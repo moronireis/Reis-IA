@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morningside AI Design System — Interactive Reference Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   MORNINGSIDE AI DESIGN SYSTEM — INTERACTIVE REFERENCE PREVIEW
+   Source: morningside.ai (homepage, /services)
+   ========================================================================== */
+
+:root {
+  /* ---- PRIMARY ACCENT ---- */
+  --ms-accent: #0CC481;
+  --ms-accent-glow: rgba(12, 196, 129, 0.15);
+  --ms-accent-dark: #0F1C16;
+
+  /* ---- BACKGROUNDS ---- */
+  --ms-bg-primary: #050808;
+  --ms-bg-secondary: #111413;
+  --ms-bg-gradient: linear-gradient(135deg, #111413 0%, #050808 100%);
+  --ms-bg-gradient-alt: linear-gradient(-135deg, #111413 0%, #050808 100%);
+
+  /* ---- TEXT ---- */
+  --ms-text-primary: #FFFFFF;
+  --ms-text-secondary: #EDECE4;
+  --ms-text-muted: rgba(255, 255, 255, 0.7);
+  --ms-text-dim: rgba(255, 255, 255, 0.5);
+
+  /* ---- BORDERS ---- */
+  --ms-border-subtle: rgba(237, 236, 228, 0.06);
+
+  /* ---- NAV ---- */
+  --ms-nav-bg: rgba(8, 8, 8, 0.35);
+
+  /* ---- FOCUS ---- */
+  --ms-focus: #4d65ff;
+
+  /* ---- GRADIENTS ---- */
+  --ms-gradient-border-90: linear-gradient(90deg, #0CC481 0%, #0F1C16 100%);
+  --ms-gradient-border-135: linear-gradient(135deg, #0F1C16 0%, #0CC481 100%);
+  --ms-gradient-popup: linear-gradient(135deg, #0CC481 0%, #0F1C16 100%);
+
+  /* ---- DURATIONS ---- */
+  --ms-duration: 0.3s;
+  --ms-duration-fade: 0.25s;
+
+  /* ---- RADIUS ---- */
+  --ms-radius-card: 12px;
+  --ms-radius-btn: 980px;
+  --ms-radius-input: 8px;
+  --ms-radius-popup: 16px;
+}
+
+/* === RESET === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+::selection { background-color: var(--ms-accent); color: white; }
+::-moz-selection { background-color: var(--ms-accent); color: white; }
+body {
+  background: var(--ms-bg-primary);
+  color: var(--ms-text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* === LAYOUT === */
+.page-wrapper { display: flex; min-height: 100vh; }
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+  background: var(--ms-bg-secondary); border-right: 1px solid var(--ms-border-subtle);
+  overflow-y: auto; z-index: 100; padding: 24px 0;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.sidebar::-webkit-scrollbar { display: none; }
+.sidebar-header { padding: 0 20px; margin-bottom: 24px; }
+.sidebar-title { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+.sidebar-subtitle { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ms-accent); margin-top: 4px; }
+.sidebar-divider { height: 1px; background: var(--ms-border-subtle); margin: 12px 20px; }
+.sidebar nav a {
+  display: flex; align-items: center; gap: 8px; padding: 6px 20px;
+  font-size: 12.5px; font-weight: 400; color: var(--ms-text-dim);
+  text-decoration: none; transition: color 150ms ease, background 150ms ease;
+  border-left: 2px solid transparent;
+}
+.sidebar nav a:hover { color: var(--ms-text-muted); background: rgba(255,255,255,0.02); }
+.sidebar nav a.active { color: var(--ms-accent); border-left-color: var(--ms-accent); background: rgba(12,196,129,0.04); font-weight: 500; }
+.sidebar nav .nav-num { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.20); min-width: 18px; font-variant-numeric: tabular-nums; }
+
+.main-content { margin-left: 260px; flex: 1; min-width: 0; }
+
+/* === SECTION === */
+.ds-section {
+  padding: 72px 48px; border-bottom: 1px solid var(--ms-border-subtle);
+  max-width: 1200px; position: relative;
+}
+.ds-section:nth-child(even) { background: var(--ms-bg-secondary); }
+.ds-section:nth-child(odd) { background: var(--ms-bg-primary); }
+.ds-section:last-child { border-bottom: none; }
+
+.section-header { margin-bottom: 48px; }
+.section-num { font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ms-accent); margin-bottom: 8px; }
+.section-title { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 10px; }
+.section-desc { font-size: 14px; color: var(--ms-text-muted); max-width: 640px; line-height: 1.6; }
+
+.subsection { margin-bottom: 48px; }
+.subsection-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.subsection-title::before { content: ''; width: 3px; height: 16px; background: var(--ms-accent); border-radius: 2px; flex-shrink: 0; }
+.subsection-desc { font-size: 13px; color: var(--ms-text-muted); margin-bottom: 16px; line-height: 1.5; }
+
+/* === COLOR SWATCH === */
+.color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.color-swatch {
+  border: 1px solid var(--ms-border-subtle); border-radius: var(--ms-radius-card);
+  overflow: hidden; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.color-swatch:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--ms-accent-glow); }
+.color-well { height: 56px; position: relative; }
+.color-well::after {
+  content: 'Copy'; position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: white; background: rgba(0,0,0,0.5); opacity: 0; transition: opacity 200ms ease;
+}
+.color-swatch:hover .color-well::after { opacity: 1; }
+.color-info { padding: 8px 10px; background: var(--ms-bg-secondary); }
+.color-name { font-size: 11px; font-weight: 600; }
+.color-value { font-size: 10px; color: var(--ms-text-dim); font-family: monospace; margin-top: 2px; }
+.color-usage { font-size: 9px; color: rgba(255,255,255,0.35); margin-top: 3px; }
+
+/* === TOKEN TABLE === */
+.token-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.token-table th { text-align: left; padding: 8px 12px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ms-text-dim); border-bottom: 1px solid var(--ms-border-subtle); }
+.token-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.02); vertical-align: middle; }
+.token-table tr:hover td { background: rgba(12,196,129,0.02); }
+.token-table .code { font-family: monospace; font-size: 12px; color: var(--ms-accent); cursor: pointer; padding: 2px 6px; background: rgba(12,196,129,0.06); border-radius: 4px; transition: background 150ms ease; }
+.token-table .code:hover { background: rgba(12,196,129,0.15); }
+
+/* === DEMO BOX === */
+.demo-box { border: 1px solid var(--ms-border-subtle); border-radius: var(--ms-radius-card); overflow: hidden; background: var(--ms-bg-primary); margin-bottom: 16px; }
+.demo-box-header { padding: 12px 20px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--ms-border-subtle); display: flex; justify-content: space-between; align-items: center; }
+.demo-box-title { font-size: 12px; font-weight: 600; color: var(--ms-text-dim); }
+.demo-box-content { padding: 32px; }
+
+/* === REPLAY BUTTON === */
+.replay-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.03em;
+  color: var(--ms-accent); background: rgba(12,196,129,0.08);
+  border: 1px solid rgba(12,196,129,0.20); border-radius: 6px;
+  padding: 5px 12px; cursor: pointer; font-family: inherit;
+  transition: all 0.3s ease;
+}
+.replay-btn:hover { background: rgba(12,196,129,0.15); border-color: rgba(12,196,129,0.35); }
+
+/* === GRADIENT BORDER CARDS === */
+.gradient-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.gradient-card {
+  border: 1px solid transparent; border-radius: var(--ms-radius-card);
+  padding: 24px; background: transparent; cursor: pointer;
+  transition: background-image 0.3s ease, box-shadow 0.3s ease;
+  min-height: 180px; display: flex; flex-direction: column; justify-content: space-between;
+}
+.gradient-card:hover {
+  background-image: var(--ms-bg-gradient), var(--ms-gradient-border-135);
+  background-origin: border-box; background-clip: padding-box, border-box;
+  box-shadow: 0 0 50px 0 var(--ms-accent-glow);
+}
+.gradient-card .card-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.gradient-card .card-desc { font-size: 13px; color: var(--ms-text-muted); line-height: 1.5; }
+.gradient-card .card-arrow {
+  opacity: 0; transform: translateX(0); transition: opacity 0.3s ease, transform 0.3s ease;
+  font-size: 18px; color: var(--ms-accent); align-self: flex-end;
+}
+.gradient-card:hover .card-arrow { opacity: 1; transform: translateX(5px); }
+
+/* Variant: 90deg (case study) */
+.gradient-card-90:hover {
+  background-image: linear-gradient(white, white), var(--ms-gradient-border-90);
+  background-origin: border-box; background-clip: padding-box, border-box;
+  box-shadow: 0 0 50px 0 var(--ms-accent-glow);
+}
+
+/* Variant: permanent (popup) */
+.gradient-card-permanent {
+  border: 1px solid transparent;
+  background-image: var(--ms-bg-gradient-alt), var(--ms-gradient-popup);
+  background-origin: border-box; background-clip: padding-box, border-box;
+  padding: 32px; border-radius: var(--ms-radius-popup);
+}
+
+/* Variant: mobile permanent */
+.gradient-card-mobile {
+  border: 1px solid transparent;
+  background-image: linear-gradient(90deg, #050808 0%, #111413 100%), linear-gradient(90deg, #0CC481 0%, #0F1C16 100%);
+  background-origin: border-box; background-clip: padding-box, border-box;
+  padding: 24px; border-radius: var(--ms-radius-card);
+}
+
+/* === FROSTED NAV DEMO === */
+.nav-demo-container {
+  height: 400px; border-radius: var(--ms-radius-card); overflow: hidden;
+  position: relative; border: 1px solid var(--ms-border-subtle);
+  background: linear-gradient(180deg, var(--ms-bg-primary) 0%, var(--ms-bg-secondary) 50%, var(--ms-bg-primary) 100%);
+}
+.nav-demo-scroll { height: 100%; overflow-y: auto; scrollbar-width: none; }
+.nav-demo-scroll::-webkit-scrollbar { display: none; }
+.nav-demo-nav {
+  position: sticky; top: 0; z-index: 10; height: 64px; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  background-color: transparent; transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+}
+.nav-demo-nav.scrolled {
+  background-color: var(--ms-nav-bg);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.nav-demo-logo { font-size: 16px; font-weight: 700; transition: opacity 0.3s ease; }
+.nav-demo-logo .logo-text { transition: opacity 0.3s ease; }
+.nav-demo-nav.scrolled .logo-text { opacity: 0; }
+.nav-demo-links { display: flex; gap: 20px; font-size: 14px; color: white; }
+.nav-demo-cta {
+  padding: 8px 20px; background: var(--ms-accent); color: white;
+  border: none; border-radius: var(--ms-radius-btn); font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+}
+.nav-demo-content { padding: 40px 24px 600px; }
+.nav-demo-content h2 { font-size: 36px; font-weight: 700; margin-bottom: 16px; }
+.nav-demo-content p { color: var(--ms-text-secondary); font-size: 18px; }
+
+/* === FAQ ACCORDION === */
+.faq-list { display: flex; flex-direction: column; gap: 8px; }
+.faq-accordion {
+  border: 1px solid transparent; cursor: pointer; padding: 20px 24px;
+  border-radius: var(--ms-radius-card); transition: background 0.3s ease, border-color 0.3s ease;
+}
+.faq-accordion:hover {
+  background: var(--ms-bg-gradient); background-clip: padding-box;
+  border: 1px solid var(--ms-border-subtle);
+}
+.faq-accordion.is-open { border: 1px solid var(--ms-border-subtle); }
+.faq-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.faq-question { font-size: 16px; font-weight: 500; }
+.faq-icon {
+  width: 24px; height: 24px; flex-shrink: 0; color: white;
+  transform: rotate(0deg); transition: transform 0.3s ease, color 0.3s ease;
+}
+.faq-accordion.is-open .faq-icon { transform: rotate(90deg); color: var(--ms-accent); }
+.faq-body { overflow: hidden; max-height: 0px; transition: max-height 0.3s ease; }
+.faq-body p { padding-top: 16px; font-size: 15px; line-height: 1.6; color: var(--ms-text-muted); }
+
+/* === SERVICE TABS === */
+.service-tabs-container { position: relative; }
+.service-nav { display: flex; gap: 0; position: relative; border-bottom: 1px solid var(--ms-border-subtle); margin-bottom: 32px; }
+.service-nav-item {
+  padding: 12px 24px; background: none; border: none;
+  color: var(--ms-text-dim); font-size: 15px; font-weight: 500;
+  cursor: pointer; font-family: inherit; transition: color 0.3s ease;
+}
+.service-nav-item.active { color: white; }
+.service-nav-item:hover { color: rgba(255,255,255,0.8); }
+.service-nav-indicator {
+  position: absolute; bottom: -1px; left: 0; height: 2px; width: 80px;
+  background-color: var(--ms-accent); transition: transform 0.3s ease, width 0.3s ease;
+  border-radius: 1px;
+}
+.service-content { display: none; }
+.service-content.active { display: block; }
+.service-content h3 { font-size: 24px; font-weight: 600; margin-bottom: 12px; }
+.service-content p { color: var(--ms-text-muted); margin-bottom: 16px; line-height: 1.6; }
+.service-content ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.service-content li { font-size: 14px; color: var(--ms-text-secondary); padding-left: 20px; position: relative; }
+.service-content li::before { content: ''; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--ms-accent); }
+
+/* === CARD HOVER EFFECTS === */
+.hover-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.hover-card {
+  border: 1px solid transparent; border-radius: var(--ms-radius-card);
+  padding: 24px; cursor: pointer;
+  transition: background-image 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.hover-card:hover {
+  background-image: var(--ms-bg-gradient), var(--ms-gradient-border-135);
+  background-origin: border-box; background-clip: padding-box, border-box;
+  box-shadow: 0 0 50px 0 var(--ms-accent-glow);
+}
+.hover-card .hc-num { font-size: 32px; font-weight: 700; color: var(--ms-accent); margin-bottom: 12px; }
+.hover-card .hc-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.hover-card .hc-desc { font-size: 13px; color: var(--ms-text-muted); line-height: 1.5; }
+.hover-card .hc-arrow {
+  opacity: 0; transform: translateX(0); transition: opacity 0.3s ease, transform 0.3s ease;
+  margin-top: 12px; font-size: 18px; color: var(--ms-accent);
+}
+.hover-card:hover .hc-arrow { opacity: 1; transform: translateX(5px); }
+
+/* === SELECTION DEMO === */
+.selection-demo { padding: 24px; border: 1px solid var(--ms-border-subtle); border-radius: var(--ms-radius-card); background: rgba(255,255,255,0.02); }
+.selection-demo p { font-size: 18px; line-height: 1.6; }
+
+/* === COPY TOAST === */
+.copy-toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ms-accent); color: white; padding: 10px 20px;
+  border-radius: 8px; font-size: 13px; font-weight: 600; z-index: 9999;
+  opacity: 0; pointer-events: none; transition: opacity 200ms ease, transform 200ms ease;
+}
+.copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; }
+  .ds-section { padding: 48px 24px; }
+  .gradient-card-grid, .hover-cards-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">Morningside AI</div>
+    <div class="sidebar-subtitle">Design System Reference</div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <nav id="sidebar-nav">
+    <a href="#color-system"><span class="nav-num">01</span> Color System</a>
+    <a href="#typography"><span class="nav-num">02</span> Typography</a>
+    <a href="#gradient-border"><span class="nav-num">03</span> Gradient Border Glow</a>
+    <a href="#frosted-nav"><span class="nav-num">04</span> Frosted Glass Nav</a>
+    <a href="#faq"><span class="nav-num">05</span> FAQ Accordion</a>
+    <a href="#card-hover"><span class="nav-num">06</span> Card Hover Effects</a>
+    <a href="#service-tabs"><span class="nav-num">07</span> Service Tab Nav</a>
+    <a href="#popup"><span class="nav-num">08</span> Popup Container</a>
+    <a href="#selection"><span class="nav-num">09</span> Selection Styling</a>
+    <a href="#focus"><span class="nav-num">10</span> Focus States</a>
+    <a href="#animation"><span class="nav-num">11</span> Animation Values</a>
+  </nav>
+</aside>
+
+<main class="main-content">
+
+<!-- 01. COLOR SYSTEM -->
+<section class="ds-section" id="color-system">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <h2 class="section-title">Color System</h2>
+    <p class="section-desc">Single accent (#0CC481), deep dark backgrounds, and warm off-white text. Extreme restraint: one strong accent used sparingly creates premium impact.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Core Palette</h3>
+    <div class="color-grid">
+      <div class="color-swatch" data-color="#0CC481"><div class="color-well" style="background:#0CC481;"></div><div class="color-info"><div class="color-name">Accent Green</div><div class="color-value">#0CC481</div><div class="color-usage">CTAs, highlights, borders</div></div></div>
+      <div class="color-swatch" data-color="#0F1C16"><div class="color-well" style="background:#0F1C16;"></div><div class="color-info"><div class="color-name">Dark Green</div><div class="color-value">#0F1C16</div><div class="color-usage">Gradient endpoint</div></div></div>
+      <div class="color-swatch" data-color="#050808"><div class="color-well" style="background:#050808; border-bottom: 1px solid rgba(255,255,255,0.1);"></div><div class="color-info"><div class="color-name">Background Primary</div><div class="color-value">#050808</div><div class="color-usage">Deepest page background</div></div></div>
+      <div class="color-swatch" data-color="#111413"><div class="color-well" style="background:#111413;"></div><div class="color-info"><div class="color-name">Background Secondary</div><div class="color-value">#111413</div><div class="color-usage">Section backgrounds, cards</div></div></div>
+      <div class="color-swatch" data-color="#FFFFFF"><div class="color-well" style="background:#000; display:flex;align-items:center;justify-content:center;"><span style="color:#FFFFFF;font-size:18px;font-weight:600;">Aa</span></div><div class="color-info"><div class="color-name">Text Primary</div><div class="color-value">#FFFFFF</div><div class="color-usage">Headings, nav links</div></div></div>
+      <div class="color-swatch" data-color="#EDECE4"><div class="color-well" style="background:#050808; display:flex;align-items:center;justify-content:center;"><span style="color:#EDECE4;font-size:18px;font-weight:600;">Aa</span></div><div class="color-info"><div class="color-name">Text Secondary</div><div class="color-value">#EDECE4</div><div class="color-usage">Body copy (warm off-white)</div></div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Gradients</h3>
+    <div class="color-grid">
+      <div class="color-swatch" data-color="linear-gradient(90deg, #0CC481 0%, #0F1C16 100%)"><div class="color-well" style="background:linear-gradient(90deg, #0CC481 0%, #0F1C16 100%);"></div><div class="color-info"><div class="color-name">Accent Sweep (90deg)</div><div class="color-value">Case study borders</div></div></div>
+      <div class="color-swatch" data-color="linear-gradient(135deg, #0F1C16 0%, #0CC481 100%)"><div class="color-well" style="background:linear-gradient(135deg, #0F1C16 0%, #0CC481 100%);"></div><div class="color-info"><div class="color-name">Accent Reverse (135deg)</div><div class="color-value">Process card borders</div></div></div>
+      <div class="color-swatch" data-color="linear-gradient(135deg, #111413 0%, #050808 100%)"><div class="color-well" style="background:linear-gradient(135deg, #111413 0%, #050808 100%);"></div><div class="color-info"><div class="color-name">Card Background</div><div class="color-value">Hover state fills</div></div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Transparency / Opacity</h3>
+    <table class="token-table">
+      <thead><tr><th>Purpose</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Green glow</td><td><span class="code" data-copy="rgba(12, 196, 129, 0.15)">rgba(12, 196, 129, 0.15)</span></td></tr>
+        <tr><td>Nav scrolled</td><td><span class="code" data-copy="rgba(8, 8, 8, 0.35)">rgba(8, 8, 8, 0.35)</span></td></tr>
+        <tr><td>Subtle border</td><td><span class="code" data-copy="rgba(237, 236, 228, 0.06)">rgba(237, 236, 228, 0.06)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 02. TYPOGRAPHY -->
+<section class="ds-section" id="typography">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <h2 class="section-title">Typography</h2>
+    <p class="section-desc">Clean geometric sans-serif (Inter). Sentence case for headings, generous whitespace, low text density. Numbered process labels (01, 02, 03).</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Type Hierarchy</h3>
+    <table class="token-table">
+      <thead><tr><th>Level</th><th>Size</th><th>Weight</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>Hero H1</td><td><span class="code" data-copy="52-60px">52-60px</span></td><td style="color:var(--ms-text-muted)">700</td><td style="color:var(--ms-text-muted)">Main headline</td></tr>
+        <tr><td>Section H2</td><td><span class="code" data-copy="36-42px">36-42px</span></td><td style="color:var(--ms-text-muted)">600-700</td><td style="color:var(--ms-text-muted)">Section titles</td></tr>
+        <tr><td>Card H3</td><td><span class="code" data-copy="24-28px">24-28px</span></td><td style="color:var(--ms-text-muted)">600</td><td style="color:var(--ms-text-muted)">Process titles</td></tr>
+        <tr><td>Body Large</td><td><span class="code" data-copy="18-20px">18-20px</span></td><td style="color:var(--ms-text-muted)">400</td><td style="color:var(--ms-text-muted)">Descriptions</td></tr>
+        <tr><td>Body</td><td><span class="code" data-copy="16px">16px</span></td><td style="color:var(--ms-text-muted)">400</td><td style="color:var(--ms-text-muted)">Paragraphs</td></tr>
+        <tr><td>Small</td><td><span class="code" data-copy="14px">14px</span></td><td style="color:var(--ms-text-muted)">400-500</td><td style="color:var(--ms-text-muted)">Labels, metadata</td></tr>
+        <tr><td>Micro</td><td><span class="code" data-copy="12px">12px</span></td><td style="color:var(--ms-text-muted)">400</td><td style="color:var(--ms-text-muted)">Legal, fine print</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 03. GRADIENT BORDER GLOW -->
+<section class="ds-section" id="gradient-border">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <h2 class="section-title">Gradient Border Glow Effect</h2>
+    <p class="section-desc">Morningside's signature technique: CSS background-clip creates gradient borders with border-radius support. 3 variants: case study (90deg), process card (135deg), mobile (permanent).</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Variant 1: Process Cards (135deg, hover)</h3>
+    <p class="subsection-desc">Hover to see diagonal gradient border + glow + arrow slide.</p>
+    <div class="gradient-card-grid">
+      <div class="gradient-card"><div class="card-title">01 &mdash; Identify</div><div class="card-desc">Decide what is actually worth building with AI.</div><div class="card-arrow">&rarr;</div></div>
+      <div class="gradient-card"><div class="card-title">02 &mdash; Develop</div><div class="card-desc">Build it right so it works from day one.</div><div class="card-arrow">&rarr;</div></div>
+      <div class="gradient-card"><div class="card-title">03 &mdash; Adopt</div><div class="card-desc">Make AI part of how work actually gets done.</div><div class="card-arrow">&rarr;</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Variant 2: Case Study (90deg, hover)</h3>
+    <p class="subsection-desc">Horizontal gradient sweep with green glow shadow.</p>
+    <div style="max-width: 400px;">
+      <div class="gradient-card gradient-card-90" style="background: var(--ms-bg-secondary); min-height: 120px;">
+        <div class="card-title">Case Study: AI Automation</div>
+        <div class="card-desc">Reduced manual processing by 85% in 6 weeks.</div>
+        <div class="card-arrow">&rarr;</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Variant 3: Mobile Permanent Border</h3>
+    <p class="subsection-desc">On mobile, gradient borders are always visible (no hover on touch devices).</p>
+    <div style="max-width: 350px;">
+      <div class="gradient-card-mobile">
+        <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Mobile Card</div>
+        <div style="font-size: 13px; color: var(--ms-text-muted);">Permanent gradient border, no hover needed.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Background-Clip Technique</h3>
+    <table class="token-table">
+      <thead><tr><th>Step</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>1. Border</td><td><span class="code" data-copy="border: 1px solid transparent;">1px solid transparent</span></td></tr>
+        <tr><td>2. Inner layer</td><td><span class="code" data-copy="linear-gradient(135deg, #111413, #050808)">Card fill gradient</span></td></tr>
+        <tr><td>3. Border layer</td><td><span class="code" data-copy="linear-gradient(135deg, #0F1C16, #0CC481)">Accent gradient</span></td></tr>
+        <tr><td>4. Origin</td><td><span class="code" data-copy="background-origin: border-box;">border-box</span></td></tr>
+        <tr><td>5. Clip</td><td><span class="code" data-copy="background-clip: padding-box, border-box;">padding-box, border-box</span></td></tr>
+        <tr><td>6. Glow</td><td><span class="code" data-copy="box-shadow: 0 0 50px 0 rgba(12, 196, 129, 0.15);">0 0 50px glow</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 04. FROSTED GLASS NAV -->
+<section class="ds-section" id="frosted-nav">
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <h2 class="section-title">Frosted Glass Navigation</h2>
+    <p class="section-desc">Transparent on load, switches to rgba(8,8,8,0.35) + blur(10px) on any scroll. Logo text paths fade to 0 on scroll.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Live Demo</h3>
+    <p class="subsection-desc">Scroll inside to see the nav transition from transparent to frosted glass.</p>
+    <div class="nav-demo-container">
+      <div class="nav-demo-scroll" id="nav-demo-scroll">
+        <div class="nav-demo-nav" id="nav-demo-nav">
+          <div class="nav-demo-logo"><span style="color: var(--ms-accent);">M</span><span class="logo-text">orningside</span></div>
+          <div class="nav-demo-links"><span>Services</span><span>Team</span></div>
+          <button class="nav-demo-cta">get in touch</button>
+        </div>
+        <div class="nav-demo-content">
+          <h2>We don't just talk AI.<br>We deliver it.</h2>
+          <p>Enterprise AI solutions that actually work in your operations.</p>
+          <div style="height: 600px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Nav Tokens</h3>
+    <table class="token-table">
+      <thead><tr><th>State</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Default bg</td><td><span class="code" data-copy="transparent">transparent</span></td></tr>
+        <tr><td>Scrolled bg</td><td><span class="code" data-copy="rgba(8, 8, 8, 0.35)">rgba(8, 8, 8, 0.35)</span></td></tr>
+        <tr><td>Blur</td><td><span class="code" data-copy="blur(10px)">blur(10px)</span></td></tr>
+        <tr><td>Trigger</td><td><span class="code" data-copy="scrollY > 0">scrollY > 0</span></td></tr>
+        <tr><td>Logo text</td><td><span class="code" data-copy="opacity: 0">Fades to 0 on scroll</span></td></tr>
+        <tr><td>Transition</td><td><span class="code" data-copy="0.3s ease">0.3s ease</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 05. FAQ ACCORDION -->
+<section class="ds-section" id="faq">
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <h2 class="section-title">FAQ Accordion</h2>
+    <p class="section-desc">Exclusive-open behavior (one at a time). Gradient background on hover/open. Chevron rotates 90deg and turns green. Max-height animation.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Live Demo</h3>
+    <div class="faq-list" id="faq-list">
+      <div class="faq-accordion">
+        <div class="faq-header">
+          <h3 class="faq-question">How is Morningside AI different from every other AI company?</h3>
+          <svg class="faq-icon" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="faq-body"><p>We are workflow specialists first, AI specialists second. We build the processes, guardrails and feedback loops that make AI actually work inside your operations.</p></div>
+      </div>
+      <div class="faq-accordion">
+        <div class="faq-header">
+          <h3 class="faq-question">How do I know if we are ready for AI?</h3>
+          <svg class="faq-icon" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="faq-body"><p>You are ready if you have clear pain points in your workflows that involve repetitive tasks, data processing, or decision-making at scale.</p></div>
+      </div>
+      <div class="faq-accordion">
+        <div class="faq-header">
+          <h3 class="faq-question">What industries do you work with?</h3>
+          <svg class="faq-icon" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="faq-body"><p>We work across healthcare, finance, logistics, and professional services -- any industry where AI can automate decisions and reduce manual bottlenecks.</p></div>
+      </div>
+      <div class="faq-accordion">
+        <div class="faq-header">
+          <h3 class="faq-question">What does a typical engagement look like?</h3>
+          <svg class="faq-icon" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="faq-body"><p>We start with an AI Readiness Assessment, then move to proof-of-concept development, and finally full production deployment with team training.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. CARD HOVER EFFECTS -->
+<section class="ds-section" id="card-hover">
+  <div class="section-header">
+    <div class="section-num">06</div>
+    <h2 class="section-title">Card Hover Effects</h2>
+    <p class="section-desc">Combined gradient border + glow + arrow slide(5px). Process cards use numbered labels (01, 02, 03, 04) for visual hierarchy.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Process Cards</h3>
+    <div class="hover-cards-grid">
+      <div class="hover-card"><div class="hc-num">01</div><div class="hc-title">Discovery</div><div class="hc-desc">We understand your business, workflows, and pain points.</div><div class="hc-arrow">&rarr;</div></div>
+      <div class="hover-card"><div class="hc-num">02</div><div class="hc-title">Strategy</div><div class="hc-desc">We map AI opportunities with clear ROI projections.</div><div class="hc-arrow">&rarr;</div></div>
+      <div class="hover-card"><div class="hc-num">03</div><div class="hc-title">Build</div><div class="hc-desc">We develop and integrate custom AI solutions.</div><div class="hc-arrow">&rarr;</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. SERVICE TAB NAVIGATION -->
+<section class="ds-section" id="service-tabs">
+  <div class="section-header">
+    <div class="section-num">07</div>
+    <h2 class="section-title">Service Tab Navigation</h2>
+    <p class="section-desc">Sliding green indicator tracks active tab. Content fades with 250ms ease-in-out. Exclusive: only one section visible.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Live Demo</h3>
+    <div class="service-tabs-container" id="service-tabs">
+      <div class="service-nav" id="service-nav">
+        <button class="service-nav-item active" data-tab="identify">Identify</button>
+        <button class="service-nav-item" data-tab="develop">Develop</button>
+        <button class="service-nav-item" data-tab="adopt">Adopt</button>
+        <div class="service-nav-indicator" id="service-indicator"></div>
+      </div>
+      <div class="service-content active" id="tab-identify">
+        <h3>Identify</h3>
+        <p>Decide what is actually worth building with AI in your organization.</p>
+        <ul>
+          <li>Executive Alignment Workshops</li>
+          <li>Employee and Stakeholder Interviews</li>
+          <li>ROI Modeling and Business Case Design</li>
+          <li>Prioritization Mapping</li>
+          <li>AI Readiness and Diagnostics Report</li>
+        </ul>
+      </div>
+      <div class="service-content" id="tab-develop">
+        <h3>Develop</h3>
+        <p>Build it right so it works from day one.</p>
+        <ul>
+          <li>Scoping and Technical Architecture</li>
+          <li>Data and Systems Integration</li>
+          <li>Proof of Concept to Production Build</li>
+          <li>Security, Governance and Reliability Design</li>
+          <li>Performance Tuning and Optimization</li>
+        </ul>
+      </div>
+      <div class="service-content" id="tab-adopt">
+        <h3>Adopt</h3>
+        <p>Make AI part of how work actually gets done.</p>
+        <ul>
+          <li>Pilot Launch and Controlled Rollout</li>
+          <li>AI Enablement Sessions</li>
+          <li>Workflow Integration Support</li>
+          <li>Performance Tracking and Ongoing Optimization</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. POPUP CONTAINER -->
+<section class="ds-section" id="popup">
+  <div class="section-header">
+    <div class="section-num">08</div>
+    <h2 class="section-title">Popup Container Gradient Border</h2>
+    <p class="section-desc">Permanent gradient border (not hover-dependent). Uses -135deg card fill + 135deg accent border. 16px radius.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Live Demo</h3>
+    <div style="max-width: 500px;">
+      <div class="gradient-card-permanent">
+        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">Get in Touch</h3>
+        <p style="font-size: 14px; color: var(--ms-text-muted); margin-bottom: 20px;">Tell us about your project and we will get back to you within 24 hours.</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--ms-border-subtle); border-radius: var(--ms-radius-input); font-size: 14px; color: var(--ms-text-dim);">First Name</div>
+          <div style="padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--ms-border-subtle); border-radius: var(--ms-radius-input); font-size: 14px; color: var(--ms-text-dim);">Email</div>
+          <button style="padding: 12px 24px; background: var(--ms-accent); color: white; border: none; border-radius: var(--ms-radius-btn); font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. SELECTION STYLING -->
+<section class="ds-section" id="selection">
+  <div class="section-header">
+    <div class="section-num">09</div>
+    <h2 class="section-title">Selection Styling</h2>
+    <p class="section-desc">Text selection uses the accent green background with white text. An easy brand consistency win.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Try It</h3>
+    <p class="subsection-desc">Select any text on this page to see the green selection highlight.</p>
+    <div class="selection-demo">
+      <p>We don't just talk AI. We deliver it. Enterprise AI solutions that actually work in your operations. Select this text to see the accent green selection styling.</p>
+    </div>
+    <table class="token-table" style="margin-top: 16px;">
+      <thead><tr><th>Property</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>::selection background</td><td><span class="code" data-copy="background-color: #0CC481;">#0CC481</span></td></tr>
+        <tr><td>::selection color</td><td><span class="code" data-copy="color: white;">white</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 10. FOCUS STATES -->
+<section class="ds-section" id="focus">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <h2 class="section-title">Focus States</h2>
+    <p class="section-desc">Focus ring uses #4d65ff blue (distinct from accent), 2px solid, 2px offset. Only visible on :focus-visible (keyboard only).</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Focus Ring Demo</h3>
+    <p class="subsection-desc">Tab to these buttons to see the blue focus ring.</p>
+    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+      <button style="padding: 12px 24px; background: var(--ms-accent); color: white; border: none; border-radius: var(--ms-radius-btn); font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; outline-offset: 2px;" onfocus="this.style.outline='2px solid #4d65ff'" onblur="this.style.outline='none'">Get in Touch</button>
+      <button style="padding: 12px 24px; background: transparent; color: white; border: 1px solid var(--ms-border-subtle); border-radius: var(--ms-radius-btn); font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; outline-offset: 2px;" onfocus="this.style.outline='2px solid #4d65ff'" onblur="this.style.outline='none'">Learn More</button>
+    </div>
+    <table class="token-table" style="margin-top: 16px;">
+      <thead><tr><th>Property</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Outline color</td><td><span class="code" data-copy="#4d65ff">#4d65ff</span></td></tr>
+        <tr><td>Outline width</td><td><span class="code" data-copy="0.125rem">0.125rem (2px)</span></td></tr>
+        <tr><td>Outline offset</td><td><span class="code" data-copy="0.125rem">0.125rem (2px)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 11. ANIMATION VALUES -->
+<section class="ds-section" id="animation">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <h2 class="section-title">Animation Values</h2>
+    <p class="section-desc">Universal pattern: 0.3s ease for all interactions. Simple, consistent, professional. No custom cubic-beziers -- restraint over sophistication.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Complete Animation Map</h3>
+    <table class="token-table">
+      <thead><tr><th>Element</th><th>Duration</th><th>Easing</th><th>Property</th></tr></thead>
+      <tbody>
+        <tr><td>Nav background</td><td><span class="code" data-copy="0.3s">0.3s</span></td><td style="color:var(--ms-text-muted)">ease</td><td style="color:var(--ms-text-muted)">background-color, backdrop-filter</td></tr>
+        <tr><td>Logo SVG paths</td><td><span class="code" data-copy="0.3s">0.3s</span></td><td style="color:var(--ms-text-muted)">ease</td><td style="color:var(--ms-text-muted)">opacity</td></tr>
+        <tr><td>Card gradient border</td><td><span class="code" data-copy="0.3s">0.3s</span></td><td style="color:var(--ms-text-muted)">ease</td><td style="color:var(--ms-text-muted)">background-image, box-shadow</td></tr>
+        <tr><td>Arrow slide</td><td><span class="code" data-copy="0.3s">0.3s</span></td><td style="color:var(--ms-text-muted)">ease</td><td style="color:var(--ms-text-muted)">opacity, transform(5px)</td></tr>
+        <tr><td>FAQ chevron</td><td><span class="code" data-copy="0.3s">0.3s</span></td><td style="color:var(--ms-text-muted)">ease</td><td style="color:var(--ms-text-muted)">transform(rotate)</td></tr>
+        <tr><td>FAQ body</td><td><span class="code" data-copy="0.3s">0.3s</span></td><td style="color:var(--ms-text-muted)">ease</td><td style="color:var(--ms-text-muted)">max-height</td></tr>
+        <tr><td>Tab content</td><td><span class="code" data-copy="0.25s">0.25s</span></td><td style="color:var(--ms-text-muted)">ease-in-out</td><td style="color:var(--ms-text-muted)">opacity</td></tr>
+        <tr><td>Tab indicator</td><td><span class="code" data-copy="0.3s">0.3s</span></td><td style="color:var(--ms-text-muted)">ease</td><td style="color:var(--ms-text-muted)">transform(translateX)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+</div>
+
+<div class="copy-toast" id="copy-toast">Copied!</div>
+
+<script>
+/* === COPY === */
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const t = document.getElementById('copy-toast');
+    t.textContent = 'Copied: ' + (text.length > 50 ? text.substring(0, 50) + '...' : text);
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1500);
+  });
+}
+document.querySelectorAll('.color-swatch').forEach(s => s.addEventListener('click', () => { if (s.dataset.color) copyToClipboard(s.dataset.color); }));
+document.querySelectorAll('.token-table .code').forEach(el => el.addEventListener('click', e => { e.stopPropagation(); copyToClipboard(el.dataset.copy || el.textContent); }));
+
+/* === SIDEBAR TRACKING === */
+const sections = document.querySelectorAll('.ds-section');
+const navLinks = document.querySelectorAll('#sidebar-nav a');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { navLinks.forEach(l => l.classList.remove('active')); const a = document.querySelector('#sidebar-nav a[href="#' + e.target.id + '"]'); if (a) a.classList.add('active'); } });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => obs.observe(s));
+
+/* === FROSTED NAV === */
+const navScroll = document.getElementById('nav-demo-scroll');
+const navBar = document.getElementById('nav-demo-nav');
+if (navScroll && navBar) {
+  navScroll.addEventListener('scroll', () => {
+    if (navScroll.scrollTop > 0) { navBar.classList.add('scrolled'); } else { navBar.classList.remove('scrolled'); }
+  }, { passive: true });
+}
+
+/* === FAQ ACCORDION === */
+document.querySelectorAll('.faq-accordion').forEach(card => {
+  const body = card.querySelector('.faq-body');
+  if (body) body.style.maxHeight = '0px';
+  card.addEventListener('click', () => {
+    const isOpen = card.classList.contains('is-open');
+    // Close all
+    document.querySelectorAll('.faq-accordion').forEach(c => {
+      c.classList.remove('is-open');
+      const b = c.querySelector('.faq-body');
+      if (b) b.style.maxHeight = '0px';
+    });
+    // Toggle clicked
+    if (!isOpen) {
+      card.classList.add('is-open');
+      if (body) body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  });
+});
+
+/* === SERVICE TABS === */
+(function() {
+  const navItems = document.querySelectorAll('.service-nav-item');
+  const indicator = document.getElementById('service-indicator');
+  const tabs = { identify: document.getElementById('tab-identify'), develop: document.getElementById('tab-develop'), adopt: document.getElementById('tab-adopt') };
+  let isAnimating = false;
+
+  function moveIndicator(item) {
+    const rect = item.getBoundingClientRect();
+    const parentRect = item.parentElement.getBoundingClientRect();
+    const left = rect.left - parentRect.left;
+    indicator.style.width = rect.width + 'px';
+    indicator.style.transform = 'translateX(' + left + 'px)';
+  }
+
+  function showTab(tabId, clickedItem) {
+    if (isAnimating) return;
+    isAnimating = true;
+    navItems.forEach(n => n.classList.remove('active'));
+    clickedItem.classList.add('active');
+    moveIndicator(clickedItem);
+
+    const activeTab = document.querySelector('.service-content.active');
+    const newTab = tabs[tabId];
+    if (activeTab === newTab) { isAnimating = false; return; }
+
+    if (activeTab) {
+      activeTab.style.transition = 'opacity 0.25s ease-in-out';
+      activeTab.style.opacity = '0';
+    }
+
+    setTimeout(() => {
+      if (activeTab) { activeTab.classList.remove('active'); activeTab.style.display = 'none'; }
+      newTab.style.opacity = '0';
+      newTab.style.display = 'block';
+      newTab.classList.add('active');
+      void newTab.offsetHeight;
+      newTab.style.transition = 'opacity 0.25s ease-in-out';
+      newTab.style.opacity = '1';
+      setTimeout(() => { isAnimating = false; }, 250);
+    }, 250);
+  }
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => showTab(item.dataset.tab, item));
+  });
+
+  // Init indicator
+  if (navItems[0]) moveIndicator(navItems[0]);
+})();
+</script>
+</body>
+</html>

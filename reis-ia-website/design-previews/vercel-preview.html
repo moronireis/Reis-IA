@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vercel Design System — Interactive Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   CSS CUSTOM PROPERTIES — VERCEL / GEIST DESIGN SYSTEM REFERENCE
+   ========================================================================== */
+:root {
+  /* ---- BACKGROUND ---- */
+  --ds-background-100: #000000;
+  --ds-background-200: #0a0a0a;
+
+  /* ---- GRAY SCALE (10 STEPS, DARK MODE) ---- */
+  --ds-gray-100: #111111;
+  --ds-gray-200: #1a1a1a;
+  --ds-gray-300: #222222;
+  --ds-gray-400: #2e2e2e;
+  --ds-gray-500: #3e3e3e;
+  --ds-gray-600: #505050;
+  --ds-gray-700: #6e6e6e;
+  --ds-gray-800: #7e7e7e;
+  --ds-gray-900: #a0a0a0;
+  --ds-gray-1000: #ededed;
+
+  /* ---- GRAY ALPHA ---- */
+  --ds-gray-alpha-100: rgba(255,255,255,0.06);
+  --ds-gray-alpha-200: rgba(255,255,255,0.09);
+  --ds-gray-alpha-300: rgba(255,255,255,0.13);
+  --ds-gray-alpha-400: rgba(255,255,255,0.17);
+
+  /* ---- ACCENT COLORS ---- */
+  --ds-blue-700: #0070f3;
+  --ds-blue-800: #0060d0;
+  --ds-blue-900: #52a9ff;
+  --ds-red-800: #e5484d;
+  --ds-amber-400: #ffb224;
+  --ds-amber-700: #f5a623;
+  --ds-amber-900: #ffcb47;
+  --ds-green-700: #45a557;
+  --ds-teal-500: #12a594;
+  --ds-purple-700: #8e4ec6;
+  --ds-pink-800: #cd2b81;
+
+  /* ---- SHADOWS ---- */
+  --shadow-floating: 0 8px 30px rgba(0,0,0,0.4);
+  --shadow-modal: 0 16px 70px rgba(0,0,0,0.5);
+
+  /* ---- EFFECTS ---- */
+  --nav-blur: saturate(180%) blur(20px);
+  --nav-bg: rgba(0, 0, 0, 0.8);
+
+  /* ---- TRANSITIONS ---- */
+  --transition-default: 200ms ease;
+  --transition-fast: 150ms ease;
+  --transition-slow: 300ms ease;
+
+  /* ---- EASINGS ---- */
+  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-quick-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-subtle-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ---- TYPOGRAPHY ---- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Courier New', monospace;
+
+  /* ---- BORDER RADIUS ---- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+}
+
+/* === RESET === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+::selection { background: rgba(0, 112, 243, 0.30); color: white; }
+body {
+  background: var(--ds-background-100);
+  color: var(--ds-gray-1000);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* === LAYOUT === */
+.page-wrapper { display: flex; min-height: 100vh; }
+
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+  background: var(--ds-background-200); border-right: 1px solid var(--ds-gray-400);
+  overflow-y: auto; z-index: 100; padding: 24px 0;
+  scrollbar-width: thin; scrollbar-color: var(--ds-gray-400) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--ds-gray-400); border-radius: 2px; }
+.sidebar-header { padding: 0 20px; margin-bottom: 24px; }
+.sidebar-title { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+.sidebar-subtitle { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ds-gray-900); margin-top: 4px; }
+.sidebar-divider { height: 1px; background: var(--ds-gray-400); margin: 12px 20px; }
+.sidebar nav a {
+  display: flex; align-items: center; gap: 8px; padding: 6px 20px; font-size: 12.5px; font-weight: 400;
+  color: var(--ds-gray-700); text-decoration: none;
+  transition: color var(--transition-default), background var(--transition-default);
+  border-left: 2px solid transparent;
+}
+.sidebar nav a:hover { color: var(--ds-gray-1000); background: var(--ds-gray-alpha-100); }
+.sidebar nav a.active { color: var(--ds-gray-1000); border-left-color: var(--ds-gray-1000); background: var(--ds-gray-alpha-100); font-weight: 500; }
+.sidebar nav .nav-num { font-size: 10px; font-weight: 600; color: var(--ds-gray-600); min-width: 18px; font-variant-numeric: tabular-nums; }
+
+.main-content { margin-left: 260px; flex: 1; min-width: 0; }
+
+/* === SECTION === */
+.ds-section {
+  padding: 72px 48px; border-bottom: 1px solid var(--ds-gray-400);
+  max-width: 1200px; position: relative;
+}
+.ds-section:last-child { border-bottom: none; }
+
+.section-header { margin-bottom: 48px; }
+.section-num { font-size: 11px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ds-gray-900); margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.section-title { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 10px; }
+.section-desc { font-size: 14px; color: var(--ds-gray-900); max-width: 640px; line-height: 1.6; }
+
+.subsection { margin-bottom: 48px; }
+.subsection-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 16px; }
+
+/* === SWATCHES === */
+.swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+.swatch {
+  border-radius: var(--radius-md); overflow: hidden; cursor: pointer;
+  transition: transform var(--transition-default); border: 1px solid var(--ds-gray-400);
+}
+.swatch:hover { transform: scale(1.03); }
+.swatch-color { height: 56px; }
+.swatch-info { padding: 8px 10px; background: var(--ds-background-200); }
+.swatch-name { font-size: 10px; font-weight: 500; margin-bottom: 1px; }
+.swatch-hex { font-size: 9px; color: var(--ds-gray-700); font-family: var(--font-mono); }
+
+/* === TOKEN TABLE === */
+.token-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.token-table th { text-align: left; padding: 10px 16px; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ds-gray-700); border-bottom: 1px solid var(--ds-gray-400); }
+.token-table td { padding: 10px 16px; border-bottom: 1px solid var(--ds-gray-alpha-100); vertical-align: middle; }
+.token-table tr:hover td { background: var(--ds-gray-alpha-100); }
+.token-value { font-family: var(--font-mono); font-size: 12px; color: var(--ds-blue-900); cursor: pointer; padding: 2px 6px; background: rgba(0,112,243,0.08); border-radius: 4px; transition: background 150ms; }
+.token-value:hover { background: rgba(0,112,243,0.15); }
+
+/* === ANIMATION DEMOS === */
+.demo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.demo-card {
+  background: var(--ds-background-200); border: 1px solid var(--ds-gray-400);
+  border-radius: var(--radius-lg); padding: 24px; cursor: pointer;
+  min-height: 220px; display: flex; flex-direction: column;
+  transition: border-color var(--transition-default);
+}
+.demo-card:hover { border-color: var(--ds-gray-500); }
+.demo-label { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.demo-desc { font-size: 12px; color: var(--ds-gray-900); margin-bottom: 16px; line-height: 1.5; }
+.demo-stage { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-radius: var(--radius-sm); }
+.demo-replay { font-size: 10px; color: var(--ds-gray-700); text-align: center; margin-top: 8px; }
+
+/* === KEYFRAMES === */
+@keyframes beam {
+  from { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  to { transform: translateY(200px); opacity: 0; }
+}
+@keyframes skeleton-pulse {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+@keyframes grid-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes border-glow-spin {
+  from { --glow-angle: 0deg; }
+  to { --glow-angle: 360deg; }
+}
+
+/* === BEAM === */
+.beam-container { position: relative; width: 100%; height: 200px; overflow: hidden; background: var(--ds-background-100); border-radius: var(--radius-sm); }
+.beam-line {
+  position: absolute; left: 50%; width: 1px; height: 120px;
+  background: linear-gradient(to bottom, transparent, var(--ds-blue-700), transparent);
+  animation: beam 4s ease-in-out infinite;
+}
+
+/* === DOT PATTERN === */
+.dot-pattern-demo {
+  width: 100%; height: 200px; border-radius: var(--radius-sm);
+  background-image: radial-gradient(circle at 1px 1px, var(--ds-gray-alpha-400) 1px, transparent 0);
+  background-size: 24px 24px;
+  background-color: var(--ds-background-100);
+}
+
+/* === BORDER GLOW === */
+.glow-card-demo {
+  position: relative; border-radius: var(--radius-lg);
+  background: var(--ds-background-200); padding: 32px;
+  width: 100%;
+}
+.glow-card-demo::before {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit;
+  background: conic-gradient(from var(--glow-angle, 0deg) at 50% 50%, transparent 0deg, var(--ds-blue-700) 90deg, transparent 180deg, var(--ds-purple-700) 270deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  padding: 1px; animation: border-glow-spin 4s linear infinite;
+}
+
+/* === SKELETON === */
+.skeleton-demo {
+  display: flex; flex-direction: column; gap: 12px; width: 100%;
+}
+.skeleton-line {
+  height: 14px; border-radius: 4px;
+  background: linear-gradient(90deg, var(--ds-gray-100) 0px, var(--ds-gray-200) 40px, var(--ds-gray-100) 80px);
+  background-size: 200px 100%;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* === GRID LINES === */
+.grid-line-demo {
+  position: relative; width: 100%; height: 200px; overflow: hidden; border-radius: var(--radius-sm);
+  background-image:
+    linear-gradient(var(--ds-gray-alpha-100) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ds-gray-alpha-100) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-color: var(--ds-background-100);
+}
+.grid-sweep-line {
+  position: absolute; top: 0; bottom: 0; width: 200px;
+  background: linear-gradient(90deg, transparent, var(--ds-blue-700), transparent);
+  animation: grid-sweep 3s ease-in-out infinite;
+  opacity: 0.3;
+}
+
+/* === LOGO TICKER === */
+.ticker-container {
+  width: 100%; overflow: hidden; position: relative; padding: 24px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+.ticker-track {
+  display: flex; gap: 48px; animation: scroll-left 20s linear infinite;
+  width: max-content;
+}
+.ticker-track:hover { animation-play-state: paused; }
+.ticker-item {
+  font-size: 14px; font-weight: 500; color: var(--ds-gray-700);
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* === ENTERPRISE GRADIENT TEXT === */
+.enterprise-gradient-text {
+  background: linear-gradient(to right, #fff, #999);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* === BUTTONS === */
+.vercel-btn {
+  padding: 8px 16px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500;
+  cursor: pointer; border: none; font-family: inherit;
+  transition: background-color var(--transition-default), color var(--transition-default), border-color var(--transition-default);
+}
+.vercel-btn--primary { background: var(--ds-gray-1000); color: var(--ds-background-100); }
+.vercel-btn--primary:hover { background: #ffffff; }
+.vercel-btn--secondary { background: var(--ds-gray-200); color: var(--ds-gray-1000); border: 1px solid var(--ds-gray-400); }
+.vercel-btn--secondary:hover { background: var(--ds-gray-300); }
+.vercel-btn--tertiary { background: transparent; color: var(--ds-gray-900); border: 1px solid var(--ds-gray-400); }
+.vercel-btn--tertiary:hover { background: var(--ds-gray-200); }
+
+/* === COMPONENT CARD === */
+.feature-card {
+  background: var(--ds-background-200); border: 1px solid var(--ds-gray-400);
+  border-radius: var(--radius-lg); padding: 32px; display: flex; flex-direction: column; gap: 24px;
+  transition: border-color var(--transition-default);
+}
+.feature-card:hover { border-color: var(--ds-gray-500); }
+
+/* === COPY TOAST === */
+.copy-toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ds-gray-1000); color: var(--ds-background-100); padding: 8px 20px;
+  border-radius: var(--radius-full); font-size: 13px; font-weight: 500;
+  opacity: 0; pointer-events: none;
+  transition: opacity 200ms, transform 200ms var(--ease-quick-out);
+  z-index: 999;
+}
+.copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; }
+  .ds-section { padding: 48px 24px; }
+  .demo-grid { grid-template-columns: 1fr; }
+}
+
+/* === CSS Property for glow animation === */
+@property --glow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Vercel</div>
+      <div class="sidebar-subtitle">Geist Design System</div>
+    </div>
+    <div class="sidebar-divider"></div>
+    <nav>
+      <a href="#colors"><span class="nav-num">01</span> Color System</a>
+      <a href="#typography"><span class="nav-num">02</span> Typography</a>
+      <a href="#beam"><span class="nav-num">03</span> Beam Animation</a>
+      <a href="#dotpattern"><span class="nav-num">04</span> Dot Pattern</a>
+      <a href="#borderglow"><span class="nav-num">05</span> Border Glow</a>
+      <a href="#skeleton"><span class="nav-num">06</span> Skeleton Loading</a>
+      <a href="#gridlines"><span class="nav-num">07</span> Grid Line Animation</a>
+      <a href="#enterprise"><span class="nav-num">08</span> Enterprise Patterns</a>
+      <a href="#components"><span class="nav-num">09</span> Component Patterns</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- 01 — COLOR SYSTEM -->
+    <section class="ds-section" id="colors">
+      <div class="section-header">
+        <div class="section-num">01</div>
+        <h2 class="section-title">Color System</h2>
+        <p class="section-desc">10-step gray scale with --ds-[color]-[shade] naming convention. Pure black (#000000) as the foundation. Depth through subtle value shifts, not shadows. Click any swatch to copy.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Gray Scale (Dark Mode)</h3>
+        <div class="swatch-grid" style="grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));">
+          <div class="swatch" onclick="copyValue('#000000')"><div class="swatch-color" style="background:#000000; border-bottom:1px solid var(--ds-gray-400);"></div><div class="swatch-info"><div class="swatch-name">bg-100</div><div class="swatch-hex">#000000</div></div></div>
+          <div class="swatch" onclick="copyValue('#0a0a0a')"><div class="swatch-color" style="background:#0a0a0a"></div><div class="swatch-info"><div class="swatch-name">bg-200</div><div class="swatch-hex">#0a0a0a</div></div></div>
+          <div class="swatch" onclick="copyValue('#111111')"><div class="swatch-color" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">gray-100</div><div class="swatch-hex">#111111</div></div></div>
+          <div class="swatch" onclick="copyValue('#1a1a1a')"><div class="swatch-color" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">gray-200</div><div class="swatch-hex">#1a1a1a</div></div></div>
+          <div class="swatch" onclick="copyValue('#222222')"><div class="swatch-color" style="background:#222222"></div><div class="swatch-info"><div class="swatch-name">gray-300</div><div class="swatch-hex">#222222</div></div></div>
+          <div class="swatch" onclick="copyValue('#2e2e2e')"><div class="swatch-color" style="background:#2e2e2e"></div><div class="swatch-info"><div class="swatch-name">gray-400</div><div class="swatch-hex">#2e2e2e</div></div></div>
+          <div class="swatch" onclick="copyValue('#3e3e3e')"><div class="swatch-color" style="background:#3e3e3e"></div><div class="swatch-info"><div class="swatch-name">gray-500</div><div class="swatch-hex">#3e3e3e</div></div></div>
+          <div class="swatch" onclick="copyValue('#505050')"><div class="swatch-color" style="background:#505050"></div><div class="swatch-info"><div class="swatch-name">gray-600</div><div class="swatch-hex">#505050</div></div></div>
+          <div class="swatch" onclick="copyValue('#6e6e6e')"><div class="swatch-color" style="background:#6e6e6e"></div><div class="swatch-info"><div class="swatch-name">gray-700</div><div class="swatch-hex">#6e6e6e</div></div></div>
+          <div class="swatch" onclick="copyValue('#7e7e7e')"><div class="swatch-color" style="background:#7e7e7e"></div><div class="swatch-info"><div class="swatch-name">gray-800</div><div class="swatch-hex">#7e7e7e</div></div></div>
+          <div class="swatch" onclick="copyValue('#a0a0a0')"><div class="swatch-color" style="background:#a0a0a0"></div><div class="swatch-info"><div class="swatch-name">gray-900</div><div class="swatch-hex">#a0a0a0</div></div></div>
+          <div class="swatch" onclick="copyValue('#ededed')"><div class="swatch-color" style="background:#ededed"></div><div class="swatch-info"><div class="swatch-name">gray-1000</div><div class="swatch-hex">#ededed</div></div></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Accent Colors</h3>
+        <div class="swatch-grid">
+          <div class="swatch" onclick="copyValue('#0070f3')"><div class="swatch-color" style="background:#0070f3"></div><div class="swatch-info"><div class="swatch-name">blue-700</div><div class="swatch-hex">#0070f3</div></div></div>
+          <div class="swatch" onclick="copyValue('#e5484d')"><div class="swatch-color" style="background:#e5484d"></div><div class="swatch-info"><div class="swatch-name">red-800</div><div class="swatch-hex">#e5484d</div></div></div>
+          <div class="swatch" onclick="copyValue('#f5a623')"><div class="swatch-color" style="background:#f5a623"></div><div class="swatch-info"><div class="swatch-name">amber-700</div><div class="swatch-hex">#f5a623</div></div></div>
+          <div class="swatch" onclick="copyValue('#45a557')"><div class="swatch-color" style="background:#45a557"></div><div class="swatch-info"><div class="swatch-name">green-700</div><div class="swatch-hex">#45a557</div></div></div>
+          <div class="swatch" onclick="copyValue('#12a594')"><div class="swatch-color" style="background:#12a594"></div><div class="swatch-info"><div class="swatch-name">teal-500</div><div class="swatch-hex">#12a594</div></div></div>
+          <div class="swatch" onclick="copyValue('#8e4ec6')"><div class="swatch-color" style="background:#8e4ec6"></div><div class="swatch-info"><div class="swatch-name">purple-700</div><div class="swatch-hex">#8e4ec6</div></div></div>
+          <div class="swatch" onclick="copyValue('#cd2b81')"><div class="swatch-color" style="background:#cd2b81"></div><div class="swatch-info"><div class="swatch-name">pink-800</div><div class="swatch-hex">#cd2b81</div></div></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Elevation System (No Shadows)</h3>
+        <p style="font-size:13px; color:var(--ds-gray-900); margin-bottom:16px;">In dark mode, Vercel communicates depth through border and background value shifts. Shadows reserved only for floating elements.</p>
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px;">
+          <div style="padding:20px; border:1px solid var(--ds-gray-400); border-radius:var(--radius-md); text-align:center;">
+            <div style="font-size:12px; font-weight:600; margin-bottom:4px;">Flat</div>
+            <div style="font-size:10px; color:var(--ds-gray-700);">border only</div>
+          </div>
+          <div style="padding:20px; background:var(--ds-gray-100); border:1px solid var(--ds-gray-400); border-radius:var(--radius-md); text-align:center;">
+            <div style="font-size:12px; font-weight:600; margin-bottom:4px;">Raised</div>
+            <div style="font-size:10px; color:var(--ds-gray-700);">bg: gray-100</div>
+          </div>
+          <div style="padding:20px; background:var(--ds-gray-200); border:1px solid var(--ds-gray-500); border-radius:var(--radius-md); text-align:center; box-shadow:var(--shadow-floating);">
+            <div style="font-size:12px; font-weight:600; margin-bottom:4px;">Floating</div>
+            <div style="font-size:10px; color:var(--ds-gray-700);">shadow + border</div>
+          </div>
+          <div style="padding:20px; background:var(--ds-gray-200); border-radius:var(--radius-md); text-align:center; box-shadow:var(--shadow-modal);">
+            <div style="font-size:12px; font-weight:600; margin-bottom:4px;">Modal</div>
+            <div style="font-size:10px; color:var(--ds-gray-700);">deep shadow</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 — TYPOGRAPHY -->
+    <section class="ds-section" id="typography">
+      <div class="section-header">
+        <div class="section-num">02</div>
+        <h2 class="section-title">Typography System</h2>
+        <p class="section-desc">Geist Sans (Inter as fallback) with full variable weight range 100-900. Letter-spacing tightens as size increases: -0.04em at 72px, 0 at 16px, +0.02em at 12px.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Heading Scale</h3>
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <div>
+            <div style="font-size:10px; color:var(--ds-gray-700); margin-bottom:4px; font-weight:500; letter-spacing:0.05em;">HEADING-72 -- 72px / Bold / -0.04em</div>
+            <div style="font-size:clamp(40px,5vw,72px); font-weight:700; letter-spacing:-0.04em; line-height:1.1;">Deploy to the cloud</div>
+          </div>
+          <div>
+            <div style="font-size:10px; color:var(--ds-gray-700); margin-bottom:4px; font-weight:500; letter-spacing:0.05em;">HEADING-48 -- 48px / Bold / -0.025em</div>
+            <div style="font-size:clamp(30px,3.5vw,48px); font-weight:700; letter-spacing:-0.025em; line-height:1.15;">Build. Preview. Ship.</div>
+          </div>
+          <div>
+            <div style="font-size:10px; color:var(--ds-gray-700); margin-bottom:4px; font-weight:500; letter-spacing:0.05em;">HEADING-32 -- 32px / Semibold / -0.015em</div>
+            <div style="font-size:clamp(24px,2.5vw,32px); font-weight:600; letter-spacing:-0.015em; line-height:1.25;">The frontend cloud</div>
+          </div>
+          <div>
+            <div style="font-size:10px; color:var(--ds-gray-700); margin-bottom:4px; font-weight:500; letter-spacing:0.05em;">COPY-16 -- 16px / Regular / 0</div>
+            <div style="font-size:16px; font-weight:400; line-height:1.6; color:var(--ds-gray-900); max-width:540px;">Vercel's frontend cloud gives developers the frameworks, workflows, and infrastructure to build a faster, more personalized web.</div>
+          </div>
+          <div>
+            <div style="font-size:10px; color:var(--ds-gray-700); margin-bottom:4px; font-weight:500; letter-spacing:0.05em;">LABEL-12 -- 12px / Medium / +0.02em / ALL CAPS</div>
+            <div style="font-size:12px; font-weight:500; letter-spacing:0.02em; text-transform:uppercase; color:var(--ds-gray-900);">Trusted by the best frontend teams</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Weight Range (Variable Font)</h3>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:baseline; gap:16px;">
+            <div style="width:60px; font-size:10px; color:var(--ds-gray-700);">100</div>
+            <div style="font-size:24px; font-weight:100; letter-spacing:-0.01em;">Thin weight</div>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:16px;">
+            <div style="width:60px; font-size:10px; color:var(--ds-gray-700);">300</div>
+            <div style="font-size:24px; font-weight:300; letter-spacing:-0.01em;">Light weight</div>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:16px;">
+            <div style="width:60px; font-size:10px; color:var(--ds-gray-700);">400</div>
+            <div style="font-size:24px; font-weight:400; letter-spacing:-0.01em;">Regular weight</div>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:16px;">
+            <div style="width:60px; font-size:10px; color:var(--ds-gray-700);">600</div>
+            <div style="font-size:24px; font-weight:600; letter-spacing:-0.01em;">Semibold weight</div>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:16px;">
+            <div style="width:60px; font-size:10px; color:var(--ds-gray-700);">800</div>
+            <div style="font-size:24px; font-weight:800; letter-spacing:-0.01em;">Extra Bold weight</div>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:16px;">
+            <div style="width:60px; font-size:10px; color:var(--ds-gray-700);">900</div>
+            <div style="font-size:24px; font-weight:900; letter-spacing:-0.01em;">Black weight</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 — BEAM ANIMATION -->
+    <section class="ds-section" id="beam">
+      <div class="section-header">
+        <div class="section-num">03</div>
+        <h2 class="section-title">Beam Animation</h2>
+        <p class="section-desc">Vercel's signature vertical beam effect. 1px wide, 200px tall, translates from -100% to 100vh over 4s with ease-in-out. Opacity fades in at 10% and out at 90% of the cycle.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Live Beam Demo</h3>
+        <div class="beam-container" onclick="replayBeam()">
+          <div class="beam-line" style="left:25%;"></div>
+          <div class="beam-line" style="left:50%; animation-delay:1.5s;"></div>
+          <div class="beam-line" style="left:75%; animation-delay:3s;"></div>
+          <div style="position:absolute; bottom:12px; width:100%; text-align:center; font-size:10px; color:var(--ds-gray-700);">Click to restart beams</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Beam Specifications</h3>
+        <table class="token-table">
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Width</td><td><span class="token-value" onclick="copyValue('1px')">1px</span></td></tr>
+            <tr><td>Height</td><td><span class="token-value" onclick="copyValue('200px')">200px</span></td></tr>
+            <tr><td>Duration</td><td><span class="token-value" onclick="copyValue('4s')">4s</span></td></tr>
+            <tr><td>Easing</td><td><span class="token-value" onclick="copyValue('ease-in-out')">ease-in-out</span></td></tr>
+            <tr><td>Color</td><td><span class="token-value" onclick="copyValue('var(--ds-blue-700)')">--ds-blue-700</span></td></tr>
+            <tr><td>Gradient</td><td><span class="token-value" onclick="copyValue('linear-gradient(to bottom, transparent, var(--ds-blue-700), transparent)')">transparent-blue-transparent</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 04 — DOT PATTERN -->
+    <section class="ds-section" id="dotpattern">
+      <div class="section-header">
+        <div class="section-num">04</div>
+        <h2 class="section-title">Dot Pattern</h2>
+        <p class="section-desc">Subtle background texture using radial-gradient. Circle at 1px with 24px grid spacing. Uses --ds-gray-alpha-400 for visibility on dark backgrounds without being distracting.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Live Dot Pattern</h3>
+        <div class="dot-pattern-demo"></div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">CSS</h3>
+        <table class="token-table">
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Pattern</td><td><span class="token-value" onclick="copyValue('radial-gradient(circle at 1px 1px, var(--ds-gray-alpha-400) 1px, transparent 0)')">radial-gradient(circle at 1px 1px, ...)</span></td></tr>
+            <tr><td>Grid size</td><td><span class="token-value" onclick="copyValue('24px 24px')">24px 24px</span></td></tr>
+            <tr><td>Dot size</td><td><span class="token-value" onclick="copyValue('1px')">1px</span></td></tr>
+            <tr><td>Dot color</td><td><span class="token-value" onclick="copyValue('rgba(255,255,255,0.17)')">--ds-gray-alpha-400</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 05 — BORDER GLOW -->
+    <section class="ds-section" id="borderglow">
+      <div class="section-header">
+        <div class="section-num">05</div>
+        <h2 class="section-title">Border Glow Effect</h2>
+        <p class="section-desc">Conic gradient mask technique. A ::before pseudo-element with conic-gradient rotates around the card border. Mask-composite: exclude creates the border-only effect.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Live Border Glow</h3>
+        <div style="max-width:400px;">
+          <div class="glow-card-demo">
+            <div style="font-size:16px; font-weight:600; margin-bottom:8px;">Glow Card</div>
+            <div style="font-size:14px; color:var(--ds-gray-900); line-height:1.5;">The conic gradient rotates continuously, creating a scanning light effect around the card border.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Implementation</h3>
+        <table class="token-table">
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Technique</td><td><span class="token-value" onclick="copyValue('conic-gradient')">conic-gradient on ::before</span></td></tr>
+            <tr><td>Mask</td><td><span class="token-value" onclick="copyValue('-webkit-mask-composite: xor; mask-composite: exclude;')">mask-composite: exclude</span></td></tr>
+            <tr><td>Border width</td><td><span class="token-value" onclick="copyValue('1px')">1px (via padding)</span></td></tr>
+            <tr><td>Rotation</td><td><span class="token-value" onclick="copyValue('4s linear infinite')">4s linear infinite</span></td></tr>
+            <tr><td>Colors</td><td><span class="token-value" onclick="copyValue('--ds-blue-700, --ds-purple-700')">blue-700 + purple-700</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 06 — SKELETON LOADING -->
+    <section class="ds-section" id="skeleton">
+      <div class="section-header">
+        <div class="section-num">06</div>
+        <h2 class="section-title">Skeleton Loading</h2>
+        <p class="section-desc">Gradient shimmer animation. Background-position sweep from -200px to (200px + 100%) over 1.5s. Uses gray-100 and gray-200 for the moving highlight against gray-100 base.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Live Skeleton Demo</h3>
+        <div style="max-width:400px; padding:24px; background:var(--ds-background-200); border:1px solid var(--ds-gray-400); border-radius:var(--radius-lg);">
+          <div class="skeleton-demo">
+            <div class="skeleton-line" style="width:40%; height:12px;"></div>
+            <div class="skeleton-line" style="width:100%;"></div>
+            <div class="skeleton-line" style="width:100%;"></div>
+            <div class="skeleton-line" style="width:70%;"></div>
+            <div style="height:8px;"></div>
+            <div class="skeleton-line" style="width:30%; height:32px; border-radius:var(--radius-md);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Specifications</h3>
+        <table class="token-table">
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Duration</td><td><span class="token-value" onclick="copyValue('1.5s')">1.5s</span></td></tr>
+            <tr><td>Easing</td><td><span class="token-value" onclick="copyValue('ease-in-out')">ease-in-out</span></td></tr>
+            <tr><td>Background size</td><td><span class="token-value" onclick="copyValue('200px 100%')">200px 100%</span></td></tr>
+            <tr><td>Base color</td><td><span class="token-value" onclick="copyValue('#111111')">--ds-gray-100</span></td></tr>
+            <tr><td>Highlight</td><td><span class="token-value" onclick="copyValue('#1a1a1a')">--ds-gray-200</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 07 — GRID LINES -->
+    <section class="ds-section" id="gridlines">
+      <div class="section-header">
+        <div class="section-num">07</div>
+        <h2 class="section-title">Grid Line Animation</h2>
+        <p class="section-desc">Static grid background with animated highlight sweep. Grid uses linear-gradient at 40px intervals. The sweep line translates across at 30% opacity over 3s.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Live Grid Animation</h3>
+        <div class="grid-line-demo">
+          <div class="grid-sweep-line"></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Grid Specifications</h3>
+        <table class="token-table">
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Grid size</td><td><span class="token-value" onclick="copyValue('40px 40px')">40px 40px</span></td></tr>
+            <tr><td>Line color</td><td><span class="token-value" onclick="copyValue('rgba(255,255,255,0.06)')">--ds-gray-alpha-100</span></td></tr>
+            <tr><td>Sweep duration</td><td><span class="token-value" onclick="copyValue('3s')">3s</span></td></tr>
+            <tr><td>Sweep easing</td><td><span class="token-value" onclick="copyValue('ease-in-out')">ease-in-out</span></td></tr>
+            <tr><td>Sweep opacity</td><td><span class="token-value" onclick="copyValue('0.3')">0.3</span></td></tr>
+            <tr><td>Sweep color</td><td><span class="token-value" onclick="copyValue('var(--ds-blue-700)')">--ds-blue-700</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 08 — ENTERPRISE PATTERNS -->
+    <section class="ds-section" id="enterprise">
+      <div class="section-header">
+        <div class="section-num">08</div>
+        <h2 class="section-title">Enterprise Patterns</h2>
+        <p class="section-desc">Gradient text (white to gray-900), infinite logo ticker with edge fade masks, and deploy terminal patterns. The premium aesthetic built on restraint.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Gradient Text</h3>
+        <div style="padding:32px; background:var(--ds-background-200); border:1px solid var(--ds-gray-400); border-radius:var(--radius-lg); text-align:center; cursor:pointer;" onclick="copyValue('background: linear-gradient(to right, #fff, #999); -webkit-background-clip: text;')">
+          <div class="enterprise-gradient-text" style="font-size:clamp(32px,4vw,56px); font-weight:700; letter-spacing:-0.03em; line-height:1.1;">AI Cloud</div>
+          <div style="font-size:11px; color:var(--ds-gray-700); margin-top:12px;">linear-gradient(to right, #fff, #999) + background-clip: text</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Logo Ticker</h3>
+        <div style="background:var(--ds-background-200); border:1px solid var(--ds-gray-400); border-radius:var(--radius-lg); overflow:hidden;">
+          <div style="padding:12px 24px; border-bottom:1px solid var(--ds-gray-alpha-100);">
+            <div style="font-size:12px; font-weight:500; letter-spacing:0.02em; text-transform:uppercase; color:var(--ds-gray-700);">Trusted by the best frontend teams</div>
+          </div>
+          <div class="ticker-container">
+            <div class="ticker-track">
+              <div class="ticker-item">Airbnb</div>
+              <div class="ticker-item">GitHub</div>
+              <div class="ticker-item">Notion</div>
+              <div class="ticker-item">Loom</div>
+              <div class="ticker-item">HashiCorp</div>
+              <div class="ticker-item">Stripe</div>
+              <div class="ticker-item">Twilio</div>
+              <div class="ticker-item">McDonald's</div>
+              <div class="ticker-item">Washington Post</div>
+              <div class="ticker-item">Nintendo</div>
+              <div class="ticker-item">Airbnb</div>
+              <div class="ticker-item">GitHub</div>
+              <div class="ticker-item">Notion</div>
+              <div class="ticker-item">Loom</div>
+              <div class="ticker-item">HashiCorp</div>
+              <div class="ticker-item">Stripe</div>
+              <div class="ticker-item">Twilio</div>
+              <div class="ticker-item">McDonald's</div>
+              <div class="ticker-item">Washington Post</div>
+              <div class="ticker-item">Nintendo</div>
+            </div>
+          </div>
+          <div style="padding:8px 24px 12px; font-size:10px; color:var(--ds-gray-700);">Hover to pause -- 30s linear infinite -- edge fade mask</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Deploy Terminal</h3>
+        <div style="max-width:500px; background:var(--ds-background-200); border:1px solid var(--ds-gray-alpha-400); border-radius:var(--radius-md); overflow:hidden; font-family:var(--font-mono);">
+          <div style="padding:8px 12px; border-bottom:1px solid var(--ds-gray-alpha-100); display:flex; gap:6px;">
+            <div style="width:10px; height:10px; border-radius:50%; background:var(--ds-red-800);"></div>
+            <div style="width:10px; height:10px; border-radius:50%; background:var(--ds-amber-700);"></div>
+            <div style="width:10px; height:10px; border-radius:50%; background:var(--ds-green-700);"></div>
+          </div>
+          <div style="padding:16px;" id="deploy-terminal">
+            <div class="deploy-line" style="opacity:0; font-size:13px; color:var(--ds-gray-900); margin-bottom:4px;">$ vercel deploy</div>
+            <div class="deploy-line" style="opacity:0; font-size:13px; color:var(--ds-gray-700); margin-bottom:4px;">Vercel CLI 34.2.0</div>
+            <div class="deploy-line" style="opacity:0; font-size:13px; color:var(--ds-gray-700); margin-bottom:4px;">Deploying reis-ia.com...</div>
+            <div class="deploy-line" style="opacity:0; font-size:13px; color:var(--ds-green-700); margin-bottom:4px;">Ready! Deployed to https://reis-ia.com</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 — COMPONENT PATTERNS -->
+    <section class="ds-section" id="components">
+      <div class="section-header">
+        <div class="section-num">09</div>
+        <h2 class="section-title">Component Patterns</h2>
+        <p class="section-desc">Vercel's philosophy: transitions should be felt, not seen. 200ms default. Color changes for hover feedback. Transform animations reserved for scroll-triggered entrances only.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Button Variants</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+          <button class="vercel-btn vercel-btn--primary">Deploy</button>
+          <button class="vercel-btn vercel-btn--secondary">Learn More</button>
+          <button class="vercel-btn vercel-btn--tertiary">Documentation</button>
+          <button class="vercel-btn vercel-btn--primary" style="border-radius:var(--radius-full);">Get Started</button>
+        </div>
+        <div style="margin-top:16px;">
+          <table class="token-table">
+            <thead><tr><th>Size</th><th>Height</th><th>Padding</th><th>Font</th><th>Radius</th></tr></thead>
+            <tbody>
+              <tr><td>Small</td><td><span class="token-value" onclick="copyValue('32px')">32px</span></td><td>12px</td><td>13px</td><td>6px</td></tr>
+              <tr><td>Medium</td><td><span class="token-value" onclick="copyValue('40px')">40px</span></td><td>16px</td><td>14px</td><td>8px</td></tr>
+              <tr><td>Large</td><td><span class="token-value" onclick="copyValue('48px')">48px</span></td><td>20px</td><td>16px</td><td>10px</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Feature Cards</h3>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px;">
+          <div class="feature-card">
+            <div style="font-size:16px; font-weight:600;">Edge Network</div>
+            <div style="font-size:14px; color:var(--ds-gray-900); line-height:1.5;">Deploy globally in seconds. Automatic edge functions and serverless computing.</div>
+          </div>
+          <div class="feature-card">
+            <div style="font-size:16px; font-weight:600;">Preview Deployments</div>
+            <div style="font-size:14px; color:var(--ds-gray-900); line-height:1.5;">Every push gets a unique URL. Share, test, and iterate before merging.</div>
+          </div>
+          <div class="feature-card">
+            <div style="font-size:16px; font-weight:600;">Analytics</div>
+            <div style="font-size:14px; color:var(--ds-gray-900); line-height:1.5;">Real-time performance insights. Web Vitals tracking and audience analytics.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Navigation Bar (Glassmorphism)</h3>
+        <div style="position:relative; border-radius:var(--radius-lg); overflow:hidden; height:64px;">
+          <div style="position:absolute; inset:0; background:linear-gradient(135deg, var(--ds-blue-700), var(--ds-purple-700)); opacity:0.3;"></div>
+          <div style="position:relative; height:100%; display:flex; align-items:center; padding:0 24px; background:var(--nav-bg); backdrop-filter:var(--nav-blur); -webkit-backdrop-filter:var(--nav-blur); border:1px solid var(--ds-gray-400);">
+            <div style="font-size:14px; font-weight:700; margin-right:32px;">&#9650; Vercel</div>
+            <div style="display:flex; gap:24px;">
+              <span style="font-size:14px; color:var(--ds-gray-900); cursor:pointer; transition:color 200ms;" onmouseenter="this.style.color='var(--ds-gray-1000)'" onmouseleave="this.style.color='var(--ds-gray-900)'">Products</span>
+              <span style="font-size:14px; color:var(--ds-gray-900); cursor:pointer; transition:color 200ms;" onmouseenter="this.style.color='var(--ds-gray-1000)'" onmouseleave="this.style.color='var(--ds-gray-900)'">Solutions</span>
+              <span style="font-size:14px; color:var(--ds-gray-900); cursor:pointer; transition:color 200ms;" onmouseenter="this.style.color='var(--ds-gray-1000)'" onmouseleave="this.style.color='var(--ds-gray-900)'">Resources</span>
+            </div>
+            <div style="margin-left:auto;">
+              <button class="vercel-btn vercel-btn--primary" style="padding:4px 12px; font-size:13px; border-radius:var(--radius-sm);">Deploy</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:12px; font-size:11px; color:var(--ds-gray-700);">backdrop-filter: saturate(180%) blur(20px) -- background: rgba(0, 0, 0, 0.8)</div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Transition Defaults</h3>
+        <table class="token-table">
+          <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+          <tbody>
+            <tr><td>--transition-fast</td><td><span class="token-value" onclick="copyValue('150ms ease')">150ms ease</span></td><td style="color:var(--ds-gray-900)">Icon hover, color hint</td></tr>
+            <tr><td>--transition-default</td><td><span class="token-value" onclick="copyValue('200ms ease')">200ms ease</span></td><td style="color:var(--ds-gray-900)">Color, background, border</td></tr>
+            <tr><td>--transition-slow</td><td><span class="token-value" onclick="copyValue('300ms ease')">300ms ease</span></td><td style="color:var(--ds-gray-900)">Menu transitions, card hover</td></tr>
+            <tr><td>Entrance</td><td><span class="token-value" onclick="copyValue('0.6s cubic-bezier(0.16, 1, 0.3, 1)')">0.6s quick-out</span></td><td style="color:var(--ds-gray-900)">Scroll-triggered fade-up</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="copy-toast" id="copyToast">Copied!</div>
+
+<script>
+/* === Copy === */
+function copyValue(val) {
+  navigator.clipboard.writeText(val).then(() => {
+    const t = document.getElementById('copyToast');
+    t.textContent = 'Copied: ' + (val.length > 50 ? val.substring(0,50) + '...' : val);
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1800);
+  });
+}
+
+/* === Scroll tracking === */
+const sections = document.querySelectorAll('.ds-section');
+const navLinks = document.querySelectorAll('.sidebar nav a');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => obs.observe(s));
+
+/* === Beam replay === */
+function replayBeam() {
+  document.querySelectorAll('.beam-line').forEach(el => {
+    el.style.animation = 'none'; el.offsetHeight;
+    el.style.animation = '';
+  });
+}
+
+/* === Deploy terminal animation === */
+function animateTerminal() {
+  const lines = document.querySelectorAll('.deploy-line');
+  lines.forEach((line, i) => {
+    line.style.opacity = '0';
+    line.style.transition = 'none';
+    setTimeout(() => {
+      line.style.transition = 'opacity 0.3s ease';
+      line.style.opacity = '1';
+    }, 500 + i * 600);
+  });
+}
+setTimeout(animateTerminal, 800);
+
+// Replay on click
+document.getElementById('deploy-terminal').addEventListener('click', () => {
+  animateTerminal();
+});
+</script>
+</body>
+</html>

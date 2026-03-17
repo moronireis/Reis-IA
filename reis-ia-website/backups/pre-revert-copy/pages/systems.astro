@@ -1,0 +1,1032 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Badge from '../components/Badge.astro';
+import Button from '../components/Button.astro';
+import SectionLabel from '../components/SectionLabel.astro';
+import StatBlock from '../components/StatBlock.astro';
+import HourglassIcon from '../components/HourglassIcon.astro';
+import ChessKnightIcon from '../components/ChessKnightIcon.astro';
+import FaqAccordion from '../components/FaqAccordion.tsx';
+import IconCheckCircle from '../components/icons/IconCheckCircle.astro';
+import IconShield from '../components/icons/IconShield.astro';
+import IconBot from '../components/icons/IconBot.astro';
+import IconHeadphones from '../components/icons/IconHeadphones.astro';
+import IconFilter from '../components/icons/IconFilter.astro';
+import IconWorkflow from '../components/icons/IconWorkflow.astro';
+import IconDatabase from '../components/icons/IconDatabase.astro';
+import IconPlug from '../components/icons/IconPlug.astro';
+import IconTarget from '../components/icons/IconTarget.astro';
+import IconCpu from '../components/icons/IconCpu.astro';
+import IconClock from '../components/icons/IconClock.astro';
+import LogoMarquee from '../components/LogoMarquee.astro';
+import HighlightBanner from '../components/HighlightBanner.astro';
+
+const faqItems = [
+  {
+    question: "E se já tentamos IA antes e não funcionou?",
+    answer: "É exatamente a coisa mais comum que ouvimos. O motivo de quase toda falha de IA que já vimos se resume a uma coisa: o projeto começou pela tecnologia em vez do resultado de negócio. Nosso processo começa pelo IA Revenue Audit — que mapeia onde IA gera impacto mensurável de receita antes de construirmos qualquer coisa. Essa é a diferença.",
+  },
+  {
+    question: "Isso vai integrar com os nossos sistemas atuais?",
+    answer: "Integração é a primeira coisa que mapeamos no IA Revenue Audit. Trabalhamos com WhatsApp Business API, HubSpot, Salesforce, Pipedrive, CRMs customizados, ERPs e a maioria dos sistemas com uma API. Antes de qualquer implementação começar, você terá um quadro claro de cada ponto de integração e eventuais restrições.",
+  },
+  {
+    question: "Quanto tempo até vermos resultados?",
+    answer: "Essa é a pergunta certa — e a maioria dos fornecedores de IA a esquiva. A resposta honesta: o Pacote Starter tem escopo para 2–4 semanas de construção. Você verá o sistema no ar em até um mês e terá dados reais de uso em 30 dias após o lançamento. Implementações completas levam 4–8 semanas para construir e integrar. Resultados otimizados — o tipo onde você consegue traçar uma linha clara do sistema até um resultado de negócio — são tipicamente visíveis em 60 dias após o lançamento.",
+  },
+  {
+    question: "O que acontece com os nossos dados? É seguro?",
+    answer: "Seus dados ficam nos seus sistemas ou em infraestrutura de nuvem aprovada — nunca nos servidores da Reis IA. Usamos o mínimo de dados necessário: a IA acessa apenas o que precisa para funcionar. Para indústrias regulamentadas (LGPD, GDPR, HIPAA), projetamos implementações que atendem aos seus requisitos de conformidade. Isso é endereçado explicitamente no IA Revenue Audit.",
+  },
+  {
+    question: "E se algo quebrar após a entrega?",
+    answer: "Você recebe documentação completa, credenciais e acesso a tudo que construímos — você possui tudo completamente. O Pacote Starter inclui 30 dias de suporte pós-entrega. Implementações completas incluem 60 dias de suporte prioritário e uma garantia de performance de 60 dias. Também oferecemos retainers mensais para gestão contínua.",
+  },
+  {
+    question: "Precisamos ter dados limpos para começar?",
+    answer: "Não necessariamente. A maioria das empresas começa com dados imperfeitos, e o processo de auditoria identifica quais requisitos de dados existem para cada implementação específica. Muitas implementações de IA não exigem grandes conjuntos de dados — exigem lógica de negócio clara, que ajudamos você a definir.",
+  },
+  {
+    question: "Podemos escalar após a implementação inicial?",
+    answer: "Sim — e isso é por design. Cada implementação do Reis IA Systems é construída para escalabilidade desde o início. Documentamos tudo para que adições futuras sejam simples, e o tier de Implementação Completa é especificamente projetado para implantações de múltiplos sistemas que crescem com o seu negócio.",
+  },
+];
+---
+
+<MainLayout
+  title="Systems — Implementação de IA Feita Para Você que Gera Receita"
+  description="O Reis IA Systems constrói agentes de IA e automações conectados diretamente a processos geradores de receita — começando por onde está o dinheiro, não pelo que é tecnicamente interessante."
+  activePage="systems"
+>
+
+  <!-- SECTION 1: HERO — floating card style matching Home -->
+  <section class="hero-card-outer" style="background-color: #000000; padding: 48px 8px 0;">
+    <div
+      class="hero-card relative overflow-hidden"
+      style="padding: 80px 0 72px; min-height: 560px;"
+    >
+      <!-- Radial hero glow -->
+      <div
+        class="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style="background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(74, 144, 255, 0.10) 0%, transparent 70%);"
+      ></div>
+      <!-- Secondary subtle orb — right depth -->
+      <div
+        class="gradient-orb gradient-orb-blue"
+        aria-hidden="true"
+        style="width: 500px; height: 350px; top: 30%; right: -5%; opacity: 0.5;"
+      ></div>
+      <div class="aurora-bg" aria-hidden="true">
+        <div class="aurora-orb aurora-orb-1"></div>
+        <div class="aurora-orb aurora-orb-2"></div>
+        <div class="aurora-orb aurora-orb-3"></div>
+      </div>
+
+      <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-12 relative z-10">
+        <!-- Hourglass pre-headline — functional, not decorative -->
+        <div class="hero-animate hero-animate-1 flex items-center gap-2 mb-4">
+          <HourglassIcon size={14} class="text-accent" />
+          <p class="text-[13px] font-semibold tracking-widest uppercase text-accent">
+            Para Empresas Prontas para Resultados Reais com IA
+          </p>
+        </div>
+
+        <h1
+          class="hero-animate hero-animate-2 max-w-[900px] azure-whisper"
+          style="font-size: clamp(36px, 7vw, 80px); font-weight: 800; line-height: 0.97; letter-spacing: -0.04em; color: #ffffff;"
+        >
+          Seu projeto de IA não falhou porque a tecnologia não funciona.<br />
+          Falhou porque ninguém fez a pergunta certa primeiro.
+        </h1>
+
+        <p
+          class="hero-animate hero-animate-3 mt-6 max-w-[640px]"
+          style="font-size: clamp(16px, 1.8vw, 18px); font-weight: 400; line-height: 1.7; color: rgba(255,255,255,0.55);"
+        >
+          O Reis IA Systems constrói agentes de IA e automações conectados diretamente a processos geradores de receita — começando por onde está o dinheiro, não pelo que é tecnicamente interessante.
+        </p>
+
+        <div class="hero-animate hero-animate-4 flex flex-col sm:flex-row items-stretch sm:items-start gap-4 mt-10">
+          <Button variant="hero" href="/agendar" class="w-full sm:w-auto text-center">Agende uma Avaliação de Revenue com IA Gratuita &#8594;</Button>
+        </div>
+        <p class="hero-animate hero-animate-5 text-xs mt-3" style="color: rgba(255,255,255,0.3);">30 minutos. Identificamos onde IA gera o maior impacto de receita no seu negócio — antes de você gastar um centavo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGO MARQUEE — after hero -->
+  <div style="background-color: #000000;">
+    <div class="mx-auto max-w-[1200px]">
+      <LogoMarquee />
+    </div>
+  </div>
+
+  <!-- Gold section divider -->
+  <div class="divider-gold mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0"></div>
+
+  <!-- SECTION 2: PROBLEM -->
+  <section style="background-color: #0A0A0A; padding: 96px 0;" class="md:py-28 lg:py-32">
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="max-w-[720px]">
+        <h2
+          class="reveal leading-tight"
+          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          Você Viu o que IA Pode Fazer. Também Viu o que Acontece Quando Não Funciona.
+        </h2>
+
+        <div class="mt-8 space-y-5 text-[17px] leading-relaxed reveal" style="color: rgba(255,255,255,0.65);">
+          <p>As manchetes são claras.</p>
+          <p>Empresas que implementam IA corretamente reduzem custos de suporte em 30–40%. Qualificam mais leads sem contratar mais vendedores. Escalam operações sem escalar equipe.</p>
+          <p>E então tem a outra história — a que não vai para os casos de sucesso.</p>
+          <p>O chatbot que foi construído, lançado e esquecido em seis meses. A iniciativa de IA que começou com uma demo do fornecedor e terminou com um projeto em compasso de espera. A automação que funcionou nos testes e quebrou em produção.</p>
+        </div>
+
+        <!-- Stat callout — with counter animation -->
+        <div class="text-center py-10 my-6 reveal">
+          <p
+            class="text-accent leading-none"
+            style="font-size: clamp(56px, 8vw, 80px); font-weight: 300;"
+            data-counter
+            data-target="42"
+            data-suffix="%"
+            data-prefix=""
+            aria-label="42% das empresas abandonaram projetos de IA em 2025"
+          >42%</p>
+          <p class="text-[17px] mt-2" style="color: rgba(255,255,255,0.65);">das empresas abandonaram projetos de IA em 2025.</p>
+        </div>
+
+        <div class="space-y-5 text-[17px] leading-relaxed reveal" style="color: rgba(255,255,255,0.65);">
+          <p>Não porque IA não funciona. Porque a abordagem estava errada.</p>
+          <p>A maioria dos projetos de IA começa com uma decisão tecnológica — "vamos construir um chatbot", "vamos automatizar esse fluxo", "vamos implementar um agente de IA". Aí é construído. E então o negócio espera por resultados que não aparecem, porque ninguém mapeou de onde os resultados deveriam vir.</p>
+        </div>
+
+        <p class="text-xl font-semibold mt-6 reveal" style="color: #ffffff;">Isso é o cemitério de protótipos. E é onde a maioria do investimento em IA vai parar.</p>
+
+        <!-- Symptoms — upgraded card -->
+        <div
+          class="mt-8 rounded-2xl p-6 sm:p-8 reveal"
+          style="background-color: #111111; border: 1px solid rgba(255,255,255,0.06);"
+        >
+          <h3 class="text-xl font-semibold mb-4" style="color: #ffffff;">Os sintomas se parecem com isso:</h3>
+          <ul class="space-y-3">
+            {[
+              'Você teve um projeto de IA escopado, construído e lançado — e ninguém mede o que ele realmente faz para o negócio',
+              'Seu time ainda faz o mesmo trabalho manual que fazia antes de "a IA ser implementada"',
+              'Você recebeu uma demo que pareceu impressionante e um entregável que não bate',
+              'Você tentou ferramentas no-code ou freelancers e bateu no teto do que eles conseguem construir de fato',
+              'Te disseram que seus dados não estão limpos o suficiente, que seus sistemas são complexos demais, ou que seu caso de uso é customizado demais — e você está travado',
+            ].map(item => (
+              <li class="flex items-start gap-3 text-[15px]" style="color: rgba(255,255,255,0.55);">
+                <span style="color: rgba(255,255,255,0.25); margin-top: 2px;" aria-hidden="true">—</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p class="text-[17px] leading-relaxed mt-4 italic reveal" style="color: rgba(255,255,255,0.45);">
+          Ou você não começou de forma alguma, porque cada pitch de fornecedor que viu trouxe capacidades tecnológicas que você não conseguia avaliar, não resultados de negócio que você pudesse medir.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: AGITATION -->
+  <section style="background-color: #000000; padding: 96px 0;" class="md:py-28 lg:py-32">
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="max-w-[720px]">
+        <h2
+          class="reveal leading-tight"
+          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          O Custo de Errar Nisso
+        </h2>
+
+        <p class="text-[17px] leading-relaxed mt-6 reveal" style="color: rgba(255,255,255,0.65);">Cada mês sem a implementação certa de IA é um mês em que:</p>
+
+        <ul class="mt-4 space-y-4 reveal">
+          {[
+            'Seu time de vendas qualifica manualmente leads que uma IA poderia pontuar em segundos',
+            'Seu time de suporte responde as mesmas perguntas centenas de vezes — perguntas que têm as mesmas 12 respostas corretas todas as vezes',
+            'Suas operações dependem de capacidade humana que não escala',
+            'Seus concorrentes — os que acertaram na implementação — lidam com o mesmo volume com menos pessoas e respondem mais rápido',
+          ].map(item => (
+            <li class="flex items-start gap-3 text-[17px]" style="color: rgba(255,255,255,0.65);">
+              <span class="text-accent mt-1" aria-hidden="true">—</span>
+              {item}
+            </li>
+          ))}
+        </ul>
+
+        <p class="text-[17px] leading-relaxed mt-8 reveal" style="color: rgba(255,255,255,0.65);">Isso não é teórico.</p>
+
+        <!-- Klarna example — upgraded card -->
+        <div
+          class="mt-6 rounded-2xl p-6 sm:p-8 reveal"
+          style="background-color: #0A0A0A; border: 1px solid rgba(255,255,255,0.06);"
+        >
+          <p class="text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
+            A IA da Klarna lida com 2,3 milhões de conversas de atendimento ao cliente. Não porque a Klarna é uma empresa tecnicamente única. Porque fizeram a pergunta certa antes de construir: <strong style="color: #ffffff;">"Onde isso economiza dinheiro e melhora a experiência do cliente?"</strong>
+          </p>
+          <p class="text-[17px] leading-relaxed mt-4" style="color: rgba(255,255,255,0.65);">
+            Essa pergunta é toda a diferença entre um sistema de IA que funciona e um protótipo que acumula poeira.
+          </p>
+        </div>
+
+        <div class="mt-8 space-y-3 reveal">
+          <p class="text-xl font-semibold" style="color: #ffffff;">O gap não é entre empresas que têm IA e empresas que não têm.</p>
+          <p class="text-xl font-semibold" style="color: #ffffff;">O gap é entre empresas que implementaram certo e as que não implementaram.</p>
+        </div>
+
+        <!-- Hourglass variation closer -->
+        <div class="mt-8 space-y-4 text-[17px] leading-relaxed reveal" style="color: rgba(255,255,255,0.65);">
+          <p>E esse gap não é estático.</p>
+          <p>Ele se alarga a cada mês.</p>
+          <p>A empresa que implementou um agente de qualificação de leads há seis meses tem seis meses de dados, seis meses de otimização e um time de vendas que aprendeu a trabalhar em um ritmo novo. A empresa que ainda está avaliando está começando do zero — enquanto aquele concorrente já está na versão três.</p>
+          <p>IA não só economiza tempo. Ela transforma tempo em distância competitiva.</p>
+          <p class="flex items-start gap-3">
+            <HourglassIcon size={24} class="text-accent flex-shrink-0 mt-0.5" />
+            <strong class="text-xl font-semibold" style="color: #ffffff;">Cada semana sem o sistema certo é uma semana que não volta.</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: SOLUTION / METHODOLOGY -->
+  <section style="background-color: #0A0A0A; padding: 96px 0;" class="md:py-28 lg:py-32">
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="reveal">
+        <div class="flex items-center gap-3 mb-2">
+          <!-- Chess knight — functional icon marking the methodology section -->
+          <ChessKnightIcon size={28} class="text-accent" />
+          <SectionLabel>A Abordagem</SectionLabel>
+        </div>
+
+        <h2
+          class="mt-3 leading-tight"
+          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          Construímos Sistemas de IA Usando o Revenue-First Framework.
+        </h2>
+      </div>
+
+      <div class="mt-8 space-y-5 text-[17px] leading-relaxed max-w-[720px] reveal" style="color: rgba(255,255,255,0.65);">
+        <p>O Revenue-First Framework não é um checklist. É um modelo estratégico.</p>
+        <p>Um enxadrista habilidoso não move peças aleatoriamente esperando vencer. Cada peça tem um papel. Cada movimento constrói em direção a uma posição. O jogador que vence é o que vê três movimentos à frente antes de tocar o tabuleiro.</p>
+        <p>É exatamente assim que abordamos a implementação de IA.</p>
+        <p>Mapeamos seu negócio — seus processos de receita, seus gargalos operacionais, suas oportunidades de maior alavancagem — antes de escrever uma linha de código. Depois construímos sistemas com intenção precisa, conectados a resultados que você define antes do projeto começar.</p>
+        <p class="text-xl font-semibold" style="color: #ffffff;">Não apenas construímos IA. Arquitetamos receita.</p>
+        <p>Todo engajamento começa com o IA Revenue Audit — um diagnóstico estruturado que mapeia seu negócio contra três perguntas:</p>
+      </div>
+
+      <!-- Framework questions — card grid with hover dimming -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 card-grid-hover reveal-stagger">
+        {[
+          { num: '01', question: 'Onde IA cria o maior impacto de receita de alavancagem nas suas operações específicas?' },
+          { num: '02', question: "Qual é o ROI esperado de cada implementação, e o que é necessário para medi-lo?" },
+          { num: '03', question: 'O que é construído primeiro para gerar o retorno mais rápido?' },
+        ].map(({ num, question }) => (
+          <div class="card-item reveal card-interactive p-6 group">
+            <div
+              class="card-visual-top mb-5 rounded-xl flex items-end p-4"
+              style="background: linear-gradient(135deg, rgba(74,144,255,0.1) 0%, rgba(74,144,255,0.02) 100%); border: 1px solid rgba(74,144,255,0.1);"
+              aria-hidden="true"
+            >
+              <HourglassIcon size={22} class="text-accent icon-hover" />
+            </div>
+            <p
+              class="text-accent leading-none mb-4"
+              style="font-size: 36px; font-weight: 300;"
+            >{num}</p>
+            <p class="text-[17px] font-semibold leading-snug" style="color: #ffffff;">{question}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-8 space-y-4 text-[17px] leading-relaxed max-w-[720px] reveal" style="color: rgba(255,255,255,0.65);">
+        <p>Não escrevemos uma linha de código até que esse mapa exista.</p>
+        <p>Este é o Revenue-First IA Framework. É o que separa implementações que geram resultados mensuráveis de implementações que se tornam projetos técnicos caros sem nada a mostrar.</p>
+      </div>
+
+      <!-- Inline CTA -->
+      <div class="mt-10 reveal">
+        <Button variant="primary" href="/agendar" class="w-full sm:w-auto text-center">Agende meu IA Revenue Audit gratuito &#8594;</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: SERVICE OFFERINGS — card grid with gradient headers -->
+  <section style="background-color: #000000; padding: 96px 0;" class="md:py-28 lg:py-32">
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="text-center mb-12 reveal">
+        <SectionLabel>O Que Construímos</SectionLabel>
+        <h2
+          class="mt-5"
+          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          Sistemas de IA Conectados à Receita
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[1000px] mx-auto card-grid-hover reveal-stagger">
+
+        <!-- IA Sales Agent -->
+        <div class="card-item reveal card-interactive flex flex-col group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end p-5 pb-4"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.12) 0%, rgba(74,144,255,0.03) 100%); border-bottom: 1px solid rgba(255,255,255,0.06); min-height: 96px;"
+            aria-hidden="true"
+          >
+            <IconBot size={28} class="text-accent icon-hover" />
+          </div>
+          <div class="p-6 sm:p-8 flex flex-col flex-1">
+            <h3 class="text-xl font-semibold mb-3" style="color: #ffffff;">Agente de Vendas com IA</h3>
+            <p class="text-[15px] leading-relaxed mb-4 flex-1" style="color: rgba(255,255,255,0.55);">Qualifica leads inbound pelo WhatsApp, site e e-mail. Faz as perguntas certas de discovery, pontua cada lead com base nos seus critérios, encaminha os qualificados para o seu time de vendas — automaticamente. Seu time gasta tempo com prospects prontos para comprar.</p>
+          </div>
+        </div>
+
+        <!-- Customer Support IA -->
+        <div class="card-item reveal card-interactive flex flex-col group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end p-5 pb-4"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.10) 0%, rgba(74,144,255,0.02) 100%); border-bottom: 1px solid rgba(255,255,255,0.06); min-height: 96px;"
+            aria-hidden="true"
+          >
+            <IconHeadphones size={28} class="text-accent icon-hover" />
+          </div>
+          <div class="p-6 sm:p-8 flex flex-col flex-1">
+            <h3 class="text-xl font-semibold mb-3" style="color: #ffffff;">Sistema de Suporte ao Cliente com IA</h3>
+            <p class="text-[15px] leading-relaxed mb-4 flex-1" style="color: rgba(255,255,255,0.55);">Lida com os 60–80% das consultas de suporte que têm respostas definidas — pelo WhatsApp, site e e-mail. Resolve problemas sem envolvimento humano. Escala casos complexos com contexto completo para que seu time não comece do zero. Alimenta cada interação no seu CRM.</p>
+          </div>
+        </div>
+
+        <!-- Lead Qualification Agent -->
+        <div class="card-item reveal card-interactive flex flex-col group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end p-5 pb-4"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.08) 0%, rgba(74,144,255,0.02) 100%); border-bottom: 1px solid rgba(255,255,255,0.06); min-height: 96px;"
+            aria-hidden="true"
+          >
+            <IconFilter size={28} class="text-accent icon-hover" />
+          </div>
+          <div class="p-6 sm:p-8 flex flex-col flex-1">
+            <h3 class="text-xl font-semibold mb-3" style="color: #ffffff;">Agente de Qualificação de Leads</h3>
+            <p class="text-[15px] leading-relaxed mb-4 flex-1" style="color: rgba(255,255,255,0.55);">Para negócios com alto volume inbound e necessidade de separar compradores de curiosos antes da conversa de vendas acontecer. Faz perguntas estruturadas, identifica sinais de intenção e filtra seu pipeline para os leads que valem a pena perseguir.</p>
+          </div>
+        </div>
+
+        <!-- Operational Automation Suite -->
+        <div class="card-item reveal card-interactive flex flex-col group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end p-5 pb-4"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.10) 0%, rgba(74,144,255,0.02) 100%); border-bottom: 1px solid rgba(255,255,255,0.06); min-height: 96px;"
+            aria-hidden="true"
+          >
+            <IconWorkflow size={28} class="text-accent icon-hover" />
+          </div>
+          <div class="p-6 sm:p-8 flex flex-col flex-1">
+            <h3 class="text-xl font-semibold mb-3" style="color: #ffffff;">Suite de Automação Operacional</h3>
+            <p class="text-[15px] leading-relaxed mb-4 flex-1" style="color: rgba(255,255,255,0.55);">Fluxos de CRM que se atualizam sozinhos. Relatórios que se geram sem ninguém rodá-los. Dados que se movem entre sistemas sem copiar e colar humano. Processos internos que atualmente dependem da pessoa certa fazendo a coisa certa na hora certa — automatizados.</p>
+          </div>
+        </div>
+
+        <!-- Internal Knowledge IA -->
+        <div class="card-item reveal card-interactive flex flex-col group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end p-5 pb-4"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.08) 0%, rgba(74,144,255,0.02) 100%); border-bottom: 1px solid rgba(255,255,255,0.06); min-height: 96px;"
+            aria-hidden="true"
+          >
+            <IconDatabase size={28} class="text-accent icon-hover" />
+          </div>
+          <div class="p-6 sm:p-8 flex flex-col flex-1">
+            <h3 class="text-xl font-semibold mb-3" style="color: #ffffff;">IA de Base de Conhecimento Interna</h3>
+            <p class="text-[15px] leading-relaxed mb-4 flex-1" style="color: rgba(255,255,255,0.55);">Um assistente de IA treinado na sua documentação, processos e conhecimento institucional. Novos colaboradores encontram respostas em segundos. Seu time para de se perguntar as mesmas coisas no Slack. Seu conhecimento fica com a empresa quando funcionários saem.</p>
+          </div>
+        </div>
+
+        <!-- Custom IA Integrations -->
+        <div class="card-item reveal card-interactive flex flex-col group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end p-5 pb-4"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.12) 0%, rgba(74,144,255,0.03) 100%); border-bottom: 1px solid rgba(255,255,255,0.06); min-height: 96px;"
+            aria-hidden="true"
+          >
+            <IconPlug size={28} class="text-accent icon-hover" />
+          </div>
+          <div class="p-6 sm:p-8 flex flex-col flex-1">
+            <h3 class="text-xl font-semibold mb-3" style="color: #ffffff;">Integrações Customizadas de IA</h3>
+            <p class="text-[15px] leading-relaxed mb-4 flex-1" style="color: rgba(255,255,255,0.55);">WhatsApp Business API, HubSpot, Salesforce, Pipedrive, CRMs customizados, bancos de dados internos, ERPs e sistemas proprietários. Já construímos integrações em toda a stack — se tem uma API, conseguimos conectar.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: PROCESS — premium journey -->
+  <section style="background-color: #0A0A0A; padding: 96px 0;" class="md:py-28 lg:py-32">
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="reveal">
+        <SectionLabel>Como Funciona</SectionLabel>
+        <h2
+          class="mt-5 mb-12"
+          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          Como Funciona um Projeto do Reis IA Systems
+        </h2>
+      </div>
+
+      <div class="space-y-6 reveal-stagger">
+
+        <!-- Step 01: Revenue Audit -->
+        <div class="reveal card-interactive group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end gap-4 p-6 pb-5"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.12) 0%, rgba(74,144,255,0.03) 100%); border-bottom: 1px solid rgba(255,255,255,0.06);"
+          >
+            <span class="text-accent leading-none" style="font-size: 56px; font-weight: 200;">01</span>
+            <div>
+              <div class="flex flex-wrap items-center gap-3 mb-1">
+                <h3 class="text-xl sm:text-2xl font-semibold" style="color: #ffffff;">IA Revenue Audit</h3>
+                <HourglassIcon size={20} class="text-accent icon-hover" />
+              </div>
+              <span class="text-xs uppercase tracking-widest px-2 py-0.5 rounded" style="background-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">SEMANA 1</span>
+            </div>
+          </div>
+          <div class="p-6 sm:p-8">
+            <p class="text-base leading-relaxed" style="color: rgba(255,255,255,0.55);">Antes de construir um único sistema, fazemos algo que a maioria dos fornecedores de IA pula completamente: descobrimos onde está o dinheiro. Uma sessão de 60–90 minutos onde mapeamos seu negócio, suas operações e seus processos de receita contra o Revenue-First Framework.</p>
+            <p class="text-base leading-relaxed mt-4" style="color: rgba(255,255,255,0.55);">Não para impressioná-lo com possibilidades técnicas — para identificar exatamente onde IA gera o retorno mais rápido e de maior alavancagem. Você recebe um relatório escrito com:</p>
+            <ul class="mt-3 space-y-2 text-base" style="color: rgba(255,255,255,0.55);">
+              <li class="flex items-start gap-2"><span style="color: rgba(74,144,255,0.7);">—</span> As top 3–5 oportunidades de receita com IA</li>
+              <li class="flex items-start gap-2"><span style="color: rgba(74,144,255,0.7);">—</span> Ranking de prioridade por esforço vs. impacto</li>
+              <li class="flex items-start gap-2"><span style="color: rgba(74,144,255,0.7);">—</span> Estimativas de orçamento e prazo</li>
+              <li class="flex items-start gap-2"><span style="color: rgba(74,144,255,0.7);">—</span> Requisitos de integração</li>
+            </ul>
+            <p class="text-base leading-relaxed mt-4" style="color: rgba(255,255,255,0.55);">Por que isso importa? Porque a coisa mais cara em qualquer projeto de IA não é a tecnologia. É o tempo perdido construindo a coisa errada. O Audit elimina isso antes de você gastar um centavo.</p>
+          </div>
+        </div>
+
+        <!-- Step 02: Implementation Plan -->
+        <div class="reveal card-interactive group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end gap-4 p-6 pb-5"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.09) 0%, rgba(74,144,255,0.02) 100%); border-bottom: 1px solid rgba(255,255,255,0.06);"
+          >
+            <span class="text-accent leading-none" style="font-size: 56px; font-weight: 200;">02</span>
+            <div>
+              <div class="flex flex-wrap items-center gap-3 mb-1">
+                <h3 class="text-xl sm:text-2xl font-semibold" style="color: #ffffff;">Plano de Implementação</h3>
+                <IconTarget size={20} class="text-accent icon-hover" />
+              </div>
+              <span class="text-xs uppercase tracking-widest px-2 py-0.5 rounded" style="background-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">SEMANAS 1–2</span>
+            </div>
+          </div>
+          <div class="p-6 sm:p-8">
+            <p class="text-base leading-relaxed" style="color: rgba(255,255,255,0.55);">Com base no audit, definimos escopo, prazo, KPIs e requisitos de integração para a implementação. Sem ambiguidade. Sem "vamos descobrir pelo caminho." Cada implementação começa com uma definição clara do que é sucesso.</p>
+          </div>
+        </div>
+
+        <!-- Step 03: Build -->
+        <div class="reveal card-interactive group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end gap-4 p-6 pb-5"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.09) 0%, rgba(74,144,255,0.02) 100%); border-bottom: 1px solid rgba(255,255,255,0.06);"
+          >
+            <span class="text-accent leading-none" style="font-size: 56px; font-weight: 200;">03</span>
+            <div>
+              <div class="flex flex-wrap items-center gap-3 mb-1">
+                <h3 class="text-xl sm:text-2xl font-semibold" style="color: #ffffff;">Construção</h3>
+                <IconCpu size={20} class="text-accent icon-hover" />
+              </div>
+              <span class="text-xs uppercase tracking-widest px-2 py-0.5 rounded" style="background-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">SEMANAS 2–6</span>
+            </div>
+          </div>
+          <div class="p-6 sm:p-8">
+            <p class="text-base leading-relaxed" style="color: rgba(255,255,255,0.55);">Construímos os sistemas acordados. Você recebe atualizações de progresso ao longo do caminho. Sem caixa preta — você vê o que está sendo construído e por quê.</p>
+          </div>
+        </div>
+
+        <!-- Step 04: Integration & Testing -->
+        <div class="reveal card-interactive group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end gap-4 p-6 pb-5"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.09) 0%, rgba(74,144,255,0.02) 100%); border-bottom: 1px solid rgba(255,255,255,0.06);"
+          >
+            <span class="text-accent leading-none" style="font-size: 56px; font-weight: 200;">04</span>
+            <div>
+              <div class="flex flex-wrap items-center gap-3 mb-1">
+                <h3 class="text-xl sm:text-2xl font-semibold" style="color: #ffffff;">Integração e Testes</h3>
+                <IconPlug size={20} class="text-accent icon-hover" />
+              </div>
+              <span class="text-xs uppercase tracking-widest px-2 py-0.5 rounded" style="background-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">SEMANAS 4–7</span>
+            </div>
+          </div>
+          <div class="p-6 sm:p-8">
+            <p class="text-base leading-relaxed" style="color: rgba(255,255,255,0.55);">Integramos com seus sistemas existentes — CRM, WhatsApp, site, APIs — e conduzimos testes estruturados antes do lançamento. Seu time participa dos testes para entender o que foi construído.</p>
+          </div>
+        </div>
+
+        <!-- Step 05: Launch & Optimize -->
+        <div class="reveal card-interactive group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end gap-4 p-6 pb-5"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.09) 0%, rgba(74,144,255,0.02) 100%); border-bottom: 1px solid rgba(255,255,255,0.06);"
+          >
+            <span class="text-accent leading-none" style="font-size: 56px; font-weight: 200;">05</span>
+            <div>
+              <div class="flex flex-wrap items-center gap-3 mb-1">
+                <h3 class="text-xl sm:text-2xl font-semibold" style="color: #ffffff;">Lançamento e Otimização</h3>
+                <IconWorkflow size={20} class="text-accent icon-hover" />
+              </div>
+              <span class="text-xs uppercase tracking-widest px-2 py-0.5 rounded" style="background-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">SEMANAS 6–8+</span>
+            </div>
+          </div>
+          <div class="p-6 sm:p-8">
+            <p class="text-base leading-relaxed" style="color: rgba(255,255,255,0.55);">Os sistemas entram em produção. Monitoramos nas primeiras 4 semanas e otimizamos com base em dados reais de uso. Não desaparecemos no lançamento.</p>
+          </div>
+        </div>
+
+        <!-- Step 06: Training & Handoff -->
+        <div class="reveal card-interactive group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end gap-4 p-6 pb-5"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.09) 0%, rgba(74,144,255,0.02) 100%); border-bottom: 1px solid rgba(255,255,255,0.06);"
+          >
+            <span class="text-accent leading-none" style="font-size: 56px; font-weight: 200;">06</span>
+            <div>
+              <div class="flex flex-wrap items-center gap-3 mb-1">
+                <h3 class="text-xl sm:text-2xl font-semibold" style="color: #ffffff;">Treinamento do Time e Entrega</h3>
+                <IconDatabase size={20} class="text-accent icon-hover" />
+              </div>
+              <span class="text-xs uppercase tracking-widest px-2 py-0.5 rounded" style="background-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">PÓS-LANÇAMENTO</span>
+            </div>
+          </div>
+          <div class="p-6 sm:p-8">
+            <p class="text-base leading-relaxed" style="color: rgba(255,255,255,0.55);">Seu time é treinado sobre como os sistemas funcionam, como mantê-los e quando escalar problemas. Você recebe documentação completa. Você é dono de tudo — código, documentação, credenciais de acesso, tudo.</p>
+          </div>
+        </div>
+
+        <!-- Step 07: 60-Day Performance Window -->
+        <div class="reveal card-interactive group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="flex items-end gap-4 p-6 pb-5"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.12) 0%, rgba(74,144,255,0.03) 100%); border-bottom: 1px solid rgba(255,255,255,0.06);"
+          >
+            <span class="text-accent leading-none" style="font-size: 56px; font-weight: 200;">07</span>
+            <div>
+              <div class="flex flex-wrap items-center gap-3 mb-1">
+                <h3 class="text-xl sm:text-2xl font-semibold" style="color: #ffffff;">Janela de Performance de 60 Dias</h3>
+                <IconClock size={20} class="text-accent icon-hover" />
+              </div>
+              <span class="text-xs uppercase tracking-widest px-2 py-0.5 rounded" style="background-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">60 DIAS PÓS-ENTREGA</span>
+            </div>
+          </div>
+          <div class="p-6 sm:p-8">
+            <p class="text-base leading-relaxed" style="color: rgba(255,255,255,0.55);">Após a entrega, monitoramos os KPIs por 60 dias. Se as metas acordadas não estiverem na direção certa, continuamos otimizando sem custo adicional.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7: RESULTS / PROOF -->
+  <section style="background-color: #000000; padding: 96px 0;" class="md:py-28 lg:py-32">
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="text-center mb-12 reveal">
+        <SectionLabel>Resultados</SectionLabel>
+        <h2
+          class="mt-5"
+          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          O Que Acontece Quando IA É Implementada da Forma Certa
+        </h2>
+      </div>
+
+      <!-- Market validation stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mt-10 sm:mt-14 reveal-stagger">
+        <div class="reveal">
+          <StatBlock value="91%" label="das PMEs que usam IA dizem que aumenta a receita" />
+        </div>
+        <div class="reveal">
+          <StatBlock value="67%" label="taxa de sucesso de implementação para especialistas" />
+        </div>
+        <div class="reveal">
+          <StatBlock value="74%" label="obtêm ROI de IA no primeiro ano" />
+        </div>
+      </div>
+
+      <!-- Inline CTA after stats -->
+      <div class="text-center mt-14 reveal">
+        <p class="text-[17px] mb-6" style="color: rgba(255,255,255,0.55);">Os números são claros. A questão é qual lado você vai estar.</p>
+        <Button variant="primary" href="/agendar" class="w-full sm:w-auto text-center">Quero começar com o Revenue Audit &#8594;</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8: QUALIFIER -->
+  <section style="background-color: #0A0A0A; padding: 96px 0;" class="md:py-28 lg:py-32">
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="text-center mb-12 reveal">
+        <SectionLabel>Para Quem É</SectionLabel>
+        <h2
+          class="mt-5"
+          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          O Reis IA Systems É a Escolha Certa?
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 card-grid-hover reveal-stagger">
+        <!-- For -->
+        <div class="card-item reveal card-interactive p-6 sm:p-8 group">
+          <div
+            class="card-visual-top mb-6 rounded-xl flex items-end p-4"
+            style="background: linear-gradient(135deg, rgba(74,222,128,0.08) 0%, rgba(74,222,128,0.02) 100%); border: 1px solid rgba(74,222,128,0.12);"
+            aria-hidden="true"
+          >
+            <IconCheckCircle size={28} class="icon-hover" style="color: #4ade80;" />
+          </div>
+          <h3 class="text-2xl font-semibold mb-6" style="color: #ffffff;">O Reis IA Systems É a Escolha Certa Se:</h3>
+          <ul class="space-y-4">
+            {[
+              'Sua empresa fatura entre R$1M e R$100M ao ano e tem orçamento para um investimento real em IA ($2K–$20K)',
+              'Você tem um problema operacional específico — leads, suporte, processos — que quer que a IA resolva',
+              'Você quer um parceiro estratégico, não um fornecedor que entrega uma ferramenta e some',
+              'Você já tentou automações básicas (Zapier, ferramentas no-code) e bateu nos limites delas',
+              'Você valoriza resultados acima de tecnologia — quer saber o que a IA vai produzir, não só o que ela pode fazer',
+              'Você tem ao menos um membro do time que pode participar dos testes, treinamento e gestão contínua',
+            ].map(item => (
+              <li class="flex items-start gap-3 text-[15px]" style="color: rgba(255,255,255,0.65);">
+                <IconCheckCircle size={18} class="flex-shrink-0 mt-0.5" style="color: #4ade80;" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Not For -->
+        <div class="card-item reveal card-interactive p-6 sm:p-8 group">
+          <div
+            class="card-visual-top mb-6 rounded-xl flex items-end p-4"
+            style="background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255,255,255,0.06);"
+            aria-hidden="true"
+          >
+            <svg class="icon-hover" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: rgba(239,68,68,0.5);">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-semibold mb-6" style="color: #ffffff;">O Reis IA Systems NÃO É a Escolha Certa Se:</h3>
+          <ul class="space-y-4">
+            {[
+              'Você está buscando a solução de chatbot mais barata — competimos por resultados, não por preço',
+              'Você não tem um problema claro para resolver — "queremos experimentar com IA" não é um projeto',
+              'Você não está disposto a participar do processo — a implementação de IA exige o seu conhecimento do seu negócio',
+              'Você precisa de algo construído em 48 horas — implementações de qualidade levam semanas, não dias',
+              'Você é uma empresa de grande porte ($100M+) com processos de compras corporativos — este não é nosso foco',
+            ].map(item => (
+              <li class="flex items-start gap-3 text-[15px]" style="color: rgba(255,255,255,0.45);">
+                <svg class="flex-shrink-0 mt-0.5" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: rgba(239,68,68,0.45);">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HIGHLIGHT BANNER — IA Revenue Audit -->
+  <HighlightBanner
+    badge="Vagas limitadas"
+    title="IA Revenue Audit — Consultoria Gratuita"
+    description="Uma sessão de 30 minutos para mapear onde IA gera o maior impacto de receita no seu negócio — antes de gastar um centavo. Vagas abertas para empresas qualificadas."
+    ctaText="Quero agendar minha consultoria"
+    ctaHref="/agendar"
+  />
+
+  <!-- SECTION 9: PRICING -->
+  <section style="background-color: #000000; padding: 96px 0;" class="md:py-28 lg:py-32" id="audit">
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="text-center mb-12 reveal">
+        <SectionLabel>Investimento</SectionLabel>
+        <h2
+          class="mt-5"
+          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          Escolha Seu Ponto de Entrada
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 card-grid-hover reveal-stagger">
+        <!-- Starter -->
+        <div class="card-item reveal card-interactive p-6 sm:p-8 flex flex-col group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="card-visual-top mb-6 rounded-xl flex items-end p-4"
+            style="background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255,255,255,0.06);"
+            aria-hidden="true"
+          >
+            <IconTarget size={28} class="text-accent icon-hover" style="opacity: 0.7;" />
+          </div>
+          <Badge variant="neutral" class="self-start mb-4">Starter</Badge>
+          <p class="leading-none mb-1 text-accent" style="font-size: clamp(28px, 4vw, 40px); font-weight: 300;">$2.000–$5.000</p>
+          <p class="text-sm mb-6" style="color: rgba(255,255,255,0.35);">por projeto</p>
+          <ul class="space-y-3 flex-1 mb-8">
+            {[
+              'IA Revenue Audit (incluso)',
+              'Um agente de IA ou automação, totalmente implementado e integrado',
+              '2 semanas de monitoramento pós-lançamento',
+              'Sessão de treinamento do time (30–60 min)',
+              '30 dias de suporte após a entrega',
+              'Garantia "Funciona ou Ajustamos"',
+            ].map(item => (
+              <li class="flex items-start gap-2 text-[15px]" style="color: rgba(255,255,255,0.65);">
+                <IconCheckCircle size={16} class="flex-shrink-0 mt-0.5" style="color: #4ade80;" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p class="text-sm italic mb-6" style="color: rgba(255,255,255,0.35);">Ideal para: PMEs, primeira implementação de IA, empresas querendo validar antes de escalar.</p>
+          <Button variant="secondary" href="/agendar" class="w-full">Agende sua Avaliação de Revenue com IA &#8594;</Button>
+        </div>
+
+        <!-- Full Implementation (highlighted) -->
+        <div
+          class="card-item reveal card-interactive flex flex-col relative group overflow-hidden"
+          style="border-radius: 16px; padding: 24px 32px 32px; background-color: rgba(74,144,255,0.03); border: 1px solid rgba(74,144,255,0.2) !important;"
+        >
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+            <Badge variant="recommended">Recomendado</Badge>
+          </div>
+          <div
+            class="card-visual-top mb-6 rounded-xl flex items-end p-4 mt-4"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.15) 0%, rgba(74,144,255,0.04) 100%); border: 1px solid rgba(74,144,255,0.18);"
+            aria-hidden="true"
+          >
+            <HourglassIcon size={28} class="text-accent icon-hover" />
+          </div>
+          <Badge variant="accent" class="self-start mb-4">Implementação Completa</Badge>
+          <p class="leading-none mb-1 text-accent" style="font-size: clamp(28px, 4vw, 40px); font-weight: 300;">$5.000–$20.000</p>
+          <p class="text-sm mb-6" style="color: rgba(255,255,255,0.35);">por projeto</p>
+          <ul class="space-y-3 flex-1 mb-8">
+            {[
+              'IA Revenue Audit completo (valor de $1.500, incluso)',
+              '2–5 agentes de IA e automações',
+              'Integração com todos os sistemas relevantes (CRM, WhatsApp, APIs)',
+              'Engenharia de prompt customizada e configuração de modelo de IA',
+              '4 semanas de monitoramento pós-lançamento',
+              'Workshop de treinamento do time (2 horas)',
+              '60 dias de suporte prioritário',
+              'Relatório mensal de performance (primeiros 3 meses)',
+              'Acesso à comunidade Reis IA Network',
+              'Garantia de performance de 60 dias',
+            ].map(item => (
+              <li class="flex items-start gap-2 text-[15px]" style="color: rgba(255,255,255,0.65);">
+                <IconCheckCircle size={16} class="flex-shrink-0 mt-0.5" style="color: #4ade80;" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p class="text-sm italic mb-6" style="color: rgba(255,255,255,0.35);">Ideal para: empresas em crescimento prontas para tornar IA uma função central do negócio.</p>
+          <Button variant="primary" href="/agendar" class="w-full">Agende sua Avaliação de Revenue com IA &#8594;</Button>
+        </div>
+
+        <!-- Retainer -->
+        <div class="card-item reveal card-interactive p-6 sm:p-8 flex flex-col group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="card-visual-top mb-6 rounded-xl flex items-end p-4"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.06) 0%, rgba(74,144,255,0.01) 100%); border: 1px solid rgba(74,144,255,0.08);"
+            aria-hidden="true"
+          >
+            <IconClock size={28} class="text-accent icon-hover" style="opacity: 0.7;" />
+          </div>
+          <Badge variant="neutral" class="self-start mb-4">Retainer</Badge>
+          <p class="leading-none mb-1 text-accent" style="font-size: clamp(28px, 4vw, 40px); font-weight: 300;">$1.000–$3.000</p>
+          <p class="text-sm mb-6" style="color: rgba(255,255,255,0.35);">/mês (pós-implementação)</p>
+          <ul class="space-y-3 flex-1 mb-8">
+            {['Otimização e monitoramento contínuos', 'Manutenção e correção de bugs', 'Novas adições de implementação', 'Relatório mensal de performance'].map(item => (
+              <li class="flex items-start gap-2 text-[15px]" style="color: rgba(255,255,255,0.65);">
+                <IconCheckCircle size={16} class="flex-shrink-0 mt-0.5" style="color: #4ade80;" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p class="text-sm italic mb-6" style="color: rgba(255,255,255,0.35);">Continuidade pós-projeto para empresas que querem um parceiro de IA contínuo.</p>
+          <Button variant="ghost" href="/agendar">Discutir Após a Implementação &#8594;</Button>
+        </div>
+      </div>
+
+      <!-- Pricing note -->
+      <div class="text-center mt-10 reveal">
+        <p class="text-base font-semibold" style="color: #ffffff;">Preço Fixo — Não Por Hora</p>
+        <p class="text-[15px] mt-2 max-w-[600px] mx-auto" style="color: rgba(255,255,255,0.45);">Precificamos por resultado, não por hora. Você sabe o investimento antes de começar. Sem surpresas, sem aumento de escopo inflando sua conta.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 10: GUARANTEE -->
+  <section style="background-color: #0A0A0A; padding: 96px 0;" class="md:py-28 lg:py-32">
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="text-center mb-12 reveal">
+        <SectionLabel>Garantia</SectionLabel>
+        <h2
+          class="mt-5"
+          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          Apoiamos Cada Implementação com uma Garantia de Performance
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 card-grid-hover reveal-stagger">
+        <!-- Starter guarantee -->
+        <div class="card-item reveal card-interactive p-6 sm:p-8 group overflow-hidden" style="border-radius: 16px;">
+          <div
+            class="card-visual-top mb-6 rounded-xl flex items-end p-4"
+            style="background: linear-gradient(135deg, rgba(74,222,128,0.08) 0%, rgba(74,222,128,0.02) 100%); border: 1px solid rgba(74,222,128,0.12);"
+            aria-hidden="true"
+          >
+            <IconShield size={28} class="icon-hover" style="color: #4ade80;" />
+          </div>
+          <h3 class="text-2xl font-semibold mb-4" style="color: #ffffff;">Funciona ou Ajustamos</h3>
+          <p class="text-base leading-relaxed" style="color: rgba(255,255,255,0.65);">
+            Se a implementação não performar conforme especificado em 30 dias, reconstruímos ou ajustamos sem custo adicional. Se ainda não estiver certo, você recebe um crédito de 50% em qualquer projeto futuro.
+          </p>
+          <p class="text-sm mt-4 italic" style="color: rgba(255,255,255,0.35);">Aplicável ao: Pacote Starter</p>
+        </div>
+
+        <!-- Full implementation guarantee -->
+        <div class="card-item reveal card-interactive p-6 sm:p-8 group overflow-hidden" style="border-radius: 16px; background-color: rgba(74,144,255,0.03); border: 1px solid rgba(74,144,255,0.15) !important;">
+          <div
+            class="card-visual-top mb-6 rounded-xl flex items-end p-4"
+            style="background: linear-gradient(135deg, rgba(74,144,255,0.15) 0%, rgba(74,144,255,0.04) 100%); border: 1px solid rgba(74,144,255,0.18);"
+            aria-hidden="true"
+          >
+            <IconShield size={28} class="text-accent icon-hover" />
+          </div>
+          <h3 class="text-2xl font-semibold mb-4" style="color: #ffffff;">Janela de Otimização de 60 Dias</h3>
+          <p class="text-base leading-relaxed" style="color: rgba(255,255,255,0.65);">
+            Após a entrega, se os KPIs acordados não estiverem na direção certa em 60 dias, fornecemos otimização adicional sem cobrança até que as metas estejam no caminho certo — ou emitimos um reembolso parcial pelo componente que não performou.
+          </p>
+          <p class="text-sm mt-4 italic" style="color: rgba(255,255,255,0.35);">Aplicável à: Implementação Completa</p>
+        </div>
+      </div>
+
+      <p class="text-[17px] text-center max-w-[640px] mx-auto mt-10 leading-relaxed reveal" style="color: rgba(255,255,255,0.55);">
+        Oferecemos essas garantias porque começamos cada implementação com uma definição clara do que é sucesso. O IA Revenue Audit elimina a ambiguidade que mata a maioria dos projetos de IA.
+      </p>
+    </div>
+  </section>
+
+  <!-- COMPACT AUTHORITY SECTION -->
+  <section style="background-color: #000000; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06);">
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="flex flex-col md:flex-row items-center justify-center gap-6 text-center md:text-left reveal">
+        <div>
+          <p class="text-sm font-semibold" style="color: rgba(255,255,255,0.45); letter-spacing: 0.06em; text-transform: uppercase; font-size: 11px;">Implementado por</p>
+          <p class="text-base font-bold mt-1" style="color: #ffffff;">Reis IA</p>
+        </div>
+        <div class="hidden md:block w-px h-10" style="background: rgba(255,255,255,0.08);"></div>
+        <div class="flex flex-wrap items-center justify-center gap-2">
+          {['+50 implementações', 'Revenue-First Framework', 'Preço fixo por resultado', 'Garantia de performance'].map(pill => (
+            <span
+              class="text-[11px] font-medium px-3 py-1.5 rounded-full"
+              style="background: rgba(74,144,255,0.08); border: 1px solid rgba(74,144,255,0.2); color: rgba(74,144,255,0.85); letter-spacing: 0.04em;"
+            >{pill}</span>
+          ))}
+        </div>
+        <div class="hidden md:block w-px h-10" style="background: rgba(255,255,255,0.08);"></div>
+        <p class="text-sm" style="color: rgba(255,255,255,0.4); max-width: 260px;">IA que gera receita mensurável — ou não cobramos pela diferença.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 11: FAQ -->
+  <section style="background-color: #0A0A0A; padding: 96px 0;" class="md:py-28 lg:py-32">
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="text-center mb-12 reveal">
+        <SectionLabel>FAQ</SectionLabel>
+        <h2
+          class="mt-5"
+          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          Perguntas Frequentes sobre Implementação de IA
+        </h2>
+      </div>
+
+      <div class="max-w-[800px] mx-auto reveal">
+        <FaqAccordion client:load items={faqItems} />
+      </div>
+    </div>
+  </section>
+
+  <!-- LEAD CAPTURE SECTION -->
+  <section class="lead-capture-section relative" style="padding: 96px 0;" aria-label="Receba insights sobre implementação de IA">
+    <!-- Background glow -->
+    <div
+      class="absolute inset-0 pointer-events-none"
+      aria-hidden="true"
+      style="background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(74,144,255,0.05) 0%, transparent 70%);"
+    ></div>
+
+    <div class="relative z-10 mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="max-w-[560px] mx-auto text-center reveal">
+        <SectionLabel>Newsletter</SectionLabel>
+        <h2
+          class="mt-5 leading-tight"
+          style="font-size: clamp(24px, 3.5vw, 40px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          Receba insights sobre implementação de IA que gera receita
+        </h2>
+        <p class="mt-5" style="font-size: 16px; line-height: 1.7; color: rgba(255,255,255,0.5);">
+          Casos reais de implementação, frameworks Revenue-First e análises sobre o que separa IA que funciona de IA que acumula poeira.
+        </p>
+      </div>
+
+      <!-- Replace PLACEHOLDER_FORM_ID with your Formspree form ID -->
+      <form
+        class="mt-10 max-w-[480px] mx-auto reveal"
+        action="https://formspree.io/f/PLACEHOLDER_FORM_ID"
+        method="POST"
+        aria-label="Formulário de inscrição na newsletter"
+      >
+        <input type="hidden" name="_source" value="newsletter-systems" />
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input
+            type="email"
+            name="email"
+            placeholder="seu@email.com"
+            class="glass-input flex-1"
+            required
+            aria-label="Seu endereço de email"
+          />
+          <button
+            type="submit"
+            style="background: #4A90FF; color: #ffffff; font-size: 15px; font-weight: 600; padding: 16px 24px; border-radius: 8px; border: 1px solid #4A90FF; white-space: nowrap; cursor: pointer; transition: background-color 200ms ease, transform 150ms ease, box-shadow 200ms ease; letter-spacing: -0.01em;"
+            onmouseover="this.style.backgroundColor='#6AADFF'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 8px 24px rgba(74,144,255,0.3)'"
+            onmouseout="this.style.backgroundColor='#4A90FF'; this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+          >
+            Quero receber
+          </button>
+        </div>
+        <p class="mt-4 text-center" style="font-size: 12px; color: rgba(255,255,255,0.25); letter-spacing: 0.03em;">
+          Sem spam. Cancele quando quiser.
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <!-- SECTION 12: FINAL CTA -->
+  <section
+    class="relative overflow-hidden"
+    style="background-color: #000000; padding: 112px 0;"
+  >
+    <!-- Radial glow -->
+    <div
+      class="absolute inset-0 pointer-events-none"
+      aria-hidden="true"
+      style="background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(74, 144, 255, 0.07) 0%, transparent 65%);"
+    ></div>
+    <!-- Gold gradient orb -->
+    <div
+      class="gradient-orb gradient-orb-gold"
+      aria-hidden="true"
+      style="width: 500px; height: 500px; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+    ></div>
+
+    <div class="relative z-10 mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
+      <div class="max-w-[720px] mx-auto text-center reveal">
+        <h2
+          class="leading-tight"
+          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
+        >
+          Comece Com o Movimento que Muda Tudo.
+        </h2>
+
+        <div class="mt-8 space-y-5 text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
+          <p>Todo jogo de xadrez tem um primeiro movimento que define a posição para tudo que se segue.</p>
+          <p>Na implementação de IA, esse movimento é o Revenue Audit.</p>
+          <p>Leva 60 minutos. Mapeia a oportunidade antes de você gastar um centavo. E te dá algo que nenhuma demo de fornecedor de IA consegue te dar: um quadro claro do que construir, quanto custa e o que retorna.</p>
+          <p>As empresas que implementam IA certo não são mais rápidas. São mais estratégicas. Fazem a pergunta certa primeiro. Constroem o que gera receita, não o que parece impressionante.</p>
+        </div>
+
+        <p class="text-xl font-semibold mt-6" style="color: #ffffff;">É aqui que isso começa.</p>
+
+        <div class="mt-10">
+          <Button variant="hero" href="/agendar" class="w-full sm:w-auto text-center">Agende sua Avaliação de Revenue com IA Gratuita &#8594;</Button>
+        </div>
+        <p class="text-[13px] mt-4" style="color: rgba(255,255,255,0.3);">60 minutos. Um relatório escrito. Um primeiro movimento claro.</p>
+
+        <div class="mt-8">
+          <Button variant="ghost" href="/agendar" class="w-full sm:w-auto text-center" style="color: rgba(255,255,255,0.45);">Ou, se você já está pronto para falar sobre uma implementação específica: Agende uma Consulta de Implementação &#8594;</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</MainLayout>

@@ -1,0 +1,142 @@
+---
+// HighlightBanner — Full-width highlighted section for events/offers
+// Used to spotlight current cohorts, launches, or upcoming events
+
+interface Props {
+  badge?: string;
+  title: string;
+  description: string;
+  ctaText: string;
+  ctaHref: string;
+}
+
+const {
+  badge,
+  title,
+  description,
+  ctaText,
+  ctaHref,
+} = Astro.props;
+---
+
+<section class="highlight-banner-section" aria-label={title}>
+  <div class="highlight-banner-inner">
+    <!-- Background decorative gradient -->
+    <div class="highlight-bg-glow" aria-hidden="true"></div>
+
+    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0 relative z-10">
+      <div class="highlight-content reveal">
+        {badge && (
+          <span class="highlight-badge">{badge}</span>
+        )}
+        <h2 class="highlight-title">{title}</h2>
+        <p class="highlight-description">{description}</p>
+        <a href={ctaHref} class="highlight-cta">
+          {ctaText}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .highlight-banner-section {
+    padding: 4px 0;
+    background: #080808;
+  }
+
+  .highlight-banner-inner {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f0e0a 0%, #0d0c08 40%, #0a0a0a 100%);
+    border-top: 1px solid rgba(201, 168, 76, 0.15);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+    padding: 64px 0;
+  }
+
+  .highlight-bg-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201, 168, 76, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .highlight-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .highlight-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #C9A84C;
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: 100px;
+    padding: 5px 14px;
+  }
+
+  .highlight-title {
+    font-size: clamp(22px, 3vw, 36px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .highlight-description {
+    font-size: 16px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 0;
+    max-width: 520px;
+  }
+
+  .highlight-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #000000;
+    background: #C9A84C;
+    border: 1px solid #C9A84C;
+    border-radius: 8px;
+    padding: 14px 28px;
+    text-decoration: none;
+    transition: background-color 200ms ease, transform 150ms ease, box-shadow 200ms ease;
+    margin-top: 4px;
+  }
+
+  .highlight-cta:hover {
+    background-color: #D4B85E;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(201, 168, 76, 0.3);
+  }
+
+  .highlight-cta:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  .highlight-cta svg {
+    transition: transform 200ms ease;
+  }
+
+  .highlight-cta:hover svg {
+    transform: translateX(3px);
+  }
+</style>

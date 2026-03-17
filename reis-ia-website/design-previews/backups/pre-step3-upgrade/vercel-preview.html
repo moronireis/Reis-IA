@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vercel Design System Reference -- Reis IA</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-page: #0a0a0a;
+    --bg-sidebar: #000000;
+    --bg-card: #111111;
+    --bg-card-hover: #1a1a1a;
+    --border: #2e2e2e;
+    --border-hover: #3e3e3e;
+    --text-primary: #ededed;
+    --text-secondary: #a0a0a0;
+    --text-muted: #6e6e6e;
+    --accent-blue: #0070f3;
+    --accent-gold: #C9A84C;
+    --accent-red: #e5484d;
+    --accent-amber: #f5a623;
+    --accent-green: #45a557;
+    --accent-teal: #12a594;
+    --accent-purple: #8e4ec6;
+    --accent-pink: #cd2b81;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+    --sidebar-width: 260px;
+    --transition-default: 200ms ease;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-page);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ==================== SIDEBAR ==================== */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    padding: 32px 24px;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .sidebar__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
+
+  .sidebar__subtitle {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-top: 4px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .sidebar__nav {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sidebar__link {
+    display: block;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: color var(--transition-default), background-color var(--transition-default);
+  }
+
+  .sidebar__link:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .sidebar__link.active {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.09);
+    font-weight: 500;
+  }
+
+  /* ==================== MAIN ==================== */
+  .main {
+    margin-left: var(--sidebar-width);
+    padding: 64px 48px 128px;
+    max-width: calc(1200px + var(--sidebar-width));
+  }
+
+  .page-title {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--text-primary);
+  }
+
+  .page-subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-top: 12px;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+
+  /* ==================== SECTIONS ==================== */
+  .section {
+    margin-top: 80px;
+    scroll-margin-top: 32px;
+  }
+
+  .section__title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+
+  .section__subtitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    margin-top: 32px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .section__desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 700px;
+  }
+
+  /* ==================== COLOR SWATCHES ==================== */
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .swatch {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+
+  .swatch__color {
+    height: 80px;
+    width: 100%;
+  }
+
+  .swatch__info {
+    padding: 10px 12px;
+  }
+
+  .swatch__name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .swatch__hex {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* ==================== TYPOGRAPHY SAMPLES ==================== */
+  .type-sample {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .type-sample:last-child {
+    border-bottom: none;
+  }
+
+  .type-sample__text {
+    color: var(--text-primary);
+  }
+
+  .type-sample__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    padding: 3px 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    color: var(--text-muted);
+  }
+
+  /* ==================== SPACING BARS ==================== */
+  .spacing-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .spacing-bar {
+    height: 24px;
+    background: var(--accent-blue);
+    border-radius: 4px;
+    opacity: 0.6;
+    transition: opacity var(--transition-default);
+  }
+
+  .spacing-bar:hover {
+    opacity: 1;
+  }
+
+  .spacing-label {
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    min-width: 90px;
+    text-align: right;
+  }
+
+  .spacing-value {
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    min-width: 50px;
+  }
+
+  .info-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .info-card {
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .info-card__label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .info-card__value {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+  }
+
+  .info-card__note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* Border radius visual */
+  .radius-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .radius-demo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .radius-box {
+    width: 56px;
+    height: 56px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--border-hover);
+  }
+
+  .radius-label {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+  }
+
+  /* ==================== BUTTONS ==================== */
+  .button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color var(--transition-default), color var(--transition-default), border-color var(--transition-default), opacity var(--transition-default);
+  }
+
+  .btn--sm { height: 32px; padding: 0 12px; font-size: 13px; border-radius: 6px; }
+  .btn--md { height: 40px; padding: 0 16px; font-size: 14px; border-radius: 8px; }
+  .btn--lg { height: 48px; padding: 0 20px; font-size: 16px; border-radius: 10px; }
+
+  .btn--primary { background: #ededed; color: #000; }
+  .btn--primary:hover { background: #fff; }
+
+  .btn--secondary { background: #1a1a1a; color: #ededed; border: 1px solid #2e2e2e; }
+  .btn--secondary:hover { background: #222; border-color: #3e3e3e; }
+
+  .btn--tertiary { background: transparent; color: #a0a0a0; border: 1px solid #2e2e2e; }
+  .btn--tertiary:hover { background: #1a1a1a; color: #ededed; }
+
+  .btn--error { background: #e5484d; color: #fff; }
+  .btn--error:hover { background: #f26267; }
+
+  .btn--warning { background: #f5a623; color: #000; }
+  .btn--warning:hover { background: #ffb837; }
+
+  .btn--pill { border-radius: 999px; }
+
+  .btn--disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+
+  .btn:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 2px; }
+
+  /* ==================== CARDS ==================== */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    padding: 32px;
+    background: #0a0a0a;
+    border: 1px solid #2e2e2e;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: border-color var(--transition-default);
+  }
+
+  .card:hover {
+    border-color: #3e3e3e;
+  }
+
+  .card__icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--text-secondary);
+  }
+
+  .card__title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color var(--transition-default);
+  }
+
+  .card:hover .card__title { color: #fff; }
+
+  .card__desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* Elevated card */
+  .card--elevated {
+    background: #111111;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    border-color: #3e3e3e;
+  }
+
+  /* Modal-level card */
+  .card--modal {
+    background: #1a1a1a;
+    box-shadow: 0 16px 70px rgba(0,0,0,0.5);
+    border-color: #3e3e3e;
+  }
+
+  /* Shadow tier showcase */
+  .shadow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .shadow-demo {
+    text-align: center;
+  }
+
+  .shadow-box {
+    width: 100%;
+    height: 100px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+
+  .shadow-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .shadow-value {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    margin-top: 4px;
+    word-break: break-all;
+  }
+
+  /* ==================== ANIMATIONS ==================== */
+  .anim-stage {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    min-height: 180px;
+    justify-content: center;
+    position: relative;
+  }
+
+  .anim-box {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-blue);
+    border-radius: 12px;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .anim-box.play {
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes slideRight {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .anim-box.play-fade {
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .anim-box.play-scale {
+    animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .anim-box.play-slide {
+    animation: slideRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .replay-btn {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: color var(--transition-default), background-color var(--transition-default);
+  }
+
+  .replay-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.1);
+  }
+
+  .anim-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  /* Easing curve bars */
+  .easing-grid {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .easing-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .easing-name {
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    min-width: 160px;
+  }
+
+  .easing-track {
+    flex: 1;
+    height: 32px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .easing-ball {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--accent-blue);
+    opacity: 0.7;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .easing-track:hover .easing-ball {
+    left: calc(100% - 32px);
+    opacity: 1;
+  }
+
+  .easing-ball[data-ease="default"] { transition: left 600ms ease, opacity 200ms; }
+  .easing-ball[data-ease="quick-out"] { transition: left 600ms cubic-bezier(0.16, 1, 0.3, 1), opacity 200ms; }
+  .easing-ball[data-ease="spring"] { transition: left 600ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 200ms; }
+  .easing-ball[data-ease="linear"] { transition: left 600ms linear, opacity 200ms; }
+  .easing-ball[data-ease="smooth"] { transition: left 600ms cubic-bezier(0.25, 0.1, 0.25, 1), opacity 200ms; }
+
+  /* Duration scale */
+  .duration-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .duration-cell {
+    padding: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color var(--transition-default);
+  }
+
+  .duration-cell:hover {
+    border-color: var(--border-hover);
+  }
+
+  .duration-cell__value {
+    font-size: 18px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+  }
+
+  .duration-cell__usage {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .duration-cell__bar {
+    height: 3px;
+    background: var(--accent-blue);
+    border-radius: 2px;
+    margin-top: 10px;
+    width: 0;
+    transition-property: width;
+    transition-timing-function: ease;
+  }
+
+  .duration-cell:hover .duration-cell__bar {
+    width: 100%;
+  }
+
+  /* ==================== EFFECTS ==================== */
+  .effects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .effect-demo {
+    padding: 32px;
+    border-radius: 12px;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .effect-demo__label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    position: relative;
+    z-index: 2;
+  }
+
+  .effect-demo__code {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Glassmorphism demo */
+  .glass-demo {
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid var(--border);
+  }
+
+  .glass-demo::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 20%;
+    width: 60%;
+    height: 80px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-pink));
+    border-radius: 50%;
+    filter: blur(30px);
+    opacity: 0.6;
+    z-index: 1;
+  }
+
+  /* Gradient demo */
+  .gradient-demo {
+    border: 1px solid var(--border);
+  }
+
+  .gradient-demo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    z-index: 0;
+  }
+
+  /* Glow demo */
+  .glow-demo {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    position: relative;
+  }
+
+  .glow-demo::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    background: var(--accent-blue);
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.3;
+    z-index: 1;
+  }
+
+  /* Noise demo */
+  .noise-demo {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    position: relative;
+  }
+
+  .noise-demo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  /* Border gradient demo */
+  .border-gradient-demo {
+    background: var(--bg-card);
+    position: relative;
+    border: none;
+    padding: 33px;
+  }
+
+  .border-gradient-demo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    padding: 1px;
+    background: linear-gradient(135deg, #3e3e3e, transparent 50%, #3e3e3e);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  /* Fade overlay demo */
+  .fade-demo {
+    border: 1px solid var(--border);
+    position: relative;
+    background: repeating-linear-gradient(
+      0deg,
+      var(--bg-card) 0px,
+      var(--bg-card) 8px,
+      rgba(255,255,255,0.03) 8px,
+      rgba(255,255,255,0.03) 16px
+    );
+  }
+
+  .fade-demo::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80%;
+    background: linear-gradient(transparent, #0a0a0a);
+    border-radius: 0 0 12px 12px;
+    z-index: 1;
+  }
+
+  /* ==================== LAYOUTS ==================== */
+  .layout-wireframe {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .wireframe-label {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .wf-nav {
+    height: 32px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .wf-logo {
+    width: 20px;
+    height: 20px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+  }
+
+  .wf-nav-item {
+    width: 40px;
+    height: 8px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+
+  .wf-hero {
+    text-align: center;
+    padding: 48px 24px;
+  }
+
+  .wf-heading {
+    height: 20px;
+    width: 60%;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+  }
+
+  .wf-subheading {
+    height: 10px;
+    width: 45%;
+    margin: 12px auto 0;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+  }
+
+  .wf-btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .wf-btn {
+    height: 24px;
+    width: 80px;
+    border-radius: 6px;
+  }
+
+  .wf-btn--primary { background: rgba(255,255,255,0.15); }
+  .wf-btn--secondary { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
+
+  .wf-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 24px 0;
+  }
+
+  .wf-card {
+    height: 100px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .wf-card-title {
+    height: 8px;
+    width: 60%;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .wf-card-text {
+    height: 6px;
+    width: 80%;
+    background: rgba(255,255,255,0.04);
+    border-radius: 2px;
+    margin-top: 8px;
+  }
+
+  .wf-cta {
+    text-align: center;
+    padding: 40px 24px;
+  }
+
+  /* ==================== SIGNATURE / ADAPTATION ==================== */
+  .adaptation-note {
+    margin-top: 16px;
+    padding: 16px 20px;
+    background: rgba(201, 168, 76, 0.06);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-gold);
+  }
+
+  .adaptation-note__label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent-gold);
+    margin-bottom: 6px;
+  }
+
+  .adaptation-note__text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .signature-demo {
+    margin-bottom: 32px;
+  }
+
+  .signature-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .signature-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  /* Black canvas demo */
+  .black-canvas-demo {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .black-canvas-swatch {
+    height: 80px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8px;
+  }
+
+  .black-canvas-swatch span {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* Elevation demo */
+  .elevation-stack {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 32px;
+    background: #000;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .elevation-item {
+    width: 140px;
+    height: 100px;
+    border-radius: 12px;
+    display: flex;
+    align-items: flex-end;
+    padding: 12px;
+  }
+
+  .elevation-item__label {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+  }
+
+  /* Backdrop blur demo */
+  .blur-demo-container {
+    position: relative;
+    height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .blur-demo-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #0070f3 0%, #8e4ec6 50%, #e5484d 100%);
+    opacity: 0.4;
+  }
+
+  .blur-demo-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .blur-demo-text {
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+  }
+
+  /* Invisible transition demo */
+  .transition-demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .transition-item {
+    padding: 20px;
+    text-align: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .transition-item__text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: color 200ms ease;
+  }
+
+  .transition-item:hover .transition-item__text {
+    color: var(--text-primary);
+  }
+
+  .transition-item__hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ==================== RESPONSIVE ==================== */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 32px 20px 96px; }
+    .swatch-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+    .card-grid { grid-template-columns: 1fr; }
+    .effects-grid { grid-template-columns: 1fr; }
+    .shadow-grid { grid-template-columns: repeat(2, 1fr); }
+    .wf-cards { grid-template-columns: 1fr; }
+    .black-canvas-demo { grid-template-columns: repeat(2, 1fr); }
+    .elevation-stack { flex-direction: column; }
+    .page-title { font-size: 28px; }
+    .duration-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+<!-- Reference Logo Header -->
+<div style="position:fixed;top:16px;right:24px;z-index:1000;opacity:0.7;">
+  <svg width="100" height="32" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="10,30 22,8 34,30" fill="white"/>
+    <text x="40" y="28" font-family="system-ui,-apple-system,sans-serif" font-size="20" font-weight="600" fill="white" letter-spacing="-0.5">Vercel</text>
+  </svg>
+</div>
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar">
+  <div class="sidebar__title">Vercel</div>
+  <div class="sidebar__subtitle">Design System Reference</div>
+  <nav class="sidebar__nav">
+    <a href="#colors" class="sidebar__link active">Color Palette</a>
+    <a href="#typography" class="sidebar__link">Typography Scale</a>
+    <a href="#spacing" class="sidebar__link">Spacing System</a>
+    <a href="#buttons" class="sidebar__link">Buttons &amp; CTAs</a>
+    <a href="#cards" class="sidebar__link">Card Components</a>
+    <a href="#animations" class="sidebar__link">Animation Showcase</a>
+    <a href="#effects" class="sidebar__link">Effects Gallery</a>
+    <a href="#layouts" class="sidebar__link">Section Layouts</a>
+    <a href="#signature" class="sidebar__link">Signature Elements</a>
+  </nav>
+</aside>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<main class="main">
+  <h1 class="page-title">Vercel Design System</h1>
+  <p class="page-subtitle">Extracted design tokens, component patterns, and visual language from vercel.com. Reference for Reis IA design system development.</p>
+
+  <!-- ==================== COLORS ==================== -->
+  <section id="colors" class="section">
+    <h2 class="section__title">Color Palette</h2>
+
+    <h3 class="section__subtitle">Dark Mode -- Backgrounds</h3>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch__color" style="background:#000000"></div><div class="swatch__info"><div class="swatch__name">Background 100</div><div class="swatch__hex">#000000</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#0a0a0a"></div><div class="swatch__info"><div class="swatch__name">Background 200</div><div class="swatch__hex">#0A0A0A</div></div></div>
+    </div>
+
+    <h3 class="section__subtitle">Dark Mode -- Gray Scale</h3>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch__color" style="background:#111111"></div><div class="swatch__info"><div class="swatch__name">Gray 100</div><div class="swatch__hex">#111111</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#1a1a1a"></div><div class="swatch__info"><div class="swatch__name">Gray 200</div><div class="swatch__hex">#1A1A1A</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#222222"></div><div class="swatch__info"><div class="swatch__name">Gray 300</div><div class="swatch__hex">#222222</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#2e2e2e"></div><div class="swatch__info"><div class="swatch__name">Gray 400</div><div class="swatch__hex">#2E2E2E</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#3e3e3e"></div><div class="swatch__info"><div class="swatch__name">Gray 500</div><div class="swatch__hex">#3E3E3E</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#505050"></div><div class="swatch__info"><div class="swatch__name">Gray 600</div><div class="swatch__hex">#505050</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#6e6e6e"></div><div class="swatch__info"><div class="swatch__name">Gray 700</div><div class="swatch__hex">#6E6E6E</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#7e7e7e"></div><div class="swatch__info"><div class="swatch__name">Gray 800</div><div class="swatch__hex">#7E7E7E</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#a0a0a0"></div><div class="swatch__info"><div class="swatch__name">Gray 900</div><div class="swatch__hex">#A0A0A0</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#ededed"></div><div class="swatch__info"><div class="swatch__name">Gray 1000</div><div class="swatch__hex">#EDEDED</div></div></div>
+    </div>
+
+    <h3 class="section__subtitle">Gray Alpha (Overlays)</h3>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch__color" style="background:rgba(255,255,255,0.06)"></div><div class="swatch__info"><div class="swatch__name">Alpha 100</div><div class="swatch__hex">rgba(255,255,255,0.06)</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:rgba(255,255,255,0.09)"></div><div class="swatch__info"><div class="swatch__name">Alpha 200</div><div class="swatch__hex">rgba(255,255,255,0.09)</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:rgba(255,255,255,0.13)"></div><div class="swatch__info"><div class="swatch__name">Alpha 300</div><div class="swatch__hex">rgba(255,255,255,0.13)</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:rgba(255,255,255,0.17)"></div><div class="swatch__info"><div class="swatch__name">Alpha 400</div><div class="swatch__hex">rgba(255,255,255,0.17)</div></div></div>
+    </div>
+
+    <h3 class="section__subtitle">Accent Colors</h3>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch__color" style="background:#0070f3"></div><div class="swatch__info"><div class="swatch__name">Blue 700</div><div class="swatch__hex">#0070F3</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#0060d0"></div><div class="swatch__info"><div class="swatch__name">Blue 800</div><div class="swatch__hex">#0060D0</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#52a9ff"></div><div class="swatch__info"><div class="swatch__name">Blue 900</div><div class="swatch__hex">#52A9FF</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#e5484d"></div><div class="swatch__info"><div class="swatch__name">Red 800</div><div class="swatch__hex">#E5484D</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#ffb224"></div><div class="swatch__info"><div class="swatch__name">Amber 400</div><div class="swatch__hex">#FFB224</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#f5a623"></div><div class="swatch__info"><div class="swatch__name">Amber 700</div><div class="swatch__hex">#F5A623</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#45a557"></div><div class="swatch__info"><div class="swatch__name">Green 700</div><div class="swatch__hex">#45A557</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#12a594"></div><div class="swatch__info"><div class="swatch__name">Teal 500</div><div class="swatch__hex">#12A594</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#8e4ec6"></div><div class="swatch__info"><div class="swatch__name">Purple 700</div><div class="swatch__hex">#8E4EC6</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#cd2b81"></div><div class="swatch__info"><div class="swatch__name">Pink 800</div><div class="swatch__hex">#CD2B81</div></div></div>
+    </div>
+
+    <h3 class="section__subtitle">Light Mode -- Backgrounds (Comparison)</h3>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch__color" style="background:#ffffff"></div><div class="swatch__info"><div class="swatch__name">Background 100</div><div class="swatch__hex">#FFFFFF</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#fafafa"></div><div class="swatch__info"><div class="swatch__name">Background 200</div><div class="swatch__hex">#FAFAFA</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#f2f2f2"></div><div class="swatch__info"><div class="swatch__name">Gray 100</div><div class="swatch__hex">#F2F2F2</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#ebebeb"></div><div class="swatch__info"><div class="swatch__name">Gray 200</div><div class="swatch__hex">#EBEBEB</div></div></div>
+      <div class="swatch"><div class="swatch__color" style="background:#171717"></div><div class="swatch__info"><div class="swatch__name">Gray 1000</div><div class="swatch__hex">#171717</div></div></div>
+    </div>
+  </section>
+
+  <!-- ==================== TYPOGRAPHY ==================== -->
+  <section id="typography" class="section">
+    <h2 class="section__title">Typography Scale</h2>
+    <p class="section__desc">Geist Sans -- a variable-weight typeface designed for legibility and precision. Shown here with Inter as the closest open-source equivalent.</p>
+
+    <h3 class="section__subtitle">Headings</h3>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-0.04em">Build and deploy</div>
+      <div class="type-sample__meta">
+        <span class="tag">heading-72</span><span class="tag">72px</span><span class="tag">700</span><span class="tag">line-height: 1.1</span><span class="tag">letter-spacing: -0.04em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:56px;font-weight:700;line-height:1.1;letter-spacing:-0.03em">Scale without limits</div>
+      <div class="type-sample__meta">
+        <span class="tag">heading-56</span><span class="tag">56px</span><span class="tag">700</span><span class="tag">line-height: 1.1</span><span class="tag">letter-spacing: -0.03em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:48px;font-weight:700;line-height:1.15;letter-spacing:-0.025em">Infrastructure at scale</div>
+      <div class="type-sample__meta">
+        <span class="tag">heading-48</span><span class="tag">48px</span><span class="tag">700</span><span class="tag">line-height: 1.15</span><span class="tag">letter-spacing: -0.025em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:40px;font-weight:600;line-height:1.2;letter-spacing:-0.02em">Feature highlights</div>
+      <div class="type-sample__meta">
+        <span class="tag">heading-40</span><span class="tag">40px</span><span class="tag">600</span><span class="tag">line-height: 1.2</span><span class="tag">letter-spacing: -0.02em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:32px;font-weight:600;line-height:1.25;letter-spacing:-0.015em">Subsection heading</div>
+      <div class="type-sample__meta">
+        <span class="tag">heading-32</span><span class="tag">32px</span><span class="tag">600</span><span class="tag">line-height: 1.25</span><span class="tag">letter-spacing: -0.015em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:24px;font-weight:600;line-height:1.3;letter-spacing:-0.01em">Card heading level</div>
+      <div class="type-sample__meta">
+        <span class="tag">heading-24</span><span class="tag">24px</span><span class="tag">600</span><span class="tag">line-height: 1.3</span><span class="tag">letter-spacing: -0.01em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:20px;font-weight:600;line-height:1.4;letter-spacing:-0.005em">Small heading</div>
+      <div class="type-sample__meta">
+        <span class="tag">heading-20</span><span class="tag">20px</span><span class="tag">600</span><span class="tag">line-height: 1.4</span><span class="tag">letter-spacing: -0.005em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:16px;font-weight:600;line-height:1.5">Smallest heading level</div>
+      <div class="type-sample__meta">
+        <span class="tag">heading-16</span><span class="tag">16px</span><span class="tag">600</span><span class="tag">line-height: 1.5</span><span class="tag">letter-spacing: 0</span>
+      </div>
+    </div>
+
+    <h3 class="section__subtitle">Body / Copy</h3>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:20px;font-weight:400;line-height:1.5;color:#a0a0a0;letter-spacing:-0.005em">Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.</div>
+      <div class="type-sample__meta">
+        <span class="tag">copy-20</span><span class="tag">20px</span><span class="tag">400</span><span class="tag">line-height: 1.5</span><span class="tag">color: gray-900</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:16px;font-weight:400;line-height:1.6;color:#a0a0a0">Default body text. The primary reading size for paragraphs, descriptions, and content blocks. Optimized for sustained reading on screens.</div>
+      <div class="type-sample__meta">
+        <span class="tag">copy-16</span><span class="tag">16px</span><span class="tag">400</span><span class="tag">line-height: 1.6</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:14px;font-weight:400;line-height:1.5;color:#a0a0a0">Secondary body text for supporting descriptions, metadata, and auxiliary content.</div>
+      <div class="type-sample__meta">
+        <span class="tag">copy-14</span><span class="tag">14px</span><span class="tag">400</span><span class="tag">line-height: 1.5</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:13px;font-weight:400;line-height:1.5;color:#6e6e6e">Tertiary text for captions, timestamps, and minor details.</div>
+      <div class="type-sample__meta">
+        <span class="tag">copy-13</span><span class="tag">13px</span><span class="tag">400</span><span class="tag">line-height: 1.5</span><span class="tag">color: gray-700</span>
+      </div>
+    </div>
+
+    <h3 class="section__subtitle">Labels</h3>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:14px;font-weight:500;line-height:1.5;color:#ededed">Standard label text -- medium weight for emphasis</div>
+      <div class="type-sample__meta">
+        <span class="tag">label-14</span><span class="tag">14px</span><span class="tag">500</span><span class="tag">line-height: 1.5</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:12px;font-weight:500;line-height:1.5;letter-spacing:0.02em;text-transform:uppercase;color:#a0a0a0">MICRO LABEL -- UPPERCASE</div>
+      <div class="type-sample__meta">
+        <span class="tag">label-12</span><span class="tag">12px</span><span class="tag">500</span><span class="tag">letter-spacing: 0.02em</span><span class="tag">uppercase</span>
+      </div>
+    </div>
+
+    <h3 class="section__subtitle">Mono</h3>
+
+    <div class="type-sample">
+      <div class="type-sample__text" style="font-size:14px;font-weight:400;line-height:1.5;font-family:'JetBrains Mono',monospace;color:#a0a0a0">const config = { theme: 'dark', font: 'geist' };</div>
+      <div class="type-sample__meta">
+        <span class="tag">copy-14-mono</span><span class="tag">14px</span><span class="tag">Geist Mono</span><span class="tag">400</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SPACING ==================== -->
+  <section id="spacing" class="section">
+    <h2 class="section__title">Spacing System</h2>
+    <p class="section__desc">Tailwind-based 4px spacing scale. Vercel uses generous section padding (96-128px desktop) and consistent component spacing.</p>
+
+    <h3 class="section__subtitle">Spacing Tokens</h3>
+    <div>
+      <div class="spacing-bar-row"><span class="spacing-label">2px</span><div class="spacing-bar" style="width:2px"></div><span class="spacing-value">p-0.5</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">4px</span><div class="spacing-bar" style="width:4px"></div><span class="spacing-value">p-1</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">8px</span><div class="spacing-bar" style="width:8px"></div><span class="spacing-value">p-2</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">12px</span><div class="spacing-bar" style="width:12px"></div><span class="spacing-value">p-3</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">16px</span><div class="spacing-bar" style="width:16px"></div><span class="spacing-value">p-4</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">20px</span><div class="spacing-bar" style="width:20px"></div><span class="spacing-value">p-5</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">24px</span><div class="spacing-bar" style="width:24px"></div><span class="spacing-value">p-6</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">32px</span><div class="spacing-bar" style="width:32px"></div><span class="spacing-value">p-8</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">40px</span><div class="spacing-bar" style="width:40px"></div><span class="spacing-value">p-10</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">48px</span><div class="spacing-bar" style="width:48px"></div><span class="spacing-value">p-12</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">64px</span><div class="spacing-bar" style="width:64px"></div><span class="spacing-value">p-16</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">96px</span><div class="spacing-bar" style="width:96px"></div><span class="spacing-value">p-24</span></div>
+      <div class="spacing-bar-row"><span class="spacing-label">128px</span><div class="spacing-bar" style="width:128px"></div><span class="spacing-value">p-32</span></div>
+    </div>
+
+    <h3 class="section__subtitle">Section Padding</h3>
+    <div class="info-card-grid">
+      <div class="info-card">
+        <div class="info-card__label">Standard Section (Mobile)</div>
+        <div class="info-card__value">48-64px</div>
+        <div class="info-card__note">Vertical padding</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__label">Standard Section (Desktop)</div>
+        <div class="info-card__value">96-128px</div>
+        <div class="info-card__note">Vertical padding</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__label">Hero Top (Desktop)</div>
+        <div class="info-card__value">120-160px</div>
+        <div class="info-card__note">Top padding only</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__label">Container Max</div>
+        <div class="info-card__value">1200px</div>
+        <div class="info-card__note">max-width: 1200px</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__label">Card Padding</div>
+        <div class="info-card__value">32px</div>
+        <div class="info-card__note">p-8 default</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__label">Grid Gap</div>
+        <div class="info-card__value">16-24px</div>
+        <div class="info-card__note">gap-4 to gap-6</div>
+      </div>
+    </div>
+
+    <h3 class="section__subtitle">Border Radius Scale</h3>
+    <div class="radius-row">
+      <div class="radius-demo"><div class="radius-box" style="border-radius:0"></div><span class="radius-label">0px</span></div>
+      <div class="radius-demo"><div class="radius-box" style="border-radius:4px"></div><span class="radius-label">4px</span></div>
+      <div class="radius-demo"><div class="radius-box" style="border-radius:6px"></div><span class="radius-label">6px</span></div>
+      <div class="radius-demo"><div class="radius-box" style="border-radius:8px"></div><span class="radius-label">8px</span></div>
+      <div class="radius-demo"><div class="radius-box" style="border-radius:12px"></div><span class="radius-label">12px</span></div>
+      <div class="radius-demo"><div class="radius-box" style="border-radius:16px"></div><span class="radius-label">16px</span></div>
+      <div class="radius-demo"><div class="radius-box" style="border-radius:999px"></div><span class="radius-label">999px (pill)</span></div>
+    </div>
+  </section>
+
+  <!-- ==================== BUTTONS ==================== -->
+  <section id="buttons" class="section">
+    <h2 class="section__title">Buttons &amp; CTAs</h2>
+
+    <h3 class="section__subtitle">Primary</h3>
+    <div class="button-row">
+      <button class="btn btn--primary btn--sm">Small</button>
+      <button class="btn btn--primary btn--md">Medium (Default)</button>
+      <button class="btn btn--primary btn--lg">Large</button>
+      <button class="btn btn--primary btn--md btn--pill">Pill Variant</button>
+      <button class="btn btn--primary btn--md btn--disabled">Disabled</button>
+    </div>
+
+    <h3 class="section__subtitle">Secondary</h3>
+    <div class="button-row">
+      <button class="btn btn--secondary btn--sm">Small</button>
+      <button class="btn btn--secondary btn--md">Medium</button>
+      <button class="btn btn--secondary btn--lg">Large</button>
+      <button class="btn btn--secondary btn--md btn--pill">Pill</button>
+    </div>
+
+    <h3 class="section__subtitle">Tertiary / Ghost</h3>
+    <div class="button-row">
+      <button class="btn btn--tertiary btn--sm">Small</button>
+      <button class="btn btn--tertiary btn--md">Medium</button>
+      <button class="btn btn--tertiary btn--lg">Large</button>
+    </div>
+
+    <h3 class="section__subtitle">Semantic</h3>
+    <div class="button-row">
+      <button class="btn btn--error btn--md">Error / Destructive</button>
+      <button class="btn btn--warning btn--md">Warning</button>
+    </div>
+
+    <h3 class="section__subtitle">Specifications</h3>
+    <div class="info-card-grid">
+      <div class="info-card">
+        <div class="info-card__label">Small Height</div>
+        <div class="info-card__value">32px</div>
+        <div class="info-card__note">padding: 0 12px, font: 13px</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__label">Medium Height</div>
+        <div class="info-card__value">40px</div>
+        <div class="info-card__note">padding: 0 16px, font: 14px</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__label">Large Height</div>
+        <div class="info-card__value">48px</div>
+        <div class="info-card__note">padding: 0 20px, font: 16px</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__label">Transition</div>
+        <div class="info-card__value">200ms</div>
+        <div class="info-card__note">ease timing function</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__label">Font Weight</div>
+        <div class="info-card__value">500</div>
+        <div class="info-card__note">Medium weight</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__label">Focus Ring</div>
+        <div class="info-card__value">2px</div>
+        <div class="info-card__note">outline: 2px solid #0070F3</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CARDS ==================== -->
+  <section id="cards" class="section">
+    <h2 class="section__title">Card Components</h2>
+
+    <h3 class="section__subtitle">Standard Cards</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card__icon">01</div>
+        <div class="card__title">Default Card</div>
+        <div class="card__desc">Standard card with 32px padding, 12px border-radius, 1px solid border at #2E2E2E. Hover reveals lighter border.</div>
+      </div>
+      <div class="card card--elevated">
+        <div class="card__icon">02</div>
+        <div class="card__title">Elevated Card</div>
+        <div class="card__desc">Raised elevation with #111111 background and floating shadow. Used for dropdowns and tooltips.</div>
+      </div>
+      <div class="card card--modal">
+        <div class="card__icon">03</div>
+        <div class="card__title">Modal-Level Card</div>
+        <div class="card__desc">Maximum elevation with #1A1A1A background and deep shadow. Used for modals and dialogs.</div>
+      </div>
+    </div>
+
+    <h3 class="section__subtitle">Elevation Tiers (Dark Mode)</h3>
+    <div class="shadow-grid">
+      <div class="shadow-demo">
+        <div class="shadow-box" style="background:#000000;border:1px solid #2e2e2e"></div>
+        <div class="shadow-name">Flat</div>
+        <div class="shadow-value">bg: #000, border: 1px #2E2E2E</div>
+      </div>
+      <div class="shadow-demo">
+        <div class="shadow-box" style="background:#0a0a0a;border:1px solid #2e2e2e"></div>
+        <div class="shadow-name">Raised</div>
+        <div class="shadow-value">bg: #0A0A0A, border: 1px #2E2E2E</div>
+      </div>
+      <div class="shadow-demo">
+        <div class="shadow-box" style="background:#1a1a1a;border:1px solid #3e3e3e;box-shadow:0 8px 30px rgba(0,0,0,0.4)"></div>
+        <div class="shadow-name">Floating</div>
+        <div class="shadow-value">bg: #1A1A1A, shadow: 0 8px 30px</div>
+      </div>
+      <div class="shadow-demo">
+        <div class="shadow-box" style="background:#1a1a1a;border:1px solid #2e2e2e;box-shadow:0 16px 70px rgba(0,0,0,0.5)"></div>
+        <div class="shadow-name">Modal</div>
+        <div class="shadow-value">bg: #1A1A1A, shadow: 0 16px 70px</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ANIMATIONS ==================== -->
+  <section id="animations" class="section">
+    <h2 class="section__title">Animation Showcase</h2>
+
+    <h3 class="section__subtitle">Entrance Animations</h3>
+
+    <div class="anim-stage">
+      <span class="anim-label">Fade Up (Primary entrance)</span>
+      <div class="anim-box" id="fadeUpBox"></div>
+      <button class="replay-btn" onclick="replayAnim('fadeUpBox','play')">Replay</button>
+      <div class="type-sample__meta"><span class="tag">0.6s cubic-bezier(0.16, 1, 0.3, 1)</span><span class="tag">translateY(20px) + opacity</span></div>
+    </div>
+
+    <div class="anim-stage">
+      <span class="anim-label">Fade In (Subtle)</span>
+      <div class="anim-box" id="fadeInBox" style="background:#45a557"></div>
+      <button class="replay-btn" onclick="replayAnim('fadeInBox','play-fade')">Replay</button>
+      <div class="type-sample__meta"><span class="tag">0.6s cubic-bezier(0.16, 1, 0.3, 1)</span><span class="tag">opacity only</span></div>
+    </div>
+
+    <div class="anim-stage">
+      <span class="anim-label">Scale In</span>
+      <div class="anim-box" id="scaleBox" style="background:#8e4ec6"></div>
+      <button class="replay-btn" onclick="replayAnim('scaleBox','play-scale')">Replay</button>
+      <div class="type-sample__meta"><span class="tag">0.5s cubic-bezier(0.16, 1, 0.3, 1)</span><span class="tag">scale(0.9) + opacity</span></div>
+    </div>
+
+    <div class="anim-stage">
+      <span class="anim-label">Slide Right</span>
+      <div class="anim-box" id="slideBox" style="background:#f5a623"></div>
+      <button class="replay-btn" onclick="replayAnim('slideBox','play-slide')">Replay</button>
+      <div class="type-sample__meta"><span class="tag">0.6s cubic-bezier(0.16, 1, 0.3, 1)</span><span class="tag">translateX(-20px) + opacity</span></div>
+    </div>
+
+    <h3 class="section__subtitle">Easing Curves (Hover to Animate)</h3>
+    <div class="easing-grid">
+      <div class="easing-row">
+        <span class="easing-name">ease (default)</span>
+        <div class="easing-track"><div class="easing-ball" data-ease="default"></div></div>
+      </div>
+      <div class="easing-row">
+        <span class="easing-name">cubic-bezier(0.16,1,0.3,1)</span>
+        <div class="easing-track"><div class="easing-ball" data-ease="quick-out"></div></div>
+      </div>
+      <div class="easing-row">
+        <span class="easing-name">cubic-bezier(0.34,1.56,0.64,1)</span>
+        <div class="easing-track"><div class="easing-ball" data-ease="spring"></div></div>
+      </div>
+      <div class="easing-row">
+        <span class="easing-name">cubic-bezier(0.25,0.1,0.25,1)</span>
+        <div class="easing-track"><div class="easing-ball" data-ease="smooth"></div></div>
+      </div>
+      <div class="easing-row">
+        <span class="easing-name">linear</span>
+        <div class="easing-track"><div class="easing-ball" data-ease="linear"></div></div>
+      </div>
+    </div>
+
+    <h3 class="section__subtitle">Duration Scale</h3>
+    <div class="duration-grid">
+      <div class="duration-cell"><div class="duration-cell__value">100ms</div><div class="duration-cell__usage">Micro</div><div class="duration-cell__bar" style="transition-duration:100ms"></div></div>
+      <div class="duration-cell"><div class="duration-cell__value">150ms</div><div class="duration-cell__usage">Color hover</div><div class="duration-cell__bar" style="transition-duration:150ms"></div></div>
+      <div class="duration-cell"><div class="duration-cell__value">200ms</div><div class="duration-cell__usage">Standard</div><div class="duration-cell__bar" style="transition-duration:200ms"></div></div>
+      <div class="duration-cell"><div class="duration-cell__value">300ms</div><div class="duration-cell__usage">Menu</div><div class="duration-cell__bar" style="transition-duration:300ms"></div></div>
+      <div class="duration-cell"><div class="duration-cell__value">400ms</div><div class="duration-cell__usage">Entrance</div><div class="duration-cell__bar" style="transition-duration:400ms"></div></div>
+      <div class="duration-cell"><div class="duration-cell__value">500ms</div><div class="duration-cell__usage">Complex</div><div class="duration-cell__bar" style="transition-duration:500ms"></div></div>
+      <div class="duration-cell"><div class="duration-cell__value">600ms</div><div class="duration-cell__usage">Fade up</div><div class="duration-cell__bar" style="transition-duration:600ms"></div></div>
+      <div class="duration-cell"><div class="duration-cell__value">800ms</div><div class="duration-cell__usage">Stagger</div><div class="duration-cell__bar" style="transition-duration:800ms"></div></div>
+    </div>
+  </section>
+
+  <!-- ==================== EFFECTS ==================== -->
+  <section id="effects" class="section">
+    <h2 class="section__title">Effects Gallery</h2>
+
+    <div class="effects-grid">
+      <div class="effect-demo glass-demo">
+        <div class="effect-demo__label">Glassmorphism (Nav Bar)</div>
+        <div class="effect-demo__code">backdrop-filter: saturate(180%) blur(20px)<br>background: rgba(0,0,0,0.8)</div>
+      </div>
+
+      <div class="effect-demo gradient-demo" style="background:radial-gradient(ellipse 80% 60% at 50% 20%, rgba(0,112,243,0.15), transparent)">
+        <div class="effect-demo__label">Subtle Radial Gradient</div>
+        <div class="effect-demo__code">radial-gradient(ellipse 80% 60%,<br>rgba(0,112,243,0.15), transparent)</div>
+      </div>
+
+      <div class="effect-demo glow-demo">
+        <div class="effect-demo__label">Blue Glow Effect</div>
+        <div class="effect-demo__code">filter: blur(60px)<br>opacity: 0.3</div>
+      </div>
+
+      <div class="effect-demo noise-demo">
+        <div class="effect-demo__label">Noise Texture Overlay</div>
+        <div class="effect-demo__code">opacity: 0.04<br>mix-blend-mode: overlay</div>
+      </div>
+
+      <div class="effect-demo border-gradient-demo">
+        <div class="effect-demo__label">Gradient Border</div>
+        <div class="effect-demo__code">linear-gradient(135deg, #3e3e3e,<br>transparent 50%, #3e3e3e)</div>
+      </div>
+
+      <div class="effect-demo fade-demo">
+        <div class="effect-demo__label">Fade-to-Black Overlay</div>
+        <div class="effect-demo__code">linear-gradient(transparent, #0a0a0a)</div>
+      </div>
+    </div>
+
+    <h3 class="section__subtitle">Live Backdrop Blur</h3>
+    <div class="blur-demo-container">
+      <div class="blur-demo-bg"></div>
+      <div class="blur-demo-bar">
+        <span class="blur-demo-text">backdrop-filter: saturate(180%) blur(20px) -- nav bar simulation</span>
+      </div>
+    </div>
+
+    <h3 class="section__subtitle">Edge Fade Mask</h3>
+    <div style="position:relative;overflow:hidden;border-radius:12px;border:1px solid #2e2e2e;padding:24px 0;">
+      <div style="display:flex;gap:16px;padding:0 32px;mask-image:linear-gradient(to right,transparent 0%,black 10%,black 90%,transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0%,black 10%,black 90%,transparent 100%)">
+        <div style="flex-shrink:0;width:120px;height:48px;background:#111;border-radius:8px;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6e6e6e">Logo 1</div>
+        <div style="flex-shrink:0;width:120px;height:48px;background:#111;border-radius:8px;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6e6e6e">Logo 2</div>
+        <div style="flex-shrink:0;width:120px;height:48px;background:#111;border-radius:8px;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6e6e6e">Logo 3</div>
+        <div style="flex-shrink:0;width:120px;height:48px;background:#111;border-radius:8px;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6e6e6e">Logo 4</div>
+        <div style="flex-shrink:0;width:120px;height:48px;background:#111;border-radius:8px;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6e6e6e">Logo 5</div>
+        <div style="flex-shrink:0;width:120px;height:48px;background:#111;border-radius:8px;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6e6e6e">Logo 6</div>
+      </div>
+      <div style="font-size:11px;font-family:var(--font-mono);color:#6e6e6e;text-align:center;margin-top:12px">mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)</div>
+    </div>
+  </section>
+
+  <!-- ==================== LAYOUTS ==================== -->
+  <section id="layouts" class="section">
+    <h2 class="section__title">Section Layouts</h2>
+
+    <h3 class="section__subtitle">Hero Section</h3>
+    <div class="layout-wireframe">
+      <span class="wireframe-label">hero</span>
+      <div class="wf-nav">
+        <div class="wf-logo"></div>
+        <div class="wf-nav-item"></div>
+        <div class="wf-nav-item"></div>
+        <div class="wf-nav-item"></div>
+        <div class="wf-nav-item" style="margin-left:auto;width:60px"></div>
+      </div>
+      <div class="wf-hero">
+        <div class="wf-heading" style="height:24px;width:50%"></div>
+        <div class="wf-heading" style="height:24px;width:40%;margin-top:8px"></div>
+        <div class="wf-subheading" style="width:55%;margin-top:16px"></div>
+        <div class="wf-subheading" style="width:35%"></div>
+        <div class="wf-btn-group">
+          <div class="wf-btn wf-btn--primary" style="width:100px"></div>
+          <div class="wf-btn wf-btn--secondary" style="width:90px"></div>
+        </div>
+      </div>
+      <div style="height:120px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:8px;margin:16px 32px 0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#3e3e3e">Hero Visual / Product Demo</div>
+    </div>
+
+    <h3 class="section__subtitle">Feature Grid</h3>
+    <div class="layout-wireframe">
+      <span class="wireframe-label">features</span>
+      <div style="padding:16px 24px">
+        <div class="wf-heading" style="width:40%;height:16px;margin:0"></div>
+        <div class="wf-subheading" style="width:50%;margin:12px 0 0 0"></div>
+      </div>
+      <div class="wf-cards">
+        <div class="wf-card"><div class="wf-card-title"></div><div class="wf-card-text"></div><div class="wf-card-text" style="width:60%"></div></div>
+        <div class="wf-card"><div class="wf-card-title"></div><div class="wf-card-text"></div><div class="wf-card-text" style="width:60%"></div></div>
+        <div class="wf-card"><div class="wf-card-title"></div><div class="wf-card-text"></div><div class="wf-card-text" style="width:60%"></div></div>
+      </div>
+    </div>
+
+    <h3 class="section__subtitle">CTA / Closing Section</h3>
+    <div class="layout-wireframe">
+      <span class="wireframe-label">cta</span>
+      <div class="wf-cta">
+        <div class="wf-heading" style="width:45%"></div>
+        <div class="wf-subheading" style="width:50%;margin-top:12px"></div>
+        <div class="wf-subheading" style="width:30%"></div>
+        <div class="wf-btn-group" style="margin-top:24px">
+          <div class="wf-btn wf-btn--primary" style="width:120px;height:32px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SIGNATURE ==================== -->
+  <section id="signature" class="section">
+    <h2 class="section__title">Signature Elements</h2>
+
+    <div class="signature-demo">
+      <div class="signature-title">1. The Black Canvas</div>
+      <div class="signature-desc">Vercel's defining characteristic: pure black (#000000) backgrounds with depth created through subtle value shifts rather than shadows. Only 3-4 shades of near-black create the entire elevation hierarchy.</div>
+      <div class="black-canvas-demo">
+        <div class="black-canvas-swatch" style="background:#000000"><span>#000</span></div>
+        <div class="black-canvas-swatch" style="background:#0a0a0a"><span>#0A0A0A</span></div>
+        <div class="black-canvas-swatch" style="background:#111111"><span>#111</span></div>
+        <div class="black-canvas-swatch" style="background:#1a1a1a"><span>#1A1A1A</span></div>
+      </div>
+      <div class="adaptation-note">
+        <div class="adaptation-note__label">Reis IA Adaptation</div>
+        <div class="adaptation-note__text">Already aligned. The key learning is restraint -- use only 3-4 background values (#000, #0A0A0A, #111, #1A1A1A). More values dilute the premium feel. Add warmth through gold accent borders and hover states rather than warm-tinted backgrounds.</div>
+      </div>
+    </div>
+
+    <div class="signature-demo">
+      <div class="signature-title">2. Minimal Elevation (Border + Background, Not Shadows)</div>
+      <div class="signature-desc">In dark mode, depth is communicated through background value shifts and border visibility rather than traditional box-shadows. Shadows are reserved only for floating elements.</div>
+      <div class="elevation-stack">
+        <div class="elevation-item" style="background:#000;border:1px solid #2e2e2e"><div class="elevation-item__label">Flat</div></div>
+        <div class="elevation-item" style="background:#0a0a0a;border:1px solid #2e2e2e"><div class="elevation-item__label">Raised</div></div>
+        <div class="elevation-item" style="background:#1a1a1a;border:1px solid #3e3e3e;box-shadow:0 8px 30px rgba(0,0,0,0.4)"><div class="elevation-item__label">Float</div></div>
+        <div class="elevation-item" style="background:#1a1a1a;box-shadow:0 16px 70px rgba(0,0,0,0.5)"><div class="elevation-item__label">Modal</div></div>
+      </div>
+      <div class="adaptation-note">
+        <div class="adaptation-note__label">Reis IA Adaptation</div>
+        <div class="adaptation-note__text">Use background-value shifts for card elevation. Add a subtle gold (#C9A84C at 20% opacity) border on premium card variants for brand differentiation. Reserve box-shadow for modals and dropdowns only.</div>
+      </div>
+    </div>
+
+    <div class="signature-demo">
+      <div class="signature-title">3. Saturated Backdrop Blur</div>
+      <div class="signature-desc">The navigation combines saturate(180%) with blur(20px). The saturation boost prevents the blur from looking washed out on dark backgrounds.</div>
+      <div class="blur-demo-container" style="height:160px">
+        <div class="blur-demo-bg"></div>
+        <div class="blur-demo-bar" style="height:56px">
+          <span class="blur-demo-text">saturate(180%) blur(20px) + rgba(0,0,0,0.8)</span>
+        </div>
+      </div>
+      <div class="adaptation-note">
+        <div class="adaptation-note__label">Reis IA Adaptation</div>
+        <div class="adaptation-note__text">Apply directly to the navigation bar. The saturate(180%) trick is universally applicable to dark mode glassmorphism. No modification needed -- this technique is brand-neutral.</div>
+      </div>
+    </div>
+
+    <div class="signature-demo">
+      <div class="signature-title">4. Invisible Transitions (200ms Default)</div>
+      <div class="signature-desc">Transitions should be felt, not seen. Standard duration is 200ms with simple ease timing. Only color/opacity changes on hover -- no scale, no position shifts.</div>
+      <div class="transition-demo-grid">
+        <div class="transition-item">
+          <div class="transition-item__text">Hover me</div>
+          <div class="transition-item__hint">color only, 200ms</div>
+        </div>
+        <div class="transition-item" style="transition:background-color 200ms ease;cursor:pointer" onmouseenter="this.style.background='rgba(255,255,255,0.06)'" onmouseleave="this.style.background='var(--bg-card)'">
+          <div class="transition-item__text">Hover me</div>
+          <div class="transition-item__hint">bg shift, 200ms</div>
+        </div>
+        <div class="transition-item" style="transition:border-color 200ms ease" onmouseenter="this.style.borderColor='#3e3e3e'" onmouseleave="this.style.borderColor='#2e2e2e'">
+          <div class="transition-item__text">Hover me</div>
+          <div class="transition-item__hint">border only, 200ms</div>
+        </div>
+      </div>
+      <div class="adaptation-note">
+        <div class="adaptation-note__label">Reis IA Adaptation</div>
+        <div class="adaptation-note__text">Adopt 200ms as the default transition duration across all components. Use color transitions for nav links and text. Use border-color transitions for cards. Reserve transform animations (scale, translate) for scroll-triggered entrance animations only.</div>
+      </div>
+    </div>
+
+    <div class="signature-demo">
+      <div class="signature-title">5. Geist Typography System</div>
+      <div class="signature-desc">Purpose-built font with Swiss precision. Variable weight (100-900), tight tracking at large sizes, loose tracking at small sizes. The font does most of the visual work.</div>
+      <div style="padding:32px;background:#000;border-radius:12px;border:1px solid #2e2e2e">
+        <div style="font-size:48px;font-weight:700;letter-spacing:-0.025em;line-height:1.15;color:#ededed;margin-bottom:16px">Typography is design.</div>
+        <div style="font-size:18px;font-weight:400;line-height:1.6;color:#a0a0a0;max-width:500px">Large headlines with tight tracking, generous line-height on body text, and weight contrast between levels.</div>
+      </div>
+      <div class="adaptation-note">
+        <div class="adaptation-note__label">Reis IA Adaptation</div>
+        <div class="adaptation-note__text">Inter (our font) shares the same Swiss heritage as Geist. Apply the same tracking rules: -0.04em at 72px, -0.02em at 40px, 0 at 16px, +0.02em at 12px. Use weight 300 for light body text to create contrast with 600-700 headings.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+// ==================== SIDEBAR NAV TRACKING ====================
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.sidebar__link');
+
+const observerOptions = {
+  rootMargin: '-10% 0px -80% 0px',
+  threshold: 0
+};
+
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const id = entry.target.id;
+      const activeLink = document.querySelector(`.sidebar__link[href="#${id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, observerOptions);
+
+sections.forEach(section => navObserver.observe(section));
+
+// Smooth scroll for nav links
+navLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// ==================== ANIMATION REPLAY ====================
+function replayAnim(id, className) {
+  const el = document.getElementById(id);
+  el.classList.remove('play', 'play-fade', 'play-scale', 'play-slide');
+  el.style.opacity = '0';
+  el.style.transform = '';
+  void el.offsetWidth; // Force reflow
+  el.classList.add(className);
+}
+
+// Auto-play entrance animations when they come into view
+const animBoxes = document.querySelectorAll('.anim-box');
+const animObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const box = entry.target;
+      const id = box.id;
+      if (id === 'fadeUpBox') box.classList.add('play');
+      else if (id === 'fadeInBox') box.classList.add('play-fade');
+      else if (id === 'scaleBox') box.classList.add('play-scale');
+      else if (id === 'slideBox') box.classList.add('play-slide');
+      animObserver.unobserve(box);
+    }
+  });
+}, { threshold: 0.5 });
+
+animBoxes.forEach(box => animObserver.observe(box));
+</script>
+</body>
+</html>

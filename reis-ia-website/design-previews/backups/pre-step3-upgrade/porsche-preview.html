@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porsche Design System Reference -- Reis IA</title>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Porsche Colors -- Dark Theme */
+    --p-bg-base: #0e0e12;
+    --p-bg-surface: #18181e;
+    --p-bg-hover: #1a1a24;
+    --p-primary: #fbfcff;
+    --p-contrast-low: #404044;
+    --p-contrast-medium: #88898c;
+    --p-contrast-high: #afb0b3;
+    --p-white: #ffffff;
+    --p-white-60: hsla(0, 0%, 100%, 0.6);
+    --p-white-50: hsla(0, 0%, 100%, 0.5);
+    --p-white-30: hsla(0, 0%, 100%, 0.3);
+    --p-white-08: rgba(255, 255, 255, 0.08);
+    --p-white-15: rgba(255, 255, 255, 0.15);
+    --p-error: #cc1922;
+    --p-info: #2762ec;
+    --p-success: #197e10;
+    --p-warning: #f3be00;
+    --p-focus: #1a44ea;
+    --p-link-hover: #9495992e;
+    --p-bg-light: #EEEFF2;
+    --p-text-dark: #010205;
+    --p-contrast-low-light: #d8d8db;
+    --p-contrast-medium-light: #6b6d70;
+    --p-contrast-high-light: #535457;
+
+    /* Reis IA Accent */
+    --reis-gold: #C9A84C;
+    --reis-gold-dim: #B8973F;
+
+    /* Spacing */
+    --space-xs: clamp(4px, 0.25vw + 3px, 8px);
+    --space-sm: clamp(8px, 0.5vw + 6px, 16px);
+    --space-md: clamp(16px, 1.25vw + 12px, 36px);
+    --space-lg: clamp(32px, 2.75vw + 23px, 76px);
+    --space-xl: clamp(48px, 3vw + 38px, 96px);
+    --space-2xl: clamp(80px, 7.5vw + 56px, 200px);
+
+    /* Motion */
+    --dur-short: 0.25s;
+    --dur-moderate: 0.4s;
+    --dur-long: 0.6s;
+    --dur-very-long: 1.2s;
+    --ease-base: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --ease-in: cubic-bezier(0, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.4, 0, 0.5, 1);
+
+    /* Layout */
+    --sidebar-width: 260px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0a0a;
+    color: var(--p-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.2) transparent;
+  }
+
+  body::-webkit-scrollbar { width: 6px; }
+  body::-webkit-scrollbar-track { background: transparent; }
+  body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: #111114;
+    border-right: 1px solid var(--p-white-08);
+    padding: 32px 24px;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-header {
+    margin-bottom: 8px;
+  }
+
+  .sidebar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--p-white);
+    letter-spacing: -0.02em;
+  }
+
+  .sidebar-subtitle {
+    font-size: 12px;
+    color: var(--p-contrast-medium);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+
+  .sidebar-divider {
+    height: 1px;
+    background: var(--p-white-08);
+    margin: 20px 0;
+  }
+
+  .sidebar-nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sidebar-nav a {
+    display: block;
+    padding: 10px 12px;
+    color: var(--p-contrast-medium);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: color var(--dur-short) var(--ease-base),
+                background-color var(--dur-short) var(--ease-base);
+  }
+
+  .sidebar-nav a:hover {
+    color: var(--p-white);
+    background: var(--p-white-08);
+  }
+
+  .sidebar-nav a.active {
+    color: var(--p-white);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .sidebar-nav a.active::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 14px;
+    background: var(--reis-gold);
+    border-radius: 2px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* ===== MAIN ===== */
+  .main {
+    margin-left: var(--sidebar-width);
+    padding: 48px 56px 120px;
+    max-width: calc(1200px + var(--sidebar-width));
+  }
+
+  .page-header {
+    margin-bottom: 64px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--p-white-08);
+  }
+
+  .page-title {
+    font-size: clamp(32px, 3vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--p-white);
+    margin-bottom: 8px;
+  }
+
+  .page-subtitle {
+    font-size: 16px;
+    color: var(--p-contrast-medium);
+    max-width: 600px;
+    line-height: 1.6;
+  }
+
+  /* ===== SECTIONS ===== */
+  .section {
+    margin-bottom: 96px;
+    scroll-margin-top: 32px;
+  }
+
+  .section-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+    color: var(--p-white);
+  }
+
+  .section-desc {
+    font-size: 15px;
+    color: var(--p-contrast-medium);
+    margin-bottom: 40px;
+    max-width: 680px;
+    line-height: 1.65;
+  }
+
+  .subsection-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--p-contrast-high);
+    margin-bottom: 20px;
+    margin-top: 48px;
+  }
+
+  .subsection-title:first-of-type {
+    margin-top: 0;
+  }
+
+  /* ===== COLOR SWATCHES ===== */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+
+  .color-swatch {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--p-white-08);
+    background: #111114;
+  }
+
+  .color-fill {
+    height: 80px;
+    position: relative;
+  }
+
+  .color-fill.checkered {
+    background-image: linear-gradient(45deg, #333 25%, transparent 25%),
+                       linear-gradient(-45deg, #333 25%, transparent 25%),
+                       linear-gradient(45deg, transparent 75%, #333 75%),
+                       linear-gradient(-45deg, transparent 75%, #333 75%);
+    background-size: 10px 10px;
+    background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+  }
+
+  .color-fill.checkered .color-overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .color-info {
+    padding: 12px 14px;
+  }
+
+  .color-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--p-primary);
+    margin-bottom: 3px;
+  }
+
+  .color-hex {
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    color: var(--p-contrast-medium);
+  }
+
+  /* ===== TYPOGRAPHY ===== */
+  .type-specimen {
+    margin-bottom: 36px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--p-white-08);
+  }
+
+  .type-specimen:last-child {
+    border-bottom: none;
+  }
+
+  .type-sample {
+    color: var(--p-white);
+    margin-bottom: 12px;
+  }
+
+  .type-meta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .type-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--p-white-08);
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--p-contrast-medium);
+  }
+
+  /* ===== SPACING ===== */
+  .spacing-bar-container {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .spacing-bar {
+    height: 24px;
+    background: linear-gradient(90deg, var(--reis-gold), rgba(201,168,76,0.4));
+    border-radius: 4px;
+    min-width: 4px;
+  }
+
+  .spacing-label {
+    font-size: 13px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-contrast-medium);
+    min-width: 120px;
+    white-space: nowrap;
+  }
+
+  .spacing-value {
+    font-size: 12px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-contrast-low);
+    min-width: 80px;
+  }
+
+  .info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .info-card {
+    background: #111114;
+    border: 1px solid var(--p-white-08);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .info-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--p-contrast-high);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .info-card-value {
+    font-size: 14px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-white);
+    line-height: 1.7;
+  }
+
+  /* Radius visual */
+  .radius-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+  }
+
+  .radius-item {
+    text-align: center;
+  }
+
+  .radius-box {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--p-white-50);
+    margin-bottom: 8px;
+  }
+
+  .radius-label {
+    font-size: 12px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-contrast-medium);
+  }
+
+  /* ===== BUTTONS ===== */
+  .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+
+  .p-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 28px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--dur-short) var(--ease-base),
+                box-shadow var(--dur-short) var(--ease-base),
+                border-color var(--dur-short) var(--ease-base),
+                color var(--dur-short) var(--ease-base);
+    line-height: calc(6px + 2.125ex);
+    text-decoration: none;
+  }
+
+  .p-btn--outline {
+    background: transparent;
+    border: 1px solid var(--p-white);
+    color: var(--p-white);
+  }
+  .p-btn--outline:hover {
+    background: var(--p-bg-hover);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.16);
+  }
+
+  .p-btn--filled-dark {
+    background: var(--p-bg-base);
+    border: 1px solid var(--p-white);
+    color: var(--p-white);
+  }
+  .p-btn--filled-dark:hover {
+    background: var(--p-bg-hover);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.16);
+  }
+
+  .p-btn--ghost {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--p-white);
+  }
+  .p-btn--ghost:hover {
+    background: var(--p-link-hover);
+  }
+
+  .p-btn--compact {
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  /* Reis IA buttons */
+  .r-btn--primary {
+    background: var(--reis-gold);
+    border: 1px solid var(--reis-gold);
+    color: #000;
+  }
+  .r-btn--primary:hover {
+    background: var(--reis-gold-dim);
+    border-color: var(--reis-gold-dim);
+    box-shadow: 0 4px 16px rgba(201,168,76,0.2);
+  }
+
+  .r-btn--secondary {
+    background: transparent;
+    border: 1px solid var(--p-white-60);
+    color: var(--p-white);
+  }
+  .r-btn--secondary:hover {
+    border-color: var(--p-white);
+    background: rgba(255,255,255,0.05);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.16);
+  }
+
+  .btn-state-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .btn-state-demo {
+    text-align: center;
+  }
+
+  .btn-state-label {
+    font-size: 11px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-contrast-low);
+    margin-top: 8px;
+  }
+
+  .focus-demo:focus-visible,
+  .focus-demo:focus {
+    outline: 2px solid var(--p-focus);
+    outline-offset: 2px;
+  }
+
+  /* ===== CARDS ===== */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .p-card {
+    background: #111114;
+    border: 1px solid var(--p-white-08);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color var(--dur-short) var(--ease-base),
+                box-shadow var(--dur-short) var(--ease-base);
+  }
+  .p-card:hover {
+    border-color: var(--p-white-15);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.16);
+  }
+
+  .p-card__image {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .p-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--dur-moderate) var(--ease-base);
+    /* Using a gradient placeholder for the demo */
+    background: linear-gradient(135deg, #1a1a24 0%, #0e0e12 100%);
+  }
+  .p-card:hover .p-card__img {
+    transform: scale3d(1.05, 1.05, 1.05);
+  }
+
+  .p-card__body {
+    padding: 24px;
+  }
+
+  .p-card__label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--p-contrast-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  .p-card__title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--p-white);
+    margin-bottom: 8px;
+    line-height: calc(6px + 2.125ex);
+  }
+
+  .p-card__desc {
+    font-size: 14px;
+    color: var(--p-contrast-medium);
+    line-height: 1.6;
+  }
+
+  /* Shadow showcase */
+  .shadow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  .shadow-demo {
+    background: #111114;
+    border-radius: 8px;
+    padding: 32px 20px;
+    text-align: center;
+    border: 1px solid var(--p-white-08);
+  }
+
+  .shadow-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--p-primary);
+    margin-bottom: 4px;
+  }
+
+  .shadow-val {
+    font-size: 11px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-contrast-low);
+    word-break: break-all;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  .anim-stage {
+    background: #111114;
+    border: 1px solid var(--p-white-08);
+    border-radius: 8px;
+    padding: 40px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .anim-box {
+    width: 80px;
+    height: 80px;
+    background: var(--reis-gold);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #000;
+  }
+
+  .replay-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: 1px solid var(--p-white-50);
+    color: var(--p-white);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background var(--dur-short) var(--ease-base);
+  }
+  .replay-btn:hover {
+    background: var(--p-white-08);
+  }
+
+  .anim-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--p-contrast-high);
+    margin-bottom: 8px;
+  }
+
+  .anim-meta {
+    font-size: 12px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-contrast-low);
+    margin-bottom: 16px;
+  }
+
+  /* Entrance animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .anim-fadeInUp {
+    animation: fadeInUp 0.6s cubic-bezier(0, 0, 0.2, 1) forwards;
+  }
+
+  .anim-fadeIn {
+    animation: fadeIn 0.6s cubic-bezier(0, 0, 0.2, 1) forwards;
+  }
+
+  .anim-scaleIn {
+    animation: scaleIn 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  }
+
+  .anim-paused {
+    animation-play-state: paused;
+    opacity: 0;
+  }
+
+  /* Easing visualizer */
+  .easing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .easing-item {
+    background: #111114;
+    border: 1px solid var(--p-white-08);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .easing-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--p-primary);
+    margin-bottom: 4px;
+  }
+
+  .easing-value {
+    font-size: 11px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-contrast-low);
+    margin-bottom: 16px;
+  }
+
+  .easing-bar-track {
+    height: 8px;
+    background: var(--p-white-08);
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .easing-bar-fill {
+    height: 100%;
+    width: 0;
+    background: var(--reis-gold);
+    border-radius: 4px;
+    transition: width 1s;
+  }
+
+  .easing-item:hover .easing-bar-fill,
+  .easing-bar-fill.active {
+    width: 100%;
+  }
+
+  .easing-bar-fill.ease-base { transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
+  .easing-bar-fill.ease-in   { transition-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+  .easing-bar-fill.ease-out  { transition-timing-function: cubic-bezier(0.4, 0, 0.5, 1); }
+
+  /* Duration scale */
+  .duration-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .duration-item {
+    background: #111114;
+    border: 1px solid var(--p-white-08);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .duration-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--reis-gold);
+    margin: 0 auto 12px;
+    transition: background-color var(--dur-short) var(--ease-base);
+  }
+
+  .duration-item:hover .duration-circle {
+    background: var(--reis-gold);
+  }
+
+  .duration-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--p-primary);
+    margin-bottom: 2px;
+  }
+
+  .duration-val {
+    font-size: 12px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-contrast-low);
+  }
+
+  .duration-item:nth-child(1) .duration-circle { transition-duration: 0.25s; }
+  .duration-item:nth-child(2) .duration-circle { transition-duration: 0.4s; }
+  .duration-item:nth-child(3) .duration-circle { transition-duration: 0.6s; }
+  .duration-item:nth-child(4) .duration-circle { transition-duration: 1.2s; }
+
+  /* ===== EFFECTS ===== */
+  .effects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .effect-demo {
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .effect-label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .effect-code {
+    font-size: 11px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-contrast-medium);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* Glassmorphism demo */
+  .glass-bg {
+    background: linear-gradient(135deg, var(--reis-gold) 0%, #1a44ea 50%, #cc1922 100%);
+    position: relative;
+  }
+
+  .glass-panel {
+    background: rgba(14, 14, 18, 0.65);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    border: 1px solid var(--p-white-15);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    z-index: 1;
+  }
+
+  /* Gradient demos */
+  .gradient-strip {
+    width: 100%;
+    height: 60px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
+  /* Border demos */
+  .border-demo-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+
+  .border-demo-item {
+    width: 120px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 11px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-contrast-medium);
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* ===== LAYOUTS ===== */
+  .layout-wireframe {
+    background: #111114;
+    border: 1px solid var(--p-white-08);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .wireframe-header {
+    height: 48px;
+    border-bottom: 1px solid var(--p-white-08);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 24px;
+  }
+
+  .wf-logo {
+    width: 80px;
+    height: 12px;
+    background: var(--p-white-30);
+    border-radius: 2px;
+  }
+
+  .wf-nav {
+    display: flex;
+    gap: 16px;
+    margin-left: auto;
+  }
+
+  .wf-nav-item {
+    width: 48px;
+    height: 8px;
+    background: var(--p-white-15);
+    border-radius: 2px;
+  }
+
+  .wireframe-hero {
+    padding: 48px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: 240px;
+    justify-content: center;
+    position: relative;
+  }
+
+  .wireframe-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, var(--p-bg-base) 100%);
+    opacity: 0.3;
+  }
+
+  .wf-headline {
+    height: 24px;
+    width: 300px;
+    max-width: 80%;
+    background: var(--p-white-30);
+    border-radius: 4px;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .wf-subheadline {
+    height: 12px;
+    width: 220px;
+    max-width: 60%;
+    background: var(--p-white-15);
+    border-radius: 2px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .wf-cta {
+    height: 40px;
+    width: 140px;
+    border: 1px solid var(--p-white-50);
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .wireframe-grid {
+    padding: 32px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .wf-card {
+    height: 180px;
+    background: var(--p-white-08);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .wf-card-title {
+    height: 10px;
+    width: 70%;
+    background: var(--p-white-30);
+    border-radius: 2px;
+  }
+
+  .wf-card-text {
+    height: 8px;
+    width: 100%;
+    background: var(--p-white-15);
+    border-radius: 2px;
+  }
+
+  .wireframe-cta-section {
+    padding: 40px 32px;
+    text-align: center;
+    border-top: 1px solid var(--p-white-08);
+  }
+
+  .wireframe-footer {
+    padding: 24px 32px;
+    border-top: 1px solid var(--p-white-08);
+    display: flex;
+    gap: 48px;
+  }
+
+  .wf-footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wf-footer-line {
+    height: 6px;
+    width: 64px;
+    background: var(--p-white-15);
+    border-radius: 2px;
+  }
+
+  .wf-footer-line.short { width: 40px; }
+
+  /* ===== SIGNATURE ===== */
+  .signature-item {
+    background: #111114;
+    border: 1px solid var(--p-white-08);
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+
+  .signature-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--p-white);
+    margin-bottom: 12px;
+  }
+
+  .signature-desc {
+    font-size: 15px;
+    color: var(--p-contrast-medium);
+    line-height: 1.65;
+    margin-bottom: 24px;
+    max-width: 640px;
+  }
+
+  .signature-demo {
+    background: var(--p-bg-base);
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 20px;
+    border: 1px solid var(--p-white-08);
+  }
+
+  .reis-callout {
+    background: rgba(201, 168, 76, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-top: 20px;
+  }
+
+  .reis-callout-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--reis-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  .reis-callout-text {
+    font-size: 14px;
+    color: var(--p-contrast-high);
+    line-height: 1.6;
+  }
+
+  /* Fluid demo */
+  .fluid-demo-text {
+    font-size: clamp(1.6rem, 1.56vw + 1.29rem, 3.16rem);
+    font-weight: 700;
+    color: var(--p-white);
+    line-height: calc(6px + 2.0ex);
+    letter-spacing: -0.02em;
+  }
+
+  /* Restraint demo */
+  .restraint-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .restraint-cell {
+    padding: 20px;
+    text-align: center;
+    font-size: 11px;
+    font-family: 'SF Mono', monospace;
+    color: var(--p-contrast-medium);
+  }
+
+  .restraint-cell.used {
+    background: rgba(201, 168, 76, 0.1);
+    color: var(--reis-gold);
+    font-weight: 600;
+  }
+
+  .restraint-cell.unused {
+    background: var(--p-white-08);
+    color: var(--p-contrast-low);
+    text-decoration: line-through;
+  }
+
+  /* Image hover demo */
+  .image-hover-demo {
+    width: 300px;
+    max-width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .image-hover-inner {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a24 0%, #2a2a34 50%, #0e0e12 100%);
+    transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--p-contrast-medium);
+    font-size: 14px;
+  }
+
+  .image-hover-demo:hover .image-hover-inner {
+    transform: scale3d(1.05, 1.05, 1.05);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 32px 20px 80px; }
+    .easing-grid { grid-template-columns: 1fr; }
+    .duration-grid { grid-template-columns: repeat(2, 1fr); }
+    .wireframe-grid { grid-template-columns: 1fr 1fr; }
+    .restraint-grid { grid-template-columns: 1fr 1fr 1fr; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .color-grid { grid-template-columns: repeat(2, 1fr); }
+    .effects-grid { grid-template-columns: 1fr; }
+    .wireframe-grid { grid-template-columns: 1fr; }
+    .button-group { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+<!-- Reference Logo Header -->
+<div style="position:fixed;top:16px;right:24px;z-index:1000;opacity:0.7;">
+  <svg width="120" height="32" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <text x="0" y="28" font-family="system-ui,-apple-system,sans-serif" font-size="22" font-weight="700" fill="white" letter-spacing="4">PORSCHE</text>
+  </svg>
+</div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">Porsche</div>
+    <div class="sidebar-subtitle">Design System Reference</div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <ul class="sidebar-nav" id="sidebar-nav">
+    <li><a href="#colors" data-section="colors">Color Palette</a></li>
+    <li><a href="#typography" data-section="typography">Typography Scale</a></li>
+    <li><a href="#spacing" data-section="spacing">Spacing System</a></li>
+    <li><a href="#buttons" data-section="buttons">Buttons & CTAs</a></li>
+    <li><a href="#cards" data-section="cards">Card Components</a></li>
+    <li><a href="#animations" data-section="animations">Animation Showcase</a></li>
+    <li><a href="#effects" data-section="effects">Effects Gallery</a></li>
+    <li><a href="#layouts" data-section="layouts">Section Layouts</a></li>
+    <li><a href="#signature" data-section="signature">Signature Elements</a></li>
+  </ul>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="page-title">Porsche Design System</h1>
+    <p class="page-subtitle">Complete design reference extracted from porsche.com. Automotive luxury applied to digital experiences -- precision engineering as visual identity.</p>
+  </header>
+
+  <!-- ===== 1. COLORS ===== -->
+  <section class="section" id="colors">
+    <h2 class="section-title">Color Palette</h2>
+    <p class="section-desc">Porsche's digital palette is defined by extreme restraint. A narrow grayscale range with white at multiple alpha levels creates layered depth. No accent color -- the brand identity comes from typography and precision alone.</p>
+
+    <h3 class="subsection-title">Dark Theme -- Primary Palette</h3>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#0e0e12;"></div>
+        <div class="color-info"><div class="color-name">Background Base</div><div class="color-hex">#0e0e12</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#18181e;"></div>
+        <div class="color-info"><div class="color-name">Background Surface</div><div class="color-hex">#18181e</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#1a1a24;"></div>
+        <div class="color-info"><div class="color-name">Hover State</div><div class="color-hex">#1a1a24</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#fbfcff;"></div>
+        <div class="color-info"><div class="color-name">Primary Text</div><div class="color-hex">#fbfcff</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#afb0b3;"></div>
+        <div class="color-info"><div class="color-name">Contrast High</div><div class="color-hex">#afb0b3</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#88898c;"></div>
+        <div class="color-info"><div class="color-name">Contrast Medium</div><div class="color-hex">#88898c</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#404044;"></div>
+        <div class="color-info"><div class="color-name">Contrast Low</div><div class="color-hex">#404044</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#ffffff;"></div>
+        <div class="color-info"><div class="color-name">White</div><div class="color-hex">#ffffff</div></div>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">Alpha / Transparency Values</h3>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="color-fill checkered"><div class="color-overlay" style="background:hsla(0,0%,100%,0.6);"></div></div>
+        <div class="color-info"><div class="color-name">White 60%</div><div class="color-hex">hsla(0,0%,100%,0.6)</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill checkered"><div class="color-overlay" style="background:hsla(0,0%,100%,0.5);"></div></div>
+        <div class="color-info"><div class="color-name">White 50%</div><div class="color-hex">hsla(0,0%,100%,0.5)</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill checkered"><div class="color-overlay" style="background:hsla(0,0%,100%,0.3);"></div></div>
+        <div class="color-info"><div class="color-name">White 30%</div><div class="color-hex">hsla(0,0%,100%,0.3)</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill checkered"><div class="color-overlay" style="background:rgba(255,255,255,0.08);"></div></div>
+        <div class="color-info"><div class="color-name">White 8%</div><div class="color-hex">rgba(255,255,255,0.08)</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill checkered"><div class="color-overlay" style="background:#9495992e;"></div></div>
+        <div class="color-info"><div class="color-name">Link Hover</div><div class="color-hex">#9495992e</div></div>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">Light Theme</h3>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#EEEFF2;"></div>
+        <div class="color-info"><div class="color-name">Background Base</div><div class="color-hex">#EEEFF2</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#010205;"></div>
+        <div class="color-info"><div class="color-name">Primary Text</div><div class="color-hex">#010205</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#d8d8db;"></div>
+        <div class="color-info"><div class="color-name">Contrast Low</div><div class="color-hex">#d8d8db</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#6b6d70;"></div>
+        <div class="color-info"><div class="color-name">Contrast Medium</div><div class="color-hex">#6b6d70</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#535457;"></div>
+        <div class="color-info"><div class="color-name">Contrast High</div><div class="color-hex">#535457</div></div>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">Status / Notification Colors</h3>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#cc1922;"></div>
+        <div class="color-info"><div class="color-name">Error</div><div class="color-hex">#cc1922</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#2762ec;"></div>
+        <div class="color-info"><div class="color-name">Info</div><div class="color-hex">#2762ec</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#197e10;"></div>
+        <div class="color-info"><div class="color-name">Success</div><div class="color-hex">#197e10</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#f3be00;"></div>
+        <div class="color-info"><div class="color-name">Warning</div><div class="color-hex">#f3be00</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-fill" style="background:#1a44ea;"></div>
+        <div class="color-info"><div class="color-name">Focus Ring</div><div class="color-hex">#1a44ea</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 2. TYPOGRAPHY ===== -->
+  <section class="section" id="typography">
+    <h2 class="section-title">Typography Scale</h2>
+    <p class="section-desc">Porsche uses a proprietary typeface ("Porsche Next") with fluid sizing via clamp(). Only 3 font weights. Line height uses a mathematical formula: calc(6px + 2.125ex) -- scales proportionally across all sizes.</p>
+
+    <div class="type-specimen">
+      <div class="type-sample" style="font-size:clamp(1.6rem, 1.56vw + 1.29rem, 3.16rem); font-weight:700; line-height:calc(6px + 2.0ex); letter-spacing:-0.02em;">
+        Display XX-Large
+      </div>
+      <div class="type-meta">
+        <span class="type-tag">clamp(1.6rem, 1.56vw + 1.29rem, 3.16rem)</span>
+        <span class="type-tag">weight: 700</span>
+        <span class="type-tag">~26-51px</span>
+        <span class="type-tag">line-height: calc(6px + 2.0ex)</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-sample" style="font-size:clamp(1.42rem, 0.94vw + 1.23rem, 2.37rem); font-weight:700; line-height:calc(6px + 2.0ex); letter-spacing:-0.01em;">
+        Heading X-Large
+      </div>
+      <div class="type-meta">
+        <span class="type-tag">clamp(1.42rem, 0.94vw + 1.23rem, 2.37rem)</span>
+        <span class="type-tag">weight: 700</span>
+        <span class="type-tag">~23-38px</span>
+        <span class="type-tag">line-height: calc(6px + 2.0ex)</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-sample" style="font-size:clamp(1.27rem, 0.51vw + 1.16rem, 1.78rem); font-weight:600; line-height:calc(6px + 2.125ex);">
+        Heading Large
+      </div>
+      <div class="type-meta">
+        <span class="type-tag">clamp(1.27rem, 0.51vw + 1.16rem, 1.78rem)</span>
+        <span class="type-tag">weight: 600</span>
+        <span class="type-tag">~20-28px</span>
+        <span class="type-tag">line-height: calc(6px + 2.125ex)</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-sample" style="font-size:clamp(1.13rem, 0.21vw + 1.08rem, 1.33rem); font-weight:600; line-height:calc(6px + 2.125ex);">
+        Text Medium -- Standard content heading size
+      </div>
+      <div class="type-meta">
+        <span class="type-tag">clamp(1.13rem, 0.21vw + 1.08rem, 1.33rem)</span>
+        <span class="type-tag">weight: 600</span>
+        <span class="type-tag">~18-21px</span>
+        <span class="type-tag">line-height: calc(6px + 2.125ex)</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-sample" style="font-size:1rem; font-weight:400; line-height:calc(6px + 2.125ex);">
+        Text Small -- This is the recommended default body text size. It provides comfortable readability across all viewport sizes and maintains the visual elegance expected from a premium brand. The line-height formula ensures consistent optical spacing regardless of font size.
+      </div>
+      <div class="type-meta">
+        <span class="type-tag">1rem (16px)</span>
+        <span class="type-tag">weight: 400</span>
+        <span class="type-tag">line-height: calc(6px + 2.125ex)</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-sample" style="font-size:clamp(0.81rem, 0.23vw + 0.77rem, 0.88rem); font-weight:400; line-height:calc(6px + 2.125ex); color:var(--p-contrast-medium);">
+        Caption X-Small -- Used for metadata, labels, and auxiliary information. Scales subtly between viewports.
+      </div>
+      <div class="type-meta">
+        <span class="type-tag">clamp(0.81rem, 0.23vw + 0.77rem, 0.88rem)</span>
+        <span class="type-tag">weight: 400</span>
+        <span class="type-tag">~13-14px</span>
+        <span class="type-tag">line-height: calc(6px + 2.125ex)</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-sample" style="font-size:0.75rem; font-weight:400; line-height:calc(6px + 2.125ex); color:var(--p-contrast-low);">
+        Disclaimer XX-Small -- Legal text and fine print only. Not for content.
+      </div>
+      <div class="type-meta">
+        <span class="type-tag">0.75rem (12px)</span>
+        <span class="type-tag">weight: 400</span>
+        <span class="type-tag">line-height: calc(6px + 2.125ex)</span>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">Font Stack & Rendering</h3>
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="info-card-title">Font Family</div>
+        <div class="info-card-value">'Porsche Next', 'Arial Narrow', Arial, 'Heiti SC', SimHei, sans-serif</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Weights Used</div>
+        <div class="info-card-value">400 (Regular)<br>600 (Semi-Bold)<br>700 (Bold)</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Rendering</div>
+        <div class="info-card-value">-webkit-font-smoothing: antialiased<br>-moz-osx-font-smoothing: grayscale<br>text-size-adjust: none</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Letter Spacing</div>
+        <div class="info-card-value">normal (default)<br>0.05em (labels/overlines)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 3. SPACING ===== -->
+  <section class="section" id="spacing">
+    <h2 class="section-title">Spacing System</h2>
+    <p class="section-desc">Six fluid spacing tokens using clamp() -- scales from mobile to desktop without breakpoint jumps. The ratios between tokens are roughly 2-2.5x, creating clear visual hierarchy from micro to macro.</p>
+
+    <div class="spacing-bar-container">
+      <div class="spacing-label">x-small</div>
+      <div class="spacing-bar" style="width:clamp(4px, 0.25vw + 3px, 8px); min-width:4px;"></div>
+      <div class="spacing-value">4-8px</div>
+    </div>
+    <div class="spacing-bar-container">
+      <div class="spacing-label">small</div>
+      <div class="spacing-bar" style="width:clamp(8px, 0.5vw + 6px, 16px); min-width:8px;"></div>
+      <div class="spacing-value">8-16px</div>
+    </div>
+    <div class="spacing-bar-container">
+      <div class="spacing-label">medium</div>
+      <div class="spacing-bar" style="width:clamp(16px, 1.25vw + 12px, 36px); min-width:16px;"></div>
+      <div class="spacing-value">16-36px</div>
+    </div>
+    <div class="spacing-bar-container">
+      <div class="spacing-label">large</div>
+      <div class="spacing-bar" style="width:clamp(32px, 2.75vw + 23px, 76px); min-width:32px;"></div>
+      <div class="spacing-value">32-76px</div>
+    </div>
+    <div class="spacing-bar-container">
+      <div class="spacing-label">x-large</div>
+      <div class="spacing-bar" style="width:clamp(48px, 3vw + 38px, 96px); min-width:48px;"></div>
+      <div class="spacing-value">48-96px</div>
+    </div>
+    <div class="spacing-bar-container">
+      <div class="spacing-label">xx-large</div>
+      <div class="spacing-bar" style="width:clamp(80px, 7.5vw + 56px, 200px); min-width:80px;"></div>
+      <div class="spacing-value">80-200px</div>
+    </div>
+
+    <h3 class="subsection-title">Section Padding & Grid</h3>
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="info-card-title">Grid Columns</div>
+        <div class="info-card-value">Mobile: 6 columns<br>Desktop (760px+): 12 columns</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Grid Gap</div>
+        <div class="info-card-value">clamp(16px, 1.25vw + 12px, 36px)<br>(= medium spacing token)</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Max Width</div>
+        <div class="info-card-value">2560px<br>Min width: 320px</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Safe Zone (Side Padding)</div>
+        <div class="info-card-value">max(22px, 10.625vw - 12px)<br>@1920px+: min(50vw - 880px, 400px)</div>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">Border Radius Scale</h3>
+    <div class="radius-row">
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:0;"></div>
+        <div class="radius-label">0px</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:4px;"></div>
+        <div class="radius-label">4px</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:8px;"></div>
+        <div class="radius-label">8px</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:50%;"></div>
+        <div class="radius-label">50%</div>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">Responsive Breakpoints</h3>
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="info-card-title">Mobile</div>
+        <div class="info-card-value">0-479px<br>6 columns<br>Header: 4.125rem</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Small Tablet</div>
+        <div class="info-card-value">480px+<br>6 columns<br>Header: 5rem</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Tablet / Desktop</div>
+        <div class="info-card-value">760px+<br>12 columns<br>Header: 4.5625rem</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Large Desktop</div>
+        <div class="info-card-value">1000px+<br>12 columns<br>Header: 4.75rem</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">XL Desktop</div>
+        <div class="info-card-value">1300px+<br>12 columns<br>Header: 5.125rem</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Ultra / TV</div>
+        <div class="info-card-value">1920px+<br>Safe zone caps<br>Max: 2560px</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 4. BUTTONS ===== -->
+  <section class="section" id="buttons">
+    <h2 class="section-title">Buttons & CTAs</h2>
+    <p class="section-desc">Porsche buttons favor outline/border styles over solid fills. Small border-radius (4-8px) -- not pill-shaped, not sharp. Hover adds elevation via box-shadow rather than color change. Focus ring uses a distinct blue for accessibility.</p>
+
+    <h3 class="subsection-title">Porsche Button Variants</h3>
+    <div class="button-group">
+      <button class="p-btn p-btn--outline">Outline Primary</button>
+      <button class="p-btn p-btn--filled-dark">Filled Dark</button>
+      <button class="p-btn p-btn--ghost">Ghost</button>
+      <button class="p-btn p-btn--outline p-btn--compact">Compact</button>
+    </div>
+
+    <div class="info-cards" style="margin-bottom:40px;">
+      <div class="info-card">
+        <div class="info-card-title">Standard Padding</div>
+        <div class="info-card-value">15px 28px</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Compact Padding</div>
+        <div class="info-card-value">6px 10px</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Border Radius</div>
+        <div class="info-card-value">4px (standard)<br>8px (compact)</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title">Hover Shadow</div>
+        <div class="info-card-value">0 4px 16px rgba(0,0,0,0.16)</div>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">Reis IA Adapted Buttons</h3>
+    <div class="button-group">
+      <button class="p-btn r-btn--primary">Gold Primary</button>
+      <button class="p-btn r-btn--secondary">White Outline</button>
+      <button class="p-btn p-btn--ghost">Ghost</button>
+    </div>
+
+    <h3 class="subsection-title">Button States</h3>
+    <div class="btn-state-row">
+      <div class="btn-state-demo">
+        <button class="p-btn p-btn--outline">Default</button>
+        <div class="btn-state-label">:default</div>
+      </div>
+      <div class="btn-state-demo">
+        <button class="p-btn p-btn--outline" style="background:var(--p-bg-hover); box-shadow:0 4px 16px rgba(0,0,0,0.16);">Hover</button>
+        <div class="btn-state-label">:hover</div>
+      </div>
+      <div class="btn-state-demo">
+        <button class="p-btn p-btn--outline focus-demo" style="outline:2px solid var(--p-focus); outline-offset:2px;">Focus</button>
+        <div class="btn-state-label">:focus-visible</div>
+      </div>
+      <div class="btn-state-demo">
+        <button class="p-btn p-btn--outline" style="opacity:0.4; cursor:not-allowed;">Disabled</button>
+        <div class="btn-state-label">:disabled</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 5. CARDS ===== -->
+  <section class="section" id="cards">
+    <h2 class="section-title">Card Components</h2>
+    <p class="section-desc">Cards use subtle border treatment (white at 8% opacity) on dark surfaces. Hover reveals a slightly brighter border and elevation shadow. Image areas use scale3d zoom on hover. Content padding follows the medium spacing token.</p>
+
+    <div class="card-grid">
+      <div class="p-card">
+        <div class="p-card__image">
+          <div class="p-card__img" style="background:linear-gradient(135deg, #1a1a24 0%, #2a2a34 50%, #0e0e12 100%); display:flex; align-items:center; justify-content:center; color:var(--p-contrast-low); font-size:13px;">Image Area</div>
+        </div>
+        <div class="p-card__body">
+          <div class="p-card__label">Model Series</div>
+          <div class="p-card__title">Card Component</div>
+          <div class="p-card__desc">Hover to see the border brightness increase and subtle box-shadow appear. Image area scales up by 5%.</div>
+        </div>
+      </div>
+
+      <div class="p-card">
+        <div class="p-card__image">
+          <div class="p-card__img" style="background:linear-gradient(135deg, #0e0e12 0%, #1a1a24 100%); display:flex; align-items:center; justify-content:center; color:var(--p-contrast-low); font-size:13px;">Image Area</div>
+        </div>
+        <div class="p-card__body">
+          <div class="p-card__label">Performance</div>
+          <div class="p-card__title">Minimal Dark Card</div>
+          <div class="p-card__desc">The dark card pattern relies on border opacity shifts rather than background changes for hover feedback.</div>
+        </div>
+      </div>
+
+      <div class="p-card">
+        <div class="p-card__image">
+          <div class="p-card__img" style="background:linear-gradient(225deg, #1a1a24 0%, #0e0e12 100%); display:flex; align-items:center; justify-content:center; color:var(--p-contrast-low); font-size:13px;">Image Area</div>
+        </div>
+        <div class="p-card__body">
+          <div class="p-card__label">Heritage</div>
+          <div class="p-card__title">Elevation Through Shadow</div>
+          <div class="p-card__desc">Shadow value: 0 4px 16px rgba(0,0,0,0.16). Single shadow tier for all elevated components.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">Shadow Tiers</h3>
+    <div class="shadow-grid">
+      <div class="shadow-demo" style="box-shadow:none;">
+        <div class="shadow-name">None</div>
+        <div class="shadow-val">box-shadow: none (default state)</div>
+      </div>
+      <div class="shadow-demo" style="box-shadow:0 4px 16px rgba(0,0,0,0.16);">
+        <div class="shadow-name">Standard</div>
+        <div class="shadow-val">0 4px 16px rgba(0,0,0,0.16)</div>
+      </div>
+      <div class="shadow-demo" style="box-shadow:0 4px 16px rgba(201,168,76,0.2);">
+        <div class="shadow-name">Gold (Reis IA)</div>
+        <div class="shadow-val">0 4px 16px rgba(201,168,76,0.2)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 6. ANIMATIONS ===== -->
+  <section class="section" id="animations">
+    <h2 class="section-title">Animation Showcase</h2>
+    <p class="section-desc">Porsche uses mechanical precision in motion -- no bounce, no elastic, no spring physics. Custom easing curves create controlled, confident movement. Four duration tiers from micro-interactions (0.25s) to dramatic reveals (1.2s).</p>
+
+    <h3 class="subsection-title">Entrance Animations</h3>
+
+    <div class="anim-label">Fade In Up (Section Reveal)</div>
+    <div class="anim-meta">animation: fadeInUp 0.6s cubic-bezier(0, 0, 0.2, 1) forwards | translateY(24px) to 0</div>
+    <div class="anim-stage">
+      <div class="anim-box anim-fadeInUp" id="anim1">Fade Up</div>
+      <button class="replay-btn" onclick="replayAnim('anim1','anim-fadeInUp')">Replay</button>
+    </div>
+
+    <div class="anim-label">Fade In (Opacity Only)</div>
+    <div class="anim-meta">animation: fadeIn 0.6s cubic-bezier(0, 0, 0.2, 1) forwards</div>
+    <div class="anim-stage">
+      <div class="anim-box anim-fadeIn" id="anim2">Fade</div>
+      <button class="replay-btn" onclick="replayAnim('anim2','anim-fadeIn')">Replay</button>
+    </div>
+
+    <div class="anim-label">Scale In (Component Entrance)</div>
+    <div class="anim-meta">animation: scaleIn 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards | scale(0.95) to 1</div>
+    <div class="anim-stage">
+      <div class="anim-box anim-scaleIn" id="anim3">Scale</div>
+      <button class="replay-btn" onclick="replayAnim('anim3','anim-scaleIn')">Replay</button>
+    </div>
+
+    <h3 class="subsection-title">Easing Curves (Hover to Animate)</h3>
+    <div class="easing-grid">
+      <div class="easing-item">
+        <div class="easing-name">Base</div>
+        <div class="easing-value">cubic-bezier(0.25, 0.1, 0.25, 1)</div>
+        <div class="easing-bar-track">
+          <div class="easing-bar-fill ease-base"></div>
+        </div>
+      </div>
+      <div class="easing-item">
+        <div class="easing-name">Ease In</div>
+        <div class="easing-value">cubic-bezier(0, 0, 0.2, 1)</div>
+        <div class="easing-bar-track">
+          <div class="easing-bar-fill ease-in"></div>
+        </div>
+      </div>
+      <div class="easing-item">
+        <div class="easing-name">Ease Out</div>
+        <div class="easing-value">cubic-bezier(0.4, 0, 0.5, 1)</div>
+        <div class="easing-bar-track">
+          <div class="easing-bar-fill ease-out"></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">Duration Scale (Hover to See Timing)</h3>
+    <div class="duration-grid">
+      <div class="duration-item">
+        <div class="duration-circle"></div>
+        <div class="duration-name">Short</div>
+        <div class="duration-val">0.25s</div>
+      </div>
+      <div class="duration-item">
+        <div class="duration-circle"></div>
+        <div class="duration-name">Moderate</div>
+        <div class="duration-val">0.4s</div>
+      </div>
+      <div class="duration-item">
+        <div class="duration-circle"></div>
+        <div class="duration-name">Long</div>
+        <div class="duration-val">0.6s</div>
+      </div>
+      <div class="duration-item">
+        <div class="duration-circle"></div>
+        <div class="duration-name">Very Long</div>
+        <div class="duration-val">1.2s</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 7. EFFECTS ===== -->
+  <section class="section" id="effects">
+    <h2 class="section-title">Effects Gallery</h2>
+    <p class="section-desc">Porsche uses minimal effects -- a single shadow value, glassmorphism for overlays, and alpha-based border layering. The dark theme creates natural depth through surface color differentiation rather than decorative effects.</p>
+
+    <div class="effects-grid">
+      <!-- Glassmorphism -->
+      <div class="effect-demo glass-bg">
+        <div class="glass-panel">
+          <div class="effect-label" style="color:var(--p-white);">Glassmorphism</div>
+          <div class="effect-code">backdrop-filter: blur(32px)<br>background: rgba(14,14,18,0.65)<br>border: 1px solid rgba(255,255,255,0.15)</div>
+        </div>
+      </div>
+
+      <!-- Shadow -->
+      <div class="effect-demo" style="background:#111114; border:1px solid var(--p-white-08);">
+        <div style="background:#18181e; padding:32px; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.16); text-align:center;">
+          <div class="effect-label" style="color:var(--p-white);">Box Shadow</div>
+          <div class="effect-code">box-shadow: 0 4px 16px<br>rgba(0, 0, 0, 0.16)</div>
+        </div>
+      </div>
+
+      <!-- Border Layering -->
+      <div class="effect-demo" style="background:#0e0e12; border:1px solid var(--p-white-08); gap:12px;">
+        <div class="effect-label" style="color:var(--p-white);">Border Alpha Layering</div>
+        <div class="border-demo-row" style="margin-top:0;">
+          <div class="border-demo-item" style="border:1px solid rgba(255,255,255,0.08);">8%</div>
+          <div class="border-demo-item" style="border:1px solid rgba(255,255,255,0.15);">15%</div>
+          <div class="border-demo-item" style="border:1px solid rgba(255,255,255,0.5);">50%</div>
+          <div class="border-demo-item" style="border:1px solid rgba(255,255,255,1);">100%</div>
+        </div>
+      </div>
+
+      <!-- Surface Layering -->
+      <div class="effect-demo" style="background:#0e0e12; border:1px solid var(--p-white-08); flex-direction:row; gap:2px; padding:0; overflow:hidden;">
+        <div style="flex:1; background:#0e0e12; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px;">
+          <div style="font-size:11px; font-family:monospace; color:var(--p-contrast-medium);">#0e0e12</div>
+          <div style="font-size:10px; color:var(--p-contrast-low);">Base</div>
+        </div>
+        <div style="flex:1; background:#18181e; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px;">
+          <div style="font-size:11px; font-family:monospace; color:var(--p-contrast-medium);">#18181e</div>
+          <div style="font-size:10px; color:var(--p-contrast-low);">Surface</div>
+        </div>
+        <div style="flex:1; background:#1a1a24; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px;">
+          <div style="font-size:11px; font-family:monospace; color:var(--p-contrast-medium);">#1a1a24</div>
+          <div style="font-size:10px; color:var(--p-contrast-low);">Hover</div>
+        </div>
+      </div>
+
+      <!-- Gradient: Image Overlay -->
+      <div class="effect-demo" style="background:linear-gradient(180deg, transparent 0%, #0e0e12 100%); border:1px solid var(--p-white-08); min-height:160px;">
+        <div class="effect-label" style="color:var(--p-white); position:relative; z-index:1;">Gradient Overlay</div>
+        <div class="effect-code" style="position:relative; z-index:1;">linear-gradient(180deg,<br>transparent 0%, #0e0e12 100%)</div>
+      </div>
+
+      <!-- Scrollbar -->
+      <div class="effect-demo" style="background:#111114; border:1px solid var(--p-white-08);">
+        <div class="effect-label" style="color:var(--p-white);">Custom Scrollbar</div>
+        <div class="effect-code">scrollbar-width: thin<br>scrollbar-color: hsla(0,0%,100%,0.3) transparent</div>
+        <div style="width:100%; height:80px; overflow-y:scroll; margin-top:12px; background:var(--p-bg-base); border-radius:4px; padding:8px; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.3) transparent;">
+          <div style="height:300px; font-size:11px; color:var(--p-contrast-low); line-height:1.8;">
+            Line 1: Scroll to see styled scrollbar<br>
+            Line 2: Thin width, translucent thumb<br>
+            Line 3: Matches the dark theme<br>
+            Line 4: No track background<br>
+            Line 5: Subtle and premium<br>
+            Line 6: Applied globally via CSS<br>
+            Line 7: Cross-browser support<br>
+            Line 8: Firefox uses scrollbar-width<br>
+            Line 9: WebKit uses pseudo-elements<br>
+            Line 10: Both are styled here
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 8. LAYOUTS ===== -->
+  <section class="section" id="layouts">
+    <h2 class="section-title">Section Layouts</h2>
+    <p class="section-desc">Wireframe reproductions of Porsche's key section patterns. The hero-to-grid-to-CTA flow is the dominant pattern. Navigation is minimal. Content is centered with generous safe zones.</p>
+
+    <h3 class="subsection-title">Hero + Grid Layout</h3>
+    <div class="layout-wireframe">
+      <div class="wireframe-header">
+        <div class="wf-logo"></div>
+        <div class="wf-nav">
+          <div class="wf-nav-item"></div>
+          <div class="wf-nav-item"></div>
+          <div class="wf-nav-item"></div>
+          <div class="wf-nav-item"></div>
+        </div>
+      </div>
+      <div class="wireframe-hero" style="background:linear-gradient(135deg, #1a1a24 0%, #0e0e12 100%);">
+        <div class="wf-headline"></div>
+        <div class="wf-subheadline"></div>
+        <div class="wf-cta"></div>
+      </div>
+      <div class="wireframe-grid">
+        <div class="wf-card">
+          <div class="wf-card-title"></div>
+          <div class="wf-card-text"></div>
+        </div>
+        <div class="wf-card">
+          <div class="wf-card-title"></div>
+          <div class="wf-card-text"></div>
+        </div>
+        <div class="wf-card">
+          <div class="wf-card-title"></div>
+          <div class="wf-card-text"></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">Split Content + CTA</h3>
+    <div class="layout-wireframe">
+      <div style="display:grid; grid-template-columns:1fr 1fr; min-height:280px;">
+        <div style="background:linear-gradient(135deg, #1a1a24 0%, #0e0e12 100%); display:flex; align-items:center; justify-content:center;">
+          <div style="width:60%; height:60%; border:1px solid var(--p-white-15); border-radius:8px;"></div>
+        </div>
+        <div style="padding:40px 32px; display:flex; flex-direction:column; justify-content:center; gap:16px;">
+          <div style="height:16px; width:50%; background:var(--p-white-30); border-radius:2px;"></div>
+          <div style="height:10px; width:80%; background:var(--p-white-15); border-radius:2px;"></div>
+          <div style="height:10px; width:70%; background:var(--p-white-15); border-radius:2px;"></div>
+          <div style="height:10px; width:60%; background:var(--p-white-15); border-radius:2px;"></div>
+          <div style="height:36px; width:120px; border:1px solid var(--p-white-50); border-radius:4px; margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="subsection-title">Full-Width CTA Section</h3>
+    <div class="layout-wireframe">
+      <div class="wireframe-cta-section" style="padding:56px 32px;">
+        <div class="wf-headline" style="margin:0 auto 12px; width:260px;"></div>
+        <div class="wf-subheadline" style="margin:0 auto 24px;"></div>
+        <div class="wf-cta" style="margin:0 auto;"></div>
+      </div>
+      <div class="wireframe-footer">
+        <div class="wf-footer-col">
+          <div class="wf-footer-line"></div>
+          <div class="wf-footer-line short"></div>
+          <div class="wf-footer-line"></div>
+          <div class="wf-footer-line short"></div>
+        </div>
+        <div class="wf-footer-col">
+          <div class="wf-footer-line"></div>
+          <div class="wf-footer-line short"></div>
+          <div class="wf-footer-line"></div>
+        </div>
+        <div class="wf-footer-col">
+          <div class="wf-footer-line"></div>
+          <div class="wf-footer-line short"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 9. SIGNATURE ===== -->
+  <section class="section" id="signature">
+    <h2 class="section-title">Signature Elements</h2>
+    <p class="section-desc">The three defining characteristics that make Porsche's web presence feel uniquely premium. Each includes an interactive demonstration and notes on how to adapt the pattern for Reis IA.</p>
+
+    <!-- Signature 1: Systematic Fluidity -->
+    <div class="signature-item">
+      <div class="signature-title">1. Systematic Fluidity</div>
+      <div class="signature-desc">Everything scales continuously via clamp() -- typography, spacing, grid gaps, safe zones. No jarring breakpoint jumps. The experience flows from mobile to ultrawide as a single continuous transformation.</div>
+
+      <div class="signature-demo">
+        <div style="margin-bottom:20px;">
+          <div style="font-size:12px; font-family:monospace; color:var(--p-contrast-low); margin-bottom:8px;">Resize your browser to see fluid scaling:</div>
+          <div class="fluid-demo-text">Fluid Typography</div>
+          <div style="font-size:12px; font-family:monospace; color:var(--p-contrast-low); margin-top:8px;">font-size: clamp(1.6rem, 1.56vw + 1.29rem, 3.16rem)</div>
+        </div>
+        <div style="display:flex; gap:4px; align-items:flex-end;">
+          <div style="height:clamp(16px, 1.25vw + 12px, 36px); width:60px; background:var(--reis-gold); border-radius:2px; opacity:0.6;"></div>
+          <div style="height:clamp(32px, 2.75vw + 23px, 76px); width:60px; background:var(--reis-gold); border-radius:2px; opacity:0.7;"></div>
+          <div style="height:clamp(48px, 3vw + 38px, 96px); width:60px; background:var(--reis-gold); border-radius:2px; opacity:0.8;"></div>
+          <div style="height:clamp(80px, 7.5vw + 56px, 200px); width:60px; background:var(--reis-gold); border-radius:2px; opacity:0.9;"></div>
+          <div style="font-size:11px; font-family:monospace; color:var(--p-contrast-low); padding-left:8px; line-height:1.5;">Spacing tokens<br>scale with viewport</div>
+        </div>
+      </div>
+
+      <div class="reis-callout">
+        <div class="reis-callout-title">Reis IA Adaptation</div>
+        <div class="reis-callout-text">Adopt the 6-token fluid spacing system directly. Replace Porsche's type scale with Inter-optimized clamp() values. Use the same calc(6px + 2.125ex) line-height formula -- test with Inter and adjust the 2.125 multiplier if needed (Inter's x-height differs from Porsche Next).</div>
+      </div>
+    </div>
+
+    <!-- Signature 2: Extreme Restraint -->
+    <div class="signature-item">
+      <div class="signature-title">2. Extreme Restraint</div>
+      <div class="signature-desc">The design system says "no" far more than it says "yes." Three font weights. One shadow value. No accent color in the UI. No gradients as decoration. No rounded pill buttons. What is absent defines the brand as much as what is present.</div>
+
+      <div class="signature-demo">
+        <div style="font-size:13px; color:var(--p-contrast-medium); margin-bottom:16px;">What Porsche uses vs. what it deliberately avoids:</div>
+        <div class="restraint-grid">
+          <div class="restraint-cell used">3 Weights</div>
+          <div class="restraint-cell unused">Italic</div>
+          <div class="restraint-cell unused">Thin/Black</div>
+          <div class="restraint-cell used">1 Shadow</div>
+          <div class="restraint-cell unused">Multi-Shadow</div>
+          <div class="restraint-cell unused">Text Shadow</div>
+          <div class="restraint-cell used">4px Radius</div>
+          <div class="restraint-cell unused">Pill Buttons</div>
+          <div class="restraint-cell unused">Round Avatars</div>
+          <div class="restraint-cell used">White Text</div>
+          <div class="restraint-cell unused">Accent Color</div>
+          <div class="restraint-cell unused">Gradients</div>
+        </div>
+      </div>
+
+      <div class="reis-callout">
+        <div class="reis-callout-title">Reis IA Adaptation</div>
+        <div class="reis-callout-text">Maintain the same restraint principle but add one deliberate exception: the muted gold accent (#C9A84C). Used only for CTAs, brand motifs, and key emphasis. Everything else follows Porsche's discipline -- no decorative gradients, no multiple shadows, no extra font weights. The gold accent should feel earned, not casual.</div>
+      </div>
+    </div>
+
+    <!-- Signature 3: Precision Over Personality -->
+    <div class="signature-item">
+      <div class="signature-title">3. Precision Over Personality</div>
+      <div class="signature-desc">Every value is engineered. The line-height formula, the custom easing curves, the non-standard breakpoint at 760px. Nothing is a default. The design system feels built by engineers, not decorated by designers. This is how precision becomes the personality.</div>
+
+      <div class="signature-demo">
+        <div style="font-size:13px; color:var(--p-contrast-medium); margin-bottom:16px;">Non-default values that reveal intentionality:</div>
+        <div class="info-cards" style="margin-top:0;">
+          <div class="info-card" style="border-color:rgba(201,168,76,0.2);">
+            <div class="info-card-title" style="color:var(--reis-gold);">Line Height</div>
+            <div class="info-card-value">calc(6px + 2.125ex)<br><span style="color:var(--p-contrast-low);">vs. typical: 1.5 or 1.6</span></div>
+          </div>
+          <div class="info-card" style="border-color:rgba(201,168,76,0.2);">
+            <div class="info-card-title" style="color:var(--reis-gold);">Easing</div>
+            <div class="info-card-value">cubic-bezier(0.25, 0.1, 0.25, 1)<br><span style="color:var(--p-contrast-low);">vs. typical: ease (0.25, 0.1, 0.25, 1.0)</span></div>
+          </div>
+          <div class="info-card" style="border-color:rgba(201,168,76,0.2);">
+            <div class="info-card-title" style="color:var(--reis-gold);">Breakpoint</div>
+            <div class="info-card-value">760px (tablet shift)<br><span style="color:var(--p-contrast-low);">vs. typical: 768px (iPad)</span></div>
+          </div>
+          <div class="info-card" style="border-color:rgba(201,168,76,0.2);">
+            <div class="info-card-title" style="color:var(--reis-gold);">Background</div>
+            <div class="info-card-value">#0e0e12 (blue-tinted black)<br><span style="color:var(--p-contrast-low);">vs. typical: #000000 or #111111</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reis-callout">
+        <div class="reis-callout-title">Reis IA Adaptation</div>
+        <div class="reis-callout-text">Apply the same principle of intentionality. Every Reis IA token should have a reason. Use warm-black (#0A0A0A) instead of blue-black -- our brand temperature is warm (gold accent), so the background should lean warm. Test the line-height formula with Inter. Match the 4-tier duration system exactly. The precision itself becomes a brand signal.</div>
+      </div>
+    </div>
+
+    <!-- Bonus: Image Hover -->
+    <div class="signature-item">
+      <div class="signature-title">4. Image Hover -- Contained Scale</div>
+      <div class="signature-desc">Images scale up by exactly 5% on hover using scale3d for GPU acceleration, contained within an overflow:hidden parent. The motion is subtle enough to feel luxurious -- seen, not noticed.</div>
+
+      <div class="signature-demo" style="display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start;">
+        <div>
+          <div style="font-size:12px; color:var(--p-contrast-low); margin-bottom:8px;">Hover the image:</div>
+          <div class="image-hover-demo">
+            <div class="image-hover-inner">
+              scale3d(1.05, 1.05, 1.05)
+            </div>
+          </div>
+        </div>
+        <div style="flex:1; min-width:200px;">
+          <div style="font-size:12px; font-family:monospace; color:var(--p-contrast-low); line-height:2;">
+            .wrapper { overflow: hidden; }<br>
+            .image {<br>
+            &nbsp;&nbsp;transition: transform 0.4s<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;cubic-bezier(0.25, 0.1, 0.25, 1);<br>
+            }<br>
+            .wrapper:hover .image {<br>
+            &nbsp;&nbsp;transform: scale3d(1.05, 1.05, 1.05);<br>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="reis-callout">
+        <div class="reis-callout-title">Reis IA Adaptation</div>
+        <div class="reis-callout-text">Use this pattern for case study cards, portfolio images, and the founder bio photo. The 1.05 scale factor and 0.4s duration are already tuned for premium feel. Apply to image-heavy cards only -- text cards should use border/shadow hover instead.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // ===== Sidebar active state via IntersectionObserver =====
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-20% 0px -60% 0px',
+    threshold: 0
+  };
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('data-section') === id);
+        });
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach(section => sectionObserver.observe(section));
+
+  // ===== Animation replay =====
+  function replayAnim(id, className) {
+    const el = document.getElementById(id);
+    el.classList.remove(className);
+    void el.offsetWidth; // force reflow
+    el.classList.add(className);
+  }
+
+  // ===== Easing bar reset on mouse leave =====
+  document.querySelectorAll('.easing-item').forEach(item => {
+    const fill = item.querySelector('.easing-bar-fill');
+    item.addEventListener('mouseleave', () => {
+      fill.style.width = '0';
+      void fill.offsetWidth;
+    });
+  });
+</script>
+
+</body>
+</html>

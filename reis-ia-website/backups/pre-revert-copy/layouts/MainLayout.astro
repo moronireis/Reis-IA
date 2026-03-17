@@ -1,0 +1,125 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  activePage?: 'home' | 'builder' | 'systems' | 'partners' | 'network' | 'about';
+}
+
+const {
+  title,
+  description = 'A Reis IA constrói sistemas de IA que geram receita, treina agências para vender soluções de IA e cria as parcerias que escalam tudo. Comece com o Revenue-First Framework.',
+  ogImage,
+  activePage = 'home'
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title} | Reis IA</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Reis IA" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body style="background-color: #000000; color: rgba(255,255,255,0.70);" class="font-sans">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-[#4A90FF] focus:text-white focus:px-4 focus:py-2 focus:rounded">Ir para o conteúdo</a>
+    <Nav activePage={activePage} />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer />
+
+    <!-- ============================================================
+         SCROLL REVEAL — Intersection Observer (Task E)
+         Counter Animations (Task F)
+         ============================================================ -->
+    <script>
+      // ---- Scroll reveal ----------------------------------------
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+      document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+      // ---- Counter animation (Task F) --------------------------
+      function animateCounter(el: Element) {
+        const target = parseInt((el as HTMLElement).dataset.target ?? '0', 10);
+        const suffix = (el as HTMLElement).dataset.suffix ?? '';
+        const prefix = (el as HTMLElement).dataset.prefix ?? '';
+        const duration = 1500;
+        const start = performance.now();
+
+        function update(now: number) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          // ease-out cubic
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = prefix + Math.round(target * eased).toLocaleString('pt-BR') + suffix;
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+      }
+
+      // Respect reduced motion: skip animation, show final value
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (prefersReducedMotion) {
+              const el = entry.target as HTMLElement;
+              el.textContent = (el.dataset.prefix ?? '') + parseInt(el.dataset.target ?? '0').toLocaleString('pt-BR') + (el.dataset.suffix ?? '');
+            } else {
+              animateCounter(entry.target);
+            }
+            counterObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('[data-counter]').forEach(el => counterObserver.observe(el));
+
+      // ---- Sticky nav scroll border (Task J) -------------------
+      const nav = document.getElementById('main-nav');
+      if (nav) {
+        const onScroll = () => {
+          if (window.scrollY > 20) {
+            nav.setAttribute('data-scrolled', 'true');
+          } else {
+            nav.removeAttribute('data-scrolled');
+          }
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll(); // run on load
+      }
+    </script>
+  </body>
+</html>

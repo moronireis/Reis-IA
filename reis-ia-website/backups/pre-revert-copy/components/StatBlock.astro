@@ -1,0 +1,48 @@
+---
+interface Props {
+  value: string;
+  label: string;
+  context?: string;
+  muted?: boolean;
+}
+
+const { value, label, context, muted = false } = Astro.props;
+
+// Parse numeric value and suffix for counter animation
+// e.g. "91%" → target=91, suffix="%"
+// e.g. "300+" → target=300, suffix="+"
+const match = value.match(/^(\d+)(.*)$/);
+const numericTarget = match ? parseInt(match[1], 10) : null;
+const numericSuffix = match ? match[2] : '';
+const canAnimate = numericTarget !== null && !muted;
+---
+
+<div class="text-center">
+  <!-- Gold accent line above number — premium touch -->
+  {!muted && (
+    <div
+      class="w-8 h-px mx-auto mb-4"
+      style="background: linear-gradient(to right, transparent, rgba(74,144,255,0.5), transparent);"
+      aria-hidden="true"
+    ></div>
+  )}
+  <p
+    class={`leading-none ${muted ? 'text-neutral-600' : 'text-accent'}`}
+    style={!muted
+      ? 'font-weight: 700; font-size: clamp(48px, 6vw, 72px);'
+      : 'font-weight: 700; font-size: clamp(40px, 5vw, 56px);'}
+    data-counter={canAnimate ? '' : undefined}
+    data-target={canAnimate ? numericTarget : undefined}
+    data-suffix={canAnimate ? numericSuffix : undefined}
+    data-prefix=""
+    aria-label={`${value} — ${label}`}
+  >
+    {value}
+  </p>
+  <p class="text-xs uppercase tracking-widest mt-3 max-w-[180px] mx-auto leading-snug" style="color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">
+    {label}
+  </p>
+  {context && (
+    <p class="text-sm mt-1" style="color: rgba(255,255,255,0.35);">{context}</p>
+  )}
+</div>

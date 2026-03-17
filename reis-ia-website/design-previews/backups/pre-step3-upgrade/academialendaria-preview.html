@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academia Lendaria Design System Reference — Reis IA Phase 3</title>
+<style>
+  /* ============================================
+     PREVIEW PAGE STYLES (not part of the design system)
+     ============================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --preview-bg: #0a0a0a;
+    --preview-surface: #141416;
+    --preview-surface-2: #1c1c1e;
+    --preview-border: rgba(255,255,255,0.08);
+    --preview-text: #e5e5e5;
+    --preview-text-muted: rgba(255,255,255,0.5);
+    --preview-accent: #C9A84C;
+    --preview-code-bg: #1a1a1a;
+
+    /* Academia Lendaria palette tokens */
+    --al-bg-primary: #000000;
+    --al-bg-surface-1: #0a0a0a;
+    --al-bg-surface-2: #111111;
+    --al-bg-surface-3: #141414;
+    --al-bg-surface-4: #161616;
+    --al-bg-surface-5: #1a1a1a;
+    --al-text-primary: #ffffff;
+    --al-text-secondary: #ffffffb3;
+    --al-text-muted: #ffffff80;
+    --al-text-faint: #ffffff3d;
+    --al-accent-gold: #ffd44a;
+    --al-accent-gold-text: #504015;
+    --al-accent-gold-hover: #ffcc00;
+    --al-accent-blue: #0055ff;
+    --al-accent-blue-hover: #0044cc;
+    --al-accent-green: #30d158;
+    --al-accent-red: #ff3b3b;
+    --al-accent-purple: #5e5ce6;
+    --al-border-primary: #242424;
+    --al-border-subtle: #ffffff1a;
+    --al-border-faint: #ffffff14;
+    --al-border-ghost: #ffffff0d;
+    --al-glass-bg: #ffffff14;
+    --al-glass-border: #ffffff14;
+    --al-overlay-dark: #24242466;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--preview-bg);
+    color: var(--preview-text);
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar Navigation */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background: var(--preview-surface);
+    border-right: 1px solid var(--preview-border);
+    overflow-y: auto;
+    padding: 24px 0;
+    z-index: 50;
+  }
+
+  .sidebar h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--preview-accent);
+    padding: 0 20px;
+    margin-bottom: 4px;
+  }
+
+  .sidebar .subtitle {
+    font-size: 11px;
+    color: var(--preview-text-muted);
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+
+  .sidebar nav a {
+    display: block;
+    padding: 8px 20px;
+    color: var(--preview-text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar nav a:hover,
+  .sidebar nav a.active {
+    color: var(--preview-text);
+    background: rgba(255,255,255,0.03);
+    border-left-color: var(--preview-accent);
+  }
+
+  .sidebar nav .divider {
+    height: 1px;
+    background: var(--preview-border);
+    margin: 12px 20px;
+  }
+
+  /* Main Content */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 48px 48px 120px;
+    max-width: 1100px;
+  }
+
+  .page-title {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .page-subtitle {
+    font-size: 16px;
+    color: var(--preview-text-muted);
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+
+  /* Sections */
+  .section {
+    margin-bottom: 72px;
+    scroll-margin-top: 32px;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--preview-border);
+  }
+
+  .section-desc {
+    font-size: 14px;
+    color: var(--preview-text-muted);
+    margin-bottom: 32px;
+    margin-top: 8px;
+  }
+
+  .subsection {
+    margin-bottom: 40px;
+  }
+
+  .subsection-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  /* Code Display */
+  .code-label {
+    display: inline-block;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    color: var(--preview-text-muted);
+    background: var(--preview-code-bg);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 6px;
+  }
+
+  .token-value {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* ============================================
+     1. COLOR PALETTE
+     ============================================ */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .color-swatch {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--preview-border);
+  }
+
+  .color-swatch__fill {
+    height: 80px;
+    position: relative;
+  }
+
+  .color-swatch__info {
+    padding: 10px 12px;
+    background: var(--preview-surface);
+  }
+
+  .color-swatch__name {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .color-swatch__hex {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    color: var(--preview-text-muted);
+  }
+
+  /* ============================================
+     2. TYPOGRAPHY
+     ============================================ */
+  .type-specimen {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .type-specimen:last-child { border-bottom: none; }
+
+  .type-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .type-meta span {
+    font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--preview-text-muted);
+    background: var(--preview-code-bg);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  /* ============================================
+     3. SPACING
+     ============================================ */
+  .spacing-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .spacing-label {
+    width: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .spacing-bar {
+    height: 32px;
+    background: linear-gradient(135deg, var(--al-accent-gold), #e8a020);
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+  }
+
+  .spacing-bar .token-value {
+    font-size: 10px;
+    color: rgba(0,0,0,0.7);
+    font-weight: 600;
+  }
+
+  .spacing-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .spacing-info-card {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .spacing-info-card h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--preview-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+
+  .spacing-info-card p {
+    font-size: 14px;
+    color: var(--preview-text);
+  }
+
+  .radius-scale {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    align-items: flex-end;
+  }
+
+  .radius-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .radius-box {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--al-accent-gold);
+    background: rgba(255, 212, 74, 0.08);
+  }
+
+  /* ============================================
+     4. BUTTONS
+     ============================================ */
+  .button-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .button-card {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 8px;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    min-width: 220px;
+  }
+
+  .button-card__label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--preview-text-muted);
+  }
+
+  /* Academia Lendaria buttons */
+  .al-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffd44a;
+    color: #504015;
+    border: none;
+    border-radius: 100px;
+    padding: 20px 48px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .al-btn-primary:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(255, 212, 74, 0.2);
+  }
+
+  .al-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 16px 32px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .al-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-2px);
+  }
+
+  .al-btn-blue {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #0066ff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 16px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+
+  .al-btn-blue:hover {
+    background: #0052cc;
+    transform: translateY(-2px);
+  }
+
+  .al-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 100px;
+    padding: 16px 32px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .al-btn-ghost:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.3);
+  }
+
+  /* ============================================
+     5. CARDS
+     ============================================ */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .al-glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border-radius: 20px;
+    padding: 32px;
+    transition: all 0.3s ease;
+  }
+
+  .al-glass-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.12);
+    transform: translateY(-4px);
+  }
+
+  .al-glass-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+
+  .al-glass-card p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.7);
+  }
+
+  @property --border-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+
+  .al-animated-card {
+    background:
+      linear-gradient(45deg, #161616, #1a1a1a 50%, #161616) padding-box,
+      conic-gradient(from var(--border-angle), #242424 80%, #646464 86%, #646464 90%, #646464 94%, #242424) border-box;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    padding: 32px;
+    transition: all 0.3s ease;
+  }
+
+  .al-animated-card.animating {
+    animation: rotateBorder 6.4s linear infinite;
+  }
+
+  @keyframes rotateBorder {
+    to { --border-angle: 360deg; }
+  }
+
+  .al-animated-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+
+  .al-animated-card p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .al-stats-card {
+    background: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid #242424;
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  .al-stats-card .stat-number {
+    font-size: 40px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .al-stats-card .stat-label {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .shadow-tiers {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+
+  .shadow-demo {
+    width: 120px;
+    height: 120px;
+    background: var(--preview-surface-2);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .shadow-demo span {
+    font-size: 11px;
+    color: var(--preview-text-muted);
+  }
+
+  /* ============================================
+     6. ANIMATIONS
+     ============================================ */
+  .anim-demo-container {
+    margin-bottom: 32px;
+  }
+
+  .anim-demo {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 12px;
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .replay-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.15s;
+  }
+
+  .replay-btn:hover {
+    background: rgba(255,255,255,0.15);
+  }
+
+  /* Shimmer text demo */
+  .demo-shimmer {
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(110deg, #fff 0% 40%, #b8b8b8 50%, #fff 60% 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 13s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: 200% 0; }
+    30% { background-position: -200% 0; }
+  }
+
+  /* 3D entrance demo */
+  .demo-3d-wrapper {
+    perspective: 1200px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .demo-3d-box {
+    width: 200px;
+    height: 120px;
+    background: linear-gradient(45deg, #161616, #1a1a1a 50%, #161616);
+    border: 1px solid #242424;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    font-weight: 500;
+    transform-origin: bottom;
+    transform-style: preserve-3d;
+  }
+
+  .demo-3d-box.hidden {
+    opacity: 0;
+    transform: translateY(150px) rotateX(15deg);
+  }
+
+  .demo-3d-box.entering {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+    transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Fade-in scale demo */
+  .demo-fade-box {
+    width: 160px;
+    height: 100px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .demo-fade-box.hidden {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  .demo-fade-box.entering {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Easing visualizer */
+  .easing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .easing-item {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .easing-item__label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .easing-item__css {
+    font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--preview-text-muted);
+    margin-bottom: 12px;
+  }
+
+  .easing-bar-track {
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .easing-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background: var(--al-accent-gold);
+    border-radius: 2px;
+  }
+
+  .easing-item:hover .easing-bar-fill {
+    width: 100%;
+  }
+
+  .easing-bar-fill.ease-smooth {
+    transition: width 0.3s ease;
+  }
+
+  .easing-bar-fill.ease-entrance {
+    transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .easing-bar-fill.ease-bounce {
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .easing-bar-fill.ease-linear {
+    transition: width 0.5s linear;
+  }
+
+  /* Duration scale */
+  .duration-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .duration-item {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .duration-item:hover {
+    border-color: rgba(255,255,255,0.15);
+  }
+
+  .duration-item__value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--al-accent-gold);
+    margin-bottom: 4px;
+  }
+
+  .duration-item__usage {
+    font-size: 11px;
+    color: var(--preview-text-muted);
+  }
+
+  .duration-item__bar {
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+
+  .duration-item__fill {
+    height: 100%;
+    width: 0;
+    background: var(--al-accent-gold);
+    border-radius: 2px;
+  }
+
+  .duration-item:hover .duration-item__fill {
+    width: 100%;
+  }
+
+  /* ============================================
+     7. EFFECTS GALLERY
+     ============================================ */
+  .effects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .effect-demo {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--preview-border);
+  }
+
+  .effect-demo__visual {
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .effect-demo__info {
+    padding: 16px;
+    background: var(--preview-surface);
+  }
+
+  .effect-demo__name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .effect-demo__css {
+    font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--preview-text-muted);
+    line-height: 1.5;
+  }
+
+  /* ============================================
+     8. SECTION LAYOUTS
+     ============================================ */
+  .layout-wireframe {
+    background: var(--al-bg-primary);
+    border: 1px solid var(--preview-border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .wireframe-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--preview-accent);
+    padding: 12px 16px;
+    background: var(--preview-surface);
+    border-bottom: 1px solid var(--preview-border);
+  }
+
+  .wireframe-content {
+    padding: 32px;
+  }
+
+  .wireframe-placeholder {
+    background: rgba(255,255,255,0.04);
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    color: rgba(255,255,255,0.3);
+    font-size: 12px;
+  }
+
+  /* ============================================
+     9. SIGNATURE ELEMENTS
+     ============================================ */
+  .reis-adaptation {
+    background: rgba(201, 168, 76, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+
+  .reis-adaptation__title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #C9A84C;
+    margin-bottom: 8px;
+  }
+
+  .reis-adaptation__text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 900px) {
+    .sidebar {
+      display: none;
+    }
+    .main {
+      margin-left: 0;
+      padding: 24px 20px 80px;
+    }
+    .color-grid {
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    }
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+    .button-grid {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .button-card {
+      min-width: unset;
+    }
+    .easing-grid {
+      grid-template-columns: 1fr;
+    }
+    .effects-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<!-- Reference Logo Header -->
+<div style="position:fixed;top:16px;right:24px;z-index:1000;opacity:0.7;">
+  <svg width="160" height="32" viewBox="0 0 200 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <text x="0" y="28" font-family="system-ui,-apple-system,sans-serif" font-size="18" font-weight="700" fill="white" letter-spacing="1">Academia Lendária</text>
+  </svg>
+</div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <h2>Academia Lendaria</h2>
+  <div class="subtitle">Design System Reference</div>
+  <nav>
+    <a href="#colors">Color Palette</a>
+    <a href="#typography">Typography Scale</a>
+    <a href="#spacing">Spacing System</a>
+    <div class="divider"></div>
+    <a href="#buttons">Buttons & CTAs</a>
+    <a href="#cards">Card Components</a>
+    <div class="divider"></div>
+    <a href="#animations">Animation Showcase</a>
+    <a href="#effects">Effects Gallery</a>
+    <div class="divider"></div>
+    <a href="#layouts">Section Layouts</a>
+    <a href="#signature">Signature Elements</a>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+
+  <h1 class="page-title">Academia Lendaria Design System</h1>
+  <p class="page-subtitle">Extracted from academialendaria.ai -- Brazilian AI education platform. Dark-mode reference for Reis IA's premium consultancy design system.</p>
+
+  <!-- ============================================
+       1. COLOR PALETTE
+       ============================================ -->
+  <section id="colors" class="section">
+    <h2 class="section-title">Color Palette</h2>
+    <p class="section-desc">Full dark-mode color system. Backgrounds use layered near-blacks for depth. Text uses white at varying opacities rather than gray hex values.</p>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Backgrounds</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#000000;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Primary BG</div>
+            <div class="color-swatch__hex">#000000</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#0a0a0a;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Surface 1</div>
+            <div class="color-swatch__hex">#0a0a0a</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#111111;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Surface 2</div>
+            <div class="color-swatch__hex">#111111</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#141414;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Surface 3</div>
+            <div class="color-swatch__hex">#141414</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#161616;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Surface 4</div>
+            <div class="color-swatch__hex">#161616</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#1a1a1a;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Surface 5</div>
+            <div class="color-swatch__hex">#1a1a1a</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#242424;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Border Primary</div>
+            <div class="color-swatch__hex">#242424</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Text Colors</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#ffffff;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Primary Text</div>
+            <div class="color-swatch__hex">#ffffff</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1);"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Secondary Text</div>
+            <div class="color-swatch__hex">#ffffffb3 (70%)</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1);"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Muted Text</div>
+            <div class="color-swatch__hex">#ffffff80 (50%)</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(255,255,255,0.24); border: 1px solid rgba(255,255,255,0.1);"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Faint Text</div>
+            <div class="color-swatch__hex">#ffffff3d (24%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Accent Colors</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#ffd44a;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Gold Primary</div>
+            <div class="color-swatch__hex">#ffd44a</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#ffcc00;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Gold Hover</div>
+            <div class="color-swatch__hex">#ffcc00</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#504015;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Gold Text</div>
+            <div class="color-swatch__hex">#504015</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#0055ff;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Blue Primary</div>
+            <div class="color-swatch__hex">#0055ff</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#30d158;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Green</div>
+            <div class="color-swatch__hex">#30d158</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#ff3b3b;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Red</div>
+            <div class="color-swatch__hex">#ff3b3b</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#5e5ce6;"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Purple</div>
+            <div class="color-swatch__hex">#5e5ce6</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Glass & Overlay</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Glass BG</div>
+            <div class="color-swatch__hex">rgba(255,255,255,0.08)</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1);"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Stats Overlay</div>
+            <div class="color-swatch__hex">#141414cc (80%)</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(36,36,36,0.4); border: 1px solid rgba(255,255,255,0.1);"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Hero Overlay</div>
+            <div class="color-swatch__hex">#24242466 (40%)</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Input BG</div>
+            <div class="color-swatch__hex">#ffffff0d (5%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Gradients</h3>
+      <div class="color-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background: linear-gradient(135deg, gold 0%, orange 100%);"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Gold Accent</div>
+            <div class="color-swatch__hex">135deg, gold -> orange</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background: linear-gradient(45deg, #161616, #1a1a1a 50%, #161616);"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Card Surface</div>
+            <div class="color-swatch__hex">45deg, #161616 -> #1a1a1a</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background: linear-gradient(110deg, #fff 0% 40%, #b8b8b8 50%, #fff 60% 100%);"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Text Shimmer</div>
+            <div class="color-swatch__hex">110deg, #fff -> #b8b8b8</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background: conic-gradient(from 0deg, #242424 80%, #646464 86%, #646464 90%, #646464 94%, #242424);"></div>
+          <div class="color-swatch__info">
+            <div class="color-swatch__name">Rotating Border</div>
+            <div class="color-swatch__hex">conic, #242424 -> #646464</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       2. TYPOGRAPHY SCALE
+       ============================================ -->
+  <section id="typography" class="section">
+    <h2 class="section-title">Typography Scale</h2>
+    <p class="section-desc">Inter font family throughout. Tight letter-spacing on display sizes. Body text uses 70% white opacity for reduced eye strain.</p>
+
+    <div class="type-specimen">
+      <div style="font-size:72px; font-weight:800; letter-spacing:-0.04em; line-height:1.1; color:#fff;">Hero Display</div>
+      <div class="type-meta">
+        <span>72px</span>
+        <span>weight: 800</span>
+        <span>line-height: 1.1</span>
+        <span>letter-spacing: -0.04em</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:64px; font-weight:600; letter-spacing:-0.02em; line-height:1.1; color:#fff;">H1 Section Title</div>
+      <div class="type-meta">
+        <span>clamp(40px, 5vw, 64px)</span>
+        <span>weight: 600</span>
+        <span>line-height: 1.1</span>
+        <span>letter-spacing: -0.02em</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:48px; font-weight:600; line-height:1.2; letter-spacing:-0.02em; color:#fff;">H2 Subsection</div>
+      <div class="type-meta">
+        <span>clamp(32px, 4vw, 48px)</span>
+        <span>weight: 600</span>
+        <span>line-height: 1.2</span>
+        <span>letter-spacing: -0.02em</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:24px; font-weight:600; line-height:1.2; color:#fff;">H3 Card / Feature Title</div>
+      <div class="type-meta">
+        <span>24-30px</span>
+        <span>weight: 600</span>
+        <span>line-height: 1.2</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:40px; font-weight:600; line-height:1.1; color:#fff;">R$200M+</div>
+      <div class="type-meta">
+        <span>40px</span>
+        <span>weight: 600</span>
+        <span>line-height: 1.1</span>
+        <span>usage: stat numbers</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:18px; font-weight:500; line-height:1.6; color:rgba(255,255,255,0.7);">Body Large -- used for intro paragraphs and featured descriptions. Note the 70% opacity white rather than a gray hex value. <strong style="color:#fff; font-weight:600;">Strong text returns to full white.</strong></div>
+      <div class="type-meta">
+        <span>18px</span>
+        <span>weight: 500</span>
+        <span>line-height: 1.6</span>
+        <span>color: #ffffffb3</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:16px; font-weight:400; line-height:1.6; color:rgba(255,255,255,0.7);">Body standard -- the default paragraph style used throughout the site for regular content blocks, descriptions, and card text.</div>
+      <div class="type-meta">
+        <span>16px</span>
+        <span>weight: 400-500</span>
+        <span>line-height: 1.6</span>
+        <span>color: #ffffffb3</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:16px; font-weight:600; line-height:1; color:#fff;">Button / CTA Label</div>
+      <div class="type-meta">
+        <span>16px</span>
+        <span>weight: 600</span>
+        <span>line-height: 1</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:13px; font-weight:500; line-height:1.4; color:rgba(255,255,255,0.7);">Small text -- used for card metadata, compact buttons, and secondary info</div>
+      <div class="type-meta">
+        <span>13px</span>
+        <span>weight: 500</span>
+        <span>line-height: 1.4</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:12px; font-weight:500; line-height:1.4; color:rgba(255,255,255,0.5);">Caption -- labels, metadata badges</div>
+      <div class="type-meta">
+        <span>12px</span>
+        <span>weight: 500</span>
+        <span>line-height: 1.4</span>
+        <span>color: #ffffff80</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:10px; font-weight:500; line-height:1; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.24);">MICRO -- TRUST LABELS, FINE PRINT</div>
+      <div class="type-meta">
+        <span>10px</span>
+        <span>weight: 500</span>
+        <span>letter-spacing: 0.1em</span>
+        <span>text-transform: uppercase</span>
+        <span>color: #ffffff3d</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       3. SPACING SYSTEM
+       ============================================ -->
+  <section id="spacing" class="section">
+    <h2 class="section-title">Spacing System</h2>
+    <p class="section-desc">Based on 8px increments. Section padding decreases progressively at smaller breakpoints.</p>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Spacing Scale</h3>
+      <div class="spacing-row">
+        <div class="spacing-label">8px</div>
+        <div class="spacing-bar" style="width:32px;"><span class="token-value">8</span></div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">16px</div>
+        <div class="spacing-bar" style="width:64px;"><span class="token-value">16</span></div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">24px</div>
+        <div class="spacing-bar" style="width:96px;"><span class="token-value">24</span></div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">32px</div>
+        <div class="spacing-bar" style="width:128px;"><span class="token-value">32</span></div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">40px</div>
+        <div class="spacing-bar" style="width:160px;"><span class="token-value">40</span></div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">48px</div>
+        <div class="spacing-bar" style="width:192px;"><span class="token-value">48</span></div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">64px</div>
+        <div class="spacing-bar" style="width:256px;"><span class="token-value">64</span></div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">100px</div>
+        <div class="spacing-bar" style="width:400px;"><span class="token-value">100</span></div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Section Padding by Breakpoint</h3>
+      <div class="spacing-info-grid">
+        <div class="spacing-info-card">
+          <h4>Desktop (1280px+)</h4>
+          <p>Section: <code class="code-label">100px 0</code></p>
+          <p>Container: <code class="code-label">0 24px</code></p>
+          <p>Card: <code class="code-label">48px</code></p>
+          <p>Grid gap: <code class="code-label">64px</code></p>
+        </div>
+        <div class="spacing-info-card">
+          <h4>Tablet (1024px)</h4>
+          <p>Section: <code class="code-label">80px 0</code></p>
+          <p>Container: <code class="code-label">0 48px</code></p>
+          <p>Card: <code class="code-label">40px</code></p>
+          <p>Grid gap: <code class="code-label">40px</code></p>
+        </div>
+        <div class="spacing-info-card">
+          <h4>Mobile (768px)</h4>
+          <p>Section: <code class="code-label">24-64px 0</code></p>
+          <p>Container: <code class="code-label">0 24px</code></p>
+          <p>Card: <code class="code-label">32px 24px</code></p>
+          <p>Grid gap: <code class="code-label">24px</code></p>
+        </div>
+        <div class="spacing-info-card">
+          <h4>Container</h4>
+          <p>Max-width: <code class="code-label">1280px</code></p>
+          <p>Centering: <code class="code-label">margin: 0 auto</code></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Border Radius Scale</h3>
+      <div class="radius-scale">
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:4px;"></div>
+          <span class="code-label">4px</span>
+          <span style="font-size:11px; color:rgba(255,255,255,0.4);">scrollbar</span>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:8px;"></div>
+          <span class="code-label">8px</span>
+          <span style="font-size:11px; color:rgba(255,255,255,0.4);">inputs, stats</span>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:16px;"></div>
+          <span class="code-label">16px</span>
+          <span style="font-size:11px; color:rgba(255,255,255,0.4);">cards, hero</span>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:20px;"></div>
+          <span class="code-label">20px</span>
+          <span style="font-size:11px; color:rgba(255,255,255,0.4);">glass cards</span>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:24px;"></div>
+          <span class="code-label">24px</span>
+          <span style="font-size:11px; color:rgba(255,255,255,0.4);">feature cards</span>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:32px;"></div>
+          <span class="code-label">100px</span>
+          <span style="font-size:11px; color:rgba(255,255,255,0.4);">pill buttons</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       4. BUTTONS & CTAs
+       ============================================ -->
+  <section id="buttons" class="section">
+    <h2 class="section-title">Buttons & CTAs</h2>
+    <p class="section-desc">Four button variants. Primary gold pill for main CTAs. Secondary transparent for supporting actions. Blue for navigation. Ghost for tertiary.</p>
+
+    <div class="button-grid">
+      <div class="button-card">
+        <span class="button-card__label">Primary (Gold Pill)</span>
+        <button class="al-btn-primary">Explorar</button>
+        <div class="code-label">bg: #ffd44a | color: #504015 | radius: 100px | pad: 20px 48px</div>
+        <div class="code-label" style="margin-top:2px;">hover: translateY(-4px) + shadow</div>
+      </div>
+
+      <div class="button-card">
+        <span class="button-card__label">Secondary (Transparent)</span>
+        <button class="al-btn-secondary">Saiba Mais</button>
+        <div class="code-label">bg: rgba(255,255,255,0.12) | radius: 8px | pad: 16px 32px</div>
+        <div class="code-label" style="margin-top:2px;">hover: bg 0.18 + translateY(-2px)</div>
+      </div>
+
+      <div class="button-card">
+        <span class="button-card__label">Blue (Hub/Link)</span>
+        <button class="al-btn-blue">Ver Hubs</button>
+        <div class="code-label">bg: #0066ff | radius: 8px | pad: 16px 24px</div>
+        <div class="code-label" style="margin-top:2px;">hover: bg #0052cc + translateY(-2px)</div>
+      </div>
+
+      <div class="button-card">
+        <span class="button-card__label">Ghost (Outline Pill)</span>
+        <button class="al-btn-ghost">Lista de Espera</button>
+        <div class="code-label">bg: transparent | border: 1px white/20 | radius: 100px</div>
+        <div class="code-label" style="margin-top:2px;">hover: bg white/6 + border white/30</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       5. CARD COMPONENTS
+       ============================================ -->
+  <section id="cards" class="section">
+    <h2 class="section-title">Card Components</h2>
+    <p class="section-desc">Three card tiers: glass (glassmorphism), animated border (conic gradient rotation), and stats overlay (positioned over content).</p>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Glass Card</h3>
+      <div class="card-grid">
+        <div class="al-glass-card">
+          <h3>Comunidade Lendaria</h3>
+          <p>Glass card with backdrop blur and subtle white-alpha background. Hovers with slight lift and increased opacity.</p>
+        </div>
+        <div class="al-glass-card">
+          <h3>Cohort Fundamentals</h3>
+          <p>Same glass treatment. The blur creates depth when layered over complex backgrounds like images or gradients.</p>
+        </div>
+      </div>
+      <div class="code-label" style="margin-top:12px;">bg: rgba(255,255,255,0.08) | backdrop-filter: blur(12px) saturate(180%) | border: 1px solid rgba(255,255,255,0.08) | radius: 20px</div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Animated Border Card</h3>
+      <div class="card-grid">
+        <div class="al-animated-card animating">
+          <h3>Revenue-First Framework</h3>
+          <p>Rotating conic gradient creates a subtle bright spot that travels around the card border. The animation runs at 6.4s per revolution.</p>
+        </div>
+        <div class="al-animated-card animating" style="animation-delay: -3.2s;">
+          <h3>AI Implementation</h3>
+          <p>Uses @property CSS for animating the gradient angle. The card background uses padding-box/border-box layering to show the gradient only at the border.</p>
+        </div>
+      </div>
+      <div class="code-label" style="margin-top:12px;">bg: linear-gradient(45deg, #161616, #1a1a1a) padding-box + conic-gradient border-box | border: 1px solid transparent | animation: 6.4s linear infinite</div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Stats Overlay Card</h3>
+      <div style="position:relative; background:#111; border-radius:16px; height:200px; overflow:hidden;">
+        <div style="position:absolute; inset:0; background:linear-gradient(135deg, #0a0a0a, #1a1a1a); display:flex; align-items:center; justify-content:center;">
+          <span style="font-size:48px; opacity:0.06;">VISUAL CONTENT</span>
+        </div>
+        <div class="al-stats-card" style="position:absolute; bottom:16px; left:16px; right:16px; display:flex; gap:32px; align-items:center;">
+          <div>
+            <div class="stat-number">15K+</div>
+            <div class="stat-label">Alunos</div>
+          </div>
+          <div style="width:1px; height:40px; background:rgba(255,255,255,0.1);"></div>
+          <div>
+            <div class="stat-number">R$200M+</div>
+            <div class="stat-label">Faturamento</div>
+          </div>
+        </div>
+      </div>
+      <div class="code-label" style="margin-top:12px;">bg: #141414cc (80%) | backdrop-filter: blur(8px) | border: 1px solid #242424 | radius: 8px | position: absolute</div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Shadow / Depth Tiers</h3>
+      <p style="font-size:14px; color:rgba(255,255,255,0.5); margin-bottom:16px;">Academia Lendaria uses almost no box-shadows. Depth is created entirely through background layering and borders.</p>
+      <div class="shadow-tiers">
+        <div class="shadow-demo" style="background:#000; border:1px solid #242424;">
+          <span>Layer 1</span>
+          <span style="font-size:10px;">#000 + border</span>
+        </div>
+        <div class="shadow-demo" style="background:#111;">
+          <span>Layer 2</span>
+          <span style="font-size:10px;">#111</span>
+        </div>
+        <div class="shadow-demo" style="background:#161616;">
+          <span>Layer 3</span>
+          <span style="font-size:10px;">#161616</span>
+        </div>
+        <div class="shadow-demo" style="background:rgba(255,255,255,0.08); backdrop-filter:blur(12px);">
+          <span>Glass</span>
+          <span style="font-size:10px;">blur + alpha</span>
+        </div>
+        <div class="shadow-demo" style="background:rgba(20,20,20,0.8); backdrop-filter:blur(8px); border:1px solid #242424;">
+          <span>Overlay</span>
+          <span style="font-size:10px;">#141414cc</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       6. ANIMATION SHOWCASE
+       ============================================ -->
+  <section id="animations" class="section">
+    <h2 class="section-title">Animation Showcase</h2>
+    <p class="section-desc">Signature animations: text shimmer, 3D perspective entrance, fade-scale, and rotating borders. All animations use slow, deliberate timing.</p>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Text Shimmer</h3>
+      <div class="anim-demo">
+        <div class="demo-shimmer">Lendaria</div>
+      </div>
+      <div class="code-label" style="margin-top:8px;">background-clip: text | gradient 200% width | animation: 13s ease-in-out infinite | gradient: #fff -> #b8b8b8 -> #fff</div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">3D Perspective Entrance</h3>
+      <div class="anim-demo" id="anim-3d">
+        <button class="replay-btn" onclick="replay3D()">Replay</button>
+        <div class="demo-3d-wrapper">
+          <div class="demo-3d-box entering" id="box3d">3D Entrance</div>
+        </div>
+      </div>
+      <div class="code-label" style="margin-top:8px;">perspective: 1200px | translateY(150px) rotateX(15deg) -> translateY(0) rotateX(0) | 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)</div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Fade-In Scale</h3>
+      <div class="anim-demo" id="anim-fade">
+        <button class="replay-btn" onclick="replayFade()">Replay</button>
+        <div class="demo-fade-box entering" id="boxFade">Fade Scale</div>
+      </div>
+      <div class="code-label" style="margin-top:8px;">scale(0.95) opacity(0) -> scale(1) opacity(1) | 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)</div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Easing Curves (hover to animate)</h3>
+      <div class="easing-grid">
+        <div class="easing-item">
+          <div class="easing-item__label">Standard Ease</div>
+          <div class="easing-item__css">transition: 0.3s ease</div>
+          <div class="easing-bar-track">
+            <div class="easing-bar-fill ease-smooth"></div>
+          </div>
+        </div>
+        <div class="easing-item">
+          <div class="easing-item__label">Entrance (3D)</div>
+          <div class="easing-item__css">1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)</div>
+          <div class="easing-bar-track">
+            <div class="easing-bar-fill ease-entrance"></div>
+          </div>
+        </div>
+        <div class="easing-item">
+          <div class="easing-item__label">Bounce Out</div>
+          <div class="easing-item__css">0.6s cubic-bezier(0.34, 1.56, 0.64, 1)</div>
+          <div class="easing-bar-track">
+            <div class="easing-bar-fill ease-bounce"></div>
+          </div>
+        </div>
+        <div class="easing-item">
+          <div class="easing-item__label">Linear</div>
+          <div class="easing-item__css">0.5s linear (marquee, border rotation)</div>
+          <div class="easing-bar-track">
+            <div class="easing-bar-fill ease-linear"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3 class="subsection-title">Duration Scale</h3>
+      <div class="duration-grid">
+        <div class="duration-item">
+          <div class="duration-item__value">0.2s</div>
+          <div class="duration-item__usage">Hub button hover</div>
+          <div class="duration-item__bar"><div class="duration-item__fill" style="transition:width 0.2s ease;"></div></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__value">0.3s</div>
+          <div class="duration-item__usage">Standard transitions</div>
+          <div class="duration-item__bar"><div class="duration-item__fill" style="transition:width 0.3s ease;"></div></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__value">0.6s</div>
+          <div class="duration-item__usage">Fade-in scale</div>
+          <div class="duration-item__bar"><div class="duration-item__fill" style="transition:width 0.6s ease;"></div></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__value">1.2s</div>
+          <div class="duration-item__usage">3D entrance</div>
+          <div class="duration-item__bar"><div class="duration-item__fill" style="transition:width 1.2s cubic-bezier(0.25,0.46,0.45,0.94);"></div></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__value">6.4s</div>
+          <div class="duration-item__usage">Border rotation</div>
+          <div class="duration-item__bar"><div class="duration-item__fill" style="transition:width 3s linear;"></div></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__value">13s</div>
+          <div class="duration-item__usage">Text shimmer</div>
+          <div class="duration-item__bar"><div class="duration-item__fill" style="transition:width 5s ease;"></div></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__value">40s</div>
+          <div class="duration-item__usage">Logo marquee</div>
+          <div class="duration-item__bar"><div class="duration-item__fill" style="transition:width 8s linear;"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       7. EFFECTS GALLERY
+       ============================================ -->
+  <section id="effects" class="section">
+    <h2 class="section-title">Effects Gallery</h2>
+    <p class="section-desc">Live-rendered examples of visual effects used across the site. Depth is created through layering, not shadows.</p>
+
+    <div class="effects-grid">
+      <!-- Glassmorphism -->
+      <div class="effect-demo">
+        <div class="effect-demo__visual" style="background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);">
+          <div style="background:rgba(255,255,255,0.08); backdrop-filter:blur(12px) saturate(180%); -webkit-backdrop-filter:blur(12px) saturate(180%); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px 32px; color:#fff; font-size:14px; font-weight:500;">
+            Glass Panel
+          </div>
+        </div>
+        <div class="effect-demo__info">
+          <div class="effect-demo__name">Glassmorphism</div>
+          <div class="effect-demo__css">backdrop-filter: blur(12px) saturate(180%)<br>background: rgba(255,255,255,0.08)<br>border: 1px solid rgba(255,255,255,0.08)</div>
+        </div>
+      </div>
+
+      <!-- Backdrop blur levels -->
+      <div class="effect-demo">
+        <div class="effect-demo__visual" style="background:linear-gradient(135deg, #ffd44a33, #ff660033, #5e5ce633); display:flex; gap:12px; padding:16px;">
+          <div style="flex:1; background:rgba(20,20,20,0.8); backdrop-filter:blur(8px); border-radius:8px; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.7); font-size:11px;">blur(8px)</div>
+          <div style="flex:1; background:rgba(20,20,20,0.6); backdrop-filter:blur(12px); border-radius:8px; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.7); font-size:11px;">blur(12px)</div>
+          <div style="flex:1; background:rgba(20,20,20,0.4); backdrop-filter:blur(20px); border-radius:8px; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.7); font-size:11px;">blur(20px)</div>
+        </div>
+        <div class="effect-demo__info">
+          <div class="effect-demo__name">Blur Tiers</div>
+          <div class="effect-demo__css">Light: blur(8px) -- stats overlay<br>Standard: blur(12px) -- glass cards<br>Heavy: blur(20px) -- full overlays</div>
+        </div>
+      </div>
+
+      <!-- Edge fade gradient -->
+      <div class="effect-demo">
+        <div class="effect-demo__visual" style="background:#000; display:flex; align-items:center; overflow:hidden; position:relative;">
+          <div style="position:absolute; left:0; top:0; bottom:0; width:80px; background:linear-gradient(90deg, #000 0%, transparent 100%); z-index:2;"></div>
+          <div style="position:absolute; right:0; top:0; bottom:0; width:80px; background:linear-gradient(270deg, #000 0%, transparent 100%); z-index:2;"></div>
+          <div style="display:flex; gap:40px; padding:0 40px; animation: demoMarquee 8s linear infinite;">
+            <span style="color:rgba(255,255,255,0.3); font-size:13px; white-space:nowrap;">LOGO</span>
+            <span style="color:rgba(255,255,255,0.3); font-size:13px; white-space:nowrap;">LOGO</span>
+            <span style="color:rgba(255,255,255,0.3); font-size:13px; white-space:nowrap;">LOGO</span>
+            <span style="color:rgba(255,255,255,0.3); font-size:13px; white-space:nowrap;">LOGO</span>
+            <span style="color:rgba(255,255,255,0.3); font-size:13px; white-space:nowrap;">LOGO</span>
+            <span style="color:rgba(255,255,255,0.3); font-size:13px; white-space:nowrap;">LOGO</span>
+            <span style="color:rgba(255,255,255,0.3); font-size:13px; white-space:nowrap;">LOGO</span>
+            <span style="color:rgba(255,255,255,0.3); font-size:13px; white-space:nowrap;">LOGO</span>
+          </div>
+        </div>
+        <div class="effect-demo__info">
+          <div class="effect-demo__name">Marquee Edge Fade</div>
+          <div class="effect-demo__css">::before linear-gradient(90deg, #000, transparent)<br>::after linear-gradient(270deg, #000, transparent)<br>width: 100px (desktop) / 50px (mobile)</div>
+        </div>
+      </div>
+
+      <!-- Conic gradient border -->
+      <div class="effect-demo">
+        <div class="effect-demo__visual" style="background:#000; display:flex; align-items:center; justify-content:center;">
+          <div style="background: linear-gradient(45deg, #161616, #1a1a1a 50%, #161616) padding-box, conic-gradient(from var(--border-angle), #242424 80%, #646464 86%, #646464 90%, #646464 94%, #242424) border-box; border:1px solid transparent; border-radius:12px; width:120px; height:80px; animation: rotateBorder 6.4s linear infinite; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.5); font-size:12px;">rotating</div>
+        </div>
+        <div class="effect-demo__info">
+          <div class="effect-demo__name">Conic Border Rotation</div>
+          <div class="effect-demo__css">@property --border-angle<br>conic-gradient(from var(--border-angle))<br>animation: 6.4s linear infinite</div>
+        </div>
+      </div>
+
+      <!-- Gold gradient -->
+      <div class="effect-demo">
+        <div class="effect-demo__visual" style="background: linear-gradient(135deg, gold 0%, orange 100%); display:flex; align-items:center; justify-content:center;">
+          <span style="color:rgba(0,0,0,0.6); font-size:14px; font-weight:600;">Gold Gradient</span>
+        </div>
+        <div class="effect-demo__info">
+          <div class="effect-demo__name">Accent Gradient</div>
+          <div class="effect-demo__css">linear-gradient(135deg, gold 0%, orange 100%)<br>Usage: feature highlights, premium badges</div>
+        </div>
+      </div>
+
+      <!-- Monochrome logo filter -->
+      <div class="effect-demo">
+        <div class="effect-demo__visual" style="background:#000; display:flex; gap:24px; align-items:center; justify-content:center;">
+          <div style="width:60px; height:30px; background:#e74c3c; border-radius:4px; filter:grayscale(100%) brightness(0) invert(1); opacity:0.5; transition:opacity 0.3s;" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.5'"></div>
+          <div style="width:60px; height:30px; background:#3498db; border-radius:4px; filter:grayscale(100%) brightness(0) invert(1); opacity:0.5; transition:opacity 0.3s;" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.5'"></div>
+          <div style="width:60px; height:30px; background:#2ecc71; border-radius:4px; filter:grayscale(100%) brightness(0) invert(1); opacity:0.5; transition:opacity 0.3s;" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.5'"></div>
+        </div>
+        <div class="effect-demo__info">
+          <div class="effect-demo__name">Monochrome Logo Filter</div>
+          <div class="effect-demo__css">filter: grayscale(100%) brightness(0) invert(1)<br>opacity: 0.5 -> hover: 1.0<br>transition: opacity 0.3s</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       8. SECTION LAYOUTS
+       ============================================ -->
+  <section id="layouts" class="section">
+    <h2 class="section-title">Section Layouts</h2>
+    <p class="section-desc">Simplified wireframe reproductions of key section patterns from the homepage.</p>
+
+    <!-- Hero Layout -->
+    <div class="layout-wireframe">
+      <div class="wireframe-label">Hero Section</div>
+      <div class="wireframe-content" style="background:#000; min-height:300px; position:relative;">
+        <div style="padding:8px 8px 0;">
+          <div style="background:linear-gradient(to bottom, #1a1a2e, #0a0a0a); border-radius:16px; min-height:280px; padding:48px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; position:relative; overflow:hidden;">
+            <div style="position:absolute; inset:0; background:rgba(36,36,36,0.4);"></div>
+            <div style="position:relative; z-index:1;">
+              <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.24); margin-bottom:16px;">ECOSYSTEM LABEL</div>
+              <div style="font-size:clamp(28px, 4vw, 48px); font-weight:800; letter-spacing:-0.04em; line-height:1.1; color:#fff; margin-bottom:16px;">Main Headline Text</div>
+              <div style="font-size:16px; color:rgba(255,255,255,0.7); margin-bottom:32px; max-width:500px;">Supporting paragraph with secondary text opacity</div>
+              <button class="al-btn-primary" style="padding:16px 36px; font-size:14px;">Explorar</button>
+            </div>
+          </div>
+        </div>
+        <div class="code-label" style="position:absolute; bottom:8px; right:8px;">padding: 8px 8px 0 | inner radius: 16px | min-height: 100vh | overlay: #24242466</div>
+      </div>
+    </div>
+
+    <!-- Two-Column Content -->
+    <div class="layout-wireframe">
+      <div class="wireframe-label">Two-Column Content (Intro Section)</div>
+      <div class="wireframe-content" style="background:#000;">
+        <div style="text-align:center; margin-bottom:32px;">
+          <div style="font-size:clamp(24px, 3vw, 40px); font-weight:600; letter-spacing:-0.02em; color:#fff;">Section Title with <span style="background:linear-gradient(110deg, #fff 40%, #b8b8b8 50%, #fff 60%); background-size:200% 100%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:shimmer 13s ease-in-out infinite;">Shimmer Text</span></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px;">
+          <div style="background:linear-gradient(45deg, #161616, #1a1a1a 50%, #161616); border:1px solid #242424; border-radius:16px; padding:32px;">
+            <div class="wireframe-placeholder" style="margin-bottom:16px;">Paragraph 1 (color: #ffffffb3)</div>
+            <div class="wireframe-placeholder" style="margin-bottom:16px;">Paragraph 2 with <strong>bold white</strong></div>
+            <div class="wireframe-placeholder">CTA Button</div>
+          </div>
+          <div style="background:linear-gradient(45deg, #000, #0a0a0a 50%, #000); border:1px solid #242424; border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:center; min-height:200px; position:relative;">
+            <div class="wireframe-placeholder" style="width:80%; aspect-ratio:1;">Visual / Globe / Image</div>
+            <div style="position:absolute; bottom:12px; left:12px; right:12px; background:rgba(20,20,20,0.8); border:1px solid #242424; border-radius:8px; padding:12px;">
+              <span style="font-size:11px; color:rgba(255,255,255,0.5);">Stats overlay card</span>
+            </div>
+          </div>
+        </div>
+        <div class="code-label" style="margin-top:8px;">grid: 1fr 1fr | gap: 64px (desktop) -> 1fr at 1024px | perspective: 1200px on parent | 3D entrance animation</div>
+      </div>
+    </div>
+
+    <!-- Logo Marquee -->
+    <div class="layout-wireframe">
+      <div class="wireframe-label">Trust Logos Marquee</div>
+      <div class="wireframe-content" style="background:#000; padding:32px;">
+        <div style="position:relative; overflow:hidden; padding:16px 0;">
+          <div style="position:absolute; left:0; top:0; bottom:0; width:60px; background:linear-gradient(90deg, #000, transparent); z-index:2;"></div>
+          <div style="position:absolute; right:0; top:0; bottom:0; width:60px; background:linear-gradient(270deg, #000, transparent); z-index:2;"></div>
+          <div style="display:flex; gap:60px; align-items:center;">
+            <div class="wireframe-placeholder" style="width:80px; height:24px; flex-shrink:0;">Logo</div>
+            <div class="wireframe-placeholder" style="width:80px; height:24px; flex-shrink:0;">Logo</div>
+            <div class="wireframe-placeholder" style="width:80px; height:24px; flex-shrink:0;">Logo</div>
+            <div class="wireframe-placeholder" style="width:80px; height:24px; flex-shrink:0;">Logo</div>
+            <div class="wireframe-placeholder" style="width:80px; height:24px; flex-shrink:0;">Logo</div>
+            <div class="wireframe-placeholder" style="width:80px; height:24px; flex-shrink:0;">Logo</div>
+          </div>
+        </div>
+        <div style="text-align:center; margin-top:24px; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.24);">TRUSTED BY LEADING COMPANIES</div>
+        <div class="code-label" style="margin-top:8px;">marquee: 40s linear infinite | logos: grayscale + invert filter @ 50% opacity | edge fade: 100px pseudo-elements</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       9. SIGNATURE ELEMENTS
+       ============================================ -->
+  <section id="signature" class="section">
+    <h2 class="section-title">Signature Elements</h2>
+    <p class="section-desc">The 3-4 visual treatments that define Academia Lendaria's design personality, with adaptation notes for Reis IA.</p>
+
+    <!-- Signature 1: Rotating Border -->
+    <div class="subsection">
+      <h3 class="subsection-title">1. Rotating Conic Gradient Borders</h3>
+      <p style="font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:16px;">The most distinctive visual element. A subtle bright spot rotates around card edges using animated CSS custom properties. Creates a premium, tech-forward feel without being flashy.</p>
+      <div style="display:flex; gap:24px; flex-wrap:wrap;">
+        <div style="background: linear-gradient(45deg, #161616, #1a1a1a 50%, #161616) padding-box, conic-gradient(from var(--border-angle), #242424 80%, #646464 86%, #646464 90%, #646464 94%, #242424) border-box; border:1px solid transparent; border-radius:16px; padding:32px; width:200px; animation: rotateBorder 6.4s linear infinite; display:flex; align-items:center; justify-content:center;">
+          <span style="color:rgba(255,255,255,0.5); font-size:13px;">Original (gray)</span>
+        </div>
+        <div style="background: linear-gradient(45deg, #111, #141414 50%, #111) padding-box, conic-gradient(from var(--border-angle), #242424 75%, #C9A84C 82%, #D4B65E 88%, #C9A84C 94%, #242424) border-box; border:1px solid transparent; border-radius:12px; padding:32px; width:200px; animation: rotateBorder 8s linear infinite; animation-delay: -2s; display:flex; align-items:center; justify-content:center;">
+          <span style="color:#C9A84C; font-size:13px;">Reis IA (gold)</span>
+        </div>
+      </div>
+      <div class="reis-adaptation">
+        <div class="reis-adaptation__title">Reis IA Adaptation</div>
+        <div class="reis-adaptation__text">Replace the gray gradient highlights (#646464) with Reis IA gold (#C9A84C / #D4B65E). Slow the rotation to 8s for added sophistication. Use on pricing cards or the "How It Works" process section. Limit to 2-3 cards per page to maintain impact.</div>
+      </div>
+    </div>
+
+    <!-- Signature 2: 3D Entrance -->
+    <div class="subsection">
+      <h3 class="subsection-title">2. 3D Perspective Scroll Entrance</h3>
+      <p style="font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:16px;">Content enters with combined translateY + rotateX creating a "cards flipping up from a table" effect. More sophisticated than standard fade-ups. The 1.2s duration with refined cubic-bezier adds weight and gravitas.</p>
+      <div class="anim-demo" style="min-height:180px;" id="anim-3d-sig">
+        <button class="replay-btn" onclick="replay3DSig()">Replay</button>
+        <div style="perspective:1200px; width:100%; display:flex; justify-content:center;">
+          <div id="box3dSig" style="width:280px; height:100px; background:linear-gradient(45deg, #161616, #1a1a1a 50%, #161616); border:1px solid #242424; border-radius:16px; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.7); font-size:14px; transform-origin:bottom; transform-style:preserve-3d; opacity:1; transform:translateY(0) rotateX(0); transition: opacity 1.2s cubic-bezier(0.25,0.46,0.45,0.94), transform 1.2s cubic-bezier(0.25,0.46,0.45,0.94);">
+            3D Perspective Entrance
+          </div>
+        </div>
+      </div>
+      <div class="reis-adaptation">
+        <div class="reis-adaptation__title">Reis IA Adaptation</div>
+        <div class="reis-adaptation__text">Use selectively -- hero section and one key content section only. Over-use feels gimmicky. Keep the slow 1.2s timing; do not speed it up. The cubic-bezier(0.25, 0.46, 0.45, 0.94) easing is critical to the premium feel. Consider using for the "Revenue-First Framework" reveal.</div>
+      </div>
+    </div>
+
+    <!-- Signature 3: Text Shimmer -->
+    <div class="subsection">
+      <h3 class="subsection-title">3. Slow Text Shimmer</h3>
+      <p style="font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:16px;">Headlines use background-clip: text with a gradient that creates an almost imperceptible shimmer. The 13-second cycle is deliberately slow -- you notice it subconsciously rather than consciously.</p>
+      <div style="display:flex; flex-direction:column; gap:24px; margin-top:16px;">
+        <div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(255,255,255,0.4); margin-bottom:8px;">Original (white-gray)</div>
+          <div style="font-size:36px; font-weight:700; letter-spacing:-0.02em; background:linear-gradient(110deg, #fff 0% 40%, #b8b8b8 50%, #fff 60% 100%); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:shimmer 13s ease-in-out infinite;">
+            Revenue-First AI
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(255,255,255,0.4); margin-bottom:8px;">Reis IA Adaptation (white-gold)</div>
+          <div style="font-size:36px; font-weight:700; letter-spacing:-0.02em; background:linear-gradient(110deg, #fff 0% 35%, #C9A84C 48%, #D4B65E 52%, #fff 65% 100%); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:goldShimmer 15s ease-in-out infinite;">
+            Revenue-First AI
+          </div>
+        </div>
+      </div>
+      <div class="reis-adaptation">
+        <div class="reis-adaptation__title">Reis IA Adaptation</div>
+        <div class="reis-adaptation__text">Replace the gray shimmer (#b8b8b8) with Reis IA gold (#C9A84C / #D4B65E). Extend the cycle to 15s for even more subtlety. Use only on the hero headline of each page. The gold shimmer reinforces brand color without being obvious.</div>
+      </div>
+    </div>
+
+    <!-- Signature 4: Layered Depth -->
+    <div class="subsection">
+      <h3 class="subsection-title">4. Shadow-Free Depth System</h3>
+      <p style="font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:16px;">Depth is created entirely through background color layering and border treatments, not box-shadows. This is unusual and distinctive -- most dark-mode sites use subtle shadows for elevation. The result is a flatter, more architectural feel.</p>
+      <div style="display:flex; gap:4px; align-items:stretch; height:120px; margin-top:16px;">
+        <div style="flex:1; background:#000; border-radius:8px 0 0 8px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+          <span style="font-size:11px; color:rgba(255,255,255,0.5);">Level 0</span>
+          <span class="code-label">#000</span>
+        </div>
+        <div style="flex:1; background:#0a0a0a; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+          <span style="font-size:11px; color:rgba(255,255,255,0.5);">Level 1</span>
+          <span class="code-label">#0a0a0a</span>
+        </div>
+        <div style="flex:1; background:#111; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+          <span style="font-size:11px; color:rgba(255,255,255,0.5);">Level 2</span>
+          <span class="code-label">#111</span>
+        </div>
+        <div style="flex:1; background:#141414; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+          <span style="font-size:11px; color:rgba(255,255,255,0.5);">Level 3</span>
+          <span class="code-label">#141414</span>
+        </div>
+        <div style="flex:1; background:#161616; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+          <span style="font-size:11px; color:rgba(255,255,255,0.5);">Level 4</span>
+          <span class="code-label">#161616</span>
+        </div>
+        <div style="flex:1; background:#1a1a1a; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+          <span style="font-size:11px; color:rgba(255,255,255,0.5);">Level 5</span>
+          <span class="code-label">#1a1a1a</span>
+        </div>
+        <div style="flex:1; background:#242424; border-radius:0 8px 8px 0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+          <span style="font-size:11px; color:rgba(255,255,255,0.5);">Border</span>
+          <span class="code-label">#242424</span>
+        </div>
+      </div>
+      <div class="reis-adaptation">
+        <div class="reis-adaptation__title">Reis IA Adaptation</div>
+        <div class="reis-adaptation__text">Directly adopt this layered depth system. Reis IA already uses bg-black / bg-neutral-950 alternation. Extend to include #141414 and #1a1a1a for card surfaces. Continue avoiding box-shadows on dark backgrounds -- they look artificial. Use borders (#242424) and background differentiation for all elevation.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<style>
+  @keyframes demoMarquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @keyframes goldShimmer {
+    0%, 100% { background-position: 200% 0; }
+    25% { background-position: -200% 0; }
+  }
+</style>
+
+<script>
+  // IntersectionObserver for active nav tracking
+  document.addEventListener('DOMContentLoaded', () => {
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.sidebar nav a');
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            navLinks.forEach((link) => link.classList.remove('active'));
+            const activeLink = document.querySelector(`.sidebar nav a[href="#${entry.target.id}"]`);
+            if (activeLink) activeLink.classList.add('active');
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '-80px 0px -60% 0px' }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+  });
+
+  // 3D entrance replay
+  function replay3D() {
+    const box = document.getElementById('box3d');
+    box.classList.remove('entering');
+    box.classList.add('hidden');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        box.classList.remove('hidden');
+        box.classList.add('entering');
+      });
+    });
+  }
+
+  // Fade-in replay
+  function replayFade() {
+    const box = document.getElementById('boxFade');
+    box.classList.remove('entering');
+    box.classList.add('hidden');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        box.classList.remove('hidden');
+        box.classList.add('entering');
+      });
+    });
+  }
+
+  // 3D signature replay
+  function replay3DSig() {
+    const box = document.getElementById('box3dSig');
+    box.style.transition = 'none';
+    box.style.opacity = '0';
+    box.style.transform = 'translateY(150px) rotateX(15deg)';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        box.style.transition = 'opacity 1.2s cubic-bezier(0.25,0.46,0.45,0.94), transform 1.2s cubic-bezier(0.25,0.46,0.45,0.94)';
+        box.style.opacity = '1';
+        box.style.transform = 'translateY(0) rotateX(0)';
+      });
+    });
+  }
+
+  // Duration scale hover animation
+  document.querySelectorAll('.duration-item').forEach((item) => {
+    const fill = item.querySelector('.duration-item__fill');
+    item.addEventListener('mouseenter', () => { fill.style.width = '100%'; });
+    item.addEventListener('mouseleave', () => { fill.style.width = '0'; });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agencia Lendaria Design System Reference — Reis IA Phase 3</title>
+<style>
+  /* ============================================
+     PREVIEW PAGE STYLES (not part of the design system)
+     ============================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @font-face {
+    font-family: 'Inter';
+    src: local('Inter');
+  }
+
+  @font-face {
+    font-family: 'Satoshi';
+    src: local('Satoshi');
+  }
+
+  :root {
+    --preview-bg: #0a0a0a;
+    --preview-surface: #141416;
+    --preview-surface-2: #1c1c1e;
+    --preview-border: rgba(255,255,255,0.08);
+    --preview-text: #e5e5e5;
+    --preview-text-muted: rgba(255,255,255,0.5);
+    --preview-accent: #C9A84C;
+    --preview-code-bg: #1a1a1a;
+
+    /* Agencia Lendaria palette tokens */
+    --al-bg-0: #080808;
+    --al-bg-1: #0d0d0d;
+    --al-bg-2: #0f0f0f;
+    --al-bg-3: #131313;
+    --al-bg-4: #141414;
+    --al-bg-5: #171717;
+    --al-bg-6: #1d1d1d;
+    --al-bg-7: #232323;
+    --al-gold: #c3b68d;
+    --al-gold-15: rgba(195, 182, 141, 0.15);
+    --al-gold-10: rgba(195, 182, 141, 0.10);
+    --al-orange: rgb(252, 150, 76);
+    --al-blue: #0099ff;
+    --al-gray: #999999;
+    --al-white: #ffffff;
+    --al-white-10: rgba(255, 255, 255, 0.10);
+    --al-white-08: rgba(255, 255, 255, 0.08);
+    --al-white-05: rgba(255, 255, 255, 0.05);
+    --al-white-04: rgba(255, 255, 255, 0.04);
+    --al-shadow: 0 2px 4px rgba(8, 26, 43, 0.45);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--preview-bg);
+    color: var(--preview-text);
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar Navigation */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background: var(--preview-surface);
+    border-right: 1px solid var(--preview-border);
+    overflow-y: auto;
+    padding: 24px 0;
+    z-index: 50;
+  }
+
+  .sidebar h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--preview-accent);
+    padding: 0 20px;
+    margin-bottom: 4px;
+  }
+
+  .sidebar .subtitle {
+    font-size: 11px;
+    color: var(--preview-text-muted);
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+
+  .sidebar nav a {
+    display: block;
+    padding: 8px 20px;
+    color: var(--preview-text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar nav a:hover,
+  .sidebar nav a.active {
+    color: var(--preview-text);
+    background: rgba(255,255,255,0.03);
+    border-left-color: var(--preview-accent);
+  }
+
+  .sidebar nav .divider {
+    height: 1px;
+    background: var(--preview-border);
+    margin: 12px 20px;
+  }
+
+  /* Main Content */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 48px 48px 120px;
+    max-width: 1100px;
+  }
+
+  .page-title {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .page-subtitle {
+    font-size: 16px;
+    color: var(--preview-text-muted);
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+
+  /* Sections */
+  .section {
+    margin-bottom: 72px;
+    scroll-margin-top: 32px;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--preview-border);
+  }
+
+  .section-desc {
+    font-size: 14px;
+    color: var(--preview-text-muted);
+    margin-bottom: 32px;
+    margin-top: 8px;
+  }
+
+  .subsection {
+    margin-bottom: 40px;
+  }
+
+  .subsection-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  /* Code Display */
+  .code-label {
+    display: inline-block;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    color: var(--preview-text-muted);
+    background: var(--preview-code-bg);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 6px;
+  }
+
+  .token-value {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* ============================================
+     1. COLOR PALETTE
+     ============================================ */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .color-swatch {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--preview-border);
+  }
+
+  .color-swatch__fill {
+    height: 80px;
+    position: relative;
+  }
+
+  .color-swatch__info {
+    padding: 10px 12px;
+    background: var(--preview-surface);
+  }
+
+  .color-swatch__name {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .color-swatch__hex {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    color: var(--preview-text-muted);
+  }
+
+  /* ============================================
+     2. TYPOGRAPHY
+     ============================================ */
+  .type-specimen {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .type-specimen:last-child { border-bottom: none; }
+
+  .type-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .type-meta span {
+    font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--preview-text-muted);
+    background: var(--preview-code-bg);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  /* ============================================
+     3. SPACING
+     ============================================ */
+  .spacing-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .spacing-label {
+    width: 70px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .spacing-bar {
+    height: 32px;
+    background: linear-gradient(135deg, var(--al-gold), #8a7a56);
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+  }
+
+  .spacing-bar .token-value {
+    font-size: 10px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .padding-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .padding-card {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .padding-card__title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .padding-card__value {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--al-gold);
+    margin-bottom: 4px;
+  }
+
+  .padding-card__usage {
+    font-size: 11px;
+    color: var(--preview-text-muted);
+  }
+
+  .radius-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+
+  .radius-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .radius-box {
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--al-gold);
+    background: var(--al-bg-4);
+  }
+
+  .radius-item .token-value {
+    font-size: 11px;
+  }
+
+  /* ============================================
+     4. BUTTONS
+     ============================================ */
+  .button-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .button-card {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 8px;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    min-width: 220px;
+  }
+
+  .button-card__label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--preview-text-muted);
+  }
+
+  /* Agencia Lendaria buttons */
+  .al-btn-primary {
+    background: linear-gradient(99deg, #36332f4d, #12110d99);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 6px 18px 6px 14px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(8, 26, 43, 0.45);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.3s ease, border-color 0.3s ease;
+  }
+
+  .al-btn-primary:hover {
+    opacity: 0.8;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .al-btn-primary .arrow {
+    font-size: 12px;
+    transition: transform 0.2s ease;
+  }
+
+  .al-btn-primary:hover .arrow {
+    transform: translateX(2px);
+  }
+
+  .al-btn-link {
+    background: none;
+    border: none;
+    color: var(--al-blue);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 6px 8px;
+    transition: opacity 0.2s ease;
+  }
+
+  .al-btn-link:hover {
+    opacity: 0.7;
+  }
+
+  /* Reis IA adapted button */
+  .reis-btn-ghost-warm {
+    background: linear-gradient(99deg, rgba(201,168,76,0.06), rgba(0,0,0,0.4));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 8px 20px 10px 16px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color 0.3s ease, background 0.3s ease;
+  }
+
+  .reis-btn-ghost-warm:hover {
+    border-color: rgba(201,168,76,0.2);
+    background: linear-gradient(99deg, rgba(201,168,76,0.10), rgba(0,0,0,0.5));
+  }
+
+  /* ============================================
+     5. CARDS
+     ============================================ */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .al-card {
+    background: var(--al-bg-4);
+    border: 1px solid var(--al-white-05);
+    border-radius: 10px;
+    padding: 45px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: border-color 0.4s ease, transform 0.5s cubic-bezier(0.7, 0, 0, 1), box-shadow 0.5s cubic-bezier(0.7, 0, 0, 1);
+  }
+
+  .al-card:hover {
+    border-color: var(--al-white-10);
+    transform: scale(1.015);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .al-card__title {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+
+  .al-card__desc {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--al-gray);
+    line-height: 1.5;
+  }
+
+  .al-card__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--al-bg-6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  /* Shadow showcase */
+  .shadow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .shadow-card {
+    height: 120px;
+    background: var(--al-bg-4);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .shadow-card__name {
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* ============================================
+     6. ANIMATIONS
+     ============================================ */
+  .entrance-demo {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 32px;
+    background: var(--preview-surface);
+    border-radius: 12px;
+    border: 1px solid var(--preview-border);
+    margin-bottom: 24px;
+    min-height: 120px;
+    align-items: center;
+  }
+
+  .entrance-box {
+    width: 80px;
+    height: 80px;
+    background: var(--al-bg-4);
+    border: 1px solid var(--al-white-08);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--preview-text-muted);
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .entrance-box.animate {
+    animation: entranceFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .entrance-box.animate:nth-child(2) { animation-delay: 0.1s; }
+  .entrance-box.animate:nth-child(3) { animation-delay: 0.2s; }
+  .entrance-box.animate:nth-child(4) { animation-delay: 0.3s; }
+
+  @keyframes entranceFadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .replay-btn {
+    background: var(--preview-surface-2);
+    border: 1px solid var(--preview-border);
+    color: var(--preview-text);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: background 0.2s;
+  }
+
+  .replay-btn:hover {
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* Easing curve visualizer */
+  .easing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .easing-item {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+  }
+
+  .easing-item__name {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .easing-item__value {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 10px;
+    color: var(--preview-text-muted);
+    margin-bottom: 12px;
+  }
+
+  .easing-bar-track {
+    height: 6px;
+    background: var(--al-bg-6);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .easing-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--al-gold);
+    border-radius: 3px;
+  }
+
+  .easing-item:hover .easing-bar-fill {
+    width: 100%;
+  }
+
+  .easing-bar-fill.ease-out {
+    transition: width 0.6s ease-out;
+  }
+
+  .easing-bar-fill.ease-in-out {
+    transition: width 0.6s ease-in-out;
+  }
+
+  .easing-bar-fill.cubic-heavy {
+    transition: width 0.5s cubic-bezier(0.7, 0, 0, 1);
+  }
+
+  .easing-bar-fill.cubic-spring {
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Duration scale */
+  .duration-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .duration-item {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .duration-item__time {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--al-gold);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .duration-item__usage {
+    font-size: 11px;
+    color: var(--preview-text-muted);
+    margin-top: 4px;
+  }
+
+  .duration-item__dot {
+    width: 8px;
+    height: 8px;
+    background: var(--al-gold);
+    border-radius: 50%;
+    margin: 12px auto 0;
+    opacity: 0;
+    transition-property: opacity, transform;
+    transition-timing-function: ease-out;
+  }
+
+  .duration-item:hover .duration-item__dot {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+
+  /* ============================================
+     7. EFFECTS GALLERY
+     ============================================ */
+  .effects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+  }
+
+  .effect-card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--preview-border);
+  }
+
+  .effect-card__display {
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .effect-card__info {
+    padding: 16px;
+    background: var(--preview-surface);
+  }
+
+  .effect-card__name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .effect-card__code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 10px;
+    color: var(--preview-text-muted);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* Light pool demo */
+  .light-pool-demo {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .light-pool-bl {
+    background: radial-gradient(35% 50% at 0% 100%, rgba(255,255,255,0.12) 0%, #080808 100%);
+  }
+
+  .light-pool-tr {
+    background: radial-gradient(35% 50% at 100% 0%, rgba(255,255,255,0.12) 0%, #080808 100%);
+  }
+
+  .light-pool-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+    z-index: 1;
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  /* Glassmorphism */
+  .glass-demo {
+    background: var(--al-bg-0);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-demo-bg {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    filter: blur(30px);
+    opacity: 0.4;
+  }
+
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 16px 24px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1;
+    position: relative;
+  }
+
+  /* Gradient mask */
+  .mask-demo {
+    background: var(--al-bg-0);
+    position: relative;
+  }
+
+  .mask-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    -webkit-mask-image: linear-gradient(
+      0deg,
+      rgba(0,0,0,0) 4%,
+      rgba(0,0,0,0.73) 24%,
+      rgba(0,0,0,0.7) 72%,
+      rgba(0,0,0,0.016) 100%
+    );
+    mask-image: linear-gradient(
+      0deg,
+      rgba(0,0,0,0) 4%,
+      rgba(0,0,0,0.73) 24%,
+      rgba(0,0,0,0.7) 72%,
+      rgba(0,0,0,0.016) 100%
+    );
+  }
+
+  .mask-bar {
+    width: 24px;
+    height: 80%;
+    border-radius: 4px;
+    background: var(--al-gold);
+    opacity: 0.6;
+  }
+
+  /* Color burn demo */
+  .burn-demo {
+    background: var(--al-bg-4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .burn-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(195,182,141,0.3), transparent 70%);
+    mix-blend-mode: color-burn;
+    position: absolute;
+    transition: transform 0.5s ease;
+  }
+
+  .burn-demo:hover .burn-circle {
+    transform: scale(1.5);
+  }
+
+  .burn-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    z-index: 1;
+    position: relative;
+  }
+
+  /* Warm gradient button demo */
+  .warm-gradient-demo {
+    background: var(--al-bg-0);
+  }
+
+  /* Blur glow */
+  .glow-demo {
+    background: var(--al-bg-0);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glow-orb {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.2;
+    transition: opacity 0.5s ease;
+  }
+
+  .glow-demo:hover .glow-orb {
+    opacity: 0.35;
+  }
+
+  .glow-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    z-index: 1;
+    position: relative;
+  }
+
+  /* ============================================
+     8. SECTION LAYOUTS
+     ============================================ */
+  .layout-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .layout-frame {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .layout-frame__header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--preview-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .layout-frame__title {
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .layout-frame__tag {
+    font-size: 10px;
+    color: var(--preview-text-muted);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .layout-frame__body {
+    padding: 32px;
+  }
+
+  /* Hero wireframe */
+  .wireframe-hero {
+    background: var(--al-bg-0);
+    border-radius: 8px;
+    padding: 64px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .wireframe-hero::before {
+    content: '';
+    position: absolute;
+    inset: -40px;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(195,182,141,0.08), transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.05), transparent 50%);
+    z-index: 0;
+  }
+
+  .wireframe-hero > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .wf-headline {
+    font-size: 42px;
+    font-weight: 500;
+    letter-spacing: -2px;
+    line-height: 1.2;
+    color: #ffffff;
+  }
+
+  .wf-subhead {
+    font-size: 14px;
+    color: var(--al-gray);
+    max-width: 400px;
+    line-height: 1.5;
+  }
+
+  .wf-cta-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  /* Features wireframe */
+  .wireframe-features {
+    background: var(--al-bg-0);
+    border-radius: 8px;
+    padding: 40px 32px;
+  }
+
+  .wf-features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .wf-feature-card {
+    background: var(--al-bg-4);
+    border: 1px solid var(--al-white-05);
+    border-radius: 10px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .wf-feature-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+  }
+
+  .wf-feature-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+  }
+
+  .wf-feature-desc {
+    height: 8px;
+    background: var(--al-bg-6);
+    border-radius: 4px;
+    width: 80%;
+  }
+
+  .wf-feature-desc:last-child {
+    width: 60%;
+  }
+
+  /* CTA wireframe */
+  .wireframe-cta {
+    background: var(--al-bg-0);
+    border-radius: 8px;
+    padding: 64px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .wireframe-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(50% 50% at 50% 100%, rgba(195,182,141,0.05), transparent);
+  }
+
+  .wireframe-cta > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .wf-cta-headline {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -1px;
+    color: #ffffff;
+  }
+
+  .wf-cta-sub {
+    font-size: 14px;
+    color: var(--al-gray);
+    max-width: 360px;
+    line-height: 1.5;
+  }
+
+  /* ============================================
+     9. SIGNATURE ELEMENTS
+     ============================================ */
+  .signature-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .signature-card {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .signature-card__display {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .signature-card__info {
+    padding: 24px;
+    border-top: 1px solid var(--preview-border);
+  }
+
+  .signature-card__name {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .signature-card__desc {
+    font-size: 13px;
+    color: var(--preview-text-muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .signature-card__adaptation {
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 16px;
+    background: rgba(201, 168, 76, 0.06);
+    border: 1px solid rgba(201, 168, 76, 0.15);
+    border-radius: 8px;
+    color: var(--preview-accent);
+  }
+
+  /* Ambient light pools interactive demo */
+  .light-pool-interactive {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: var(--al-bg-0);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .light-pool-quadrant {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+    transition: background 0.6s ease;
+    cursor: pointer;
+  }
+
+  .light-pool-quadrant:nth-child(1) { background: radial-gradient(70% 70% at 0% 0%, rgba(255,255,255,0.08) 0%, var(--al-bg-0) 100%); }
+  .light-pool-quadrant:nth-child(2) { background: radial-gradient(70% 70% at 100% 0%, rgba(255,255,255,0.08) 0%, var(--al-bg-0) 100%); }
+  .light-pool-quadrant:nth-child(3) { background: radial-gradient(70% 70% at 0% 100%, rgba(255,255,255,0.08) 0%, var(--al-bg-0) 100%); }
+  .light-pool-quadrant:nth-child(4) { background: radial-gradient(70% 70% at 100% 100%, rgba(255,255,255,0.08) 0%, var(--al-bg-0) 100%); }
+
+  .light-pool-quadrant:hover {
+    background: radial-gradient(70% 70% at 50% 50%, rgba(255,255,255,0.15) 0%, var(--al-bg-0) 100%);
+  }
+
+  /* Dark depth layers */
+  .depth-layers {
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+
+  .depth-layer {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 16px;
+    font-size: 10px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: rgba(255,255,255,0.4);
+    transition: flex 0.4s ease;
+    cursor: pointer;
+  }
+
+  .depth-layer:hover {
+    flex: 1.5;
+  }
+
+  /* Gold shimmer text */
+  .gold-shimmer-text {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #C9A84C, #ffffff 40%, #C9A84C 60%, #ffffff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 8s linear infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 24px 16px 80px; }
+    .wf-features-grid { grid-template-columns: 1fr; }
+    .card-grid { grid-template-columns: 1fr; }
+    .button-grid { flex-direction: column; align-items: stretch; }
+    .button-card { min-width: unset; }
+    .wf-headline { font-size: 28px; letter-spacing: -1px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Reference Logo Header -->
+<div style="position:fixed;top:16px;right:24px;z-index:1000;opacity:0.7;">
+  <svg width="160" height="32" viewBox="0 0 200 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <text x="0" y="28" font-family="system-ui,-apple-system,sans-serif" font-size="18" font-weight="700" fill="white" letter-spacing="1">Agência Lendária</text>
+  </svg>
+</div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <h2>Agencia Lendaria</h2>
+  <div class="subtitle">Design System Reference</div>
+  <nav>
+    <a href="#colors" class="active">Color Palette</a>
+    <a href="#typography">Typography Scale</a>
+    <a href="#spacing">Spacing System</a>
+    <div class="divider"></div>
+    <a href="#buttons">Buttons &amp; CTAs</a>
+    <a href="#cards">Card Components</a>
+    <div class="divider"></div>
+    <a href="#animations">Animation Showcase</a>
+    <a href="#effects">Effects Gallery</a>
+    <div class="divider"></div>
+    <a href="#layouts">Section Layouts</a>
+    <a href="#signature">Signature Elements</a>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+  <h1 class="page-title">Agencia Lendaria Design System</h1>
+  <p class="page-subtitle">Extracted from agencialendaria.ai. Dark-mode AI agency portfolio built on Framer. Study the ambient lighting technique, gold accent system, and dark depth layering.</p>
+
+  <!-- ==========================================
+       1. COLOR PALETTE
+       ========================================== -->
+  <section class="section" id="colors">
+    <h2 class="section-title">Color Palette</h2>
+    <p class="section-desc">8-tier dark background scale, warm gold accent, and a white overlay border system.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Dark Background Scale</div>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#080808"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">BG-0 (Page)</div><div class="color-swatch__hex">#080808</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#0d0d0d"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">BG-1</div><div class="color-swatch__hex">#0d0d0d</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#0f0f0f"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">BG-2</div><div class="color-swatch__hex">#0f0f0f</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#131313"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">BG-3</div><div class="color-swatch__hex">#131313</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#141414"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">BG-4 (Cards)</div><div class="color-swatch__hex">#141414</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#171717"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">BG-5 (Surface)</div><div class="color-swatch__hex">#171717</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#1d1d1d"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">BG-6 (Hover)</div><div class="color-swatch__hex">#1d1d1d</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#232323"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">BG-7 (Active)</div><div class="color-swatch__hex">#232323</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Accent Colors</div>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#c3b68d"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">Gold (Primary)</div><div class="color-swatch__hex">#c3b68d</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(195,182,141,0.15)"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">Gold 15%</div><div class="color-swatch__hex">rgba(195,182,141,.15)</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgb(252,150,76)"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">Orange (Warm)</div><div class="color-swatch__hex">rgb(252,150,76)</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#0099ff"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">Blue (Links)</div><div class="color-swatch__hex">#0099ff</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Text Colors</div>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#ffffff"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">Primary Text</div><div class="color-swatch__hex">#ffffff</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:#999999"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">Secondary Text</div><div class="color-swatch__hex">#999999</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">White Overlay Scale (Borders)</div>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.04)"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">Ghost</div><div class="color-swatch__hex">white 4%</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.05)"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">Subtle</div><div class="color-swatch__hex">white 5%</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.08)"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">Default</div><div class="color-swatch__hex">white 8%</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch__fill" style="background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.10)"></div>
+          <div class="color-swatch__info"><div class="color-swatch__name">Emphasis</div><div class="color-swatch__hex">white 10%</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       2. TYPOGRAPHY
+       ========================================== -->
+  <section class="section" id="typography">
+    <h2 class="section-title">Typography Scale</h2>
+    <p class="section-desc">Inter (primary) and Satoshi (accent). Notably uses weight 500 for headlines and weight 600 for body text.</p>
+
+    <div class="type-specimen">
+      <div style="font-size:75px; font-weight:500; letter-spacing:-3px; line-height:1.2; color:#ffffff">Display H2</div>
+      <div class="type-meta">
+        <span>75px</span>
+        <span>weight: 500</span>
+        <span>letter-spacing: -3px</span>
+        <span>line-height: 1.2</span>
+        <span>Inter</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:60px; font-weight:500; letter-spacing:-2.5px; line-height:1.2; color:#ffffff">Display (Tablet)</div>
+      <div class="type-meta">
+        <span>60px</span>
+        <span>weight: 500</span>
+        <span>letter-spacing: -2.5px</span>
+        <span>line-height: 1.2</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:44px; font-weight:500; letter-spacing:-2.5px; line-height:1.2; color:#ffffff">Display (Mobile)</div>
+      <div class="type-meta">
+        <span>44px</span>
+        <span>weight: 500</span>
+        <span>letter-spacing: -2.5px</span>
+        <span>line-height: 1.2</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:35px; font-weight:500; letter-spacing:-1.2px; line-height:1.4; color:#ffffff">Heading H3</div>
+      <div class="type-meta">
+        <span>35px</span>
+        <span>weight: 500</span>
+        <span>letter-spacing: -1.2px</span>
+        <span>line-height: 1.4</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:30px; font-weight:500; letter-spacing:-1.2px; line-height:1.4; color:#ffffff">Heading H3 (Mobile)</div>
+      <div class="type-meta">
+        <span>30px</span>
+        <span>weight: 500</span>
+        <span>letter-spacing: -1.2px</span>
+        <span>line-height: 1.4</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-size:14px; font-weight:600; letter-spacing:-0.5px; line-height:1.3; color:#999999">Body text is set at 14px with unusually heavy weight 600 and tight line-height. This creates a dense, editorial feel that works for short descriptions but would struggle with long-form content. The negative letter-spacing compresses it further.</div>
+      <div class="type-meta">
+        <span>14px</span>
+        <span>weight: 600</span>
+        <span>letter-spacing: -0.5px</span>
+        <span>line-height: 1.3</span>
+        <span>color: #999999</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div style="font-family:'Satoshi', sans-serif; font-size:24px; font-weight:500; letter-spacing:-0.5px; color:#ffffff">Satoshi (Alternate Font)</div>
+      <div class="type-meta">
+        <span>Satoshi</span>
+        <span>24px</span>
+        <span>weight: 500</span>
+        <span>Used for accent/brand text</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       3. SPACING SYSTEM
+       ========================================== -->
+  <section class="section" id="spacing">
+    <h2 class="section-title">Spacing System</h2>
+    <p class="section-desc">Non-systematic spacing (not based on a strict 4px/8px scale). Values extracted from actual usage.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Gap Scale</div>
+      <div class="spacing-row"><div class="spacing-label">6px</div><div class="spacing-bar" style="width:6px"><span class="token-value"></span></div><span class="code-label">icon + text</span></div>
+      <div class="spacing-row"><div class="spacing-label">8px</div><div class="spacing-bar" style="width:16px"><span class="token-value"></span></div><span class="code-label">small groups</span></div>
+      <div class="spacing-row"><div class="spacing-label">10px</div><div class="spacing-bar" style="width:20px"><span class="token-value"></span></div><span class="code-label">compact lists</span></div>
+      <div class="spacing-row"><div class="spacing-label">15px</div><div class="spacing-bar" style="width:30px"><span class="token-value"></span></div><span class="code-label">medium spacing</span></div>
+      <div class="spacing-row"><div class="spacing-label">20px</div><div class="spacing-bar" style="width:50px"><span class="token-value"></span></div><span class="code-label">card grid gap</span></div>
+      <div class="spacing-row"><div class="spacing-label">25px</div><div class="spacing-bar" style="width:62px"><span class="token-value"></span></div><span class="code-label">content groups</span></div>
+      <div class="spacing-row"><div class="spacing-label">34px</div><div class="spacing-bar" style="width:85px"><span class="token-value"></span></div><span class="code-label">sub-groups</span></div>
+      <div class="spacing-row"><div class="spacing-label">50px</div><div class="spacing-bar" style="width:125px"><span class="token-value"></span></div><span class="code-label">card internal</span></div>
+      <div class="spacing-row"><div class="spacing-label">64px</div><div class="spacing-bar" style="width:160px"><span class="token-value"></span></div><span class="code-label">section groups</span></div>
+      <div class="spacing-row"><div class="spacing-label">100px</div><div class="spacing-bar" style="width:250px"><span class="token-value"></span></div><span class="code-label">hero spacing</span></div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Section Padding</div>
+      <div class="padding-cards">
+        <div class="padding-card">
+          <div class="padding-card__title">Nav Padding</div>
+          <div class="padding-card__value">20/40</div>
+          <div class="padding-card__usage">20px vertical, 40px horizontal</div>
+        </div>
+        <div class="padding-card">
+          <div class="padding-card__title">Card Padding</div>
+          <div class="padding-card__value">45px</div>
+          <div class="padding-card__usage">All sides, generous breathing room</div>
+        </div>
+        <div class="padding-card">
+          <div class="padding-card__title">Section (Compact)</div>
+          <div class="padding-card__value">50/40</div>
+          <div class="padding-card__usage">50px top/bottom, 40px sides</div>
+        </div>
+        <div class="padding-card">
+          <div class="padding-card__title">Section (Standard)</div>
+          <div class="padding-card__value">75/80</div>
+          <div class="padding-card__usage">75px top/bottom, 80px sides</div>
+        </div>
+        <div class="padding-card">
+          <div class="padding-card__title">Section (Large)</div>
+          <div class="padding-card__value">120px</div>
+          <div class="padding-card__usage">Vertical separation between majors</div>
+        </div>
+        <div class="padding-card">
+          <div class="padding-card__title">Footer Top</div>
+          <div class="padding-card__value">200px</div>
+          <div class="padding-card__usage">Dramatic emptiness above footer</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Border Radius Scale</div>
+      <div class="radius-row">
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:10px"></div>
+          <span class="token-value">10px</span>
+          <span class="code-label">Cards</span>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:15px"></div>
+          <span class="token-value">15px</span>
+          <span class="code-label">Containers</span>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:20px"></div>
+          <span class="token-value">20px</span>
+          <span class="code-label">Buttons</span>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:32px"></div>
+          <span class="token-value">32px</span>
+          <span class="code-label">Pills</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Container Widths</div>
+      <div class="padding-cards">
+        <div class="padding-card">
+          <div class="padding-card__value" style="font-size:18px">1024px</div>
+          <div class="padding-card__usage">Narrow content</div>
+        </div>
+        <div class="padding-card">
+          <div class="padding-card__value" style="font-size:18px">1120px</div>
+          <div class="padding-card__usage">Standard content</div>
+        </div>
+        <div class="padding-card">
+          <div class="padding-card__value" style="font-size:18px">1200px</div>
+          <div class="padding-card__usage">Wide content</div>
+        </div>
+        <div class="padding-card">
+          <div class="padding-card__value" style="font-size:18px">1280px</div>
+          <div class="padding-card__usage">Maximum width</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       4. BUTTONS & CTAs
+       ========================================== -->
+  <section class="section" id="buttons">
+    <h2 class="section-title">Buttons &amp; CTAs</h2>
+    <p class="section-desc">Minimal button system. Primary uses a warm-tinted dark gradient; secondary is a plain text link.</p>
+
+    <div class="button-grid">
+      <div class="button-card">
+        <div class="button-card__label">Primary (Warm Gradient)</div>
+        <button class="al-btn-primary">Saiba mais <span class="arrow">&rarr;</span></button>
+        <div class="code-label">bg: linear-gradient(99deg, #36332f4d, #12110d99)</div>
+        <div class="code-label">border: 1px solid white/10 | radius: 20px</div>
+        <div class="code-label">padding: 6px 18px 6px 14px</div>
+        <div class="code-label">hover: opacity 0.8</div>
+      </div>
+
+      <div class="button-card">
+        <div class="button-card__label">Link Button</div>
+        <button class="al-btn-link">Ver projetos</button>
+        <div class="code-label">color: #0099ff</div>
+        <div class="code-label">text-decoration: underline</div>
+        <div class="code-label">hover: opacity 0.7</div>
+      </div>
+
+      <div class="button-card" style="border-color:rgba(201,168,76,0.15)">
+        <div class="button-card__label" style="color:var(--preview-accent)">Reis IA Adapted</div>
+        <button class="reis-btn-ghost-warm">Agendar conversa <span class="arrow">&rarr;</span></button>
+        <div class="code-label">bg: gold/6% to black/40%</div>
+        <div class="code-label">hover: gold border glow</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       5. CARD COMPONENTS
+       ========================================== -->
+  <section class="section" id="cards">
+    <h2 class="section-title">Card Components</h2>
+    <p class="section-desc">Dark cards with generous padding, near-invisible borders, and scale+shadow hover effect.</p>
+
+    <div class="card-grid">
+      <div class="al-card">
+        <div class="al-card__icon" style="color:var(--al-gold)">&#9670;</div>
+        <div class="al-card__title">AI Strategy</div>
+        <div class="al-card__desc">Cards use 45px padding and 50px internal gap. The border at white/5% is barely visible until hover raises it to white/10%. Hover scales 1.015x with 500ms cubic-bezier(0.7, 0, 0, 1).</div>
+      </div>
+
+      <div class="al-card">
+        <div class="al-card__icon" style="color:var(--al-orange)">&#9679;</div>
+        <div class="al-card__title">Implementation</div>
+        <div class="al-card__desc">The 10px border-radius gives a tighter, more architectural feel than typical SaaS cards (which use 16-24px). Combined with the generous padding, cards feel like panels rather than containers.</div>
+      </div>
+
+      <div class="al-card">
+        <div class="al-card__icon" style="color:#ffffff">&#9651;</div>
+        <div class="al-card__title">Optimization</div>
+        <div class="al-card__desc">Background is #141414 -- two stops above the page background (#080808). This creates enough contrast to define the card boundary even without borders, working as a complement to the border rather than relying on it.</div>
+      </div>
+    </div>
+
+    <div class="subsection" style="margin-top:40px">
+      <div class="subsection-title">Shadow Scale</div>
+      <div class="shadow-grid">
+        <div class="shadow-card" style="box-shadow: none; border: 1px solid var(--al-white-05);">
+          <div class="shadow-card__name">Flat (default)</div>
+          <span class="token-value">no shadow</span>
+        </div>
+        <div class="shadow-card" style="box-shadow: 0 2px 4px rgba(8,26,43,0.45);">
+          <div class="shadow-card__name">Subtle</div>
+          <span class="token-value">0 2px 4px</span>
+        </div>
+        <div class="shadow-card" style="box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
+          <div class="shadow-card__name">Hover Depth</div>
+          <span class="token-value">0 8px 32px</span>
+        </div>
+        <div class="shadow-card" style="box-shadow: 0 16px 48px rgba(0,0,0,0.6);">
+          <div class="shadow-card__name">Maximum</div>
+          <span class="token-value">0 16px 48px</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       6. ANIMATION SHOWCASE
+       ========================================== -->
+  <section class="section" id="animations">
+    <h2 class="section-title">Animation Showcase</h2>
+    <p class="section-desc">Framer-based animations with will-change optimization. Entrance effects use staggered fade-up.</p>
+
+    <div class="subsection">
+      <div class="subsection-title">Entrance Animation (Staggered Fade-Up)</div>
+      <button class="replay-btn" onclick="replayEntrance()">Replay Animation</button>
+      <div class="entrance-demo" id="entrance-demo">
+        <div class="entrance-box animate">1</div>
+        <div class="entrance-box animate">2</div>
+        <div class="entrance-box animate">3</div>
+        <div class="entrance-box animate">4</div>
+      </div>
+      <div class="code-label">translateY(20px) -> 0 | opacity 0 -> 1 | 0.6s cubic-bezier(0.16, 1, 0.3, 1) | stagger: 100ms</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Easing Curves (hover to preview)</div>
+      <div class="easing-grid">
+        <div class="easing-item">
+          <div class="easing-item__name">ease-out</div>
+          <div class="easing-item__value">ease-out (default)</div>
+          <div class="easing-bar-track"><div class="easing-bar-fill ease-out"></div></div>
+        </div>
+        <div class="easing-item">
+          <div class="easing-item__name">ease-in-out</div>
+          <div class="easing-item__value">ease-in-out</div>
+          <div class="easing-bar-track"><div class="easing-bar-fill ease-in-out"></div></div>
+        </div>
+        <div class="easing-item">
+          <div class="easing-item__name">Heavy (Cards)</div>
+          <div class="easing-item__value">cubic-bezier(0.7, 0, 0, 1)</div>
+          <div class="easing-bar-track"><div class="easing-bar-fill cubic-heavy"></div></div>
+        </div>
+        <div class="easing-item">
+          <div class="easing-item__name">Spring (Entrance)</div>
+          <div class="easing-item__value">cubic-bezier(0.16, 1, 0.3, 1)</div>
+          <div class="easing-bar-track"><div class="easing-bar-fill cubic-spring"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Duration Scale</div>
+      <div class="duration-grid">
+        <div class="duration-item">
+          <div class="duration-item__time">150ms</div>
+          <div class="duration-item__usage">Color, opacity</div>
+          <div class="duration-item__dot" style="transition-duration:0.15s"></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__time">200ms</div>
+          <div class="duration-item__usage">Link hover</div>
+          <div class="duration-item__dot" style="transition-duration:0.2s"></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__time">300ms</div>
+          <div class="duration-item__usage">Button hover</div>
+          <div class="duration-item__dot" style="transition-duration:0.3s"></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__time">400ms</div>
+          <div class="duration-item__usage">Border transitions</div>
+          <div class="duration-item__dot" style="transition-duration:0.4s"></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__time">500ms</div>
+          <div class="duration-item__usage">Card scale + shadow</div>
+          <div class="duration-item__dot" style="transition-duration:0.5s"></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__time">600ms</div>
+          <div class="duration-item__usage">Entrance animations</div>
+          <div class="duration-item__dot" style="transition-duration:0.6s"></div>
+        </div>
+        <div class="duration-item">
+          <div class="duration-item__time">8000ms</div>
+          <div class="duration-item__usage">Shimmer loops</div>
+          <div class="duration-item__dot" style="transition-duration:1s"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       7. EFFECTS GALLERY
+       ========================================== -->
+  <section class="section" id="effects">
+    <h2 class="section-title">Effects Gallery</h2>
+    <p class="section-desc">Ambient light pools, glassmorphism, gradient masks, blur glows, and blend modes.</p>
+
+    <div class="effects-grid">
+
+      <div class="effect-card">
+        <div class="effect-card__display light-pool-demo light-pool-bl">
+          <div class="light-pool-text">Bottom-Left Light Pool</div>
+        </div>
+        <div class="effect-card__info">
+          <div class="effect-card__name">Ambient Light Pool (BL)</div>
+          <div class="effect-card__code">radial-gradient(35% 50% at 0% 100%,
+rgba(255,255,255,.12) 0%, #080808 100%)</div>
+        </div>
+      </div>
+
+      <div class="effect-card">
+        <div class="effect-card__display light-pool-demo light-pool-tr">
+          <div class="light-pool-text">Top-Right Light Pool</div>
+        </div>
+        <div class="effect-card__info">
+          <div class="effect-card__name">Ambient Light Pool (TR)</div>
+          <div class="effect-card__code">radial-gradient(35% 50% at 100% 0%,
+rgba(255,255,255,.12) 0%, #080808 100%)</div>
+        </div>
+      </div>
+
+      <div class="effect-card">
+        <div class="effect-card__display glass-demo">
+          <div class="glass-demo-bg" style="background:var(--al-gold); top:20px; left:30px;"></div>
+          <div class="glass-demo-bg" style="background:var(--al-orange); bottom:10px; right:20px;"></div>
+          <div class="glass-panel">Glassmorphism Panel</div>
+        </div>
+        <div class="effect-card__info">
+          <div class="effect-card__name">Glassmorphism (Navigation)</div>
+          <div class="effect-card__code">backdrop-filter: blur(20px)
+bg: rgba(255,255,255,0.08)
+border: 1px solid white/10</div>
+        </div>
+      </div>
+
+      <div class="effect-card">
+        <div class="effect-card__display mask-demo">
+          <div class="mask-content">
+            <div class="mask-bar"></div>
+            <div class="mask-bar" style="height:60%"></div>
+            <div class="mask-bar" style="height:90%"></div>
+            <div class="mask-bar" style="height:50%"></div>
+            <div class="mask-bar" style="height:75%"></div>
+            <div class="mask-bar" style="height:40%"></div>
+            <div class="mask-bar" style="height:85%"></div>
+          </div>
+        </div>
+        <div class="effect-card__info">
+          <div class="effect-card__name">Gradient Mask (Section Fade)</div>
+          <div class="effect-card__code">mask-image: linear-gradient(0deg,
+transparent 4%, black 24%,
+black 72%, transparent 100%)</div>
+        </div>
+      </div>
+
+      <div class="effect-card">
+        <div class="effect-card__display burn-demo">
+          <div class="burn-circle" style="top:30px; left:40px;"></div>
+          <div class="burn-text">Hover to expand</div>
+        </div>
+        <div class="effect-card__info">
+          <div class="effect-card__name">Color-Burn Blend Mode</div>
+          <div class="effect-card__code">mix-blend-mode: color-burn
+radial-gradient with gold tint
+hover: scale(1.5)</div>
+        </div>
+      </div>
+
+      <div class="effect-card">
+        <div class="effect-card__display glow-demo">
+          <div class="glow-orb" style="background:var(--al-gold); top:20%; left:30%;"></div>
+          <div class="glow-label">Hover for glow</div>
+        </div>
+        <div class="effect-card__info">
+          <div class="effect-card__name">Background Blur Glow</div>
+          <div class="effect-card__code">filter: blur(40px) | opacity: 0.2
+position: absolute | pointer-events: none
+hover: opacity 0.35</div>
+        </div>
+      </div>
+
+      <div class="effect-card">
+        <div class="effect-card__display warm-gradient-demo" style="background:var(--al-bg-0)">
+          <button class="al-btn-primary" style="transform:scale(1.5)">Warm Gradient <span class="arrow">&rarr;</span></button>
+        </div>
+        <div class="effect-card__info">
+          <div class="effect-card__name">Warm-Tinted Dark Gradient</div>
+          <div class="effect-card__code">linear-gradient(99deg, #36332f4d, #12110d99)
+Warm brown tones, not neutral gray
+Subtle gold warmth without visible color</div>
+        </div>
+      </div>
+
+      <div class="effect-card">
+        <div class="effect-card__display" style="background:var(--preview-surface-2)">
+          <div class="gold-shimmer-text">Gold Shimmer</div>
+        </div>
+        <div class="effect-card__info">
+          <div class="effect-card__name">Reis IA Adaptation: Gold Shimmer</div>
+          <div class="effect-card__code">gradient: gold > white > gold
+background-size: 300% | 8s loop</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================
+       8. SECTION LAYOUTS
+       ========================================== -->
+  <section class="section" id="layouts">
+    <h2 class="section-title">Section Layouts</h2>
+    <p class="section-desc">Simplified wireframe reproductions of key section patterns from agencialendaria.ai.</p>
+
+    <div class="layout-showcase">
+      <div class="layout-frame">
+        <div class="layout-frame__header">
+          <span class="layout-frame__title">Hero Section</span>
+          <span class="layout-frame__tag">height: 100vh | gap: 100px | radial gradient bg | mask fade bottom</span>
+        </div>
+        <div class="layout-frame__body" style="padding:0">
+          <div class="wireframe-hero">
+            <div class="wf-headline">Transforme sua visao<br>em realidade digital</div>
+            <div class="wf-subhead">Full viewport hero with ambient light pools and gradient mask fade at bottom edge. 100px gap between internal elements.</div>
+            <div class="wf-cta-row">
+              <button class="al-btn-primary">Saiba mais <span class="arrow">&rarr;</span></button>
+              <button class="al-btn-link">Ver projetos</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout-frame">
+        <div class="layout-frame__header">
+          <span class="layout-frame__title">Card Grid Section</span>
+          <span class="layout-frame__tag">grid: repeat(2, 1fr) | gap: 20px | padding: 75px 80px | max-w: 1280px</span>
+        </div>
+        <div class="layout-frame__body" style="padding:0">
+          <div class="wireframe-features">
+            <div class="wf-features-grid">
+              <div class="wf-feature-card">
+                <div class="wf-feature-icon" style="background:var(--al-gold)"></div>
+                <div class="wf-feature-title">Service Area One</div>
+                <div class="wf-feature-desc"></div>
+                <div class="wf-feature-desc"></div>
+              </div>
+              <div class="wf-feature-card">
+                <div class="wf-feature-icon" style="background:var(--al-orange)"></div>
+                <div class="wf-feature-title">Service Area Two</div>
+                <div class="wf-feature-desc"></div>
+                <div class="wf-feature-desc"></div>
+              </div>
+              <div class="wf-feature-card">
+                <div class="wf-feature-icon" style="background:#ffffff"></div>
+                <div class="wf-feature-title">Service Area Three</div>
+                <div class="wf-feature-desc"></div>
+                <div class="wf-feature-desc"></div>
+              </div>
+              <div class="wf-feature-card">
+                <div class="wf-feature-icon" style="background:var(--al-gold)"></div>
+                <div class="wf-feature-title">Service Area Four</div>
+                <div class="wf-feature-desc"></div>
+                <div class="wf-feature-desc"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout-frame">
+        <div class="layout-frame__header">
+          <span class="layout-frame__title">CTA Section</span>
+          <span class="layout-frame__tag">centered text | radial gradient from bottom | generous vertical padding</span>
+        </div>
+        <div class="layout-frame__body" style="padding:0">
+          <div class="wireframe-cta">
+            <div class="wf-cta-headline">Vamos conversar?</div>
+            <div class="wf-cta-sub">CTA sections use centered layout with a radial gradient wash from the bottom center, creating a spotlight effect on the call-to-action.</div>
+            <div class="wf-cta-row">
+              <button class="al-btn-primary">Agendar reuniao <span class="arrow">&rarr;</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       9. SIGNATURE ELEMENTS
+       ========================================== -->
+  <section class="section" id="signature">
+    <h2 class="section-title">Signature Elements</h2>
+    <p class="section-desc">The 3-4 visual treatments that define agencialendaria.ai's personality, with Reis IA adaptation notes.</p>
+
+    <div class="signature-showcase">
+
+      <div class="signature-card">
+        <div class="signature-card__display" style="padding:0">
+          <div class="light-pool-interactive">
+            <div class="light-pool-quadrant">Top-Left</div>
+            <div class="light-pool-quadrant">Top-Right</div>
+            <div class="light-pool-quadrant">Bottom-Left</div>
+            <div class="light-pool-quadrant">Bottom-Right</div>
+          </div>
+        </div>
+        <div class="signature-card__info">
+          <div class="signature-card__name">1. Ambient Light Pool Backgrounds</div>
+          <div class="signature-card__desc">Each section has a different radial gradient positioned at a corner, simulating off-screen light sources illuminating a dark room. The gradient center is 10-15% opacity white, sized at 25-50% of section width. Light source position alternates between sections (BL, TR, BR, TL) to create natural visual rhythm. This eliminates the "flat black wall" problem in dark mode.</div>
+          <div class="signature-card__adaptation">Reis IA adaptation: Directly applicable. Alternate light pool positions across sections. Add optional gold tinting: radial-gradient(35% 50% at 0% 100%, rgba(201,168,76,0.04) 0%, #000000 100%). Use neutral (white) pools for most sections, gold-tinted pools for CTA or hero sections only. Maximum one gold pool per page.</div>
+        </div>
+      </div>
+
+      <div class="signature-card">
+        <div class="signature-card__display" style="padding:0">
+          <div class="depth-layers">
+            <div class="depth-layer" style="background:#080808">#080808</div>
+            <div class="depth-layer" style="background:#0d0d0d">#0d0d0d</div>
+            <div class="depth-layer" style="background:#0f0f0f">#0f0f0f</div>
+            <div class="depth-layer" style="background:#131313">#131313</div>
+            <div class="depth-layer" style="background:#141414">#141414</div>
+            <div class="depth-layer" style="background:#171717">#171717</div>
+            <div class="depth-layer" style="background:#1d1d1d">#1d1d1d</div>
+            <div class="depth-layer" style="background:#232323">#232323</div>
+          </div>
+        </div>
+        <div class="signature-card__info">
+          <div class="signature-card__name">2. Multi-Layer Dark Depth (8 Tiers)</div>
+          <div class="signature-card__desc">Rather than relying on shadows (which don't work well on dark backgrounds), depth perception comes from background color differentiation alone. Darker values recede, lighter values advance. This 8-tier system allows very fine control over spatial hierarchy.</div>
+          <div class="signature-card__adaptation">Reis IA adaptation: Expand current 3-tier system (#000, #0A0A0A, #141414) to 5 tiers by adding #0D0D0D and #111111 as intermediates. 5 tiers is sufficient for Reis IA's simpler component hierarchy -- 8 is overkill for a consultancy site. Map: page=#000, section-alt=#0A0A0A, card-bg=#111111, elevated=#141414, hover=#1A1A1A.</div>
+        </div>
+      </div>
+
+      <div class="signature-card">
+        <div class="signature-card__display" style="background:var(--al-bg-0)">
+          <div style="display:flex; gap:24px; align-items:center">
+            <button class="al-btn-primary" style="transform:scale(1.3)">Warm Gradient <span class="arrow">&rarr;</span></button>
+            <div style="width:80px; height:80px; background:linear-gradient(99deg, #36332f4d, #12110d99); border:1px solid rgba(255,255,255,0.1); border-radius:10px;"></div>
+          </div>
+        </div>
+        <div class="signature-card__info">
+          <div class="signature-card__name">3. Warm-Tinted Dark Gradients</div>
+          <div class="signature-card__desc">Buttons and card backgrounds use dark gradients with warm brown tinting (#36332f, #12110d) rather than neutral gray/black. This adds subliminal warmth that complements the gold accent without being overtly gold. It's the visual equivalent of warm lighting in an interior space.</div>
+          <div class="signature-card__adaptation">Reis IA adaptation: Use on ghost/secondary buttons and card hover states. Replace brown tints with ultra-subtle gold: linear-gradient(99deg, rgba(201,168,76,0.06), rgba(0,0,0,0.4)). Reserve solid gold background for primary CTAs only -- the warm gradient becomes the "middle tier" between ghost and primary.</div>
+        </div>
+      </div>
+
+      <div class="signature-card">
+        <div class="signature-card__display" style="background:var(--al-bg-0); overflow:hidden; position:relative">
+          <div style="position:absolute; top:0; left:0; right:0; height:40%; background:linear-gradient(180deg, rgba(255,255,255,0.03), transparent); pointer-events:none;"></div>
+          <div style="position:absolute; bottom:0; left:0; right:0; height:40%; background:linear-gradient(0deg, rgba(255,255,255,0.03), transparent); pointer-events:none;"></div>
+          <div style="text-align:center; z-index:1; position:relative;">
+            <div style="font-size:11px; color:var(--al-gray); margin-bottom:8px;">Section transitions use</div>
+            <div style="font-size:24px; font-weight:500; letter-spacing:-1px; color:#fff;">Gradient Masks</div>
+            <div style="font-size:11px; color:var(--al-gray); margin-top:8px;">to soften edges between sections</div>
+          </div>
+        </div>
+        <div class="signature-card__info">
+          <div class="signature-card__name">4. Section Edge Gradient Masks</div>
+          <div class="signature-card__desc">Sections fade into each other using CSS mask-image gradients rather than hard edges. The mask creates transparent zones at top and bottom of each section, making content appear to emerge from and dissolve into darkness. This is more sophisticated than simple bottom-fades because the mask affects all content, not just the background.</div>
+          <div class="signature-card__adaptation">Reis IA adaptation: Use sparingly -- perhaps only on the hero-to-first-section transition. Over-using section fades weakens the architectural, grid-based feel that Reis IA targets. A single gradient fade at the hero bottom is elegant; applying it everywhere would feel soft and formless.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Entrance animation replay
+  function replayEntrance() {
+    const boxes = document.querySelectorAll('#entrance-demo .entrance-box');
+    boxes.forEach(box => {
+      box.classList.remove('animate');
+    });
+    void document.getElementById('entrance-demo').offsetHeight;
+    boxes.forEach(box => {
+      box.classList.add('animate');
+    });
+  }
+
+  // Active nav tracking
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.sidebar nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const id = entry.target.id;
+        const activeLink = document.querySelector(`.sidebar nav a[href="#${id}"]`);
+        if (activeLink) activeLink.classList.add('active');
+      }
+    });
+  }, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
+
+  sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>

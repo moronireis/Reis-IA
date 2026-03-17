@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stripe Design System — Interactive Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   CSS CUSTOM PROPERTIES — STRIPE DESIGN SYSTEM REFERENCE
+   ========================================================================== */
+:root {
+  /* ---- CORE PALETTE ---- */
+  --navy-dark: #0a2540;
+  --navy-darker: #061b31;
+  --navy-darkest: #031323;
+  --purple-primary: #635bff;
+  --purple-alt: #533afd;
+  --purple-light: #9966ff;
+  --white: #ffffff;
+
+  /* ---- NEUTRAL SCALE (LIGHT) ---- */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f9fc;
+  --bg-tertiary: #f8fafd;
+  --bg-menu: #eff3f9;
+  --border-primary: #e5edf5;
+  --border-secondary: #e7ecf1;
+  --text-body: #3c4f69;
+  --text-tertiary: #667691;
+  --text-quaternary: #727f96;
+  --text-muted: #aab4c1;
+  --text-disabled: #b2bcc7;
+
+  /* ---- DARK BACKGROUNDS ---- */
+  --hero-gradient-start: #24264d;
+  --hero-gradient-end: #13172b;
+  --enterprise-gradient: linear-gradient(145deg, #24264d, #13172b 75%);
+
+  /* ---- ACCENT COLORS ---- */
+  --color-success: #15be53;
+  --color-orange: #ff6118;
+  --color-pink: #ff5996;
+  --color-pink-purple: #fb76fa;
+  --nav-rainbow: linear-gradient(90deg, #533afd, #533afd 20%, #fb76fa 40%, #ff6118 60%, #ff6118);
+
+  /* ---- PRODUCT SUITE GRADIENT TOKENS ---- */
+  --suite-payments: #ff6118;
+  --stop-payments: #fb76fa;
+  --gradient-payments: #533afd;
+  --suite-billing: #ffcc55;
+  --suite-connect: #f44bcc;
+  --suite-tax: #ea2261;
+
+  /* ---- BILLING HERO COLORS ---- */
+  --billing-slider: #edf1f5;
+  --billing-professional: #15be53;
+  --billing-starter: #fab000;
+  --billing-enterprise: #09cbcb;
+
+  /* ---- SHADOWS ---- */
+  --cardShadowXSmall: 0 1px 1.5px 0 rgba(0,0,0,.03), 0 2px 4px 0 rgba(0,0,0,.03);
+  --cardShadowSmall: 0 18px 36px -18px rgba(0,0,0,.1), 0 30px 45px -30px rgba(50,50,93,.25);
+  --cardShadowMedium: 0 20px 60px rgba(50,50,93,.18);
+  --cardShadowLarge: 0 30px 60px -10px rgba(50,50,93,.25);
+  --cardShadowXLarge: 0 50px 100px -20px rgba(0,0,0,.25);
+  --focus-ring: rgba(50, 151, 211, 0.3);
+
+  /* ---- EASING CURVES (8 NAMED) ---- */
+  --easeOutCubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --easeDramatic: cubic-bezier(0.7, 0, 0, 1);
+  --easeInOutCubic: cubic-bezier(0.65, 0, 0.35, 1);
+  --easeInOutSine: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  --easeOutBack: cubic-bezier(0.25, 1, 0.5, 1);
+  --easeMaterial: cubic-bezier(0.4, 0, 0.2, 1);
+  --easeEnterprise: cubic-bezier(0.22, 1, 0.36, 1);
+  --easeMobileMenu: cubic-bezier(0, 0.09, 0.4, 1);
+
+  /* ---- TYPOGRAPHY ---- */
+  --fontFamily: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ---- LAYOUT ---- */
+  --contentMaxWidth: 1080px;
+  --navMaxWidth: 1264px;
+
+  /* ---- BORDER RADIUS ---- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-pill: 12.5px;
+  --radius-button: 16.5px;
+
+  /* ---- FORM TOKENS ---- */
+  --formFieldBorderColor: #e6ebf1;
+  --formFieldBorderRadius: 6px;
+  --formFieldInputHeight: 38px;
+  --formFieldTextColor: #425466;
+  --formFieldPlaceholderColor: #8f9cb2;
+}
+
+/* === RESET === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+::selection { background: rgba(99, 91, 255, 0.30); color: white; }
+body {
+  background: var(--hero-gradient-end);
+  color: var(--white);
+  font-family: var(--fontFamily);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* === LAYOUT === */
+.page-wrapper { display: flex; min-height: 100vh; }
+
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+  background: #0d1b2a; border-right: 1px solid rgba(255,255,255,0.06);
+  overflow-y: auto; z-index: 100; padding: 24px 0;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+.sidebar-header { padding: 0 20px; margin-bottom: 24px; }
+.sidebar-title { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+.sidebar-subtitle {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--purple-primary); margin-top: 4px;
+}
+.sidebar-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 12px 20px; }
+.sidebar nav a {
+  display: flex; align-items: center; gap: 8px; padding: 6px 20px; font-size: 12.5px; font-weight: 400;
+  color: rgba(255,255,255,0.35); text-decoration: none;
+  transition: color 150ms var(--easeOutCubic), background 150ms var(--easeOutCubic);
+  border-left: 2px solid transparent;
+}
+.sidebar nav a:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.02); }
+.sidebar nav a.active {
+  color: var(--purple-primary); border-left-color: var(--purple-primary);
+  background: rgba(99,91,255,0.06); font-weight: 500;
+}
+.sidebar nav .nav-num {
+  font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.15);
+  min-width: 18px; font-variant-numeric: tabular-nums;
+}
+
+.main-content { margin-left: 260px; flex: 1; min-width: 0; }
+
+/* === SECTION SHELL === */
+.ds-section {
+  padding: 72px 48px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  max-width: 1200px; position: relative;
+}
+.ds-section:nth-child(even) { background: rgba(255,255,255,0.015); }
+.ds-section:last-child { border-bottom: none; }
+
+.section-header { margin-bottom: 48px; }
+.section-num {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--purple-primary); margin-bottom: 8px; font-variant-numeric: tabular-nums;
+}
+.section-title { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 10px; }
+.section-desc { font-size: 14px; color: rgba(255,255,255,0.6); max-width: 640px; line-height: 1.6; }
+
+.subsection { margin-bottom: 48px; }
+.subsection-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 16px; color: rgba(255,255,255,0.85); }
+.subsection-desc { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 20px; line-height: 1.6; }
+
+/* === COLOR SWATCHES === */
+.swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.swatch {
+  border-radius: var(--radius-lg); overflow: hidden; cursor: pointer;
+  transition: transform 500ms var(--easeDramatic), box-shadow 500ms var(--easeDramatic);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.swatch:hover { transform: scale(1.018); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+.swatch-color { height: 72px; position: relative; }
+.swatch-info { padding: 10px 12px; background: rgba(0,0,0,0.4); }
+.swatch-name { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+.swatch-hex { font-size: 10px; color: rgba(255,255,255,0.5); font-family: 'Inter', monospace; }
+
+/* === TOKEN TABLE === */
+.token-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.token-table th {
+  text-align: left; padding: 10px 16px; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.35);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.token-table td { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+.token-table tr:hover td { background: rgba(255,255,255,0.02); }
+.token-value {
+  font-family: 'Inter', monospace; font-size: 12px; color: var(--purple-primary);
+  cursor: pointer; padding: 2px 6px; background: rgba(99,91,255,0.08);
+  border-radius: 4px; transition: background 150ms;
+}
+.token-value:hover { background: rgba(99,91,255,0.15); }
+
+/* === EASING DEMOS === */
+.easing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.easing-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-lg); padding: 20px; cursor: pointer;
+  transition: border-color 300ms;
+}
+.easing-card:hover { border-color: rgba(99,91,255,0.3); }
+.easing-label { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.easing-value { font-size: 10px; font-family: 'Inter', monospace; color: rgba(255,255,255,0.4); margin-bottom: 12px; cursor: pointer; }
+.easing-box {
+  width: 28px; height: 28px; background: var(--purple-primary); border-radius: 6px;
+  position: relative; left: 0;
+}
+.easing-hint { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 8px; }
+
+/* === ANIMATION DEMOS === */
+.anim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.anim-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-lg); padding: 24px; cursor: pointer;
+  min-height: 200px; display: flex; flex-direction: column;
+}
+.anim-card:hover { border-color: rgba(99,91,255,0.2); }
+.anim-label { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.anim-desc { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
+.anim-stage { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.anim-replay { font-size: 10px; color: rgba(255,255,255,0.25); text-align: center; margin-top: 8px; }
+
+/* === GRADIENT PREVIEWS === */
+.gradient-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.gradient-card {
+  border-radius: var(--radius-lg); overflow: hidden; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: transform 500ms var(--easeDramatic);
+}
+.gradient-card:hover { transform: scale(1.018); }
+.gradient-preview { height: 100px; }
+.gradient-info { padding: 12px 16px; background: rgba(0,0,0,0.5); }
+.gradient-name { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.gradient-css { font-size: 10px; font-family: 'Inter', monospace; color: rgba(255,255,255,0.4); cursor: pointer; word-break: break-all; }
+
+/* === TIMING DEMOS === */
+.timing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.timing-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-lg); padding: 24px; text-align: center; cursor: pointer;
+}
+.timing-card:hover { border-color: rgba(99,91,255,0.2); }
+.timing-duration {
+  font-size: 32px; font-weight: 700; letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--purple-primary), var(--purple-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.timing-label { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); margin-top: 4px; margin-bottom: 12px; }
+.timing-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin-bottom: 8px; }
+.timing-fill { height: 100%; width: 0; background: var(--purple-primary); border-radius: 2px; }
+.timing-desc { font-size: 10px; color: rgba(255,255,255,0.3); }
+
+/* === STRIPE CARDS (LIGHT) === */
+.pattern-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+.stripe-card {
+  background: var(--bg-primary); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer;
+  box-shadow: var(--cardShadowSmall);
+  transition: transform 500ms var(--easeDramatic), box-shadow 500ms var(--easeDramatic);
+}
+.stripe-card:hover {
+  transform: scale(1.018);
+  box-shadow: 0 100px 60px -40px rgba(0,0,0,.06), 0 60px 100px 0 rgba(50,50,93,.15);
+}
+.stripe-card-accent { height: 6px; width: 100%; }
+.stripe-card-body { padding: 24px 20px 20px; color: var(--navy-dark); }
+.stripe-card-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.01em; }
+.stripe-card-desc { font-size: 14px; color: var(--text-body); line-height: 1.5; }
+.stripe-card-footer {
+  padding: 12px 20px; border-top: 1px solid var(--border-primary);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.stripe-card-link { font-size: 14px; font-weight: 600; color: var(--purple-primary); display: flex; align-items: center; gap: 6px; }
+.stripe-card-link .arrow { transition: transform 150ms var(--easeOutCubic); display: inline-block; }
+.stripe-card:hover .stripe-card-link .arrow { transform: translateX(3px); }
+
+/* Enterprise card (dark) */
+.enterprise-card {
+  background: linear-gradient(145deg, rgba(36,38,77,0.8), rgba(19,23,43,0.9));
+  border-radius: var(--radius-lg); padding: 28px 24px; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 50px 100px -20px rgba(50,50,93,0.25), 0 30px 60px -30px rgba(0,0,0,0.3), inset 0 -2px 6px 0 rgba(10,37,64,0.35);
+  transition: transform 500ms var(--easeDramatic);
+}
+.enterprise-card:hover { transform: scale(1.018); }
+.enterprise-card-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.enterprise-card-desc { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.5; }
+
+/* === PAYMENT DEMO === */
+.payment-demo-wrap {
+  max-width: 480px; margin: 0 auto; background: var(--bg-primary);
+  border-radius: 12px; overflow: hidden; box-shadow: var(--cardShadowLarge);
+}
+.payment-tabs { display: flex; border-bottom: 1px solid var(--border-primary); background: var(--bg-secondary); }
+.payment-tab {
+  flex: 1; padding: 12px 16px; font-size: 13px; font-weight: 600; text-align: center;
+  color: var(--text-tertiary); cursor: pointer; border: none; background: none;
+  transition: color 150ms, background 150ms; font-family: inherit;
+  border-bottom: 2px solid transparent;
+}
+.payment-tab.active { color: var(--purple-primary); border-bottom-color: var(--purple-primary); background: var(--white); }
+.payment-tab:hover { color: var(--navy-dark); }
+.payment-body { padding: 24px; color: var(--navy-dark); }
+.payment-field { margin-bottom: 16px; }
+.payment-field label { display: block; font-size: 13px; font-weight: 600; color: var(--formFieldTextColor); margin-bottom: 6px; }
+.payment-field input {
+  width: 100%; height: var(--formFieldInputHeight); padding: 0 12px;
+  border: 1px solid var(--formFieldBorderColor); border-radius: var(--formFieldBorderRadius);
+  font-size: 14px; font-family: inherit; color: var(--navy-dark); background: var(--white);
+  transition: box-shadow 150ms;
+}
+.payment-field input:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--focus-ring), 0 1px 1px 0 rgba(0,0,0,0.07), 0 0 0 4px var(--focus-ring);
+}
+.payment-field input::placeholder { color: var(--formFieldPlaceholderColor); }
+.payment-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.payment-btn {
+  width: 100%; padding: 10px 16px; border: none; border-radius: var(--radius-button);
+  background: var(--purple-primary); color: white; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: opacity 150ms var(--easeOutCubic); font-family: inherit;
+  letter-spacing: 0.2px; margin-top: 8px;
+}
+.payment-btn:hover { opacity: 0.6; }
+
+/* === BUTTON SHOWCASE === */
+.btn-grid { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+.stripe-btn {
+  padding: 3px 16px 6px; border-radius: var(--radius-button); font-size: 14px; font-weight: 600;
+  letter-spacing: 0.2px; line-height: 1.6; cursor: pointer; border: none;
+  transition: opacity 150ms var(--easeOutCubic); font-family: inherit;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.stripe-btn:hover { opacity: 0.6; }
+.stripe-btn--primary { background: var(--purple-primary); color: white; }
+.stripe-btn--dark { background: var(--navy-darkest); color: white; }
+.stripe-btn--link { background: transparent; color: var(--purple-primary); padding: 3px 0 6px; }
+.stripe-btn--link .arrow { transition: transform 150ms var(--easeOutCubic); }
+.stripe-btn--link:hover .arrow { transform: translateX(3px); }
+.stripe-btn--link:hover { opacity: 1; }
+.stripe-btn--outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); }
+
+/* === SHADOW TIERS === */
+.shadow-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+.shadow-demo {
+  background: var(--bg-primary); border-radius: var(--radius-lg); padding: 32px 20px;
+  text-align: center; color: var(--navy-dark); transition: transform 300ms; cursor: pointer;
+}
+.shadow-demo:hover { transform: translateY(-2px); }
+.shadow-label { font-size: 12px; font-weight: 600; margin-top: 8px; }
+.shadow-value { font-size: 10px; color: var(--text-tertiary); margin-top: 4px; }
+
+/* === KEYFRAMES === */
+@keyframes knockoutText {
+  0% { background-position-y: 0; }
+  to { background-position-y: 100%; }
+}
+@keyframes bucketListingStatArrowAnimation {
+  0% { opacity: 0.25; }
+  50% { opacity: 1; }
+  to { opacity: 0.25; }
+}
+@keyframes spinnerRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.knockout-text {
+  font-size: 48px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;
+  background: linear-gradient(90deg, #96f, #bf70ff, #e67aff, #ff89dc, #ffa176, #ffb90f);
+  background-size: 1000%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: knockoutText 5s linear infinite;
+  -webkit-mask-image: linear-gradient(45deg, transparent, #000 20%, #000 60%, transparent 80%);
+  -webkit-mask-size: 1000%;
+}
+.stripe-spinner {
+  width: 20px; height: 20px; border: 2px solid rgba(99,91,255,0.2);
+  border-top-color: var(--purple-primary); border-radius: 50%;
+  animation: spinnerRotate 0.6s linear infinite;
+}
+
+/* === COPY TOAST === */
+.copy-toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--purple-primary); color: white; padding: 8px 20px;
+  border-radius: var(--radius-button); font-size: 13px; font-weight: 500;
+  opacity: 0; pointer-events: none;
+  transition: opacity 200ms, transform 200ms var(--easeOutBack);
+  z-index: 999;
+}
+.copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; }
+  .ds-section { padding: 48px 24px; }
+  .easing-grid, .anim-grid { grid-template-columns: 1fr; }
+  .timing-grid { grid-template-columns: 1fr 1fr; }
+  .knockout-text { font-size: 32px; }
+  .pattern-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Stripe</div>
+      <div class="sidebar-subtitle">Design System Reference</div>
+    </div>
+    <div class="sidebar-divider"></div>
+    <nav>
+      <a href="#colors"><span class="nav-num">01</span> Color System</a>
+      <a href="#typography"><span class="nav-num">02</span> Typography</a>
+      <a href="#spacing"><span class="nav-num">03</span> Spacing</a>
+      <a href="#easings"><span class="nav-num">04</span> Easing Curves</a>
+      <a href="#keyframes"><span class="nav-num">05</span> Keyframe Animations</a>
+      <a href="#gradients"><span class="nav-num">06</span> Gradient Definitions</a>
+      <a href="#timing"><span class="nav-num">07</span> Micro-interaction Timing</a>
+      <a href="#cards"><span class="nav-num">08</span> Card &amp; Feature Patterns</a>
+      <a href="#payments"><span class="nav-num">09</span> Payment Demo Flow</a>
+      <a href="#buttons"><span class="nav-num">10</span> Button Styles</a>
+      <a href="#shadows"><span class="nav-num">11</span> Shadow System</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- 01 — COLOR SYSTEM -->
+    <section class="ds-section" id="colors">
+      <div class="section-header">
+        <div class="section-num">01</div>
+        <h2 class="section-title">Color System</h2>
+        <p class="section-desc">Stripe's palette combines deep navy tones with a signature purple accent. Restraint defines the approach: one accent color dominates. Click any swatch to copy its hex value.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Core Palette</h3>
+        <div class="swatch-grid">
+          <div class="swatch" onclick="copyValue('#0a2540')"><div class="swatch-color" style="background:#0a2540"></div><div class="swatch-info"><div class="swatch-name">Navy Dark</div><div class="swatch-hex">#0a2540</div></div></div>
+          <div class="swatch" onclick="copyValue('#061b31')"><div class="swatch-color" style="background:#061b31"></div><div class="swatch-info"><div class="swatch-name">Navy Darker</div><div class="swatch-hex">#061b31</div></div></div>
+          <div class="swatch" onclick="copyValue('#031323')"><div class="swatch-color" style="background:#031323"></div><div class="swatch-info"><div class="swatch-name">Navy Darkest</div><div class="swatch-hex">#031323</div></div></div>
+          <div class="swatch" onclick="copyValue('#635bff')"><div class="swatch-color" style="background:#635bff"></div><div class="swatch-info"><div class="swatch-name">Purple Primary</div><div class="swatch-hex">#635bff</div></div></div>
+          <div class="swatch" onclick="copyValue('#533afd')"><div class="swatch-color" style="background:#533afd"></div><div class="swatch-info"><div class="swatch-name">Purple Alt</div><div class="swatch-hex">#533afd</div></div></div>
+          <div class="swatch" onclick="copyValue('#9966ff')"><div class="swatch-color" style="background:#9966ff"></div><div class="swatch-info"><div class="swatch-name">Purple Light</div><div class="swatch-hex">#96f</div></div></div>
+          <div class="swatch" onclick="copyValue('#ffffff')"><div class="swatch-color" style="background:#ffffff; border-bottom:1px solid #e5edf5;"></div><div class="swatch-info"><div class="swatch-name">White</div><div class="swatch-hex">#ffffff</div></div></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Accent Colors</h3>
+        <div class="swatch-grid">
+          <div class="swatch" onclick="copyValue('#15be53')"><div class="swatch-color" style="background:#15be53"></div><div class="swatch-info"><div class="swatch-name">Success</div><div class="swatch-hex">#15be53</div></div></div>
+          <div class="swatch" onclick="copyValue('#ff6118')"><div class="swatch-color" style="background:#ff6118"></div><div class="swatch-info"><div class="swatch-name">Orange</div><div class="swatch-hex">#ff6118</div></div></div>
+          <div class="swatch" onclick="copyValue('#ff5996')"><div class="swatch-color" style="background:#ff5996"></div><div class="swatch-info"><div class="swatch-name">Pink</div><div class="swatch-hex">#ff5996</div></div></div>
+          <div class="swatch" onclick="copyValue('#fb76fa')"><div class="swatch-color" style="background:#fb76fa"></div><div class="swatch-info"><div class="swatch-name">Pink-Purple</div><div class="swatch-hex">#fb76fa</div></div></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Product Suite Gradients</h3>
+        <div class="swatch-grid">
+          <div class="swatch" onclick="copyValue('linear-gradient(90deg, #533afd, #fb76fa, #ff6118)')"><div class="swatch-color" style="background:linear-gradient(90deg,#533afd,#fb76fa,#ff6118)"></div><div class="swatch-info"><div class="swatch-name">Payments</div><div class="swatch-hex">Purple-Pink-Orange</div></div></div>
+          <div class="swatch" onclick="copyValue('linear-gradient(90deg, #533afd, #fb76fa, #ffcc55)')"><div class="swatch-color" style="background:linear-gradient(90deg,#533afd,#fb76fa,#ffcc55)"></div><div class="swatch-info"><div class="swatch-name">Billing</div><div class="swatch-hex">Purple-Pink-Gold</div></div></div>
+          <div class="swatch" onclick="copyValue('linear-gradient(90deg, #533afd, #ec8fff, #f44bcc)')"><div class="swatch-color" style="background:linear-gradient(90deg,#533afd,#ec8fff,#f44bcc)"></div><div class="swatch-info"><div class="swatch-name">Connect</div><div class="swatch-hex">Purple-Lilac-Pink</div></div></div>
+          <div class="swatch" onclick="copyValue('linear-gradient(90deg, #533afd, #da56ed, #ea2261)')"><div class="swatch-color" style="background:linear-gradient(90deg,#533afd,#da56ed,#ea2261)"></div><div class="swatch-info"><div class="swatch-name">Tax</div><div class="swatch-hex">Purple-Magenta-Red</div></div></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Dark Backgrounds</h3>
+        <div class="swatch-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="swatch" onclick="copyValue('linear-gradient(145deg, #24264d, #13172b 75%)')"><div class="swatch-color" style="background:linear-gradient(145deg,#24264d,#13172b 75%); height:100px;"></div><div class="swatch-info"><div class="swatch-name">Enterprise Hero</div><div class="swatch-hex">145deg, #24264d to #13172b</div></div></div>
+          <div class="swatch" onclick="copyValue('linear-gradient(90deg, #533afd, #533afd 20%, #fb76fa 40%, #ff6118 60%, #ff6118)')"><div class="swatch-color" style="background:linear-gradient(90deg,#533afd,#533afd 20%,#fb76fa 40%,#ff6118 60%,#ff6118); height:100px;"></div><div class="swatch-info"><div class="swatch-name">Navigation Rainbow</div><div class="swatch-hex">5-stop rainbow gradient</div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 — TYPOGRAPHY -->
+    <section class="ds-section" id="typography">
+      <div class="section-header">
+        <div class="section-num">02</div>
+        <h2 class="section-title">Typography System</h2>
+        <p class="section-desc">Letter-spacing tightens as size increases. Semibold (600) is the workhorse weight. Caption text uses positive letter-spacing (+0.2px) for readability at small sizes.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Type Scale</h3>
+        <div style="display:flex; flex-direction:column; gap:24px;">
+          <div>
+            <div style="font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:6px; font-weight:600; letter-spacing:0.05em;">DISPLAY -- 76px / Bold / -0.96px</div>
+            <div style="font-size:clamp(42px,5vw,76px); font-weight:700; letter-spacing:-0.96px; line-height:1.1;">Financial infrastructure</div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:6px; font-weight:600; letter-spacing:0.05em;">H1 -- 56px / Bold / -0.64px</div>
+            <div style="font-size:clamp(36px,4vw,56px); font-weight:700; letter-spacing:-0.64px; line-height:1.2;">Payments for the internet</div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:6px; font-weight:600; letter-spacing:0.05em;">H2 -- 48px / Semibold / -0.02em</div>
+            <div style="font-size:clamp(30px,3.5vw,48px); font-weight:600; letter-spacing:-0.02em; line-height:1.16;">A complete platform</div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:6px; font-weight:600; letter-spacing:0.05em;">H3 -- 38px / Semibold / -0.1px</div>
+            <div style="font-size:clamp(26px,3vw,38px); font-weight:600; letter-spacing:-0.1px; line-height:1.2;">Built for developers</div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:6px; font-weight:600; letter-spacing:0.05em;">BODY LARGE -- 18px / Light (300)</div>
+            <div style="font-size:18px; font-weight:300; line-height:1.55; color:rgba(255,255,255,0.7); max-width:640px;">Millions of companies of all sizes use Stripe online and in person to accept payments, send payouts, automate financial processes, and ultimately grow revenue.</div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:6px; font-weight:600; letter-spacing:0.05em;">CAPTION -- 15px / Semibold / +0.2px</div>
+            <div style="font-size:15px; font-weight:600; letter-spacing:0.2px; line-height:1.6;">Start with payments, then grow your business</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Weight System</h3>
+        <table class="token-table">
+          <thead><tr><th>Weight</th><th>Value</th><th>Usage</th></tr></thead>
+          <tbody>
+            <tr><td>Light</td><td><span class="token-value" onclick="copyValue('300')">300</span></td><td style="color:rgba(255,255,255,0.5)">Body text (some contexts)</td></tr>
+            <tr><td>Regular</td><td><span class="token-value" onclick="copyValue('400')">400</span></td><td style="color:rgba(255,255,255,0.5)">Body text, descriptions</td></tr>
+            <tr><td>Medium</td><td><span class="token-value" onclick="copyValue('500')">500</span></td><td style="color:rgba(255,255,255,0.5)">Emphasis, some labels</td></tr>
+            <tr><td>Semibold</td><td><span class="token-value" onclick="copyValue('600')">600</span></td><td style="color:rgba(255,255,255,0.5)">Subheadings, captions, buttons</td></tr>
+            <tr><td>Bold</td><td><span class="token-value" onclick="copyValue('700')">700</span></td><td style="color:rgba(255,255,255,0.5)">Headlines, hero text</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 03 — SPACING -->
+    <section class="ds-section" id="spacing">
+      <div class="section-header">
+        <div class="section-num">03</div>
+        <h2 class="section-title">Spacing System</h2>
+        <p class="section-desc">96-128px between sections. Most sites use 48-64px. Hero sections have 182-214px top padding. Content breathes. Stripe uses fluid spacing between 375px and 1112px viewport widths.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Gap Scale</h3>
+        <div id="spacing-vis" style="display:flex; flex-direction:column; gap:6px;"></div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Section Padding</h3>
+        <table class="token-table">
+          <thead><tr><th>Context</th><th>Mobile</th><th>Desktop</th></tr></thead>
+          <tbody>
+            <tr><td>Standard section</td><td><span class="token-value" onclick="copyValue('72px')">72px</span></td><td><span class="token-value" onclick="copyValue('96-128px')">96-128px</span></td></tr>
+            <tr><td>Hero padding-top</td><td><span class="token-value" onclick="copyValue('214px')">214px</span></td><td><span class="token-value" onclick="copyValue('182px')">182px</span></td></tr>
+            <tr><td>Column padding</td><td><span class="token-value" onclick="copyValue('24px')">24px</span></td><td><span class="token-value" onclick="copyValue('48px')">48px</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 04 — EASING CURVES -->
+    <section class="ds-section" id="easings">
+      <div class="section-header">
+        <div class="section-num">04</div>
+        <h2 class="section-title">Easing Curves</h2>
+        <p class="section-desc">8 distinct cubic-bezier curves. Never default ease or ease-in-out. Each curve matches a specific interaction tier. Click any card to replay the animation.</p>
+      </div>
+      <div class="easing-grid" id="easing-grid"></div>
+    </section>
+
+    <!-- 05 — KEYFRAME ANIMATIONS -->
+    <section class="ds-section" id="keyframes">
+      <div class="section-header">
+        <div class="section-num">05</div>
+        <h2 class="section-title">Keyframe Animations</h2>
+        <p class="section-desc">Production keyframes extracted from stripe.com. Knockout gradient text, billing stat counters, the payment spinner, and card entrance sequences. Click to replay.</p>
+      </div>
+
+      <div class="anim-grid">
+        <div class="anim-card" onclick="replayKnockout(this)">
+          <div class="anim-label">Knockout Text</div>
+          <div class="anim-desc">Gradient text reveal (1s ease-out) + infinite loop (5s linear). Enterprise hero headline.</div>
+          <div class="anim-stage">
+            <div class="knockout-text" style="font-size:36px;">Enterprise</div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayBillingStats(this)">
+          <div class="anim-label">Billing Statistics</div>
+          <div class="anim-desc">Arrow opacity pulse (0.25-1-0.25). Background scroll animation for stat counters.</div>
+          <div class="anim-stage">
+            <div style="display:flex; gap:24px; align-items:center;">
+              <div style="text-align:center;">
+                <div style="font-size:28px; font-weight:700; color:var(--billing-professional);">+23%</div>
+                <div style="font-size:11px; color:rgba(255,255,255,0.4);">Revenue</div>
+              </div>
+              <div class="billing-arrow" style="color:var(--billing-professional); font-size:20px; animation:bucketListingStatArrowAnimation 2s ease-in-out infinite;">&#9650;</div>
+              <div style="text-align:center;">
+                <div style="font-size:28px; font-weight:700; color:var(--billing-enterprise);">$4.2M</div>
+                <div style="font-size:11px; color:rgba(255,255,255,0.4);">ARR</div>
+              </div>
+            </div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replaySpinner(this)">
+          <div class="anim-label">Payment Spinner</div>
+          <div class="anim-desc">0.6s linear infinite rotation. Used during payment processing.</div>
+          <div class="anim-stage">
+            <div style="display:flex; align-items:center; gap:16px;">
+              <div class="stripe-spinner"></div>
+              <div style="font-size:13px; color:rgba(255,255,255,0.5);">Processing payment...</div>
+            </div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayCardEntrance(this)">
+          <div class="anim-label">Card Entrance</div>
+          <div class="anim-desc">translateY(20px) to 0 + opacity 0 to 1 over 850ms with easeInOutCubic.</div>
+          <div class="anim-stage">
+            <div class="entrance-demo" style="width:120px; height:80px; background:linear-gradient(135deg,var(--purple-primary),var(--purple-light)); border-radius:8px; opacity:0; transform:translateY(20px);"></div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" id="nav-arrow-card">
+          <div class="anim-label">Nav Hover Arrow</div>
+          <div class="anim-desc">Bi-directional: slides in from -3px with 0.3s on hover, fades out 0.15s on leave.</div>
+          <div class="anim-stage">
+            <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
+              <a href="#" onclick="return false" class="nav-arrow-demo" style="display:flex; align-items:center; gap:8px; color:var(--purple-primary); font-weight:600; font-size:14px; text-decoration:none; padding:8px 12px; border-radius:6px; background:rgba(99,91,255,0.06);">
+                <span>Products</span>
+                <span class="hover-arrow" style="opacity:0; transform:translateX(-3px); transition:opacity 0.3s var(--easeOutBack), transform 0.3s var(--easeOutBack);">&#8594;</span>
+              </a>
+              <a href="#" onclick="return false" class="nav-arrow-demo" style="display:flex; align-items:center; gap:8px; color:var(--purple-primary); font-weight:600; font-size:14px; text-decoration:none; padding:8px 12px; border-radius:6px; background:rgba(99,91,255,0.06);">
+                <span>Solutions</span>
+                <span class="hover-arrow" style="opacity:0; transform:translateX(-3px); transition:opacity 0.3s var(--easeOutBack), transform 0.3s var(--easeOutBack);">&#8594;</span>
+              </a>
+            </div>
+          </div>
+          <div class="anim-replay">Hover over the links</div>
+        </div>
+
+        <div class="anim-card" onclick="replayTooltip(this)">
+          <div class="anim-label">Portal Tooltip Fade</div>
+          <div class="anim-desc">Opacity 0 to 1 with subtle translateY. Contextual tooltips.</div>
+          <div class="anim-stage">
+            <div class="tooltip-demo" style="background:var(--navy-darkest); color:white; padding:8px 14px; border-radius:6px; font-size:12px; font-weight:500; opacity:0; transform:translateY(4px); box-shadow:var(--cardShadowMedium);">
+              Payment method saved
+            </div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 — GRADIENTS -->
+    <section class="ds-section" id="gradients">
+      <div class="section-header">
+        <div class="section-num">06</div>
+        <h2 class="section-title">Gradient Definitions</h2>
+        <p class="section-desc">Complete gradient catalog from Stripe source. Navigation rainbow, enterprise hero, knockout text, modal overlays, and product suite gradients. Click to copy CSS.</p>
+      </div>
+
+      <div class="gradient-grid">
+        <div class="gradient-card" onclick="copyValue('linear-gradient(90deg, #533afd, #533afd 20%, #fb76fa 40%, #ff6118 60%, #ff6118)')">
+          <div class="gradient-preview" style="background:linear-gradient(90deg,#533afd,#533afd 20%,#fb76fa 40%,#ff6118 60%,#ff6118)"></div>
+          <div class="gradient-info"><div class="gradient-name">Navigation Rainbow</div><div class="gradient-css">linear-gradient(90deg, #533afd 20%, #fb76fa 40%, #ff6118 60%)</div></div>
+        </div>
+        <div class="gradient-card" onclick="copyValue('linear-gradient(145deg, #24264d, #13172b 75%)')">
+          <div class="gradient-preview" style="background:linear-gradient(145deg,#24264d,#13172b 75%)"></div>
+          <div class="gradient-info"><div class="gradient-name">Enterprise Hero</div><div class="gradient-css">linear-gradient(145deg, #24264d, #13172b 75%)</div></div>
+        </div>
+        <div class="gradient-card" onclick="copyValue('linear-gradient(90deg, #96f, #bf70ff, #e67aff, #ff89dc, #ffa176, #ffb90f)')">
+          <div class="gradient-preview" style="background:linear-gradient(90deg,#96f,#bf70ff,#e67aff,#ff89dc,#ffa176,#ffb90f)"></div>
+          <div class="gradient-info"><div class="gradient-name">Enterprise Rainbow (Knockout)</div><div class="gradient-css">linear-gradient(90deg, #96f, #bf70ff, #e67aff, #ff89dc, #ffa176, #ffb90f)</div></div>
+        </div>
+        <div class="gradient-card" onclick="copyValue('linear-gradient(90deg, #e18638, #e17a38)')">
+          <div class="gradient-preview" style="background:linear-gradient(90deg,#e18638,#e17a38)"></div>
+          <div class="gradient-info"><div class="gradient-name">Navigation CTA</div><div class="gradient-css">linear-gradient(90deg, #e18638, #e17a38)</div></div>
+        </div>
+        <div class="gradient-card" onclick="copyValue('linear-gradient(transparent, rgba(236, 239, 241, 0.8))')">
+          <div class="gradient-preview" style="background:linear-gradient(rgba(19,23,43,0.1), rgba(236,239,241,0.8));"></div>
+          <div class="gradient-info"><div class="gradient-name">Modal Overlay</div><div class="gradient-css">linear-gradient(transparent, rgba(236, 239, 241, 0.8))</div></div>
+        </div>
+        <div class="gradient-card" onclick="copyValue('linear-gradient(90deg, #533afd, #fb76fa, #ff6118)')">
+          <div class="gradient-preview" style="background:linear-gradient(90deg,#533afd,#fb76fa,#ff6118)"></div>
+          <div class="gradient-info"><div class="gradient-name">Payments Suite</div><div class="gradient-css">linear-gradient(90deg, #533afd, #fb76fa, #ff6118)</div></div>
+        </div>
+        <div class="gradient-card" onclick="copyValue('linear-gradient(90deg, #533afd, #fb76fa, #ffcc55)')">
+          <div class="gradient-preview" style="background:linear-gradient(90deg,#533afd,#fb76fa,#ffcc55)"></div>
+          <div class="gradient-info"><div class="gradient-name">Billing Suite</div><div class="gradient-css">linear-gradient(90deg, #533afd, #fb76fa, #ffcc55)</div></div>
+        </div>
+        <div class="gradient-card" onclick="copyValue('linear-gradient(90deg, #533afd, #da56ed, #ea2261)')">
+          <div class="gradient-preview" style="background:linear-gradient(90deg,#533afd,#da56ed,#ea2261)"></div>
+          <div class="gradient-info"><div class="gradient-name">Tax Suite</div><div class="gradient-css">linear-gradient(90deg, #533afd, #da56ed, #ea2261)</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 — MICRO-INTERACTION TIMING -->
+    <section class="ds-section" id="timing">
+      <div class="section-header">
+        <div class="section-num">07</div>
+        <h2 class="section-title">Micro-interaction Timing</h2>
+        <p class="section-desc">Three tiers: 150ms for hovers, 250ms for UI changes, 850ms for dramatic entrances. Nothing bounces, nothing overshoots. Everything decelerates smoothly. Click to see the timing.</p>
+      </div>
+
+      <div class="timing-grid">
+        <div class="timing-card" onclick="playTiming(this, 150)">
+          <div class="timing-duration">150ms</div>
+          <div class="timing-label">Micro-interactions</div>
+          <div class="timing-bar"><div class="timing-fill"></div></div>
+          <div class="timing-desc">Button hovers, color changes, icon shifts</div>
+        </div>
+        <div class="timing-card" onclick="playTiming(this, 250)">
+          <div class="timing-duration">250ms</div>
+          <div class="timing-label">Standard UI</div>
+          <div class="timing-bar"><div class="timing-fill"></div></div>
+          <div class="timing-desc">Nav menu, slider knob, mobile toggle</div>
+        </div>
+        <div class="timing-card" onclick="playTiming(this, 850)">
+          <div class="timing-duration">850ms</div>
+          <div class="timing-label">Large Animations</div>
+          <div class="timing-bar"><div class="timing-fill"></div></div>
+          <div class="timing-desc">Card entrances, section transforms</div>
+        </div>
+      </div>
+
+      <div class="subsection" style="margin-top:48px;">
+        <h3 class="subsection-title">Full Duration Catalog</h3>
+        <table class="token-table">
+          <thead><tr><th>Duration</th><th>Usage</th><th>Easing</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-value" onclick="copyValue('150ms')">150ms</span></td><td style="color:rgba(255,255,255,0.5)">Micro-interactions (hovers, color changes)</td><td style="color:rgba(255,255,255,0.35)">easeOutCubic</td></tr>
+            <tr><td><span class="token-value" onclick="copyValue('200ms')">200ms</span></td><td style="color:rgba(255,255,255,0.5)">Small UI changes (slider knob)</td><td style="color:rgba(255,255,255,0.35)">ease-out</td></tr>
+            <tr><td><span class="token-value" onclick="copyValue('240ms')">240ms</span></td><td style="color:rgba(255,255,255,0.5)">Mobile menu open/close</td><td style="color:rgba(255,255,255,0.35)">ease-out</td></tr>
+            <tr><td><span class="token-value" onclick="copyValue('250ms')">250ms</span></td><td style="color:rgba(255,255,255,0.5)">Navigation menu transitions</td><td style="color:rgba(255,255,255,0.35)">easeInOutSine</td></tr>
+            <tr><td><span class="token-value" onclick="copyValue('300ms')">300ms</span></td><td style="color:rgba(255,255,255,0.5)">Gradient line reveals</td><td style="color:rgba(255,255,255,0.35)">ease-out</td></tr>
+            <tr><td><span class="token-value" onclick="copyValue('500ms')">500ms</span></td><td style="color:rgba(255,255,255,0.5)">Card hover scale + shadow</td><td style="color:rgba(255,255,255,0.35)">easeDramatic</td></tr>
+            <tr><td><span class="token-value" onclick="copyValue('600ms')">600ms</span></td><td style="color:rgba(255,255,255,0.5)">Spinner rotation</td><td style="color:rgba(255,255,255,0.35)">linear</td></tr>
+            <tr><td><span class="token-value" onclick="copyValue('850ms')">850ms</span></td><td style="color:rgba(255,255,255,0.5)">Large section animations</td><td style="color:rgba(255,255,255,0.35)">easeInOutCubic</td></tr>
+            <tr><td><span class="token-value" onclick="copyValue('1000ms')">1000ms</span></td><td style="color:rgba(255,255,255,0.5)">Hero knockout text reveal</td><td style="color:rgba(255,255,255,0.35)">ease-out</td></tr>
+            <tr><td><span class="token-value" onclick="copyValue('5000ms')">5000ms</span></td><td style="color:rgba(255,255,255,0.5)">Knockout text gradient loop</td><td style="color:rgba(255,255,255,0.35)">linear</td></tr>
+            <tr><td><span class="token-value" onclick="copyValue('30000ms')">30s</span></td><td style="color:rgba(255,255,255,0.5)">Logo marquee scroll</td><td style="color:rgba(255,255,255,0.35)">linear</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 08 — CARD & FEATURE PATTERNS -->
+    <section class="ds-section" id="cards">
+      <div class="section-header">
+        <div class="section-num">08</div>
+        <h2 class="section-title">Card &amp; Feature Patterns</h2>
+        <p class="section-desc">Cards scale to exactly 1.018x on hover. The 500ms duration with easeDramatic is the key: it feels premium because it is slow and weighted.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Accented Top Border Cards (Light)</h3>
+        <div class="pattern-grid">
+          <div class="stripe-card">
+            <div class="stripe-card-accent" style="background:var(--purple-primary);"></div>
+            <div class="stripe-card-body">
+              <div class="stripe-card-title">Payments</div>
+              <div class="stripe-card-desc">Accept and optimise payments, globally. Build for any business model, from e-commerce to marketplaces.</div>
+            </div>
+            <div class="stripe-card-footer">
+              <div class="stripe-card-link">Learn more <span class="arrow">&#8594;</span></div>
+            </div>
+          </div>
+          <div class="stripe-card">
+            <div class="stripe-card-accent" style="background:var(--color-success);"></div>
+            <div class="stripe-card-body">
+              <div class="stripe-card-title">Billing</div>
+              <div class="stripe-card-desc">Manage subscriptions, invoices, and recurring revenue. Scale your billing operations.</div>
+            </div>
+            <div class="stripe-card-footer">
+              <div class="stripe-card-link">Learn more <span class="arrow">&#8594;</span></div>
+            </div>
+          </div>
+          <div class="stripe-card">
+            <div class="stripe-card-accent" style="background:var(--color-orange);"></div>
+            <div class="stripe-card-body">
+              <div class="stripe-card-title">Connect</div>
+              <div class="stripe-card-desc">Multiparty payments for platforms and marketplaces. Enable your users to accept payments.</div>
+            </div>
+            <div class="stripe-card-footer">
+              <div class="stripe-card-link">Learn more <span class="arrow">&#8594;</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Enterprise Cards (Dark, Deep Shadow)</h3>
+        <div class="pattern-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+          <div class="enterprise-card">
+            <div class="enterprise-card-title">Enterprise Security</div>
+            <div class="enterprise-card-desc">Bank-grade security with SOC 2 compliance, end-to-end encryption, and PCI DSS Level 1 certification.</div>
+          </div>
+          <div class="enterprise-card">
+            <div class="enterprise-card-title">Dedicated Support</div>
+            <div class="enterprise-card-desc">24/7 phone and email support with a dedicated account manager and implementation team.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 — PAYMENT DEMO -->
+    <section class="ds-section" id="payments">
+      <div class="section-header">
+        <div class="section-num">09</div>
+        <h2 class="section-title">Payment Demo Flow</h2>
+        <p class="section-desc">Interactive multi-tab payment flow. Form fields with Stripe's signature focus glow (ring + shadow). Tab between Card, Bank, and Wallet methods.</p>
+      </div>
+
+      <div class="payment-demo-wrap">
+        <div class="payment-tabs">
+          <button class="payment-tab active" onclick="switchPaymentTab(this, 'card')">Card</button>
+          <button class="payment-tab" onclick="switchPaymentTab(this, 'bank')">Bank</button>
+          <button class="payment-tab" onclick="switchPaymentTab(this, 'wallet')">Wallet</button>
+        </div>
+        <div class="payment-body" id="payment-content">
+          <div class="payment-field"><label>Card number</label><input type="text" placeholder="1234 1234 1234 1234" /></div>
+          <div class="payment-row">
+            <div class="payment-field"><label>Expiration</label><input type="text" placeholder="MM / YY" /></div>
+            <div class="payment-field"><label>CVC</label><input type="text" placeholder="CVC" /></div>
+          </div>
+          <div class="payment-field"><label>Country</label><input type="text" placeholder="United States" /></div>
+          <button class="payment-btn">Pay $49.00</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 — BUTTON STYLES -->
+    <section class="ds-section" id="buttons">
+      <div class="section-header">
+        <div class="section-num">10</div>
+        <h2 class="section-title">Button Styles</h2>
+        <p class="section-desc">Asymmetric pill button (3px top, 6px bottom) with 16.5px border-radius. Hover is simple opacity reduction. No color shift, no scale, no shadow change.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Button Variants</h3>
+        <div class="btn-grid">
+          <button class="stripe-btn stripe-btn--primary">Start now</button>
+          <button class="stripe-btn stripe-btn--dark">Contact sales</button>
+          <button class="stripe-btn stripe-btn--link">Learn more <span class="arrow">&#8594;</span></button>
+          <button class="stripe-btn stripe-btn--outline">Documentation</button>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Button Specifications</h3>
+        <table class="token-table">
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Padding</td><td><span class="token-value" onclick="copyValue('3px 16px 6px')">3px 16px 6px</span></td></tr>
+            <tr><td>Border Radius</td><td><span class="token-value" onclick="copyValue('16.5px')">16.5px</span></td></tr>
+            <tr><td>Font Size</td><td><span class="token-value" onclick="copyValue('14px')">14px</span></td></tr>
+            <tr><td>Font Weight</td><td><span class="token-value" onclick="copyValue('600')">600 (Semibold)</span></td></tr>
+            <tr><td>Letter Spacing</td><td><span class="token-value" onclick="copyValue('0.2px')">0.2px</span></td></tr>
+            <tr><td>Hover Effect</td><td><span class="token-value" onclick="copyValue('opacity: 0.6')">opacity: 0.6</span></td></tr>
+            <tr><td>Transition</td><td><span class="token-value" onclick="copyValue('150ms cubic-bezier(0.215, 0.61, 0.355, 1)')">150ms easeOutCubic</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 11 — SHADOW SYSTEM -->
+    <section class="ds-section" id="shadows">
+      <div class="section-header">
+        <div class="section-num">11</div>
+        <h2 class="section-title">Shadow System</h2>
+        <p class="section-desc">Two-value stacked shadows: ambient occlusion + directional shadow. Color tinted with rgba(50,50,93,...) not pure black. This adds warmth. Click to copy shadow value.</p>
+      </div>
+
+      <div class="shadow-grid">
+        <div class="shadow-demo" style="box-shadow:var(--cardShadowXSmall);" onclick="copyValue('0 1px 1.5px 0 rgba(0,0,0,.03), 0 2px 4px 0 rgba(0,0,0,.03)')">
+          <div style="font-size:20px; margin-bottom:4px; color:#635bff;">&#9632;</div>
+          <div class="shadow-label">XSmall</div>
+          <div class="shadow-value">cardShadowXSmall</div>
+        </div>
+        <div class="shadow-demo" style="box-shadow:var(--cardShadowSmall);" onclick="copyValue('0 18px 36px -18px rgba(0,0,0,.1), 0 30px 45px -30px rgba(50,50,93,.25)')">
+          <div style="font-size:20px; margin-bottom:4px; color:#635bff;">&#9632;</div>
+          <div class="shadow-label">Small</div>
+          <div class="shadow-value">cardShadowSmall</div>
+        </div>
+        <div class="shadow-demo" style="box-shadow:var(--cardShadowMedium);" onclick="copyValue('0 20px 60px rgba(50,50,93,.18)')">
+          <div style="font-size:20px; margin-bottom:4px; color:#635bff;">&#9632;</div>
+          <div class="shadow-label">Medium</div>
+          <div class="shadow-value">cardShadowMedium</div>
+        </div>
+        <div class="shadow-demo" style="box-shadow:var(--cardShadowLarge);" onclick="copyValue('0 30px 60px -10px rgba(50,50,93,.25)')">
+          <div style="font-size:20px; margin-bottom:4px; color:#635bff;">&#9632;</div>
+          <div class="shadow-label">Large</div>
+          <div class="shadow-value">cardShadowLarge</div>
+        </div>
+        <div class="shadow-demo" style="box-shadow:var(--cardShadowXLarge);" onclick="copyValue('0 50px 100px -20px rgba(0,0,0,.25)')">
+          <div style="font-size:20px; margin-bottom:4px; color:#635bff;">&#9632;</div>
+          <div class="shadow-label">XLarge</div>
+          <div class="shadow-value">cardShadowXLarge</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="copy-toast" id="copyToast">Copied!</div>
+
+<script>
+/* === Copy to clipboard === */
+function copyValue(val) {
+  navigator.clipboard.writeText(val).then(() => {
+    const toast = document.getElementById('copyToast');
+    toast.textContent = 'Copied: ' + (val.length > 50 ? val.substring(0, 50) + '...' : val);
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+  });
+}
+
+/* === Scroll tracking === */
+const sections = document.querySelectorAll('.ds-section');
+const navLinks = document.querySelectorAll('.sidebar nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.sidebar nav a[href="#${entry.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+/* === Easing curves === */
+const easings = [
+  { name: 'easeOutCubic', value: 'cubic-bezier(0.215, 0.61, 0.355, 1)', usage: 'Link hovers, micro-interactions' },
+  { name: 'Dramatic Ease', value: 'cubic-bezier(0.7, 0, 0, 1)', usage: 'Hero animations, section transforms' },
+  { name: 'easeInOutCubic', value: 'cubic-bezier(0.65, 0, 0.35, 1)', usage: 'Section transitions, card entrances' },
+  { name: 'easeInOutSine', value: 'cubic-bezier(0.45, 0.05, 0.55, 0.95)', usage: 'Nav height changes' },
+  { name: 'easeOutBack-ish', value: 'cubic-bezier(0.25, 1, 0.5, 1)', usage: 'Arrow animations, playful interactions' },
+  { name: 'Material Ease', value: 'cubic-bezier(0.4, 0, 0.2, 1)', usage: 'Menu section slides' },
+  { name: 'Enterprise', value: 'cubic-bezier(0.22, 1, 0.36, 1)', usage: 'Enterprise transitions' },
+  { name: 'Mobile Menu', value: 'cubic-bezier(0, 0.09, 0.4, 1)', usage: 'Mobile menu button' },
+];
+const easingGrid = document.getElementById('easing-grid');
+easings.forEach((e) => {
+  const card = document.createElement('div');
+  card.className = 'easing-card';
+  card.innerHTML = `
+    <div class="easing-label">${e.name}</div>
+    <div class="easing-value" onclick="event.stopPropagation(); copyValue('${e.value}')">${e.value}</div>
+    <div style="padding:8px 0;"><div class="easing-box" data-easing="${e.value}"></div></div>
+    <div class="easing-hint">${e.usage} -- click to replay</div>`;
+  card.addEventListener('click', () => playEasing(card));
+  easingGrid.appendChild(card);
+});
+function playEasing(card) {
+  const box = card.querySelector('.easing-box');
+  const easing = box.dataset.easing;
+  box.style.transition = 'none';
+  box.style.transform = 'translateX(0)';
+  requestAnimationFrame(() => { requestAnimationFrame(() => {
+    const maxX = card.offsetWidth - 28 - 40;
+    box.style.transition = `transform 850ms ${easing}`;
+    box.style.transform = `translateX(${maxX}px)`;
+  }); });
+}
+setTimeout(() => document.querySelectorAll('.easing-card').forEach(c => playEasing(c)), 500);
+
+/* === Animation replays === */
+function replayKnockout(card) {
+  const el = card.querySelector('.knockout-text');
+  el.style.animation = 'none'; el.offsetHeight;
+  el.style.animation = 'knockoutText 5s linear infinite';
+}
+function replayBillingStats(card) {
+  const a = card.querySelector('.billing-arrow');
+  if (a) { a.style.animation = 'none'; a.offsetHeight; a.style.animation = 'bucketListingStatArrowAnimation 2s ease-in-out infinite'; }
+}
+function replaySpinner(card) {
+  const s = card.querySelector('.stripe-spinner');
+  s.style.animation = 'none'; s.offsetHeight; s.style.animation = 'spinnerRotate 0.6s linear infinite';
+}
+function replayCardEntrance(card) {
+  const d = card.querySelector('.entrance-demo');
+  d.style.transition = 'none'; d.style.opacity = '0'; d.style.transform = 'translateY(20px)';
+  requestAnimationFrame(() => { requestAnimationFrame(() => {
+    d.style.transition = 'opacity 850ms cubic-bezier(0.65,0,0.35,1), transform 850ms cubic-bezier(0.65,0,0.35,1)';
+    d.style.opacity = '1'; d.style.transform = 'translateY(0)';
+  }); });
+}
+function replayTooltip(card) {
+  const d = card.querySelector('.tooltip-demo');
+  d.style.transition = 'none'; d.style.opacity = '0'; d.style.transform = 'translateY(4px)';
+  requestAnimationFrame(() => { requestAnimationFrame(() => {
+    d.style.transition = 'opacity 300ms ease-out, transform 300ms ease-out';
+    d.style.opacity = '1'; d.style.transform = 'translateY(0)';
+  }); });
+}
+setTimeout(() => {
+  document.querySelectorAll('.entrance-demo').forEach(d => {
+    d.style.transition = 'opacity 850ms cubic-bezier(0.65,0,0.35,1), transform 850ms cubic-bezier(0.65,0,0.35,1)';
+    d.style.opacity = '1'; d.style.transform = 'translateY(0)';
+  });
+  document.querySelectorAll('.tooltip-demo').forEach(d => {
+    d.style.transition = 'opacity 300ms ease-out, transform 300ms ease-out';
+    d.style.opacity = '1'; d.style.transform = 'translateY(0)';
+  });
+}, 800);
+
+/* === Nav hover arrows === */
+document.querySelectorAll('.nav-arrow-demo').forEach(link => {
+  const arrow = link.querySelector('.hover-arrow');
+  link.addEventListener('mouseenter', () => { arrow.style.opacity = '1'; arrow.style.transform = 'translateX(0)'; });
+  link.addEventListener('mouseleave', () => { arrow.style.opacity = '0'; arrow.style.transform = 'translateX(-3px)'; });
+});
+
+/* === Timing demos === */
+function playTiming(card, duration) {
+  const fill = card.querySelector('.timing-fill');
+  fill.style.transition = 'none'; fill.style.width = '0%';
+  requestAnimationFrame(() => { requestAnimationFrame(() => {
+    fill.style.transition = `width ${duration}ms cubic-bezier(0.215,0.61,0.355,1)`;
+    fill.style.width = '100%';
+  }); });
+}
+
+/* === Payment tabs === */
+function switchPaymentTab(tab, type) {
+  document.querySelectorAll('.payment-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  const c = document.getElementById('payment-content');
+  const t = {
+    card: `<div class="payment-field"><label>Card number</label><input type="text" placeholder="1234 1234 1234 1234" /></div>
+      <div class="payment-row"><div class="payment-field"><label>Expiration</label><input type="text" placeholder="MM / YY" /></div>
+      <div class="payment-field"><label>CVC</label><input type="text" placeholder="CVC" /></div></div>
+      <div class="payment-field"><label>Country</label><input type="text" placeholder="United States" /></div>
+      <button class="payment-btn">Pay $49.00</button>`,
+    bank: `<div class="payment-field"><label>Account holder name</label><input type="text" placeholder="Full name" /></div>
+      <div class="payment-field"><label>Routing number</label><input type="text" placeholder="110000000" /></div>
+      <div class="payment-field"><label>Account number</label><input type="text" placeholder="000123456789" /></div>
+      <button class="payment-btn">Authorize payment</button>`,
+    wallet: `<div style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px; padding:14px 16px; border:1px solid var(--formFieldBorderColor); border-radius:6px; cursor:pointer;">
+        <div style="width:36px; height:24px; background:#000; border-radius:4px; display:flex; align-items:center; justify-content:center; color:white; font-size:10px; font-weight:700;">AP</div>
+        <div style="font-size:14px; font-weight:500; color:var(--navy-dark);">Apple Pay</div></div>
+      <div style="display:flex; align-items:center; gap:12px; padding:14px 16px; border:1px solid var(--formFieldBorderColor); border-radius:6px; cursor:pointer;">
+        <div style="width:36px; height:24px; background:#4285f4; border-radius:4px; display:flex; align-items:center; justify-content:center; color:white; font-size:10px; font-weight:700;">G</div>
+        <div style="font-size:14px; font-weight:500; color:var(--navy-dark);">Google Pay</div></div></div>
+      <button class="payment-btn" style="margin-top:16px;">Continue</button>`
+  };
+  c.innerHTML = t[type];
+}
+
+/* === Spacing visualization === */
+const sv = document.getElementById('spacing-vis');
+const sizes = [8,12,16,24,32,40,48,64,96,128];
+const names = ['XS','SM','MD','LG','XL','2XL','3XL','4XL','5XL','6XL'];
+sizes.forEach((s, i) => {
+  const r = document.createElement('div');
+  r.style.cssText = 'display:flex; align-items:center; gap:12px;';
+  r.innerHTML = `<div style="font-size:10px; font-weight:600; color:rgba(255,255,255,0.35); width:28px; text-align:right;">${names[i]}</div>
+    <div style="width:${Math.min(s*2,400)}px; height:8px; background:linear-gradient(90deg,var(--purple-primary),rgba(99,91,255,0.15)); border-radius:4px;"></div>
+    <div style="font-size:10px; color:rgba(255,255,255,0.3); font-family:monospace;">${s}px</div>`;
+  sv.appendChild(r);
+});
+</script>
+</body>
+</html>

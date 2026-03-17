@@ -1,0 +1,65 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'hero';
+  href?: string;
+  class?: string;
+  type?: 'button' | 'submit';
+}
+
+const { variant = 'primary', href, class: className = '', type = 'button' } = Astro.props;
+
+const variantClasses = {
+  primary: 'btn-primary-style bg-accent text-black font-semibold tracking-wide px-8 py-4 rounded-md min-w-[200px] text-center inline-flex items-center justify-center text-base',
+  secondary: 'btn-secondary-style bg-transparent text-white px-8 py-4 rounded-md inline-flex items-center justify-center text-base font-semibold',
+  ghost: 'bg-transparent py-2 px-0 inline-flex items-center text-sm font-medium transition-colors duration-200 hover:text-white',
+  hero: 'btn-primary-style bg-accent text-black text-lg font-semibold tracking-wide px-10 py-5 rounded-lg inline-flex items-center justify-center text-center',
+};
+---
+
+{href ? (
+  <a href={href} class={`${variantClasses[variant]} ${className} focus:outline-none focus:ring-2 focus:ring-accent/20`}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class={`${variantClasses[variant]} ${className} focus:outline-none focus:ring-2 focus:ring-accent/20`}>
+    <slot />
+  </button>
+)}
+
+<style>
+  /* Ghost default color */
+  .btn-ghost-style {
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* Primary button — gold with hover glow (Tasks G + D) */
+  .btn-primary-style {
+    background-color: #C9A84C;
+    transition: background-color 200ms ease, transform 150ms ease, box-shadow 200ms ease;
+  }
+  .btn-primary-style:hover {
+    background-color: #D4B85E;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(201, 168, 76, 0.3), 0 0 20px rgba(201, 168, 76, 0.1);
+  }
+  .btn-primary-style:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  /* Secondary button — border brightens on hover (Task G) */
+  .btn-secondary-style {
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.85);
+    transition: border-color 200ms ease, color 200ms ease, background-color 200ms ease, transform 150ms ease;
+  }
+  .btn-secondary-style:hover {
+    border-color: rgba(255,255,255,0.35);
+    color: #fff;
+    background-color: rgba(255,255,255,0.04);
+    transform: translateY(-1px);
+  }
+  .btn-secondary-style:active {
+    transform: translateY(0);
+  }
+</style>

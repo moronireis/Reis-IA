@@ -1,0 +1,525 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand Colors */
+  --color-accent: #C9A84C;
+  --color-accent-hover: #D4B85E;
+  --color-accent-muted: #A68B3C;
+  --color-accent-bright: #E4C46A;
+
+  /* Surface system (Task B) */
+  --color-surface-0: #080808;
+  --color-surface-1: #111113;
+  --color-surface-2: #1c1c1e;
+  --color-surface-3: #242427;
+
+  /* Text opacity system (Task C) */
+  --color-text-primary:    rgba(255,255,255,1.0);
+  --color-text-secondary:  rgba(255,255,255,0.75);
+  --color-text-tertiary:   rgba(255,255,255,0.45);
+  --color-text-quaternary: rgba(255,255,255,0.25);
+
+  /* Borders */
+  --color-border-subtle:   rgba(255,255,255,0.06);
+  --color-border-default:  rgba(255,255,255,0.10);
+  --color-border-strong:   rgba(255,255,255,0.18);
+
+  /* Neutral extensions (kept for backward compat) */
+  --color-neutral-850: #1A1A1A;
+  --color-neutral-950: #0A0A0A;
+
+  /* Font */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-surface-0);
+    color: var(--color-text-secondary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Typography refinements (Task K) */
+  h1, h2, h3 {
+    color: var(--color-text-primary);
+  }
+
+  p {
+    color: var(--color-text-secondary);
+  }
+}
+
+@layer utilities {
+  /* Surface system utilities (Task B) */
+  .bg-surface-0 { background-color: var(--color-surface-0); }
+  .bg-surface-1 { background-color: var(--color-surface-1); }
+  .bg-surface-2 { background-color: var(--color-surface-2); }
+  .bg-surface-3 { background-color: var(--color-surface-3); }
+
+  /* Text opacity system utilities (Task C) */
+  .text-primary   { color: var(--color-text-primary); }
+  .text-secondary { color: var(--color-text-secondary); }
+  .text-tertiary  { color: var(--color-text-tertiary); }
+  .text-quaternary { color: var(--color-text-quaternary); }
+
+  /* Gold accent glow (Task D) */
+  .accent-glow {
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.15), 0 0 40px rgba(201, 168, 76, 0.05);
+  }
+  .accent-glow-strong {
+    box-shadow: 0 8px 24px rgba(201, 168, 76, 0.3), 0 0 40px rgba(201, 168, 76, 0.1);
+  }
+
+  /* Legacy utilities (kept for backward compat) */
+  .chess-grid {
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(255,255,255,0.03) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.03) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.03) 75%);
+    background-size: 48px 48px;
+    background-position: 0 0, 0 24px, 24px -24px, -24px 0;
+  }
+
+  .divider-fade {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.06) 80%, transparent);
+  }
+
+  /* Gold divider (Task H) */
+  .divider-gold {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201,168,76,0.3) 20%, rgba(201,168,76,0.3) 80%, transparent);
+  }
+
+  .text-accent { color: var(--color-accent); }
+  .text-accent-muted { color: var(--color-accent-muted); }
+  .bg-accent { background-color: var(--color-accent); }
+  .bg-accent-hover { background-color: var(--color-accent-hover); }
+  .bg-neutral-850 { background-color: var(--color-neutral-850); }
+  .bg-neutral-950 { background-color: var(--color-neutral-950); }
+  .border-neutral-850 { border-color: var(--color-neutral-850); }
+  .border-accent { border-color: var(--color-accent); }
+
+  .placeholder-content {
+    border: 1px dashed #404040;
+    background-color: rgba(255,255,255,0.02);
+    color: #525252;
+  }
+
+  /* ---- Icon hover animation (Task: Icon Upgrade) ---- */
+  .icon-hover {
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  .group:hover .icon-hover {
+    transform: scale(1.1);
+    color: var(--color-accent, #C9A84C);
+  }
+
+  /* ---- Gradient orb (Task: Subtle graphic elements) ---- */
+  .gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .gradient-orb-gold {
+    background: rgba(201, 168, 76, 0.06);
+  }
+  .gradient-orb-blue {
+    background: rgba(100, 130, 200, 0.03);
+  }
+
+  /* ---- Premium card border (Task: Subtle graphic elements) ---- */
+  .card-premium {
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card-premium:hover {
+    border-color: rgba(201, 168, 76, 0.2);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.08);
+  }
+
+  /* ---- Divider accent (gold gradient) ---- */
+  .divider-accent {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.3), transparent);
+  }
+
+  /* Letter spacing for headlines (Task K) */
+  .tracking-headline { letter-spacing: -0.03em; }
+  .tracking-display  { letter-spacing: -0.04em; }
+}
+
+/* ============================================================
+   HERO LOAD ANIMATIONS (Task I)
+   ============================================================ */
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-animate {
+  opacity: 0;
+  animation: heroFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.hero-animate-1 { animation-delay: 0.1s; }
+.hero-animate-2 { animation-delay: 0.25s; }
+.hero-animate-3 { animation-delay: 0.4s; }
+.hero-animate-4 { animation-delay: 0.55s; }
+.hero-animate-5 { animation-delay: 0.7s; }
+
+/* ============================================================
+   SCROLL REVEAL ANIMATIONS (Task E)
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered reveals for grids/lists */
+.reveal-stagger > .reveal:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger > .reveal:nth-child(2) { transition-delay: 100ms; }
+.reveal-stagger > .reveal:nth-child(3) { transition-delay: 200ms; }
+.reveal-stagger > .reveal:nth-child(4) { transition-delay: 300ms; }
+.reveal-stagger > .reveal:nth-child(5) { transition-delay: 400ms; }
+.reveal-stagger > .reveal:nth-child(6) { transition-delay: 500ms; }
+
+/* ============================================================
+   COUNTER ANIMATION (Task F) — JS-driven, only needs reset state
+   ============================================================ */
+[data-counter] {
+  display: inline-block;
+}
+
+/* ============================================================
+   CARD HOVER EFFECTS (Task G)
+   ============================================================ */
+.card-interactive {
+  background-color: var(--color-surface-1);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 16px;
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 300ms ease,
+              border-color 300ms ease,
+              background-color 300ms ease;
+}
+.card-interactive:hover {
+  background-color: var(--color-surface-2);
+  border-color: rgba(201, 168, 76, 0.18);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.08);
+}
+
+/* ============================================================
+   SECTION GRADIENT TRANSITIONS (Task H)
+   ============================================================ */
+.section-transition-top {
+  position: relative;
+}
+.section-transition-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, var(--color-surface-0), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ============================================================
+   LEGACY REVEAL (backward compat — keep for existing classes)
+   ============================================================ */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal-up {
+  animation: reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.reveal-delay-1 { animation-delay: 100ms; }
+.reveal-delay-2 { animation-delay: 200ms; }
+.reveal-delay-3 { animation-delay: 300ms; }
+.reveal-delay-4 { animation-delay: 400ms; }
+
+/* ============================================================
+   NOISE TEXTURE OVERLAY — subtle grain for dark surface richness
+   ============================================================ */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   HERO CARD (floating card hero — Academy Lendária pattern)
+   ============================================================ */
+.hero-card {
+  margin: 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, #0c0b09 0%, #080808 100%);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ============================================================
+   CARD GRID GROUP HOVER DIMMING
+   (Non-hovered cards dim; hovered card stays bright)
+   ============================================================ */
+.card-grid-hover:hover .card-item {
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+.card-grid-hover:hover .card-item:hover {
+  opacity: 1;
+}
+.card-grid-hover .card-item {
+  transition: opacity 0.3s ease;
+}
+
+/* ============================================================
+   ANIMATED ROTATING BORDER (conic-gradient, @property)
+   ============================================================ */
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateBorder {
+  to { --border-angle: 360deg; }
+}
+
+.rotating-border {
+  background:
+    linear-gradient(#111113, #111113) padding-box,
+    conic-gradient(
+      from var(--border-angle),
+      rgba(36, 36, 39, 1) 60%,
+      rgba(201, 168, 76, 0.55) 78%,
+      rgba(228, 196, 106, 0.8) 86%,
+      rgba(201, 168, 76, 0.55) 94%,
+      rgba(36, 36, 39, 1) 100%
+    ) border-box;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  animation: rotateBorder 6s linear infinite;
+}
+
+/* ============================================================
+   CARD GOLD UNDERLINE CTA LINK
+   Width grows 0 → 100% on hover
+   ============================================================ */
+.card-cta-link {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  padding-bottom: 2px;
+}
+.card-cta-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(to right, #C9A84C, #E4C46A);
+  transition: width 0.3s ease;
+}
+.card-cta-link:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+.card-cta-link:hover::after {
+  width: 100%;
+}
+
+/* ============================================================
+   GLASSMORPHISM INPUT FIELDS (lead capture section)
+   ============================================================ */
+.glass-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 15px;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  width: 100%;
+  outline: none;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+.glass-input:focus {
+  border-color: rgba(201, 168, 76, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================
+   LEAD CAPTURE SECTION
+   ============================================================ */
+.lead-capture-section {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0c0b09 0%, #080808 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ============================================================
+   COMMUNITY AVATAR GRID — staggered fade-in
+   ============================================================ */
+.avatar-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #1c1c1e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.03em;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+  flex-shrink: 0;
+}
+.avatar-circle:hover {
+  border-color: rgba(201, 168, 76, 0.4);
+  transform: scale(1.08);
+}
+
+/* Staggered entrance for avatar items */
+.avatar-item {
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.avatar-item.revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+.avatar-item:nth-child(1)  { transition-delay: 0ms;   }
+.avatar-item:nth-child(2)  { transition-delay: 60ms;  }
+.avatar-item:nth-child(3)  { transition-delay: 120ms; }
+.avatar-item:nth-child(4)  { transition-delay: 180ms; }
+.avatar-item:nth-child(5)  { transition-delay: 240ms; }
+.avatar-item:nth-child(6)  { transition-delay: 300ms; }
+.avatar-item:nth-child(7)  { transition-delay: 360ms; }
+.avatar-item:nth-child(8)  { transition-delay: 420ms; }
+.avatar-item:nth-child(9)  { transition-delay: 480ms; }
+.avatar-item:nth-child(10) { transition-delay: 540ms; }
+
+/* ============================================================
+   FOUNDER SECTION — rotating border on photo placeholder
+   ============================================================ */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateBorderFounder {
+  to { --angle: 360deg; }
+}
+
+.founder-photo-border {
+  background:
+    linear-gradient(#111113, #111113) padding-box,
+    conic-gradient(
+      from var(--angle),
+      rgba(36, 36, 39, 1) 60%,
+      rgba(201, 168, 76, 0.6) 80%,
+      rgba(228, 196, 106, 0.9) 88%,
+      rgba(201, 168, 76, 0.6) 96%,
+      rgba(36, 36, 39, 1) 100%
+    ) border-box;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  animation: rotateBorderFounder 6s linear infinite;
+}
+
+/* ============================================================
+   SECTION VISUAL DEPTH CARDS — upgraded card style
+   ============================================================ */
+.card-visual-top {
+  border-radius: 16px 16px 0 0;
+  height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ============================================================
+   REDUCED MOTION — ALWAYS LAST (Task E rule)
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .hero-animate {
+    opacity: 1;
+    animation: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .reveal-up {
+    animation: none;
+    opacity: 1;
+  }
+  .card-interactive {
+    transition: none;
+  }
+  .marquee-track {
+    animation-play-state: paused;
+  }
+  .rotating-border,
+  .founder-photo-border {
+    animation: none;
+  }
+  .avatar-item {
+    opacity: 1;
+    transform: scale(1);
+    transition: none;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

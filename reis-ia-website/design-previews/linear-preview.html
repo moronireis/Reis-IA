@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linear Design System — Interactive Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=EB+Garamond:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   CSS CUSTOM PROPERTIES — LINEAR DESIGN SYSTEM REFERENCE
+   ========================================================================== */
+:root {
+  /* ---- CORE DARK PALETTE ---- */
+  --color-bg-primary: #08090a;
+  --color-bg-elevated: #0e0f11;
+  --color-bg-tertiary: #141517;
+
+  /* ---- TEXT HIERARCHY (OPACITY-BASED) ---- */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.70);
+  --color-text-tertiary: rgba(255, 255, 255, 0.50);
+  --color-text-quaternary: rgba(255, 255, 255, 0.35);
+  --color-text-dimmed: rgba(255, 255, 255, 0.48);
+
+  /* ---- BORDERS ---- */
+  --color-border-primary: rgba(255, 255, 255, 0.08);
+  --color-border-secondary: rgba(255, 255, 255, 0.05);
+
+  /* ---- SEMANTIC COLORS ---- */
+  --color-yellow: #e4f222;
+  --color-orange: #ff5900;
+  --color-green: #01c646;
+  --color-pink: #ffc8d0;
+  --color-red: red;
+  --color-blue: #8cc3f2;
+  --color-lavender: #dee2ff;
+
+  /* ---- GRADIENT DEFINITIONS ---- */
+  --gradient-purple-pink: linear-gradient(120deg, #db91cb 0%, #9a5eff 50%, #db91cb 100%);
+  --gradient-blue-purple: linear-gradient(92.88deg, #455eb5 9.16%, #5643cc 43.89%, #673fd7 64.72%);
+  --gradient-teal-blue: linear-gradient(124.31deg, #46e3b7 0.18%, #2f7ad0 89.82%);
+  --gradient-pink-gold: linear-gradient(285.49deg, #f537f9 -14.61%, #f7c12b 106.06%);
+
+  /* ---- GRID COLORS ---- */
+  --grid-color-purple: #746cf3;
+  --grid-color-lavender: #a9a1ff;
+  --grid-color-green: #46e3b7;
+  --grid-color-gold: #f3bd6c;
+
+  /* ---- GLITCH COLORS ---- */
+  --a-pink: #db91cb;
+  --a-gray: #999;
+  --a-blush: #ffb1bf;
+  --b-purple: #9a5eff;
+  --b-gray: #555;
+
+  /* ---- STAGGER SYSTEM ---- */
+  --entry-duration: 800ms;
+  --entry-stagger: 200ms;
+  --entry-delay: 400ms;
+  --entry-offset: 30px;
+  --computer-delay: calc(7 * var(--entry-stagger) + var(--entry-delay));
+
+  /* ---- EASING ---- */
+  --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* ---- TYPOGRAPHY ---- */
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'EB Garamond', serif;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* ---- BORDER RADIUS ---- */
+  --radius-sm: 4px;
+  --radius-md: 5px;
+  --radius-lg: 7px;
+  --radius-full: 50%;
+}
+
+/* === RESET === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  isolation: isolate;
+}
+::selection { background: rgba(154, 94, 255, 0.30); color: white; }
+body {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-primary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* === LAYOUT === */
+.page-wrapper { display: flex; min-height: 100vh; }
+
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+  background: var(--color-bg-elevated); border-right: 1px solid var(--color-border-primary);
+  overflow-y: auto; z-index: 100; padding: 24px 0;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.06) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
+.sidebar-header { padding: 0 20px; margin-bottom: 24px; }
+.sidebar-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+.sidebar-subtitle { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grid-color-purple); margin-top: 4px; }
+.sidebar-divider { height: 1px; background: var(--color-border-primary); margin: 12px 20px; }
+.sidebar nav a {
+  display: flex; align-items: center; gap: 8px; padding: 6px 20px; font-size: 12.5px; font-weight: 400;
+  color: var(--color-text-quaternary); text-decoration: none;
+  transition: color 200ms, background 200ms;
+  border-left: 2px solid transparent;
+}
+.sidebar nav a:hover { color: var(--color-text-secondary); background: rgba(255,255,255,0.02); }
+.sidebar nav a.active { color: var(--grid-color-purple); border-left-color: var(--grid-color-purple); background: rgba(116,108,243,0.06); font-weight: 500; }
+.sidebar nav .nav-num { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.12); min-width: 18px; font-variant-numeric: tabular-nums; }
+
+.main-content { margin-left: 260px; flex: 1; min-width: 0; }
+
+/* === SECTION SHELL === */
+.ds-section {
+  padding: 72px 48px; border-bottom: 1px solid var(--color-border-primary);
+  max-width: 1200px; position: relative;
+}
+.ds-section:last-child { border-bottom: none; }
+
+.section-header { margin-bottom: 48px; }
+.section-num { font-size: 11px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--grid-color-purple); margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.section-title { font-size: 28px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 10px; }
+.section-desc { font-size: 14px; color: var(--color-text-secondary); max-width: 640px; line-height: 1.6; }
+
+.subsection { margin-bottom: 48px; }
+.subsection-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 16px; color: rgba(255,255,255,0.85); }
+
+/* === SWATCHES === */
+.swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.swatch {
+  border-radius: var(--radius-md); overflow: hidden; cursor: pointer;
+  transition: transform 300ms; border: 1px solid var(--color-border-primary);
+}
+.swatch:hover { transform: scale(1.02); }
+.swatch-color { height: 72px; }
+.swatch-info { padding: 10px 12px; background: var(--color-bg-elevated); }
+.swatch-name { font-size: 11px; font-weight: 500; margin-bottom: 2px; }
+.swatch-hex { font-size: 10px; color: var(--color-text-quaternary); font-family: 'Inter', monospace; }
+
+/* === TOKEN TABLE === */
+.token-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.token-table th { text-align: left; padding: 10px 16px; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-quaternary); border-bottom: 1px solid var(--color-border-primary); }
+.token-table td { padding: 10px 16px; border-bottom: 1px solid var(--color-border-secondary); vertical-align: middle; }
+.token-table tr:hover td { background: rgba(255,255,255,0.015); }
+.token-value { font-family: 'Inter', monospace; font-size: 12px; color: var(--grid-color-purple); cursor: pointer; padding: 2px 6px; background: rgba(116,108,243,0.08); border-radius: 4px; transition: background 150ms; }
+.token-value:hover { background: rgba(116,108,243,0.15); }
+
+/* === STAGGER DEMO === */
+.stagger-demo { display: flex; flex-direction: column; gap: 12px; max-width: 500px; }
+.stagger-item {
+  padding: 16px 20px; background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-primary); border-radius: var(--radius-md);
+  opacity: 0; transform: translateY(var(--entry-offset));
+  font-size: 14px; font-weight: 500;
+}
+.stagger-item.visible {
+  opacity: 1; transform: translateY(0);
+  transition-property: opacity, transform;
+  transition-duration: var(--entry-duration);
+}
+
+/* === ANIMATION DEMOS === */
+.anim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.anim-card {
+  background: var(--color-bg-elevated); border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md); padding: 24px; cursor: pointer;
+  min-height: 200px; display: flex; flex-direction: column;
+  transition: border-color 200ms;
+}
+.anim-card:hover { border-color: rgba(116,108,243,0.2); }
+.anim-label { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.anim-desc { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 16px; }
+.anim-stage { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.anim-replay { font-size: 10px; color: var(--color-text-quaternary); text-align: center; margin-top: 8px; }
+
+/* === DOT GRID === */
+.dot-grid-container {
+  display: grid; grid-template-columns: repeat(5, 24px); grid-template-rows: repeat(5, 24px);
+  gap: 12px; justify-content: center; padding: 24px;
+}
+.dot-grid-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--grid-color-purple);
+  opacity: 0.3; justify-self: center; align-self: center;
+}
+
+/* === GRADIENT PREVIEWS === */
+.gradient-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.gradient-card {
+  border-radius: var(--radius-md); overflow: hidden; cursor: pointer;
+  border: 1px solid var(--color-border-primary); transition: transform 300ms;
+}
+.gradient-card:hover { transform: scale(1.02); }
+.gradient-preview { height: 100px; }
+.gradient-info { padding: 12px 16px; background: var(--color-bg-elevated); }
+.gradient-name { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.gradient-css { font-size: 10px; font-family: 'Inter', monospace; color: var(--color-text-quaternary); cursor: pointer; word-break: break-all; }
+
+/* === GRADIENT TEXT === */
+.gradient-text {
+  background: var(--gradient-purple-pink);
+  background-size: 200% auto;
+  background-clip: text; -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 3s linear infinite;
+}
+@keyframes gradientShift { to { background-position: -200%; } }
+
+/* === KEYFRAMES === */
+@keyframes entrance-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes entrance-left {
+  from { opacity: 0; transform: translateX(-64px) translateY(30px); }
+  50% { transform: translateX(-64px) translateY(0); }
+  75% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+@keyframes entrance-right {
+  from { opacity: 0; transform: translateX(64px) translateY(-30px); }
+  50% { transform: translateX(64px) translateY(0); }
+  75% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+@keyframes entrance-down {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes stroke-draw {
+  from { stroke-dashoffset: 506; }
+  30%, 100% { stroke-dashoffset: 0; }
+}
+@keyframes glitch {
+  2%, 60%, 63%, 78%, 81% { transform: none; opacity: 1; }
+  62% { transform: translate(-2px, 0) skew(21deg); }
+  80% { opacity: 0.4; transform: translate(2px, 0) skew(-15deg); }
+}
+@keyframes shimmer { to { background-position: -200%; } }
+@keyframes scale-pulse {
+  0% { transform: scale(0); }
+  50% { transform: scale(1); }
+  100% { transform: scale(0); }
+}
+@keyframes rotate-180 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(180deg); }
+}
+@keyframes blink { 50% { opacity: 0; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes clip-reveal {
+  from { clip-path: polygon(0 0, 100% 0, 100% 0%, 0 0%); }
+  50%, 100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+/* === COMPONENT DEMOS === */
+.linear-btn {
+  padding: 6px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+  cursor: pointer; border: none; font-family: inherit; transition: opacity 200ms;
+}
+.linear-btn:hover { opacity: 0.8; }
+.linear-btn--primary { background: var(--grid-color-purple); color: white; }
+.linear-btn--secondary { background: var(--color-bg-tertiary); color: var(--color-text-primary); border: 1px solid var(--color-border-primary); }
+.linear-btn--ghost { background: transparent; color: var(--color-text-secondary); }
+
+/* === COPY TOAST === */
+.copy-toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--grid-color-purple); color: white; padding: 8px 20px;
+  border-radius: 20px; font-size: 13px; font-weight: 500;
+  opacity: 0; pointer-events: none;
+  transition: opacity 200ms, transform 200ms var(--ease-out-quad);
+  z-index: 999;
+}
+.copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* === HARDWARE DEMO === */
+.hw-demo { display: flex; gap: 24px; align-items: center; }
+.hw-indicator { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; }
+.hw-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; }
+  .ds-section { padding: 48px 24px; }
+  .anim-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Linear</div>
+      <div class="sidebar-subtitle">Design System Reference</div>
+    </div>
+    <div class="sidebar-divider"></div>
+    <nav>
+      <a href="#colors"><span class="nav-num">01</span> Color System</a>
+      <a href="#typography"><span class="nav-num">02</span> Typography</a>
+      <a href="#stagger"><span class="nav-num">03</span> Stagger System</a>
+      <a href="#hardware"><span class="nav-num">04</span> Hardware-Adaptive</a>
+      <a href="#keyframes"><span class="nav-num">05</span> Keyframe Animations</a>
+      <a href="#dotgrid"><span class="nav-num">06</span> Dot Grid Matrix</a>
+      <a href="#gradients"><span class="nav-num">07</span> Gradient Text &amp; Effects</a>
+      <a href="#components"><span class="nav-num">08</span> Component Patterns</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- 01 — COLOR SYSTEM -->
+    <section class="ds-section" id="colors">
+      <div class="section-header">
+        <div class="section-num">01</div>
+        <h2 class="section-title">Color System</h2>
+        <p class="section-desc">Linear achieves hierarchy almost entirely through opacity rather than different colors. 5+ levels of white on dark. The interface feels unified because every text element is the same color at different transparencies.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Core Dark Palette</h3>
+        <div class="swatch-grid">
+          <div class="swatch" onclick="copyValue('#08090a')"><div class="swatch-color" style="background:#08090a; border:1px solid rgba(255,255,255,0.08);"></div><div class="swatch-info"><div class="swatch-name">Background Primary</div><div class="swatch-hex">#08090a</div></div></div>
+          <div class="swatch" onclick="copyValue('#0e0f11')"><div class="swatch-color" style="background:#0e0f11"></div><div class="swatch-info"><div class="swatch-name">Background Elevated</div><div class="swatch-hex">#0e0f11</div></div></div>
+          <div class="swatch" onclick="copyValue('#141517')"><div class="swatch-color" style="background:#141517"></div><div class="swatch-info"><div class="swatch-name">Background Tertiary</div><div class="swatch-hex">#141517</div></div></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Text Hierarchy (Opacity-Based)</h3>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; gap:16px; cursor:pointer;" onclick="copyValue('rgba(255, 255, 255, 1.0)')">
+            <div style="width:80px; font-size:12px; color:var(--color-text-quaternary);">100%</div>
+            <div style="font-size:18px; font-weight:600; color:var(--color-text-primary);">Primary Text</div>
+            <span class="token-value">rgba(255, 255, 255, 1.0)</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px; cursor:pointer;" onclick="copyValue('rgba(255, 255, 255, 0.70)')">
+            <div style="width:80px; font-size:12px; color:var(--color-text-quaternary);">70%</div>
+            <div style="font-size:18px; font-weight:600; color:var(--color-text-secondary);">Secondary Text</div>
+            <span class="token-value">rgba(255, 255, 255, 0.70)</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px; cursor:pointer;" onclick="copyValue('rgba(255, 255, 255, 0.50)')">
+            <div style="width:80px; font-size:12px; color:var(--color-text-quaternary);">50%</div>
+            <div style="font-size:18px; font-weight:600; color:var(--color-text-tertiary);">Tertiary Text</div>
+            <span class="token-value">rgba(255, 255, 255, 0.50)</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px; cursor:pointer;" onclick="copyValue('rgba(255, 255, 255, 0.35)')">
+            <div style="width:80px; font-size:12px; color:var(--color-text-quaternary);">35%</div>
+            <div style="font-size:18px; font-weight:600; color:var(--color-text-quaternary);">Quaternary Text</div>
+            <span class="token-value">rgba(255, 255, 255, 0.35)</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px; cursor:pointer;" onclick="copyValue('rgba(255, 255, 255, 0.48)')">
+            <div style="width:80px; font-size:12px; color:var(--color-text-quaternary);">48%</div>
+            <div style="font-size:18px; font-weight:600; color:var(--color-text-dimmed);">Dimmed Text</div>
+            <span class="token-value">rgba(255, 255, 255, 0.48)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Borders (Structure Felt, Not Seen)</h3>
+        <div style="display:flex; gap:24px;">
+          <div style="flex:1; padding:24px; border:1px solid var(--color-border-primary); border-radius:var(--radius-md); cursor:pointer;" onclick="copyValue('rgba(255, 255, 255, 0.08)')">
+            <div style="font-size:12px; font-weight:500;">Primary Border</div>
+            <div style="font-size:10px; color:var(--color-text-quaternary); margin-top:4px;">rgba(255, 255, 255, 0.08)</div>
+          </div>
+          <div style="flex:1; padding:24px; border:1px solid var(--color-border-secondary); border-radius:var(--radius-md); cursor:pointer;" onclick="copyValue('rgba(255, 255, 255, 0.05)')">
+            <div style="font-size:12px; font-weight:500;">Secondary Border</div>
+            <div style="font-size:10px; color:var(--color-text-quaternary); margin-top:4px;">rgba(255, 255, 255, 0.05)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Semantic / Partner Colors</h3>
+        <div class="swatch-grid">
+          <div class="swatch" onclick="copyValue('#e4f222')"><div class="swatch-color" style="background:#e4f222"></div><div class="swatch-info"><div class="swatch-name">Yellow</div><div class="swatch-hex">#e4f222</div></div></div>
+          <div class="swatch" onclick="copyValue('#ff5900')"><div class="swatch-color" style="background:#ff5900"></div><div class="swatch-info"><div class="swatch-name">Orange</div><div class="swatch-hex">#ff5900</div></div></div>
+          <div class="swatch" onclick="copyValue('#01c646')"><div class="swatch-color" style="background:#01c646"></div><div class="swatch-info"><div class="swatch-name">Green</div><div class="swatch-hex">#01c646</div></div></div>
+          <div class="swatch" onclick="copyValue('#8cc3f2')"><div class="swatch-color" style="background:#8cc3f2"></div><div class="swatch-info"><div class="swatch-name">Light Blue</div><div class="swatch-hex">#8cc3f2</div></div></div>
+          <div class="swatch" onclick="copyValue('#dee2ff')"><div class="swatch-color" style="background:#dee2ff"></div><div class="swatch-info"><div class="swatch-name">Lavender</div><div class="swatch-hex">#dee2ff</div></div></div>
+          <div class="swatch" onclick="copyValue('#ffc8d0')"><div class="swatch-color" style="background:#ffc8d0"></div><div class="swatch-info"><div class="swatch-name">Pink</div><div class="swatch-hex">#ffc8d0</div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 — TYPOGRAPHY -->
+    <section class="ds-section" id="typography">
+      <div class="section-header">
+        <div class="section-num">02</div>
+        <h2 class="section-title">Typography System</h2>
+        <p class="section-desc">Inter Variable as primary, EB Garamond as display serif. 9-level title scale + 6 text sizes. Semibold (600) is the heaviest standard weight. text-wrap: balance on headlines; text-wrap: pretty on body.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Title Scale</h3>
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <div>
+            <div style="font-size:10px; color:var(--color-text-quaternary); margin-bottom:4px; font-weight:500; letter-spacing:0.05em;">TITLE 1 (DISPLAY) -- ~72px / Bold / -0.03em</div>
+            <div style="font-size:clamp(40px,5vw,72px); font-weight:700; letter-spacing:-0.03em; line-height:1.0; text-wrap:balance;">Build software</div>
+          </div>
+          <div>
+            <div style="font-size:10px; color:var(--color-text-quaternary); margin-bottom:4px; font-weight:500; letter-spacing:0.05em;">TITLE 3 -- ~48px / Semibold / -0.02em</div>
+            <div style="font-size:clamp(30px,3.5vw,48px); font-weight:600; letter-spacing:-0.02em; line-height:1.1; text-wrap:balance;">Plan. Build. Ship.</div>
+          </div>
+          <div>
+            <div style="font-size:10px; color:var(--color-text-quaternary); margin-bottom:4px; font-weight:500; letter-spacing:0.05em;">TITLE 5 -- ~32px / Semibold / -0.01em</div>
+            <div style="font-size:clamp(22px,2.5vw,32px); font-weight:600; letter-spacing:-0.01em; line-height:1.2; text-wrap:balance;">Purpose-built for product teams</div>
+          </div>
+          <div>
+            <div style="font-size:10px; color:var(--color-text-quaternary); margin-bottom:4px; font-weight:500; letter-spacing:0.05em;">DISPLAY SERIF -- EB Garamond / Normal 400</div>
+            <div style="font-family:var(--font-serif); font-size:clamp(28px,3vw,48px); font-weight:400; line-height:1.15;">The method behind the craft</div>
+          </div>
+          <div>
+            <div style="font-size:10px; color:var(--color-text-quaternary); margin-bottom:4px; font-weight:500; letter-spacing:0.05em;">TEXT REGULAR -- 16px / Normal 400</div>
+            <div style="font-size:16px; font-weight:400; line-height:1.6; color:var(--color-text-secondary); max-width:540px; text-wrap:pretty;">Linear is a purpose-built tool for planning and building products. Streamline issues, projects, and product roadmaps.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Typography Features</h3>
+        <table class="token-table">
+          <thead><tr><th>Feature</th><th>CSS</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>text-wrap: balance</td><td><span class="token-value" onclick="copyValue('text-wrap: balance')">text-wrap: balance</span></td><td style="color:var(--color-text-tertiary)">Headlines -- even line distribution</td></tr>
+            <tr><td>text-wrap: pretty</td><td><span class="token-value" onclick="copyValue('text-wrap: pretty')">text-wrap: pretty</span></td><td style="color:var(--color-text-tertiary)">Body -- prevents orphans/widows</td></tr>
+            <tr><td>Tabular nums</td><td><span class="token-value" onclick="copyValue('font-variant-numeric: tabular-nums')">tabular-nums</span></td><td style="color:var(--color-text-tertiary)">Data alignment in columns</td></tr>
+            <tr><td>Stylistic Set</td><td><span class="token-value" onclick="copyValue('font-feature-settings: \"ss01\"')">ss01</span></td><td style="color:var(--color-text-tertiary)">Alternate Inter glyphs</td></tr>
+            <tr><td>Line clamp</td><td><span class="token-value" onclick="copyValue('-webkit-line-clamp: 2')">-webkit-line-clamp: 2</span></td><td style="color:var(--color-text-tertiary)">Description truncation</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 03 — STAGGER SYSTEM -->
+    <section class="ds-section" id="stagger">
+      <div class="section-header">
+        <div class="section-num">03</div>
+        <h2 class="section-title">Stagger System</h2>
+        <p class="section-desc">Orchestrated entrance animations. Base delay 400ms (page settles first), then each element adds 200ms. Duration 800ms. Offset 30px. Click to replay the sequence.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Stagger Tokens</h3>
+        <table class="token-table">
+          <thead><tr><th>Token</th><th>Value</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>--entry-duration</td><td><span class="token-value" onclick="copyValue('800ms')">800ms</span></td><td style="color:var(--color-text-tertiary)">Animation duration per element</td></tr>
+            <tr><td>--entry-stagger</td><td><span class="token-value" onclick="copyValue('200ms')">200ms</span></td><td style="color:var(--color-text-tertiary)">Delay between elements</td></tr>
+            <tr><td>--entry-delay</td><td><span class="token-value" onclick="copyValue('400ms')">400ms</span></td><td style="color:var(--color-text-tertiary)">Base delay before sequence</td></tr>
+            <tr><td>--entry-offset</td><td><span class="token-value" onclick="copyValue('30px')">30px</span></td><td style="color:var(--color-text-tertiary)">translateY start offset</td></tr>
+            <tr><td>--computer-delay</td><td><span class="token-value" onclick="copyValue('calc(7 * 200ms + 400ms)')">1800ms</span></td><td style="color:var(--color-text-tertiary)">Last element delay</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Live Stagger Demo</h3>
+        <p class="subsection-desc" style="margin-bottom:16px;">Click anywhere in the demo area to replay the staggered entrance sequence.</p>
+        <div class="stagger-demo" id="stagger-demo" onclick="replayStagger()">
+          <div class="stagger-item" style="--index:0;">Element 1 <span style="color:var(--color-text-quaternary); font-size:11px;">-- delay: 400ms</span></div>
+          <div class="stagger-item" style="--index:1;">Element 2 <span style="color:var(--color-text-quaternary); font-size:11px;">-- delay: 600ms</span></div>
+          <div class="stagger-item" style="--index:2;">Element 3 <span style="color:var(--color-text-quaternary); font-size:11px;">-- delay: 800ms</span></div>
+          <div class="stagger-item" style="--index:3;">Element 4 <span style="color:var(--color-text-quaternary); font-size:11px;">-- delay: 1000ms</span></div>
+          <div class="stagger-item" style="--index:4;">Element 5 <span style="color:var(--color-text-quaternary); font-size:11px;">-- delay: 1200ms</span></div>
+          <div class="stagger-item" style="--index:5;">Element 6 <span style="color:var(--color-text-quaternary); font-size:11px;">-- delay: 1400ms</span></div>
+          <div class="stagger-item" style="--index:6;">Element 7 <span style="color:var(--color-text-quaternary); font-size:11px;">-- delay: 1600ms</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 — HARDWARE-ADAPTIVE -->
+    <section class="ds-section" id="hardware">
+      <div class="section-header">
+        <div class="section-num">04</div>
+        <h2 class="section-title">Hardware-Adaptive Rendering</h2>
+        <p class="section-desc">Linear checks navigator.hardwareConcurrency at page load. Machines with more than 4 cores get the "enhanced" class, enabling richer animations. Below 4 cores, simpler transitions are used.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Your Device</h3>
+        <div class="hw-demo" id="hw-demo">
+          <div class="hw-indicator">
+            <div class="hw-dot" id="hw-dot"></div>
+            <span id="hw-label">Detecting...</span>
+          </div>
+        </div>
+        <div style="margin-top:24px;">
+          <table class="token-table">
+            <thead><tr><th>Cores</th><th>Class</th><th>Animations</th></tr></thead>
+            <tbody>
+              <tr><td>&gt; 4</td><td><span class="token-value" onclick="copyValue('.enhanced')">enhanced</span></td><td style="color:var(--color-text-tertiary)">Full animations: grid dots, entrance sequences, glitch effects</td></tr>
+              <tr><td>&le; 4</td><td><span class="token-value">(none)</span></td><td style="color:var(--color-text-tertiary)">Reduced animations: simple fades only</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 — KEYFRAME ANIMATIONS -->
+    <section class="ds-section" id="keyframes">
+      <div class="section-header">
+        <div class="section-num">05</div>
+        <h2 class="section-title">Keyframe Animations</h2>
+        <p class="section-desc">12+ keyframe definitions from Linear's production code. Entrance sequences, stroke drawing, glitch effects, shimmer, and more. Click any card to replay.</p>
+      </div>
+
+      <div class="anim-grid">
+        <div class="anim-card" onclick="replayAnim(this,'entrance-left')">
+          <div class="anim-label">entrance-left</div>
+          <div class="anim-desc">Slide from left + up, then settle. 4s duration with opacity crossfade at 75%.</div>
+          <div class="anim-stage">
+            <div class="anim-target" style="width:100px; height:60px; background:var(--gradient-blue-purple); border-radius:var(--radius-md); opacity:0;">
+            </div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayAnim(this,'entrance-right')">
+          <div class="anim-label">entrance-right</div>
+          <div class="anim-desc">Slide from right + up counterpart. Mirror of entrance-left.</div>
+          <div class="anim-stage">
+            <div class="anim-target" style="width:100px; height:60px; background:var(--gradient-teal-blue); border-radius:var(--radius-md); opacity:0;">
+            </div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayAnim(this,'entrance-up')">
+          <div class="anim-label">entrance-up</div>
+          <div class="anim-desc">Simple vertical entrance. translateY(30px) to 0 + opacity. 800ms.</div>
+          <div class="anim-stage">
+            <div class="anim-target" style="width:100px; height:60px; background:var(--gradient-pink-gold); border-radius:var(--radius-md); opacity:0;">
+            </div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayStrokeDraw(this)">
+          <div class="anim-label">stroke-draw</div>
+          <div class="anim-desc">SVG path with stroke-dasharray. Draws over 8s, holds at 30%.</div>
+          <div class="anim-stage">
+            <svg width="160" height="80" viewBox="0 0 160 80">
+              <path class="stroke-path" d="M10,70 Q40,10 80,40 T150,20" fill="none" stroke="var(--grid-color-purple)" stroke-width="2" stroke-dasharray="200" stroke-dashoffset="200" style="will-change:stroke-dashoffset;"/>
+            </svg>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayGlitch(this)">
+          <div class="anim-label">glitch</div>
+          <div class="anim-desc">Digital glitch / distortion. translate + skew at 62% and 80%. 1s loop.</div>
+          <div class="anim-stage">
+            <div class="glitch-target" style="font-size:28px; font-weight:600; letter-spacing:-0.02em;">Linear</div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayShimmer(this)">
+          <div class="anim-label">shimmer</div>
+          <div class="anim-desc">Loading shimmer. Background-position shift over 3s. Used for skeleton states.</div>
+          <div class="anim-stage">
+            <div class="shimmer-target" style="width:200px; height:16px; border-radius:4px; background:linear-gradient(90deg, var(--color-bg-tertiary) 25%, rgba(255,255,255,0.06) 50%, var(--color-bg-tertiary) 75%); background-size:200% 100%;"></div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayScalePulse(this)">
+          <div class="anim-label">scale-pulse</div>
+          <div class="anim-desc">Scale 0 to 1 to 0. 700ms. Used for notification dots and status indicators.</div>
+          <div class="anim-stage">
+            <div class="pulse-target" style="width:16px; height:16px; border-radius:50%; background:var(--color-green);"></div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayBlink(this)">
+          <div class="anim-label">blink</div>
+          <div class="anim-desc">50% opacity toggle. 1.2s loop. Cursor blink or status indicator.</div>
+          <div class="anim-stage">
+            <div style="display:flex; align-items:center; gap:4px; font-family:monospace; font-size:14px;">
+              <span style="color:var(--color-text-tertiary);">Type here</span>
+              <div class="blink-target" style="width:2px; height:18px; background:var(--grid-color-purple);"></div>
+            </div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayClipReveal(this)">
+          <div class="anim-label">clip-reveal</div>
+          <div class="anim-desc">Clip-path polygon from 0% height to 100%. Stepped (8 steps) over 8s. Cinematic.</div>
+          <div class="anim-stage">
+            <div class="clip-target" style="width:120px; height:70px; background:var(--gradient-purple-pink); border-radius:var(--radius-md);"></div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayRotate(this)">
+          <div class="anim-label">rotate-180</div>
+          <div class="anim-desc">Half rotation over 1000ms. Used for chevron toggles and expand/collapse.</div>
+          <div class="anim-stage">
+            <div class="rotate-target" style="font-size:24px; color:var(--grid-color-purple);">&#9660;</div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayAnim(this,'entrance-down')">
+          <div class="anim-label">entrance-down</div>
+          <div class="anim-desc">Reverse of entrance-up. translateY(-30px) to 0. 2s duration.</div>
+          <div class="anim-stage">
+            <div class="anim-target" style="width:100px; height:60px; background:linear-gradient(135deg, var(--grid-color-green), var(--grid-color-gold)); border-radius:var(--radius-md); opacity:0;">
+            </div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+
+        <div class="anim-card" onclick="replayFadeIn(this)">
+          <div class="anim-label">fade-in</div>
+          <div class="anim-desc">Simple opacity 0 to 1. Foundation for all other entrances.</div>
+          <div class="anim-stage">
+            <div class="fade-target" style="font-size:20px; font-weight:600; color:var(--grid-color-lavender); opacity:0;">Hello, world</div>
+          </div>
+          <div class="anim-replay">Click to replay</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 — DOT GRID MATRIX -->
+    <section class="ds-section" id="dotgrid">
+      <div class="section-header">
+        <div class="section-num">06</div>
+        <h2 class="section-title">Dot Grid Matrix Pattern</h2>
+        <p class="section-desc">Linear's signature visual: 5x5 matrix of dots with discrete opacity steps. steps(1, end) creates binary appearance. Two animation families (3200ms agent + 2800ms upDown) create non-repeating patterns.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Live Dot Grid</h3>
+        <div style="display:flex; justify-content:center; padding:32px; background:var(--color-bg-elevated); border:1px solid var(--color-border-primary); border-radius:var(--radius-md);">
+          <div class="dot-grid-container" id="dot-grid"></div>
+        </div>
+        <div style="margin-top:16px; display:flex; gap:24px; justify-content:center;">
+          <div style="font-size:11px; color:var(--color-text-quaternary);"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--grid-color-purple); opacity:0.3; vertical-align:middle; margin-right:4px;"></span> Dim (0.3)</div>
+          <div style="font-size:11px; color:var(--color-text-quaternary);"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--grid-color-purple); opacity:1; vertical-align:middle; margin-right:4px;"></span> Bright (1.0)</div>
+          <div style="font-size:11px; color:var(--color-text-quaternary);">steps(1, end) -- binary transition</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Grid Animation Tokens</h3>
+        <table class="token-table">
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Agent cycle</td><td><span class="token-value" onclick="copyValue('3200ms')">3200ms</span></td></tr>
+            <tr><td>UpDown cycle</td><td><span class="token-value" onclick="copyValue('2800ms')">2800ms</span></td></tr>
+            <tr><td>Timing</td><td><span class="token-value" onclick="copyValue('steps(1, end)')">steps(1, end)</span></td></tr>
+            <tr><td>Dim opacity</td><td><span class="token-value" onclick="copyValue('0.3')">0.3</span></td></tr>
+            <tr><td>Bright opacity</td><td><span class="token-value" onclick="copyValue('1.0')">1.0</span></td></tr>
+            <tr><td>Grid size</td><td><span class="token-value" onclick="copyValue('5x5')">5x5 (25 dots)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 07 — GRADIENTS -->
+    <section class="ds-section" id="gradients">
+      <div class="section-header">
+        <div class="section-num">07</div>
+        <h2 class="section-title">Gradient Text &amp; Effects</h2>
+        <p class="section-desc">Gradients appear only as accent treatments: text fills, small decorative elements. The dark background does almost all the visual work. Click to copy gradient CSS.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Live Gradient Text</h3>
+        <div style="padding:32px; background:var(--color-bg-elevated); border:1px solid var(--color-border-primary); border-radius:var(--radius-md); text-align:center;">
+          <div class="gradient-text" style="font-size:clamp(32px,4vw,56px); font-weight:700; letter-spacing:-0.03em; line-height:1.1;">Build software</div>
+          <div style="font-size:11px; color:var(--color-text-quaternary); margin-top:12px;">background-size: 200% auto; animation: gradient 3s linear infinite</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Gradient Definitions</h3>
+        <div class="gradient-grid">
+          <div class="gradient-card" onclick="copyValue('linear-gradient(120deg, #db91cb 0%, #9a5eff 50%, #db91cb 100%)')">
+            <div class="gradient-preview" style="background:var(--gradient-purple-pink)"></div>
+            <div class="gradient-info"><div class="gradient-name">Purple-Pink Shimmer</div><div class="gradient-css">120deg, #db91cb 0%, #9a5eff 50%, #db91cb 100%</div></div>
+          </div>
+          <div class="gradient-card" onclick="copyValue('linear-gradient(92.88deg, #455eb5 9.16%, #5643cc 43.89%, #673fd7 64.72%)')">
+            <div class="gradient-preview" style="background:var(--gradient-blue-purple)"></div>
+            <div class="gradient-info"><div class="gradient-name">Deep Purple</div><div class="gradient-css">92.88deg, #455eb5 → #5643cc → #673fd7</div></div>
+          </div>
+          <div class="gradient-card" onclick="copyValue('linear-gradient(124.31deg, #46e3b7 0.18%, #2f7ad0 89.82%)')">
+            <div class="gradient-preview" style="background:var(--gradient-teal-blue)"></div>
+            <div class="gradient-info"><div class="gradient-name">Teal-Blue</div><div class="gradient-css">124.31deg, #46e3b7 → #2f7ad0</div></div>
+          </div>
+          <div class="gradient-card" onclick="copyValue('linear-gradient(285.49deg, #f537f9 -14.61%, #f7c12b 106.06%)')">
+            <div class="gradient-preview" style="background:var(--gradient-pink-gold)"></div>
+            <div class="gradient-info"><div class="gradient-name">Pink-Gold</div><div class="gradient-css">285.49deg, #f537f9 → #f7c12b</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Text Shadow Glow</h3>
+        <div style="padding:32px; background:var(--color-bg-elevated); border:1px solid var(--color-border-primary); border-radius:var(--radius-md); text-align:center; cursor:pointer;" onclick="copyValue('text-shadow: rgba(246, 193, 43, 0.7) 0 0 20px')">
+          <div style="font-size:36px; font-weight:600; letter-spacing:-0.02em; text-shadow: rgba(246, 193, 43, 0.7) 0 0 20px; color: #f3bd6c;">Dream mode</div>
+          <div style="font-size:11px; color:var(--color-text-quaternary); margin-top:8px;">text-shadow: rgba(246, 193, 43, 0.7) 0 0 20px</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 — COMPONENT PATTERNS -->
+    <section class="ds-section" id="components">
+      <div class="section-header">
+        <div class="section-num">08</div>
+        <h2 class="section-title">Component Patterns</h2>
+        <p class="section-desc">Linear's components reflect "structure felt, not seen." Multiple button variants, dual-element hover patterns, and ultra-low-contrast underlines. Minimal decoration, maximum content focus.</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Button Variants</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+          <button class="linear-btn linear-btn--primary">Primary</button>
+          <button class="linear-btn linear-btn--secondary">Secondary</button>
+          <button class="linear-btn linear-btn--ghost">Ghost</button>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Dual-Element Hover Pattern</h3>
+        <p class="subsection-desc" style="margin-bottom:16px;">Elements swap on hover: static text replaced by arrow icon. Opacity crossfade.</p>
+        <div style="display:flex; gap:16px;">
+          <div style="padding:16px 20px; background:var(--color-bg-elevated); border:1px solid var(--color-border-primary); border-radius:var(--radius-md); cursor:pointer; position:relative; overflow:hidden; min-width:200px;" onmouseenter="this.querySelector('.show-h').style.opacity='1'; this.querySelector('.hide-h').style.opacity='0';" onmouseleave="this.querySelector('.show-h').style.opacity='0'; this.querySelector('.hide-h').style.opacity='1';">
+            <div class="hide-h" style="font-size:13px; font-weight:500; transition:opacity 200ms;">View feature</div>
+            <div class="show-h" style="font-size:13px; font-weight:500; color:var(--grid-color-purple); opacity:0; transition:opacity 200ms; position:absolute; top:16px; left:20px;">Learn more &#8594;</div>
+          </div>
+          <div style="padding:16px 20px; background:var(--color-bg-elevated); border:1px solid var(--color-border-primary); border-radius:var(--radius-md); cursor:pointer; position:relative; overflow:hidden; min-width:200px;" onmouseenter="this.querySelector('.show-h').style.opacity='1'; this.querySelector('.hide-h').style.opacity='0';" onmouseleave="this.querySelector('.show-h').style.opacity='0'; this.querySelector('.hide-h').style.opacity='1';">
+            <div class="hide-h" style="font-size:13px; font-weight:500; transition:opacity 200ms;">Changelog</div>
+            <div class="show-h" style="font-size:13px; font-weight:500; color:var(--grid-color-purple); opacity:0; transition:opacity 200ms; position:absolute; top:16px; left:20px;">Read more &#8594;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Underline Decoration</h3>
+        <div style="font-size:16px; line-height:1.6; color:var(--color-text-secondary); max-width:540px;">
+          Linear uses <span style="text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:2.5px; text-decoration-color:var(--color-text-quaternary);">subtle quaternary-color underlines</span> that are decorative rather than dominant. The 2.5px offset provides breathing room.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Feature Card</h3>
+        <div style="max-width:400px; background:var(--color-bg-elevated); border:1px solid var(--color-border-primary); border-radius:var(--radius-md); overflow:hidden;">
+          <div style="height:200px; background:var(--gradient-blue-purple); opacity:0.8;"></div>
+          <div style="padding:20px;">
+            <div style="font-size:10px; font-weight:500; color:var(--color-text-quaternary); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">Feature</div>
+            <div style="font-size:18px; font-weight:600; letter-spacing:-0.01em; margin-bottom:8px;">Artificial Intelligence</div>
+            <div style="font-size:14px; color:var(--color-text-secondary); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">AI-powered features that help you move faster. From automated triage to smart suggestions.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="copy-toast" id="copyToast">Copied!</div>
+
+<script>
+/* === Copy === */
+function copyValue(val) {
+  navigator.clipboard.writeText(val).then(() => {
+    const t = document.getElementById('copyToast');
+    t.textContent = 'Copied: ' + (val.length > 50 ? val.substring(0,50) + '...' : val);
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1800);
+  });
+}
+
+/* === Scroll tracking === */
+const sections = document.querySelectorAll('.ds-section');
+const navLinks = document.querySelectorAll('.sidebar nav a');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => obs.observe(s));
+
+/* === Stagger demo === */
+function replayStagger() {
+  const items = document.querySelectorAll('.stagger-item');
+  items.forEach(item => { item.classList.remove('visible'); item.style.transition = 'none'; });
+  requestAnimationFrame(() => { requestAnimationFrame(() => {
+    items.forEach((item, i) => {
+      const delay = 400 + i * 200;
+      item.style.transition = `opacity 800ms ${delay}ms, transform 800ms ${delay}ms`;
+      item.classList.add('visible');
+    });
+  }); });
+}
+setTimeout(replayStagger, 600);
+
+/* === Animation replays === */
+function replayAnim(card, name) {
+  const el = card.querySelector('.anim-target');
+  el.style.animation = 'none'; el.style.opacity = '0'; el.offsetHeight;
+  const durations = { 'entrance-left': '2s', 'entrance-right': '2s', 'entrance-up': '800ms', 'entrance-down': '1s' };
+  el.style.animation = `${name} ${durations[name] || '800ms'} ease forwards`;
+}
+function replayStrokeDraw(card) {
+  const p = card.querySelector('.stroke-path');
+  p.style.animation = 'none'; p.style.strokeDashoffset = '200'; p.offsetHeight;
+  p.style.animation = 'stroke-draw 3s ease forwards';
+}
+function replayGlitch(card) {
+  const el = card.querySelector('.glitch-target');
+  el.style.animation = 'none'; el.offsetHeight;
+  el.style.animation = 'glitch 1s linear 3';
+}
+function replayShimmer(card) {
+  const el = card.querySelector('.shimmer-target');
+  el.style.animation = 'none'; el.offsetHeight;
+  el.style.animation = 'shimmer 3s ease-in-out 2';
+}
+function replayScalePulse(card) {
+  const el = card.querySelector('.pulse-target');
+  el.style.animation = 'none'; el.offsetHeight;
+  el.style.animation = 'scale-pulse 700ms ease 3';
+}
+function replayBlink(card) {
+  const el = card.querySelector('.blink-target');
+  el.style.animation = 'none'; el.offsetHeight;
+  el.style.animation = 'blink 1.2s step-end infinite';
+}
+function replayClipReveal(card) {
+  const el = card.querySelector('.clip-target');
+  el.style.animation = 'none'; el.offsetHeight;
+  el.style.animation = 'clip-reveal 3s steps(8) forwards';
+}
+function replayRotate(card) {
+  const el = card.querySelector('.rotate-target');
+  el.style.animation = 'none'; el.offsetHeight;
+  el.style.animation = 'rotate-180 1000ms ease forwards';
+}
+function replayFadeIn(card) {
+  const el = card.querySelector('.fade-target');
+  el.style.animation = 'none'; el.style.opacity = '0'; el.offsetHeight;
+  el.style.animation = 'fade-in 800ms ease forwards';
+}
+
+// Auto-play on load
+setTimeout(() => {
+  document.querySelectorAll('.anim-card').forEach(card => {
+    const target = card.querySelector('.anim-target');
+    if (target) {
+      const name = card.querySelector('.anim-label').textContent;
+      const durations = { 'entrance-left': '2s', 'entrance-right': '2s', 'entrance-up': '800ms', 'entrance-down': '1s' };
+      target.style.animation = `${name} ${durations[name] || '800ms'} ease forwards`;
+    }
+  });
+  document.querySelectorAll('.stroke-path').forEach(p => { p.style.animation = 'stroke-draw 3s ease forwards'; });
+  document.querySelectorAll('.glitch-target').forEach(el => { el.style.animation = 'glitch 1s linear infinite'; });
+  document.querySelectorAll('.shimmer-target').forEach(el => { el.style.animation = 'shimmer 3s ease-in-out infinite'; });
+  document.querySelectorAll('.blink-target').forEach(el => { el.style.animation = 'blink 1.2s step-end infinite'; });
+  document.querySelectorAll('.pulse-target').forEach(el => { el.style.animation = 'scale-pulse 700ms ease infinite'; });
+  document.querySelectorAll('.fade-target').forEach(el => { el.style.animation = 'fade-in 800ms ease forwards'; });
+}, 500);
+
+/* === Dot Grid === */
+const grid = document.getElementById('dot-grid');
+const gridPatterns = [];
+for (let r = 0; r < 5; r++) {
+  for (let c = 0; c < 5; c++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot-grid-dot';
+    grid.appendChild(dot);
+    // Generate pseudo-random timing pattern
+    const agentDuration = 3200;
+    const pattern = [];
+    const steps = 8 + Math.floor(Math.random() * 4);
+    for (let s = 0; s < steps; s++) {
+      pattern.push({ time: (s / steps) * 100, bright: Math.random() > 0.6 });
+    }
+    gridPatterns.push({ dot, pattern, duration: r % 2 === 0 ? agentDuration : 2800 });
+  }
+}
+function animateDotGrid() {
+  const now = performance.now();
+  gridPatterns.forEach(({ dot, pattern, duration }) => {
+    const progress = (now % duration) / duration * 100;
+    let bright = false;
+    for (let i = pattern.length - 1; i >= 0; i--) {
+      if (progress >= pattern[i].time) { bright = pattern[i].bright; break; }
+    }
+    dot.style.opacity = bright ? '1' : '0.3';
+  });
+  requestAnimationFrame(animateDotGrid);
+}
+animateDotGrid();
+
+/* === Hardware detection === */
+const cores = navigator.hardwareConcurrency || 4;
+const enhanced = cores > 4;
+document.getElementById('hw-dot').style.background = enhanced ? 'var(--color-green)' : 'var(--color-orange)';
+document.getElementById('hw-label').textContent = `${cores} cores detected -- ${enhanced ? 'Enhanced animations enabled' : 'Standard animations'}`;
+</script>
+</body>
+</html>

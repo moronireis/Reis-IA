@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reis IA — Brand Mark Refinement (Step A v2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --surface-0: #000000;
+    --surface-1: #0A0A0A;
+    --surface-2: #111111;
+    --surface-3: #161616;
+    --surface-4: #1A1A1A;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.12);
+    --border-accent: rgba(74,144,255,0.30);
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255,255,255,0.70);
+    --text-tertiary: rgba(255,255,255,0.50);
+    --text-quaternary: rgba(255,255,255,0.35);
+    --text-muted: rgba(255,255,255,0.20);
+    --accent: #4A90FF;
+    --accent-glow: rgba(74,144,255,0.15);
+    --accent-soft: rgba(74,144,255,0.06);
+  }
+  body {
+    background: var(--surface-0);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+
+  /* Header */
+  .header { padding: 80px 0 48px; border-bottom: 1px solid var(--border); }
+  .header h1 { font-size: 42px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+  .header h1 span { color: var(--accent); }
+  .header p { font-size: 15px; color: var(--text-secondary); max-width: 680px; line-height: 1.7; }
+  .header .meta { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+  .header .tag { display: inline-block; padding: 4px 12px; border: 1px solid rgba(74,144,255,0.3); border-radius: 100px; font-size: 11px; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; }
+  .header .tag.neutral { border-color: var(--border-strong); color: var(--text-quaternary); }
+
+  /* Sections */
+  section { padding: 80px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .section-title { font-size: 28px; font-weight: 600; letter-spacing: -0.025em; margin-bottom: 12px; }
+  .section-desc { font-size: 14px; color: var(--text-quaternary); margin-bottom: 48px; max-width: 720px; line-height: 1.7; }
+
+  /* Variation comparison grid */
+  .variation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 2px;
+    margin-bottom: 48px;
+  }
+  .variation-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 32px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    transition: border-color 0.3s ease;
+  }
+  .variation-card:hover { border-color: var(--border-strong); }
+  .variation-card.current { border-color: rgba(255,255,255,0.15); }
+  .variation-card.current::before {
+    content: 'CURRENT';
+    position: absolute; top: 8px; left: 12px;
+    font-size: 9px; font-weight: 600; letter-spacing: 0.1em; color: var(--text-muted);
+  }
+  .variation-card.recommended { border-color: var(--border-accent); }
+  .variation-card.recommended::after {
+    content: 'RECOMMENDED';
+    position: absolute; top: 8px; right: 12px;
+    font-size: 9px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent); opacity: 0.8;
+  }
+  .variation-card .var-label {
+    font-size: 12px; font-weight: 600; letter-spacing: -0.01em; color: var(--text-secondary);
+  }
+  .variation-card .var-desc {
+    font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.5;
+  }
+
+  /* Size ladder */
+  .size-ladder {
+    display: flex;
+    align-items: flex-end;
+    gap: 28px;
+    padding: 28px 32px;
+    border: 1px solid var(--border);
+    margin-bottom: 2px;
+    background: var(--surface-1);
+    flex-wrap: wrap;
+  }
+  .size-item {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .size-item .size-label {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.05em; color: var(--text-quaternary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Context sections */
+  .context-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 2px;
+  }
+  .context-panel {
+    padding: 40px 32px;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+  .context-panel .panel-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 24px;
+  }
+
+  /* Nav simulation */
+  .nav-sim {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 12px 24px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .nav-sim .nav-links {
+    display: flex; gap: 24px; flex: 1;
+  }
+  .nav-sim .nav-link {
+    font-size: 13px; color: var(--text-secondary); font-weight: 400; letter-spacing: -0.005em;
+  }
+  .nav-sim .nav-cta {
+    font-size: 13px; color: var(--accent); font-weight: 500;
+  }
+
+  /* Watermark context */
+  .watermark-ctx {
+    position: relative;
+    padding: 48px 40px;
+    overflow: hidden;
+  }
+  .watermark-ctx .watermark-icon {
+    position: absolute;
+    opacity: 0.035;
+    pointer-events: none;
+  }
+  .watermark-ctx p {
+    font-size: 16px; color: var(--text-secondary); line-height: 1.7;
+    max-width: 480px; position: relative; z-index: 1;
+  }
+
+  /* Glow context */
+  .glow-ctx {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    padding: 48px 32px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+  }
+  .glow-item {
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .glow-item .glow-wrap {
+    filter: drop-shadow(0 0 20px rgba(74,144,255,0.25));
+  }
+  .glow-item .glow-label {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.05em; color: var(--text-quaternary);
+  }
+
+  /* Light background section */
+  .light-section {
+    background: #FFFFFF;
+    padding: 64px 0;
+  }
+  .light-section .section-label { color: #3570CC; }
+  .light-section .section-title { color: #000000; }
+  .light-section .section-desc { color: rgba(0,0,0,0.5); }
+  .light-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 2px;
+  }
+  .light-card {
+    background: #F9FAFB;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 32px 20px 24px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    position: relative;
+  }
+  .light-card .var-label { font-size: 12px; font-weight: 600; color: rgba(0,0,0,0.6); }
+
+  /* Comparison overlay */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  .compare-col {
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    padding: 32px;
+    border: 1px solid var(--border);
+    background: var(--surface-1);
+  }
+  .compare-col .compare-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-quaternary);
+  }
+
+  /* Agent icon section */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-bottom: 24px;
+  }
+  .agent-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 28px 20px 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+  }
+  .agent-card .var-label { font-size: 11px; font-weight: 500; color: var(--text-quaternary); }
+
+  /* Footer */
+  .footer {
+    padding: 48px 0;
+    text-align: center;
+  }
+  .footer p { font-size: 12px; color: var(--text-muted); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .variation-grid { grid-template-columns: repeat(2, 1fr); }
+    .context-row { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .agent-grid { grid-template-columns: repeat(2, 1fr); }
+    .header h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====================================================================
+     SVG Symbol Definitions
+     All brand mark variations defined here for reuse via <use>
+     ==================================================================== -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+
+  <!-- ORIGINAL (pre-refinement) -->
+  <symbol id="original" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Original favicon geometry: center at ~y31, bars at y10/y54 -->
+    <line x1="14" y1="10" x2="50" y2="10"/>
+    <line x1="50" y1="10" x2="14" y2="54"/>
+    <line x1="14" y1="10" x2="30" y2="29.1"/>
+    <line x1="34" y1="34.9" x2="50" y2="54"/>
+    <line x1="14" y1="54" x2="50" y2="54"/>
+  </symbol>
+
+  <!-- VARIATION A: Mathematical Precision
+       Golden ratio proportions. True geometric center at y=32.
+       Bar span 36 units (14-50). Height span 48 units (8-56).
+       Gap: 8 units (28,28)-(36,36). Diagonal crosses true center.
+       Improvement: bars pushed to y=8/56 for maximum canvas use.
+       Gap sized at 12.5% of total height for clear legibility. -->
+  <symbol id="var-a" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="14" y1="8" x2="50" y2="8"/>
+    <line x1="50" y1="8" x2="14" y2="56"/>
+    <line x1="14" y1="8" x2="28" y2="28"/>
+    <line x1="36" y1="36" x2="50" y2="56"/>
+    <line x1="14" y1="56" x2="50" y2="56"/>
+  </symbol>
+
+  <!-- VARIATION B: Structural Hierarchy
+       Variable stroke weights create visual hierarchy.
+       Horizontal bars: 1.25px (lighter, structural)
+       Full diagonal: 1.5px (medium, connecting)
+       Intersection stubs: 1.75px (heavier, focal point)
+       This draws the eye to the open gap — the mark's signature. -->
+  <symbol id="var-b" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="14" y1="8" x2="50" y2="8" stroke-width="1.25"/>
+    <line x1="14" y1="56" x2="50" y2="56" stroke-width="1.25"/>
+    <line x1="50" y1="8" x2="14" y2="56" stroke-width="1.5"/>
+    <line x1="14" y1="8" x2="28" y2="28" stroke-width="1.75"/>
+    <line x1="36" y1="36" x2="50" y2="56" stroke-width="1.75"/>
+  </symbol>
+
+  <!-- VARIATION C: Micro-Rounded Path
+       Single continuous path with round join at corners.
+       The Z-shape (top bar > full diagonal > bottom bar) uses a path
+       so corners get natural round-join softening.
+       Stubs remain as separate lines for the gap definition.
+       Result: slightly softer, more approachable without losing geometry. -->
+  <symbol id="var-c" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14,8 L50,8 L14,56 L50,56"/>
+    <line x1="14" y1="8" x2="28" y2="28"/>
+    <line x1="36" y1="36" x2="50" y2="56"/>
+  </symbol>
+
+  <!-- VARIATION D: Taller Proportions
+       Height increased: bars at y=5/59 (54 unit span vs 48).
+       Width narrowed: x 16-48 (32 unit span vs 36).
+       Ratio shifts from 1:1.33 to 1:1.69 (approaching golden ratio 1:1.618).
+       Creates a more elegant, vertical presence.
+       Gap maintained at 8 diagonal units. -->
+  <symbol id="var-d" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="18" y1="5" x2="46" y2="5"/>
+    <line x1="46" y1="5" x2="18" y2="59"/>
+    <line x1="18" y1="5" x2="29.5" y2="27.5"/>
+    <line x1="34.5" y1="36.5" x2="46" y2="59"/>
+    <line x1="18" y1="59" x2="46" y2="59"/>
+  </symbol>
+
+  <!-- VARIATION E: Maximum Gap Legibility
+       Gap expanded to 12 diagonal units (26,26)-(38,38).
+       This is the most legible at small sizes.
+       The gap becomes the dominant visual element.
+       Trade-off: less structural continuity at large sizes,
+       but significantly better favicon/nav clarity. -->
+  <symbol id="var-e" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="14" y1="8" x2="50" y2="8"/>
+    <line x1="50" y1="8" x2="14" y2="56"/>
+    <line x1="14" y1="8" x2="26" y2="25.4"/>
+    <line x1="38" y1="38.6" x2="50" y2="56"/>
+    <line x1="14" y1="56" x2="50" y2="56"/>
+  </symbol>
+
+  <!-- ============================================================
+       SIZE-OPTIMIZED VARIANTS (Based on Variation A geometry)
+       Stroke weights scale inversely with render size.
+       Gap width adjusts wider at small sizes for legibility.
+       ============================================================ -->
+
+  <!-- OPT-16: Favicon (renders at 16x16px)
+       Stroke: 3px at viewBox scale = ~0.75px rendered
+       Gap: 12 units wide for maximum clarity at tiny size
+       Simplified: no optical tricks, just bold and clear -->
+  <symbol id="opt-16" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="14" y1="8" x2="50" y2="8"/>
+    <line x1="50" y1="8" x2="14" y2="56"/>
+    <line x1="14" y1="8" x2="25" y2="25"/>
+    <line x1="39" y1="39" x2="50" y2="56"/>
+    <line x1="14" y1="56" x2="50" y2="56"/>
+  </symbol>
+
+  <!-- OPT-24: Navigation (renders at 24x24px)
+       Stroke: 2.5px at viewBox scale
+       Gap: 10 units -->
+  <symbol id="opt-24" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="14" y1="8" x2="50" y2="8"/>
+    <line x1="50" y1="8" x2="14" y2="56"/>
+    <line x1="14" y1="8" x2="26.5" y2="27"/>
+    <line x1="37.5" y1="37" x2="50" y2="56"/>
+    <line x1="14" y1="56" x2="50" y2="56"/>
+  </symbol>
+
+  <!-- OPT-32: Inline (renders at 32x32px)
+       Stroke: 2px at viewBox scale
+       Gap: 9 units -->
+  <symbol id="opt-32" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="14" y1="8" x2="50" y2="8"/>
+    <line x1="50" y1="8" x2="14" y2="56"/>
+    <line x1="14" y1="8" x2="27.5" y2="27.5"/>
+    <line x1="36.5" y1="36.5" x2="50" y2="56"/>
+    <line x1="14" y1="56" x2="50" y2="56"/>
+  </symbol>
+
+  <!-- OPT-48: Section (renders at 48x48px)
+       Stroke: 1.5px at viewBox scale (standard)
+       Gap: 8 units (standard) -->
+  <symbol id="opt-48" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="14" y1="8" x2="50" y2="8"/>
+    <line x1="50" y1="8" x2="14" y2="56"/>
+    <line x1="14" y1="8" x2="28" y2="28"/>
+    <line x1="36" y1="36" x2="50" y2="56"/>
+    <line x1="14" y1="56" x2="50" y2="56"/>
+  </symbol>
+
+  <!-- OPT-64: Feature (renders at 64x64px)
+       Stroke: 1.5px
+       Gap: 8 units -->
+  <symbol id="opt-64" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="14" y1="8" x2="50" y2="8"/>
+    <line x1="50" y1="8" x2="14" y2="56"/>
+    <line x1="14" y1="8" x2="28" y2="28"/>
+    <line x1="36" y1="36" x2="50" y2="56"/>
+    <line x1="14" y1="56" x2="50" y2="56"/>
+  </symbol>
+
+  <!-- OPT-128: Hero (renders at 128px+)
+       Stroke: 1.25px — thinner at large size for elegance
+       Gap: 7 units — tighter gap reads better large -->
+  <symbol id="opt-128" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="14" y1="8" x2="50" y2="8"/>
+    <line x1="50" y1="8" x2="14" y2="56"/>
+    <line x1="14" y1="8" x2="29" y2="29"/>
+    <line x1="35" y1="35" x2="50" y2="56"/>
+    <line x1="14" y1="56" x2="50" y2="56"/>
+  </symbol>
+
+  <!-- ============================================================
+       MINIMAL AGENT ICON (Tertiary UI icon, NOT a brand mark)
+       Refined stroke weights for consistency
+       ============================================================ -->
+
+  <!-- Agent: Standard (48px+) -->
+  <symbol id="agent" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="18" y="22" width="28" height="16" rx="8"/>
+    <line x1="30" y1="29" x2="34" y2="29"/>
+    <line x1="19" y1="28" x2="16" y2="26"/>
+    <line x1="45" y1="28" x2="48" y2="26"/>
+  </symbol>
+
+  <!-- Agent: 16px optimized -->
+  <symbol id="agent-16" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="16" y="22" width="32" height="18" rx="9"/>
+    <line x1="29" y1="30" x2="35" y2="30"/>
+    <line x1="17" y1="29" x2="13" y2="26"/>
+    <line x1="47" y1="29" x2="51" y2="26"/>
+  </symbol>
+
+  <!-- Agent: 24px optimized -->
+  <symbol id="agent-24" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="17" y="22" width="30" height="17" rx="8.5"/>
+    <line x1="30" y1="29.5" x2="34" y2="29.5"/>
+    <line x1="18" y1="28.5" x2="15" y2="26"/>
+    <line x1="46" y1="28.5" x2="49" y2="26"/>
+  </symbol>
+
+  <!-- Agent: 32px optimized -->
+  <symbol id="agent-32" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="17" y="22" width="30" height="17" rx="8.5"/>
+    <line x1="30" y1="29.5" x2="34" y2="29.5"/>
+    <line x1="18" y1="28.5" x2="15" y2="26"/>
+    <line x1="46" y1="28.5" x2="49" y2="26"/>
+  </symbol>
+
+</svg>
+
+
+<div class="container">
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <div class="header">
+    <h1>Brand Mark <span>Refinement</span></h1>
+    <p>
+      H1-B "Open Intersection" Hourglass refined based on analysis of 9 premium reference sites (Apple, Stripe, Linear, Porsche, Morningside, Vercel, Agencia Lendaria, Academia Lendaria). Five subtle geometry variations plus six size-optimized optical variants. Agent icon refined for stroke consistency.
+    </p>
+    <div class="meta">
+      <span class="tag">Step A v2</span>
+      <span class="tag neutral">2026-03-17</span>
+      <span class="tag neutral">H1-B Hourglass</span>
+      <span class="tag neutral">5 Variations</span>
+      <span class="tag neutral">6 Size Opts</span>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       SECTION 1: Side-by-Side Comparison (Current vs Refined)
+       ============================================================ -->
+  <section>
+    <div class="section-label">01 / Comparison</div>
+    <div class="section-title">Current vs. Refined Variations</div>
+    <div class="section-desc">
+      Original mark (pre-refinement) alongside five subtle improvements.
+      Each variation shares the same conceptual DNA — two horizontal bars
+      connected by an X with an open intersection gap at center — but
+      refines proportions, stroke hierarchy, corner treatment, aspect ratio,
+      or gap width based on premium reference learnings.
+    </div>
+
+    <div class="variation-grid">
+      <!-- Original -->
+      <div class="variation-card current">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;">
+          <use href="#original"/>
+        </svg>
+        <div class="var-label">Original</div>
+        <div class="var-desc">Pre-refinement. Bars at y10/54, center ~y31 (not true center), gap ~5.8 units.</div>
+      </div>
+
+      <!-- Var A -->
+      <div class="variation-card recommended">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;">
+          <use href="#var-a"/>
+        </svg>
+        <div class="var-label">A. Mathematical Precision</div>
+        <div class="var-desc">True center y=32. Bars at y8/56 for max canvas use. Gap 8 units. Clean proportions.</div>
+      </div>
+
+      <!-- Var B -->
+      <div class="variation-card">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;">
+          <use href="#var-b"/>
+        </svg>
+        <div class="var-label">B. Structural Hierarchy</div>
+        <div class="var-desc">Variable strokes: bars 1.25px, diagonal 1.5px, stubs 1.75px. Eye drawn to gap.</div>
+      </div>
+
+      <!-- Var C -->
+      <div class="variation-card">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;">
+          <use href="#var-c"/>
+        </svg>
+        <div class="var-label">C. Micro-Rounded Path</div>
+        <div class="var-desc">Continuous path for Z-shape. Round joins soften corners naturally. More approachable.</div>
+      </div>
+
+      <!-- Var D -->
+      <div class="variation-card">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;">
+          <use href="#var-d"/>
+        </svg>
+        <div class="var-label">D. Taller Proportions</div>
+        <div class="var-desc">Height 54u, width 28u. Ratio 1:1.69 (near golden). More elegant vertical presence.</div>
+      </div>
+
+      <!-- Var E -->
+      <div class="variation-card">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;">
+          <use href="#var-e"/>
+        </svg>
+        <div class="var-label">E. Maximum Gap</div>
+        <div class="var-desc">Gap expanded to 12 diagonal units. Best favicon legibility. Clear open intersection.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 2: Size Ladders (All Variations)
+       ============================================================ -->
+  <section>
+    <div class="section-label">02 / Size Ladder</div>
+    <div class="section-title">Multi-Size Rendering</div>
+    <div class="section-desc">
+      Each variation rendered at 16, 24, 32, 48, 64, and 128px.
+      Evaluate legibility of the open intersection gap at each size.
+      Premium brands like Apple create optical size variants — smaller
+      sizes need bolder strokes and wider gaps for clarity.
+    </div>
+
+    <!-- Original -->
+    <div style="margin-bottom: 4px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); padding: 8px 32px;">Original</div>
+      <div class="size-ladder">
+        <div class="size-item">
+          <svg width="16" height="16" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#original"/></svg>
+          <div class="size-label">16px</div>
+        </div>
+        <div class="size-item">
+          <svg width="24" height="24" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#original"/></svg>
+          <div class="size-label">24px</div>
+        </div>
+        <div class="size-item">
+          <svg width="32" height="32" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#original"/></svg>
+          <div class="size-label">32px</div>
+        </div>
+        <div class="size-item">
+          <svg width="48" height="48" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#original"/></svg>
+          <div class="size-label">48px</div>
+        </div>
+        <div class="size-item">
+          <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#original"/></svg>
+          <div class="size-label">64px</div>
+        </div>
+        <div class="size-item">
+          <svg width="128" height="128" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#original"/></svg>
+          <div class="size-label">128px</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Var A -->
+    <div style="margin-bottom: 4px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); padding: 8px 32px;">A. Mathematical Precision (Recommended)</div>
+      <div class="size-ladder">
+        <div class="size-item">
+          <svg width="16" height="16" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-a"/></svg>
+          <div class="size-label">16px</div>
+        </div>
+        <div class="size-item">
+          <svg width="24" height="24" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-a"/></svg>
+          <div class="size-label">24px</div>
+        </div>
+        <div class="size-item">
+          <svg width="32" height="32" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-a"/></svg>
+          <div class="size-label">32px</div>
+        </div>
+        <div class="size-item">
+          <svg width="48" height="48" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-a"/></svg>
+          <div class="size-label">48px</div>
+        </div>
+        <div class="size-item">
+          <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-a"/></svg>
+          <div class="size-label">64px</div>
+        </div>
+        <div class="size-item">
+          <svg width="128" height="128" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-a"/></svg>
+          <div class="size-label">128px</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Var B -->
+    <div style="margin-bottom: 4px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); padding: 8px 32px;">B. Structural Hierarchy</div>
+      <div class="size-ladder">
+        <div class="size-item">
+          <svg width="16" height="16" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-b"/></svg>
+          <div class="size-label">16px</div>
+        </div>
+        <div class="size-item">
+          <svg width="24" height="24" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-b"/></svg>
+          <div class="size-label">24px</div>
+        </div>
+        <div class="size-item">
+          <svg width="32" height="32" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-b"/></svg>
+          <div class="size-label">32px</div>
+        </div>
+        <div class="size-item">
+          <svg width="48" height="48" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-b"/></svg>
+          <div class="size-label">48px</div>
+        </div>
+        <div class="size-item">
+          <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-b"/></svg>
+          <div class="size-label">64px</div>
+        </div>
+        <div class="size-item">
+          <svg width="128" height="128" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-b"/></svg>
+          <div class="size-label">128px</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Var C -->
+    <div style="margin-bottom: 4px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); padding: 8px 32px;">C. Micro-Rounded Path</div>
+      <div class="size-ladder">
+        <div class="size-item">
+          <svg width="16" height="16" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-c"/></svg>
+          <div class="size-label">16px</div>
+        </div>
+        <div class="size-item">
+          <svg width="24" height="24" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-c"/></svg>
+          <div class="size-label">24px</div>
+        </div>
+        <div class="size-item">
+          <svg width="32" height="32" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-c"/></svg>
+          <div class="size-label">32px</div>
+        </div>
+        <div class="size-item">
+          <svg width="48" height="48" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-c"/></svg>
+          <div class="size-label">48px</div>
+        </div>
+        <div class="size-item">
+          <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-c"/></svg>
+          <div class="size-label">64px</div>
+        </div>
+        <div class="size-item">
+          <svg width="128" height="128" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-c"/></svg>
+          <div class="size-label">128px</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Var D -->
+    <div style="margin-bottom: 4px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); padding: 8px 32px;">D. Taller Proportions</div>
+      <div class="size-ladder">
+        <div class="size-item">
+          <svg width="16" height="16" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-d"/></svg>
+          <div class="size-label">16px</div>
+        </div>
+        <div class="size-item">
+          <svg width="24" height="24" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-d"/></svg>
+          <div class="size-label">24px</div>
+        </div>
+        <div class="size-item">
+          <svg width="32" height="32" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-d"/></svg>
+          <div class="size-label">32px</div>
+        </div>
+        <div class="size-item">
+          <svg width="48" height="48" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-d"/></svg>
+          <div class="size-label">48px</div>
+        </div>
+        <div class="size-item">
+          <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-d"/></svg>
+          <div class="size-label">64px</div>
+        </div>
+        <div class="size-item">
+          <svg width="128" height="128" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-d"/></svg>
+          <div class="size-label">128px</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Var E -->
+    <div style="margin-bottom: 4px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); padding: 8px 32px;">E. Maximum Gap</div>
+      <div class="size-ladder">
+        <div class="size-item">
+          <svg width="16" height="16" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-e"/></svg>
+          <div class="size-label">16px</div>
+        </div>
+        <div class="size-item">
+          <svg width="24" height="24" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-e"/></svg>
+          <div class="size-label">24px</div>
+        </div>
+        <div class="size-item">
+          <svg width="32" height="32" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-e"/></svg>
+          <div class="size-label">32px</div>
+        </div>
+        <div class="size-item">
+          <svg width="48" height="48" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-e"/></svg>
+          <div class="size-label">48px</div>
+        </div>
+        <div class="size-item">
+          <svg width="64" height="64" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-e"/></svg>
+          <div class="size-label">64px</div>
+        </div>
+        <div class="size-item">
+          <svg width="128" height="128" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-e"/></svg>
+          <div class="size-label">128px</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 3: Size-Optimized Variants (Var A)
+       ============================================================ -->
+  <section>
+    <div class="section-label">03 / Optical Sizing</div>
+    <div class="section-title">Size-Optimized Variants</div>
+    <div class="section-desc">
+      Based on Variation A geometry. Each size gets its own SVG with
+      adjusted stroke weight and gap width. Inspired by Apple's SF Symbols
+      optical size system and Porsche's precise centering at every breakpoint.
+      Smaller sizes use bolder strokes and wider gaps; larger sizes use thinner
+      strokes and tighter gaps for elegance.
+    </div>
+
+    <div class="size-ladder" style="gap: 40px; justify-content: center; padding: 40px;">
+      <div class="size-item">
+        <svg width="16" height="16" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-16"/></svg>
+        <div class="size-label">opt-16</div>
+        <div style="font-size: 9px; color: var(--text-muted); text-align: center;">3.5px stroke<br>14u gap</div>
+      </div>
+      <div class="size-item">
+        <svg width="24" height="24" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-24"/></svg>
+        <div class="size-label">opt-24</div>
+        <div style="font-size: 9px; color: var(--text-muted); text-align: center;">2.5px stroke<br>11u gap</div>
+      </div>
+      <div class="size-item">
+        <svg width="32" height="32" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-32"/></svg>
+        <div class="size-label">opt-32</div>
+        <div style="font-size: 9px; color: var(--text-muted); text-align: center;">2px stroke<br>9u gap</div>
+      </div>
+      <div class="size-item">
+        <svg width="48" height="48" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-48"/></svg>
+        <div class="size-label">opt-48</div>
+        <div style="font-size: 9px; color: var(--text-muted); text-align: center;">1.5px stroke<br>8u gap</div>
+      </div>
+      <div class="size-item">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-64"/></svg>
+        <div class="size-label">opt-64</div>
+        <div style="font-size: 9px; color: var(--text-muted); text-align: center;">1.5px stroke<br>8u gap</div>
+      </div>
+      <div class="size-item">
+        <svg width="128" height="128" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-128"/></svg>
+        <div class="size-label">opt-128</div>
+        <div style="font-size: 9px; color: var(--text-muted); text-align: center;">1.25px stroke<br>6u gap</div>
+      </div>
+    </div>
+
+    <!-- Side by side: non-optimized vs optimized at 16px -->
+    <div style="margin-top: 32px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px;">16px Comparison: Standard vs. Optimized</div>
+      <div class="compare-grid">
+        <div class="compare-col">
+          <div class="compare-label">Var A at 16px (no optimization)</div>
+          <svg width="16" height="16" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#var-a"/></svg>
+          <div style="font-size: 11px; color: var(--text-muted);">1.5px stroke, 8u gap</div>
+          <svg width="48" height="48" viewBox="0 0 64 64" style="color: rgba(255,255,255,0.3);">
+            <use href="#var-a"/>
+          </svg>
+          <div style="font-size: 10px; color: var(--text-muted);">3x zoom</div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-label">opt-16 (size-optimized)</div>
+          <svg width="16" height="16" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-16"/></svg>
+          <div style="font-size: 11px; color: var(--accent); opacity: 0.6;">3.5px stroke, 14u gap</div>
+          <svg width="48" height="48" viewBox="0 0 64 64" style="color: rgba(74,144,255,0.3);">
+            <use href="#opt-16"/>
+          </svg>
+          <div style="font-size: 10px; color: var(--text-muted);">3x zoom</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 4: Contextual Rendering
+       ============================================================ -->
+  <section>
+    <div class="section-label">04 / Context</div>
+    <div class="section-title">Real-World Contexts</div>
+    <div class="section-desc">
+      How the mark performs in its actual deployment contexts:
+      navigation bar, accent glow, watermark over text, and blue-on-dark feature display.
+    </div>
+
+    <!-- Nav simulation -->
+    <div style="margin-bottom: 32px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;">Navigation Bar</div>
+      <div class="nav-sim">
+        <svg width="24" height="24" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-24"/></svg>
+        <div class="nav-links">
+          <span class="nav-link">Builder</span>
+          <span class="nav-link">Systems</span>
+          <span class="nav-link">Partners</span>
+          <span class="nav-link">Network</span>
+        </div>
+        <span class="nav-cta">Agendar</span>
+      </div>
+    </div>
+
+    <!-- Nav with frosted glass -->
+    <div style="margin-bottom: 32px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;">Navigation Bar (Frosted Glass / Scrolled)</div>
+      <div class="nav-sim" style="background: rgba(10,10,10,0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-color: rgba(255,255,255,0.05);">
+        <svg width="24" height="24" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-24"/></svg>
+        <div class="nav-links">
+          <span class="nav-link">Builder</span>
+          <span class="nav-link">Systems</span>
+          <span class="nav-link">Partners</span>
+          <span class="nav-link">Network</span>
+        </div>
+        <span class="nav-cta">Agendar</span>
+      </div>
+    </div>
+
+    <!-- Accent Glow -->
+    <div style="margin-bottom: 32px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;">Accent Blue Glow</div>
+      <div class="glow-ctx">
+        <div class="glow-item">
+          <div class="glow-wrap">
+            <svg width="48" height="48" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-48"/></svg>
+          </div>
+          <div class="glow-label">48px with glow</div>
+        </div>
+        <div class="glow-item">
+          <div class="glow-wrap">
+            <svg width="64" height="64" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-64"/></svg>
+          </div>
+          <div class="glow-label">64px with glow</div>
+        </div>
+        <div class="glow-item">
+          <div class="glow-wrap">
+            <svg width="96" height="96" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-128"/></svg>
+          </div>
+          <div class="glow-label">96px with glow</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Watermark -->
+    <div style="margin-bottom: 32px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;">Watermark Context (3.5% opacity)</div>
+      <div class="context-row">
+        <div class="context-panel" style="background: var(--surface-0);">
+          <div class="watermark-ctx">
+            <svg class="watermark-icon" width="240" height="240" viewBox="0 0 64 64" style="color: #FFFFFF; right: -20px; top: -20px;"><use href="#opt-128"/></svg>
+            <p>
+              AI systems that actually compound over time. Not one-time implementations that decay — living systems that learn, adapt, and multiply your team's output every quarter.
+            </p>
+          </div>
+        </div>
+        <div class="context-panel" style="background: var(--surface-1);">
+          <div class="watermark-ctx">
+            <svg class="watermark-icon" width="280" height="280" viewBox="0 0 64 64" style="color: #4A90FF; left: -30px; bottom: -30px;"><use href="#opt-128"/></svg>
+            <p>
+              Your competitors are still debating whether to use AI. Your business will be operating with systems that already learned from their first 10,000 decisions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Large hero context -->
+    <div style="margin-bottom: 32px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;">Hero Context (128px mark)</div>
+      <div style="display: flex; align-items: center; gap: 32px; padding: 64px 48px; background: var(--surface-1); border: 1px solid var(--border); border-radius: 2px;">
+        <div style="filter: drop-shadow(0 0 30px rgba(74,144,255,0.2));">
+          <svg width="128" height="128" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-128"/></svg>
+        </div>
+        <div>
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px;">Reis IA</div>
+          <div style="font-size: 36px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 12px;">Inteligencia Artificial<br>que gera resultado.</div>
+          <div style="font-size: 16px; color: var(--text-secondary); max-width: 400px; line-height: 1.6;">Implementamos sistemas de IA que multiplicam a capacidade da sua equipe e escalam com o seu negocio.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 5: Agent Icon Refinement
+       ============================================================ -->
+  <section>
+    <div class="section-label">05 / Agent Icon</div>
+    <div class="section-title">Minimal Agent (Tertiary UI Icon)</div>
+    <div class="section-desc">
+      Not a brand mark. Used only as a tertiary UI indicator for AI agent contexts.
+      Stroke weights adjusted for consistency with the hourglass system.
+      Size-optimized at 16px, 24px, and 32px.
+    </div>
+
+    <div class="agent-grid">
+      <div class="agent-card">
+        <svg width="16" height="16" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#agent-16"/></svg>
+        <div class="var-label">16px (2.5px stroke)</div>
+      </div>
+      <div class="agent-card">
+        <svg width="24" height="24" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#agent-24"/></svg>
+        <div class="var-label">24px (2px stroke)</div>
+      </div>
+      <div class="agent-card">
+        <svg width="32" height="32" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#agent-32"/></svg>
+        <div class="var-label">32px (1.75px stroke)</div>
+      </div>
+      <div class="agent-card">
+        <svg width="48" height="48" viewBox="0 0 64 64" style="color: #FFFFFF;"><use href="#agent"/></svg>
+        <div class="var-label">48px (1.5px stroke)</div>
+      </div>
+    </div>
+
+    <!-- Agent in blue -->
+    <div style="margin-top: 24px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;">Agent Icon in Accent Blue</div>
+      <div style="display: flex; gap: 32px; padding: 24px 32px; background: var(--surface-1); border: 1px solid var(--border);">
+        <svg width="16" height="16" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#agent-16"/></svg>
+        <svg width="24" height="24" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#agent-24"/></svg>
+        <svg width="32" height="32" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#agent-32"/></svg>
+        <svg width="48" height="48" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#agent"/></svg>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 6: Light Background
+       ============================================================ -->
+</div>
+
+<div class="light-section">
+  <div class="container">
+    <div class="section-label">06 / Light Background</div>
+    <div class="section-title">Contrast Verification</div>
+    <div class="section-desc">
+      All marks must work on light backgrounds for print, emails, and
+      light-mode contexts. Shown in black for maximum contrast.
+    </div>
+
+    <div class="light-grid">
+      <div class="light-card">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #000000;"><use href="#original"/></svg>
+        <div class="var-label">Original</div>
+      </div>
+      <div class="light-card" style="border-color: rgba(74,144,255,0.3);">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #000000;"><use href="#var-a"/></svg>
+        <div class="var-label">A. Precision</div>
+      </div>
+      <div class="light-card">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #000000;"><use href="#var-b"/></svg>
+        <div class="var-label">B. Hierarchy</div>
+      </div>
+      <div class="light-card">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #000000;"><use href="#var-c"/></svg>
+        <div class="var-label">C. Rounded</div>
+      </div>
+      <div class="light-card">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #000000;"><use href="#var-d"/></svg>
+        <div class="var-label">D. Taller</div>
+      </div>
+      <div class="light-card">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="color: #000000;"><use href="#var-e"/></svg>
+        <div class="var-label">E. Max Gap</div>
+      </div>
+    </div>
+
+    <!-- Light background size ladder for recommended -->
+    <div style="margin-top: 32px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(0,0,0,0.35); margin-bottom: 12px;">Variation A — Size Ladder on Light</div>
+      <div style="display: flex; align-items: flex-end; gap: 28px; padding: 28px 32px; background: #FFFFFF; border: 1px solid rgba(0,0,0,0.08); flex-wrap: wrap;">
+        <div class="size-item">
+          <svg width="16" height="16" viewBox="0 0 64 64" style="color: #000000;"><use href="#opt-16"/></svg>
+          <div class="size-label" style="color: rgba(0,0,0,0.35);">16px</div>
+        </div>
+        <div class="size-item">
+          <svg width="24" height="24" viewBox="0 0 64 64" style="color: #000000;"><use href="#opt-24"/></svg>
+          <div class="size-label" style="color: rgba(0,0,0,0.35);">24px</div>
+        </div>
+        <div class="size-item">
+          <svg width="32" height="32" viewBox="0 0 64 64" style="color: #000000;"><use href="#opt-32"/></svg>
+          <div class="size-label" style="color: rgba(0,0,0,0.35);">32px</div>
+        </div>
+        <div class="size-item">
+          <svg width="48" height="48" viewBox="0 0 64 64" style="color: #000000;"><use href="#opt-48"/></svg>
+          <div class="size-label" style="color: rgba(0,0,0,0.35);">48px</div>
+        </div>
+        <div class="size-item">
+          <svg width="64" height="64" viewBox="0 0 64 64" style="color: #000000;"><use href="#opt-64"/></svg>
+          <div class="size-label" style="color: rgba(0,0,0,0.35);">64px</div>
+        </div>
+        <div class="size-item">
+          <svg width="128" height="128" viewBox="0 0 64 64" style="color: #000000;"><use href="#opt-128"/></svg>
+          <div class="size-label" style="color: rgba(0,0,0,0.35);">128px</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blue on light -->
+    <div style="margin-top: 32px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(0,0,0,0.35); margin-bottom: 12px;">Accent Blue on Light</div>
+      <div style="display: flex; align-items: flex-end; gap: 28px; padding: 28px 32px; background: #F9FAFB; border: 1px solid rgba(0,0,0,0.08); flex-wrap: wrap;">
+        <div class="size-item">
+          <svg width="24" height="24" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-24"/></svg>
+          <div class="size-label" style="color: rgba(0,0,0,0.35);">24px</div>
+        </div>
+        <div class="size-item">
+          <svg width="32" height="32" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-32"/></svg>
+          <div class="size-label" style="color: rgba(0,0,0,0.35);">32px</div>
+        </div>
+        <div class="size-item">
+          <svg width="48" height="48" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-48"/></svg>
+          <div class="size-label" style="color: rgba(0,0,0,0.35);">48px</div>
+        </div>
+        <div class="size-item">
+          <svg width="64" height="64" viewBox="0 0 64 64" style="color: #4A90FF;"><use href="#opt-64"/></svg>
+          <div class="size-label" style="color: rgba(0,0,0,0.35);">64px</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ============================================================
+       SECTION 7: Design Rationale
+       ============================================================ -->
+  <section>
+    <div class="section-label">07 / Rationale</div>
+    <div class="section-title">Design Decisions</div>
+    <div class="section-desc">
+      Reference-informed reasoning behind each variation and the optical sizing system.
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+      <!-- Var A rationale -->
+      <div style="padding: 24px; border: 1px solid var(--border); background: var(--surface-1);">
+        <div style="font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 8px;">A. Mathematical Precision</div>
+        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+          <strong style="color: var(--text-primary);">Concept:</strong> True geometric center with maximum canvas utilization.<br><br>
+          <strong style="color: var(--text-primary);">Reference:</strong> Apple's SF Symbols use a strict grid system where every icon fills its optical bounding box. Porsche centers marks with sub-pixel precision. Stripe's geometric wordmark uses mathematical ratios.<br><br>
+          <strong style="color: var(--text-primary);">Changes:</strong> Intersection centered at exact y=32 (vs original ~y31). Bars pushed to y=8/56 for 48-unit height span. Gap 8 units for clean proportions.<br><br>
+          <strong style="color: var(--text-primary);">Best at:</strong> All sizes. Recommended as the primary mark.
+        </div>
+      </div>
+
+      <!-- Var B rationale -->
+      <div style="padding: 24px; border: 1px solid var(--border); background: var(--surface-1);">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">B. Structural Hierarchy</div>
+        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+          <strong style="color: var(--text-primary);">Concept:</strong> Variable stroke weights create focal hierarchy.<br><br>
+          <strong style="color: var(--text-primary);">Reference:</strong> Linear's underline decoration uses 1.5px specifically. Apple's SF Symbols use different weights for different contexts. The variable-weight approach draws from typography's bold/regular contrast.<br><br>
+          <strong style="color: var(--text-primary);">Changes:</strong> Bars 1.25px, diagonal 1.5px, intersection stubs 1.75px. The heavier stubs draw the eye to the gap — the mark's signature feature.<br><br>
+          <strong style="color: var(--text-primary);">Best at:</strong> 48px+. Weight differences collapse at small sizes.
+        </div>
+      </div>
+
+      <!-- Var C rationale -->
+      <div style="padding: 24px; border: 1px solid var(--border); background: var(--surface-1);">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">C. Micro-Rounded Path</div>
+        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+          <strong style="color: var(--text-primary);">Concept:</strong> Continuous path with natural round-join softening.<br><br>
+          <strong style="color: var(--text-primary);">Reference:</strong> Porsche's motion system uses `cubic-bezier(0.25, 0.1, 0.25, 1)` for smoothness. Linear's stroke-draw animation reveals paths continuously. Both brands favor curves over sharp edges.<br><br>
+          <strong style="color: var(--text-primary);">Changes:</strong> Z-shape (top bar, full diagonal, bottom bar) as a single path element. SVG `stroke-linejoin="round"` softens the two corners naturally without explicit border-radius.<br><br>
+          <strong style="color: var(--text-primary);">Best at:</strong> 32px+. The rounded corners are subtle but add warmth.
+        </div>
+      </div>
+
+      <!-- Var D rationale -->
+      <div style="padding: 24px; border: 1px solid var(--border); background: var(--surface-1);">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">D. Taller Proportions</div>
+        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+          <strong style="color: var(--text-primary);">Concept:</strong> Vertical elongation approaching the golden ratio.<br><br>
+          <strong style="color: var(--text-primary);">Reference:</strong> Porsche's crest is taller than wide (approximately 1:1.4). The golden ratio (1:1.618) is used across Apple's layout system. Taller marks read as more elegant and authoritative.<br><br>
+          <strong style="color: var(--text-primary);">Changes:</strong> Width narrowed to 28u (18-46), height expanded to 54u (5-59). Ratio 1:1.69. Creates a more hourglass-like silhouette.<br><br>
+          <strong style="color: var(--text-primary);">Best at:</strong> 48px+. Narrow width can feel cramped at small sizes.
+        </div>
+      </div>
+
+      <!-- Var E rationale -->
+      <div style="padding: 24px; border: 1px solid var(--border); background: var(--surface-1);">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">E. Maximum Gap</div>
+        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+          <strong style="color: var(--text-primary);">Concept:</strong> Widest possible gap for small-size legibility.<br><br>
+          <strong style="color: var(--text-primary);">Reference:</strong> Apple's favicon designs prioritize recognition over detail. Morningside has zero brand iconography (our competitive gap to exploit). The mark must be instantly recognizable at 16px in a browser tab.<br><br>
+          <strong style="color: var(--text-primary);">Changes:</strong> Gap expanded to 12 diagonal units (26,25.4)-(38,38.6). The open intersection becomes the dominant visual element.<br><br>
+          <strong style="color: var(--text-primary);">Best at:</strong> 16-32px. At 128px+ the gap can feel too wide/disconnected.
+        </div>
+      </div>
+
+      <!-- Optical sizing rationale -->
+      <div style="padding: 24px; border: 1px solid var(--border); background: var(--surface-1);">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">Optical Sizing System</div>
+        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+          <strong style="color: var(--text-primary);">Concept:</strong> Each target size gets its own SVG with tuned parameters.<br><br>
+          <strong style="color: var(--text-primary);">Reference:</strong> Apple's SF Symbols ship in 3 optical sizes (Small, Medium, Large) with different stroke weights. Porsche's icon system adjusts at every breakpoint. This is an industry-leading practice that most brands skip.<br><br>
+          <strong style="color: var(--text-primary);">System:</strong> Stroke weight and gap width scale inversely with render size. At 16px: 3.5px stroke, 14u gap. At 128px: 1.25px stroke, 6u gap. This ensures the mark reads clearly at favicon scale and feels refined at hero scale.<br><br>
+          <strong style="color: var(--text-primary);">Implementation:</strong> Use opt-16 for favicon, opt-24 for nav, opt-32 for inline, opt-48/64 for features, opt-128 for hero/watermarks.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <div class="footer">
+    <p>Reis IA Brand Mark Refinement — Step A v2 — 2026-03-17</p>
+    <p style="margin-top: 4px;">H1-B "Open Intersection" Hourglass — 5 variations, 6 optical sizes, agent icon refined</p>
+  </div>
+
+</div>
+
+</body>
+</html>

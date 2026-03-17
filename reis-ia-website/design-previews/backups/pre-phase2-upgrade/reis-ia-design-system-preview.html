@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reis IA Design System — Visual Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   CSS CUSTOM PROPERTIES
+   ========================================================================== */
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+:root {
+  --surface-0: #000000;
+  --surface-1: #0A0A0A;
+  --surface-2: #111111;
+  --surface-3: #161616;
+  --surface-4: #1A1A1A;
+
+  --accent: #4A90FF;
+  --accent-hover: #6AADFF;
+  --accent-muted: #3570CC;
+  --accent-bright: #8DC4FF;
+  --accent-rgb: 74, 144, 255;
+
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255,255,255,0.7);
+  --text-tertiary: rgba(255,255,255,0.5);
+  --text-quaternary: rgba(255,255,255,0.35);
+  --text-dim: rgba(255,255,255,0.2);
+
+  --border-subtle: rgba(255,255,255,0.05);
+  --border-default: rgba(255,255,255,0.08);
+  --border-visible: rgba(255,255,255,0.12);
+  --border-strong: rgba(255,255,255,0.20);
+  --border-accent: rgba(74,144,255,0.30);
+
+  --shadow-subtle: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-default: 0 4px 16px rgba(0,0,0,0.25);
+  --shadow-elevated: 0 8px 30px rgba(0,0,0,0.4);
+  --shadow-dramatic: 0 16px 70px rgba(0,0,0,0.5);
+  --shadow-blue-glow: 0 0 50px rgba(74,144,255,0.12);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.4);
+
+  --ease-base: cubic-bezier(0.25, 0.1, 0.25, 1.0);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.55, 0.06, 0.68, 0.19);
+  --ease-dramatic: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-card: cubic-bezier(0.7, 0, 0, 1);
+
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-medium: 350ms;
+  --duration-moderate: 500ms;
+  --duration-slow: 800ms;
+  --duration-slower: 800ms;
+  --duration-dramatic: 1200ms;
+  --duration-ambient: 13000ms;
+
+  --text-display: clamp(2.5rem, 1.5rem + 3.5vw, 4.5rem);
+  --text-h1: clamp(2.25rem, 1.5rem + 2.75vw, 3.5rem);
+  --text-h2: clamp(1.875rem, 1.25rem + 2.25vw, 3rem);
+  --text-h3: clamp(1.625rem, 1.25rem + 1.25vw, 2.25rem);
+  --text-h4: clamp(1.375rem, 1.125rem + 0.75vw, 1.75rem);
+  --text-h5: clamp(1.25rem, 1.125rem + 0.5vw, 1.5rem);
+  --text-h6: clamp(1.125rem, 1rem + 0.25vw, 1.25rem);
+  --text-body-lg: clamp(1.125rem, 1rem + 0.25vw, 1.25rem);
+  --text-body: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-caption: clamp(0.75rem, 0.75rem + 0.1vw, 0.8125rem);
+  --text-micro: 0.6875rem;
+  --text-label: 0.75rem;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: clamp(24px, 1vw + 20px, 32px);
+  --space-xl: clamp(32px, 2vw + 24px, 48px);
+  --space-2xl: clamp(48px, 4vw + 32px, 80px);
+  --space-3xl: clamp(64px, 7vw + 36px, 120px);
+  --space-4xl: clamp(80px, 10vw + 40px, 160px);
+
+  --gradient-blue-ambient: radial-gradient(ellipse at center, rgba(74,144,255,0.06) 0%, transparent 70%);
+  --gradient-divider: linear-gradient(to right, transparent, var(--border-default) 20%, var(--border-default) 80%, transparent);
+
+  /* ---- BLUE ACCENT OPACITY LADDER [ADDED -- 2026-03-16] ---- */
+  --blue-02: rgba(74,144,255,0.02);
+  --blue-04: rgba(74,144,255,0.04);
+  --blue-06: rgba(74,144,255,0.06);
+  --blue-08: rgba(74,144,255,0.08);
+  --blue-10: rgba(74,144,255,0.10);
+  --blue-12: rgba(74,144,255,0.12);
+  --blue-15: rgba(74,144,255,0.15);
+  --blue-20: rgba(74,144,255,0.20);
+  --blue-30: rgba(74,144,255,0.30);
+  --blue-40: rgba(74,144,255,0.40);
+  --blue-50: rgba(74,144,255,0.50);
+  --blue-80: rgba(74,144,255,0.80);
+
+  /* ---- SIGNAL COLORS [ADDED -- 2026-03-16] ---- */
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+  --color-success: #22C55E;
+  --color-info: var(--accent);
+  --color-error-bg: rgba(239,68,68,0.10);
+  --color-error-border: rgba(239,68,68,0.25);
+  --color-warning-bg: rgba(245,158,11,0.10);
+  --color-warning-border: rgba(245,158,11,0.25);
+  --color-success-bg: rgba(34,197,94,0.10);
+  --color-success-border: rgba(34,197,94,0.25);
+  --color-info-bg: rgba(74,144,255,0.10);
+  --color-info-border: rgba(74,144,255,0.25);
+
+  /* ---- COMPONENT SPACING [ADDED -- 2026-03-16] ---- */
+  --gap-0: 0px; --gap-1: 4px; --gap-2: 8px; --gap-3: 12px; --gap-4: 16px;
+  --gap-5: 20px; --gap-6: 24px; --gap-7: 32px; --gap-8: 40px; --gap-9: 48px; --gap-10: 64px;
+
+  /* ---- BORDER RADIUS SCALE [ADDED -- 2026-03-16] ---- */
+  --radius-none: 0px; --radius-sm: 4px; --radius-md: 6px; --radius: 8px;
+  --radius-lg: 10px; --radius-xl: 12px; --radius-2xl: 16px; --radius-full: 9999px;
+
+  /* ---- ICON SIZES [ADDED -- 2026-03-16] ---- */
+  --icon-xs: 12px; --icon-sm: 16px; --icon-md: 20px; --icon-lg: 24px; --icon-xl: 32px;
+}
+
+/* === RESET === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+::selection { background: rgba(74,144,255,0.30); color: white; }
+body {
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+/* === LAYOUT === */
+.page-wrapper { display: flex; min-height: 100vh; }
+
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 240px; height: 100vh;
+  background: var(--surface-1); border-right: 1px solid var(--border-default);
+  overflow-y: auto; z-index: 100; padding: 32px 0;
+}
+.sidebar-title { font-size: 18px; font-weight: 700; padding: 0 24px; margin-bottom: 8px; letter-spacing: -0.02em; }
+.sidebar-subtitle { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding: 0 24px; margin-bottom: 24px; }
+.sidebar nav a {
+  display: block; padding: 8px 24px; font-size: 13px; font-weight: 400;
+  color: var(--text-tertiary); text-decoration: none;
+  transition: color 150ms var(--ease-base), background 150ms var(--ease-base);
+  border-left: 2px solid transparent;
+}
+.sidebar nav a:hover { color: var(--text-primary); background: rgba(255,255,255,0.03); }
+.sidebar nav a.active { color: var(--accent); border-left-color: var(--accent); background: rgba(74,144,255,0.05); font-weight: 500; }
+
+.main-content { margin-left: 240px; flex: 1; min-width: 0; }
+
+.ds-section { padding: 80px 48px; border-bottom: 1px solid var(--border-default); max-width: 1200px; }
+.ds-section:last-child { border-bottom: none; }
+.section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.section-title { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 12px; }
+.section-desc { font-size: 15px; color: var(--text-secondary); max-width: 680px; line-height: 1.65; margin-bottom: 48px; }
+.subsection { margin-bottom: 48px; }
+.subsection-title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 16px; }
+
+.token-label { font-size: 11px; font-weight: 500; color: var(--text-quaternary); letter-spacing: 0.02em; margin-top: 6px; }
+.token-value { font-size: 11px; color: var(--text-dim); font-family: 'SF Mono', 'Fira Code', monospace; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+
+/* === SWATCHES === */
+.swatch-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; }
+.swatch { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.swatch-box { width: 80px; height: 60px; border-radius: 8px; border: 1px solid var(--border-default); }
+.swatch-box-lg { width: 100px; height: 70px; border-radius: 8px; border: 1px solid var(--border-default); }
+
+/* === TYPE SPECIMENS === */
+.type-specimen { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-subtle); }
+.type-specimen:last-child { border-bottom: none; }
+.type-meta { display: flex; gap: 16px; margin-top: 4px; flex-wrap: wrap; }
+.type-meta span { font-size: 11px; color: var(--text-quaternary); font-family: 'SF Mono', 'Fira Code', monospace; }
+
+/* === SPACING DEMO === */
+.space-demo { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+.space-bar { height: 24px; background: rgba(74,144,255,0.15); border: 1px solid rgba(74,144,255,0.3); border-radius: 4px; min-width: 4px; }
+.space-info { font-size: 12px; color: var(--text-tertiary); white-space: nowrap; }
+
+/* === BUTTONS === */
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--accent); color: #FFF; font-size: 16px; font-weight: 600;
+  letter-spacing: 0.01em; padding: 13px 32px 15px; border-radius: 8px;
+  border: none; min-width: 200px; cursor: pointer;
+  transition: all 200ms var(--ease-base); text-decoration: none;
+}
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+.btn-primary:active { background: var(--accent-muted); transform: translateY(0); }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; color: var(--text-primary); font-size: 16px; font-weight: 600;
+  padding: 14px 32px; border-radius: 8px; border: 1px solid var(--border-visible);
+  cursor: pointer; transition: all 200ms var(--ease-base); text-decoration: none;
+}
+.btn-secondary:hover { border-color: var(--border-strong); background: rgba(255,255,255,0.03); }
+
+.btn-small { font-size: 14px; padding: 10px 24px; min-width: auto; }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent; color: var(--text-secondary); font-size: 16px; font-weight: 500;
+  padding: 8px 0; border: none; cursor: pointer;
+  transition: color 200ms var(--ease-base); text-decoration: none;
+}
+.btn-ghost:hover { color: var(--text-primary); }
+.btn-ghost .arrow { transition: transform 200ms var(--ease-base); }
+.btn-ghost:hover .arrow { transform: translateX(4px); }
+
+/* === CARDS === */
+.card-standard {
+  background: var(--surface-2); border: 1px solid var(--border-default); border-radius: 12px; padding: 32px;
+  transition: border-color 300ms var(--ease-base), background-color 300ms var(--ease-base);
+}
+.card-standard:hover { border-color: var(--border-visible); background: var(--surface-3); }
+.card-accented {
+  background: var(--surface-2); border: 1px solid var(--border-default);
+  border-top: 2px solid var(--accent); border-radius: 12px; padding: 32px;
+}
+.card-glass {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle);
+  border-radius: 16px; padding: 32px;
+  backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+.card-gradient-border {
+  background: linear-gradient(135deg, var(--surface-2), var(--surface-3)) padding-box,
+    linear-gradient(90deg, rgba(74,144,255,0.4) 0%, rgba(74,144,255,0) 50%, rgba(74,144,255,0.4) 100%) border-box;
+  border: 1px solid transparent; border-radius: 12px; padding: 32px;
+}
+.card-rotating-border {
+  background: linear-gradient(135deg, var(--surface-2), var(--surface-3)) padding-box,
+    conic-gradient(from var(--border-angle),
+      rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.08) 75%,
+      rgba(74,144,255,0.5) 85%, rgba(74,144,255,0.8) 90%,
+      rgba(74,144,255,0.5) 95%, rgba(255,255,255,0.08) 100%) border-box;
+  border: 1px solid transparent; border-radius: 12px; padding: 32px;
+  animation: rotateBorder 8s linear infinite;
+}
+.card-title { font-size: var(--text-h4); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 12px; }
+.card-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.65; }
+
+.badge {
+  display: inline-block; background: rgba(74,144,255,0.10); color: var(--accent);
+  font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(74,144,255,0.20);
+}
+
+/* === NAV MOCKUP === */
+.nav-mockup {
+  display: flex; align-items: center; justify-content: space-between; height: 72px; padding: 0 32px;
+  background: rgba(0,0,0,0.85); backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid var(--border-subtle); border-radius: 12px;
+}
+.nav-brand { font-size: 18px; font-weight: 700; }
+.nav-links { display: flex; gap: 32px; }
+.nav-links a { font-size: 14px; color: var(--text-tertiary); text-decoration: none; transition: color 150ms var(--ease-base); }
+.nav-links a:hover { color: var(--text-primary); }
+.nav-links a.nav-active { color: var(--text-primary); border-bottom: 2px solid var(--accent); padding-bottom: 4px; }
+
+/* === SIGNATURE ANIMATIONS === */
+@keyframes rotateBorder { to { --border-angle: 360deg; } }
+
+.aurora-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 50% at 20% 40%, rgba(74,144,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(141,196,255,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 50% 80%, rgba(53,112,204,0.06) 0%, transparent 60%);
+  animation: aurora-shift 20s ease-in-out infinite alternate; pointer-events: none;
+}
+@keyframes aurora-shift {
+  0% { transform: translate(0,0) scale(1); opacity: 1; }
+  33% { transform: translate(-5%,3%) scale(1.05); opacity: 0.8; }
+  66% { transform: translate(3%,-2%) scale(0.98); opacity: 1; }
+  100% { transform: translate(-2%,5%) scale(1.02); opacity: 0.9; }
+}
+
+.animate-on-scroll {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity var(--duration-slow) var(--ease-out), transform var(--duration-slow) var(--ease-out);
+}
+.animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+
+.ease-demo-track {
+  position: relative; height: 40px; background: var(--surface-2); border-radius: 6px;
+  border: 1px solid var(--border-default); overflow: hidden; flex: 1;
+}
+.ease-demo-box {
+  width: 40px; height: 40px; background: var(--accent); border-radius: 6px; position: absolute; top: 0; left: 0;
+}
+@keyframes slideEase { 0% { left: 0; } 100% { left: calc(100% - 40px); } }
+
+.text-reveal {
+  background: linear-gradient(180deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,1) 100%);
+  background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-size: 100% 200%; background-position: 0 0;
+  transition: background-position 1.2s var(--ease-dramatic);
+}
+.text-reveal.in-view { background-position: 0 -100%; }
+
+.mesh-gradient {
+  background: radial-gradient(at 40% 20%, rgba(74,144,255,0.07) 0%, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(53,112,204,0.05) 0%, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(141,196,255,0.04) 0%, transparent 50%),
+    radial-gradient(at 60% 100%, rgba(74,144,255,0.06) 0%, transparent 50%),
+    var(--surface-0);
+}
+
+.grid-stagger > * {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity var(--duration-slow) var(--ease-out), transform var(--duration-slow) var(--ease-out);
+}
+.grid-stagger.in-view > *:nth-child(1) { transition-delay: 0ms; opacity: 1; transform: translateY(0); }
+.grid-stagger.in-view > *:nth-child(2) { transition-delay: 100ms; opacity: 1; transform: translateY(0); }
+.grid-stagger.in-view > *:nth-child(3) { transition-delay: 200ms; opacity: 1; transform: translateY(0); }
+.grid-stagger.in-view > *:nth-child(4) { transition-delay: 300ms; opacity: 1; transform: translateY(0); }
+
+.counter-value { font-size: 56px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1.1; }
+
+.magnetic-hover { transition: transform 300ms var(--ease-out); }
+.magnetic-hover:hover { transform: translate(2px, -2px); }
+
+/* === BADGE VARIANTS [ADDED -- 2026-03-16] === */
+.badge,.badge-accent,.badge-success,.badge-warning,.badge-error,.badge-neutral {
+  display:inline-block;font-size:12px;font-weight:600;letter-spacing:0.05em;
+  text-transform:uppercase;padding:6px 14px;border-radius:var(--radius-md);border:1px solid;
+}
+.badge,.badge-accent { background:var(--blue-10);border-color:var(--blue-20);color:var(--accent); }
+.badge-success { background:var(--color-success-bg);border-color:rgba(34,197,94,0.20);color:var(--color-success); }
+.badge-warning { background:var(--color-warning-bg);border-color:rgba(245,158,11,0.20);color:var(--color-warning); }
+.badge-error { background:var(--color-error-bg);border-color:rgba(239,68,68,0.20);color:var(--color-error); }
+.badge-neutral { background:rgba(255,255,255,0.06);border-color:var(--border-visible);color:var(--text-secondary); }
+
+/* === FORM INPUTS [ADDED -- 2026-03-16] === */
+.input {
+  display:block;width:100%;height:48px;padding:12px 16px;font-family:inherit;font-size:16px;font-weight:400;
+  color:var(--text-primary);background:var(--surface-3);border:1px solid var(--border-default);
+  border-radius:var(--radius);outline:none;
+  transition:border-color 200ms var(--ease-base),box-shadow 200ms var(--ease-base);
+}
+.input::placeholder { color:var(--text-quaternary); }
+.input:hover:not(:focus):not(:disabled):not(.input-error) { border-color:var(--border-visible); }
+.input:focus { border-color:var(--accent);box-shadow:0 0 0 3px var(--blue-15); }
+.input-error { border-color:var(--color-error) !important;box-shadow:0 0 0 3px rgba(239,68,68,0.15) !important; }
+.input-success { border-color:var(--color-success) !important; }
+.input:disabled { background:var(--surface-2);border-color:var(--border-subtle);color:var(--text-quaternary);cursor:not-allowed;opacity:0.7; }
+.input-label { display:block;font-size:14px;font-weight:500;color:var(--text-secondary);margin-bottom:8px; }
+.input-helper { font-size:13px;color:var(--text-tertiary);margin-top:6px; }
+.input-error-text { font-size:13px;color:var(--color-error);margin-top:6px; }
+
+/* === KPI CARD [ADDED -- 2026-03-16] === */
+.kpi-card {
+  background:var(--surface-2);border:1px solid var(--border-default);border-radius:var(--radius-xl);padding:24px;
+  transition:border-color 200ms var(--ease-base),background-color 200ms var(--ease-base);
+}
+.kpi-card:hover { border-color:var(--border-visible);background:var(--surface-3); }
+
+/* === HAIRLINE GRID [ADDED -- 2026-03-16] === */
+.grid-hairline { display:grid;gap:1px;background:var(--border-default);border:1px solid var(--border-default); }
+.grid-hairline > * { background:var(--surface-0); }
+.grid-hairline-3 { grid-template-columns:repeat(3,1fr); }
+.grid-hairline-4 { grid-template-columns:repeat(4,1fr); }
+
+/* === TABS [ADDED -- 2026-03-16] === */
+.tab-list { display:flex;border-bottom:1px solid var(--border-default);overflow-x:auto; }
+.tab-trigger {
+  flex-shrink:0;padding:12px 20px;font-size:14px;font-weight:500;color:var(--text-tertiary);
+  background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;
+  transition:color 200ms var(--ease-base),border-color 200ms var(--ease-base);white-space:nowrap;
+}
+.tab-trigger:hover { color:var(--text-secondary); }
+.tab-trigger.is-active { color:var(--text-primary);font-weight:600;border-bottom-color:var(--accent); }
+.tab-panel { padding-top:24px;min-height:60px; }
+.tab-panel[hidden] { display:none; }
+
+/* === ICON SIZES [ADDED -- 2026-03-16] === */
+.icon-xs { width:12px;height:12px; } .icon-sm { width:16px;height:16px; }
+.icon-md { width:20px;height:20px; } .icon-lg { width:24px;height:24px; } .icon-xl { width:32px;height:32px; }
+
+*:focus-visible { outline: 2px solid #4D65FF; outline-offset: 2px; border-radius: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important; scroll-behavior: auto !important;
+  }
+}
+@media (max-width: 900px) {
+  .sidebar { width: 200px; }
+  .main-content { margin-left: 200px; }
+  .ds-section { padding: 48px 24px; }
+}
+@media (max-width: 640px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="hourglass" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="14" y1="10" x2="50" y2="10"/>
+    <line x1="50" y1="10" x2="14" y2="54"/>
+    <line x1="14" y1="10" x2="30" y2="29.1"/>
+    <line x1="34" y1="34.9" x2="50" y2="54"/>
+    <line x1="14" y1="54" x2="50" y2="54"/>
+  </symbol>
+</svg>
+
+<div class="page-wrapper">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-title">Reis IA</div>
+  <div class="sidebar-subtitle">Design System v1.0</div>
+  <nav>
+    <a href="#philosophy" data-section="philosophy">1. Design Philosophy</a>
+    <a href="#colors" data-section="colors">2. Color System</a>
+    <a href="#typography" data-section="typography">3. Typography Scale</a>
+    <a href="#spacing" data-section="spacing">4. Spacing System</a>
+    <a href="#surfaces" data-section="surfaces">5. Surface &amp; Depth</a>
+    <a href="#components" data-section="components">6. Components</a>
+    <a href="#signature" data-section="signature">7. Signature Elements</a>
+    <a href="#advanced" data-section="advanced">8. Advanced Effects</a>
+    <a href="#motion" data-section="motion">9. Motion &amp; Animation</a>
+    <a href="#brand" data-section="brand">10. Brand Mark</a>
+    <a href="#responsive" data-section="responsive">11. Responsive Rules</a>
+    <a href="#accessibility" data-section="accessibility">12. Accessibility</a>
+    <a href="#opacity-ladder" data-section="opacity-ladder">13. Opacity Ladder</a>
+    <a href="#signal-colors" data-section="signal-colors">14. Signal Colors</a>
+    <a href="#icons" data-section="icons">15. Icon System</a>
+    <a href="#numeric-spacing" data-section="numeric-spacing">16. Numeric Spacing</a>
+    <a href="#radius-scale" data-section="radius-scale">17. Radius Scale</a>
+    <a href="#badges" data-section="badges">18. Badge Variants</a>
+    <a href="#form-inputs" data-section="form-inputs">19. Form Inputs</a>
+    <a href="#kpi-card" data-section="kpi-card">20. KPI Card</a>
+    <a href="#tabs-demo" data-section="tabs-demo">21. Tabs</a>
+    <a href="#hairline-grid" data-section="hairline-grid">22. Hairline Grid</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content">
+
+<!-- ===================== 1. DESIGN PHILOSOPHY ===================== -->
+<section class="ds-section" id="philosophy" data-section="philosophy">
+  <div class="section-label">Section 01</div>
+  <h2 class="section-title">Design Philosophy</h2>
+  <p class="section-desc">Five principles govern every visual decision, ordered by priority.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;">
+    <div class="card-standard" style="padding:24px;">
+      <div style="font-size:32px;font-weight:700;color:var(--accent);margin-bottom:8px;">01</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Restraint Is the Design</div>
+      <div style="font-size:13px;color:var(--text-tertiary);line-height:1.55;">Every element must earn its space. Black space is the primary premium signal.</div>
+    </div>
+    <div class="card-standard" style="padding:24px;">
+      <div style="font-size:32px;font-weight:700;color:var(--accent);margin-bottom:8px;">02</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Typography Is Architecture</div>
+      <div style="font-size:13px;color:var(--text-tertiary);line-height:1.55;">Type does 90% of the hierarchy work. Dense impact vs open legibility.</div>
+    </div>
+    <div class="card-standard" style="padding:24px;">
+      <div style="font-size:32px;font-weight:700;color:var(--accent);margin-bottom:8px;">03</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Dark Mode Mastery</div>
+      <div style="font-size:13px;color:var(--text-tertiary);line-height:1.55;">Layered surface system. Depth through background shifts, not shadows.</div>
+    </div>
+    <div class="card-standard" style="padding:24px;">
+      <div style="font-size:32px;font-weight:700;color:var(--accent);margin-bottom:8px;">04</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Conversion Through Clarity</div>
+      <div style="font-size:13px;color:var(--text-tertiary);line-height:1.55;">Blue accent exists for conversion. Max 2 blue elements per viewport.</div>
+    </div>
+    <div class="card-standard" style="padding:24px;">
+      <div style="font-size:32px;font-weight:700;color:var(--accent);margin-bottom:8px;">05</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Engineered Precision</div>
+      <div style="font-size:13px;color:var(--text-tertiary);line-height:1.55;">Every value intentional. Custom easings, fluid clamp(), optical tuning.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 2. COLOR SYSTEM ===================== -->
+<section class="ds-section" id="colors" data-section="colors">
+  <div class="section-label">Section 02</div>
+  <h2 class="section-title">Color System</h2>
+  <p class="section-desc">Blue accent palette with a 5-tier surface layering system. Text hierarchy via white opacity.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Brand Colors</div>
+    <div class="swatch-row">
+      <div class="swatch"><div class="swatch-box" style="background:#000;border-color:var(--border-visible);"></div><div class="token-label">Black</div><div class="token-value">#000000</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#FFF;"></div><div class="token-label">White</div><div class="token-value">#FFFFFF</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#4A90FF;border-color:transparent;"></div><div class="token-label">Accent Blue</div><div class="token-value">#4A90FF</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#6AADFF;border-color:transparent;"></div><div class="token-label">Accent Hover</div><div class="token-value">#6AADFF</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#3570CC;border-color:transparent;"></div><div class="token-label">Accent Muted</div><div class="token-value">#3570CC</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#8DC4FF;border-color:transparent;"></div><div class="token-label">Accent Bright</div><div class="token-value">#8DC4FF</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Surface Layering (5 Tiers)</div>
+    <div class="swatch-row">
+      <div class="swatch"><div class="swatch-box-lg" style="background:#000;border-color:var(--border-visible);"></div><div class="token-label">Tier 0 Void</div><div class="token-value">#000000</div></div>
+      <div class="swatch"><div class="swatch-box-lg" style="background:#0A0A0A;"></div><div class="token-label">Tier 1 Base</div><div class="token-value">#0A0A0A</div></div>
+      <div class="swatch"><div class="swatch-box-lg" style="background:#111;"></div><div class="token-label">Tier 2 Raised</div><div class="token-value">#111111</div></div>
+      <div class="swatch"><div class="swatch-box-lg" style="background:#161616;"></div><div class="token-label">Tier 3 Elevated</div><div class="token-value">#161616</div></div>
+      <div class="swatch"><div class="swatch-box-lg" style="background:#1A1A1A;"></div><div class="token-label">Tier 4 Float</div><div class="token-value">#1A1A1A</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Text Opacity Scale</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;align-items:center;gap:16px;"><span style="width:180px;font-size:20px;font-weight:600;color:rgba(255,255,255,1);">Primary 100%</span><span class="token-value">rgba(255,255,255,1.0) -- Headlines</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><span style="width:180px;font-size:20px;font-weight:600;color:rgba(255,255,255,0.7);">Secondary 70%</span><span class="token-value">rgba(255,255,255,0.70) -- Body copy</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><span style="width:180px;font-size:20px;font-weight:600;color:rgba(255,255,255,0.5);">Tertiary 50%</span><span class="token-value">rgba(255,255,255,0.50) -- Captions</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><span style="width:180px;font-size:20px;font-weight:600;color:rgba(255,255,255,0.35);">Quaternary 35%</span><span class="token-value">rgba(255,255,255,0.35) -- Decorative</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><span style="width:180px;font-size:20px;font-weight:600;color:rgba(255,255,255,0.2);">Muted 20%</span><span class="token-value">rgba(255,255,255,0.20) -- Watermarks</span></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Border Opacity Scale</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:200px;height:1px;background:rgba(255,255,255,0.05);"></div><span class="token-value">Subtle 5%</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:200px;height:1px;background:rgba(255,255,255,0.08);"></div><span class="token-value">Default 8%</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:200px;height:1px;background:rgba(255,255,255,0.12);"></div><span class="token-value">Visible 12%</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:200px;height:1px;background:rgba(255,255,255,0.20);"></div><span class="token-value">Strong 20%</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:200px;height:1px;background:rgba(74,144,255,0.30);"></div><span class="token-value">Accent 30%</span></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Shadow Palette</div>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;">
+      <div style="width:140px;height:80px;background:var(--surface-2);border-radius:8px;box-shadow:var(--shadow-subtle);display:flex;align-items:center;justify-content:center;"><span class="token-value" style="color:var(--text-tertiary);">Subtle</span></div>
+      <div style="width:140px;height:80px;background:var(--surface-2);border-radius:8px;box-shadow:var(--shadow-default);display:flex;align-items:center;justify-content:center;"><span class="token-value" style="color:var(--text-tertiary);">Default</span></div>
+      <div style="width:140px;height:80px;background:var(--surface-2);border-radius:8px;box-shadow:var(--shadow-elevated);display:flex;align-items:center;justify-content:center;"><span class="token-value" style="color:var(--text-tertiary);">Elevated</span></div>
+      <div style="width:140px;height:80px;background:var(--surface-2);border-radius:8px;box-shadow:var(--shadow-dramatic);display:flex;align-items:center;justify-content:center;"><span class="token-value" style="color:var(--text-tertiary);">Dramatic</span></div>
+      <div style="width:140px;height:80px;background:var(--surface-2);border-radius:8px;box-shadow:var(--shadow-blue-glow);display:flex;align-items:center;justify-content:center;"><span class="token-value" style="color:var(--text-tertiary);">Blue Glow</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3. TYPOGRAPHY ===================== -->
+<section class="ds-section" id="typography" data-section="typography">
+  <div class="section-label">Section 03</div>
+  <h2 class="section-title">Typography Scale</h2>
+  <p class="section-desc">Inter Variable (weight 100-900). 12 fluid tokens using clamp(). Letter-spacing tightens as size increases.</p>
+
+  <div class="type-specimen"><div style="font-size:var(--text-display);font-weight:700;line-height:1.05;letter-spacing:-0.03em;">Display</div><div class="type-meta"><span>72px / 40px</span><span>700</span><span>lh: 1.05</span><span>ls: -0.03em</span><span>clamp(2.5rem, 1.5rem + 3.5vw, 4.5rem)</span></div></div>
+  <div class="type-specimen"><div style="font-size:var(--text-h1);font-weight:700;line-height:1.08;letter-spacing:-0.025em;">Heading 1</div><div class="type-meta"><span>56px / 36px</span><span>700</span><span>lh: 1.08</span><span>ls: -0.025em</span><span>clamp(2.25rem, 1.5rem + 2.75vw, 3.5rem)</span></div></div>
+  <div class="type-specimen"><div style="font-size:var(--text-h2);font-weight:600;line-height:1.10;letter-spacing:-0.02em;">Heading 2</div><div class="type-meta"><span>48px / 30px</span><span>600</span><span>lh: 1.10</span><span>ls: -0.02em</span><span>clamp(1.875rem, 1.25rem + 2.25vw, 3rem)</span></div></div>
+  <div class="type-specimen"><div style="font-size:var(--text-h3);font-weight:600;line-height:1.15;letter-spacing:-0.015em;">Heading 3</div><div class="type-meta"><span>36px / 26px</span><span>600</span><span>lh: 1.15</span><span>ls: -0.015em</span><span>clamp(1.625rem, 1.25rem + 1.25vw, 2.25rem)</span></div></div>
+  <div class="type-specimen"><div style="font-size:var(--text-h4);font-weight:600;line-height:1.20;letter-spacing:-0.01em;">Heading 4</div><div class="type-meta"><span>28px / 22px</span><span>600</span><span>lh: 1.20</span><span>ls: -0.01em</span><span>clamp(1.375rem, 1.125rem + 0.75vw, 1.75rem)</span></div></div>
+  <div class="type-specimen"><div style="font-size:var(--text-h5);font-weight:600;line-height:1.25;letter-spacing:-0.005em;">Heading 5</div><div class="type-meta"><span>24px / 20px</span><span>600</span><span>lh: 1.25</span><span>ls: -0.005em</span><span>clamp(1.25rem, 1.125rem + 0.5vw, 1.5rem)</span></div></div>
+  <div class="type-specimen"><div style="font-size:var(--text-h6);font-weight:600;line-height:1.30;">Heading 6</div><div class="type-meta"><span>20px / 18px</span><span>600</span><span>lh: 1.30</span><span>ls: 0</span></div></div>
+  <div class="type-specimen"><div style="font-size:var(--text-body-lg);font-weight:400;line-height:1.60;color:var(--text-secondary);">Body Large: Strategic intelligence and automation systems that multiply revenue and reclaim your time.</div><div class="type-meta"><span>20px / 18px</span><span>400</span><span>lh: 1.60</span><span>ls: 0</span></div></div>
+  <div class="type-specimen"><div style="font-size:var(--text-body);font-weight:400;line-height:1.65;color:var(--text-secondary);">Body: Standard body text for descriptions, card content, and general reading. Hierarchy through opacity.</div><div class="type-meta"><span>16px</span><span>400</span><span>lh: 1.65</span><span>ls: 0</span></div></div>
+  <div class="type-specimen"><div style="font-size:var(--text-body-sm);font-weight:400;line-height:1.55;color:var(--text-secondary);">Body Small: Bullet lists within cards, secondary descriptions, supporting content.</div><div class="type-meta"><span>14px</span><span>400</span><span>lh: 1.55</span><span>ls: 0</span></div></div>
+  <div class="type-specimen"><div style="font-size:var(--text-caption);font-weight:500;line-height:1.45;letter-spacing:0.01em;color:var(--text-tertiary);">Caption: Metadata, timestamps, additional context. Weight 500 for subtle emphasis.</div><div class="type-meta"><span>13px / 12px</span><span>500</span><span>lh: 1.45</span><span>ls: 0.01em</span></div></div>
+  <div class="type-specimen"><div style="font-size:var(--text-label);font-weight:600;line-height:1.40;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-tertiary);">Label: Section labels, badges, column headers</div><div class="type-meta"><span>12px</span><span>600</span><span>lh: 1.40</span><span>ls: 0.05em</span><span>uppercase</span></div></div>
+</section>
+
+<!-- ===================== 4. SPACING ===================== -->
+<section class="ds-section" id="spacing" data-section="spacing">
+  <div class="section-label">Section 04</div>
+  <h2 class="section-title">Spacing System</h2>
+  <p class="section-desc">8 fluid spacing tokens using clamp(). Covers micro-interactions to hero breathing room.</p>
+
+  <div class="space-demo"><div class="space-bar" style="width:4px;"></div><div class="space-info"><strong>xs</strong> 4px -- Icon gaps</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:8px;"></div><div class="space-info"><strong>sm</strong> 8px -- Tight groups</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:16px;"></div><div class="space-info"><strong>md</strong> 16px -- Standard spacing</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:32px;"></div><div class="space-info"><strong>lg</strong> 24-32px -- Card padding, gutters</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:48px;"></div><div class="space-info"><strong>xl</strong> 32-48px -- Content groups</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:80px;"></div><div class="space-info"><strong>2xl</strong> 48-80px -- Section (compact)</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:120px;"></div><div class="space-info"><strong>3xl</strong> 64-120px -- Section (standard)</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:160px;"></div><div class="space-info"><strong>4xl</strong> 80-160px -- Hero padding</div></div>
+
+  <div class="subsection" style="margin-top:48px;">
+    <div class="subsection-title">Container Widths</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:100%;max-width:1280px;height:8px;background:rgba(74,144,255,0.08);border:1px solid rgba(74,144,255,0.2);border-radius:4px;"></div><span class="token-value">Wide 1280px</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:100%;max-width:1200px;height:8px;background:rgba(74,144,255,0.08);border:1px solid rgba(74,144,255,0.2);border-radius:4px;"></div><span class="token-value">Standard 1200px</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:100%;max-width:900px;height:8px;background:rgba(74,144,255,0.08);border:1px solid rgba(74,144,255,0.2);border-radius:4px;"></div><span class="token-value">Headline 900px</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:100%;max-width:800px;height:8px;background:rgba(74,144,255,0.08);border:1px solid rgba(74,144,255,0.2);border-radius:4px;"></div><span class="token-value">Narrow 800px</span></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:100%;max-width:680px;height:8px;background:rgba(74,144,255,0.08);border:1px solid rgba(74,144,255,0.2);border-radius:4px;"></div><span class="token-value">Text 680px</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 5. SURFACE & DEPTH ===================== -->
+<section class="ds-section" id="surfaces" data-section="surfaces">
+  <div class="section-label">Section 05</div>
+  <h2 class="section-title">Surface &amp; Depth</h2>
+  <p class="section-desc">5-tier system where depth comes from background lightness + border opacity. No box-shadows for standard elevation.</p>
+
+  <div class="subsection-title">Nested Depth Progression</div>
+  <div style="background:var(--surface-0);border:1px solid var(--border-default);border-radius:16px;padding:32px;">
+    <div style="font-size:11px;color:var(--text-dim);margin-bottom:12px;">TIER 0 -- Void #000000</div>
+    <div style="background:var(--surface-1);border:1px solid var(--border-default);border-radius:12px;padding:28px;">
+      <div style="font-size:11px;color:var(--text-quaternary);margin-bottom:12px;">TIER 1 -- Base #0A0A0A</div>
+      <div style="background:var(--surface-2);border:1px solid var(--border-default);border-radius:12px;padding:24px;">
+        <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:12px;">TIER 2 -- Raised #111111</div>
+        <div style="background:var(--surface-3);border:1px solid var(--border-visible);border-radius:10px;padding:20px;">
+          <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;">TIER 3 -- Elevated #161616</div>
+          <div style="background:var(--surface-4);border:1px solid var(--border-visible);border-radius:8px;padding:16px;">
+            <div style="font-size:11px;color:var(--text-primary);">TIER 4 -- Float #1A1A1A</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 6. COMPONENTS ===================== -->
+<section class="ds-section" id="components" data-section="components">
+  <div class="section-label">Section 06</div>
+  <h2 class="section-title">Components</h2>
+  <p class="section-desc">Button variants, card variants, navigation, badges, and card internal structure.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Buttons</div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;">
+      <button class="btn-primary">Primary CTA</button>
+      <button class="btn-primary" style="font-size:18px;padding:17px 40px 19px;border-radius:10px;">Hero CTA</button>
+      <button class="btn-secondary">Secondary</button>
+      <button class="btn-primary btn-small">Small Primary</button>
+      <button class="btn-ghost">Learn more <span class="arrow">&rarr;</span></button>
+    </div>
+    <div class="token-value">Primary: bg #4A90FF, white text, 600, 8px radius | Hover: #6AADFF + translateY(-2px) | Active: #3570CC</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Badge / Label</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <span class="badge">Design System</span>
+      <span class="badge">AI Strategy</span>
+      <span class="badge">Premium</span>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Card Variants</div>
+    <div class="grid-2" style="margin-bottom:24px;">
+      <div class="card-standard"><div class="card-title">Standard Card</div><div class="card-desc">bg #111, border 8% white, 12px radius. Hover: border 12%, bg #161616.</div></div>
+      <div class="card-accented"><div class="card-title">Accented Card</div><div class="card-desc">Standard + 2px solid #4A90FF top border for featured content.</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card-glass"><div class="card-title">Glass Card</div><div class="card-desc">rgba(255,255,255,0.05), backdrop blur(16px) saturate(180%), 16px radius.</div></div>
+      <div class="card-gradient-border"><div class="card-title">Gradient Border</div><div class="card-desc">Background-clip technique. Blue gradient fading to transparent at center.</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Card Internal Structure</div>
+    <div style="max-width:400px;">
+      <div class="card-standard" style="display:flex;flex-direction:column;">
+        <div style="margin-bottom:24px;"><svg width="36" height="36" color="var(--accent)"><use href="#hourglass"/></svg></div>
+        <div class="card-title">Card Title (H4)</div>
+        <div class="card-desc" style="margin-bottom:24px;">Description in Body 16px, text-secondary 70%.</div>
+        <ul style="list-style:none;margin-bottom:24px;font-size:14px;color:var(--text-secondary);line-height:1.7;">
+          <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">&#8226;</span>Bullet item one</li>
+          <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">&#8226;</span>Bullet item two</li>
+          <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">&#8226;</span>Bullet item three</li>
+        </ul>
+        <div style="margin-top:auto;"><button class="btn-ghost" style="font-size:14px;">Learn more <span class="arrow">&rarr;</span></button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Navigation Bar</div>
+    <div class="nav-mockup">
+      <div class="nav-brand">Reis IA</div>
+      <div class="nav-links"><a href="#" class="nav-active">Home</a><a href="#">Builder</a><a href="#">Systems</a><a href="#">Partners</a><a href="#">About</a></div>
+      <button class="btn-primary btn-small" style="min-width:auto;">Book a Call</button>
+    </div>
+    <div class="token-value" style="margin-top:8px;">Fixed top, 72px, transparent to glass on scroll. z-index: 50</div>
+  </div>
+</section>
+
+<!-- ===================== 7. SIGNATURE ELEMENTS ===================== -->
+<section class="ds-section" id="signature" data-section="signature">
+  <div class="section-label">Section 07</div>
+  <h2 class="section-title">Signature Elements</h2>
+  <p class="section-desc">4 original visual treatments unique to Reis IA. Live demos below.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">1. Sapphire Scanner -- Rotating Border</div>
+    <p style="font-size:13px;color:var(--text-tertiary);margin-bottom:24px;">Conic gradient border with blue scanning beam, 8s rotation. @property --border-angle.</p>
+    <div class="grid-2">
+      <div class="card-rotating-border">
+        <div style="margin-bottom:16px;"><svg width="32" height="32" color="var(--accent)"><use href="#hourglass"/></svg></div>
+        <div class="card-title">Sapphire Scanner</div>
+        <div class="card-desc">Blue beam (15% of circle) rotates at 8s. Use on 1-2 featured cards per page max.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:center;gap:8px;">
+        <div class="token-value">@property --border-angle { syntax: "&lt;angle&gt;"; initial-value: 0deg; }</div>
+        <div class="token-value">conic-gradient(from var(--border-angle), 75% subtle, 90% blue peak)</div>
+        <div class="token-value">animation: rotateBorder 8s linear infinite</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">2. Cool Ambient Pools</div>
+    <p style="font-size:13px;color:var(--text-tertiary);margin-bottom:24px;">Radial gradient pools at section corners. Blue on key sections, neutral on secondary.</p>
+    <div class="grid-2">
+      <div style="position:relative;overflow:hidden;height:200px;background:var(--surface-0);border:1px solid var(--border-default);border-radius:12px;padding:24px;">
+        <div style="position:absolute;inset:0;background:radial-gradient(35% 50% at 0% 100%, rgba(74,144,255,0.06) 0%, transparent 100%);pointer-events:none;"></div>
+        <div style="position:relative;z-index:1;"><div style="font-size:13px;color:var(--text-tertiary);margin-bottom:8px;">Blue pool -- bottom-left</div><div style="font-size:24px;font-weight:700;">Key Section</div><div style="font-size:14px;color:var(--text-secondary);margin-top:8px;">Blue at conversion moments.</div></div>
+      </div>
+      <div style="position:relative;overflow:hidden;height:200px;background:var(--surface-1);border:1px solid var(--border-default);border-radius:12px;padding:24px;">
+        <div style="position:absolute;inset:0;background:radial-gradient(35% 50% at 100% 0%, rgba(255,255,255,0.03) 0%, transparent 100%);pointer-events:none;"></div>
+        <div style="position:relative;z-index:1;"><div style="font-size:13px;color:var(--text-tertiary);margin-bottom:8px;">Neutral pool -- top-right</div><div style="font-size:24px;font-weight:700;">Secondary Section</div><div style="font-size:14px;color:var(--text-secondary);margin-top:8px;">White pools on secondary.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">3. Hourglass Watermark</div>
+    <p style="font-size:13px;color:var(--text-tertiary);margin-bottom:24px;">H1-B SVG at 200-300px, 3-5% opacity, behind content.</p>
+    <div style="position:relative;overflow:hidden;background:var(--surface-0);border:1px solid var(--border-default);border-radius:12px;padding:64px 32px;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0.04;pointer-events:none;">
+        <svg width="280" height="280" color="white"><use href="#hourglass"/></svg>
+      </div>
+      <div style="position:relative;z-index:1;text-align:center;max-width:600px;margin:0 auto;">
+        <div style="font-size:var(--text-h2);font-weight:600;line-height:1.10;letter-spacing:-0.02em;margin-bottom:16px;">Strategic AI Implementation</div>
+        <div style="font-size:var(--text-body-lg);color:var(--text-secondary);line-height:1.60;">The hourglass watermark at 4% opacity anchors the brand behind content sections.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">4. Surface Depth Harmony</div>
+    <p style="font-size:13px;color:var(--text-tertiary);margin-bottom:24px;">The 5-tier system in action with ambient pool and layered elements.</p>
+    <div style="position:relative;overflow:hidden;background:var(--surface-0);border:1px solid var(--border-default);border-radius:16px;padding:40px;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(74,144,255,0.04) 0%, transparent 70%);pointer-events:none;"></div>
+      <div style="position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+        <div style="background:var(--surface-1);border:1px solid var(--border-default);border-radius:12px;padding:20px;">
+          <div style="font-size:13px;color:var(--text-tertiary);margin-bottom:8px;">Surface 1</div>
+          <div style="background:var(--surface-2);border:1px solid var(--border-default);border-radius:8px;padding:16px;"><div style="font-size:12px;color:var(--text-tertiary);">Card (S2)</div></div>
+        </div>
+        <div style="background:var(--surface-2);border:1px solid var(--border-default);border-radius:12px;padding:20px;">
+          <div style="font-size:13px;color:var(--text-tertiary);margin-bottom:8px;">Surface 2</div>
+          <div style="background:var(--surface-3);border:1px solid var(--border-visible);border-radius:8px;padding:16px;"><div style="font-size:12px;color:var(--text-tertiary);">Input (S3)</div></div>
+        </div>
+        <div style="background:var(--surface-3);border:1px solid var(--border-visible);border-radius:12px;padding:20px;">
+          <div style="font-size:13px;color:var(--text-tertiary);margin-bottom:8px;">Surface 3</div>
+          <div style="background:var(--surface-4);border:1px solid var(--border-strong);border-radius:8px;padding:16px;"><div style="font-size:12px;color:var(--text-secondary);">Tooltip (S4)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 8. ADVANCED EFFECTS ===================== -->
+<section class="ds-section" id="advanced" data-section="advanced">
+  <div class="section-label">Section 08</div>
+  <h2 class="section-title">Advanced Effects</h2>
+  <p class="section-desc">8 enriched effects with live demos.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">1. Aurora Background</div>
+    <div style="position:relative;overflow:hidden;height:240px;background:var(--surface-0);border:1px solid var(--border-default);border-radius:12px;">
+      <div class="aurora-bg"></div>
+      <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:32px;">
+        <div><div style="font-size:var(--text-h3);font-weight:600;letter-spacing:-0.015em;">Ethereal Atmospheric Backdrop</div><div style="font-size:14px;color:var(--text-tertiary);margin-top:8px;">20s cycle, scale shifts, opacity pulses</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">2. Mesh Gradient</div>
+    <div class="mesh-gradient" style="height:200px;border:1px solid var(--border-default);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+      <div style="text-align:center;"><div style="font-size:var(--text-h4);font-weight:600;">Multi-Point Radial Composition</div><div style="font-size:13px;color:var(--text-tertiary);margin-top:8px;">4 overlaid radial-gradients</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">3. Gradient Text Reveal</div>
+    <p style="font-size:13px;color:var(--text-tertiary);margin-bottom:16px;">Text transitions from muted to full brightness. Hover to see.</p>
+    <div style="padding:24px 0;">
+      <div class="text-reveal" id="textRevealDemo" style="font-size:var(--text-h2);font-weight:600;line-height:1.10;letter-spacing:-0.02em;cursor:pointer;">Hover to reveal this headline</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">4. Magnetic Hover</div>
+    <div style="display:flex;gap:24px;">
+      <div class="card-standard magnetic-hover" style="width:200px;text-align:center;"><div class="card-title" style="font-size:16px;">Hover me</div><div style="font-size:12px;color:var(--text-tertiary);">Subtle directional shift</div></div>
+      <div class="card-standard magnetic-hover" style="width:200px;text-align:center;"><div class="card-title" style="font-size:16px;">Hover me</div><div style="font-size:12px;color:var(--text-tertiary);">Max 8px offset</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">5. Staggered Grid Reveal</div>
+    <p style="font-size:13px;color:var(--text-tertiary);margin-bottom:16px;">Scroll to trigger IntersectionObserver.</p>
+    <div class="grid-4 grid-stagger" id="staggerGrid">
+      <div class="card-standard" style="padding:20px;text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--accent);">01</div><div style="font-size:13px;color:var(--text-tertiary);margin-top:4px;">0ms</div></div>
+      <div class="card-standard" style="padding:20px;text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--accent);">02</div><div style="font-size:13px;color:var(--text-tertiary);margin-top:4px;">100ms</div></div>
+      <div class="card-standard" style="padding:20px;text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--accent);">03</div><div style="font-size:13px;color:var(--text-tertiary);margin-top:4px;">200ms</div></div>
+      <div class="card-standard" style="padding:20px;text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--accent);">04</div><div style="font-size:13px;color:var(--text-tertiary);margin-top:4px;">300ms</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">6. Counter Animation</div>
+    <p style="font-size:13px;color:var(--text-tertiary);margin-bottom:16px;">Numbers count from 0 with ease-out over 2000ms. Scroll to trigger.</p>
+    <div style="display:flex;gap:48px;flex-wrap:wrap;" id="counterSection">
+      <div style="text-align:center;"><div class="counter-value" data-target="150" data-suffix="+">0</div><div style="font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-tertiary);margin-top:4px;">Clients</div></div>
+      <div style="text-align:center;"><div class="counter-value" data-target="97" data-suffix="%">0</div><div style="font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-tertiary);margin-top:4px;">Retention</div></div>
+      <div style="text-align:center;"><div class="counter-value" data-target="3" data-suffix="x">0</div><div style="font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-tertiary);margin-top:4px;">Revenue</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">7. Scroll-Linked Parallax</div>
+    <div style="position:relative;overflow:hidden;height:300px;border-radius:12px;border:1px solid var(--border-default);background:var(--surface-1);" id="parallaxDemo">
+      <div class="parallax-slow" style="position:absolute;top:20px;left:20px;opacity:0.04;pointer-events:none;"><svg width="160" height="160" color="white"><use href="#hourglass"/></svg></div>
+      <div class="parallax-medium" style="position:absolute;top:60px;right:40px;opacity:0.06;pointer-events:none;"><svg width="100" height="100" color="var(--accent)"><use href="#hourglass"/></svg></div>
+      <div class="parallax-fast" style="position:absolute;bottom:30px;left:40%;opacity:0.03;pointer-events:none;"><svg width="200" height="200" color="white"><use href="#hourglass"/></svg></div>
+      <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">
+        <div><div style="font-size:var(--text-h4);font-weight:600;">Parallax Depth Layers</div><div style="font-size:13px;color:var(--text-tertiary);margin-top:8px;">-0.05, -0.1, -0.15 scroll multipliers</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">8. Section Transition Gradient</div>
+    <div style="position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--border-default);">
+      <div style="height:120px;background:var(--surface-0);padding:24px;position:relative;">
+        <div style="font-size:13px;color:var(--text-tertiary);">Section on Surface-0</div>
+        <div style="position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(to bottom, transparent, var(--surface-1));pointer-events:none;"></div>
+      </div>
+      <div style="height:120px;background:var(--surface-1);padding:24px;"><div style="font-size:13px;color:var(--text-tertiary);">Section on Surface-1 -- smooth gradient blend</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 9. MOTION & ANIMATION ===================== -->
+<section class="ds-section" id="motion" data-section="motion">
+  <div class="section-label">Section 09</div>
+  <h2 class="section-title">Motion &amp; Animation</h2>
+  <p class="section-desc">5 easing curves, 7 duration tiers, 3 entrance types. No default CSS ease.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Easing Curves</div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="width:120px;font-size:13px;color:var(--text-secondary);">Ease Base</div>
+        <div class="ease-demo-track"><div class="ease-demo-box" style="animation:slideEase 2s cubic-bezier(0.25,0.1,0.25,1) infinite alternate;"></div></div>
+        <div class="token-value" style="width:280px;">cubic-bezier(0.25, 0.1, 0.25, 1.0)</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="width:120px;font-size:13px;color:var(--text-secondary);">Ease Out</div>
+        <div class="ease-demo-track"><div class="ease-demo-box" style="animation:slideEase 2s cubic-bezier(0.16,1,0.3,1) infinite alternate;"></div></div>
+        <div class="token-value" style="width:280px;">cubic-bezier(0.16, 1, 0.3, 1)</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="width:120px;font-size:13px;color:var(--text-secondary);">Ease In</div>
+        <div class="ease-demo-track"><div class="ease-demo-box" style="animation:slideEase 2s cubic-bezier(0.55,0.06,0.68,0.19) infinite alternate;"></div></div>
+        <div class="token-value" style="width:280px;">cubic-bezier(0.55, 0.06, 0.68, 0.19)</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="width:120px;font-size:13px;color:var(--text-secondary);">Ease Dramatic</div>
+        <div class="ease-demo-track"><div class="ease-demo-box" style="animation:slideEase 2s cubic-bezier(0.65,0,0.35,1) infinite alternate;"></div></div>
+        <div class="token-value" style="width:280px;">cubic-bezier(0.65, 0, 0.35, 1)</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="width:120px;font-size:13px;color:var(--text-secondary);">Ease Card</div>
+        <div class="ease-demo-track"><div class="ease-demo-box" style="animation:slideEase 2s cubic-bezier(0.7,0,0,1) infinite alternate;"></div></div>
+        <div class="token-value" style="width:280px;">cubic-bezier(0.7, 0, 0, 1)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Duration Scale</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:100px;font-size:13px;color:var(--text-secondary);">Instant</div><div style="width:10px;height:16px;background:var(--accent);border-radius:2px;"></div><div class="token-value">100ms -- Opacity hints</div></div>
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:100px;font-size:13px;color:var(--text-secondary);">Fast</div><div style="width:20px;height:16px;background:var(--accent);border-radius:2px;"></div><div class="token-value">200ms -- Hover color/border</div></div>
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:100px;font-size:13px;color:var(--text-secondary);">Normal</div><div style="width:30px;height:16px;background:var(--accent);border-radius:2px;"></div><div class="token-value">300ms -- Standard transitions</div></div>
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:100px;font-size:13px;color:var(--text-secondary);">Moderate</div><div style="width:50px;height:16px;background:var(--accent);border-radius:2px;"></div><div class="token-value">500ms -- Card scale + shadow</div></div>
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:100px;font-size:13px;color:var(--text-secondary);">Slow</div><div style="width:80px;height:16px;background:var(--accent);border-radius:2px;"></div><div class="token-value">800ms -- Scroll entrances</div></div>
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:100px;font-size:13px;color:var(--text-secondary);">Dramatic</div><div style="width:120px;height:16px;background:var(--accent);border-radius:2px;"></div><div class="token-value">1200ms -- Hero entrance</div></div>
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:100px;font-size:13px;color:var(--text-secondary);">Ambient</div><div style="width:200px;height:16px;background:linear-gradient(90deg,var(--accent),var(--accent-muted));border-radius:2px;"></div><div class="token-value">13000ms -- Shimmer loop</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Entrance Animations</div>
+    <div class="grid-3">
+      <div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:12px;">Fade Up (default)</div>
+        <div class="animate-on-scroll" id="fadeUpDemo" style="background:var(--surface-2);border:1px solid var(--border-default);border-radius:8px;padding:20px;text-align:center;">
+          <div style="font-size:13px;color:var(--text-tertiary);">translateY(24px) + opacity:0</div><div style="font-size:11px;color:var(--text-dim);margin-top:4px;">800ms ease-out</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:12px;">Fade In</div>
+        <div id="fadeInDemo" style="opacity:0;transition:opacity 800ms var(--ease-out);background:var(--surface-2);border:1px solid var(--border-default);border-radius:8px;padding:20px;text-align:center;">
+          <div style="font-size:13px;color:var(--text-tertiary);">opacity:0 only</div><div style="font-size:11px;color:var(--text-dim);margin-top:4px;">800ms ease-out</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:12px;">Scale Reveal</div>
+        <div id="scaleDemo" style="opacity:0;transform:scale(0.96);transition:opacity 800ms var(--ease-out),transform 800ms var(--ease-out);background:var(--surface-2);border:1px solid var(--border-default);border-radius:8px;padding:20px;text-align:center;">
+          <div style="font-size:13px;color:var(--text-tertiary);">scale(0.96) + opacity:0</div><div style="font-size:11px;color:var(--text-dim);margin-top:4px;">800ms ease-out</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 10. BRAND MARK ===================== -->
+<section class="ds-section" id="brand" data-section="brand">
+  <div class="section-label">Section 10</div>
+  <h2 class="section-title">Brand Mark</h2>
+  <p class="section-desc">H1-B "Open Intersection" Hourglass -- the singular brand symbol. No chess, no crown, no agent.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Sizes</div>
+    <div style="display:flex;align-items:flex-end;gap:32px;padding:32px;background:var(--surface-0);border:1px solid var(--border-default);border-radius:12px;margin-bottom:24px;">
+      <div style="text-align:center;"><svg width="16" height="16" color="white"><use href="#hourglass"/></svg><div class="token-label">16</div></div>
+      <div style="text-align:center;"><svg width="24" height="24" color="white"><use href="#hourglass"/></svg><div class="token-label">24</div></div>
+      <div style="text-align:center;"><svg width="32" height="32" color="white"><use href="#hourglass"/></svg><div class="token-label">32</div></div>
+      <div style="text-align:center;"><svg width="48" height="48" color="white"><use href="#hourglass"/></svg><div class="token-label">48</div></div>
+      <div style="text-align:center;"><svg width="64" height="64" color="white"><use href="#hourglass"/></svg><div class="token-label">64</div></div>
+      <div style="text-align:center;"><svg width="128" height="128" color="white"><use href="#hourglass"/></svg><div class="token-label">128</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Color Variants</div>
+    <div style="display:flex;gap:32px;flex-wrap:wrap;">
+      <div style="text-align:center;padding:24px;background:var(--surface-0);border:1px solid var(--border-default);border-radius:12px;"><svg width="48" height="48" color="white"><use href="#hourglass"/></svg><div class="token-label">White on black</div></div>
+      <div style="text-align:center;padding:24px;background:var(--surface-0);border:1px solid var(--border-default);border-radius:12px;"><svg width="48" height="48" color="#4A90FF"><use href="#hourglass"/></svg><div class="token-label">Accent blue</div></div>
+      <div style="text-align:center;padding:24px;background:#F9FAFB;border-radius:12px;"><svg width="48" height="48" color="#111"><use href="#hourglass"/></svg><div class="token-label" style="color:rgba(0,0,0,0.4);">Dark on white</div></div>
+      <div style="text-align:center;padding:24px;background:var(--surface-2);border:1px solid var(--border-default);border-radius:12px;"><svg width="48" height="48" color="white"><use href="#hourglass"/></svg><div class="token-label">On Surface-2</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Inline Usage</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;align-items:center;gap:10px;font-size:16px;font-weight:500;"><svg width="24" height="24" color="var(--accent)"><use href="#hourglass"/></svg><span>Reis IA</span></div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:16px;font-weight:500;"><svg width="24" height="24" color="var(--accent)"><use href="#hourglass"/></svg><span>Reis IA Systems</span></div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-secondary);"><svg width="20" height="20" color="var(--accent)"><use href="#hourglass"/></svg><span>Powered by Reis IA</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 11. RESPONSIVE ===================== -->
+<section class="ds-section" id="responsive" data-section="responsive">
+  <div class="section-label">Section 11</div>
+  <h2 class="section-title">Responsive Rules</h2>
+  <p class="section-desc">Breakpoints, layout collapse, and mobile-specific considerations.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Breakpoints</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:80px;font-size:13px;font-weight:500;">Mobile</div><div style="flex:1;height:6px;background:var(--accent);border-radius:3px;opacity:0.3;"></div><div class="token-value">0px default</div></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:80px;font-size:13px;font-weight:500;">Tablet</div><div style="flex:1;height:6px;background:var(--accent);border-radius:3px;opacity:0.5;max-width:60%;"></div><div class="token-value">768px md:</div></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:80px;font-size:13px;font-weight:500;">Desktop</div><div style="flex:1;height:6px;background:var(--accent);border-radius:3px;opacity:0.7;max-width:75%;"></div><div class="token-value">1024px lg:</div></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:80px;font-size:13px;font-weight:500;">Wide</div><div style="flex:1;height:6px;background:var(--accent);border-radius:3px;opacity:0.85;max-width:90%;"></div><div class="token-value">1280px xl:</div></div>
+      <div style="display:flex;align-items:center;gap:16px;"><div style="width:80px;font-size:13px;font-weight:500;">Ultrawide</div><div style="flex:1;height:6px;background:var(--accent);border-radius:3px;opacity:1;"></div><div class="token-value">1536px 2xl:</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Mobile-Specific Rules</div>
+    <div class="card-standard" style="padding:24px;">
+      <ul style="font-size:14px;color:var(--text-secondary);line-height:1.8;list-style:none;">
+        <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">&#8226;</span>No hover effects on touch: @media (hover: hover)</li>
+        <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">&#8226;</span>Touch targets: minimum 44x44px</li>
+        <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">&#8226;</span>Hourglass watermarks: hidden on mobile</li>
+        <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">&#8226;</span>Section padding: --space-2xl (48-80px)</li>
+        <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">&#8226;</span>Card padding: 24px (vs 32px desktop)</li>
+        <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">&#8226;</span>Nav collapses to hamburger at &lt;1024px</li>
+        <li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">&#8226;</span>Sticky CTA bar at bottom on sales pages</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 12. ACCESSIBILITY ===================== -->
+<section class="ds-section" id="accessibility" data-section="accessibility">
+  <div class="section-label">Section 12</div>
+  <h2 class="section-title">Accessibility</h2>
+  <p class="section-desc">WCAG AA compliance, focus states, motion sensitivity, contrast ratios.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Contrast Ratios</div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="border-bottom:1px solid var(--border-default);">
+          <th style="text-align:left;padding:8px 12px;color:var(--text-tertiary);font-weight:600;">Text</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--text-tertiary);font-weight:600;">Background</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--text-tertiary);font-weight:600;">Ratio</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--text-tertiary);font-weight:600;">Grade</th>
+        </tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:8px 12px;">Primary 100%</td><td style="padding:8px 12px;color:var(--text-secondary);">Surface-0</td><td style="padding:8px 12px;color:var(--text-secondary);">21:1</td><td style="padding:8px 12px;color:#22c55e;">AAA</td></tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:8px 12px;">Primary</td><td style="padding:8px 12px;color:var(--text-secondary);">Surface-2</td><td style="padding:8px 12px;color:var(--text-secondary);">17.4:1</td><td style="padding:8px 12px;color:#22c55e;">AAA</td></tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:8px 12px;">Secondary 70%</td><td style="padding:8px 12px;color:var(--text-secondary);">Surface-0</td><td style="padding:8px 12px;color:var(--text-secondary);">14.7:1</td><td style="padding:8px 12px;color:#22c55e;">AAA</td></tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:8px 12px;">Tertiary 50%</td><td style="padding:8px 12px;color:var(--text-secondary);">Surface-0</td><td style="padding:8px 12px;color:var(--text-secondary);">10.5:1</td><td style="padding:8px 12px;color:#22c55e;">AAA</td></tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:8px 12px;">Quaternary 35%</td><td style="padding:8px 12px;color:var(--text-secondary);">Surface-0</td><td style="padding:8px 12px;color:var(--text-secondary);">7.3:1</td><td style="padding:8px 12px;color:#eab308;">AA</td></tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:8px 12px;">Accent Blue</td><td style="padding:8px 12px;color:var(--text-secondary);">Surface-0</td><td style="padding:8px 12px;color:var(--text-secondary);">6.7:1</td><td style="padding:8px 12px;color:#eab308;">AA</td></tr>
+          <tr><td style="padding:8px 12px;">White on Blue</td><td style="padding:8px 12px;color:var(--text-secondary);">#4A90FF</td><td style="padding:8px 12px;color:var(--text-secondary);">8.3:1</td><td style="padding:8px 12px;color:#22c55e;">AAA</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:var(--text-quaternary);">text-muted (20%) fails on all backgrounds -- decorative only.</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Focus Ring</div>
+    <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;">
+      <button class="btn-primary" style="min-width:auto;">Focus me (Tab)</button>
+      <button class="btn-secondary">Focus me (Tab)</button>
+    </div>
+    <div class="token-value" style="margin-top:12px;">outline: 2px solid #4D65FF | offset: 2px | border-radius: inherit</div>
+    <div style="font-size:12px;color:var(--text-quaternary);margin-top:4px;">Focus uses #4D65FF (distinct from accent #4A90FF).</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Reduced Motion</div>
+    <div class="card-standard" style="padding:24px;">
+      <code style="font-size:13px;color:var(--text-secondary);display:block;white-space:pre;overflow-x:auto;">@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}</code>
+      <div style="font-size:12px;color:var(--text-quaternary);margin-top:12px;">All shimmer, rotating, entrance animations stop. Marquee static. Transitions instant.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 13. OPACITY LADDER [ADDED -- 2026-03-16] ===================== -->
+<section class="ds-section" id="opacity-ladder" data-section="opacity-ladder">
+  <div class="section-label">Section 13 -- Added</div>
+  <h2 class="section-title">Blue Accent Opacity Ladder</h2>
+  <p class="section-desc">12-step graduated opacity scale for #4A90FF. Eliminates inline magic numbers.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;">
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-02);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-02</div><div class="token-value">2%</div></div>
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-04);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-04</div><div class="token-value">4%</div></div>
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-06);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-06</div><div class="token-value">6%</div></div>
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-08);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-08</div><div class="token-value">8%</div></div>
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-10);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-10</div><div class="token-value">10%</div></div>
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-12);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-12</div><div class="token-value">12%</div></div>
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-15);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-15</div><div class="token-value">15%</div></div>
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-20);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-20</div><div class="token-value">20%</div></div>
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-30);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-30</div><div class="token-value">30%</div></div>
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-40);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-40</div><div class="token-value">40%</div></div>
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-50);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-50</div><div class="token-value">50%</div></div>
+    <div style="text-align:center;"><div style="width:100%;height:60px;background:var(--blue-80);border:1px solid var(--border-default);border-radius:6px;"></div><div class="token-label">blue-80</div><div class="token-value">80%</div></div>
+  </div>
+</section>
+
+<!-- ===================== 14. SIGNAL COLORS [ADDED -- 2026-03-16] ===================== -->
+<section class="ds-section" id="signal-colors" data-section="signal-colors">
+  <div class="section-label">Section 14 -- Added</div>
+  <h2 class="section-title">Signal / Semantic Colors</h2>
+  <p class="section-desc">Error, warning, success, info -- each with background, border, and text variants.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Primary Signal Colors</div>
+    <div class="swatch-row">
+      <div class="swatch"><div class="swatch-box" style="background:#EF4444;border-color:transparent;"></div><div class="token-label">Error</div><div class="token-value">#EF4444</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#F59E0B;border-color:transparent;"></div><div class="token-label">Warning</div><div class="token-value">#F59E0B</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#22C55E;border-color:transparent;"></div><div class="token-label">Success</div><div class="token-value">#22C55E</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#4A90FF;border-color:transparent;"></div><div class="token-label">Info</div><div class="token-value">#4A90FF</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Signal Backgrounds + Borders</div>
+    <div class="grid-2" style="gap:16px;">
+      <div style="background:var(--color-error-bg);border:1px solid var(--color-error-border);border-radius:8px;padding:16px;">
+        <span style="color:var(--color-error);font-size:14px;font-weight:600;">Error state</span>
+        <span class="token-value" style="display:block;margin-top:4px;">bg 10% / border 25%</span>
+      </div>
+      <div style="background:var(--color-warning-bg);border:1px solid var(--color-warning-border);border-radius:8px;padding:16px;">
+        <span style="color:var(--color-warning);font-size:14px;font-weight:600;">Warning state</span>
+        <span class="token-value" style="display:block;margin-top:4px;">bg 10% / border 25%</span>
+      </div>
+      <div style="background:var(--color-success-bg);border:1px solid var(--color-success-border);border-radius:8px;padding:16px;">
+        <span style="color:var(--color-success);font-size:14px;font-weight:600;">Success state</span>
+        <span class="token-value" style="display:block;margin-top:4px;">bg 10% / border 25%</span>
+      </div>
+      <div style="background:var(--color-info-bg);border:1px solid var(--color-info-border);border-radius:8px;padding:16px;">
+        <span style="color:var(--color-info);font-size:14px;font-weight:600;">Info state</span>
+        <span class="token-value" style="display:block;margin-top:4px;">bg 10% / border 25%</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 15. ICON SYSTEM [ADDED -- 2026-03-16] ===================== -->
+<section class="ds-section" id="icons" data-section="icons">
+  <div class="section-label">Section 15 -- Added</div>
+  <h2 class="section-title">Icon System</h2>
+  <p class="section-desc">Lucide Icons, 5 sizes (12-32px), stroke-only, currentColor inheritance. Placeholder checkmarks shown.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Icon Sizes</div>
+    <div style="display:flex;align-items:flex-end;gap:32px;padding:24px;background:var(--surface-1);border:1px solid var(--border-default);border-radius:12px;">
+      <div style="text-align:center;">
+        <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="token-label">XS 12px</div>
+      </div>
+      <div style="text-align:center;">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="token-label">SM 16px</div>
+      </div>
+      <div style="text-align:center;">
+        <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="token-label">MD 20px</div>
+      </div>
+      <div style="text-align:center;">
+        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="token-label">LG 24px</div>
+      </div>
+      <div style="text-align:center;">
+        <svg class="icon-xl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="token-label">XL 32px</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Icon Color Variants (at 24px)</div>
+    <div style="display:flex;gap:32px;padding:24px;background:var(--surface-1);border:1px solid var(--border-default);border-radius:12px;">
+      <div style="text-align:center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-secondary);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div class="token-label">Default</div><div class="token-value">70% white</div>
+      </div>
+      <div style="text-align:center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-primary);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div class="token-label">Primary</div><div class="token-value">#FFFFFF</div>
+      </div>
+      <div style="text-align:center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div class="token-label">Accent</div><div class="token-value">#4A90FF</div>
+      </div>
+      <div style="text-align:center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-quaternary);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div class="token-label">Muted</div><div class="token-value">35% white</div>
+      </div>
+      <div style="text-align:center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-error);"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        <div class="token-label">Error</div><div class="token-value">#EF4444</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 16. NUMERIC SPACING [ADDED -- 2026-03-16] ===================== -->
+<section class="ds-section" id="numeric-spacing" data-section="numeric-spacing">
+  <div class="section-label">Section 16 -- Added</div>
+  <h2 class="section-title">Numeric Spacing Scale</h2>
+  <p class="section-desc">11-step static scale for component internals. Complements fluid --space-* tokens.</p>
+
+  <div class="space-demo"><div class="space-bar" style="width:0px;min-width:2px;"></div><div class="space-info"><strong>gap-0</strong> 0px -- Conditional removal</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:4px;"></div><div class="space-info"><strong>gap-1</strong> 4px -- = space-xs</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:8px;"></div><div class="space-info"><strong>gap-2</strong> 8px -- = space-sm</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:12px;"></div><div class="space-info"><strong>gap-3</strong> 12px -- Icon-to-text gaps</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:16px;"></div><div class="space-info"><strong>gap-4</strong> 16px -- = space-md</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:20px;"></div><div class="space-info"><strong>gap-5</strong> 20px -- Form field spacing</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:24px;"></div><div class="space-info"><strong>gap-6</strong> 24px -- Card internal padding</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:32px;"></div><div class="space-info"><strong>gap-7</strong> 32px -- Card padding (desktop)</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:40px;"></div><div class="space-info"><strong>gap-8</strong> 40px -- Content group breaks</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:48px;"></div><div class="space-info"><strong>gap-9</strong> 48px -- Subsection spacing</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:64px;"></div><div class="space-info"><strong>gap-10</strong> 64px -- Section-level</div></div>
+</section>
+
+<!-- ===================== 17. BORDER RADIUS [ADDED -- 2026-03-16] ===================== -->
+<section class="ds-section" id="radius-scale" data-section="radius-scale">
+  <div class="section-label">Section 17 -- Added</div>
+  <h2 class="section-title">Border Radius Scale</h2>
+  <p class="section-desc">Generic 8-step scale alongside existing semantic aliases.</p>
+
+  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end;">
+    <div style="text-align:center;">
+      <div style="width:72px;height:72px;background:var(--surface-2);border:1px solid var(--border-visible);border-radius:var(--radius-none);"></div>
+      <div class="token-label">none</div><div class="token-value">0px</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="width:72px;height:72px;background:var(--surface-2);border:1px solid var(--border-visible);border-radius:var(--radius-sm);"></div>
+      <div class="token-label">sm</div><div class="token-value">4px</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="width:72px;height:72px;background:var(--surface-2);border:1px solid var(--border-visible);border-radius:var(--radius-md);"></div>
+      <div class="token-label">md</div><div class="token-value">6px</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="width:72px;height:72px;background:var(--surface-2);border:1px solid var(--border-visible);border-radius:var(--radius);"></div>
+      <div class="token-label">default</div><div class="token-value">8px</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="width:72px;height:72px;background:var(--surface-2);border:1px solid var(--border-visible);border-radius:var(--radius-lg);"></div>
+      <div class="token-label">lg</div><div class="token-value">10px</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="width:72px;height:72px;background:var(--surface-2);border:1px solid var(--border-visible);border-radius:var(--radius-xl);"></div>
+      <div class="token-label">xl</div><div class="token-value">12px</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="width:72px;height:72px;background:var(--surface-2);border:1px solid var(--border-visible);border-radius:var(--radius-2xl);"></div>
+      <div class="token-label">2xl</div><div class="token-value">16px</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="width:72px;height:72px;background:var(--surface-2);border:1px solid var(--border-visible);border-radius:var(--radius-full);"></div>
+      <div class="token-label">full</div><div class="token-value">9999px</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 18. BADGE VARIANTS [ADDED -- 2026-03-16] ===================== -->
+<section class="ds-section" id="badges" data-section="badges">
+  <div class="section-label">Section 18 -- Added</div>
+  <h2 class="section-title">Badge Variants</h2>
+  <p class="section-desc">5 semantic badge variants: accent (default), success, warning, error, neutral.</p>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+    <span class="badge-accent">Accent</span>
+    <span class="badge-success">Success</span>
+    <span class="badge-warning">Warning</span>
+    <span class="badge-error">Error</span>
+    <span class="badge-neutral">Neutral</span>
+  </div>
+  <div class="token-value" style="margin-top:16px;">12px, weight 600, uppercase, 0.05em tracking, 6px radius, 6px/14px padding</div>
+</section>
+
+<!-- ===================== 19. FORM INPUTS [ADDED -- 2026-03-16] ===================== -->
+<section class="ds-section" id="form-inputs" data-section="form-inputs">
+  <div class="section-label">Section 19 -- Added</div>
+  <h2 class="section-title">Form Inputs</h2>
+  <p class="section-desc">Text input with all states: default, focus, error, success, disabled.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:800px;">
+    <div>
+      <label class="input-label">Default state</label>
+      <input type="text" class="input" placeholder="Enter your name..." />
+      <div class="input-helper">Helper text for guidance</div>
+    </div>
+    <div>
+      <label class="input-label">Focus state (click)</label>
+      <input type="text" class="input" placeholder="Click to focus..." />
+    </div>
+    <div>
+      <label class="input-label">Error state</label>
+      <input type="text" class="input input-error" value="invalid@" />
+      <div class="input-error-text">Please enter a valid email address</div>
+    </div>
+    <div>
+      <label class="input-label">Success state</label>
+      <input type="text" class="input input-success" value="moroni@reis.ia" />
+      <div style="font-size:13px;color:var(--color-success);margin-top:6px;">Email verified</div>
+    </div>
+    <div>
+      <label class="input-label">Disabled state</label>
+      <input type="text" class="input" disabled value="Not editable" />
+    </div>
+    <div>
+      <label class="input-label">Textarea</label>
+      <textarea class="input" style="height:auto;min-height:80px;resize:vertical;" placeholder="Type your message..."></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 20. KPI CARD [ADDED -- 2026-03-16] ===================== -->
+<section class="ds-section" id="kpi-card" data-section="kpi-card">
+  <div class="section-label">Section 20 -- Added</div>
+  <h2 class="section-title">KPI Card</h2>
+  <p class="section-desc">Specialized card for metrics. Label, value, trend, optional context.</p>
+
+  <div class="grid-3" style="max-width:900px;">
+    <div class="kpi-card">
+      <div style="font-size:var(--text-label);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px;">Revenue Growth</div>
+      <div style="font-size:var(--text-h2);font-weight:700;color:var(--accent);line-height:1.1;font-variant-numeric:tabular-nums;">3.2x</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:500;color:var(--color-success);margin-top:8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        +42% vs previous
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div style="font-size:var(--text-label);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px;">Hours Saved / Week</div>
+      <div style="font-size:var(--text-h2);font-weight:700;color:var(--text-primary);line-height:1.1;font-variant-numeric:tabular-nums;">47</div>
+      <div style="font-size:14px;color:var(--text-secondary);margin-top:8px;">Per team member average</div>
+    </div>
+    <div class="kpi-card">
+      <div style="font-size:var(--text-label);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px;">Client Retention</div>
+      <div style="font-size:var(--text-h2);font-weight:700;color:var(--accent);line-height:1.1;font-variant-numeric:tabular-nums;">97%</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:500;color:var(--color-error);margin-top:8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+        -1% vs target
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 21. TABS [ADDED -- 2026-03-16] ===================== -->
+<section class="ds-section" id="tabs-demo" data-section="tabs-demo">
+  <div class="section-label">Section 21 -- Added</div>
+  <h2 class="section-title">Tabs Component</h2>
+  <p class="section-desc">Tabbed interface for content organization. Active tab has blue bottom border.</p>
+
+  <div class="tabs" style="max-width:700px;">
+    <div class="tab-list" role="tablist">
+      <button class="tab-trigger is-active" data-tab="overview" role="tab" aria-selected="true">Overview</button>
+      <button class="tab-trigger" data-tab="features" role="tab" aria-selected="false">Features</button>
+      <button class="tab-trigger" data-tab="pricing" role="tab" aria-selected="false">Process</button>
+    </div>
+    <div class="tab-panel" data-tab-panel="overview" role="tabpanel">
+      <div style="font-size:16px;color:var(--text-secondary);line-height:1.65;">Overview content panel. Active by default. 24px top padding, min-height 100px. Tab triggers: 14px, weight 500 (600 when active), text-tertiary (text-primary when active).</div>
+    </div>
+    <div class="tab-panel" data-tab-panel="features" role="tabpanel" hidden>
+      <div style="font-size:16px;color:var(--text-secondary);line-height:1.65;">Features content panel. Hidden until selected. Horizontal scroll on mobile with hidden scrollbar for tab list overflow.</div>
+    </div>
+    <div class="tab-panel" data-tab-panel="pricing" role="tabpanel" hidden>
+      <div style="font-size:16px;color:var(--text-secondary);line-height:1.65;">Process content panel. Transitions with opacity 200ms ease-base when switching between panels.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 22. HAIRLINE GRID [ADDED -- 2026-03-16] ===================== -->
+<section class="ds-section" id="hairline-grid" data-section="hairline-grid">
+  <div class="section-label">Section 22 -- Added</div>
+  <h2 class="section-title">Hairline Grid</h2>
+  <p class="section-desc">1px gap grid where parent background shows through as seamless dividers. No individual card borders.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">3-Column Hairline Grid</div>
+    <div class="grid-hairline grid-hairline-3" style="max-width:800px;">
+      <div style="padding:24px;">
+        <div style="font-size:var(--text-label);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">Metric A</div>
+        <div style="font-size:32px;font-weight:700;color:var(--accent);">3.2x</div>
+      </div>
+      <div style="padding:24px;">
+        <div style="font-size:var(--text-label);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">Metric B</div>
+        <div style="font-size:32px;font-weight:700;color:var(--text-primary);">47h</div>
+      </div>
+      <div style="padding:24px;">
+        <div style="font-size:var(--text-label);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">Metric C</div>
+        <div style="font-size:32px;font-weight:700;color:var(--accent);">97%</div>
+      </div>
+    </div>
+    <div class="token-value" style="margin-top:12px;">Parent: bg var(--border-default), gap 1px, border 1px | Children: bg var(--surface-0)</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">4-Column Hairline Grid (Feature List)</div>
+    <div class="grid-hairline grid-hairline-4" style="max-width:900px;">
+      <div style="padding:20px;"><div style="font-size:14px;font-weight:600;margin-bottom:4px;">AI Audit</div><div style="font-size:13px;color:var(--text-tertiary);">60-minute deep dive</div></div>
+      <div style="padding:20px;"><div style="font-size:14px;font-weight:600;margin-bottom:4px;">Strategy</div><div style="font-size:13px;color:var(--text-tertiary);">Revenue-First plan</div></div>
+      <div style="padding:20px;"><div style="font-size:14px;font-weight:600;margin-bottom:4px;">Build</div><div style="font-size:13px;color:var(--text-tertiary);">System implementation</div></div>
+      <div style="padding:20px;"><div style="font-size:14px;font-weight:600;margin-bottom:4px;">Optimize</div><div style="font-size:13px;color:var(--text-tertiary);">Continuous refinement</div></div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- JAVASCRIPT -->
+<script>
+(function() {
+  // Sidebar active tracking
+  var sections = document.querySelectorAll('.ds-section[data-section]');
+  var navLinks = document.querySelectorAll('.sidebar nav a[data-section]');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.dataset.section;
+        navLinks.forEach(function(link) { link.classList.toggle('active', link.dataset.section === id); });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+  sections.forEach(function(s) { observer.observe(s); });
+
+  // Staggered grid
+  var sg = document.getElementById('staggerGrid');
+  if (sg) {
+    new IntersectionObserver(function(e) { e.forEach(function(en) { if (en.isIntersecting) { en.target.classList.add('in-view'); } }); }, { threshold: 0.2 }).observe(sg);
+  }
+
+  // Entrance demos
+  ['fadeUpDemo','fadeInDemo','scaleDemo'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    new IntersectionObserver(function(e) { e.forEach(function(en) {
+      if (en.isIntersecting) {
+        if (id === 'fadeUpDemo') el.classList.add('is-visible');
+        if (id === 'fadeInDemo') el.style.opacity = '1';
+        if (id === 'scaleDemo') { el.style.opacity = '1'; el.style.transform = 'scale(1)'; }
+      }
+    }); }, { threshold: 0.3 }).observe(el);
+  });
+
+  // Counter animation
+  var cs = document.getElementById('counterSection');
+  if (cs) {
+    var done = false;
+    new IntersectionObserver(function(e) { e.forEach(function(en) {
+      if (en.isIntersecting && !done) {
+        done = true;
+        cs.querySelectorAll('.counter-value').forEach(function(c) {
+          var t = parseInt(c.dataset.target), s = c.dataset.suffix || '', st = performance.now();
+          function u(now) {
+            var p = Math.min((now - st) / 2000, 1), v = 1 - Math.pow(1 - p, 3);
+            c.textContent = Math.round(t * v) + s;
+            if (p < 1) requestAnimationFrame(u);
+          }
+          requestAnimationFrame(u);
+        });
+      }
+    }); }, { threshold: 0.3 }).observe(cs);
+  }
+
+  // Text reveal
+  var tr = document.getElementById('textRevealDemo');
+  if (tr) {
+    tr.addEventListener('mouseenter', function() { tr.classList.add('in-view'); });
+    tr.addEventListener('mouseleave', function() { tr.classList.remove('in-view'); });
+    new IntersectionObserver(function(e) { e.forEach(function(en) { if (en.isIntersecting) tr.classList.add('in-view'); }); }, { threshold: 0.5 }).observe(tr);
+  }
+
+  // Parallax
+  window.addEventListener('scroll', function() {
+    var y = window.scrollY;
+    document.querySelectorAll('.parallax-slow').forEach(function(el) { el.style.transform = 'translateY(' + (y * -0.05) + 'px)'; });
+    document.querySelectorAll('.parallax-medium').forEach(function(el) { el.style.transform = 'translateY(' + (y * -0.1) + 'px)'; });
+    document.querySelectorAll('.parallax-fast').forEach(function(el) { el.style.transform = 'translateY(' + (y * -0.15) + 'px)'; });
+  }, { passive: true });
+
+  // Tabs
+  document.querySelectorAll('.tabs').forEach(function(tabGroup) {
+    var triggers = tabGroup.querySelectorAll('.tab-trigger');
+    var panels = tabGroup.querySelectorAll('.tab-panel');
+    triggers.forEach(function(trigger) {
+      trigger.addEventListener('click', function() {
+        var targetId = trigger.dataset.tab;
+        triggers.forEach(function(t) { t.classList.remove('is-active'); t.setAttribute('aria-selected', 'false'); });
+        panels.forEach(function(p) { p.setAttribute('hidden', ''); });
+        trigger.classList.add('is-active');
+        trigger.setAttribute('aria-selected', 'true');
+        var panel = tabGroup.querySelector('[data-tab-panel="' + targetId + '"]');
+        if (panel) panel.removeAttribute('hidden');
+      });
+    });
+  });
+
+  // Smooth scroll sidebar
+  navLinks.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.getElementById(link.dataset.section);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>

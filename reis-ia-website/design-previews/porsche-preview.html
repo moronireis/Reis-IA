@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porsche Design System — Interactive Reference Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   PORSCHE DESIGN SYSTEM — INTERACTIVE REFERENCE PREVIEW
+   Source: porsche.com, Porsche Design System v3.33.0
+   ========================================================================== */
+
+:root {
+  /* ---- DARK THEME BACKGROUNDS ---- */
+  --pds-bg: #0E0E12;
+  --pds-bg-darken: #000000;
+  --pds-bg-lighten: #292934;
+  --pds-bg-surface: #212225;
+  --pds-bg-surface-darken: #040405;
+  --pds-bg-surface-lighten: #3E4045;
+  --pds-bg-shading: rgba(38, 38, 41, 0.67);
+  --pds-bg-frosted: hsl(240 3% 26% / 35%);
+
+  /* ---- DARK THEME TEXT ---- */
+  --pds-primary: #FBFCFF;
+  --pds-primary-darken: #BECEFF;
+  --pds-contrast-low: #404044;
+  --pds-contrast-medium: #88898C;
+  --pds-contrast-high: #AFB0B3;
+  --pds-contrast-high-darken: #909195;
+  --pds-contrast-high-lighten: #CECFD1;
+
+  /* ---- DARK THEME INTERACTIVE ---- */
+  --pds-hover: rgba(148, 149, 152, 0.18);
+  --pds-hover-darken: #75767A;
+  --pds-active: rgba(126, 127, 130, 0.20);
+  --pds-focus: #1A44EA;
+  --pds-disabled: #7E7F82;
+
+  /* ---- DARK SEMANTIC STATES ---- */
+  --pds-error: #FC4040;
+  --pds-error-darken: #FB0404;
+  --pds-error-soft: #3A0F0F;
+  --pds-success: #09D087;
+  --pds-success-darken: #069561;
+  --pds-success-soft: #003320;
+  --pds-warning: #F7CB47;
+  --pds-warning-soft: #362B0A;
+  --pds-info: #178BFF;
+  --pds-info-soft: #04294E;
+
+  /* ---- LIGHT THEME ---- */
+  --pds-light-bg: #FFFFFF;
+  --pds-light-surface: #EEEFF2;
+  --pds-light-primary: #010205;
+  --pds-light-contrast-low: #D8D8DB;
+  --pds-light-contrast-medium: #6B6D70;
+  --pds-light-contrast-high: #535457;
+  --pds-light-error: #CC1922;
+  --pds-light-success: #197E10;
+  --pds-light-warning: #F3BE00;
+  --pds-light-info: #2762EC;
+  --pds-light-frosted: hsl(240 4% 85% / 35%);
+
+  /* ---- SPACING (FLUID) ---- */
+  --pcom-spacing-x-small: clamp(4px, 0.25vw + 3px, 8px);
+  --pcom-spacing-small: clamp(8px, 0.5vw + 6px, 16px);
+  --pcom-spacing-medium: clamp(16px, 1.25vw + 12px, 36px);
+  --pcom-spacing-large: clamp(32px, 2.75vw + 23px, 76px);
+  --pcom-spacing-x-large: clamp(48px, 3vw + 38px, 96px);
+  --pcom-spacing-xx-large: clamp(80px, 7.5vw + 56px, 200px);
+
+  /* ---- MOTION DURATIONS ---- */
+  --pcom-motion-duration-short: 0.25s;
+  --pcom-motion-duration-moderate: 0.4s;
+  --pcom-motion-duration-long: 0.6s;
+  --pcom-motion-duration-very-long: 1.2s;
+
+  /* ---- MOTION EASINGS ---- */
+  --pcom-motion-easing-base: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --pcom-motion-easing-in: cubic-bezier(0, 0, 0.2, 1);
+  --pcom-motion-easing-out: cubic-bezier(0.4, 0, 0.5, 1);
+
+  /* ---- IMAGE INTERACTION ---- */
+  --pcom-image-hover-scale: scale3d(1.05, 1.05, 1.05);
+
+  /* ---- SHADOWS ---- */
+  --pds-shadow-float: 0 4px 16px rgba(0, 0, 0, 0.16);
+  --pds-shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+  /* ---- GRID ---- */
+  --pds-grid-max: 2560px;
+  --pds-grid-min: 320px;
+
+  /* ---- BORDER RADIUS ---- */
+  --pds-radius-sm: 4px;
+  --pds-radius-md: 8px;
+}
+
+/* === RESET === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: none;
+  scroll-behavior: smooth;
+}
+::selection { background: rgba(26, 68, 234, 0.30); color: white; }
+body {
+  background: var(--pds-bg);
+  color: var(--pds-primary);
+  font-family: 'Inter', 'Arial Narrow', Arial, sans-serif;
+  font-size: 16px;
+  line-height: calc(6px + 2.125ex);
+  scrollbar-width: thin;
+  scrollbar-color: hsla(0, 0%, 100%, 0.3) transparent;
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb { background: hsla(0, 0%, 100%, 0.3); border-radius: 4px; }
+
+/* === LAYOUT === */
+.page-wrapper { display: flex; min-height: 100vh; }
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+  background: var(--pds-bg-surface); border-right: 1px solid var(--pds-contrast-low);
+  overflow-y: auto; z-index: 100; padding: 24px 0;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+.sidebar-header { padding: 0 20px; margin-bottom: 24px; }
+.sidebar-title { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+.sidebar-subtitle { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pds-contrast-high); margin-top: 4px; }
+.sidebar-divider { height: 1px; background: var(--pds-contrast-low); margin: 12px 20px; }
+.sidebar nav a {
+  display: flex; align-items: center; gap: 8px; padding: 6px 20px;
+  font-size: 12.5px; font-weight: 400; color: var(--pds-contrast-medium);
+  text-decoration: none; transition: color 150ms var(--pcom-motion-easing-base), background 150ms var(--pcom-motion-easing-base);
+  border-left: 2px solid transparent;
+}
+.sidebar nav a:hover { color: var(--pds-contrast-high); background: var(--pds-hover); }
+.sidebar nav a.active { color: var(--pds-primary); border-left-color: var(--pds-primary); background: rgba(255,255,255,0.04); font-weight: 500; }
+.sidebar nav .nav-num { font-size: 10px; font-weight: 600; color: var(--pds-contrast-low); min-width: 18px; font-variant-numeric: tabular-nums; }
+
+.main-content { margin-left: 260px; flex: 1; min-width: 0; }
+
+/* === SECTION SHELL === */
+.ds-section {
+  padding: 72px 48px; border-bottom: 1px solid var(--pds-contrast-low);
+  max-width: 1200px; position: relative;
+}
+.ds-section:nth-child(even) { background: var(--pds-bg-surface); }
+.ds-section:nth-child(odd) { background: var(--pds-bg); }
+.ds-section:last-child { border-bottom: none; }
+
+.section-header { margin-bottom: 48px; }
+.section-num { font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--pds-contrast-high); margin-bottom: 8px; }
+.section-title { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 10px; }
+.section-desc { font-size: 14px; color: var(--pds-contrast-medium); max-width: 640px; line-height: 1.6; }
+
+.subsection { margin-bottom: 48px; }
+.subsection-title {
+  font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.subsection-title::before { content: ''; width: 3px; height: 16px; background: var(--pds-primary); border-radius: 2px; flex-shrink: 0; }
+.subsection-desc { font-size: 13px; color: var(--pds-contrast-medium); margin-bottom: 16px; line-height: 1.5; }
+
+/* === COLOR SWATCH === */
+.color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.color-swatch {
+  border: 1px solid var(--pds-contrast-low); border-radius: var(--pds-radius-md);
+  overflow: hidden; cursor: pointer;
+  transition: transform var(--pcom-motion-duration-short) var(--pcom-motion-easing-base), box-shadow var(--pcom-motion-duration-short) var(--pcom-motion-easing-base);
+}
+.color-swatch:hover { transform: translateY(-2px); box-shadow: var(--pds-shadow-float); }
+.color-well { height: 56px; position: relative; }
+.color-well::after {
+  content: 'Copy'; position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: white; background: rgba(0,0,0,0.5); opacity: 0; transition: opacity 200ms ease;
+}
+.color-swatch:hover .color-well::after { opacity: 1; }
+.color-info { padding: 8px 10px; background: var(--pds-bg-surface); }
+.color-name { font-size: 11px; font-weight: 600; }
+.color-value { font-size: 10px; color: var(--pds-contrast-medium); font-family: monospace; margin-top: 2px; }
+.color-usage { font-size: 9px; color: var(--pds-contrast-low); margin-top: 3px; }
+
+/* === TOKEN TABLE === */
+.token-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.token-table th { text-align: left; padding: 8px 12px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pds-contrast-low); border-bottom: 1px solid var(--pds-contrast-low); }
+.token-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+.token-table tr:hover td { background: var(--pds-hover); }
+.token-table .code { font-family: monospace; font-size: 12px; color: var(--pds-info); cursor: pointer; padding: 2px 6px; background: rgba(23,139,255,0.06); border-radius: var(--pds-radius-sm); transition: background 150ms ease; }
+.token-table .code:hover { background: rgba(23,139,255,0.15); }
+
+/* === DEMO BOX === */
+.demo-box { border: 1px solid var(--pds-contrast-low); border-radius: var(--pds-radius-md); overflow: hidden; background: var(--pds-bg); margin-bottom: 16px; }
+.demo-box-header { padding: 12px 20px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--pds-contrast-low); display: flex; justify-content: space-between; align-items: center; }
+.demo-box-title { font-size: 12px; font-weight: 600; color: var(--pds-contrast-medium); }
+.demo-box-content { padding: 32px; }
+
+/* === REPLAY BUTTON === */
+.replay-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.03em;
+  color: var(--pds-primary); background: rgba(255,255,255,0.06);
+  border: 1px solid var(--pds-contrast-low); border-radius: var(--pds-radius-sm);
+  padding: 5px 12px; cursor: pointer; font-family: inherit;
+  transition: all var(--pcom-motion-duration-short) var(--pcom-motion-easing-base);
+}
+.replay-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--pds-contrast-medium); box-shadow: var(--pds-shadow-float); }
+
+/* === SPACING RULER === */
+.spacing-ruler { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; padding: 24px 0; }
+.spacing-bar-wrap { text-align: center; }
+.spacing-bar {
+  background: linear-gradient(180deg, rgba(23,139,255,0.3), rgba(23,139,255,0.1));
+  border: 1px solid rgba(23,139,255,0.3); border-radius: 4px 4px 0 0;
+  min-width: 40px; cursor: pointer;
+  transition: background var(--pcom-motion-duration-short) var(--pcom-motion-easing-base);
+}
+.spacing-bar:hover { background: linear-gradient(180deg, rgba(23,139,255,0.5), rgba(23,139,255,0.2)); }
+.spacing-label { font-size: 10px; font-weight: 600; color: var(--pds-contrast-medium); margin-top: 6px; }
+.spacing-value { font-size: 9px; color: var(--pds-contrast-low); font-family: monospace; margin-top: 2px; }
+
+/* === MOTION DEMO === */
+.motion-demo-track {
+  height: 60px; background: rgba(255,255,255,0.02); border-radius: var(--pds-radius-md);
+  border: 1px solid var(--pds-contrast-low); position: relative; overflow: hidden;
+  margin-bottom: 8px;
+}
+.motion-demo-ball {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--pds-primary); position: absolute; top: 10px; left: 10px;
+  transition-property: transform;
+}
+.motion-demo-ball.animate { transform: translateX(calc(100% + 200px)); }
+
+/* === EASING CURVE === */
+.easing-demo { display: flex; gap: 20px; flex-wrap: wrap; }
+.easing-card {
+  flex: 1; min-width: 200px; padding: 20px; border: 1px solid var(--pds-contrast-low);
+  border-radius: var(--pds-radius-md); background: rgba(255,255,255,0.02);
+  cursor: pointer; transition: background var(--pcom-motion-duration-short) var(--pcom-motion-easing-base);
+}
+.easing-card:hover { background: var(--pds-hover); }
+.easing-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.easing-card .easing-value { font-size: 11px; font-family: monospace; color: var(--pds-info); margin-bottom: 12px; }
+.easing-card .easing-desc { font-size: 11px; color: var(--pds-contrast-medium); line-height: 1.5; }
+.easing-track { height: 40px; background: rgba(255,255,255,0.03); border-radius: 4px; position: relative; overflow: hidden; margin-top: 12px; }
+.easing-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--pds-primary); position: absolute; top: 8px; left: 4px; }
+
+/* === FLOATING CTA DEMO === */
+.floating-cta-demo {
+  height: 500px; overflow-y: auto; border-radius: var(--pds-radius-md);
+  border: 1px solid var(--pds-contrast-low); position: relative;
+  background: linear-gradient(180deg, var(--pds-bg) 0%, var(--pds-bg-surface) 100%);
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
+.floating-cta-demo::-webkit-scrollbar { width: 6px; }
+.floating-cta-demo::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+.floating-cta-wrapper { position: sticky; bottom: 0; left: 0; right: 0; height: 0; z-index: 10; pointer-events: none; }
+.floating-cta-btn {
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(40%) scale(0.9);
+  transform-origin: center bottom; opacity: 0; pointer-events: none;
+  font-family: inherit; font-weight: 600; font-size: 15px; white-space: nowrap;
+  border-radius: 980px; padding: 12px 32px; cursor: pointer; border: none;
+  background-color: var(--pds-primary); color: var(--pds-bg);
+  transition: opacity var(--pcom-motion-duration-moderate) ease-in-out, transform var(--pcom-motion-duration-long) ease-in-out, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.floating-cta-btn.is-active { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); pointer-events: auto; }
+.floating-cta-btn.is-stuck {
+  backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
+  background-color: hsla(240, 3%, 26%, 0.5); color: var(--pds-primary);
+}
+.floating-cta-btn:hover { box-shadow: var(--pds-shadow-float); }
+
+/* === IMAGE HOVER DEMO === */
+.image-hover-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.image-hover-card { overflow: hidden; border-radius: 0; cursor: pointer; }
+.image-hover-card .img-placeholder {
+  height: 180px; background: linear-gradient(135deg, var(--pds-bg-lighten), var(--pds-bg-surface));
+  transition: transform var(--pcom-motion-duration-long) var(--pcom-motion-easing-base);
+  will-change: transform; display: flex; align-items: center; justify-content: center;
+  font-size: 36px; color: var(--pds-contrast-low);
+}
+@media (hover: hover) {
+  .image-hover-card:hover .img-placeholder { transform: var(--pcom-image-hover-scale); }
+}
+
+/* === BACKDROP BLUR DEMO === */
+.blur-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.blur-card {
+  height: 140px; border-radius: var(--pds-radius-md); overflow: hidden; position: relative;
+  background: linear-gradient(135deg, #1a1a3e, #2d1b69, #0d2a1a);
+}
+.blur-overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 4px; font-size: 14px; font-weight: 600;
+}
+.blur-label { font-size: 10px; font-weight: 600; color: var(--pds-contrast-medium); letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* === 16-COLUMN GRID VIZ === */
+.grid-viz { display: grid; gap: 4px; padding: 16px 0; }
+.grid-col {
+  height: 120px; background: rgba(23,139,255,0.06); border: 1px solid rgba(23,139,255,0.15);
+  border-radius: 2px; display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 6px; font-size: 9px; color: var(--pds-contrast-low); font-weight: 600;
+}
+
+/* === SHADOW DEMO === */
+.shadow-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.shadow-card {
+  height: 120px; border-radius: var(--pds-radius-md);
+  background: var(--pds-bg-surface); display: flex; align-items: center;
+  justify-content: center; flex-direction: column; gap: 4px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: box-shadow var(--pcom-motion-duration-moderate) ease-in-out;
+}
+.shadow-card .shadow-value { font-size: 10px; color: var(--pds-contrast-medium); font-family: monospace; }
+
+/* === FOCUS DEMO === */
+.focus-demo-btn {
+  padding: 15px 28px; background: var(--pds-bg); color: var(--pds-primary);
+  border: 1px solid var(--pds-primary); border-radius: var(--pds-radius-sm);
+  font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background-color var(--pcom-motion-duration-moderate) var(--pcom-motion-easing-base), box-shadow var(--pcom-motion-duration-moderate) var(--pcom-motion-easing-base);
+}
+.focus-demo-btn:hover { background: #1a1a24; box-shadow: var(--pds-shadow-float); }
+.focus-demo-btn:focus { outline: 2px solid var(--pds-focus); outline-offset: 2px; }
+.focus-demo-btn:focus:not(:focus-visible) { outline-color: transparent; }
+.focus-demo-btn:focus-visible { outline: 2px solid var(--pds-focus); outline-offset: 2px; }
+
+/* === COPY TOAST === */
+.copy-toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--pds-primary); color: var(--pds-bg); padding: 10px 20px;
+  border-radius: var(--pds-radius-md); font-size: 13px; font-weight: 600; z-index: 9999;
+  opacity: 0; pointer-events: none; transition: opacity 200ms ease, transform 200ms ease;
+}
+.copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; }
+  .ds-section { padding: 48px 24px; }
+  .image-hover-grid { grid-template-columns: 1fr; }
+  .blur-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">Porsche</div>
+    <div class="sidebar-subtitle">Design System Reference</div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <nav id="sidebar-nav">
+    <a href="#color-system"><span class="nav-num">01</span> Color System</a>
+    <a href="#spacing"><span class="nav-num">02</span> Fluid Spacing</a>
+    <a href="#motion-duration"><span class="nav-num">03</span> Motion Duration</a>
+    <a href="#easing"><span class="nav-num">04</span> Easing Curves</a>
+    <a href="#typography"><span class="nav-num">05</span> Typography</a>
+    <a href="#floating-cta"><span class="nav-num">06</span> Floating CTA</a>
+    <a href="#image-hover"><span class="nav-num">07</span> Image Hover scale3d</a>
+    <a href="#backdrop-blur"><span class="nav-num">08</span> Backdrop Blur</a>
+    <a href="#grid"><span class="nav-num">09</span> 16-Column Grid</a>
+    <a href="#shadows"><span class="nav-num">10</span> Shadow System</a>
+    <a href="#focus"><span class="nav-num">11</span> Focus / Accessibility</a>
+  </nav>
+</aside>
+
+<main class="main-content">
+
+<!-- 01. COLOR SYSTEM -->
+<section class="ds-section" id="color-system">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <h2 class="section-title">Color System</h2>
+    <p class="section-desc">Porsche uses blue-tinted near-black (#0E0E12) with white at multiple alpha levels for layered depth. No accent color -- restraint is the identity.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Dark Theme</h3>
+    <div class="color-grid">
+      <div class="color-swatch" data-color="#0E0E12"><div class="color-well" style="background:#0E0E12; border-bottom:1px solid rgba(255,255,255,0.1);"></div><div class="color-info"><div class="color-name">Background Base</div><div class="color-value">#0E0E12</div><div class="color-usage">Page background</div></div></div>
+      <div class="color-swatch" data-color="#212225"><div class="color-well" style="background:#212225;"></div><div class="color-info"><div class="color-name">Surface</div><div class="color-value">#212225</div><div class="color-usage">Card surfaces</div></div></div>
+      <div class="color-swatch" data-color="#292934"><div class="color-well" style="background:#292934;"></div><div class="color-info"><div class="color-name">Background Lighten</div><div class="color-value">#292934</div><div class="color-usage">Elevated containers</div></div></div>
+      <div class="color-swatch" data-color="#FBFCFF"><div class="color-well" style="background:#FBFCFF;"></div><div class="color-info"><div class="color-name">Primary</div><div class="color-value">#FBFCFF</div><div class="color-usage">Primary text, CTAs</div></div></div>
+      <div class="color-swatch" data-color="#404044"><div class="color-well" style="background:#404044;"></div><div class="color-info"><div class="color-name">Contrast Low</div><div class="color-value">#404044</div><div class="color-usage">Borders, dividers</div></div></div>
+      <div class="color-swatch" data-color="#88898C"><div class="color-well" style="background:#88898C;"></div><div class="color-info"><div class="color-name">Contrast Medium</div><div class="color-value">#88898C</div><div class="color-usage">Secondary text</div></div></div>
+      <div class="color-swatch" data-color="#AFB0B3"><div class="color-well" style="background:#AFB0B3;"></div><div class="color-info"><div class="color-name">Contrast High</div><div class="color-value">#AFB0B3</div><div class="color-usage">Tertiary text</div></div></div>
+      <div class="color-swatch" data-color="#1A44EA"><div class="color-well" style="background:#1A44EA;"></div><div class="color-info"><div class="color-name">Focus</div><div class="color-value">#1A44EA</div><div class="color-usage">Keyboard focus ring</div></div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Dark Semantic States</h3>
+    <div class="color-grid">
+      <div class="color-swatch" data-color="#FC4040"><div class="color-well" style="background:#FC4040;"></div><div class="color-info"><div class="color-name">Error</div><div class="color-value">#FC4040</div></div></div>
+      <div class="color-swatch" data-color="#09D087"><div class="color-well" style="background:#09D087;"></div><div class="color-info"><div class="color-name">Success</div><div class="color-value">#09D087</div></div></div>
+      <div class="color-swatch" data-color="#F7CB47"><div class="color-well" style="background:#F7CB47;"></div><div class="color-info"><div class="color-name">Warning</div><div class="color-value">#F7CB47</div></div></div>
+      <div class="color-swatch" data-color="#178BFF"><div class="color-well" style="background:#178BFF;"></div><div class="color-info"><div class="color-name">Info</div><div class="color-value">#178BFF</div></div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Light Theme</h3>
+    <div class="color-grid">
+      <div class="color-swatch" data-color="#FFFFFF"><div class="color-well" style="background:#FFFFFF;"></div><div class="color-info"><div class="color-name">Background</div><div class="color-value">#FFFFFF</div></div></div>
+      <div class="color-swatch" data-color="#EEEFF2"><div class="color-well" style="background:#EEEFF2;"></div><div class="color-info"><div class="color-name">Surface</div><div class="color-value">#EEEFF2</div></div></div>
+      <div class="color-swatch" data-color="#010205"><div class="color-well" style="background:#010205;"></div><div class="color-info"><div class="color-name">Primary</div><div class="color-value">#010205</div></div></div>
+      <div class="color-swatch" data-color="#6B6D70"><div class="color-well" style="background:#6B6D70;"></div><div class="color-info"><div class="color-name">Contrast Medium</div><div class="color-value">#6B6D70</div></div></div>
+      <div class="color-swatch" data-color="#CC1922"><div class="color-well" style="background:#CC1922;"></div><div class="color-info"><div class="color-name">Error (light)</div><div class="color-value">#CC1922</div></div></div>
+      <div class="color-swatch" data-color="#197E10"><div class="color-well" style="background:#197E10;"></div><div class="color-info"><div class="color-name">Success (light)</div><div class="color-value">#197E10</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 02. FLUID SPACING -->
+<section class="ds-section" id="spacing">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <h2 class="section-title">6-Tier Fluid Spacing</h2>
+    <p class="section-desc">All spacing uses clamp() for fluid scaling. 6 tokens from 4px micro-gaps to 200px dramatic hero spacing. Ratios are roughly 2x between tiers.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Visual Rulers</h3>
+    <div class="spacing-ruler">
+      <div class="spacing-bar-wrap"><div class="spacing-bar" style="height: 8px;" data-copy="clamp(4px, 0.25vw + 3px, 8px)"></div><div class="spacing-label">x-small</div><div class="spacing-value">4-8px</div></div>
+      <div class="spacing-bar-wrap"><div class="spacing-bar" style="height: 16px;" data-copy="clamp(8px, 0.5vw + 6px, 16px)"></div><div class="spacing-label">small</div><div class="spacing-value">8-16px</div></div>
+      <div class="spacing-bar-wrap"><div class="spacing-bar" style="height: 36px;" data-copy="clamp(16px, 1.25vw + 12px, 36px)"></div><div class="spacing-label">medium</div><div class="spacing-value">16-36px</div></div>
+      <div class="spacing-bar-wrap"><div class="spacing-bar" style="height: 76px;" data-copy="clamp(32px, 2.75vw + 23px, 76px)"></div><div class="spacing-label">large</div><div class="spacing-value">32-76px</div></div>
+      <div class="spacing-bar-wrap"><div class="spacing-bar" style="height: 96px;" data-copy="clamp(48px, 3vw + 38px, 96px)"></div><div class="spacing-label">x-large</div><div class="spacing-value">48-96px</div></div>
+      <div class="spacing-bar-wrap"><div class="spacing-bar" style="height: 160px;" data-copy="clamp(80px, 7.5vw + 56px, 200px)"></div><div class="spacing-label">xx-large</div><div class="spacing-value">80-200px</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Token Values</h3>
+    <table class="token-table">
+      <thead><tr><th>Token</th><th>clamp() Value</th><th>Range</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td>x-small</td><td><span class="code" data-copy="clamp(4px, 0.25vw + 3px, 8px)">clamp(4px, 0.25vw + 3px, 8px)</span></td><td style="color:var(--pds-contrast-medium)">4-8px</td><td style="color:var(--pds-contrast-medium)">Icon gaps</td></tr>
+        <tr><td>small</td><td><span class="code" data-copy="clamp(8px, 0.5vw + 6px, 16px)">clamp(8px, 0.5vw + 6px, 16px)</span></td><td style="color:var(--pds-contrast-medium)">8-16px</td><td style="color:var(--pds-contrast-medium)">Label padding</td></tr>
+        <tr><td>medium</td><td><span class="code" data-copy="clamp(16px, 1.25vw + 12px, 36px)">clamp(16px, 1.25vw + 12px, 36px)</span></td><td style="color:var(--pds-contrast-medium)">16-36px</td><td style="color:var(--pds-contrast-medium)">Card padding, grid gaps</td></tr>
+        <tr><td>large</td><td><span class="code" data-copy="clamp(32px, 2.75vw + 23px, 76px)">clamp(32px, 2.75vw + 23px, 76px)</span></td><td style="color:var(--pds-contrast-medium)">32-76px</td><td style="color:var(--pds-contrast-medium)">Section padding</td></tr>
+        <tr><td>x-large</td><td><span class="code" data-copy="clamp(48px, 3vw + 38px, 96px)">clamp(48px, 3vw + 38px, 96px)</span></td><td style="color:var(--pds-contrast-medium)">48-96px</td><td style="color:var(--pds-contrast-medium)">Major section breaks</td></tr>
+        <tr><td>xx-large</td><td><span class="code" data-copy="clamp(80px, 7.5vw + 56px, 200px)">clamp(80px, 7.5vw + 56px, 200px)</span></td><td style="color:var(--pds-contrast-medium)">80-200px</td><td style="color:var(--pds-contrast-medium)">Hero spacing</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 03. MOTION DURATION -->
+<section class="ds-section" id="motion-duration">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <h2 class="section-title">4-Tier Motion Duration</h2>
+    <p class="section-desc">Each tier is roughly 1.5-2x the previous. Click to replay each animation.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Animated Demos</h3>
+    <div style="display: grid; gap: 16px;">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 13px; font-weight: 600;">Short (0.25s) — Micro-interactions</span>
+          <button class="replay-btn" onclick="replayMotion(this, 0.25, 'base')">Replay</button>
+        </div>
+        <div class="motion-demo-track"><div class="motion-demo-ball" style="transition-duration: var(--pcom-motion-duration-short); transition-timing-function: var(--pcom-motion-easing-base);"></div></div>
+      </div>
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 13px; font-weight: 600;">Moderate (0.4s) — Standard transitions</span>
+          <button class="replay-btn" onclick="replayMotion(this, 0.4, 'base')">Replay</button>
+        </div>
+        <div class="motion-demo-track"><div class="motion-demo-ball" style="transition-duration: var(--pcom-motion-duration-moderate); transition-timing-function: var(--pcom-motion-easing-base);"></div></div>
+      </div>
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 13px; font-weight: 600;">Long (0.6s) — Major transitions</span>
+          <button class="replay-btn" onclick="replayMotion(this, 0.6, 'base')">Replay</button>
+        </div>
+        <div class="motion-demo-track"><div class="motion-demo-ball" style="transition-duration: var(--pcom-motion-duration-long); transition-timing-function: var(--pcom-motion-easing-base);"></div></div>
+      </div>
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 13px; font-weight: 600;">Very Long (1.2s) — Hero reveals</span>
+          <button class="replay-btn" onclick="replayMotion(this, 1.2, 'base')">Replay</button>
+        </div>
+        <div class="motion-demo-track"><div class="motion-demo-ball" style="transition-duration: var(--pcom-motion-duration-very-long); transition-timing-function: var(--pcom-motion-easing-base);"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. EASING CURVES -->
+<section class="ds-section" id="easing">
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <h2 class="section-title">3 Easing Curves</h2>
+    <p class="section-desc">No bounce, no elastic, no spring physics. Porsche motion is mechanical precision. Click each card to see the easing in action.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Animated Comparisons</h3>
+    <div class="easing-demo">
+      <div class="easing-card" onclick="replayEasing(this, 'cubic-bezier(0.25, 0.1, 0.25, 1)')">
+        <h4>Base</h4>
+        <div class="easing-value">cubic-bezier(0.25, 0.1, 0.25, 1)</div>
+        <div class="easing-desc">Fast start, even deceleration, smooth settle. All-purpose.</div>
+        <div class="easing-track"><div class="easing-dot" style="transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);"></div></div>
+      </div>
+      <div class="easing-card" onclick="replayEasing(this, 'cubic-bezier(0, 0, 0.2, 1)')">
+        <h4>In (Exit)</h4>
+        <div class="easing-value">cubic-bezier(0, 0, 0.2, 1)</div>
+        <div class="easing-desc">Linear start, gradual acceleration. For elements leaving.</div>
+        <div class="easing-track"><div class="easing-dot" style="transition: transform 0.6s cubic-bezier(0, 0, 0.2, 1);"></div></div>
+      </div>
+      <div class="easing-card" onclick="replayEasing(this, 'cubic-bezier(0.4, 0, 0.5, 1)')">
+        <h4>Out (Enter)</h4>
+        <div class="easing-value">cubic-bezier(0.4, 0, 0.5, 1)</div>
+        <div class="easing-desc">Gentle start, controlled arrival. For elements entering.</div>
+        <div class="easing-track"><div class="easing-dot" style="transition: transform 0.6s cubic-bezier(0.4, 0, 0.5, 1);"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. TYPOGRAPHY -->
+<section class="ds-section" id="typography">
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <h2 class="section-title">Typography</h2>
+    <p class="section-desc">3 font weights (400, 600, 700), fluid type scale with clamp(), and a calculated line-height formula: calc(6px + 2.125ex).</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Line Height Formula</h3>
+    <div class="demo-box">
+      <div class="demo-box-header"><span class="demo-box-title">calc(6px + 2.125ex) at different sizes</span></div>
+      <div class="demo-box-content">
+        <div style="font-size: 48px; font-weight: 700; line-height: calc(6px + 2.125ex); margin-bottom: 24px;">Cayenne GTS<br>Coupe</div>
+        <div style="font-size: 24px; font-weight: 600; line-height: calc(6px + 2.125ex); margin-bottom: 24px;">Performance meets versatility.<br>Every road is a playground.</div>
+        <div style="font-size: 16px; font-weight: 400; line-height: calc(6px + 2.125ex); color: var(--pds-contrast-high);">The formula produces optically-correct spacing at every size. At 16px it yields ~1.5 ratio, at 48px ~1.17 ratio, at 80px ~1.1 ratio.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Weight System</h3>
+    <table class="token-table">
+      <thead><tr><th>Weight</th><th>Value</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>Regular</td><td><span class="code" data-copy="400">400</span></td><td style="color:var(--pds-contrast-medium)">Body text, captions</td></tr>
+        <tr><td>Semi-Bold</td><td><span class="code" data-copy="600">600</span></td><td style="color:var(--pds-contrast-medium)">Subheadings, emphasis</td></tr>
+        <tr><td>Bold</td><td><span class="code" data-copy="700">700</span></td><td style="color:var(--pds-contrast-medium)">Headlines, CTAs</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 06. FLOATING CTA -->
+<section class="ds-section" id="floating-cta">
+  <div class="section-header">
+    <div class="section-num">06</div>
+    <h2 class="section-title">FloatingCTA Component</h2>
+    <p class="section-desc">Porsche's most animated component. Appears on scroll with scale + opacity transition. Switches to frosted glass "stuck" state near bottom.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Live Demo</h3>
+    <p class="subsection-desc">Scroll inside. The CTA appears after scrolling 200px, switches to frosted glass near the bottom.</p>
+    <div class="floating-cta-demo" id="floating-cta-demo">
+      <div style="padding: 60px 40px; text-align: center;">
+        <div style="font-size: 36px; font-weight: 700; line-height: calc(6px + 2.125ex);">Taycan Turbo GT</div>
+        <div style="font-size: 18px; color: var(--pds-contrast-medium); margin-top: 12px;">Electrifying performance.</div>
+      </div>
+      <div style="height: 800px; padding: 40px; display: flex; flex-direction: column; gap: 40px;">
+        <div style="font-size: 24px; font-weight: 600;">Performance</div>
+        <div style="color: var(--pds-contrast-high);">0-100 km/h in 2.2 seconds. The fastest acceleration Porsche has ever built.</div>
+        <div style="font-size: 24px; font-weight: 600;">Range</div>
+        <div style="color: var(--pds-contrast-high);">Up to 305 miles of electric range on a single charge.</div>
+        <div style="font-size: 24px; font-weight: 600;">Design</div>
+        <div style="color: var(--pds-contrast-high);">Every line drawn by the wind. Pure Porsche DNA.</div>
+      </div>
+      <div class="floating-cta-wrapper">
+        <button class="floating-cta-btn" id="floating-cta-btn">Configure now</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. IMAGE HOVER -->
+<section class="ds-section" id="image-hover">
+  <div class="section-header">
+    <div class="section-num">07</div>
+    <h2 class="section-title">Image Hover scale3d Effect</h2>
+    <p class="section-desc">scale3d(1.05, 1.05, 1.05) forces GPU acceleration. The 1.05 factor is subtle -- luxury animation is felt, not seen. Duration: 0.6s, base easing.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Live Demo</h3>
+    <div class="image-hover-grid">
+      <div class="image-hover-card"><div class="img-placeholder">911</div></div>
+      <div class="image-hover-card"><div class="img-placeholder">Taycan</div></div>
+      <div class="image-hover-card"><div class="img-placeholder">Cayenne</div></div>
+    </div>
+    <div style="margin-top: 12px;">
+      <span class="replay-btn" style="cursor: default;">Hover to activate &mdash; scale3d(1.05, 1.05, 1.05)</span>
+    </div>
+  </div>
+</section>
+
+<!-- 08. BACKDROP BLUR -->
+<section class="ds-section" id="backdrop-blur">
+  <div class="section-header">
+    <div class="section-num">08</div>
+    <h2 class="section-title">Backdrop Blur Variants</h2>
+    <p class="section-desc">4 levels of frosted glass. Porsche uses aggressive 32px blur for panels, 20px + saturate for nav.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">4 Blur Levels</h3>
+    <div class="blur-grid">
+      <div class="blur-card"><div class="blur-overlay" style="backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); background: rgba(14,14,18,0.3);"><span style="font-size: 20px; font-weight: 700;">10px</span><span class="blur-label">Subtle</span></div></div>
+      <div class="blur-card"><div class="blur-overlay" style="backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); background: rgba(14,14,18,0.5);"><span style="font-size: 20px; font-weight: 700;">20px + sat</span><span class="blur-label">Header Nav</span></div></div>
+      <div class="blur-card"><div class="blur-overlay" style="backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); background: hsl(240 3% 26% / 35%);"><span style="font-size: 20px; font-weight: 700;">32px</span><span class="blur-label">Dark Frosted</span></div></div>
+      <div class="blur-card"><div class="blur-overlay" style="backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); background: hsl(240 4% 85% / 35%); color: #010205;"><span style="font-size: 20px; font-weight: 700;">32px</span><span class="blur-label">Light Frosted</span></div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Blur Tokens</h3>
+    <table class="token-table">
+      <thead><tr><th>Context</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Dark frosted</td><td><span class="code" data-copy="backdrop-filter: blur(32px); background: hsl(240 3% 26% / 35%);">blur(32px) + hsl(240 3% 26% / 35%)</span></td></tr>
+        <tr><td>Light frosted</td><td><span class="code" data-copy="backdrop-filter: blur(32px); background: hsl(240 4% 85% / 35%);">blur(32px) + hsl(240 4% 85% / 35%)</span></td></tr>
+        <tr><td>Header nav</td><td><span class="code" data-copy="backdrop-filter: blur(20px) saturate(180%); background: rgba(14, 14, 18, 0.8);">blur(20px) saturate(180%) + rgba(14,14,18,0.8)</span></td></tr>
+        <tr><td>Stuck CTA</td><td><span class="code" data-copy="backdrop-filter: blur(32px); background: hsl(from hsla(240,3%,26%,0.35) h s l / 0.5);">blur(32px) + relative color</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 09. 16-COLUMN GRID -->
+<section class="ds-section" id="grid">
+  <div class="section-header">
+    <div class="section-num">09</div>
+    <h2 class="section-title">16-Column Grid Visualization</h2>
+    <p class="section-desc">6 columns on mobile, 16 on desktop (760px+). Grid gap equals the medium spacing token. Max-width 2560px.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Desktop Grid (16 columns)</h3>
+    <div class="grid-viz" style="grid-template-columns: repeat(16, 1fr);">
+      <div class="grid-col">1</div><div class="grid-col">2</div><div class="grid-col">3</div><div class="grid-col">4</div>
+      <div class="grid-col">5</div><div class="grid-col">6</div><div class="grid-col">7</div><div class="grid-col">8</div>
+      <div class="grid-col">9</div><div class="grid-col">10</div><div class="grid-col">11</div><div class="grid-col">12</div>
+      <div class="grid-col">13</div><div class="grid-col">14</div><div class="grid-col">15</div><div class="grid-col">16</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Mobile Grid (6 columns)</h3>
+    <div class="grid-viz" style="grid-template-columns: repeat(6, 1fr);">
+      <div class="grid-col">1</div><div class="grid-col">2</div><div class="grid-col">3</div>
+      <div class="grid-col">4</div><div class="grid-col">5</div><div class="grid-col">6</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Grid Tokens</h3>
+    <table class="token-table">
+      <thead><tr><th>Property</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Max width</td><td><span class="code" data-copy="2560px">2560px</span></td></tr>
+        <tr><td>Min width</td><td><span class="code" data-copy="320px">320px</span></td></tr>
+        <tr><td>Gap</td><td><span class="code" data-copy="clamp(16px, 1.25vw + 12px, 36px)">medium spacing</span></td></tr>
+        <tr><td>Desktop columns</td><td><span class="code" data-copy="repeat(16, 1fr)">16 (at 760px+)</span></td></tr>
+        <tr><td>Mobile columns</td><td><span class="code" data-copy="repeat(6, 1fr)">6 (below 760px)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 10. SHADOW SYSTEM -->
+<section class="ds-section" id="shadows">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <h2 class="section-title">Shadow System</h2>
+    <p class="section-desc">Porsche uses very few shadows. Single shadow value for most elements. Dark theme creates depth through background layering instead.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Shadow Comparison</h3>
+    <div class="shadow-grid">
+      <div class="shadow-card" style="box-shadow: var(--pds-shadow-float);" data-copy="0 4px 16px rgba(0, 0, 0, 0.16)">Float<div class="shadow-value">0 4px 16px rgba(0,0,0,0.16)</div></div>
+      <div class="shadow-card" style="box-shadow: var(--pds-shadow-elevated);" data-copy="0 8px 32px rgba(0, 0, 0, 0.12)">Elevated<div class="shadow-value">0 8px 32px rgba(0,0,0,0.12)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. FOCUS / ACCESSIBILITY -->
+<section class="ds-section" id="focus">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <h2 class="section-title">Focus / Accessibility</h2>
+    <p class="section-desc">Focus ring uses #1A44EA blue, separate from brand palette. Only visible on keyboard navigation via :focus-visible.</p>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Focus Ring Demo</h3>
+    <p class="subsection-desc">Tab to these buttons to see the focus ring. Mouse clicks do not show it.</p>
+    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+      <button class="focus-demo-btn">Configure</button>
+      <button class="focus-demo-btn">Discover</button>
+      <button class="focus-demo-btn">Contact</button>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Focus Tokens</h3>
+    <table class="token-table">
+      <thead><tr><th>Property</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Outline color</td><td><span class="code" data-copy="#1A44EA">#1A44EA</span></td></tr>
+        <tr><td>Outline width</td><td><span class="code" data-copy="2px">2px</span></td></tr>
+        <tr><td>Outline offset</td><td><span class="code" data-copy="2px">2px</span></td></tr>
+        <tr><td>Scrollbar width</td><td><span class="code" data-copy="thin">thin</span></td></tr>
+        <tr><td>Scrollbar thumb</td><td><span class="code" data-copy="hsla(0, 0%, 100%, 0.3)">hsla(0, 0%, 100%, 0.3)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+</div>
+
+<div class="copy-toast" id="copy-toast">Copied!</div>
+
+<script>
+/* === COPY === */
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const t = document.getElementById('copy-toast');
+    t.textContent = 'Copied: ' + (text.length > 50 ? text.substring(0, 50) + '...' : text);
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1500);
+  });
+}
+document.querySelectorAll('.color-swatch').forEach(s => s.addEventListener('click', () => { if (s.dataset.color) copyToClipboard(s.dataset.color); }));
+document.querySelectorAll('.token-table .code').forEach(el => el.addEventListener('click', e => { e.stopPropagation(); copyToClipboard(el.dataset.copy || el.textContent); }));
+document.querySelectorAll('.spacing-bar').forEach(el => el.addEventListener('click', () => { if (el.dataset.copy) copyToClipboard(el.dataset.copy); }));
+document.querySelectorAll('.shadow-card').forEach(el => el.addEventListener('click', () => { if (el.dataset.copy) copyToClipboard(el.dataset.copy); }));
+
+/* === SIDEBAR TRACKING === */
+const sections = document.querySelectorAll('.ds-section');
+const navLinks = document.querySelectorAll('#sidebar-nav a');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { navLinks.forEach(l => l.classList.remove('active')); const a = document.querySelector('#sidebar-nav a[href="#' + e.target.id + '"]'); if (a) a.classList.add('active'); } });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => obs.observe(s));
+
+/* === MOTION DEMO === */
+function replayMotion(btn, duration, easing) {
+  const track = btn.closest('div').nextElementSibling;
+  const ball = track.querySelector('.motion-demo-ball');
+  ball.classList.remove('animate');
+  ball.style.transform = '';
+  void ball.offsetWidth;
+  ball.classList.add('animate');
+  setTimeout(() => { ball.classList.remove('animate'); ball.style.transform = ''; }, duration * 1000 + 100);
+}
+
+/* === EASING DEMO === */
+function replayEasing(card, easing) {
+  const dot = card.querySelector('.easing-dot');
+  dot.style.transform = '';
+  void dot.offsetWidth;
+  dot.style.transform = 'translateX(calc(100% + 140px))';
+  setTimeout(() => { dot.style.transform = ''; }, 800);
+}
+
+/* === FLOATING CTA === */
+const ctaDemo = document.getElementById('floating-cta-demo');
+const ctaBtn = document.getElementById('floating-cta-btn');
+if (ctaDemo && ctaBtn) {
+  ctaDemo.addEventListener('scroll', () => {
+    const scrollTop = ctaDemo.scrollTop;
+    const maxScroll = ctaDemo.scrollHeight - ctaDemo.clientHeight;
+    if (scrollTop > 200) {
+      ctaBtn.classList.add('is-active');
+      if (scrollTop > maxScroll - 100) { ctaBtn.classList.add('is-stuck'); } else { ctaBtn.classList.remove('is-stuck'); }
+    } else {
+      ctaBtn.classList.remove('is-active');
+    }
+  }, { passive: true });
+}
+</script>
+</body>
+</html>

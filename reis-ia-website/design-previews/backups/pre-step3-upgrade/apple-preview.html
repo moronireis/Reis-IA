@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apple Design System Reference — Reis IA Phase 3</title>
+<style>
+  /* ============================================
+     PREVIEW PAGE STYLES (not part of the design system)
+     ============================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @font-face {
+    font-family: 'Inter';
+    src: local('Inter');
+  }
+
+  :root {
+    --preview-bg: #0a0a0a;
+    --preview-surface: #141416;
+    --preview-surface-2: #1c1c1e;
+    --preview-border: rgba(255,255,255,0.08);
+    --preview-text: #e5e5e5;
+    --preview-text-muted: rgba(255,255,255,0.5);
+    --preview-accent: #C9A84C;
+    --preview-code-bg: #1a1a1a;
+
+    /* Apple palette tokens */
+    --apple-black: #000000;
+    --apple-near-black: #1d1d1f;
+    --apple-white: #ffffff;
+    --apple-off-white: #f5f5f7;
+    --apple-light-gray-bg: #fbfbfd;
+    --apple-link-blue: #0071e3;
+    --apple-link-blue-hover: #0077ed;
+    --apple-text-secondary: #86868b;
+    --apple-text-tertiary: #6e6e73;
+    --apple-text-quaternary: #a1a1a6;
+    --apple-border-light: #d2d2d7;
+    --apple-border-dark: #424245;
+    --apple-border-subtle: #e8e8ed;
+    --apple-dark-elevated: #1c1c1e;
+    --apple-dark-secondary: #2c2c2e;
+    --apple-dark-tertiary: #3a3a3c;
+    --apple-iphone-gold: #c9a76c;
+    --apple-blue-accent: #2997ff;
+    --apple-green: #30d158;
+    --apple-orange: #ff9f0a;
+    --apple-red: #ff3b30;
+    --apple-purple: #bf5af2;
+    --apple-separator-light: rgba(0,0,0,0.1);
+    --apple-separator-dark: rgba(255,255,255,0.15);
+    --apple-glass-light: rgba(255,255,255,0.72);
+    --apple-glass-dark: rgba(29,29,31,0.72);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--preview-bg);
+    color: var(--preview-text);
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar Navigation */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background: var(--preview-surface);
+    border-right: 1px solid var(--preview-border);
+    overflow-y: auto;
+    padding: 24px 0;
+    z-index: 50;
+  }
+
+  .sidebar h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--preview-accent);
+    padding: 0 20px;
+    margin-bottom: 4px;
+  }
+
+  .sidebar .subtitle {
+    font-size: 11px;
+    color: var(--preview-text-muted);
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+
+  .sidebar nav a {
+    display: block;
+    padding: 8px 20px;
+    color: var(--preview-text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar nav a:hover,
+  .sidebar nav a.active {
+    color: var(--preview-text);
+    background: rgba(255,255,255,0.03);
+    border-left-color: var(--preview-accent);
+  }
+
+  .sidebar nav .divider {
+    height: 1px;
+    background: var(--preview-border);
+    margin: 12px 20px;
+  }
+
+  /* Main Content */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 48px 48px 120px;
+    max-width: 1100px;
+  }
+
+  .page-title {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .page-subtitle {
+    font-size: 16px;
+    color: var(--preview-text-muted);
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+
+  /* Sections */
+  .section {
+    margin-bottom: 72px;
+    scroll-margin-top: 32px;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--preview-border);
+  }
+
+  .section-desc {
+    font-size: 14px;
+    color: var(--preview-text-muted);
+    margin-bottom: 32px;
+    max-width: 560px;
+  }
+
+  .subsection-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--preview-text);
+    margin-top: 32px;
+    margin-bottom: 16px;
+  }
+
+  /* Swatch Grid */
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .swatch {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--preview-border);
+    background: var(--preview-surface);
+  }
+
+  .swatch-fill {
+    height: 80px;
+    position: relative;
+  }
+
+  .swatch-fill.checkered {
+    background-image:
+      linear-gradient(45deg, #333 25%, transparent 25%),
+      linear-gradient(-45deg, #333 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #333 75%),
+      linear-gradient(-45deg, transparent 75%, #333 75%);
+    background-size: 10px 10px;
+    background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+  }
+
+  .swatch-fill.checkered::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .swatch-info {
+    padding: 10px 12px;
+  }
+
+  .swatch-name {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: var(--preview-text);
+  }
+
+  .swatch-hex {
+    font-size: 11px;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    color: var(--preview-text-muted);
+  }
+
+  /* Code Tag */
+  code, .code {
+    font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+    font-size: 12px;
+    background: var(--preview-code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--preview-accent);
+  }
+
+  /* Tag */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    color: var(--preview-text-muted);
+    background: var(--preview-code-bg);
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 6px;
+    margin-top: 6px;
+  }
+
+  /* Typography Samples */
+  .type-sample {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .type-sample:last-child {
+    border-bottom: none;
+  }
+
+  .type-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  /* Spacing Bars */
+  .spacing-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .spacing-bar {
+    height: 24px;
+    border-radius: 4px;
+    min-width: 4px;
+  }
+
+  .spacing-label {
+    font-size: 12px;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    color: var(--preview-text-muted);
+    min-width: 60px;
+  }
+
+  .spacing-value {
+    font-size: 12px;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    color: var(--preview-text-muted);
+    min-width: 40px;
+  }
+
+  /* Info Cards */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .info-card {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .info-card h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--preview-text);
+  }
+
+  .info-card p {
+    font-size: 12px;
+    color: var(--preview-text-muted);
+    line-height: 1.5;
+  }
+
+  /* Radius visual */
+  .radius-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: end;
+  }
+
+  .radius-item {
+    text-align: center;
+  }
+
+  .radius-box {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--preview-accent);
+    margin-bottom: 6px;
+  }
+
+  .radius-label {
+    font-size: 11px;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    color: var(--preview-text-muted);
+  }
+
+  /* Button showcase */
+  .button-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  /* Card showcase */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  /* Animation containers */
+  .anim-box {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .anim-box h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .replay-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--preview-border);
+    background: var(--preview-surface-2);
+    color: var(--preview-text);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    margin-top: 12px;
+  }
+
+  .replay-btn:hover {
+    border-color: var(--preview-accent);
+  }
+
+  /* Easing bars */
+  .easing-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .easing-label {
+    font-size: 11px;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    color: var(--preview-text-muted);
+    min-width: 200px;
+  }
+
+  .easing-track {
+    flex: 1;
+    height: 32px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .easing-ball {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--preview-accent);
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    transition-property: left;
+    transition-duration: 1s;
+  }
+
+  .easing-track:hover .easing-ball {
+    left: calc(100% - 28px);
+  }
+
+  /* Duration grid */
+  .duration-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+  }
+
+  .duration-item {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .duration-item:hover {
+    border-color: var(--preview-accent);
+  }
+
+  .duration-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--preview-accent);
+    margin-bottom: 4px;
+  }
+
+  .duration-name {
+    font-size: 11px;
+    color: var(--preview-text-muted);
+  }
+
+  /* Effects gallery */
+  .effects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .effect-item {
+    text-align: center;
+  }
+
+  .effect-demo {
+    height: 120px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .effect-label {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .effect-code {
+    font-size: 10px;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    color: var(--preview-text-muted);
+    word-break: break-all;
+  }
+
+  /* Layout wireframes */
+  .wireframe {
+    background: var(--preview-surface);
+    border: 1px solid var(--preview-border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .wireframe-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--preview-accent);
+    margin-bottom: 16px;
+  }
+
+  .wire-block {
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--preview-text-muted);
+    background: rgba(255,255,255,0.02);
+  }
+
+  /* Adaptation callout */
+  .adaptation-note {
+    background: rgba(201, 168, 76, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+
+  .adaptation-note h4 {
+    color: var(--preview-accent);
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .adaptation-note p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 24px 20px 80px; }
+    .swatch-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .info-grid { grid-template-columns: 1fr; }
+    .card-grid { grid-template-columns: 1fr; }
+    .effects-grid { grid-template-columns: repeat(2, 1fr); }
+    .easing-label { min-width: 140px; font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+<!-- Reference Logo Header -->
+<div style="position:fixed;top:16px;right:24px;z-index:1000;opacity:0.7;">
+  <svg width="28" height="32" viewBox="0 0 28 34" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22.5 17.5c-.03-3.3 2.7-4.9 2.82-4.97-1.54-2.24-3.93-2.55-4.78-2.58-2.03-.21-3.97 1.2-5 1.2-1.04 0-2.64-1.17-4.34-1.14-2.23.03-4.29 1.3-5.44 3.3-2.32 4.02-.59 9.98 1.67 13.24 1.1 1.6 2.42 3.39 4.15 3.33 1.67-.07 2.3-1.08 4.32-1.08 2.01 0 2.59 1.08 4.36 1.04 1.79-.03 2.93-1.63 4.02-3.23 1.27-1.85 1.79-3.64 1.82-3.73-.04-.02-3.49-1.34-3.53-5.31zm-3.3-9.77c.92-1.11 1.53-2.66 1.36-4.2-1.32.05-2.91.88-3.86 1.98-.85.98-1.59 2.55-1.39 4.05 1.47.11 2.97-.75 3.89-1.83z"/>
+  </svg>
+</div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <h2>Apple</h2>
+  <div class="subtitle">Design System Reference</div>
+  <nav>
+    <a href="#colors">Color Palette</a>
+    <a href="#typography">Typography Scale</a>
+    <a href="#spacing">Spacing System</a>
+    <div class="divider"></div>
+    <a href="#buttons">Buttons & CTAs</a>
+    <a href="#cards">Card Components</a>
+    <div class="divider"></div>
+    <a href="#animations">Animation Showcase</a>
+    <a href="#effects">Effects Gallery</a>
+    <div class="divider"></div>
+    <a href="#layouts">Section Layouts</a>
+    <a href="#signature">Signature Elements</a>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+  <h1 class="page-title">Apple Design System</h1>
+  <p class="page-subtitle">Extracted from apple.com -- premium editorial web design reference for Reis IA. Focus on typography mastery, spatial elegance, and scroll-driven choreography.</p>
+
+  <!-- ======================================== -->
+  <!-- COLORS -->
+  <!-- ======================================== -->
+  <section id="colors" class="section">
+    <h2 class="section-title">Color Palette</h2>
+    <p class="section-desc">Apple's palette is remarkably restrained: black, white, light gray, and a single blue accent. Depth comes from background layering, not color variety.</p>
+
+    <div class="subsection-title">Core Palette</div>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#000000;"></div>
+        <div class="swatch-info"><div class="swatch-name">Black</div><div class="swatch-hex">#000000</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#1d1d1f;"></div>
+        <div class="swatch-info"><div class="swatch-name">Near Black</div><div class="swatch-hex">#1d1d1f</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#ffffff; border-bottom: 1px solid rgba(255,255,255,0.1);"></div>
+        <div class="swatch-info"><div class="swatch-name">White</div><div class="swatch-hex">#ffffff</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#f5f5f7; border-bottom: 1px solid rgba(255,255,255,0.1);"></div>
+        <div class="swatch-info"><div class="swatch-name">Off White</div><div class="swatch-hex">#f5f5f7</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#fbfbfd; border-bottom: 1px solid rgba(255,255,255,0.1);"></div>
+        <div class="swatch-info"><div class="swatch-name">Light Gray BG</div><div class="swatch-hex">#fbfbfd</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#0071e3;"></div>
+        <div class="swatch-info"><div class="swatch-name">Link Blue</div><div class="swatch-hex">#0071e3</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#0077ed;"></div>
+        <div class="swatch-info"><div class="swatch-name">Blue Hover</div><div class="swatch-hex">#0077ed</div></div>
+      </div>
+    </div>
+
+    <div class="subsection-title">Text Colors</div>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#1d1d1f;"></div>
+        <div class="swatch-info"><div class="swatch-name">Text Primary</div><div class="swatch-hex">#1d1d1f</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#86868b;"></div>
+        <div class="swatch-info"><div class="swatch-name">Text Secondary</div><div class="swatch-hex">#86868b</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#6e6e73;"></div>
+        <div class="swatch-info"><div class="swatch-name">Text Tertiary</div><div class="swatch-hex">#6e6e73</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#a1a1a6;"></div>
+        <div class="swatch-info"><div class="swatch-name">Text Quaternary</div><div class="swatch-hex">#a1a1a6</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#f5f5f7;"></div>
+        <div class="swatch-info"><div class="swatch-name">Text on Dark</div><div class="swatch-hex">#f5f5f7</div></div>
+      </div>
+    </div>
+
+    <div class="subsection-title">Borders & Separators</div>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#d2d2d7;"></div>
+        <div class="swatch-info"><div class="swatch-name">Border Light</div><div class="swatch-hex">#d2d2d7</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#424245;"></div>
+        <div class="swatch-info"><div class="swatch-name">Border Dark</div><div class="swatch-hex">#424245</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#e8e8ed;"></div>
+        <div class="swatch-info"><div class="swatch-name">Border Subtle</div><div class="swatch-hex">#e8e8ed</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill checkered" style=""><div style="position:absolute;inset:0;background:rgba(0,0,0,0.1);"></div></div>
+        <div class="swatch-info"><div class="swatch-name">Separator Light</div><div class="swatch-hex">rgba(0,0,0,0.1)</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill checkered"><div style="position:absolute;inset:0;background:rgba(255,255,255,0.15);"></div></div>
+        <div class="swatch-info"><div class="swatch-name">Separator Dark</div><div class="swatch-hex">rgba(255,255,255,0.15)</div></div>
+      </div>
+    </div>
+
+    <div class="subsection-title">Dark Theme Surfaces</div>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#000000;"></div>
+        <div class="swatch-info"><div class="swatch-name">BG Primary</div><div class="swatch-hex">#000000</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#1c1c1e;"></div>
+        <div class="swatch-info"><div class="swatch-name">Elevated</div><div class="swatch-hex">#1c1c1e</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#2c2c2e;"></div>
+        <div class="swatch-info"><div class="swatch-name">Secondary</div><div class="swatch-hex">#2c2c2e</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#3a3a3c;"></div>
+        <div class="swatch-info"><div class="swatch-name">Tertiary</div><div class="swatch-hex">#3a3a3c</div></div>
+      </div>
+    </div>
+
+    <div class="subsection-title">Product Accent Colors</div>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#c9a76c;"></div>
+        <div class="swatch-info"><div class="swatch-name">Titanium Gold</div><div class="swatch-hex">#c9a76c</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#2997ff;"></div>
+        <div class="swatch-info"><div class="swatch-name">Feature Blue</div><div class="swatch-hex">#2997ff</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#30d158;"></div>
+        <div class="swatch-info"><div class="swatch-name">Green</div><div class="swatch-hex">#30d158</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#ff9f0a;"></div>
+        <div class="swatch-info"><div class="swatch-name">Orange</div><div class="swatch-hex">#ff9f0a</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#ff3b30;"></div>
+        <div class="swatch-info"><div class="swatch-name">Red</div><div class="swatch-hex">#ff3b30</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#bf5af2;"></div>
+        <div class="swatch-info"><div class="swatch-name">Purple</div><div class="swatch-hex">#bf5af2</div></div>
+      </div>
+    </div>
+
+    <div class="subsection-title">Glassmorphism Backgrounds</div>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-fill checkered"><div style="position:absolute;inset:0;background:rgba(255,255,255,0.72);"></div></div>
+        <div class="swatch-info"><div class="swatch-name">Glass Light</div><div class="swatch-hex">rgba(255,255,255,0.72)</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill checkered"><div style="position:absolute;inset:0;background:rgba(29,29,31,0.72);"></div></div>
+        <div class="swatch-info"><div class="swatch-name">Glass Dark</div><div class="swatch-hex">rgba(29,29,31,0.72)</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- TYPOGRAPHY -->
+  <!-- ======================================== -->
+  <section id="typography" class="section">
+    <h2 class="section-title">Typography Scale</h2>
+    <p class="section-desc">Apple's type system relies on SF Pro Display for large sizes and SF Pro Text for small. Headlines are bold with extremely tight line-heights (1.0-1.1). Negative letter-spacing compresses large text; positive tracking opens small text.</p>
+
+    <div class="type-sample">
+      <div style="font-size:72px; font-weight:700; line-height:1.0; letter-spacing:-0.015em; color:#f5f5f7;">Display Hero</div>
+      <div class="type-meta">
+        <span class="tag">96px (desktop)</span>
+        <span class="tag">48px (mobile)</span>
+        <span class="tag">700</span>
+        <span class="tag">line-height: 1.0</span>
+        <span class="tag">letter-spacing: -0.015em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:56px; font-weight:700; line-height:1.0; letter-spacing:-0.015em; color:#f5f5f7;">Display Secondary</div>
+      <div class="type-meta">
+        <span class="tag">80px (desktop)</span>
+        <span class="tag">40px (mobile)</span>
+        <span class="tag">700</span>
+        <span class="tag">line-height: 1.0</span>
+        <span class="tag">letter-spacing: -0.015em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:48px; font-weight:700; line-height:1.0625; letter-spacing:-0.009em; color:#f5f5f7;">Headline 1</div>
+      <div class="type-meta">
+        <span class="tag">64px (desktop)</span>
+        <span class="tag">32px (mobile)</span>
+        <span class="tag">700</span>
+        <span class="tag">line-height: 1.0625</span>
+        <span class="tag">letter-spacing: -0.009em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:40px; font-weight:600; line-height:1.0833; letter-spacing:-0.003em; color:#f5f5f7;">Headline 2</div>
+      <div class="type-meta">
+        <span class="tag">48px (desktop)</span>
+        <span class="tag">28px (mobile)</span>
+        <span class="tag">600</span>
+        <span class="tag">line-height: 1.0833</span>
+        <span class="tag">letter-spacing: -0.003em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:32px; font-weight:600; line-height:1.1; letter-spacing:0; color:#f5f5f7;">Headline 3</div>
+      <div class="type-meta">
+        <span class="tag">40px (desktop)</span>
+        <span class="tag">24px (mobile)</span>
+        <span class="tag">600</span>
+        <span class="tag">line-height: 1.1</span>
+        <span class="tag">letter-spacing: 0</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:28px; font-weight:600; line-height:1.125; letter-spacing:0.004em; color:#f5f5f7;">Headline 4</div>
+      <div class="type-meta">
+        <span class="tag">32px (desktop)</span>
+        <span class="tag">21px (mobile)</span>
+        <span class="tag">600</span>
+        <span class="tag">line-height: 1.125</span>
+        <span class="tag">letter-spacing: 0.004em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:24px; font-weight:600; line-height:1.1667; letter-spacing:0.007em; color:#f5f5f7;">Headline 5 / Eyebrow</div>
+      <div class="type-meta">
+        <span class="tag">24px</span>
+        <span class="tag">19px (mobile)</span>
+        <span class="tag">600</span>
+        <span class="tag">line-height: 1.1667</span>
+        <span class="tag">letter-spacing: 0.007em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:21px; font-weight:400; line-height:1.381; letter-spacing:0.011em; color:#86868b;">Body Large -- The quick brown fox jumps over the lazy dog. Apple uses this size for product descriptions and key selling points beneath headlines.</div>
+      <div class="type-meta">
+        <span class="tag">21px</span>
+        <span class="tag">19px (mobile)</span>
+        <span class="tag">400</span>
+        <span class="tag">line-height: 1.381</span>
+        <span class="tag">letter-spacing: 0.011em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:17px; font-weight:400; line-height:1.4706; letter-spacing:-0.022em; color:#86868b;">Body -- The quick brown fox jumps over the lazy dog. This is Apple's standard body text size, used for general descriptions and supplementary content across the site.</div>
+      <div class="type-meta">
+        <span class="tag">17px</span>
+        <span class="tag">400</span>
+        <span class="tag">line-height: 1.4706</span>
+        <span class="tag">letter-spacing: -0.022em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:14px; font-weight:400; line-height:1.4286; letter-spacing:-0.016em; color:#6e6e73;">Body Small -- Used for secondary information, fine print, and supplementary details that support but don't compete with primary content.</div>
+      <div class="type-meta">
+        <span class="tag">14px</span>
+        <span class="tag">400</span>
+        <span class="tag">line-height: 1.4286</span>
+        <span class="tag">letter-spacing: -0.016em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:12px; font-weight:400; line-height:1.3333; letter-spacing:-0.01em; color:#6e6e73;">Caption / Footnote -- Legal text, footnote markers, copyright notices, navigation items at desktop size.</div>
+      <div class="type-meta">
+        <span class="tag">12px</span>
+        <span class="tag">400</span>
+        <span class="tag">line-height: 1.3333</span>
+        <span class="tag">letter-spacing: -0.01em</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:21px; font-weight:400; line-height:1.381; letter-spacing:0.011em;">
+        <span style="color:#0071e3; cursor:pointer;">Learn more &#8250;</span>
+      </div>
+      <div class="type-meta">
+        <span class="tag">CTA Text: 21px</span>
+        <span class="tag">400</span>
+        <span class="tag">color: #0071e3</span>
+        <span class="tag">arrow: &#8250; (rsaquo)</span>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div style="font-size:12px; font-weight:400; line-height:1.3333; letter-spacing:0;">
+        <span style="color:#a1a1a6;">Nav Item -- Store  Mac  iPad  iPhone  Watch</span>
+      </div>
+      <div class="type-meta">
+        <span class="tag">Nav: 12px (desktop)</span>
+        <span class="tag">17px (mobile)</span>
+        <span class="tag">400</span>
+        <span class="tag">line-height: 1.3333</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SPACING -->
+  <!-- ======================================== -->
+  <section id="spacing" class="section">
+    <h2 class="section-title">Spacing System</h2>
+    <p class="section-desc">8px base unit with 4px sub-grid. Apple's spacing is characterized by extreme generosity in section padding -- content floats in vast whitespace.</p>
+
+    <div class="subsection-title">Spacing Scale</div>
+    <div style="margin-bottom:32px;">
+      <div class="spacing-bar-row">
+        <span class="spacing-label">4xs</span>
+        <div class="spacing-bar" style="width:4px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">4px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">3xs</span>
+        <div class="spacing-bar" style="width:8px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">8px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">2xs</span>
+        <div class="spacing-bar" style="width:12px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">12px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">xs</span>
+        <div class="spacing-bar" style="width:16px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">16px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">sm</span>
+        <div class="spacing-bar" style="width:20px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">20px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">md</span>
+        <div class="spacing-bar" style="width:24px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">24px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">lg</span>
+        <div class="spacing-bar" style="width:32px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">32px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">xl</span>
+        <div class="spacing-bar" style="width:40px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">40px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">2xl</span>
+        <div class="spacing-bar" style="width:48px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">48px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">3xl</span>
+        <div class="spacing-bar" style="width:64px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">64px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">4xl</span>
+        <div class="spacing-bar" style="width:80px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">80px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">5xl</span>
+        <div class="spacing-bar" style="width:100px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">100px</span>
+      </div>
+      <div class="spacing-bar-row">
+        <span class="spacing-label">6xl</span>
+        <div class="spacing-bar" style="width:120px; background:var(--preview-accent);"></div>
+        <span class="spacing-value">120px</span>
+      </div>
+    </div>
+
+    <div class="subsection-title">Section Padding by Breakpoint</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <h4>Mobile (&lt; 735px)</h4>
+        <p>Padding: 48px - 80px vertical<br>Container: 100% - 44px side padding<br>Hero: 100px top, 64px bottom</p>
+      </div>
+      <div class="info-card">
+        <h4>Tablet (735px - 1068px)</h4>
+        <p>Padding: 80px - 100px vertical<br>Container: 692px max-width<br>Hero: 140px top, 80px bottom</p>
+      </div>
+      <div class="info-card">
+        <h4>Desktop (&gt; 1068px)</h4>
+        <p>Padding: 100px - 120px vertical<br>Container: 980px max-width<br>Hero: 180px top, 100px bottom</p>
+      </div>
+    </div>
+
+    <div class="subsection-title">Container Widths</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <h4>Content Container</h4>
+        <p><code>max-width: 980px</code><br>Auto margins, side padding 22px on mobile</p>
+      </div>
+      <div class="info-card">
+        <h4>Narrow (Body Copy)</h4>
+        <p><code>max-width: 680px</code><br>Optimal reading line length</p>
+      </div>
+      <div class="info-card">
+        <h4>Headline Container</h4>
+        <p><code>max-width: 780px</code><br>Centered headlines and subtitles</p>
+      </div>
+      <div class="info-card">
+        <h4>Full-Bleed</h4>
+        <p><code>width: 100vw</code><br>Images and backgrounds, no padding</p>
+      </div>
+    </div>
+
+    <div class="subsection-title">Border Radius Scale</div>
+    <div class="radius-grid">
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:0;"></div>
+        <div class="radius-label">0</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:4px;"></div>
+        <div class="radius-label">4px</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:8px;"></div>
+        <div class="radius-label">8px</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:12px;"></div>
+        <div class="radius-label">12px</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:18px;"></div>
+        <div class="radius-label">18px</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:28px;"></div>
+        <div class="radius-label">28px</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:50%;"></div>
+        <div class="radius-label">50%</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:980px; width:120px; height:40px;"></div>
+        <div class="radius-label">980px (pill)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- BUTTONS -->
+  <!-- ======================================== -->
+  <section id="buttons" class="section">
+    <h2 class="section-title">Buttons & CTAs</h2>
+    <p class="section-desc">Apple uses two CTA patterns consistently: a blue pill button for "Buy" and a blue text link with arrow for "Learn more." Buttons are flat -- no gradients, no shadows.</p>
+
+    <div class="subsection-title">Primary CTA (Pill Button)</div>
+    <div class="button-row">
+      <a href="#" style="display:inline-flex; align-items:center; justify-content:center; padding:8px 22px; border-radius:980px; background:#0071e3; color:#fff; font-size:17px; font-weight:400; line-height:1.17648; letter-spacing:-0.022em; text-decoration:none; border:none; transition:background-color 0.3s;" onmouseover="this.style.background='#0077ed'" onmouseout="this.style.background='#0071e3'">Buy</a>
+      <a href="#" style="display:inline-flex; align-items:center; justify-content:center; padding:8px 22px; border-radius:980px; background:#0071e3; color:#fff; font-size:17px; font-weight:400; line-height:1.17648; letter-spacing:-0.022em; text-decoration:none; border:none; transition:background-color 0.3s;" onmouseover="this.style.background='#0077ed'" onmouseout="this.style.background='#0071e3'">Shop iPhone</a>
+      <span class="tag">bg: #0071e3</span>
+      <span class="tag">hover: #0077ed</span>
+      <span class="tag">radius: 980px</span>
+      <span class="tag">padding: 8px 22px</span>
+      <span class="tag">font: 17px / 400</span>
+    </div>
+
+    <div class="subsection-title">Reis IA Adaptation (Gold Pill)</div>
+    <div class="button-row">
+      <a href="#" style="display:inline-flex; align-items:center; justify-content:center; padding:8px 22px; border-radius:980px; background:#C9A84C; color:#000; font-size:17px; font-weight:500; line-height:1.17648; letter-spacing:-0.022em; text-decoration:none; border:none; transition:background-color 0.3s;" onmouseover="this.style.background='#D4B65E'" onmouseout="this.style.background='#C9A84C'">Book Strategy Call</a>
+      <a href="#" style="display:inline-flex; align-items:center; justify-content:center; padding:8px 22px; border-radius:980px; background:#C9A84C; color:#000; font-size:17px; font-weight:500; line-height:1.17648; letter-spacing:-0.022em; text-decoration:none; border:none; transition:background-color 0.3s;" onmouseover="this.style.background='#D4B65E'" onmouseout="this.style.background='#C9A84C'">Apply Now</a>
+      <span class="tag">bg: #C9A84C</span>
+      <span class="tag">hover: #D4B65E</span>
+      <span class="tag">text: #000</span>
+    </div>
+
+    <div class="subsection-title">Secondary CTA (Arrow Link)</div>
+    <div class="button-row">
+      <a href="#" style="color:#0071e3; font-size:21px; font-weight:400; line-height:1.381; letter-spacing:0.011em; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:color 0.3s;" onmouseover="this.style.textDecoration='underline'; this.style.color='#0077ed'" onmouseout="this.style.textDecoration='none'; this.style.color='#0071e3'">Learn more &#8250;</a>
+      <span class="tag">color: #0071e3</span>
+      <span class="tag">21px / 400</span>
+      <span class="tag">hover: underline + #0077ed</span>
+      <span class="tag">arrow shifts +4px on hover</span>
+    </div>
+
+    <div class="subsection-title">Reis IA Adaptation (Gold Arrow Link)</div>
+    <div class="button-row">
+      <a href="#" style="color:#C9A84C; font-size:21px; font-weight:400; line-height:1.381; letter-spacing:0.011em; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:color 0.3s;" onmouseover="this.style.textDecoration='underline'; this.style.color='#D4B65E'" onmouseout="this.style.textDecoration='none'; this.style.color='#C9A84C'">See how it works &#8250;</a>
+      <a href="#" style="color:#C9A84C; font-size:17px; font-weight:400; line-height:1.381; letter-spacing:0.011em; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:color 0.3s;" onmouseover="this.style.textDecoration='underline'; this.style.color='#D4B65E'" onmouseout="this.style.textDecoration='none'; this.style.color='#C9A84C'">Explore the framework &#8250;</a>
+    </div>
+
+    <div class="subsection-title">Outline Button (Dark Background)</div>
+    <div class="button-row">
+      <a href="#" style="display:inline-flex; align-items:center; justify-content:center; padding:8px 22px; border-radius:980px; background:transparent; color:#f5f5f7; font-size:17px; font-weight:400; line-height:1.17648; letter-spacing:-0.022em; text-decoration:none; border:1px solid rgba(255,255,255,0.25); transition:border-color 0.3s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.5)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.25)'">Watch the film</a>
+      <span class="tag">border: 1px solid rgba(255,255,255,0.25)</span>
+      <span class="tag">hover border: rgba(255,255,255,0.5)</span>
+    </div>
+
+    <div class="subsection-title">Dual CTA Pattern (Apple Signature)</div>
+    <div class="button-row" style="gap:24px;">
+      <a href="#" style="color:#0071e3; font-size:21px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">Learn more &#8250;</a>
+      <a href="#" style="display:inline-flex; align-items:center; justify-content:center; padding:8px 22px; border-radius:980px; background:#0071e3; color:#fff; font-size:17px; text-decoration:none;">Buy &#8250;</a>
+    </div>
+    <div class="tag" style="margin-top:8px;">Pattern: text link + pill button, gap: 24px, centered</div>
+
+    <div class="subsection-title">Focus State</div>
+    <div class="button-row">
+      <a href="#" style="display:inline-flex; align-items:center; justify-content:center; padding:8px 22px; border-radius:980px; background:#0071e3; color:#fff; font-size:17px; text-decoration:none; outline:4px solid rgba(0,125,250,0.6); outline-offset:1px;">Focused Button</a>
+      <span class="tag">outline: 4px solid rgba(0,125,250,0.6)</span>
+      <span class="tag">outline-offset: 1px</span>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- CARDS -->
+  <!-- ======================================== -->
+  <section id="cards" class="section">
+    <h2 class="section-title">Card Components</h2>
+    <p class="section-desc">Apple's cards are large, rounded, and use background color for depth -- not shadows. The two-up grid with 12px gap and 28px border-radius is their signature card layout.</p>
+
+    <div class="subsection-title">Two-Up Product Cards</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
+      <div style="background:#1c1c1e; border-radius:28px; min-height:360px; padding:48px 32px 0; text-align:center; overflow:hidden; position:relative;">
+        <div style="font-size:24px; font-weight:600; line-height:1.1667; letter-spacing:0.007em; color:#C9A84C; margin-bottom:8px;">Builder</div>
+        <div style="font-size:40px; font-weight:700; line-height:1.0; letter-spacing:-0.003em; color:#f5f5f7; margin-bottom:12px;">AI Revenue<br>Architecture</div>
+        <div style="font-size:17px; color:#86868b; line-height:1.4706; margin-bottom:20px;">Turn AI into a revenue channel,<br>not just a tool.</div>
+        <div style="display:flex; gap:24px; justify-content:center;">
+          <a href="#" style="color:#C9A84C; font-size:17px; text-decoration:none;">Learn more &#8250;</a>
+          <a href="#" style="color:#C9A84C; font-size:17px; text-decoration:none;">Apply &#8250;</a>
+        </div>
+        <div style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:200px; height:120px; background:linear-gradient(to top, rgba(201,168,76,0.06), transparent); border-radius:50% 50% 0 0;"></div>
+      </div>
+      <div style="background:#f5f5f7; border-radius:28px; min-height:360px; padding:48px 32px 0; text-align:center; overflow:hidden; position:relative;">
+        <div style="font-size:24px; font-weight:600; line-height:1.1667; letter-spacing:0.007em; color:#6e6e73; margin-bottom:8px;">Systems</div>
+        <div style="font-size:40px; font-weight:700; line-height:1.0; letter-spacing:-0.003em; color:#1d1d1f; margin-bottom:12px;">AI Revenue<br>Systems</div>
+        <div style="font-size:17px; color:#86868b; line-height:1.4706; margin-bottom:20px;">Replace 40+ hours of manual work<br>with intelligent automation.</div>
+        <div style="display:flex; gap:24px; justify-content:center;">
+          <a href="#" style="color:#0071e3; font-size:17px; text-decoration:none;">Learn more &#8250;</a>
+          <a href="#" style="color:#0071e3; font-size:17px; text-decoration:none;">Book audit &#8250;</a>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:32px;">
+      <span class="tag">grid: 1fr 1fr</span>
+      <span class="tag">gap: 12px</span>
+      <span class="tag">radius: 28px</span>
+      <span class="tag">min-height: 580px (desktop)</span>
+      <span class="tag">padding: 48px 32px 0</span>
+      <span class="tag">text-align: center</span>
+    </div>
+
+    <div class="subsection-title">Single Full-Width Card</div>
+    <div style="background:#000; border-radius:28px; padding:80px 40px; text-align:center; margin-bottom:16px; border:0.5px solid rgba(255,255,255,0.08);">
+      <div style="font-size:24px; font-weight:600; color:#C9A84C; margin-bottom:8px;">Reis IA</div>
+      <div style="font-size:48px; font-weight:700; line-height:1.0; letter-spacing:-0.003em; color:#f5f5f7; margin-bottom:16px;">Revenue-First AI</div>
+      <div style="font-size:21px; color:#86868b; line-height:1.381; margin-bottom:24px; max-width:500px; margin-left:auto; margin-right:auto;">The operating system for businesses that want AI to generate revenue, not just save time.</div>
+      <div style="display:flex; gap:24px; justify-content:center;">
+        <a href="#" style="color:#C9A84C; font-size:21px; text-decoration:none;">See how it works &#8250;</a>
+        <a href="#" style="display:inline-flex; align-items:center; padding:8px 22px; border-radius:980px; background:#C9A84C; color:#000; font-size:17px; text-decoration:none;">Book a call &#8250;</a>
+      </div>
+    </div>
+
+    <div class="subsection-title">Shadow Tiers (Apple Uses Sparingly)</div>
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:16px;">
+      <div style="background:var(--preview-surface-2); border-radius:18px; height:100px; display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--preview-text-muted);">
+        No shadow<br><span style="font-family:monospace; font-size:10px;">none (default)</span>
+      </div>
+      <div style="background:var(--preview-surface-2); border-radius:18px; height:100px; display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--preview-text-muted); box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+        Subtle<br><span style="font-family:monospace; font-size:10px;">0 4px 16px</span>
+      </div>
+      <div style="background:var(--preview-surface-2); border-radius:18px; height:100px; display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--preview-text-muted); box-shadow:0 8px 36px rgba(0,0,0,0.4);">
+        Medium<br><span style="font-family:monospace; font-size:10px;">0 8px 36px</span>
+      </div>
+      <div style="background:var(--preview-surface-2); border-radius:18px; height:100px; display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--preview-text-muted); box-shadow:0 12px 48px rgba(0,0,0,0.5);">
+        Heavy<br><span style="font-family:monospace; font-size:10px;">0 12px 48px</span>
+      </div>
+    </div>
+    <div class="tag">Apple rarely uses box-shadow -- depth via background color layering is the primary method</div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- ANIMATIONS -->
+  <!-- ======================================== -->
+  <section id="animations" class="section">
+    <h2 class="section-title">Animation Showcase</h2>
+    <p class="section-desc">Scroll-triggered entrances are Apple's signature web animation pattern. Every element fades up into view as the user scrolls, creating a cinematic reveal sequence.</p>
+
+    <div class="subsection-title">Entrance Animations</div>
+
+    <div class="anim-box">
+      <h4>Fade Up (Apple's Primary Entrance)</h4>
+      <div id="fadeUpDemo" style="opacity:0; transform:translateY(20px); transition:opacity 0.8s cubic-bezier(0.25,0.1,0.25,1), transform 0.8s cubic-bezier(0.25,0.1,0.25,1);">
+        <div style="font-size:32px; font-weight:700; line-height:1.0; color:#f5f5f7; margin-bottom:8px;">Revenue-First AI</div>
+        <div style="font-size:17px; color:#86868b;">Elements start invisible and 20px below, then animate to final position.</div>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:12px;">
+        <span class="tag">opacity: 0 -> 1</span>
+        <span class="tag">translateY: 20px -> 0</span>
+        <span class="tag">duration: 0.8s</span>
+        <span class="tag">easing: cubic-bezier(0.25, 0.1, 0.25, 1)</span>
+      </div>
+      <button class="replay-btn" onclick="replayFadeUp()">Replay</button>
+    </div>
+
+    <div class="anim-box">
+      <h4>Scale Reveal (Product Images)</h4>
+      <div id="scaleDemo" style="opacity:0; transform:scale(0.94); transition:opacity 1s cubic-bezier(0.42,0,0.58,1), transform 1s cubic-bezier(0.42,0,0.58,1);">
+        <div style="width:200px; height:120px; background:linear-gradient(135deg, #1c1c1e, #3a3a3c); border-radius:18px; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:14px; color:#86868b;">Product Image</div>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:12px;">
+        <span class="tag">opacity: 0 -> 1</span>
+        <span class="tag">scale: 0.94 -> 1</span>
+        <span class="tag">duration: 1.0s</span>
+        <span class="tag">easing: cubic-bezier(0.42, 0, 0.58, 1)</span>
+      </div>
+      <button class="replay-btn" onclick="replayScale()">Replay</button>
+    </div>
+
+    <div class="anim-box">
+      <h4>Staggered Entrance (Multiple Elements)</h4>
+      <div id="staggerDemo" style="display:flex; gap:12px; margin-bottom:12px;">
+        <div class="stagger-item" style="width:80px; height:80px; background:#1c1c1e; border-radius:12px; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; display:flex; align-items:center; justify-content:center; font-size:11px; color:#86868b;">1</div>
+        <div class="stagger-item" style="width:80px; height:80px; background:#1c1c1e; border-radius:12px; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; transition-delay:0.1s; display:flex; align-items:center; justify-content:center; font-size:11px; color:#86868b;">2</div>
+        <div class="stagger-item" style="width:80px; height:80px; background:#1c1c1e; border-radius:12px; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; transition-delay:0.2s; display:flex; align-items:center; justify-content:center; font-size:11px; color:#86868b;">3</div>
+        <div class="stagger-item" style="width:80px; height:80px; background:#1c1c1e; border-radius:12px; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; transition-delay:0.3s; display:flex; align-items:center; justify-content:center; font-size:11px; color:#86868b;">4</div>
+        <div class="stagger-item" style="width:80px; height:80px; background:#1c1c1e; border-radius:12px; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; transition-delay:0.4s; display:flex; align-items:center; justify-content:center; font-size:11px; color:#86868b;">5</div>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px;">
+        <span class="tag">delay increment: 0.1s</span>
+        <span class="tag">duration: 0.6s each</span>
+        <span class="tag">easing: ease</span>
+      </div>
+      <button class="replay-btn" onclick="replayStagger()">Replay</button>
+    </div>
+
+    <div class="subsection-title">Easing Curve Visualizer</div>
+    <p style="font-size:12px; color:var(--preview-text-muted); margin-bottom:16px;">Hover over each track to see the easing in action.</p>
+
+    <div class="easing-row">
+      <span class="easing-label">ease (default)</span>
+      <div class="easing-track">
+        <div class="easing-ball" style="transition-timing-function:ease;"></div>
+      </div>
+    </div>
+    <div class="easing-row">
+      <span class="easing-label">cubic-bezier(0.25, 0.1, 0.25, 1)</span>
+      <div class="easing-track">
+        <div class="easing-ball" style="transition-timing-function:cubic-bezier(0.25, 0.1, 0.25, 1);"></div>
+      </div>
+    </div>
+    <div class="easing-row">
+      <span class="easing-label">cubic-bezier(0.42, 0, 0.58, 1)</span>
+      <div class="easing-track">
+        <div class="easing-ball" style="transition-timing-function:cubic-bezier(0.42, 0, 0.58, 1);"></div>
+      </div>
+    </div>
+    <div class="easing-row">
+      <span class="easing-label">cubic-bezier(0.16, 1, 0.3, 1)</span>
+      <div class="easing-track">
+        <div class="easing-ball" style="transition-timing-function:cubic-bezier(0.16, 1, 0.3, 1);"></div>
+      </div>
+    </div>
+    <div class="easing-row">
+      <span class="easing-label">cubic-bezier(0.34, 1.56, 0.64, 1)</span>
+      <div class="easing-track">
+        <div class="easing-ball" style="transition-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+      </div>
+    </div>
+    <div class="easing-row">
+      <span class="easing-label">cubic-bezier(0.19, 1, 0.22, 1)</span>
+      <div class="easing-track">
+        <div class="easing-ball" style="transition-timing-function:cubic-bezier(0.19, 1, 0.22, 1);"></div>
+      </div>
+    </div>
+
+    <div class="subsection-title">Duration Scale</div>
+    <div class="duration-grid">
+      <div class="duration-item" onclick="this.style.transition='transform '+this.querySelector('.duration-value').textContent; this.style.transform='scale(0.95)'; setTimeout(()=>{this.style.transform='scale(1)'},500)">
+        <div class="duration-value">0.1s</div>
+        <div class="duration-name">Instant</div>
+      </div>
+      <div class="duration-item" onclick="this.style.transition='transform '+this.querySelector('.duration-value').textContent; this.style.transform='scale(0.95)'; setTimeout(()=>{this.style.transform='scale(1)'},500)">
+        <div class="duration-value">0.2s</div>
+        <div class="duration-name">Fast</div>
+      </div>
+      <div class="duration-item" onclick="this.style.transition='transform '+this.querySelector('.duration-value').textContent; this.style.transform='scale(0.95)'; setTimeout(()=>{this.style.transform='scale(1)'},500)">
+        <div class="duration-value">0.3s</div>
+        <div class="duration-name">Normal</div>
+      </div>
+      <div class="duration-item" onclick="this.style.transition='transform '+this.querySelector('.duration-value').textContent; this.style.transform='scale(0.95)'; setTimeout(()=>{this.style.transform='scale(1)'},500)">
+        <div class="duration-value">0.5s</div>
+        <div class="duration-name">Moderate</div>
+      </div>
+      <div class="duration-item" onclick="this.style.transition='transform '+this.querySelector('.duration-value').textContent; this.style.transform='scale(0.95)'; setTimeout(()=>{this.style.transform='scale(1)'},1200)">
+        <div class="duration-value">0.8s</div>
+        <div class="duration-name">Slow</div>
+      </div>
+      <div class="duration-item" onclick="this.style.transition='transform '+this.querySelector('.duration-value').textContent; this.style.transform='scale(0.95)'; setTimeout(()=>{this.style.transform='scale(1)'},1500)">
+        <div class="duration-value">1.2s</div>
+        <div class="duration-name">Dramatic</div>
+      </div>
+      <div class="duration-item" onclick="this.style.transition='transform '+this.querySelector('.duration-value').textContent; this.style.transform='scale(0.95)'; setTimeout(()=>{this.style.transform='scale(1)'},2000)">
+        <div class="duration-value">1.8s</div>
+        <div class="duration-name">Cinematic</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- EFFECTS -->
+  <!-- ======================================== -->
+  <section id="effects" class="section">
+    <h2 class="section-title">Effects Gallery</h2>
+    <p class="section-desc">Apple's effects vocabulary is restrained: glassmorphism on the nav, hairline borders, background color layering, and gradient overlays for image readability. Shadows are rare.</p>
+
+    <div class="subsection-title">Glassmorphism</div>
+    <div style="position:relative; height:200px; border-radius:18px; overflow:hidden; margin-bottom:24px; background:linear-gradient(135deg, #2c2c2e 0%, #1c1c1e 50%, #3a3a3c 100%);">
+      <div style="position:absolute; top:20px; left:20px; width:60px; height:60px; border-radius:50%; background:#C9A84C; opacity:0.6;"></div>
+      <div style="position:absolute; top:60px; right:40px; width:100px; height:100px; border-radius:50%; background:#0071e3; opacity:0.4;"></div>
+      <div style="position:absolute; bottom:30px; left:40%; width:80px; height:80px; border-radius:50%; background:#bf5af2; opacity:0.3;"></div>
+      <!-- Glass panel -->
+      <div style="position:absolute; bottom:0; left:0; right:0; height:60px; backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); background:rgba(29,29,31,0.72); display:flex; align-items:center; justify-content:space-between; padding:0 24px; border-top:0.5px solid rgba(255,255,255,0.08);">
+        <span style="font-size:12px; color:#f5f5f7; font-weight:400;">Navigation Bar</span>
+        <span style="font-size:10px; font-family:monospace; color:var(--preview-text-muted);">backdrop-filter: saturate(180%) blur(20px)</span>
+      </div>
+    </div>
+
+    <div class="subsection-title">Hairline Borders</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:24px;">
+      <div style="padding:20px; border:0.5px solid rgba(255,255,255,0.08); border-radius:12px; text-align:center;">
+        <div style="font-size:12px; color:var(--preview-text-muted); margin-bottom:4px;">0.5px hairline</div>
+        <div style="font-size:10px; font-family:monospace; color:var(--preview-text-muted);">rgba(255,255,255,0.08)</div>
+      </div>
+      <div style="padding:20px; border:0.5px solid rgba(255,255,255,0.15); border-radius:12px; text-align:center;">
+        <div style="font-size:12px; color:var(--preview-text-muted); margin-bottom:4px;">0.5px separator</div>
+        <div style="font-size:10px; font-family:monospace; color:var(--preview-text-muted);">rgba(255,255,255,0.15)</div>
+      </div>
+      <div style="padding:20px; border:1px solid #424245; border-radius:12px; text-align:center;">
+        <div style="font-size:12px; color:var(--preview-text-muted); margin-bottom:4px;">1px dark border</div>
+        <div style="font-size:10px; font-family:monospace; color:var(--preview-text-muted);">#424245</div>
+      </div>
+    </div>
+
+    <div class="subsection-title">Gradient Overlays</div>
+    <div class="effects-grid" style="margin-bottom:24px;">
+      <div class="effect-item">
+        <div class="effect-demo" style="background:linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.6) 100%); border:1px solid var(--preview-border); color:#f5f5f7;">
+          Text Readability
+        </div>
+        <div class="effect-label">Image Overlay</div>
+        <div class="effect-code">linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.6) 100%)</div>
+      </div>
+      <div class="effect-item">
+        <div class="effect-demo" style="background:linear-gradient(180deg, #000 0%, #1d1d1f 100%); color:#f5f5f7;">
+          Section Depth
+        </div>
+        <div class="effect-label">Dark Section</div>
+        <div class="effect-code">linear-gradient(180deg, #000 0%, #1d1d1f 100%)</div>
+      </div>
+      <div class="effect-item">
+        <div class="effect-demo" style="background:radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%); border:1px solid var(--preview-border); color:#86868b;">
+          Product Glow
+        </div>
+        <div class="effect-label">Radial Glow</div>
+        <div class="effect-code">radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%)</div>
+      </div>
+      <div class="effect-item">
+        <div class="effect-demo" style="background:rgba(0,0,0,0.48); border:1px solid var(--preview-border); color:#f5f5f7;">
+          Modal Overlay
+        </div>
+        <div class="effect-label">Dark Overlay</div>
+        <div class="effect-code">rgba(0,0,0,0.48)</div>
+      </div>
+    </div>
+
+    <div class="subsection-title">Background Color Depth (No Shadows)</div>
+    <div style="display:flex; gap:2px; margin-bottom:24px; border-radius:12px; overflow:hidden;">
+      <div style="flex:1; height:80px; background:#000; display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:#86868b;">#000000</div>
+      <div style="flex:1; height:80px; background:#1c1c1e; display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:#86868b;">#1c1c1e</div>
+      <div style="flex:1; height:80px; background:#2c2c2e; display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:#86868b;">#2c2c2e</div>
+      <div style="flex:1; height:80px; background:#3a3a3c; display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:#86868b;">#3a3a3c</div>
+      <div style="flex:1; height:80px; background:#48484a; display:flex; align-items:center; justify-content:center; font-size:10px; font-family:monospace; color:#86868b;">#48484a</div>
+    </div>
+    <div class="tag">Apple creates depth via background color steps, not shadows -- this is a core principle</div>
+
+    <div class="subsection-title">Fading Separator (Reis IA Adaptation)</div>
+    <div style="margin-bottom:24px;">
+      <div style="height:1px; background:linear-gradient(to right, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.08) 80%, transparent); margin:24px 0;"></div>
+      <div style="font-size:10px; font-family:monospace; color:var(--preview-text-muted);">linear-gradient(to right, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.08) 80%, transparent)</div>
+    </div>
+
+    <div style="margin-bottom:24px;">
+      <div style="height:1px; background:linear-gradient(to right, transparent, rgba(201,168,76,0.2) 20%, rgba(201,168,76,0.2) 80%, transparent); margin:24px 0;"></div>
+      <div style="font-size:10px; font-family:monospace; color:var(--preview-text-muted);">Gold variant: rgba(201,168,76,0.2)</div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- LAYOUTS -->
+  <!-- ======================================== -->
+  <section id="layouts" class="section">
+    <h2 class="section-title">Section Layouts</h2>
+    <p class="section-desc">Apple's page structure is a vertical sequence of self-contained "slides" -- each section is a complete visual moment. The scroll is a presentation tool.</p>
+
+    <div class="wireframe">
+      <div class="wireframe-title">Hero Section Pattern</div>
+      <div style="text-align:center; padding:40px 0;">
+        <div class="wire-block" style="width:120px; height:16px; margin:0 auto 12px; border-radius:4px;">Eyebrow</div>
+        <div class="wire-block" style="width:400px; max-width:100%; height:48px; margin:0 auto 12px; border-radius:4px;">Display Headline (96px)</div>
+        <div class="wire-block" style="width:320px; max-width:100%; height:24px; margin:0 auto 20px; border-radius:4px;">Subtitle (21px, gray)</div>
+        <div style="display:flex; gap:24px; justify-content:center;">
+          <div class="wire-block" style="width:120px; height:20px; border-radius:4px;">Learn more ></div>
+          <div class="wire-block" style="width:80px; height:32px; border-radius:980px; background:rgba(0,113,227,0.2);">Buy ></div>
+        </div>
+        <div class="wire-block" style="width:500px; max-width:100%; height:200px; margin:40px auto 0; border-radius:18px;">Product Image (full-width)</div>
+      </div>
+      <div style="font-size:10px; font-family:monospace; color:var(--preview-text-muted);">padding: 180px 0 100px | max-width: 780px (text) | text-align: center</div>
+    </div>
+
+    <div class="wireframe">
+      <div class="wireframe-title">Two-Up Feature Grid</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div class="wire-block" style="height:240px; border-radius:28px; flex-direction:column; padding:24px;">
+          <div style="text-align:center;">
+            <div class="wire-block" style="width:80px; height:12px; margin:0 auto 8px; border-radius:3px;">Eyebrow</div>
+            <div class="wire-block" style="width:160px; height:28px; margin:0 auto 8px; border-radius:3px;">Headline</div>
+            <div class="wire-block" style="width:120px; height:14px; margin:0 auto 12px; border-radius:3px;">CTA row</div>
+          </div>
+          <div class="wire-block" style="width:180px; height:100px; margin:auto auto 0; border-radius:12px;">Image</div>
+        </div>
+        <div class="wire-block" style="height:240px; border-radius:28px; flex-direction:column; padding:24px;">
+          <div style="text-align:center;">
+            <div class="wire-block" style="width:80px; height:12px; margin:0 auto 8px; border-radius:3px;">Eyebrow</div>
+            <div class="wire-block" style="width:160px; height:28px; margin:0 auto 8px; border-radius:3px;">Headline</div>
+            <div class="wire-block" style="width:120px; height:14px; margin:0 auto 12px; border-radius:3px;">CTA row</div>
+          </div>
+          <div class="wire-block" style="width:180px; height:100px; margin:auto auto 0; border-radius:12px;">Image</div>
+        </div>
+      </div>
+      <div style="font-size:10px; font-family:monospace; color:var(--preview-text-muted);">grid: 1fr 1fr | gap: 12px | card radius: 28px | min-height: 580px | max-width: 980px</div>
+    </div>
+
+    <div class="wireframe">
+      <div class="wireframe-title">Feature Section (Text + Image, Centered)</div>
+      <div style="text-align:center; padding:32px 0;">
+        <div class="wire-block" style="width:80px; height:12px; margin:0 auto 8px; border-radius:3px;">Eyebrow</div>
+        <div class="wire-block" style="width:440px; max-width:100%; height:32px; margin:0 auto 12px; border-radius:4px;">Headline (48px)</div>
+        <div class="wire-block" style="width:380px; max-width:100%; height:48px; margin:0 auto 32px; border-radius:4px;">Body copy paragraph (680px max)</div>
+        <div class="wire-block" style="width:600px; max-width:100%; height:200px; margin:0 auto; border-radius:18px;">Full-width Feature Image</div>
+      </div>
+      <div style="font-size:10px; font-family:monospace; color:var(--preview-text-muted);">text max-width: 680px | image: centered, no borders | padding: 120px top/bottom</div>
+    </div>
+
+    <div class="wireframe">
+      <div class="wireframe-title">CTA Section (Reis IA Adaptation)</div>
+      <div style="text-align:center; padding:48px 0; border:1px dashed rgba(201,168,76,0.2); border-radius:18px; margin-bottom:12px;">
+        <div class="wire-block" style="width:40px; height:40px; margin:0 auto 16px; border-radius:6px; border-color:rgba(201,168,76,0.3);">Icon</div>
+        <div class="wire-block" style="width:360px; max-width:90%; height:28px; margin:0 auto 8px; border-radius:4px;">Headline</div>
+        <div class="wire-block" style="width:280px; max-width:80%; height:20px; margin:0 auto 24px; border-radius:4px;">Supporting text</div>
+        <div class="wire-block" style="width:160px; height:36px; margin:0 auto; border-radius:980px; background:rgba(201,168,76,0.15); border-color:rgba(201,168,76,0.3);">Primary CTA</div>
+      </div>
+      <div style="font-size:10px; font-family:monospace; color:var(--preview-text-muted);">Apple: dual CTA (text + pill) | Reis IA: single gold pill CTA with hourglass watermark bg</div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SIGNATURE -->
+  <!-- ======================================== -->
+  <section id="signature" class="section">
+    <h2 class="section-title">Signature Elements</h2>
+    <p class="section-desc">The 3 defining characteristics of Apple's web presence -- and how each adapts to the Reis IA brand.</p>
+
+    <div class="subsection-title">1. Radical Whitespace</div>
+    <div class="anim-box">
+      <div style="text-align:center; padding:80px 0;">
+        <div style="font-size:48px; font-weight:700; line-height:1.0; letter-spacing:-0.003em; color:#f5f5f7; margin-bottom:16px;">One Headline.</div>
+        <div style="font-size:21px; color:#86868b; line-height:1.381;">One subtitle. Nothing else.</div>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px;">
+        <span class="tag">Content occupies < 40% of viewport</span>
+        <span class="tag">Section padding: 100-200px</span>
+        <span class="tag">No decorative elements</span>
+      </div>
+      <div class="adaptation-note">
+        <h4>Reis IA Adaptation</h4>
+        <p>Adopt extreme vertical padding (80-120px). Let hero headlines float in space. Resist the urge to fill empty areas with badges, icons, or decorative elements. The whitespace communicates premium positioning. On dark backgrounds, the breathing room feels even more luxurious.</p>
+      </div>
+    </div>
+
+    <div class="subsection-title">2. Scroll-Triggered Choreography</div>
+    <div class="anim-box">
+      <h4>Interactive Demo -- Scroll to Reveal</h4>
+      <div style="display:flex; gap:16px; margin:20px 0;">
+        <div id="sig-item-1" class="sig-scroll-item" style="flex:1; height:100px; background:#1c1c1e; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#86868b; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease;">Section 1</div>
+        <div id="sig-item-2" class="sig-scroll-item" style="flex:1; height:100px; background:#1c1c1e; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#86868b; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; transition-delay:0.15s;">Section 2</div>
+        <div id="sig-item-3" class="sig-scroll-item" style="flex:1; height:100px; background:#1c1c1e; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#86868b; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; transition-delay:0.3s;">Section 3</div>
+      </div>
+      <button class="replay-btn" onclick="replaySignature()">Replay</button>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:12px;">
+        <span class="tag">IntersectionObserver threshold: 0.15</span>
+        <span class="tag">rootMargin: 0px 0px -60px 0px</span>
+        <span class="tag">animate once, then unobserve</span>
+      </div>
+      <div class="adaptation-note">
+        <h4>Reis IA Adaptation</h4>
+        <p>Implement scroll-triggered fade-up animations on every section. Use IntersectionObserver with 15% threshold. Stagger child elements with 100ms delay increments. This creates the "curated reveal" feeling that elevates the experience from a website to a presentation. Critical for the Builder and Systems sales pages where each section must land with impact.</p>
+      </div>
+    </div>
+
+    <div class="subsection-title">3. Typography as Architecture</div>
+    <div class="anim-box">
+      <div style="padding:40px 0; text-align:center;">
+        <div style="font-size:64px; font-weight:700; line-height:1.0; letter-spacing:-0.009em; color:#f5f5f7; margin-bottom:4px;">Revenue-First AI.</div>
+        <div style="font-size:64px; font-weight:700; line-height:1.0; letter-spacing:-0.009em; color:#86868b;">Strategy, not just tools.</div>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px;">
+        <span class="tag">Same size, different colors = hierarchy within a single headline</span>
+        <span class="tag">Line 1: white (primary)</span>
+        <span class="tag">Line 2: gray (secondary)</span>
+      </div>
+      <div class="adaptation-note">
+        <h4>Reis IA Adaptation</h4>
+        <p>Apple creates visual interest using color contrast within the same headline -- first line white, second line gray. For Reis IA, use first line white (#f5f5f7) and second line in gold (#C9A84C) for the accent variation, or gray (#86868b) for the understated variation. This technique eliminates the need for decorative elements while maintaining visual drama. Use it for hero headlines and section openers.</p>
+      </div>
+    </div>
+
+    <div class="subsection-title">Additional Signature Techniques</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <h4>Glassmorphism Nav</h4>
+        <p>Fixed header with <code>backdrop-filter: saturate(180%) blur(20px)</code> and semi-transparent background. Creates depth without shadow. Reis IA: use on dark backgrounds with <code>rgba(22,22,23,0.72)</code>.</p>
+      </div>
+      <div class="info-card">
+        <h4>Hairline Precision</h4>
+        <p>0.5px borders on retina displays. <code>border: 0.5px solid rgba(255,255,255,0.08)</code>. This forensic precision communicates quality. Reis IA: use for card borders and section separators.</p>
+      </div>
+      <div class="info-card">
+        <h4>Dual CTA Pattern</h4>
+        <p>"Learn more >" text link + "Buy >" pill button, 24px apart, centered. Creates consistent rhythm. Reis IA adaptation: "See how it works >" + "Book a call" gold pill.</p>
+      </div>
+      <div class="info-card">
+        <h4>Background Color Sectioning</h4>
+        <p>Sections alternate between background colors instead of using borders or dividers. Apple: #fff / #f5f5f7 / #000. Reis IA: #000 / #0A0A0A with occasional #141414 surface.</p>
+      </div>
+      <div class="info-card">
+        <h4>Centered Everything</h4>
+        <p>Nearly all product page content is center-aligned, creating a calm vertical axis. Reis IA: center hero headlines and CTAs. Left-align body copy and service descriptions for scannability.</p>
+      </div>
+      <div class="info-card">
+        <h4>Full-Bleed Imagery</h4>
+        <p>Product images extend edge-to-edge with no borders or frames. Museum-quality presentation. Reis IA: apply this to case study visuals and dashboard screenshots.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // ============================================
+  // IntersectionObserver for sidebar active state
+  // ============================================
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.sidebar nav a');
+
+  const navObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          navLinks.forEach((link) => link.classList.remove('active'));
+          const id = entry.target.id;
+          const activeLink = document.querySelector(`.sidebar nav a[href="#${id}"]`);
+          if (activeLink) activeLink.classList.add('active');
+        }
+      });
+    },
+    { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' }
+  );
+
+  sections.forEach((section) => navObserver.observe(section));
+
+  // ============================================
+  // Scroll-triggered animations for signature section
+  // ============================================
+  const scrollItems = document.querySelectorAll('.sig-scroll-item');
+  const scrollObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    },
+    { threshold: 0.15, rootMargin: '0px 0px -60px 0px' }
+  );
+  scrollItems.forEach((item) => scrollObserver.observe(item));
+
+  // ============================================
+  // Replay functions for animation demos
+  // ============================================
+  function replayFadeUp() {
+    const el = document.getElementById('fadeUpDemo');
+    el.style.transition = 'none';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.style.transition = 'opacity 0.8s cubic-bezier(0.25,0.1,0.25,1), transform 0.8s cubic-bezier(0.25,0.1,0.25,1)';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      });
+    });
+  }
+
+  function replayScale() {
+    const el = document.getElementById('scaleDemo');
+    el.style.transition = 'none';
+    el.style.opacity = '0';
+    el.style.transform = 'scale(0.94)';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.style.transition = 'opacity 1s cubic-bezier(0.42,0,0.58,1), transform 1s cubic-bezier(0.42,0,0.58,1)';
+        el.style.opacity = '1';
+        el.style.transform = 'scale(1)';
+      });
+    });
+  }
+
+  function replayStagger() {
+    const items = document.querySelectorAll('#staggerDemo .stagger-item');
+    items.forEach((item) => {
+      item.style.transition = 'none';
+      item.style.opacity = '0';
+      item.style.transform = 'translateY(20px)';
+    });
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        items.forEach((item) => {
+          item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0)';
+        });
+      });
+    });
+  }
+
+  function replaySignature() {
+    const items = document.querySelectorAll('.sig-scroll-item');
+    items.forEach((item) => {
+      item.style.transition = 'none';
+      item.style.opacity = '0';
+      item.style.transform = 'translateY(20px)';
+    });
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        items.forEach((item) => {
+          item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0)';
+        });
+      });
+    });
+  }
+
+  // Auto-play initial animations after page load
+  window.addEventListener('load', () => {
+    setTimeout(() => replayFadeUp(), 500);
+    setTimeout(() => replayScale(), 800);
+    setTimeout(() => replayStagger(), 1100);
+  });
+</script>
+
+</body>
+</html>

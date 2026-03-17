@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIOX Squad Design System — Interactive Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   AIOX SQUAD DESIGN SYSTEM PREVIEW — DARK COCKPIT EDITION
+   Primary structural reference for Reis IA
+   Source: https://brand.aioxsquad.ai/
+   ========================================================================== */
+
+:root {
+  /* ---- LIME THEME (Primary) ---- */
+  --bb-lime: #D1FF00;
+  --bb-lime-rgb: 209, 255, 0;
+  --bb-blue: #0099FF;
+  --bb-flare: #ED4609;
+  --bb-error: #EF4444;
+  --bb-warning: #f59e0b;
+  --bb-success: #22C55E;
+
+  /* ---- SURFACES ---- */
+  --bb-canvas: #050505;
+  --bb-dark: #050505;
+  --bb-surface: #0F0F11;
+  --bb-surface-alt: #1C1E19;
+  --bb-surface-panel: #141416;
+  --bb-surface-console: #171719;
+  --bb-surface-hover-strong: #1E1E21;
+
+  /* ---- TEXT ---- */
+  --bb-cream: #F4F4E8;
+  --bb-cream-alt: #F5F4E7;
+  --bb-warm-white: #FFFFED;
+  --bb-dim: rgba(245, 244, 231, 0.4);
+  --bb-muted: #B0B0B0;
+  --bb-meta: #888888;
+
+  /* ---- NEUTRALS ---- */
+  --bb-gray-charcoal: #3D3D3D;
+  --bb-gray-dim: #696969;
+  --bb-gray-muted: #999999;
+  --bb-gray-silver: #BDBDBD;
+
+  /* ---- BORDERS ---- */
+  --bb-border: rgba(156, 156, 156, 0.15);
+  --bb-border-soft: rgba(156, 156, 156, 0.10);
+  --bb-border-strong: rgba(156, 156, 156, 0.25);
+  --bb-border-hover: rgba(156, 156, 156, 0.24);
+  --bb-border-input: rgba(156, 156, 156, 0.2);
+
+  /* ---- ACCENT OPACITY LADDER (14 steps) ---- */
+  --bb-accent-02: rgba(209, 255, 0, 0.02);
+  --bb-accent-04: rgba(209, 255, 0, 0.04);
+  --bb-accent-05: rgba(209, 255, 0, 0.05);
+  --bb-accent-06: rgba(209, 255, 0, 0.06);
+  --bb-accent-08: rgba(209, 255, 0, 0.08);
+  --bb-accent-10: rgba(209, 255, 0, 0.10);
+  --bb-accent-12: rgba(209, 255, 0, 0.12);
+  --bb-accent-15: rgba(209, 255, 0, 0.15);
+  --bb-accent-20: rgba(209, 255, 0, 0.20);
+  --bb-accent-25: rgba(209, 255, 0, 0.25);
+  --bb-accent-40: rgba(209, 255, 0, 0.40);
+  --bb-accent-50: rgba(209, 255, 0, 0.50);
+  --bb-accent-75: rgba(209, 255, 0, 0.75);
+  --bb-accent-90: rgba(209, 255, 0, 0.90);
+
+  /* ---- GOLD THEME TOKENS ---- */
+  --gold-accent: #DDD1BB;
+  --gold-flare: #C4B7A2;
+  --gold-canvas: #09090A;
+  --gold-surface: #151517;
+
+  /* ---- GLOW / NEON ---- */
+  --neon: #D1FF00;
+  --neon-dim: rgba(209, 255, 0, 0.15);
+  --neon-glow: rgba(209, 255, 0, 0.4);
+  --lime-glow: rgba(209, 255, 0, 0.25);
+  --lime-glow-soft: rgba(209, 255, 0, 0.1);
+
+  /* ---- EASING CURVES ---- */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-decel: cubic-bezier(0, 0, 0.2, 1);
+  --ease-accel: cubic-bezier(0.4, 0, 1, 1);
+  --motion-easing-spring: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---- DURATIONS ---- */
+  --dur-fast: 0.2s;
+  --dur-medium: 0.4s;
+  --dur-slow: 0.7s;
+
+  /* ---- TYPOGRAPHY ---- */
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'Roboto Mono', ui-monospace, monospace;
+
+  /* ---- SPACING (14-step) ---- */
+  --space-0: 0px; --space-1: 4px; --space-2: 8px; --space-3: 12px;
+  --space-4: 15px; --space-5: 20px; --space-6: 30px; --space-7: 40px;
+  --space-8: 60px; --space-9: 80px; --space-10: 90px; --space-11: 120px;
+  --space-12: 150px; --space-13: 180px;
+
+  /* ---- RADIUS ---- */
+  --radius-sm: 4px; --radius: 8px; --radius-md: 8px; --radius-lg: 12px;
+  --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+
+  /* ---- GLASS ---- */
+  --glass-blur: blur(10px);
+  --glass-blur-soft: blur(5px);
+
+  /* ---- Z-INDEX ---- */
+  --layer-nav: 100; --layer-dropdown: 200; --layer-overlay: 300;
+  --layer-modal: 400; --layer-toast: 500;
+}
+
+/* === RESET === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; scroll-behavior: smooth; }
+::selection { background: var(--bb-accent-25); color: var(--bb-dark); }
+body { background: var(--bb-canvas); color: var(--bb-cream); font-family: var(--font-sans); font-size: 16px; line-height: 1.6; }
+
+/* === LAYOUT === */
+.page-wrapper { display: flex; min-height: 100vh; }
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+  background: var(--bb-surface); border-right: 1px solid var(--bb-border);
+  overflow-y: auto; z-index: var(--layer-nav); padding: 24px 0;
+  scrollbar-width: thin; scrollbar-color: rgba(209,255,0,0.1) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(209,255,0,0.15); border-radius: 2px; }
+.sidebar-header { padding: 0 20px; margin-bottom: 24px; }
+.sidebar-title { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+.sidebar-subtitle { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bb-lime); margin-top: 4px; font-family: var(--font-mono); }
+.sidebar-badge { display: inline-block; font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bb-dark); background: var(--bb-lime); padding: 2px 8px; border-radius: var(--radius-full); margin-top: 8px; font-family: var(--font-mono); }
+.sidebar-divider { height: 1px; background: var(--bb-border); margin: 12px 20px; }
+.sidebar nav a {
+  display: flex; align-items: center; gap: 8px; padding: 6px 20px; font-size: 12px; font-weight: 400;
+  color: var(--bb-dim); text-decoration: none; font-family: var(--font-mono);
+  transition: color 150ms var(--ease-smooth), background 150ms var(--ease-smooth);
+  border-left: 2px solid transparent;
+}
+.sidebar nav a:hover { color: var(--bb-cream); background: var(--bb-accent-04); }
+.sidebar nav a.active { color: var(--bb-lime); border-left-color: var(--bb-lime); background: var(--bb-accent-06); font-weight: 500; }
+.sidebar nav .nav-num { font-size: 10px; font-weight: 600; color: var(--bb-dim); min-width: 18px; }
+.main-content { margin-left: 260px; flex: 1; min-width: 0; }
+
+/* === SECTION === */
+.ds-section { padding: 72px 48px; border-bottom: 1px solid var(--bb-border); position: relative; }
+.ds-section:nth-child(even) { background: var(--bb-surface); }
+.ds-section:nth-child(odd) { background: var(--bb-canvas); }
+.ds-section:last-child { border-bottom: none; }
+.section-header { margin-bottom: 48px; }
+.section-num { font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--bb-lime); margin-bottom: 8px; font-family: var(--font-mono); }
+.section-title { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 10px; }
+.section-desc { font-size: 14px; color: var(--bb-dim); max-width: 640px; line-height: 1.6; }
+.subsection { margin-bottom: 48px; }
+.subsection:last-child { margin-bottom: 0; }
+.subsection-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 16px; }
+
+/* === HAIRLINE GRID === */
+.grid-hairline { display: grid; gap: 1px; background: rgba(156,156,156,0.12); border-radius: var(--radius-lg); overflow: hidden; }
+.grid-hairline > * { background: var(--bb-canvas); }
+.ds-section:nth-child(even) .grid-hairline > * { background: var(--bb-surface); }
+
+/* === MONO LABELS === */
+.mono-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bb-dim); }
+.mono-value { font-family: var(--font-mono); font-size: 11px; color: var(--bb-cream); }
+
+/* === COPYABLE === */
+.copyable { cursor: pointer; position: relative; transition: color 150ms var(--ease-smooth); }
+.copyable:hover { color: var(--bb-lime); }
+.copy-toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--bb-lime); color: var(--bb-dark); font-size: 12px; font-weight: 600;
+  padding: 8px 20px; border-radius: var(--radius-full); z-index: 9999;
+  pointer-events: none; opacity: 0; transition: opacity 200ms var(--ease-decel);
+  letter-spacing: 0.02em; font-family: var(--font-mono);
+}
+.copy-toast.show { opacity: 1; }
+
+/* === REPLAY CELL === */
+.replay-cell {
+  position: relative; cursor: pointer; user-select: none;
+  min-height: 200px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 24px;
+  transition: background 200ms var(--ease-smooth);
+}
+.replay-cell:hover { background: var(--bb-accent-04) !important; }
+.replay-hint {
+  position: absolute; bottom: 10px; left: 12px;
+  font-size: 9px; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.15em; color: var(--bb-dim); font-family: var(--font-mono);
+  transition: color 200ms var(--ease-smooth);
+}
+.replay-cell:hover .replay-hint { color: var(--bb-muted); }
+.replay-meta { position: absolute; top: 10px; left: 12px; display: flex; flex-direction: column; gap: 2px; }
+.replay-meta-num { font-size: 10px; font-weight: 600; color: var(--bb-lime); letter-spacing: 0.15em; font-family: var(--font-mono); }
+.replay-meta-name { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bb-dim); font-family: var(--font-mono); }
+.replay-badge { position: absolute; top: 10px; right: 12px; font-size: 9px; color: var(--bb-dim); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-mono); }
+
+/* === KEYFRAMES === */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+@keyframes slideRight { from { width: 0%; } to { width: 100%; } }
+@keyframes neonPulse {
+  0%, 100% { box-shadow: 0 0 8px var(--neon-glow), 0 0 24px var(--neon-dim); }
+  50% { box-shadow: 0 0 16px rgba(209,255,0,0.6), 0 0 48px rgba(209,255,0,0.3); }
+}
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes morphSquare {
+  0%, 100% { border-radius: 0%; } 25% { border-radius: 15%; }
+  50% { border-radius: 50%; } 75% { border-radius: 15%; }
+}
+@keyframes glitchSkew {
+  0%, 100% { transform: skewX(0deg); filter: hue-rotate(0deg) brightness(1); }
+  15% { transform: skewX(-5deg); filter: hue-rotate(90deg) brightness(1.5); }
+  35% { transform: skewX(3deg); filter: hue-rotate(-60deg) brightness(0.8); }
+  55% { transform: skewX(-2deg); filter: hue-rotate(30deg) brightness(1.2); }
+}
+@keyframes letterRise { from { opacity: 0; transform: translateY(20px) rotateX(-90deg); } to { opacity: 1; transform: translateY(0) rotateX(0); } }
+@keyframes blindsLeft { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+@keyframes blindsRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
+@keyframes logoScale { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+@keyframes dissolveFlicker {
+  0% { opacity: 1; filter: blur(0px); } 20% { opacity: 0.8; filter: blur(0px); }
+  40% { opacity: 1; filter: blur(1px); } 60% { opacity: 0.5; filter: blur(2px); }
+  80% { opacity: 0.2; filter: blur(3px); } 100% { opacity: 0; filter: blur(8px); }
+}
+@keyframes particleOrbit { 0% { transform: rotate(0deg) translateX(40px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(40px) rotate(-360deg); } }
+@keyframes seedDot { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes speedLineDraw { from { stroke-dashoffset: 100; opacity: 0; } to { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes scanlineSweep { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
+
+/* === SCROLL REVEAL === */
+.scroll-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--motion-easing-spring), transform 0.7s var(--motion-easing-spring); }
+.scroll-reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+/* === RESPONSIVE === */
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+@media (max-width: 1024px) { .sidebar { width: 220px; } .main-content { margin-left: 220px; } .ds-section { padding: 56px 32px; } }
+@media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; } .ds-section { padding: 40px 20px; } .grid-hairline { grid-template-columns: 1fr !important; } }
+*:focus-visible { outline: 2px solid var(--bb-lime); outline-offset: 2px; border-radius: inherit; }
+</style>
+</head>
+<body>
+
+<div class="copy-toast" id="copyToast">Copied</div>
+
+<div class="page-wrapper">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">AIOX Squad</div>
+    <div class="sidebar-subtitle">Design System Reference</div>
+    <div class="sidebar-badge">Dark Cockpit Edition</div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <nav id="sidebarNav">
+    <a href="#colors"><span class="nav-num">01</span> Color System</a>
+    <a href="#opacity-ladder"><span class="nav-num">02</span> Opacity Ladder</a>
+    <a href="#typography"><span class="nav-num">03</span> Typography</a>
+    <a href="#spacing"><span class="nav-num">04</span> Spacing Scale</a>
+    <a href="#surfaces"><span class="nav-num">05</span> Surface System</a>
+    <a href="#easings"><span class="nav-num">06</span> Easing Curves</a>
+    <a href="#logo-animations"><span class="nav-num">07</span> Logo Animations</a>
+    <a href="#hairline-grid"><span class="nav-num">08</span> Hairline Grid</a>
+    <a href="#glow-system"><span class="nav-num">09</span> Glow System</a>
+    <a href="#hud-frames"><span class="nav-num">10</span> HUD Frames</a>
+    <a href="#film-grain"><span class="nav-num">11</span> Film Grain</a>
+    <a href="#grid-patterns"><span class="nav-num">12</span> Grid Patterns</a>
+    <a href="#texture-overlays"><span class="nav-num">13</span> Texture Overlays</a>
+    <a href="#section-shell"><span class="nav-num">14</span> SectionShell</a>
+    <a href="#components"><span class="nav-num">15</span> Components</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content">
+
+<!-- 01. COLOR SYSTEM -->
+<section class="ds-section" id="colors">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[01] color_system</div>
+    <h2 class="section-title">Color System</h2>
+    <p class="section-desc">Two theme variants: Lime (primary, neon #D1FF00) and Gold (alternate, warm #DDD1BB). Both share the same surface and border architecture. Click any swatch to copy.</p>
+  </div>
+  <div class="subsection scroll-reveal">
+    <div class="subsection-title">Lime Theme Accents</div>
+    <div class="grid-hairline" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+      <div class="replay-cell copyable" data-copy="--bb-lime: #D1FF00" onclick="copyText(this)" style="min-height:130px;"><div style="width:100%;height:44px;background:#D1FF00;border-radius:var(--radius-sm);margin-bottom:10px;"></div><div class="mono-label">--bb-lime</div><div class="mono-value">#D1FF00</div></div>
+      <div class="replay-cell copyable" data-copy="--bb-blue: #0099FF" onclick="copyText(this)" style="min-height:130px;"><div style="width:100%;height:44px;background:#0099FF;border-radius:var(--radius-sm);margin-bottom:10px;"></div><div class="mono-label">--bb-blue</div><div class="mono-value">#0099FF</div></div>
+      <div class="replay-cell copyable" data-copy="--bb-flare: #ED4609" onclick="copyText(this)" style="min-height:130px;"><div style="width:100%;height:44px;background:#ED4609;border-radius:var(--radius-sm);margin-bottom:10px;"></div><div class="mono-label">--bb-flare</div><div class="mono-value">#ED4609</div></div>
+      <div class="replay-cell copyable" data-copy="--bb-error: #EF4444" onclick="copyText(this)" style="min-height:130px;"><div style="width:100%;height:44px;background:#EF4444;border-radius:var(--radius-sm);margin-bottom:10px;"></div><div class="mono-label">--bb-error</div><div class="mono-value">#EF4444</div></div>
+      <div class="replay-cell copyable" data-copy="--bb-warning: #f59e0b" onclick="copyText(this)" style="min-height:130px;"><div style="width:100%;height:44px;background:#f59e0b;border-radius:var(--radius-sm);margin-bottom:10px;"></div><div class="mono-label">--bb-warning</div><div class="mono-value">#F59E0B</div></div>
+      <div class="replay-cell copyable" data-copy="--bb-success: #22C55E" onclick="copyText(this)" style="min-height:130px;"><div style="width:100%;height:44px;background:#22C55E;border-radius:var(--radius-sm);margin-bottom:10px;"></div><div class="mono-label">--bb-success</div><div class="mono-value">#22C55E</div></div>
+    </div>
+  </div>
+  <div class="subsection scroll-reveal">
+    <div class="subsection-title">Gold Theme Accents</div>
+    <div class="grid-hairline" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+      <div class="replay-cell copyable" data-copy="--bb-lime (gold): #DDD1BB" onclick="copyText(this)" style="min-height:130px;"><div style="width:100%;height:44px;background:#DDD1BB;border-radius:var(--radius-sm);margin-bottom:10px;"></div><div class="mono-label">--bb-lime (gold)</div><div class="mono-value">#DDD1BB</div></div>
+      <div class="replay-cell copyable" data-copy="--bb-flare (gold): #C4B7A2" onclick="copyText(this)" style="min-height:130px;"><div style="width:100%;height:44px;background:#C4B7A2;border-radius:var(--radius-sm);margin-bottom:10px;"></div><div class="mono-label">--bb-flare (gold)</div><div class="mono-value">#C4B7A2</div></div>
+    </div>
+  </div>
+  <div class="subsection scroll-reveal">
+    <div class="subsection-title">Surface Layers</div>
+    <div class="grid-hairline" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
+      <div class="replay-cell copyable" data-copy="--bb-dark: #050505" onclick="copyText(this)" style="min-height:110px;"><div style="width:100%;height:40px;background:#050505;border:1px solid var(--bb-border);border-radius:var(--radius-sm);margin-bottom:8px;"></div><div class="mono-label">--bb-dark</div><div class="mono-value">#050505</div></div>
+      <div class="replay-cell copyable" data-copy="--bb-surface: #0F0F11" onclick="copyText(this)" style="min-height:110px;"><div style="width:100%;height:40px;background:#0F0F11;border:1px solid var(--bb-border);border-radius:var(--radius-sm);margin-bottom:8px;"></div><div class="mono-label">--bb-surface</div><div class="mono-value">#0F0F11</div></div>
+      <div class="replay-cell copyable" data-copy="--bb-surface-alt: #1C1E19" onclick="copyText(this)" style="min-height:110px;"><div style="width:100%;height:40px;background:#1C1E19;border:1px solid var(--bb-border);border-radius:var(--radius-sm);margin-bottom:8px;"></div><div class="mono-label">--bb-surface-alt</div><div class="mono-value">#1C1E19</div></div>
+      <div class="replay-cell copyable" data-copy="--bb-surface-panel: #141416" onclick="copyText(this)" style="min-height:110px;"><div style="width:100%;height:40px;background:#141416;border:1px solid var(--bb-border);border-radius:var(--radius-sm);margin-bottom:8px;"></div><div class="mono-label">--bb-surface-panel</div><div class="mono-value">#141416</div></div>
+      <div class="replay-cell copyable" data-copy="--bb-surface-hover-strong: #1E1E21" onclick="copyText(this)" style="min-height:110px;"><div style="width:100%;height:40px;background:#1E1E21;border:1px solid var(--bb-border);border-radius:var(--radius-sm);margin-bottom:8px;"></div><div class="mono-label">--bb-hover</div><div class="mono-value">#1E1E21</div></div>
+    </div>
+  </div>
+  <div class="subsection scroll-reveal">
+    <div class="subsection-title">Text Colors</div>
+    <div style="display:flex;flex-direction:column;gap:2px;">
+      <div class="copyable" data-copy="--bb-cream: #F4F4E8" onclick="copyText(this)" style="display:flex;align-items:center;gap:16px;padding:8px 0;"><div style="width:28px;height:28px;border-radius:50%;background:#F4F4E8;flex-shrink:0;"></div><span class="mono-label" style="min-width:110px;">--bb-cream</span><span class="mono-value">#F4F4E8</span><span style="font-size:11px;color:var(--bb-dim);margin-left:auto;">Primary text</span></div>
+      <div class="copyable" data-copy="--bb-warm-white: #FFFFED" onclick="copyText(this)" style="display:flex;align-items:center;gap:16px;padding:8px 0;"><div style="width:28px;height:28px;border-radius:50%;background:#FFFFED;flex-shrink:0;"></div><span class="mono-label" style="min-width:110px;">--bb-warm-white</span><span class="mono-value">#FFFFED</span><span style="font-size:11px;color:var(--bb-dim);margin-left:auto;">Max white</span></div>
+      <div class="copyable" data-copy="--bb-muted: #B0B0B0" onclick="copyText(this)" style="display:flex;align-items:center;gap:16px;padding:8px 0;"><div style="width:28px;height:28px;border-radius:50%;background:#B0B0B0;flex-shrink:0;"></div><span class="mono-label" style="min-width:110px;">--bb-muted</span><span class="mono-value">#B0B0B0</span><span style="font-size:11px;color:var(--bb-dim);margin-left:auto;">Secondary</span></div>
+      <div class="copyable" data-copy="--bb-dim: rgba(245,244,231,0.4)" onclick="copyText(this)" style="display:flex;align-items:center;gap:16px;padding:8px 0;"><div style="width:28px;height:28px;border-radius:50%;background:rgba(245,244,231,0.4);flex-shrink:0;"></div><span class="mono-label" style="min-width:110px;">--bb-dim</span><span class="mono-value">rgba(...,0.4)</span><span style="font-size:11px;color:var(--bb-dim);margin-left:auto;">Muted</span></div>
+      <div class="copyable" data-copy="--bb-meta: #888888" onclick="copyText(this)" style="display:flex;align-items:center;gap:16px;padding:8px 0;"><div style="width:28px;height:28px;border-radius:50%;background:#888888;flex-shrink:0;"></div><span class="mono-label" style="min-width:110px;">--bb-meta</span><span class="mono-value">#888888</span><span style="font-size:11px;color:var(--bb-dim);margin-left:auto;">Metadata</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 02. OPACITY LADDER -->
+<section class="ds-section" id="opacity-ladder">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[02] opacity_ladder</div>
+    <h2 class="section-title">14-Step Accent Opacity Ladder</h2>
+    <p class="section-desc">Graduated lime green opacity from 2% to 90%. Enables consistent transparency across backgrounds, borders, and overlays.</p>
+  </div>
+  <div class="scroll-reveal" id="ladderContainer"></div>
+</section>
+
+<!-- 03. TYPOGRAPHY -->
+<section class="ds-section" id="typography">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[03] typography_system</div>
+    <h2 class="section-title">Typography</h2>
+    <p class="section-desc">3 font families: TASA Orbiter Display (hero), Geist/Inter (body), Roboto Mono (labels, metadata). All labels: uppercase, tracked letter-spacing. Using Inter as substitute for TASA Orbiter and Geist.</p>
+  </div>
+  <div class="subsection scroll-reveal">
+    <div class="subsection-title">Font Families</div>
+    <div class="grid-hairline" style="grid-template-columns: repeat(3, 1fr);">
+      <div style="padding:24px;"><div class="mono-label" style="margin-bottom:12px;">Display (TASA Orbiter)</div><div style="font-size:36px;font-weight:800;letter-spacing:-0.03em;line-height:1;">AIOX</div><div style="font-size:11px;color:var(--bb-dim);margin-top:8px;font-family:var(--font-mono);">Weight: 800 Black</div></div>
+      <div style="padding:24px;"><div class="mono-label" style="margin-bottom:12px;">Sans (Inter / Geist)</div><div style="font-size:18px;font-weight:400;line-height:1.5;">The quick brown fox jumps over the lazy dog</div><div style="font-size:11px;color:var(--bb-dim);margin-top:8px;font-family:var(--font-mono);">Weight: 400-700</div></div>
+      <div style="padding:24px;"><div class="mono-label" style="margin-bottom:12px;">Mono (Roboto Mono)</div><div style="font-family:var(--font-mono);font-size:14px;font-weight:400;line-height:1.6;">console.log("AIOX");</div><div style="font-size:11px;color:var(--bb-dim);margin-top:8px;font-family:var(--font-mono);">Weight: 400-500</div></div>
+    </div>
+  </div>
+  <div class="subsection scroll-reveal">
+    <div class="subsection-title">Type Scale</div>
+    <div style="display:flex;flex-direction:column;gap:1px;background:var(--bb-border);border-radius:var(--radius-lg);overflow:hidden;">
+      <div class="copyable" data-copy="font-size: 4rem; font-weight: 800;" onclick="copyText(this)" style="padding:20px 24px;background:var(--bb-canvas);display:flex;align-items:baseline;gap:24px;"><span style="font-size:clamp(2rem,4vw,4rem);font-weight:800;letter-spacing:-0.03em;line-height:1;">Display</span><span class="mono-label">4rem / 64px</span></div>
+      <div class="copyable" data-copy="font-size: 2.5rem; font-weight: 700;" onclick="copyText(this)" style="padding:16px 24px;background:var(--bb-canvas);display:flex;align-items:baseline;gap:24px;"><span style="font-size:clamp(1.5rem,3vw,2.5rem);font-weight:700;letter-spacing:-0.02em;">Heading 1</span><span class="mono-label">2.5rem / 40px</span></div>
+      <div class="copyable" data-copy="font-size: 1.5rem; font-weight: 600;" onclick="copyText(this)" style="padding:14px 24px;background:var(--bb-canvas);display:flex;align-items:baseline;gap:24px;"><span style="font-size:1.5rem;font-weight:600;">Heading 2</span><span class="mono-label">1.5rem / 24px</span></div>
+      <div class="copyable" data-copy="font-size: 1rem; font-weight: 400;" onclick="copyText(this)" style="padding:12px 24px;background:var(--bb-canvas);display:flex;align-items:baseline;gap:24px;"><span style="font-size:1rem;">Body Text</span><span class="mono-label">1rem / 16px</span></div>
+      <div class="copyable" data-copy="font-size: 0.8rem;" onclick="copyText(this)" style="padding:12px 24px;background:var(--bb-canvas);display:flex;align-items:baseline;gap:24px;"><span style="font-size:0.8rem;color:var(--bb-dim);">Small Text</span><span class="mono-label">0.8rem / 12.8px</span></div>
+      <div class="copyable" data-copy="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;" onclick="copyText(this)" style="padding:12px 24px;background:var(--bb-canvas);display:flex;align-items:baseline;gap:24px;"><span style="font-size:0.65rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.12em;color:var(--bb-dim);">LABEL TEXT</span><span class="mono-label">0.65rem / 10.4px</span></div>
+      <div class="copyable" data-copy="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em;" onclick="copyText(this)" style="padding:12px 24px;background:var(--bb-canvas);display:flex;align-items:baseline;gap:24px;"><span style="font-size:0.6rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.15em;color:var(--bb-dim);">MICRO TEXT</span><span class="mono-label">0.6rem / 9.6px</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. SPACING -->
+<section class="ds-section" id="spacing">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[04] spacing_scale</div>
+    <h2 class="section-title">14-Step Spacing Scale</h2>
+    <p class="section-desc">Non-linear scale from 0px to 180px. Accelerates for larger values, providing tight control at small sizes and dramatic gaps for section layout.</p>
+  </div>
+  <div class="scroll-reveal" id="spacingContainer"></div>
+</section>
+
+<!-- 05. SURFACE SYSTEM -->
+<section class="ds-section" id="surfaces">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[05] surface_system</div>
+    <h2 class="section-title">Surface, Border &amp; Glass</h2>
+    <p class="section-desc">Borders use neutral gray at varied opacities. Glass effects use backdrop-filter blur at two levels.</p>
+  </div>
+  <div class="subsection scroll-reveal">
+    <div class="subsection-title">Border Tokens</div>
+    <div class="grid-hairline" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+      <div class="copyable" data-copy="--bb-border: rgba(156,156,156,0.15)" onclick="copyText(this)" style="padding:20px;"><div style="height:48px;border:1px solid var(--bb-border);border-radius:var(--radius);margin-bottom:8px;"></div><div class="mono-label">--bb-border</div><div class="mono-value" style="font-size:10px;">rgba(156,156,156,0.15)</div></div>
+      <div class="copyable" data-copy="--bb-border-soft: rgba(156,156,156,0.10)" onclick="copyText(this)" style="padding:20px;"><div style="height:48px;border:1px solid var(--bb-border-soft);border-radius:var(--radius);margin-bottom:8px;"></div><div class="mono-label">--bb-border-soft</div><div class="mono-value" style="font-size:10px;">rgba(156,156,156,0.10)</div></div>
+      <div class="copyable" data-copy="--bb-border-strong: rgba(156,156,156,0.25)" onclick="copyText(this)" style="padding:20px;"><div style="height:48px;border:1px solid var(--bb-border-strong);border-radius:var(--radius);margin-bottom:8px;"></div><div class="mono-label">--bb-border-strong</div><div class="mono-value" style="font-size:10px;">rgba(156,156,156,0.25)</div></div>
+    </div>
+  </div>
+  <div class="subsection scroll-reveal">
+    <div class="subsection-title">Glass / Blur</div>
+    <div class="grid-hairline" style="grid-template-columns: 1fr 1fr;">
+      <div style="padding:24px;position:relative;min-height:120px;"><div style="position:absolute;inset:24px;background:linear-gradient(135deg,var(--bb-lime),var(--bb-flare));opacity:0.3;border-radius:var(--radius);"></div><div style="position:relative;padding:16px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--bb-border);border-radius:var(--radius);background:rgba(15,15,17,0.6);"><div class="mono-label" style="margin-bottom:4px;">--glass-blur</div><div class="mono-value">blur(10px)</div><div style="font-size:11px;color:var(--bb-dim);margin-top:4px;">Nav, modals, panels</div></div></div>
+      <div style="padding:24px;position:relative;min-height:120px;"><div style="position:absolute;inset:24px;background:linear-gradient(135deg,var(--bb-blue),var(--bb-lime));opacity:0.3;border-radius:var(--radius);"></div><div style="position:relative;padding:16px;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border:1px solid var(--bb-border);border-radius:var(--radius);background:rgba(15,15,17,0.6);"><div class="mono-label" style="margin-bottom:4px;">--glass-blur-soft</div><div class="mono-value">blur(5px)</div><div style="font-size:11px;color:var(--bb-dim);margin-top:4px;">Tooltips, popovers</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. EASING CURVES -->
+<section class="ds-section" id="easings">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[06] easing_curves</div>
+    <h2 class="section-title">3 Core Easing Curves</h2>
+    <p class="section-desc">Spring (bouncy overshoot), Smooth (general purpose), Decel (entrance reveals). Click any box to replay.</p>
+  </div>
+  <div class="scroll-reveal">
+    <div class="grid-hairline" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="replay-cell" onclick="replayEasing(this)" style="min-height:240px;">
+        <div class="replay-meta"><span class="replay-meta-num">01</span><span class="replay-meta-name">Spring</span></div>
+        <div class="replay-badge">0.7s</div>
+        <div style="width:100%;max-width:260px;">
+          <div style="height:6px;background:var(--bb-surface-alt);border-radius:3px;overflow:hidden;"><div class="easing-track" style="height:100%;width:0%;background:var(--bb-lime);border-radius:3px;transition:width 0.7s cubic-bezier(0.34,1.56,0.64,1);"></div></div>
+          <div class="easing-box" style="width:36px;height:36px;background:var(--bb-lime);border-radius:var(--radius);margin-top:16px;position:relative;left:0;transition:left 0.7s cubic-bezier(0.34,1.56,0.64,1);"></div>
+        </div>
+        <div class="mono-value copyable" data-copy="cubic-bezier(0.34, 1.56, 0.64, 1)" onclick="event.stopPropagation();copyText(this)" style="margin-top:16px;font-size:10px;">cubic-bezier(0.34, 1.56, 0.64, 1)</div>
+        <div style="font-size:11px;color:var(--bb-dim);margin-top:4px;">Buttons, modals, toasts</div>
+        <span class="replay-hint">click to replay</span>
+      </div>
+      <div class="replay-cell" onclick="replayEasing(this)" style="min-height:240px;">
+        <div class="replay-meta"><span class="replay-meta-num">02</span><span class="replay-meta-name">Smooth</span></div>
+        <div class="replay-badge">0.7s</div>
+        <div style="width:100%;max-width:260px;">
+          <div style="height:6px;background:var(--bb-surface-alt);border-radius:3px;overflow:hidden;"><div class="easing-track" style="height:100%;width:0%;background:var(--bb-lime);border-radius:3px;transition:width 0.7s cubic-bezier(0.25,0.1,0.25,1);"></div></div>
+          <div class="easing-box" style="width:36px;height:36px;background:var(--bb-lime);border-radius:var(--radius);margin-top:16px;position:relative;left:0;transition:left 0.7s cubic-bezier(0.25,0.1,0.25,1);"></div>
+        </div>
+        <div class="mono-value copyable" data-copy="cubic-bezier(0.25, 0.1, 0.25, 1)" onclick="event.stopPropagation();copyText(this)" style="margin-top:16px;font-size:10px;">cubic-bezier(0.25, 0.1, 0.25, 1)</div>
+        <div style="font-size:11px;color:var(--bb-dim);margin-top:4px;">Page transitions, fades</div>
+        <span class="replay-hint">click to replay</span>
+      </div>
+      <div class="replay-cell" onclick="replayEasing(this)" style="min-height:240px;">
+        <div class="replay-meta"><span class="replay-meta-num">03</span><span class="replay-meta-name">Decelerate</span></div>
+        <div class="replay-badge">0.7s</div>
+        <div style="width:100%;max-width:260px;">
+          <div style="height:6px;background:var(--bb-surface-alt);border-radius:3px;overflow:hidden;"><div class="easing-track" style="height:100%;width:0%;background:var(--bb-lime);border-radius:3px;transition:width 0.7s cubic-bezier(0,0,0.2,1);"></div></div>
+          <div class="easing-box" style="width:36px;height:36px;background:var(--bb-lime);border-radius:var(--radius);margin-top:16px;position:relative;left:0;transition:left 0.7s cubic-bezier(0,0,0.2,1);"></div>
+        </div>
+        <div class="mono-value copyable" data-copy="cubic-bezier(0, 0, 0.2, 1)" onclick="event.stopPropagation();copyText(this)" style="margin-top:16px;font-size:10px;">cubic-bezier(0, 0, 0.2, 1)</div>
+        <div style="font-size:11px;color:var(--bb-dim);margin-top:4px;">Entrance reveals, scroll</div>
+        <span class="replay-hint">click to replay</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. LOGO ANIMATIONS -->
+<section class="ds-section" id="logo-animations">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[07] logo_animations</div>
+    <h2 class="section-title">8 Logo Animation Concepts</h2>
+    <p class="section-desc">Simplified CSS versions of AIOX's Framer Motion logo animations. Click any cell to replay. Originals are GPU-accelerated Framer Motion.</p>
+  </div>
+  <div class="scroll-reveal">
+    <div class="grid-hairline" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+      <!-- 01 Orchestration Pulse -->
+      <div class="replay-cell" onclick="replayLogoAnim(this)" style="min-height:260px;">
+        <div class="replay-meta"><span class="replay-meta-num">01</span><span class="replay-meta-name">Orchestration Pulse</span></div><div class="replay-badge">3.5s</div>
+        <div class="logo-anim" style="display:flex;align-items:center;gap:2px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--bb-lime);animation:seedDot 0.3s var(--ease-spring) forwards;"></div>
+          <span style="font-size:30px;font-weight:800;animation:fadeUp 0.5s var(--ease-spring) 0.3s both;">A</span>
+          <span style="font-size:30px;font-weight:800;animation:fadeUp 0.5s var(--ease-spring) 0.38s both;">I</span>
+          <span style="font-size:30px;font-weight:800;animation:fadeUp 0.5s var(--ease-spring) 0.46s both;">O</span>
+          <span style="font-size:30px;font-weight:800;animation:fadeUp 0.5s var(--ease-spring) 0.54s both;">X</span>
+        </div>
+        <div style="width:70px;height:70px;border-radius:50%;border:2px solid var(--bb-lime);position:absolute;animation:neonPulse 2s ease-in-out infinite 1s;opacity:0.4;"></div>
+        <span class="replay-hint">click to replay</span>
+      </div>
+      <!-- 02 Speed Lines -->
+      <div class="replay-cell" onclick="replayLogoAnim(this)" style="min-height:260px;">
+        <div class="replay-meta"><span class="replay-meta-num">02</span><span class="replay-meta-name">Speed Lines</span></div><div class="replay-badge">2s</div>
+        <div class="logo-anim" style="position:relative;">
+          <div style="font-size:30px;font-weight:800;color:var(--bb-cream);animation:fadeUp 0.8s var(--ease-decel) both;">AIOX</div>
+          <svg width="100" height="24" style="position:absolute;top:50%;left:100%;transform:translateY(-50%);margin-left:6px;">
+            <line x1="0" y1="6" x2="70" y2="6" stroke="#D1FF00" stroke-width="2" stroke-dasharray="100" style="animation:speedLineDraw 0.6s ease-out 0.4s both;" />
+            <line x1="0" y1="12" x2="50" y2="12" stroke="#D1FF00" stroke-width="1.5" stroke-dasharray="100" style="animation:speedLineDraw 0.6s ease-out 0.5s both;" />
+            <line x1="0" y1="18" x2="35" y2="18" stroke="#D1FF00" stroke-width="1" stroke-dasharray="100" style="animation:speedLineDraw 0.6s ease-out 0.6s both;" />
+          </svg>
+        </div>
+        <span class="replay-hint">click to replay</span>
+      </div>
+      <!-- 03 Particle Orbit -->
+      <div class="replay-cell" onclick="replayLogoAnim(this)" style="min-height:260px;">
+        <div class="replay-meta"><span class="replay-meta-num">03</span><span class="replay-meta-name">Particle Orbit</span></div><div class="replay-badge">loop</div>
+        <div class="logo-anim" style="position:relative;width:90px;height:90px;">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:var(--bb-lime);animation:scaleIn 0.5s var(--ease-spring) both;">X</div>
+          <div style="width:7px;height:7px;border-radius:50%;background:var(--bb-lime);position:absolute;top:50%;left:50%;margin:-3.5px;animation:particleOrbit 4s linear infinite;"></div>
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--bb-lime);opacity:0.6;position:absolute;top:50%;left:50%;margin:-2.5px;animation:particleOrbit 4s linear infinite 1s;"></div>
+          <div style="width:4px;height:4px;border-radius:50%;background:var(--bb-lime);opacity:0.4;position:absolute;top:50%;left:50%;margin:-2px;animation:particleOrbit 4s linear infinite 2s;"></div>
+          <div style="width:3px;height:3px;border-radius:50%;background:var(--bb-lime);opacity:0.3;position:absolute;top:50%;left:50%;margin:-1.5px;animation:particleOrbit 4s linear infinite 3s;"></div>
+        </div>
+        <span class="replay-hint">click to replay</span>
+      </div>
+      <!-- 04 Logo Dissolve -->
+      <div class="replay-cell" onclick="replayLogoAnim(this)" style="min-height:260px;">
+        <div class="replay-meta"><span class="replay-meta-num">04</span><span class="replay-meta-name">Logo Dissolve</span></div><div class="replay-badge">3s</div>
+        <div class="logo-anim" style="display:flex;gap:2px;">
+          <span style="font-size:30px;font-weight:800;animation:dissolveFlicker 2.2s ease-in 0.1s both;">A</span>
+          <span style="font-size:30px;font-weight:800;animation:dissolveFlicker 2.5s ease-in 0.3s both;">I</span>
+          <span style="font-size:30px;font-weight:800;animation:dissolveFlicker 2.0s ease-in 0.5s both;">O</span>
+          <span style="font-size:30px;font-weight:800;animation:dissolveFlicker 2.3s ease-in 0.2s both;">X</span>
+        </div>
+        <span class="replay-hint">click to replay</span>
+      </div>
+      <!-- 05 Morphing Square -->
+      <div class="replay-cell" onclick="replayLogoAnim(this)" style="min-height:260px;">
+        <div class="replay-meta"><span class="replay-meta-num">05</span><span class="replay-meta-name">Morphing Square</span></div><div class="replay-badge">3.5s loop</div>
+        <div class="logo-anim"><div style="width:56px;height:56px;border:2px solid var(--bb-lime);animation:morphSquare 3.5s var(--ease-smooth) infinite;"></div></div>
+        <span class="replay-hint">click to replay</span>
+      </div>
+      <!-- 06 Glitch Reveal -->
+      <div class="replay-cell" onclick="replayLogoAnim(this)" style="min-height:260px;overflow:hidden;">
+        <div class="replay-meta"><span class="replay-meta-num">06</span><span class="replay-meta-name">Glitch Reveal</span></div><div class="replay-badge">2s</div>
+        <div class="logo-anim" style="position:relative;"><div style="font-size:30px;font-weight:800;animation:glitchSkew 2s var(--ease-decel) both;">AIOX</div><div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);pointer-events:none;opacity:0.5;"></div></div>
+        <span class="replay-hint">click to replay</span>
+      </div>
+      <!-- 07 Stagger Letters -->
+      <div class="replay-cell" onclick="replayLogoAnim(this)" style="min-height:260px;perspective:600px;">
+        <div class="replay-meta"><span class="replay-meta-num">07</span><span class="replay-meta-name">Stagger Letters</span></div><div class="replay-badge">1.5s</div>
+        <div class="logo-anim" style="display:flex;flex-direction:column;align-items:center;">
+          <div style="display:flex;gap:3px;"><span style="font-size:26px;font-weight:800;animation:letterRise 0.5s var(--ease-spring) 0.0s both;display:inline-block;">A</span><span style="font-size:26px;font-weight:800;animation:letterRise 0.5s var(--ease-spring) 0.06s both;display:inline-block;">I</span><span style="font-size:26px;font-weight:800;animation:letterRise 0.5s var(--ease-spring) 0.12s both;display:inline-block;">O</span><span style="font-size:26px;font-weight:800;animation:letterRise 0.5s var(--ease-spring) 0.18s both;display:inline-block;">X</span></div>
+          <div style="height:2px;background:var(--bb-lime);width:0;animation:slideRight 0.4s var(--ease-spring) 0.8s forwards;margin-top:4px;align-self:stretch;"></div>
+        </div>
+        <span class="replay-hint">click to replay</span>
+      </div>
+      <!-- 08 Brand Reveal -->
+      <div class="replay-cell" onclick="replayLogoAnim(this)" style="min-height:260px;overflow:hidden;">
+        <div class="replay-meta"><span class="replay-meta-num">08</span><span class="replay-meta-name">Brand Reveal</span></div><div class="replay-badge">3s</div>
+        <div class="logo-anim" style="position:relative;width:140px;height:50px;">
+          <div style="position:absolute;top:0;left:0;width:50%;height:100%;background:var(--bb-dark);z-index:2;animation:blindsLeft 1.2s var(--ease-decel) 0.3s forwards;"></div>
+          <div style="position:absolute;top:0;right:0;width:50%;height:100%;background:var(--bb-dark);z-index:2;animation:blindsRight 1.2s var(--ease-decel) 0.3s forwards;"></div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:var(--bb-lime);animation:logoScale 1s var(--ease-spring) 1s both;text-shadow:0 0 40px rgba(209,255,0,0.6);">AIOX</div>
+        </div>
+        <span class="replay-hint">click to replay</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. HAIRLINE GRID -->
+<section class="ds-section" id="hairline-grid">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[08] hairline_grid</div>
+    <h2 class="section-title">Hairline Grid (gap-px)</h2>
+    <p class="section-desc">AIOX's signature grid: 1px gaps with semi-transparent parent background. Parent bg bleeds through gaps creating elegant dividers without border declarations.</p>
+  </div>
+  <div class="scroll-reveal">
+    <div style="display:grid;gap:1px;background:rgba(156,156,156,0.12);border-radius:var(--radius-lg);overflow:hidden;grid-template-columns:repeat(4,1fr);">
+      <div style="background:var(--bb-dark);padding:20px;min-height:100px;"><div class="mono-label" style="color:var(--bb-lime);">01</div><div style="font-size:13px;font-weight:600;margin-top:4px;">Cell One</div><div style="font-size:10px;color:var(--bb-dim);margin-top:4px;">gap: 1px</div></div>
+      <div style="background:var(--bb-dark);padding:20px;min-height:100px;"><div class="mono-label" style="color:var(--bb-lime);">02</div><div style="font-size:13px;font-weight:600;margin-top:4px;">Cell Two</div><div style="font-size:10px;color:var(--bb-dim);margin-top:4px;">No borders</div></div>
+      <div style="background:var(--bb-dark);padding:20px;min-height:100px;"><div class="mono-label" style="color:var(--bb-lime);">03</div><div style="font-size:13px;font-weight:600;margin-top:4px;">Cell Three</div><div style="font-size:10px;color:var(--bb-dim);margin-top:4px;">Parent bleeds</div></div>
+      <div style="background:var(--bb-dark);padding:20px;min-height:100px;"><div class="mono-label" style="color:var(--bb-lime);">04</div><div style="font-size:13px;font-weight:600;margin-top:4px;">Cell Four</div><div style="font-size:10px;color:var(--bb-dim);margin-top:4px;">Clean lines</div></div>
+      <div style="background:var(--bb-dark);padding:20px;min-height:100px;"><div class="mono-label" style="color:var(--bb-lime);">05</div><div style="font-size:13px;font-weight:600;margin-top:4px;">Cell Five</div></div>
+      <div style="background:var(--bb-dark);padding:20px;min-height:100px;"><div class="mono-label" style="color:var(--bb-lime);">06</div><div style="font-size:13px;font-weight:600;margin-top:4px;">Cell Six</div></div>
+      <div style="background:var(--bb-dark);padding:20px;min-height:100px;"><div class="mono-label" style="color:var(--bb-lime);">07</div><div style="font-size:13px;font-weight:600;margin-top:4px;">Cell Seven</div></div>
+      <div style="background:var(--bb-dark);padding:20px;min-height:100px;"><div class="mono-label" style="color:var(--bb-lime);">08</div><div style="font-size:13px;font-weight:600;margin-top:4px;">Cell Eight</div></div>
+    </div>
+    <div class="copyable mono-value" data-copy="display: grid; gap: 1px; background: rgba(156,156,156,0.12);" onclick="copyText(this)" style="margin-top:12px;font-size:10px;color:var(--bb-dim);">CSS: display: grid; gap: 1px; background: rgba(156,156,156,0.12); /* children bg: var(--bb-dark) */</div>
+  </div>
+</section>
+
+<!-- 09. GLOW SYSTEM -->
+<section class="ds-section" id="glow-system">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[09] glow_system</div>
+    <h2 class="section-title">Glow System</h2>
+    <p class="section-desc">Three glow variants replace traditional shadows: Neon (full), Soft (subdued), Ring (outline glow).</p>
+  </div>
+  <div class="scroll-reveal">
+    <div class="grid-hairline" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="copyable" data-copy="box-shadow: 0 0 8px rgba(209,255,0,0.4), 0 0 24px rgba(209,255,0,0.2)" onclick="copyText(this)" style="padding:32px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:180px;justify-content:center;"><div style="width:72px;height:72px;border-radius:var(--radius-lg);background:var(--bb-surface-alt);box-shadow:0 0 8px rgba(209,255,0,0.4),0 0 24px rgba(209,255,0,0.2);border:1px solid var(--bb-accent-20);"></div><div class="mono-label" style="color:var(--bb-lime);">Neon Glow</div></div>
+      <div class="copyable" data-copy="box-shadow: 0 0 16px rgba(209,255,0,0.15)" onclick="copyText(this)" style="padding:32px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:180px;justify-content:center;"><div style="width:72px;height:72px;border-radius:var(--radius-lg);background:var(--bb-surface-alt);box-shadow:0 0 16px rgba(209,255,0,0.15);border:1px solid var(--bb-accent-10);"></div><div class="mono-label" style="color:var(--bb-lime);">Soft Glow</div></div>
+      <div class="copyable" data-copy="box-shadow: 0 0 0 2px rgba(209,255,0,0.3), 0 0 16px rgba(209,255,0,0.15)" onclick="copyText(this)" style="padding:32px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:180px;justify-content:center;"><div style="width:72px;height:72px;border-radius:var(--radius-lg);background:var(--bb-surface-alt);box-shadow:0 0 0 2px rgba(209,255,0,0.3),0 0 16px rgba(209,255,0,0.15);"></div><div class="mono-label" style="color:var(--bb-lime);">Ring Glow</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. HUD FRAMES -->
+<section class="ds-section" id="hud-frames">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[10] hud_frames</div>
+    <h2 class="section-title">HUD Frame Components</h2>
+    <p class="section-desc">Corner brackets and clip-path frames from the cockpit/HUD aesthetic. Premium containment for hero elements and feature cards.</p>
+  </div>
+  <div class="scroll-reveal">
+    <div class="grid-hairline" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+      <div style="padding:36px;display:flex;align-items:center;justify-content:center;"><div style="position:relative;width:160px;height:100px;"><div style="position:absolute;top:0;left:0;width:24px;height:24px;border-top:2px solid var(--bb-lime);border-left:2px solid var(--bb-lime);"></div><div style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-bottom:2px solid var(--bb-lime);border-right:2px solid var(--bb-lime);"></div><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;"><div><div class="mono-label" style="color:var(--bb-lime);">Bracket</div><div style="font-size:10px;color:var(--bb-dim);margin-top:2px;">TL + BR</div></div></div></div></div>
+      <div style="padding:36px;display:flex;align-items:center;justify-content:center;"><div style="position:relative;width:160px;height:100px;"><div style="position:absolute;top:0;left:0;width:24px;height:24px;border-top:2px solid var(--bb-lime);border-left:2px solid var(--bb-lime);"></div><div style="position:absolute;top:0;right:0;width:24px;height:24px;border-top:2px solid var(--bb-lime);border-right:2px solid var(--bb-lime);"></div><div style="position:absolute;bottom:0;left:0;width:24px;height:24px;border-bottom:2px solid var(--bb-lime);border-left:2px solid var(--bb-lime);"></div><div style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-bottom:2px solid var(--bb-lime);border-right:2px solid var(--bb-lime);"></div><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;"><div><div class="mono-label" style="color:var(--bb-lime);">Bracket Full</div><div style="font-size:10px;color:var(--bb-dim);margin-top:2px;">All 4 corners</div></div></div></div></div>
+      <div style="padding:36px;display:flex;align-items:center;justify-content:center;"><div style="width:160px;height:100px;clip-path:polygon(12px 0%,calc(100% - 12px) 0%,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0% calc(100% - 12px),0% 12px);background:var(--bb-accent-06);border:1px solid var(--bb-lime);display:flex;align-items:center;justify-content:center;text-align:center;"><div><div class="mono-label" style="color:var(--bb-lime);">Tech Frame</div><div style="font-size:10px;color:var(--bb-dim);margin-top:2px;">clip-path octagon</div></div></div></div>
+      <div style="padding:36px;display:flex;align-items:center;justify-content:center;"><div style="width:160px;height:100px;clip-path:polygon(0% 0%,calc(100% - 16px) 0%,100% 16px,100% 100%,16px 100%,0% calc(100% - 16px));background:var(--bb-accent-06);border:1px solid var(--bb-lime);display:flex;align-items:center;justify-content:center;text-align:center;"><div><div class="mono-label" style="color:var(--bb-lime);">Notch Frame</div><div style="font-size:10px;color:var(--bb-dim);margin-top:2px;">TR + BL notches</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. FILM GRAIN -->
+<section class="ds-section" id="film-grain">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[11] film_grain</div>
+    <h2 class="section-title">Film Grain SVG Noise</h2>
+    <p class="section-desc">SVG fractalNoise overlay with mix-blend-mode: overlay. Drag slider to adjust opacity 0-25%.</p>
+  </div>
+  <div class="scroll-reveal">
+    <div style="position:relative;min-height:180px;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--bb-border);background:linear-gradient(135deg,var(--bb-surface),var(--bb-surface-alt));">
+      <div style="padding:40px;position:relative;z-index:1;"><div style="font-size:22px;font-weight:700;margin-bottom:6px;">Grain Texture Preview</div><div style="font-size:13px;color:var(--bb-dim);">Adjust the slider to see noise overlay at different opacities.</div></div>
+      <div id="grainOverlay" style="position:absolute;inset:0;background-image:url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E&quot;);mix-blend-mode:overlay;pointer-events:none;z-index:2;opacity:0.05;"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;margin-top:16px;"><span class="mono-label">Opacity</span><input type="range" min="0" max="25" value="5" step="1" id="grainSlider" style="flex:1;accent-color:var(--bb-lime);" oninput="document.getElementById('grainOverlay').style.opacity=this.value/100;document.getElementById('grainValue').textContent=this.value+'%';"><span class="mono-value" id="grainValue">5%</span></div>
+  </div>
+</section>
+
+<!-- 12. GRID PATTERNS -->
+<section class="ds-section" id="grid-patterns">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[12] grid_patterns</div>
+    <h2 class="section-title">Grid Patterns</h2>
+    <p class="section-desc">Background texture patterns: dot grid, crosshair, wireframe perspective. Subtle depth on surfaces and empty states.</p>
+  </div>
+  <div class="scroll-reveal">
+    <div class="grid-hairline" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="copyable" data-copy="background-image: radial-gradient(circle, rgba(209,255,0,0.3) 1px, transparent 1px); background-size: 16px 16px;" onclick="copyText(this)" style="min-height:180px;padding:16px;background-image:radial-gradient(circle, rgba(209,255,0,0.3) 1px, transparent 1px);background-size:16px 16px;"><div class="mono-label" style="color:var(--bb-lime);">Dot Grid</div><div style="font-size:10px;color:var(--bb-dim);">16px spacing</div></div>
+      <div class="copyable" data-copy="/* crosshair grid 80px */" onclick="copyText(this)" style="min-height:180px;padding:16px;background-image:linear-gradient(rgba(209,255,0,0.1) 1px, transparent 1px),linear-gradient(90deg, rgba(209,255,0,0.1) 1px, transparent 1px),radial-gradient(circle, rgba(209,255,0,0.3) 2px, transparent 2px);background-size:80px 80px;"><div class="mono-label" style="color:var(--bb-lime);">Crosshair Grid</div><div style="font-size:10px;color:var(--bb-dim);">80px + dots</div></div>
+      <div class="copyable" data-copy="/* wireframe perspective 60px */" onclick="copyText(this)" style="min-height:180px;padding:16px;background-image:linear-gradient(rgba(209,255,0,0.08) 1px, transparent 1px),linear-gradient(90deg, rgba(209,255,0,0.08) 1px, transparent 1px),radial-gradient(ellipse at center, rgba(209,255,0,0.15) 0%, transparent 60%);background-size:60px 60px, 60px 60px, 100% 100%;"><div class="mono-label" style="color:var(--bb-lime);">Wireframe</div><div style="font-size:10px;color:var(--bb-dim);">60px + radial glow</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. TEXTURE OVERLAYS -->
+<section class="ds-section" id="texture-overlays">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[13] texture_overlays</div>
+    <h2 class="section-title">Texture Overlays</h2>
+    <p class="section-desc">CRT scanlines, vignette, and edge fade. Cinematic texture for the dark cockpit aesthetic.</p>
+  </div>
+  <div class="scroll-reveal">
+    <div class="grid-hairline" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="copyable" data-copy="/* scanlines: repeating-linear-gradient 2px */" onclick="copyText(this)" style="min-height:180px;padding:24px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:18px;font-weight:700;margin-bottom:6px;">Scanlines</div><div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);pointer-events:none;"></div><div class="mono-label" style="position:relative;">2px / 4px gap</div></div>
+      <div class="copyable" data-copy="/* CRT: scanlines + vignette */" onclick="copyText(this)" style="min-height:180px;padding:24px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:18px;font-weight:700;margin-bottom:6px;">CRT Effect</div><div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.1) 2px,rgba(0,0,0,0.1) 4px);pointer-events:none;"></div><div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,0.3) 100%);pointer-events:none;"></div><div class="mono-label" style="position:relative;">composite</div></div>
+      <div class="copyable" data-copy="background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5) 100%);" onclick="copyText(this)" style="min-height:180px;padding:24px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:18px;font-weight:700;margin-bottom:6px;">Vignette</div><div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,0.5) 100%);pointer-events:none;"></div><div class="mono-label" style="position:relative;">radial fade</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. SECTIONSHELL -->
+<section class="ds-section" id="section-shell">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[14] section_architecture</div>
+    <h2 class="section-title">SectionShell Architecture</h2>
+    <p class="section-desc">Every AIOX LP section uses: SectionShell (dark/light variant, fullBleed prop) + SectionHeader (numbered monospace label). Dark/light sections alternate for rhythm.</p>
+  </div>
+  <div class="scroll-reveal">
+    <div style="display:flex;flex-direction:column;gap:1px;background:var(--bb-border);border-radius:var(--radius-lg);overflow:hidden;">
+      <div style="background:#050505;color:var(--bb-cream);padding:28px 36px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.2em;color:var(--bb-lime);">[01]</span><span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.2em;color:var(--bb-dim);text-transform:uppercase;">hero_section_</span></div><div style="font-size:18px;font-weight:700;">Dark Variant (bg: #050505)</div><div style="font-size:12px;color:var(--bb-dim);margin-top:4px;">py-24 md:py-32 / max-w-[1400px] / px-6 md:px-10</div></div>
+      <div style="background:#F5F4E7;color:#050505;padding:28px 36px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.2em;color:#050505;">[02]</span><span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.2em;color:rgba(5,5,5,0.4);text-transform:uppercase;">who_we_are_</span></div><div style="font-size:18px;font-weight:700;">Light Variant (bg: #F5F4E7)</div><div style="font-size:12px;color:rgba(5,5,5,0.5);margin-top:4px;">Same structure, inverted colors</div></div>
+      <div style="background:#050505;color:var(--bb-cream);padding:28px 36px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.2em;color:var(--bb-lime);">[03]</span><span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.2em;color:var(--bb-dim);text-transform:uppercase;">services_</span></div><div style="font-size:18px;font-weight:700;">Dark Variant (alternating)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15. COMPONENTS -->
+<section class="ds-section" id="components">
+  <div class="section-header scroll-reveal">
+    <div class="section-num">[15] components</div>
+    <h2 class="section-title">Component Samples</h2>
+    <p class="section-desc">AccentButton (lime CTA with arrow glyph), Accordion (numbered badges), and Skeleton loading states.</p>
+  </div>
+  <div class="subsection scroll-reveal">
+    <div class="subsection-title">AccentButton Variants</div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
+      <button style="display:inline-flex;align-items:center;gap:8px;padding:14px 24px;min-width:180px;background:var(--bb-lime);color:var(--bb-dark);border:none;font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 0 20px rgba(209,255,0,0.25)'" onmouseout="this.style.boxShadow='none'">Book a Call <span style="font-size:14px;">&#8599;</span></button>
+      <button style="display:inline-flex;align-items:center;gap:8px;padding:14px 24px;min-width:180px;background:var(--bb-dark);color:var(--bb-cream);border:1px solid rgba(255,255,255,0.15);font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='var(--bb-dark)'">Learn More <span style="font-size:14px;">&#8599;</span></button>
+      <button style="display:inline-flex;align-items:center;gap:8px;padding:14px 24px;min-width:180px;background:transparent;color:var(--bb-cream);border:none;font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">Ghost CTA <span style="font-size:14px;">&#8599;</span></button>
+    </div>
+  </div>
+  <div class="subsection scroll-reveal">
+    <div class="subsection-title">Accordion</div>
+    <div style="border:1px solid var(--bb-border);border-radius:var(--radius-lg);overflow:hidden;">
+      <div class="accordion-item" style="border-bottom:1px solid var(--bb-border);"><button onclick="toggleAccordion(this)" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:transparent;border:none;color:var(--bb-cream);cursor:pointer;font-size:14px;font-weight:500;"><span style="display:flex;align-items:center;gap:12px;"><span style="width:24px;height:24px;border-radius:50%;background:var(--bb-lime);color:var(--bb-dark);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--font-mono);">01</span>What is AI orchestration?</span><span class="accordion-icon" style="transition:transform 0.2s;font-size:18px;color:var(--bb-dim);">+</span></button><div class="accordion-content" style="max-height:0;overflow:hidden;transition:max-height 0.3s var(--ease-smooth);"><div style="padding:0 20px 16px 56px;font-size:13px;color:var(--bb-dim);line-height:1.6;">AI orchestration coordinates multiple AI agents and tools to automate complex business workflows, layering specialized agents that communicate and hand off tasks.</div></div></div>
+      <div class="accordion-item" style="border-bottom:1px solid var(--bb-border);"><button onclick="toggleAccordion(this)" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:transparent;border:none;color:var(--bb-cream);cursor:pointer;font-size:14px;font-weight:500;"><span style="display:flex;align-items:center;gap:12px;"><span style="width:24px;height:24px;border-radius:50%;background:var(--bb-lime);color:var(--bb-dark);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--font-mono);">02</span>How long does implementation take?</span><span class="accordion-icon" style="transition:transform 0.2s;font-size:18px;color:var(--bb-dim);">+</span></button><div class="accordion-content" style="max-height:0;overflow:hidden;transition:max-height 0.3s var(--ease-smooth);"><div style="padding:0 20px 16px 56px;font-size:13px;color:var(--bb-dim);line-height:1.6;">Typical implementation takes 4-8 weeks: Discovery, Architecture, Implementation, QA Review, Deploy.</div></div></div>
+      <div class="accordion-item"><button onclick="toggleAccordion(this)" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:transparent;border:none;color:var(--bb-cream);cursor:pointer;font-size:14px;font-weight:500;"><span style="display:flex;align-items:center;gap:12px;"><span style="width:24px;height:24px;border-radius:50%;background:var(--bb-lime);color:var(--bb-dark);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--font-mono);">03</span>What results can I expect?</span><span class="accordion-icon" style="transition:transform 0.2s;font-size:18px;color:var(--bb-dim);">+</span></button><div class="accordion-content" style="max-height:0;overflow:hidden;transition:max-height 0.3s var(--ease-smooth);"><div style="padding:0 20px 16px 56px;font-size:13px;color:var(--bb-dim);line-height:1.6;">Clients typically see 70% reduction in manual work within the first month. Automation rate averages 85%.</div></div></div>
+    </div>
+  </div>
+  <div class="subsection scroll-reveal">
+    <div class="subsection-title">Skeleton Loading</div>
+    <div class="grid-hairline" style="grid-template-columns: repeat(3, 1fr);">
+      <div style="padding:24px;"><div class="mono-label" style="margin-bottom:12px;">Text</div><div style="display:flex;flex-direction:column;gap:8px;"><div style="height:12px;border-radius:var(--radius);background:linear-gradient(90deg,var(--bb-surface-alt) 25%,var(--bb-surface-hover-strong) 50%,var(--bb-surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;width:100%;"></div><div style="height:12px;border-radius:var(--radius);background:linear-gradient(90deg,var(--bb-surface-alt) 25%,var(--bb-surface-hover-strong) 50%,var(--bb-surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite 0.1s;width:85%;"></div><div style="height:12px;border-radius:var(--radius);background:linear-gradient(90deg,var(--bb-surface-alt) 25%,var(--bb-surface-hover-strong) 50%,var(--bb-surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite 0.2s;width:70%;"></div></div></div>
+      <div style="padding:24px;"><div class="mono-label" style="margin-bottom:12px;">Card</div><div style="border:1px solid var(--bb-border);border-radius:var(--radius-lg);overflow:hidden;"><div style="height:72px;background:linear-gradient(90deg,var(--bb-surface-alt) 25%,var(--bb-surface-hover-strong) 50%,var(--bb-surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div><div style="padding:12px;"><div style="height:12px;border-radius:var(--radius-sm);background:linear-gradient(90deg,var(--bb-surface-alt) 25%,var(--bb-surface-hover-strong) 50%,var(--bb-surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;width:60%;"></div></div></div></div>
+      <div style="padding:24px;"><div class="mono-label" style="margin-bottom:12px;">Avatar</div><div style="display:flex;align-items:center;gap:12px;"><div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(90deg,var(--bb-surface-alt) 25%,var(--bb-surface-hover-strong) 50%,var(--bb-surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;flex-shrink:0;"></div><div style="flex:1;display:flex;flex-direction:column;gap:6px;"><div style="height:12px;border-radius:var(--radius-sm);background:linear-gradient(90deg,var(--bb-surface-alt) 25%,var(--bb-surface-hover-strong) 50%,var(--bb-surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;width:70%;"></div><div style="height:10px;border-radius:var(--radius-sm);background:linear-gradient(90deg,var(--bb-surface-alt) 25%,var(--bb-surface-hover-strong) 50%,var(--bb-surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite 0.1s;width:50%;"></div></div></div></div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+/* Copy */
+function copyText(el){const t=el.dataset.copy||el.textContent.trim();navigator.clipboard.writeText(t).then(()=>{const toast=document.getElementById('copyToast');toast.textContent='Copied: '+t.substring(0,50)+(t.length>50?'...':'');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1500);})}
+
+/* Easing replay */
+function replayEasing(cell){const track=cell.querySelector('.easing-track'),box=cell.querySelector('.easing-box');if(!track||!box)return;const tt=track.style.transition,bt=box.style.transition;track.style.transition='none';box.style.transition='none';track.style.width='0%';box.style.left='0';requestAnimationFrame(()=>{requestAnimationFrame(()=>{track.style.transition=tt;box.style.transition=bt;track.style.width='100%';box.style.left='calc(100% - 36px)';});})}
+
+/* Logo replay */
+function replayLogoAnim(cell){const c=cell.querySelector('.logo-anim');if(!c)return;const cl=c.cloneNode(true);c.replaceWith(cl);}
+
+/* Accordion */
+function toggleAccordion(btn){const content=btn.nextElementSibling,icon=btn.querySelector('.accordion-icon'),isOpen=content.style.maxHeight&&content.style.maxHeight!=='0px';document.querySelectorAll('.accordion-content').forEach(c=>{c.style.maxHeight='0px';});document.querySelectorAll('.accordion-icon').forEach(i=>{i.style.transform='rotate(0deg)';});document.querySelectorAll('.accordion-item').forEach(i=>{i.style.background='transparent';});if(!isOpen){content.style.maxHeight=content.scrollHeight+'px';icon.style.transform='rotate(45deg)';btn.closest('.accordion-item').style.background='var(--bb-accent-04)';}}
+
+/* Scroll reveal */
+const observer=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('is-visible');});},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.scroll-reveal').forEach(el=>observer.observe(el));
+
+/* Sidebar tracking */
+const sections=document.querySelectorAll('.ds-section[id]'),navLinks=document.querySelectorAll('#sidebarNav a');
+const sObs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){navLinks.forEach(l=>l.classList.remove('active'));const a=document.querySelector(`#sidebarNav a[href="#${en.target.id}"]`);if(a)a.classList.add('active');}});},{threshold:0.3,rootMargin:'-80px 0px -40% 0px'});
+sections.forEach(s=>sObs.observe(s));
+
+/* Build opacity ladder */
+(function(){const steps=[['02',2],['04',4],['06',6],['08',8],['10',10],['12',12],['15',15],['20',20],['25',25],['40',40],['50',50],['75',75],['90',90]];const c=document.getElementById('ladderContainer');let h='<div style="display:flex;flex-direction:column;gap:2px;">';steps.forEach(([k,v])=>{h+=`<div class="copyable" data-copy="--bb-accent-${k}: rgba(209,255,0,${v/100})" onclick="copyText(this)" style="display:flex;align-items:center;gap:16px;padding:6px 0;"><div style="flex:1;height:30px;background:var(--bb-accent-${k});border-radius:var(--radius-sm);border:1px solid var(--bb-border-soft);"></div><span class="mono-label" style="min-width:80px;">accent-${k}</span><span class="mono-value" style="min-width:40px;text-align:right;">${v}%</span></div>`;});h+='</div>';c.innerHTML=h;})();
+
+/* Build spacing */
+(function(){const steps=[[1,4],[2,8],[3,12],[4,15],[5,20],[6,30],[7,40],[8,60],[9,80],[10,90],[11,120],[12,150],[13,180]];const c=document.getElementById('spacingContainer');let h='<div style="display:flex;flex-direction:column;gap:4px;">';steps.forEach(([k,v])=>{h+=`<div class="copyable" data-copy="--space-${k}: ${v}px" onclick="copyText(this)" style="display:flex;align-items:center;gap:16px;padding:4px 0;"><span class="mono-label" style="min-width:70px;">space-${k}</span><div style="height:12px;width:${v}px;background:var(--bb-lime);border-radius:2px;"></div><span class="mono-value">${v}px</span></div>`;});h+='</div>';c.innerHTML=h;})();
+
+/* Initial easing anim */
+window.addEventListener('load',()=>{setTimeout(()=>{document.querySelectorAll('.easing-track').forEach(t=>{t.style.width='100%';});document.querySelectorAll('.easing-box').forEach(b=>{b.style.left='calc(100% - 36px)';});},500);});
+</script>
+</body>
+</html>
