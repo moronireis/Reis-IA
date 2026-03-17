@@ -1,0 +1,160 @@
+/* ==========================================================================
+   REIS IA -- Animation Classes
+   Source: reis-ia-implementation-guide.md Section 3
+   ========================================================================== */
+
+/* ---- ENTRANCE ANIMATIONS ---- */
+
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered children */
+.animate-stagger > .animate-on-scroll:nth-child(1) { transition-delay: 200ms; }
+.animate-stagger > .animate-on-scroll:nth-child(2) { transition-delay: 350ms; }
+.animate-stagger > .animate-on-scroll:nth-child(3) { transition-delay: 500ms; }
+.animate-stagger > .animate-on-scroll:nth-child(4) { transition-delay: 650ms; }
+.animate-stagger > .animate-on-scroll:nth-child(5) { transition-delay: 800ms; }
+.animate-stagger > .animate-on-scroll:nth-child(6) { transition-delay: 950ms; }
+
+/* Fade in (opacity only) */
+.animate-fade-in {
+  opacity: 0;
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+.animate-fade-in.is-visible {
+  opacity: 1;
+}
+
+/* Scale reveal */
+.animate-scale-reveal {
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+.animate-scale-reveal.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* 3D perspective entrance */
+.animate-perspective-parent {
+  perspective: 1200px;
+}
+.animate-perspective-up {
+  opacity: 0;
+  transform: translateY(80px) rotateX(8deg);
+  transform-origin: bottom center;
+  transform-style: preserve-3d;
+  transition:
+    opacity var(--duration-dramatic) var(--ease-dramatic),
+    transform var(--duration-dramatic) var(--ease-dramatic);
+}
+.animate-perspective-up.is-visible {
+  opacity: 1;
+  transform: translateY(0) rotateX(0);
+}
+
+/* ---- SIGNATURE ANIMATIONS ---- */
+
+/* Blue shimmer text */
+.text-shimmer {
+  background: var(--gradient-blue-shimmer);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer var(--duration-ambient) ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 200% 0; }
+  50% { background-position: -200% 0; }
+}
+
+/* Rotating blue border */
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.card-rotating-border {
+  background:
+    linear-gradient(135deg, var(--surface-2), var(--surface-3)) padding-box,
+    conic-gradient(
+      from var(--border-angle),
+      rgba(255,255,255,0.08) 0%,
+      rgba(255,255,255,0.08) 75%,
+      rgba(74,144,255,0.5) 85%,
+      rgba(74,144,255,0.8) 90%,
+      rgba(74,144,255,0.5) 95%,
+      rgba(255,255,255,0.08) 100%
+    ) border-box;
+  border: 1px solid transparent;
+  animation: rotate-border 8s linear infinite;
+}
+
+@keyframes rotate-border {
+  to { --border-angle: 360deg; }
+}
+
+/* Gradient divider */
+.gradient-divider {
+  height: 1px;
+  background: var(--gradient-divider);
+}
+
+/* Grain overlay */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  z-index: 1;
+}
+
+/* Container utilities */
+.container-standard {
+  max-width: var(--container-standard);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+.container-narrow {
+  max-width: var(--container-narrow);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+.container-text {
+  max-width: var(--container-text);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+.container-wide {
+  max-width: var(--container-wide);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}

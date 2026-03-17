@@ -1,0 +1,163 @@
+---
+import Logo from './Logo.astro';
+import { headerDropdowns } from '../data/navigation';
+
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  class="fixed top-0 left-0 right-0 z-[var(--z-nav)] border-b"
+  style="background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-color: var(--border-default);"
+>
+  <div class="container-standard flex items-center justify-between h-[60px]">
+    <!-- Logo -->
+    <Logo />
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
+      {headerDropdowns.map((dropdown) => (
+        <div class="relative group" data-dropdown>
+          <button
+            class="flex items-center gap-1.5 px-3 py-2 text-[var(--text-secondary)] text-sm font-medium tracking-tight transition-colors duration-200 hover:text-[var(--text-primary)] rounded-[var(--space-xs)]"
+            aria-expanded="false"
+            aria-haspopup="true"
+            data-dropdown-trigger
+          >
+            {dropdown.label}
+            <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <!-- Dropdown Panel -->
+          <div
+            class="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+            data-dropdown-panel
+          >
+            <div
+              class="min-w-[220px] rounded-xl border p-3"
+              style="background: var(--surface-2); border-color: var(--border-default); box-shadow: var(--shadow-elevated);"
+            >
+              {dropdown.groups.map((group, gi) => (
+                <div class:list={[gi > 0 && "mt-3 pt-3 border-t" ]} style={gi > 0 ? "border-color: var(--border-default);" : ""}>
+                  {group.heading && (
+                    <div class="px-2 pb-1.5 text-[var(--text-quaternary)] text-[11px] font-semibold uppercase tracking-[0.08em]">
+                      {group.heading}
+                    </div>
+                  )}
+                  {group.links.map((link) => (
+                    <a
+                      href={link.href}
+                      class:list={[
+                        "block px-2 py-1.5 text-sm rounded-lg transition-colors duration-150",
+                        currentPath === link.href
+                          ? "text-[var(--accent-blue)] bg-[var(--accent-05)]"
+                          : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--accent-05)]",
+                      ]}
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ))}
+    </nav>
+
+    <!-- Mobile Hamburger -->
+    <button
+      class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--accent-05)] transition-colors duration-200"
+      aria-label="Open menu"
+      data-mobile-menu-trigger
+    >
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- Mobile Menu Overlay -->
+<div
+  class="fixed inset-0 z-[calc(var(--z-nav)+1)] hidden"
+  style="background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);"
+  data-mobile-menu
+>
+  <div class="flex items-center justify-between h-[60px] px-5">
+    <Logo />
+    <button
+      class="flex items-center justify-center w-10 h-10 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-200"
+      aria-label="Close menu"
+      data-mobile-menu-close
+    >
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <nav class="px-5 py-4 overflow-y-auto" style="max-height: calc(100vh - 60px);" aria-label="Mobile navigation">
+    {headerDropdowns.map((dropdown) => (
+      <div class="mb-6">
+        <div class="text-[var(--text-quaternary)] text-[11px] font-semibold uppercase tracking-[0.08em] mb-2 px-1">
+          {dropdown.label}
+        </div>
+        {dropdown.groups.map((group) => (
+          <div class="mb-3">
+            {group.heading && (
+              <div class="px-1 pb-1 text-[var(--text-tertiary)] text-xs font-medium">
+                {group.heading}
+              </div>
+            )}
+            {group.links.map((link) => (
+              <a
+                href={link.href}
+                class:list={[
+                  "block px-3 py-2.5 text-base rounded-lg transition-colors duration-150",
+                  currentPath === link.href
+                    ? "text-[var(--accent-blue)] bg-[var(--accent-05)]"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--accent-05)]",
+                ]}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        ))}
+      </div>
+    ))}
+  </nav>
+</div>
+
+<script>
+  const trigger = document.querySelector('[data-mobile-menu-trigger]');
+  const closeBtn = document.querySelector('[data-mobile-menu-close]');
+  const menu = document.querySelector('[data-mobile-menu]') as HTMLElement;
+
+  function openMenu() {
+    if (!menu) return;
+    menu.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    if (!menu) return;
+    menu.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  trigger?.addEventListener('click', openMenu);
+  closeBtn?.addEventListener('click', closeMenu);
+
+  // Close on link click
+  menu?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+</script>

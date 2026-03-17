@@ -1,0 +1,542 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CopyButton from '../../components/CopyButton.tsx';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import EasingDemo from '../../components/EasingDemo.tsx';
+import DurationDemo from '../../components/DurationDemo.tsx';
+import ScrollRevealDemo from '../../components/ScrollRevealDemo.tsx';
+import StaggerGridDemo from '../../components/StaggerGridDemo.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+
+const easingCurves = [
+  { name: 'Ease Base', cssVar: '--ease-base', value: 'cubic-bezier(0.25, 0.1, 0.25, 1)', description: 'Default for most transitions. Nearly identical to CSS ease but engineered.' },
+  { name: 'Ease Out', cssVar: '--ease-out', value: 'cubic-bezier(0.16, 1, 0.3, 1)', description: 'Elements appearing, scroll reveals. Fast start, gentle deceleration.' },
+  { name: 'Ease In', cssVar: '--ease-in', value: 'cubic-bezier(0.4, 0, 0.5, 1)', description: 'Elements exiting view. Quick acceleration, gentle landing.' },
+  { name: 'Ease Dramatic', cssVar: '--ease-dramatic', value: 'cubic-bezier(0.65, 0, 0.35, 1)', description: 'Hero entrances, major section reveals. Symmetrical S-curve.' },
+  { name: 'Ease Card', cssVar: '--ease-card', value: 'cubic-bezier(0.7, 0, 0, 1)', description: 'Card hover scale + shadow. Heavy, weighted feel.' },
+];
+
+const durationTokens = [
+  { name: 'Instant', cssVar: '--duration-instant', value: '100ms', usage: 'Opacity micro-hints' },
+  { name: 'Fast', cssVar: '--duration-fast', value: '200ms', usage: 'Hover color changes, border transitions, icon shifts' },
+  { name: 'Normal', cssVar: '--duration-normal', value: '300ms', usage: 'Standard transitions, card hover' },
+  { name: 'Moderate', cssVar: '--duration-moderate', value: '500ms', usage: 'Card scale + shadow, complex transitions' },
+  { name: 'Slow', cssVar: '--duration-slow', value: '800ms', usage: 'Scroll-triggered entrance animations' },
+  { name: 'Dramatic', cssVar: '--duration-dramatic', value: '1200ms', usage: 'Hero entrance, 3D perspective reveals' },
+  { name: 'Ambient', cssVar: '--duration-ambient', value: '13000ms', usage: 'Continuous ambient effects (rotating border)' },
+];
+
+const codeEasing = `:root {
+  --ease-base:     cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:       cubic-bezier(0.4, 0, 0.5, 1);
+  --ease-dramatic: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-card:     cubic-bezier(0.7, 0, 0, 1);
+}`;
+
+const codeDuration = `:root {
+  --duration-instant:   100ms;
+  --duration-fast:      200ms;
+  --duration-normal:    300ms;
+  --duration-moderate:  500ms;
+  --duration-slow:      800ms;
+  --duration-dramatic:  1200ms;
+  --duration-ambient:   13000ms;
+}`;
+
+const codeEntrance = `/* Primary entrance: Fade Up */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fade In (opacity only) */
+.animate-fade-in {
+  opacity: 0;
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+.animate-fade-in.is-visible { opacity: 1; }
+
+/* Scale Reveal (images/visuals) */
+.animate-scale-reveal {
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+.animate-scale-reveal.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* 3D Perspective (hero only) */
+.animate-perspective-parent { perspective: 1200px; }
+.animate-perspective-up {
+  opacity: 0;
+  transform: translateY(80px) rotateX(8deg);
+  transform-origin: bottom center;
+  transition: all var(--duration-dramatic) var(--ease-dramatic);
+}
+.animate-perspective-up.is-visible {
+  opacity: 1;
+  transform: translateY(0) rotateX(0);
+}`;
+
+const codeStagger = `/* Grid stagger (100ms per item) */
+.grid-stagger > * {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+.grid-stagger.in-view > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+.grid-stagger.in-view > *:nth-child(1) { transition-delay: 0ms; }
+.grid-stagger.in-view > *:nth-child(2) { transition-delay: 100ms; }
+.grid-stagger.in-view > *:nth-child(3) { transition-delay: 200ms; }
+.grid-stagger.in-view > *:nth-child(4) { transition-delay: 300ms; }
+.grid-stagger.in-view > *:nth-child(5) { transition-delay: 400ms; }
+.grid-stagger.in-view > *:nth-child(6) { transition-delay: 500ms; }
+
+/* JS trigger via IntersectionObserver */
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+      }
+    });
+  },
+  { threshold: 0.1 }
+);`;
+
+const codeReducedMotion = `@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}`;
+---
+
+<BrandbookLayout
+  title="Motion"
+  pageName="MOTION"
+  description="Animation system with 5 easing curves, 7 duration tokens, entrance animations, and motion principles."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Motion System
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Every animation is intentional. No default <code>ease</code>. No arbitrary durations. Slow is premium — fast feels cheap. The motion system is engineered with the same precision as the AI systems we build.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: Motion Principles -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Motion Principles" />
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            Slow Is Premium
+          </div>
+          <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">
+            Fast transitions feel utilitarian. Slower, weighted animations communicate luxury and confidence. The system uses 800ms for entrances and 500ms for card interactions — slower than most tech sites.
+          </p>
+        </div>
+        <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            Physics Over Math
+          </div>
+          <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">
+            Custom cubic-bezier curves create natural movement. Elements decelerate into position (ease-out) and accelerate out of view (ease-in), mimicking physical objects with mass.
+          </p>
+        </div>
+        <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            Restraint In Motion
+          </div>
+          <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">
+            Not everything moves. Static elements create contrast that makes animated elements more impactful. Translate distances are small (24px max), rotations subtle (8deg max).
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Easing Curves -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Easing Curves" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        5 curves for different animation contexts. Click any curve to see its motion profile. Each curve is named by its primary use case, not its mathematical shape.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {easingCurves.map(curve => (
+          <EasingDemo
+            client:visible
+            name={curve.name}
+            cssVar={curve.cssVar}
+            value={curve.value}
+            description={curve.description}
+          />
+        ))}
+      </div>
+
+      <div class="mt-8">
+        <CodeBlock
+          client:visible
+          label="Easing CSS Variables"
+          code={codeEasing}
+        />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Duration Tokens -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Duration Tokens" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        7 duration tiers, each roughly 1.5-2x the previous. The ambient tier (13s) is for continuous effects only. Click each to see the timing in real time.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {durationTokens.map(token => (
+          <DurationDemo
+            client:visible
+            name={token.name}
+            cssVar={token.cssVar}
+            value={token.value}
+            usage={token.usage}
+          />
+        ))}
+      </div>
+
+      <div class="mt-8">
+        <CodeBlock
+          client:visible
+          label="Duration CSS Variables"
+          code={codeDuration}
+        />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Entrance Animations -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Entrance Animations" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        4 entrance types for different contexts. Fade Up is the primary entrance used on most elements. 3D Perspective is reserved for hero sections only. Click each to replay.
+      </p>
+
+      <ScrollRevealDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock
+          client:visible
+          label="Entrance Animation CSS"
+          code={codeEntrance}
+        />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Staggered Grid Entrance -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Staggered Grid Entrance" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Cards in a grid appear with cascading delays (100ms per item for grids, 150ms per item for linear stacks). The stagger creates a wave effect that guides the eye left-to-right, top-to-bottom.
+      </p>
+
+      <StaggerGridDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock
+          client:visible
+          label="Stagger CSS"
+          code={codeStagger}
+        />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Card Hover Animations -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Card Hover Animations" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Three card hover tiers. Standard uses 300ms ease-base. Featured adds blue glow at 500ms with the weighted ease-card. Image cards scale the inner image at 1.03x.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Standard card hover -->
+        <div
+          class="p-6 rounded-xl border cursor-pointer transition-all"
+          style="background: var(--surface-2); border-color: var(--border-default); transition: border-color 300ms var(--ease-base), background-color 300ms var(--ease-base);"
+          onmouseenter="this.style.background='var(--surface-3)';this.style.borderColor='var(--border-visible)'"
+          onmouseleave="this.style.background='var(--surface-2)';this.style.borderColor='var(--border-default)'"
+        >
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            Standard Hover
+          </div>
+          <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">
+            Border: default to visible. Background: S-2 to S-3. Duration: 300ms ease-base.
+          </p>
+          <code class="block text-[10px] font-mono mt-3" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">300ms var(--ease-base)</code>
+        </div>
+
+        <!-- Featured card hover -->
+        <div
+          class="p-6 rounded-xl border cursor-pointer"
+          style="background: var(--surface-2); border-color: var(--border-default); transition: all 500ms cubic-bezier(0.7, 0, 0, 1);"
+          onmouseenter="this.style.borderColor='var(--border-accent)';this.style.boxShadow='0 0 50px rgba(74, 144, 255, 0.12)'"
+          onmouseleave="this.style.borderColor='var(--border-default)';this.style.boxShadow='none'"
+        >
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            Featured Hover
+          </div>
+          <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">
+            Border: accent blue. Shadow: blue glow appears. Duration: 500ms ease-card.
+          </p>
+          <code class="block text-[10px] font-mono mt-3" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">500ms var(--ease-card)</code>
+        </div>
+
+        <!-- Image card hover -->
+        <div
+          class="rounded-xl border overflow-hidden cursor-pointer"
+          style="background: var(--surface-2); border-color: var(--border-default); transition: border-color 300ms var(--ease-base);"
+          onmouseenter="this.style.borderColor='var(--border-visible)';this.querySelector('.card-img').style.transform='scale(1.03)'"
+          onmouseleave="this.style.borderColor='var(--border-default)';this.querySelector('.card-img').style.transform='scale(1)'"
+        >
+          <div class="overflow-hidden" style="height: 120px;">
+            <div
+              class="card-img w-full h-full"
+              style="background: linear-gradient(135deg, var(--blue-08), var(--blue-15)); transition: transform 500ms cubic-bezier(0.7, 0, 0, 1);"
+            ></div>
+          </div>
+          <div class="p-5">
+            <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+              Image Hover
+            </div>
+            <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">
+              Image scales 1.03x with overflow:hidden parent. 500ms ease-card.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Ambient Animations -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Ambient Animations" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Continuous animations that run in the background. The rotating border (8s) and aurora effect (20s) create ambient movement without demanding attention.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Rotating border ambient -->
+        <div class="card-rotating-border rounded-xl p-6" style="min-height: 180px;">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            Rotating Border
+          </div>
+          <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">
+            8s linear infinite rotation. The blue beam sweeps ~15% of the perimeter, creating a subtle scanning effect.
+          </p>
+          <code class="block text-[10px] font-mono mt-3" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">animation: rotate-border 8s linear infinite</code>
+        </div>
+
+        <!-- Gradient divider pulse (conceptual demo) -->
+        <div
+          class="rounded-xl border p-6 relative overflow-hidden"
+          style="background: var(--surface-2); border-color: var(--border-default); min-height: 180px;"
+        >
+          {/* Ambient glow */}
+          <div
+            style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at center, rgba(74, 144, 255, 0.04) 0%, transparent 50%); animation: aurora-shift 20s ease-in-out infinite alternate; pointer-events: none;"
+          ></div>
+          <div style="position: relative; z-index: 1;">
+            <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+              Aurora Ambient
+            </div>
+            <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">
+              20s ease-in-out infinite alternate. Three gradient orbs slowly drift, creating atmospheric depth behind hero sections.
+            </p>
+            <code class="block text-[10px] font-mono mt-3" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">animation: aurora-shift 20s ease-in-out infinite alternate</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 08: Reduced Motion -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Reduced Motion" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-secondary); text-wrap: pretty;">
+        When <code>prefers-reduced-motion: reduce</code> is active, all animations and transitions collapse to near-instant (0.01ms). This is a global rule — no exceptions. Content and functionality remain identical; only motion is removed.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Normal state -->
+        <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            Default (Motion On)
+          </div>
+          <ul class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <li>Scroll-triggered fade-up at 800ms</li>
+            <li>Card hover transitions at 200-500ms</li>
+            <li>Rotating border at 8s continuous</li>
+            <li>Aurora background at 20s drift</li>
+            <li>Stagger delays: 100-150ms per item</li>
+          </ul>
+        </div>
+
+        <!-- Reduced state -->
+        <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--color-success);">
+            Reduced Motion
+          </div>
+          <ul class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <li>All elements visible immediately (no fade)</li>
+            <li>Hover states change instantly (0.01ms)</li>
+            <li>Rotating border: single frame (no spin)</li>
+            <li>Aurora: static gradient (no drift)</li>
+            <li>No stagger delays</li>
+          </ul>
+        </div>
+      </div>
+
+      <CodeBlock
+        client:visible
+        label="Reduced Motion CSS"
+        code={codeReducedMotion}
+      />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 09: Hover Reference Table -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="09" title="Hover Micro-Interactions" />
+
+      <div class="border rounded-xl overflow-hidden" style="border-color: var(--border-default);">
+        <div class="grid grid-cols-[1fr_1.5fr_auto_auto] gap-0 border-b" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-wider" style="color: var(--text-tertiary);">Element</div>
+          <div class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-wider" style="color: var(--text-tertiary);">Effect</div>
+          <div class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-wider hidden md:block" style="color: var(--text-tertiary);">Duration</div>
+          <div class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-wider hidden md:block" style="color: var(--text-tertiary);">Easing</div>
+        </div>
+        {[
+          { element: 'Primary CTA', effect: 'Background darken + translateY(-2px)', duration: '200ms', easing: 'ease-base' },
+          { element: 'Secondary Button', effect: 'Border brightens + subtle bg tint', duration: '200ms', easing: 'ease-base' },
+          { element: 'Ghost Button', effect: 'Text to white + arrow translateX(4px)', duration: '200ms', easing: 'ease-base' },
+          { element: 'Standard Card', effect: 'Border visible + bg one tier up', duration: '300ms', easing: 'ease-base' },
+          { element: 'Featured Card', effect: 'Border accent + blue glow shadow', duration: '500ms', easing: 'ease-card' },
+          { element: 'Nav Link', effect: 'Text color to white', duration: '150ms', easing: 'ease-base' },
+          { element: 'Image in Card', effect: 'scale(1.03) with overflow:hidden', duration: '500ms', easing: 'ease-card' },
+        ].map((row, i) => (
+          <div
+            class="grid grid-cols-[1fr_1.5fr_auto_auto] gap-0 border-b last:border-b-0 transition-colors duration-200 hover:bg-[var(--surface-2)]"
+            style="background: var(--surface-1); border-color: var(--border-subtle);"
+          >
+            <div class="px-4 py-3 text-sm font-medium" style="color: var(--text-primary);">{row.element}</div>
+            <div class="px-4 py-3 text-sm" style="color: var(--text-secondary);">{row.effect}</div>
+            <div class="px-4 py-3 font-mono text-[11px] hidden md:block" style="color: var(--text-quaternary);">{row.duration}</div>
+            <div class="px-4 py-3 font-mono text-[11px] hidden md:block" style="color: var(--text-quaternary);">{row.easing}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 10: Usage Rules -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="10" title="Usage Rules" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Use --ease-out for elements entering the viewport' },
+        { type: 'do', text: 'Use --ease-base for hover/focus state transitions' },
+        { type: 'do', text: 'Keep translate distances under 24px for standard entrances' },
+        { type: 'do', text: 'Respect prefers-reduced-motion in all animations' },
+        { type: 'do', text: 'Use stagger delays (100-150ms) when multiple siblings enter together' },
+        { type: 'dont', text: 'Use CSS default ease or linear for UI transitions' },
+        { type: 'dont', text: 'Animate transforms on elements that trigger layout recalculation' },
+        { type: 'dont', text: 'Use 3D perspective entrance outside of hero sections' },
+        { type: 'dont', text: 'Create stagger chains longer than 6 items (cap at 600ms total)' },
+        { type: 'dont', text: 'Use bounce or elastic easing — too playful for the brand' },
+      ]} />
+    </div>
+  </section>
+</BrandbookLayout>
+
+<style>
+  @keyframes aurora-shift {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    33% { transform: translate(-5%, 3%) scale(1.05); opacity: 0.8; }
+    66% { transform: translate(3%, -2%) scale(0.98); opacity: 1; }
+    100% { transform: translate(-2%, 5%) scale(1.02); opacity: 0.9; }
+  }
+</style>

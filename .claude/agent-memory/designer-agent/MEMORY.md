@@ -1,0 +1,6 @@
+- [design-patterns.md](design-patterns.md) -- Design decisions and patterns established for page specs
+- [project-brand-motifs.md](project-brand-motifs.md) -- Hourglass/chess placement strategy per page
+- [reference-sites.md](reference-sites.md) -- Design system references extracted and key takeaways
+- [reference-porsche-patterns.md](reference-porsche-patterns.md) -- Porsche.com design system: fluid spacing, easing, restraint patterns
+- [design-system-v1.md](design-system-v1.md) -- Official design system decisions and their reference origins
+- [design-system-gap-update.md](design-system-gap-update.md) -- Gap analysis additions (Sections 13-22) added 2026-03-17

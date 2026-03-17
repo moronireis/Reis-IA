@@ -1,0 +1,80 @@
+---
+/**
+ * TokenTable — Displays a table of design tokens.
+ * Uses hairline grid pattern from the design system.
+ */
+import CopyButton from './CopyButton.tsx';
+
+interface Token {
+  name: string;
+  value: string;
+  cssVar: string;
+  usage?: string;
+}
+
+interface Props {
+  tokens: Token[];
+  showPreview?: boolean;
+  previewType?: 'color' | 'border' | 'text' | 'spacing' | 'radius';
+}
+
+const { tokens, showPreview = false, previewType = 'color' } = Astro.props;
+---
+
+<div
+  class="border rounded-xl overflow-hidden"
+  style="border-color: var(--border-default);"
+>
+  <!-- Header row -->
+  <div
+    class="grid grid-cols-[1fr_1fr_1.5fr] md:grid-cols-[180px_200px_1fr] gap-0 border-b"
+    style="background: var(--surface-2); border-color: var(--border-default);"
+  >
+    <div class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-wider" style="color: var(--text-tertiary);">
+      Token
+    </div>
+    <div class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-wider" style="color: var(--text-tertiary);">
+      Value
+    </div>
+    <div class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-wider" style="color: var(--text-tertiary);">
+      Usage
+    </div>
+  </div>
+
+  <!-- Data rows -->
+  {tokens.map((token, i) => (
+    <div
+      class="grid grid-cols-[1fr_1fr_1.5fr] md:grid-cols-[180px_200px_1fr] gap-0 border-b last:border-b-0 transition-colors duration-200 hover:bg-[var(--surface-2)]"
+      style={`background: var(--surface-1); border-color: var(--border-subtle);`}
+    >
+      <div class="px-4 py-3 flex items-center gap-2">
+        {showPreview && previewType === 'color' && (
+          <div
+            class="w-4 h-4 rounded-sm flex-shrink-0 border"
+            style={`background: var(${token.cssVar}); border-color: var(--border-default);`}
+          ></div>
+        )}
+        {showPreview && previewType === 'border' && (
+          <div
+            class="w-4 h-4 rounded-sm flex-shrink-0"
+            style={`border: 2px solid var(${token.cssVar});`}
+          ></div>
+        )}
+        <div class="flex items-center gap-1 min-w-0">
+          <span class="font-mono text-xs truncate" style="color: var(--text-secondary);">
+            {token.name}
+          </span>
+          <CopyButton client:visible text={`var(${token.cssVar})`} />
+        </div>
+      </div>
+      <div class="px-4 py-3">
+        <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">
+          {token.value}
+        </code>
+      </div>
+      <div class="px-4 py-3 text-xs" style="color: var(--text-tertiary);">
+        {token.usage}
+      </div>
+    </div>
+  ))}
+</div>

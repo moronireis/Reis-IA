@@ -1,0 +1,66 @@
+---
+/**
+ * TypeSpecimen — Renders a live type sample with metadata.
+ */
+import CopyButton from './CopyButton.tsx';
+
+interface Props {
+  name: string;
+  cssVar: string;
+  weight: string;
+  lineHeight: string;
+  letterSpacing: string;
+  sample?: string;
+  clampValue?: string;
+}
+
+const {
+  name,
+  cssVar,
+  weight,
+  lineHeight,
+  letterSpacing,
+  sample = 'Reis IA Design System',
+  clampValue,
+} = Astro.props;
+---
+
+<div
+  class="py-6 border-b flex flex-col md:flex-row md:items-baseline gap-4"
+  style="border-color: var(--border-subtle);"
+>
+  <!-- Metadata column -->
+  <div class="flex-shrink-0 w-full md:w-48">
+    <div class="flex items-center gap-2 mb-1">
+      <span class="font-mono text-[11px] font-semibold uppercase tracking-wider" style="color: var(--accent-blue);">
+        {name}
+      </span>
+      <CopyButton client:visible text={`var(${cssVar})`} />
+    </div>
+    <div class="space-y-0.5">
+      <div class="text-[11px] font-mono" style="color: var(--text-quaternary);">
+        Weight: {weight}
+      </div>
+      <div class="text-[11px] font-mono" style="color: var(--text-quaternary);">
+        Line-height: {lineHeight}
+      </div>
+      <div class="text-[11px] font-mono" style="color: var(--text-quaternary);">
+        Letter-spacing: {letterSpacing}
+      </div>
+      {clampValue && (
+        <div class="text-[10px] font-mono mt-1" style="color: var(--text-muted);">
+          {clampValue}
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- Live sample -->
+  <div class="flex-1 min-w-0 truncate">
+    <span
+      style={`font-size: var(${cssVar}); font-weight: ${weight}; line-height: ${lineHeight}; letter-spacing: ${letterSpacing}; color: var(--text-primary);`}
+    >
+      {sample}
+    </span>
+  </div>
+</div>

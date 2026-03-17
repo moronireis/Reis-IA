@@ -1,0 +1,417 @@
+@import "tailwindcss";
+@import "./design-system.css";
+@import "./animations.css";
+
+/* ---- BASE STYLES ---- */
+@layer base {
+  html {
+    font-family: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    background-color: var(--surface-0);
+    color: var(--text-primary);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--surface-0);
+    overflow-x: hidden;
+  }
+
+  /* Heading defaults */
+  h1 { font-size: var(--text-h1); line-height: 1.08; letter-spacing: -0.025em; font-weight: 700; }
+  h2 { font-size: var(--text-h2); line-height: 1.10; letter-spacing: -0.02em; font-weight: 600; }
+  h3 { font-size: var(--text-h3); line-height: 1.15; letter-spacing: -0.015em; font-weight: 600; }
+  h4 { font-size: var(--text-h4); line-height: 1.20; letter-spacing: -0.01em; font-weight: 600; }
+  h5 { font-size: var(--text-h5); line-height: 1.25; letter-spacing: -0.005em; font-weight: 600; }
+
+  /* Body text */
+  p {
+    font-size: var(--text-body);
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+
+  /* Links */
+  a {
+    color: var(--accent-blue);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-base);
+  }
+  a:hover {
+    color: var(--accent-blue-hover);
+  }
+
+  /* Code */
+  code {
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.875em;
+    background: var(--surface-2);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    border: 1px solid var(--border-default);
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+  }
+}
+
+/* ==========================================================================
+   ICON SYSTEM -- Lucide Icons Integration
+   [ADDED -- 2026-03-17] Source: Implementation Guide 8E
+   ========================================================================== */
+
+/* Icon sizes */
+.icon-xs  { width: 12px; height: 12px; }
+.icon-sm  { width: 16px; height: 16px; }
+.icon-md  { width: 20px; height: 20px; }
+.icon-lg  { width: 24px; height: 24px; }
+.icon-xl  { width: 32px; height: 32px; }
+
+/* Icon colors */
+.icon-default { color: var(--text-secondary); }
+.icon-primary { color: var(--text-primary); }
+.icon-accent  { color: var(--accent-blue); }
+.icon-muted   { color: var(--text-quaternary); }
+.icon-error   { color: var(--color-error); }
+
+/* Icon alignment helper (aligns to text x-height) */
+.icon-inline {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: -0.125em;
+}
+
+/* ==========================================================================
+   BADGE VARIANTS
+   [ADDED -- 2026-03-17] Source: Implementation Guide 8F
+   ========================================================================== */
+
+/* Base badge (shared properties) */
+.badge,
+.badge-accent,
+.badge-success,
+.badge-warning,
+.badge-error,
+.badge-neutral {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: var(--radius-md, 6px);
+  border-width: 1px;
+  border-style: solid;
+}
+
+/* Accent (default) */
+.badge,
+.badge-accent {
+  background: var(--blue-10, rgba(74, 144, 255, 0.10));
+  border-color: var(--blue-20, rgba(74, 144, 255, 0.20));
+  color: var(--accent-blue, #4A90FF);
+}
+
+/* Success */
+.badge-success {
+  background: var(--color-success-bg, rgba(34, 197, 94, 0.10));
+  border-color: rgba(34, 197, 94, 0.20);
+  color: var(--color-success, #22C55E);
+}
+
+/* Warning */
+.badge-warning {
+  background: var(--color-warning-bg, rgba(245, 158, 11, 0.10));
+  border-color: rgba(245, 158, 11, 0.20);
+  color: var(--color-warning, #F59E0B);
+}
+
+/* Error */
+.badge-error {
+  background: var(--color-error-bg, rgba(239, 68, 68, 0.10));
+  border-color: rgba(239, 68, 68, 0.20);
+  color: var(--color-error, #EF4444);
+}
+
+/* Neutral */
+.badge-neutral {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border-visible, rgba(255, 255, 255, 0.12));
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   FORM INPUTS
+   [ADDED -- 2026-03-17] Source: Implementation Guide 8G
+   ========================================================================== */
+
+/* Base input */
+.input {
+  display: block;
+  width: 100%;
+  height: 48px;
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--surface-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius, 8px);
+  transition: border-color 200ms var(--ease-base),
+              box-shadow 200ms var(--ease-base);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--text-quaternary);
+}
+
+/* Hover */
+.input:hover:not(:focus):not(:disabled):not(.input-error) {
+  border-color: var(--border-visible);
+}
+
+/* Focus */
+.input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px var(--blue-15, rgba(74, 144, 255, 0.15));
+}
+
+/* Error state */
+.input-error,
+.input.is-error {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* Success state */
+.input-success,
+.input.is-success {
+  border-color: var(--color-success);
+}
+
+/* Disabled state */
+.input:disabled,
+.input.is-disabled {
+  background: var(--surface-2);
+  border-color: var(--border-subtle);
+  color: var(--text-quaternary);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Textarea variant */
+.input-textarea {
+  height: auto;
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Select variant */
+.input-select {
+  appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+}
+
+/* Field label */
+.input-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+/* Helper text */
+.input-helper {
+  display: block;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-top: 6px;
+}
+
+/* Error text */
+.input-error-text {
+  display: block;
+  font-size: 13px;
+  color: var(--color-error);
+  margin-top: 6px;
+}
+
+/* ==========================================================================
+   HAIRLINE GRID
+   [ADDED -- 2026-03-17] Source: Implementation Guide 8H
+   ========================================================================== */
+
+.grid-hairline {
+  display: grid;
+  gap: 1px;
+  background: var(--border-default);
+  border: 1px solid var(--border-default);
+}
+
+.grid-hairline > * {
+  background: var(--surface-0);
+}
+
+/* Variant on Surface-1 section */
+.grid-hairline-s1 > * {
+  background: var(--surface-1);
+}
+
+/* Common column patterns */
+.grid-hairline-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-hairline-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-hairline-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Responsive collapse */
+@media (max-width: 767px) {
+  .grid-hairline-2,
+  .grid-hairline-3,
+  .grid-hairline-4 {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .grid-hairline-3,
+  .grid-hairline-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ==========================================================================
+   KPI CARD
+   [ADDED -- 2026-03-17] Source: Implementation Guide 8I
+   ========================================================================== */
+
+.kpi-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl, 12px);
+  padding: 24px;
+  transition: border-color 200ms var(--ease-base),
+              background-color 200ms var(--ease-base);
+}
+
+.kpi-card:hover {
+  border-color: var(--border-visible);
+  background: var(--surface-3);
+}
+
+.kpi-card__label {
+  font-size: var(--text-label, 12px);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+
+.kpi-card__value {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-card__value--accent {
+  color: var(--accent-blue);
+}
+
+.kpi-card__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.kpi-card__trend--up {
+  color: var(--color-success, #22C55E);
+}
+
+.kpi-card__trend--down {
+  color: var(--color-error, #EF4444);
+}
+
+.kpi-card__context {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   TABS
+   [ADDED -- 2026-03-17] Source: Implementation Guide 8J
+   ========================================================================== */
+
+.tabs {}
+
+.tab-list {
+  display: flex;
+  border-bottom: 1px solid var(--border-default);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;  /* Firefox */
+}
+
+.tab-list::-webkit-scrollbar {
+  display: none;  /* Chrome/Safari */
+}
+
+.tab-trigger {
+  flex-shrink: 0;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 200ms var(--ease-base),
+              border-color 200ms var(--ease-base);
+  white-space: nowrap;
+}
+
+.tab-trigger:hover {
+  color: var(--text-secondary);
+}
+
+.tab-trigger[aria-selected="true"],
+.tab-trigger.is-active {
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom-color: var(--accent-blue);
+}
+
+.tab-panel {
+  padding-top: 24px;
+  min-height: 100px;
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
+.tab-panel:not([hidden]) {
+  animation: tab-fade-in 200ms var(--ease-base);
+}
+
+@keyframes tab-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

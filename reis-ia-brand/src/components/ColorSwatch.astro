@@ -1,0 +1,55 @@
+---
+/**
+ * ColorSwatch — Displays a color sample with metadata.
+ * Used on foundations, surfaces, and token pages.
+ */
+import CopyButton from './CopyButton.tsx';
+
+interface Props {
+  name: string;
+  cssVar: string;
+  hex?: string;
+  opacity?: string;
+  usage?: string;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const { name, cssVar, hex, opacity, usage, size = 'md' } = Astro.props;
+
+const sizeClasses = {
+  sm: 'w-16 h-16',
+  md: 'w-20 h-20',
+  lg: 'w-full h-24',
+};
+---
+
+<div class="flex-shrink-0">
+  <div
+    class:list={[sizeClasses[size], "rounded-lg mb-2 border"]}
+    style={`background: var(${cssVar}); border-color: var(--border-default);`}
+  ></div>
+  <div class="text-xs font-medium mb-0.5" style="color: var(--text-secondary);">
+    {name}
+  </div>
+  {hex && (
+    <div class="flex items-center gap-1">
+      <span class="text-[11px] font-mono" style="color: var(--text-quaternary);">
+        {hex}
+      </span>
+    </div>
+  )}
+  {opacity && (
+    <div class="text-[11px] font-mono" style="color: var(--text-quaternary);">
+      {opacity}
+    </div>
+  )}
+  <div class="flex items-center mt-1">
+    <CopyButton client:visible text={cssVar} label="" />
+    <span class="text-[10px] font-mono" style="color: var(--text-muted);">{cssVar}</span>
+  </div>
+  {usage && (
+    <div class="text-[10px] mt-1 max-w-[160px]" style="color: var(--text-tertiary);">
+      {usage}
+    </div>
+  )}
+</div>

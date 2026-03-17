@@ -1,0 +1,60 @@
+---
+/**
+ * DosDonts — Displays do/don't guidelines side by side.
+ */
+interface Item {
+  type: 'do' | 'dont';
+  text: string;
+}
+
+interface Props {
+  items: Item[];
+}
+
+const { items } = Astro.props;
+const dos = items.filter(i => i.type === 'do');
+const donts = items.filter(i => i.type === 'dont');
+---
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <!-- Do column -->
+  <div
+    class="rounded-xl p-6 border"
+    style="background: var(--color-success-bg); border-color: var(--color-success-border);"
+  >
+    <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--color-success);">
+      Do
+    </div>
+    <ul class="space-y-3">
+      {dos.map(item => (
+        <li class="flex items-start gap-2 text-sm" style="color: var(--text-secondary);">
+          <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: var(--color-success);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span>{item.text}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Don't column -->
+  <div
+    class="rounded-xl p-6 border"
+    style="background: var(--color-error-bg); border-color: var(--color-error-border);"
+  >
+    <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--color-error);">
+      Don't
+    </div>
+    <ul class="space-y-3">
+      {donts.map(item => (
+        <li class="flex items-start gap-2 text-sm" style="color: var(--text-secondary);">
+          <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: var(--color-error);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+          <span>{item.text}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>

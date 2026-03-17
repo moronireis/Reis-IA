@@ -1,0 +1,536 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+
+const codeContainer = `/* Section container widths */
+.container-standard { max-width: 1200px; }
+.container-narrow   { max-width: 800px; }
+.container-text     { max-width: 680px; }
+.container-wide     { max-width: 1280px; }
+
+/* All containers share: */
+.container-* {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+/* Container padding is fluid: */
+--container-padding: clamp(20px, 5vw, 48px);`;
+
+const codeSection = `<!-- Section wrapper pattern -->
+<section style="background: var(--surface-0);">
+  <div class="container-standard"
+    style="padding-top: var(--space-3xl);
+           padding-bottom: var(--space-3xl);">
+    <SectionLabel number="01" title="Section Title" />
+    <!-- content -->
+  </div>
+</section>`;
+
+const codeSectionLabel = `<!-- Section numbered label -->
+<div class="font-mono text-[11px] font-bold uppercase
+  tracking-[0.04em] mb-6">
+  <span style="color: var(--accent-blue);">[01]</span>
+  <span class="ml-2"
+    style="color: var(--text-secondary);">
+    SECTION TITLE
+  </span>
+</div>`;
+
+const codeAlternation = `<!-- Surface alternation pattern -->
+<section style="background: var(--surface-0);">
+  <!-- Section 1 content -->
+</section>
+<div class="gradient-divider"></div>
+<section style="background: var(--surface-1);">
+  <!-- Section 2 content -->
+</section>
+<div class="gradient-divider"></div>
+<section style="background: var(--surface-0);">
+  <!-- Section 3 content -->
+</section>`;
+
+const codeAmbient = `/* Blue ambient pool (hero/CTA sections) */
+.section-hero {
+  position: relative;
+  overflow: hidden;
+}
+.section-hero::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 60%;
+  height: 140%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(74, 144, 255, 0.06) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}`;
+
+const codeWatermark = `/* Hourglass watermark section */
+.section-watermark {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-watermark .watermark {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 240px;
+  height: 336px;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (max-width: 767px) {
+  .section-watermark .watermark {
+    display: none;
+  }
+}`;
+
+const codeTransition = `/* Gradient fade between sections */
+.section-transition-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--surface-next)
+  );
+  pointer-events: none;
+}
+
+/* Gradient divider (1px line) */
+.gradient-divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--border-default) 20%,
+    var(--border-default) 80%,
+    transparent
+  );
+}`;
+
+const codeHero = `<!-- Hero section pattern -->
+<section class="relative overflow-hidden"
+  style="background: var(--surface-0);">
+  <!-- Ambient pool -->
+  <div class="absolute inset-0"
+    style="background: radial-gradient(
+      ellipse at center,
+      rgba(74,144,255,0.06) 0%,
+      transparent 70%);
+      pointer-events: none;">
+  </div>
+
+  <div class="container-standard relative z-10"
+    style="padding-top: var(--space-4xl);
+           padding-bottom: var(--space-3xl);">
+    <!-- Badge -->
+    <span class="badge-accent mb-6 inline-block">
+      AI Consulting
+    </span>
+
+    <!-- Headline (max 900px) -->
+    <h1 class="max-w-[900px] font-bold"
+      style="font-size: var(--text-display);
+             text-wrap: balance;">
+      Multiply your revenue with AI systems
+    </h1>
+
+    <!-- Subhead (max 680px) -->
+    <p class="max-w-[680px] mt-6"
+      style="font-size: var(--text-body-lg);
+             color: var(--text-secondary);">
+      Description text here.
+    </p>
+
+    <!-- CTA pair -->
+    <div class="flex flex-wrap gap-4 mt-8">
+      <a href="/agendar" class="btn-hero">
+        Agendar Reuniao
+      </a>
+      <a href="/aplicar" class="btn-secondary">
+        Aplicar Agora
+      </a>
+    </div>
+  </div>
+</section>`;
+
+const codeCta = `<!-- CTA section pattern -->
+<section class="relative overflow-hidden"
+  style="background: var(--surface-1);">
+  <div class="absolute inset-0"
+    style="background: radial-gradient(
+      ellipse at center,
+      rgba(74,144,255,0.06) 0%,
+      transparent 70%);
+      pointer-events: none;">
+  </div>
+
+  <div class="container-standard relative z-10
+    text-center"
+    style="padding-top: var(--space-3xl);
+           padding-bottom: var(--space-3xl);">
+    <h2 class="font-bold mb-4"
+      style="font-size: var(--text-h2);
+             text-wrap: balance;">
+      Ready to transform your business?
+    </h2>
+    <p class="max-w-[600px] mx-auto mb-8"
+      style="color: var(--text-secondary);">
+      Schedule a free strategy call.
+    </p>
+    <a href="/agendar" class="btn-primary">
+      Agendar Reuniao
+    </a>
+  </div>
+</section>`;
+---
+
+<BrandbookLayout
+  title="Sections"
+  pageName="SECTIONS"
+  description="Section layout patterns: containers, numbered labels, surface alternation, ambient pools, watermarks, and section transitions."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Sections
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Sections are the top-level layout unit. Each section gets a surface background, generous fluid padding, a container width, and an optional ambient light pool. Sections alternate between Surface-0 and Surface-1 to create visual rhythm without explicit dividers.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: Container System -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Container System" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Four container widths create a content hierarchy. Headlines use container-headline (900px), body text uses container-text (680px), general content uses container-standard (1200px), and full-bleed layouts use container-wide (1280px).
+        </p>
+      </div>
+
+      <!-- Visual container comparison -->
+      <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
+        <div class="p-6" style="background: var(--surface-0);">
+          {[
+            { label: 'Wide', width: '1280px', pct: '100%' },
+            { label: 'Standard', width: '1200px', pct: '93.75%' },
+            { label: 'Headline', width: '900px', pct: '70.3%' },
+            { label: 'Narrow', width: '800px', pct: '62.5%' },
+            { label: 'Text', width: '680px', pct: '53.1%' },
+          ].map(c => (
+            <div class="mb-3 last:mb-0">
+              <div class="flex items-center gap-3 mb-1">
+                <span class="font-mono text-[10px] font-bold uppercase tracking-wider" style="color: var(--accent-blue); min-width: 70px;">{c.label}</span>
+                <span class="font-mono text-[10px]" style="color: var(--text-quaternary);">{c.width}</span>
+              </div>
+              <div
+                class="h-3 rounded-sm"
+                style={`width: ${c.pct}; background: var(--blue-10); border: 1px solid var(--blue-20); max-width: 100%;`}
+              ></div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Container System CSS" code={codeContainer} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Section Wrapper Pattern -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Section Wrapper Pattern" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Every section follows the same structure: a <code>&lt;section&gt;</code> tag with a surface background, a container <code>&lt;div&gt;</code> with fluid padding, and content inside. Padding uses <code>var(--space-3xl)</code> which scales from 64px to 120px.
+        </p>
+      </div>
+
+      <CodeBlock client:visible label="Section Wrapper" language="html" code={codeSection} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Numbered Label -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Numbered Section Label" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Adapted from the AIOX structural pattern. Monospace font, 11px, bold, uppercase with tight letter-spacing. The number appears in accent blue, the title in text-secondary. Used at the top of every documentation section.
+        </p>
+      </div>
+
+      <!-- Live demos -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {['01', '02', '03', '04'].map((num, i) => (
+          <div class="rounded-xl border p-6" style={`background: var(--surface-${i % 2}); border-color: var(--border-default);`}>
+            <SectionLabel number={num} title={['Color System', 'Typography', 'Spacing Scale', 'Surfaces'][i]} />
+            <p class="text-sm" style="color: var(--text-tertiary);">
+              Section content would appear here beneath the numbered label.
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <CodeBlock client:visible label="Section Label Component" language="html" code={codeSectionLabel} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Surface Alternation -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Surface Alternation" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Sections alternate between Surface-0 (#000000) and Surface-1 (#0A0A0A). This subtle shift creates visual rhythm without needing borders or dividers. A gradient divider (1px fading line) adds optional stronger separation.
+        </p>
+      </div>
+
+      <!-- Visual demo: stacked sections -->
+      <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
+        <div class="p-6" style="background: var(--surface-0);">
+          <div class="font-mono text-[10px] uppercase tracking-wider mb-2" style="color: var(--accent-blue);">Section 1 — Surface-0</div>
+          <div class="h-8 rounded" style="background: var(--surface-2); border: 1px solid var(--border-default);"></div>
+        </div>
+        <div class="gradient-divider"></div>
+        <div class="p-6" style="background: var(--surface-1);">
+          <div class="font-mono text-[10px] uppercase tracking-wider mb-2" style="color: var(--accent-blue);">Section 2 — Surface-1</div>
+          <div class="h-8 rounded" style="background: var(--surface-2); border: 1px solid var(--border-default);"></div>
+        </div>
+        <div class="gradient-divider"></div>
+        <div class="p-6" style="background: var(--surface-0);">
+          <div class="font-mono text-[10px] uppercase tracking-wider mb-2" style="color: var(--accent-blue);">Section 3 — Surface-0</div>
+          <div class="h-8 rounded" style="background: var(--surface-2); border: 1px solid var(--border-default);"></div>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Surface Alternation" language="html" code={codeAlternation} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Ambient Pools -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Ambient Pool Background" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Blue-tinted radial gradients appear on hero and CTA sections. Neutral pools appear on secondary sections. The alternating positions create visual rhythm and directional depth.
+        </p>
+      </div>
+
+      <!-- Visual demo -->
+      <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
+        <div class="relative p-8" style="background: var(--surface-0); min-height: 200px;">
+          <div style="position: absolute; top: -20%; left: -10%; width: 60%; height: 140%; background: radial-gradient(ellipse at center, rgba(74,144,255,0.06) 0%, transparent 70%); pointer-events: none;"></div>
+          <div class="relative z-10">
+            <div class="font-mono text-[10px] uppercase tracking-wider mb-3" style="color: var(--accent-blue);">Hero Section with Blue Ambient</div>
+            <div class="max-w-[400px]">
+              <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">Section Headline</h3>
+              <p class="text-sm" style="color: var(--text-secondary);">
+                The blue ambient pool creates a subtle glow behind the content, adding depth without distraction.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Ambient Pool CSS" code={codeAmbient} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Hourglass Watermark -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Hourglass Watermark" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Large hourglass silhouettes (200-300px) at 3-5% opacity. Hidden on mobile to reduce visual noise. Place in sections about time, efficiency, urgency, or wherever a visual anchor enhances the narrative.
+        </p>
+      </div>
+
+      <!-- Visual demo -->
+      <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
+        <div class="relative p-8" style="background: var(--surface-1); min-height: 200px; overflow: hidden;">
+          <svg
+            viewBox="0 0 100 140"
+            style="position: absolute; top: -20px; right: -20px; width: 200px; height: 280px; pointer-events: none; opacity: 0.04;"
+            fill="white"
+            aria-hidden="true"
+          >
+            <polygon points="10,0 90,0 50,60" />
+            <polygon points="10,140 90,140 50,80" />
+          </svg>
+          <div class="relative z-10 max-w-[500px]">
+            <div class="font-mono text-[10px] uppercase tracking-wider mb-3" style="color: var(--accent-blue);">Watermark Demo</div>
+            <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">Save 100+ Hours Monthly</h3>
+            <p class="text-sm" style="color: var(--text-secondary);">
+              The hourglass watermark appears subtly behind time/efficiency content, reinforcing the brand motif without competing with readability.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Watermark CSS" code={codeWatermark} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Section Transitions -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Section Transitions" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Two transition patterns: the gradient divider (a 1px line fading from transparent to border color and back), and the gradient fade (a 120px tall blend from one surface to the next). Use the divider for same-tier transitions, the fade for tier jumps.
+        </p>
+      </div>
+
+      <CodeBlock client:visible label="Section Transitions CSS" code={codeTransition} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 08: Hero Section Pattern -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Hero Section Pattern" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          The hero section uses the largest spacing (space-4xl top, space-3xl bottom), a blue ambient pool, and contains the badge, display headline (max 900px), body text (max 680px), and CTA button pair.
+        </p>
+      </div>
+
+      <!-- Mini hero demo -->
+      <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
+        <div class="relative" style="background: var(--surface-0);">
+          <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(74,144,255,0.06) 0%, transparent 70%); pointer-events: none;"></div>
+          <div class="relative z-10 p-8 md:p-12">
+            <span class="badge-accent mb-4 inline-block">AI Consulting</span>
+            <h2 class="text-2xl md:text-3xl font-bold mb-3" style="color: var(--text-primary); text-wrap: balance;">Multiply Your Revenue with AI Systems</h2>
+            <p class="text-sm max-w-[500px] mb-6" style="color: var(--text-secondary);">
+              Strategy, implementation, and ongoing optimization of AI systems that drive measurable business outcomes.
+            </p>
+            <div class="flex flex-wrap gap-3">
+              <a href="/agendar" style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; text-decoration: none;">
+                Agendar Reuniao
+              </a>
+              <a href="/aplicar" style="display: inline-flex; align-items: center; justify-content: center; background: transparent; color: var(--text-primary); font-size: 16px; font-weight: 600; padding: 14px 32px; border-radius: 8px; border: 1px solid var(--border-visible); text-decoration: none;">
+                Aplicar Agora
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Hero Section Pattern" language="html" code={codeHero} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 09: CTA Section Pattern -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="09" title="CTA Section Pattern" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Centered CTA section with ambient blue pool. Used as a closing section on every page. Headline + supporting text + single primary CTA. All routes to /agendar or /aplicar.
+        </p>
+      </div>
+
+      <!-- Mini CTA demo -->
+      <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
+        <div class="relative" style="background: var(--surface-1);">
+          <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(74,144,255,0.06) 0%, transparent 70%); pointer-events: none;"></div>
+          <div class="relative z-10 p-8 md:p-12 text-center">
+            <h3 class="text-xl md:text-2xl font-bold mb-3" style="color: var(--text-primary); text-wrap: balance;">
+              Ready to Transform Your Business?
+            </h3>
+            <p class="text-sm max-w-[500px] mx-auto mb-6" style="color: var(--text-secondary);">
+              Schedule a free strategy call to discuss your AI implementation goals.
+            </p>
+            <a href="/agendar" style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; text-decoration: none;">
+              Agendar Reuniao
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="CTA Section Pattern" language="html" code={codeCta} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 10: Usage Rules -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="10" title="Usage Rules" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Alternate Surface-0 and Surface-1 between consecutive sections' },
+        { type: 'do', text: 'Use generous padding — var(--space-3xl) (64-120px) for standard sections' },
+        { type: 'do', text: 'Cap body text at 680px, headlines at 900px within any container' },
+        { type: 'do', text: 'Place ambient blue pools on hero and CTA sections only' },
+        { type: 'do', text: 'Hide watermark motifs on mobile screens' },
+        { type: 'dont', text: 'Jump more than one surface tier between adjacent sections (Surface-0 to Surface-3)' },
+        { type: 'dont', text: 'Use less than 48px spacing between sections — premium = spacious' },
+        { type: 'dont', text: 'Stack multiple ambient pools in the same section' },
+        { type: 'dont', text: 'Place two CTA sections within 2 viewports of each other' },
+        { type: 'dont', text: 'Create sections longer than 2 viewports without a CTA touchpoint' },
+      ]} />
+    </div>
+  </section>
+</BrandbookLayout>

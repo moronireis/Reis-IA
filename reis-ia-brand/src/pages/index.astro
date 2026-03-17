@@ -1,0 +1,253 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionLabel from '../components/SectionLabel.astro';
+import { homeSections } from '../data/navigation';
+---
+
+<BaseLayout title="Design System Overview">
+  <!-- Hero -->
+  <section
+    class="relative overflow-hidden"
+    style="background: var(--surface-0);"
+  >
+    <!-- Ambient glow -->
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] pointer-events-none"
+      style="background: var(--gradient-blue-ambient); opacity: 0.6;"
+      aria-hidden="true"
+    ></div>
+
+    <div class="container-standard relative py-24 md:py-32 lg:py-40">
+      <div class="max-w-[900px]">
+        <!-- Eyebrow -->
+        <div class="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] mb-6" style="color: var(--accent-blue);">
+          Design System v1.0
+        </div>
+
+        <!-- Headline -->
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary);"
+        >
+          The single source of truth for <span style="color: var(--accent-blue);">Reis IA</span>
+        </h1>
+
+        <!-- Description -->
+        <p
+          class="max-w-[600px] mb-10"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary);"
+        >
+          Brand identity, design tokens, components, patterns, and guidelines
+          — everything needed to build consistent, premium experiences across
+          the Reis IA ecosystem.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap gap-3">
+          <a
+            href="/brandbook/foundations"
+            class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300"
+            style="background: var(--accent-blue); color: #000;"
+          >
+            Explore Foundations
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+          <a
+            href="/brandbook/components"
+            class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold rounded-lg border transition-all duration-300 hover:bg-[var(--accent-05)]"
+            style="border-color: var(--border-visible); color: var(--text-secondary);"
+          >
+            Browse Components
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gradient divider -->
+  <div class="gradient-divider"></div>
+
+  <!-- Section Navigation Grid -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard py-16 md:py-24">
+      <SectionLabel number="01" title="Explore the System" />
+
+      <!-- Bento Grid -->
+      <div
+        class="grid grid-cols-12 gap-[1px] rounded-xl border overflow-hidden"
+        style="background: var(--border-default); border-color: var(--border-default);"
+      >
+        {homeSections.map((section) => (
+          <a
+            href={section.href}
+            class:list={[
+              "col-span-12 group relative p-6 md:p-8 transition-colors duration-300 hover:!bg-[var(--surface-3)]",
+              section.span,
+            ]}
+            style="background: var(--surface-1);"
+          >
+            <!-- Number -->
+            <div
+              class="font-mono text-[42px] md:text-[56px] font-bold leading-none mb-4 transition-colors duration-300 group-hover:text-[var(--accent-blue)]"
+              style="color: var(--text-muted);"
+            >
+              {section.number}
+            </div>
+
+            <!-- Title -->
+            <h3
+              class="text-lg font-semibold mb-2 transition-colors duration-300 group-hover:text-[var(--text-primary)]"
+              style="color: var(--text-secondary);"
+            >
+              {section.title}
+            </h3>
+
+            <!-- Description -->
+            <p class="text-sm max-w-[340px]" style="color: var(--text-tertiary);">
+              {section.description}
+            </p>
+
+            <!-- Arrow indicator -->
+            <div
+              class="absolute top-6 right-6 opacity-0 translate-x-[-4px] transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0"
+              style="color: var(--accent-blue);"
+            >
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Token Preview Strip -->
+  <div class="gradient-divider"></div>
+
+  <section style="background: var(--surface-1);">
+    <div class="container-standard py-16 md:py-24">
+      <SectionLabel number="02" title="Token Preview" />
+
+      <!-- Color Palette -->
+      <div class="mb-12">
+        <h3 class="text-lg font-semibold mb-6" style="color: var(--text-secondary);">
+          Accent Blue
+        </h3>
+        <div class="flex flex-wrap gap-3">
+          {[
+            { name: 'Blue', var: '--accent-blue', hex: '#4A90FF' },
+            { name: 'Hover', var: '--accent-blue-hover', hex: '#6AADFF' },
+            { name: 'Muted', var: '--accent-blue-muted', hex: '#3570CC' },
+            { name: 'Bright', var: '--accent-blue-bright', hex: '#8DC4FF' },
+          ].map((color) => (
+            <div class="flex-shrink-0">
+              <div
+                class="w-20 h-20 rounded-lg mb-2 border"
+                style={`background: var(${color.var}); border-color: var(--border-default);`}
+              ></div>
+              <div class="text-xs font-medium" style="color: var(--text-secondary);">
+                {color.name}
+              </div>
+              <div class="text-[11px] font-mono" style="color: var(--text-quaternary);">
+                {color.hex}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Surface Tiers -->
+      <div class="mb-12">
+        <h3 class="text-lg font-semibold mb-6" style="color: var(--text-secondary);">
+          Surface System
+        </h3>
+        <div class="flex flex-wrap gap-3">
+          {[
+            { name: 'Void', tier: '0', hex: '#000000' },
+            { name: 'Base', tier: '1', hex: '#0A0A0A' },
+            { name: 'Raised', tier: '2', hex: '#111111' },
+            { name: 'Elevated', tier: '3', hex: '#161616' },
+            { name: 'Float', tier: '4', hex: '#1A1A1A' },
+          ].map((surface) => (
+            <div class="flex-shrink-0">
+              <div
+                class="w-20 h-20 rounded-lg mb-2 border"
+                style={`background: var(--surface-${surface.tier}); border-color: var(--border-visible);`}
+              ></div>
+              <div class="text-xs font-medium" style="color: var(--text-secondary);">
+                {surface.name}
+              </div>
+              <div class="text-[11px] font-mono" style="color: var(--text-quaternary);">
+                {surface.hex}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Typography Scale Preview -->
+      <div>
+        <h3 class="text-lg font-semibold mb-6" style="color: var(--text-secondary);">
+          Typography Scale
+        </h3>
+        <div class="space-y-4">
+          {[
+            { name: 'Display', var: '--text-display', sample: 'Reis IA' },
+            { name: 'H1', var: '--text-h1', sample: 'Design System' },
+            { name: 'H2', var: '--text-h2', sample: 'Brand Identity' },
+            { name: 'H3', var: '--text-h3', sample: 'Components' },
+            { name: 'Body', var: '--text-body', sample: 'The single source of truth for premium experiences.' },
+          ].map((type) => (
+            <div class="flex items-baseline gap-4 pb-4 border-b" style="border-color: var(--border-subtle);">
+              <span class="flex-shrink-0 w-16 font-mono text-[11px]" style="color: var(--text-quaternary);">
+                {type.name}
+              </span>
+              <span
+                class="font-semibold truncate"
+                style={`font-size: var(${type.var}); color: var(--text-primary); line-height: 1.2;`}
+              >
+                {type.sample}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Stats -->
+  <div class="gradient-divider"></div>
+
+  <section style="background: var(--surface-0);">
+    <div class="container-standard py-16 md:py-24">
+      <SectionLabel number="03" title="System Overview" />
+
+      <div
+        class="grid grid-cols-2 md:grid-cols-4 gap-[1px] rounded-xl border overflow-hidden"
+        style="background: var(--border-default); border-color: var(--border-default);"
+      >
+        {[
+          { value: '5', label: 'Surface Tiers' },
+          { value: '14', label: 'Accent Opacities' },
+          { value: '12', label: 'Typography Scales' },
+          { value: '8', label: 'Spacing Steps' },
+        ].map((stat) => (
+          <div class="p-6 md:p-8 text-center" style="background: var(--surface-1);">
+            <div
+              class="text-3xl md:text-4xl font-bold mb-2 tabular-nums"
+              style="color: var(--accent-blue);"
+            >
+              {stat.value}
+            </div>
+            <div class="text-xs font-mono uppercase tracking-wider" style="color: var(--text-tertiary);">
+              {stat.label}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
