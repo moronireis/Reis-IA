@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Diagnóstico Reis IA — Descubra qual programa é ideal para o seu momento. Assessment interativo em 2 minutos." />
+  <title>Diagnóstico — Qual programa é ideal para você? | Reis IA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%234A90FF' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='14' y1='8' x2='50' y2='8'/%3E%3Cline x1='50' y1='8' x2='14' y2='56'/%3E%3Cline x1='14' y1='8' x2='25' y2='25'/%3E%3Cline x1='39' y1='39' x2='50' y2='56'/%3E%3Cline x1='14' y1='56' x2='50' y2='56'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --accent-blue: #4A90FF;
+      --accent-blue-hover: #6AADFF;
+      --accent-blue-muted: #3570CC;
+      --surface-0: #000000;
+      --surface-1: #0A0A0A;
+      --surface-2: #111111;
+      --surface-3: #161616;
+      --surface-4: #1A1A1A;
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(255, 255, 255, 0.70);
+      --text-tertiary: rgba(255, 255, 255, 0.50);
+      --text-quaternary: rgba(255, 255, 255, 0.35);
+      --border-default: rgba(255, 255, 255, 0.08);
+      --border-visible: rgba(255, 255, 255, 0.12);
+      --radius: 8px;
+      --radius-xl: 12px;
+      --radius-full: 9999px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-dramatic: cubic-bezier(0.65, 0, 0.35, 1);
+
+      --color-systems: #4ADE80;
+      --color-builders: #2D7AFF;
+      --color-starter: #FB923C;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; background: var(--surface-0); color: var(--text-primary); -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+    body { min-height: 100vh; background: var(--surface-0); overflow-x: hidden; }
+    ::selection { background: rgba(74, 144, 255, 0.30); color: white; }
+    body::after { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"); z-index: 9999; }
+
+    /* Nav */
+    .nav { position: fixed; top: 0; left: 0; right: 0; height: 64px; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-default); }
+    .nav-inner { max-width: 1200px; width: 100%; padding: 0 clamp(20px,5vw,48px); display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { display: flex; align-items: center; gap: 10px; color: var(--text-primary); font-weight: 300; font-size: 1rem; text-decoration: none; }
+    .nav-brand svg { color: var(--accent-blue); }
+
+    /* Progress bar */
+    .progress-wrap { position: fixed; top: 64px; left: 0; right: 0; height: 3px; background: var(--surface-2); z-index: 49; }
+    .progress-bar { height: 100%; background: var(--accent-blue); transition: width 0.5s var(--ease-out); width: 0%; }
+
+    /* Quiz container */
+    .quiz-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: calc(64px + 40px) 20px 60px; }
+    .quiz-container { max-width: 640px; width: 100%; }
+
+    /* Step */
+    .step { display: none; animation: stepIn 0.5s var(--ease-out); }
+    .step.active { display: block; }
+    @keyframes stepIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    .step-number { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-blue); margin-bottom: 16px; }
+    .step h2 { font-size: clamp(1.5rem, 1rem + 2vw, 2.25rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 8px; }
+    .step .step-desc { color: var(--text-tertiary); font-size: 0.9375rem; margin-bottom: 32px; line-height: 1.6; }
+
+    /* Option cards */
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .option {
+      position: relative; padding: 20px 24px; border-radius: var(--radius-xl);
+      background: var(--surface-2); border: 1px solid var(--border-default);
+      cursor: pointer; transition: all 0.25s var(--ease-out);
+      display: flex; align-items: flex-start; gap: 16px;
+    }
+    .option:hover { border-color: var(--border-visible); background: var(--surface-3); }
+    .option.selected { border-color: rgba(74,144,255,0.40); background: rgba(74,144,255,0.06); }
+    .option-radio {
+      width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border-visible);
+      flex-shrink: 0; margin-top: 2px; transition: all 0.2s; position: relative;
+    }
+    .option.selected .option-radio { border-color: var(--accent-blue); }
+    .option.selected .option-radio::after { content: ''; position: absolute; top: 4px; left: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-blue); }
+    .option-text h4 { font-size: 1rem; font-weight: 600; margin-bottom: 2px; }
+    .option-text p { font-size: 0.8125rem; color: var(--text-tertiary); line-height: 1.5; margin: 0; }
+
+    /* Input fields */
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 8px; }
+    .input-group input { width: 100%; padding: 14px 18px; font-family: inherit; font-size: 1rem; color: var(--text-primary); background: var(--surface-3); border: 1px solid var(--border-default); border-radius: var(--radius); outline: none; transition: border-color 0.2s; }
+    .input-group input:focus { border-color: rgba(74,144,255,0.4); }
+    .input-group input::placeholder { color: var(--text-quaternary); }
+
+    /* Buttons */
+    .btn-next {
+      margin-top: 32px; display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px; font-size: 1rem; font-weight: 600; font-family: inherit;
+      background: var(--accent-blue); color: #fff; border: none; border-radius: var(--radius-full);
+      cursor: pointer; transition: background 0.2s, transform 50ms, opacity 0.2s;
+    }
+    .btn-next:hover { background: var(--accent-blue-hover); }
+    .btn-next:active { transform: scale(0.98); }
+    .btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-next .arrow { transition: transform 0.2s; }
+    .btn-next:hover .arrow { transform: translateX(3px); }
+
+    /* ============ RESULTS ============ */
+    .result-card {
+      background: var(--surface-2); border-radius: 16px; padding: 40px;
+      border: 1px solid var(--border-default); margin-bottom: 32px;
+    }
+
+    /* Heat map bars */
+    .heatmap { margin: 32px 0; }
+    .heatmap-row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .heatmap-label { width: 100px; font-size: 0.8125rem; font-weight: 600; text-align: right; flex-shrink: 0; }
+    .heatmap-track { flex: 1; height: 32px; background: var(--surface-3); border-radius: 6px; overflow: hidden; position: relative; }
+    .heatmap-fill { height: 100%; border-radius: 6px; transition: width 1.2s var(--ease-dramatic); width: 0%; display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; }
+    .heatmap-fill span { font-size: 0.75rem; font-weight: 700; color: #fff; }
+    .heatmap-fill.systems { background: linear-gradient(90deg, rgba(74,222,128,0.2), var(--color-systems)); }
+    .heatmap-fill.builders { background: linear-gradient(90deg, rgba(45,122,255,0.2), var(--color-builders)); }
+    .heatmap-fill.starter { background: linear-gradient(90deg, rgba(251,146,60,0.2), var(--color-starter)); }
+
+    /* Radar chart (canvas) */
+    .radar-wrap { display: flex; justify-content: center; margin: 32px 0; }
+    .radar-wrap canvas { max-width: 300px; max-height: 300px; }
+
+    /* Result recommendation */
+    .recommendation {
+      text-align: center; padding: 32px; border-radius: var(--radius-xl);
+      margin-bottom: 24px;
+    }
+    .recommendation.systems { background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.20); }
+    .recommendation.builders { background: rgba(45,122,255,0.06); border: 1px solid rgba(45,122,255,0.20); }
+    .recommendation.starter { background: rgba(251,146,60,0.06); border: 1px solid rgba(251,146,60,0.20); }
+    .rec-badge { display: inline-flex; padding: 6px 16px; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
+    .rec-badge.systems { background: rgba(74,222,128,0.15); color: var(--color-systems); }
+    .rec-badge.builders { background: rgba(45,122,255,0.15); color: var(--color-builders); }
+    .rec-badge.starter { background: rgba(251,146,60,0.15); color: var(--color-starter); }
+    .rec-title { font-size: clamp(1.25rem, 1rem + 1.5vw, 1.75rem); font-weight: 700; margin-bottom: 8px; }
+    .rec-desc { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.7; max-width: 500px; margin: 0 auto 24px; }
+
+    .btn-cta {
+      display: inline-flex; align-items: center; padding: 16px 40px;
+      font-size: 1.0625rem; font-weight: 600; font-family: inherit;
+      color: #fff; border: none; border-radius: var(--radius-full);
+      cursor: pointer; transition: transform 50ms, filter 0.2s;
+      text-decoration: none;
+    }
+    .btn-cta:hover { filter: brightness(1.15); color: #fff; }
+    .btn-cta:active { transform: scale(0.98); }
+    .btn-cta.systems { background: var(--color-systems); color: #000; }
+    .btn-cta.builders { background: var(--color-builders); }
+    .btn-cta.starter { background: var(--color-starter); color: #000; }
+
+    /* Dimension cards */
+    .dimensions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+    .dim-card { background: var(--surface-3); border-radius: var(--radius); padding: 16px; }
+    .dim-label { font-size: 0.6875rem; color: var(--text-quaternary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .dim-value { font-size: 0.9375rem; font-weight: 600; }
+    @media (max-width: 480px) { .dimensions { grid-template-columns: 1fr; } .result-card { padding: 24px; } }
+
+    /* Footer */
+    .footer-mini { text-align: center; padding: 40px 20px; color: var(--text-quaternary); font-size: 0.8125rem; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface-0); }
+    ::-webkit-scrollbar-thumb { background: var(--border-visible); border-radius: 3px; }
+    @keyframes hourglass-spin {
+      0% { transform: rotate(0deg); }
+      20% { transform: rotate(180deg); }
+      45% { transform: rotate(180deg); }
+      65% { transform: rotate(360deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <span class="nav-brand" style="cursor: default;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" aria-hidden="true">
+          <line x1="14" y1="8" x2="50" y2="8"/><line x1="50" y1="8" x2="14" y2="56"/><line x1="14" y1="8" x2="25" y2="25"/><line x1="39" y1="39" x2="50" y2="56"/><line x1="14" y1="56" x2="50" y2="56"/>
+        </svg>
+        Reis IA
+      </span>
+      <span style="font-size: 0.8125rem; color: var(--text-quaternary);">Diagnóstico — 2 min</span>
+    </div>
+  </nav>
+
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-container">
+
+      <!-- STEP 0: INTRO -->
+      <div class="step active" data-step="0">
+        <div class="step-number">Diagnóstico Reis IA</div>
+        <h2>Descubra como ganhar tempo e receita por meio de IA de acordo com seu momento.</h2>
+        <p class="step-desc">7 perguntas rápidas. Em 2 minutos você recebe um diagnóstico personalizado — e o próximo passo concreto.</p>
+        <button class="btn-next" onclick="nextStep()">Começar diagnóstico <span class="arrow">&rarr;</span></button>
+      </div>
+
+      <!-- STEP 1: PERFIL -->
+      <div class="step" data-step="1">
+        <div class="step-number">Pergunta 1 de 7</div>
+        <h2>Qual é o seu perfil hoje?</h2>
+        <p class="step-desc">Escolha o que mais se aproxima da sua realidade atual.</p>
+        <div class="options" data-key="perfil">
+          <div class="option" data-value="empresa" data-scores="systems:3,builders:0,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Dono de empresa / C-Level</h4>
+              <p>Tenho uma empresa e quero usar IA para gerar mais receita ou eficiência.</p>
+            </div>
+          </div>
+          <div class="option" data-value="agencia" data-scores="systems:0,builders:3,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Dono de agência / Freelancer</h4>
+              <p>Trabalho com serviços digitais e quero vender IA como serviço.</p>
+            </div>
+          </div>
+          <div class="option" data-value="profissional" data-scores="systems:1,builders:2,starter:1">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Profissional / Gestor</h4>
+              <p>Trabalho em uma empresa e quero dominar IA para crescer na carreira.</p>
+            </div>
+          </div>
+          <div class="option" data-value="iniciante" data-scores="systems:0,builders:1,starter:3">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Estou começando</h4>
+              <p>Quero entender IA, ainda não tenho negócio ou serviço definido.</p>
+            </div>
+          </div>
+        </div>
+        <button class="btn-next" disabled onclick="nextStep()">Próxima <span class="arrow">&rarr;</span></button>
+      </div>
+
+      <!-- STEP 2: FATURAMENTO -->
+      <div class="step" data-step="2">
+        <div class="step-number">Pergunta 2 de 7</div>
+        <h2>Qual é o seu faturamento mensal?</h2>
+        <p class="step-desc">Se não tem negócio ainda, escolha a primeira opção.</p>
+        <div class="options" data-key="faturamento">
+          <div class="option" data-value="nao-fatura" data-scores="systems:0,builders:1,starter:3">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Não faturo ainda</h4>
+              <p>Fase de ideação ou primeiros passos.</p>
+            </div>
+          </div>
+          <div class="option" data-value="ate-5k" data-scores="systems:0,builders:2,starter:2">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Até R$ 5K/mês</h4>
+              <p>Operação inicial ou renda complementar.</p>
+            </div>
+          </div>
+          <div class="option" data-value="5k-10k" data-scores="systems:1,builders:3,starter:1">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>R$ 5K — R$ 10K/mês</h4>
+              <p>Negócio rodando, buscando escalar.</p>
+            </div>
+          </div>
+          <div class="option" data-value="10k-50k" data-scores="systems:2,builders:3,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>R$ 10K — R$ 50K/mês</h4>
+              <p>Operação estabelecida com margem para investir.</p>
+            </div>
+          </div>
+          <div class="option" data-value="50k-100k" data-scores="systems:3,builders:2,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>R$ 50K — R$ 100K/mês</h4>
+              <p>Empresa consolidada em crescimento.</p>
+            </div>
+          </div>
+          <div class="option" data-value="acima-100k" data-scores="systems:3,builders:1,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Mais de R$ 100K/mês</h4>
+              <p>Empresa com estrutura e receita significativa.</p>
+            </div>
+          </div>
+        </div>
+        <button class="btn-next" disabled onclick="nextStep()">Próxima <span class="arrow">&rarr;</span></button>
+      </div>
+
+      <!-- STEP 3: CONHECIMENTO IA -->
+      <div class="step" data-step="3">
+        <div class="step-number">Pergunta 3 de 7</div>
+        <h2>Qual é o seu nível de conhecimento em IA?</h2>
+        <p class="step-desc">Seja honesto — isso ajuda a direcionar melhor.</p>
+        <div class="options" data-key="nivel_ia">
+          <div class="option" data-value="avancado" data-scores="systems:3,builders:2,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Avançado</h4>
+              <p>Já implementei IA em projetos reais, conheço ferramentas e frameworks.</p>
+            </div>
+          </div>
+          <div class="option" data-value="intermediario" data-scores="systems:2,builders:3,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Intermediário</h4>
+              <p>Uso IA no dia a dia (ChatGPT, automações), mas nunca implementei comercialmente.</p>
+            </div>
+          </div>
+          <div class="option" data-value="basico" data-scores="systems:1,builders:2,starter:2">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Básico</h4>
+              <p>Entendo o conceito, já testei algumas ferramentas, mas sem profundidade.</p>
+            </div>
+          </div>
+          <div class="option" data-value="zero" data-scores="systems:0,builders:0,starter:3">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Estou começando do zero</h4>
+              <p>Sei que IA é importante mas ainda não mergulhei no assunto.</p>
+            </div>
+          </div>
+        </div>
+        <button class="btn-next" disabled onclick="nextStep()">Próxima <span class="arrow">&rarr;</span></button>
+      </div>
+
+      <!-- STEP 4: OBJETIVO -->
+      <div class="step" data-step="4">
+        <div class="step-number">Pergunta 4 de 7</div>
+        <h2>Qual é o seu principal objetivo com IA?</h2>
+        <p class="step-desc">O que mais importa para você agora.</p>
+        <div class="options" data-key="objetivo">
+          <div class="option" data-value="receita" data-scores="systems:3,builders:1,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Gerar receita com IA na minha empresa</h4>
+              <p>Quero que IA apareça no faturamento, não só na eficiência.</p>
+            </div>
+          </div>
+          <div class="option" data-value="vender-ia" data-scores="systems:0,builders:3,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Vender IA como serviço para clientes</h4>
+              <p>Quero oferecer implementação de IA para outras empresas.</p>
+            </div>
+          </div>
+          <div class="option" data-value="eficiencia" data-scores="systems:2,builders:1,starter:1">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Otimizar operações com IA</h4>
+              <p>Quero automatizar processos e ganhar produtividade.</p>
+            </div>
+          </div>
+          <div class="option" data-value="aprender" data-scores="systems:0,builders:1,starter:3">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Aprender e me preparar para o mercado</h4>
+              <p>Quero me capacitar antes de tomar qualquer decisão.</p>
+            </div>
+          </div>
+        </div>
+        <button class="btn-next" disabled onclick="nextStep()">Próxima <span class="arrow">&rarr;</span></button>
+      </div>
+
+      <!-- STEP 5: URGÊNCIA -->
+      <div class="step" data-step="5">
+        <div class="step-number">Pergunta 5 de 7</div>
+        <h2>Qual é a sua urgência?</h2>
+        <p class="step-desc">Quando você precisa que isso esteja funcionando.</p>
+        <div class="options" data-key="urgencia">
+          <div class="option" data-value="imediato" data-scores="systems:3,builders:2,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Preciso para ontem</h4>
+              <p>Já estou perdendo oportunidades. Preciso agir agora.</p>
+            </div>
+          </div>
+          <div class="option" data-value="proximo-trimestre" data-scores="systems:2,builders:3,starter:1">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Nos próximos 1-3 meses</h4>
+              <p>Quero começar logo, mas tenho um pouco de margem.</p>
+            </div>
+          </div>
+          <div class="option" data-value="semestre" data-scores="systems:1,builders:2,starter:2">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Nos próximos 3-6 meses</h4>
+              <p>Estou planejando, não tem pressa imediata.</p>
+            </div>
+          </div>
+          <div class="option" data-value="explorando" data-scores="systems:0,builders:1,starter:3">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Estou só explorando por enquanto</h4>
+              <p>Quero entender as opções antes de me comprometer.</p>
+            </div>
+          </div>
+        </div>
+        <button class="btn-next" disabled onclick="nextStep()">Próxima <span class="arrow">&rarr;</span></button>
+      </div>
+
+      <!-- STEP 6: INVESTIMENTO -->
+      <div class="step" data-step="6">
+        <div class="step-number">Pergunta 6 de 7</div>
+        <h2>Qual o investimento que faz sentido para você agora?</h2>
+        <p class="step-desc">Não existe resposta errada. É sobre o momento.</p>
+        <div class="options" data-key="investimento">
+          <div class="option" data-value="alto" data-scores="systems:3,builders:1,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>R$ 15K+ (projeto completo)</h4>
+              <p>Quero uma implementação séria, com resultado concreto.</p>
+            </div>
+          </div>
+          <div class="option" data-value="medio" data-scores="systems:1,builders:3,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>R$ 3K — R$ 15K (programa/mentoria)</h4>
+              <p>Quero aprender fazendo, com acompanhamento.</p>
+            </div>
+          </div>
+          <div class="option" data-value="baixo" data-scores="systems:0,builders:1,starter:3">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Até R$ 3K (curso/entrada)</h4>
+              <p>Quero começar com baixo risco e ir crescendo.</p>
+            </div>
+          </div>
+          <div class="option" data-value="nenhum" data-scores="systems:0,builders:0,starter:2">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Ainda não estou pronto para investir</h4>
+              <p>Quero primeiro entender melhor o que existe.</p>
+            </div>
+          </div>
+        </div>
+        <button class="btn-next" disabled onclick="nextStep()">Próxima <span class="arrow">&rarr;</span></button>
+      </div>
+
+      <!-- STEP 7: EQUIPE -->
+      <div class="step" data-step="7">
+        <div class="step-number">Pergunta 7 de 7</div>
+        <h2>Você tem equipe que pode executar IA internamente?</h2>
+        <p class="step-desc">Última pergunta — estamos quase lá.</p>
+        <div class="options" data-key="equipe">
+          <div class="option" data-value="sim-tech" data-scores="systems:2,builders:1,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Sim, tenho time técnico</h4>
+              <p>Devs, analistas ou time de dados que podem executar.</p>
+            </div>
+          </div>
+          <div class="option" data-value="sim-parcial" data-scores="systems:3,builders:2,starter:0">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Tenho equipe, mas não técnica em IA</h4>
+              <p>Time bom, mas precisa de direção e metodologia.</p>
+            </div>
+          </div>
+          <div class="option" data-value="sozinho" data-scores="systems:0,builders:3,starter:1">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>Sou eu e mais 1-2 pessoas</h4>
+              <p>Operação enxuta, faço quase tudo.</p>
+            </div>
+          </div>
+          <div class="option" data-value="solo" data-scores="systems:0,builders:2,starter:3">
+            <div class="option-radio"></div>
+            <div class="option-text">
+              <h4>É só eu</h4>
+              <p>One-person show — preciso aprender e executar.</p>
+            </div>
+          </div>
+        </div>
+        <button class="btn-next" disabled onclick="showLead()">Ver meu diagnóstico <span class="arrow">&rarr;</span></button>
+      </div>
+
+      <!-- STEP 8: LEAD CAPTURE -->
+      <div class="step" data-step="8">
+        <div class="step-number">Último passo</div>
+        <h2>Para onde enviamos seu diagnóstico?</h2>
+        <p class="step-desc">Seu resultado está pronto. Preencha para visualizar.</p>
+        <div class="input-group">
+          <label for="lead-nome">Nome</label>
+          <input type="text" id="lead-nome" placeholder="Seu nome" required />
+        </div>
+        <div class="input-group">
+          <label for="lead-whatsapp">WhatsApp</label>
+          <input type="tel" id="lead-whatsapp" placeholder="(11) 99999-9999" required />
+        </div>
+        <div class="input-group">
+          <label for="lead-email">Email</label>
+          <input type="email" id="lead-email" placeholder="seu@email.com" required />
+        </div>
+        <button class="btn-next" onclick="showResults()" id="btn-results">Ver resultado <span class="arrow">&rarr;</span></button>
+      </div>
+
+      <!-- STEP 9: RESULTS -->
+      <div class="step" data-step="9">
+        <div class="result-card">
+          <div class="step-number">Seu Diagnóstico</div>
+          <div id="recommendation"></div>
+
+          <h3 style="font-size: 1rem; margin: 32px 0 16px; color: var(--text-secondary);">Mapa de calor — Compatibilidade</h3>
+          <div class="heatmap">
+            <div class="heatmap-row">
+              <div class="heatmap-label" style="color: var(--color-systems);">Systems</div>
+              <div class="heatmap-track"><div class="heatmap-fill systems" id="bar-systems"><span id="pct-systems"></span></div></div>
+            </div>
+            <div class="heatmap-row">
+              <div class="heatmap-label" style="color: var(--color-builders);">Builders</div>
+              <div class="heatmap-track"><div class="heatmap-fill builders" id="bar-builders"><span id="pct-builders"></span></div></div>
+            </div>
+            <div class="heatmap-row">
+              <div class="heatmap-label" style="color: var(--color-starter);">Starter</div>
+              <div class="heatmap-track"><div class="heatmap-fill starter" id="bar-starter"><span id="pct-starter"></span></div></div>
+            </div>
+          </div>
+
+          <div class="radar-wrap"><canvas id="radar" width="300" height="300"></canvas></div>
+
+          <div id="dimensions"></div>
+        </div>
+
+        <div style="text-align: center; background: var(--surface-2); border: 1px solid var(--border-default); border-radius: var(--radius-xl); padding: 40px;" id="contact-box">
+          <!-- Hourglass spinning logo -->
+          <div style="margin-bottom: 20px;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48" style="color: var(--accent-blue); animation: hourglass-spin 3s ease-in-out infinite;" aria-hidden="true">
+              <line x1="14" y1="8" x2="50" y2="8"/><line x1="50" y1="8" x2="14" y2="56"/><line x1="14" y1="8" x2="25" y2="25"/><line x1="39" y1="39" x2="50" y2="56"/><line x1="14" y1="56" x2="50" y2="56"/>
+            </svg>
+          </div>
+          <h3 style="font-size: 1.125rem; margin-bottom: 8px;">Vamos entrar em contato com você em breve.</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9375rem; max-width: 460px; margin: 0 auto 24px; line-height: 1.7;">
+            Nosso time vai analisar seu diagnóstico individualmente e te chamar para uma conversa personalizada — sem compromisso — para te ajudar a alcançar os resultados que você busca.
+          </p>
+          <button class="btn-next" onclick="confirmAndSendEmail()" id="btn-confirm">Ok, entendido <span class="arrow">&rarr;</span></button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer-mini">Reis IA — O Tempo é Rei.</div>
+
+  <script src="supabase.js"></script>
+  <script>
+    let currentStep = 0;
+    const totalSteps = 9;
+    const answers = {};
+    const scores = { systems: 0, builders: 0, starter: 0 };
+
+    // Option selection
+    document.querySelectorAll('.options').forEach(group => {
+      group.querySelectorAll('.option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          group.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          const key = group.dataset.key;
+          answers[key] = opt.dataset.value;
+          // Enable next button
+          const step = opt.closest('.step');
+          const btn = step.querySelector('.btn-next');
+          if (btn) btn.disabled = false;
+        });
+      });
+    });
+
+    function updateProgress() {
+      const pct = (currentStep / (totalSteps - 1)) * 100;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+
+    function nextStep() {
+      // Collect scores from current step
+      const step = document.querySelector(`.step[data-step="${currentStep}"]`);
+      const selected = step.querySelector('.option.selected');
+      if (selected && selected.dataset.scores) {
+        selected.dataset.scores.split(',').forEach(pair => {
+          const [key, val] = pair.split(':');
+          scores[key] += parseInt(val);
+        });
+      }
+
+      currentStep++;
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showLead() {
+      // Collect last step scores
+      const step = document.querySelector(`.step[data-step="${currentStep}"]`);
+      const selected = step.querySelector('.option.selected');
+      if (selected && selected.dataset.scores) {
+        selected.dataset.scores.split(',').forEach(pair => {
+          const [key, val] = pair.split(':');
+          scores[key] += parseInt(val);
+        });
+      }
+      currentStep = 8;
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.querySelector('.step[data-step="8"]').classList.add('active');
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showResults() {
+      const nome = document.getElementById('lead-nome').value.trim();
+      const email = document.getElementById('lead-email').value.trim();
+      const whatsapp = document.getElementById('lead-whatsapp').value.trim();
+
+      if (!nome || !whatsapp || !email) {
+        alert('Preencha nome, WhatsApp e email para ver o resultado.');
+        return;
+      }
+
+      // Save lead + submit
+      const leadData = { ...answers, nome, email, whatsapp, scores_systems: scores.systems, scores_builders: scores.builders, scores_starter: scores.starter };
+
+      try {
+        fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ form_type: 'diagnostico', name: nome, data: leadData })
+        });
+      } catch(e) { console.warn(e); }
+
+      // Show results
+      currentStep = 9;
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.querySelector('.step[data-step="9"]').classList.add('active');
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      renderResults(nome);
+    }
+
+    function renderResults(nome) {
+      const max = Math.max(scores.systems, scores.builders, scores.starter, 1);
+      const pctSystems = Math.round((scores.systems / 21) * 100);
+      const pctBuilders = Math.round((scores.builders / 21) * 100);
+      const pctStarter = Math.round((scores.starter / 21) * 100);
+
+      // Determine winner
+      let winner = 'starter';
+      let winnerScore = scores.starter;
+      if (scores.systems > winnerScore) { winner = 'systems'; winnerScore = scores.systems; }
+      if (scores.builders > winnerScore) { winner = 'builders'; winnerScore = scores.builders; }
+
+      const profiles = {
+        systems: {
+          title: 'Perfil: Implementação Estratégica',
+          desc: `${nome}, o seu diagnóstico indica que você já tem um negócio estabelecido e está no momento certo para implementar IA de forma estratégica — focada em receita, não em experimentos.`
+        },
+        builders: {
+          title: 'Perfil: Construtor de IA',
+          desc: `${nome}, você tem o perfil de quem quer dominar IA para construir serviços, vender implementações ou escalar uma operação própria. Está no ponto certo para acelerar.`
+        },
+        starter: {
+          title: 'Perfil: Fundação Estratégica',
+          desc: `${nome}, você está construindo as bases da sua jornada com IA — e esse é o momento mais importante. Com a orientação certa agora, cada passo seguinte fica mais claro e mais rápido.`
+        }
+      };
+
+      const prof = profiles[winner];
+
+      document.getElementById('recommendation').innerHTML = `
+        <div class="recommendation ${winner}">
+          <div class="rec-badge ${winner}">Seu perfil</div>
+          <div class="rec-title">${prof.title}</div>
+          <div class="rec-desc">${prof.desc}</div>
+        </div>
+      `;
+
+      // Animate heatmap bars
+      setTimeout(() => {
+        document.getElementById('bar-systems').style.width = Math.max(pctSystems, 5) + '%';
+        document.getElementById('pct-systems').textContent = pctSystems + '%';
+        document.getElementById('bar-builders').style.width = Math.max(pctBuilders, 5) + '%';
+        document.getElementById('pct-builders').textContent = pctBuilders + '%';
+        document.getElementById('bar-starter').style.width = Math.max(pctStarter, 5) + '%';
+        document.getElementById('pct-starter').textContent = pctStarter + '%';
+      }, 200);
+
+      // Render radar chart
+      renderRadar(pctSystems, pctBuilders, pctStarter);
+
+      // Render dimension cards
+      const dimLabels = {
+        perfil: { empresa: 'Empresário', agencia: 'Agência/Freelancer', profissional: 'Profissional', iniciante: 'Iniciante' },
+        nivel_ia: { avancado: 'Avançado', intermediario: 'Intermediário', basico: 'Básico', zero: 'Começando' },
+        urgencia: { imediato: 'Imediata', 'proximo-trimestre': '1-3 meses', semestre: '3-6 meses', explorando: 'Explorando' },
+        investimento: { alto: 'R$15K+', medio: 'R$3K-15K', baixo: 'Até R$3K', nenhum: 'Ainda não' }
+      };
+
+      document.getElementById('dimensions').innerHTML = `
+        <div class="dimensions">
+          <div class="dim-card"><div class="dim-label">Perfil</div><div class="dim-value">${dimLabels.perfil[answers.perfil] || '—'}</div></div>
+          <div class="dim-card"><div class="dim-label">Nível IA</div><div class="dim-value">${dimLabels.nivel_ia[answers.nivel_ia] || '—'}</div></div>
+          <div class="dim-card"><div class="dim-label">Urgência</div><div class="dim-value">${dimLabels.urgencia[answers.urgencia] || '—'}</div></div>
+          <div class="dim-card"><div class="dim-label">Investimento</div><div class="dim-value">${dimLabels.investimento[answers.investimento] || '—'}</div></div>
+        </div>
+      `;
+    }
+
+    function renderRadar(sys, bld, str) {
+      const canvas = document.getElementById('radar');
+      const ctx = canvas.getContext('2d');
+      const cx = 150, cy = 150, r = 110;
+
+      ctx.clearRect(0, 0, 300, 300);
+
+      // Grid circles
+      for (let i = 1; i <= 4; i++) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, (r / 4) * i, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // Axes
+      const angles = [-Math.PI / 2, -Math.PI / 2 + (2 * Math.PI / 3), -Math.PI / 2 + (4 * Math.PI / 3)];
+      const labels = ['Systems', 'Builders', 'Starter'];
+      const colors = ['#4ADE80', '#2D7AFF', '#FB923C'];
+      const values = [sys / 100, bld / 100, str / 100];
+
+      angles.forEach((angle, i) => {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Label
+        const lx = cx + Math.cos(angle) * (r + 20);
+        const ly = cy + Math.sin(angle) * (r + 20);
+        ctx.fillStyle = colors[i];
+        ctx.font = '600 11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(labels[i], lx, ly);
+      });
+
+      // Data polygon
+      ctx.beginPath();
+      angles.forEach((angle, i) => {
+        const val = Math.max(values[i], 0.05);
+        const px = cx + Math.cos(angle) * r * val;
+        const py = cy + Math.sin(angle) * r * val;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(74, 144, 255, 0.12)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(74, 144, 255, 0.6)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Data points
+      angles.forEach((angle, i) => {
+        const val = Math.max(values[i], 0.05);
+        const px = cx + Math.cos(angle) * r * val;
+        const py = cy + Math.sin(angle) * r * val;
+        ctx.beginPath();
+        ctx.arc(px, py, 5, 0, Math.PI * 2);
+        ctx.fillStyle = colors[i];
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+    }
+
+    async function confirmAndSendEmail() {
+      const btn = document.getElementById('btn-confirm');
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+
+      const nome = document.getElementById('lead-nome').value.trim();
+      const email = document.getElementById('lead-email').value.trim();
+
+      // Determine winner for email
+      let winner = 'starter';
+      let winnerScore = scores.starter;
+      if (scores.systems > winnerScore) { winner = 'systems'; winnerScore = scores.systems; }
+      if (scores.builders > winnerScore) { winner = 'builders'; winnerScore = scores.builders; }
+
+      try {
+        await fetch('/api/lead-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome, email, perfil: winner, scores })
+        });
+      } catch(e) { console.warn(e); }
+
+      // Replace box with confirmation
+      const box = document.getElementById('contact-box');
+      box.innerHTML = `
+        <div style="margin-bottom: 16px;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48" style="color: #22C55E;" aria-hidden="true">
+            <line x1="14" y1="8" x2="50" y2="8"/><line x1="50" y1="8" x2="14" y2="56"/><line x1="14" y1="8" x2="25" y2="25"/><line x1="39" y1="39" x2="50" y2="56"/><line x1="14" y1="56" x2="50" y2="56"/>
+          </svg>
+        </div>
+        <h3 style="font-size: 1.125rem; margin-bottom: 8px; color: #22C55E;">Pronto!</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9375rem; max-width: 460px; margin: 0 auto; line-height: 1.7;">
+          Enviamos um email para <strong style="color: var(--text-primary);">${email}</strong> com o resumo do seu diagnóstico. Fique de olho — entraremos em contato em breve.
+        </p>
+      `;
+    }
+  </script>
+</body>
+</html>
