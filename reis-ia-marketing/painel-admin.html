@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Painel Admin — Reis Marketing IA</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='3' fill='%234A90FF'/%3E%3Cg fill='none' stroke='%23000000' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='14' y1='8' x2='50' y2='8'/%3E%3Cline x1='50' y1='8' x2='14' y2='56'/%3E%3Cline x1='14' y1='8' x2='25' y2='25'/%3E%3Cline x1='39' y1='39' x2='50' y2='56'/%3E%3Cline x1='14' y1='56' x2='50' y2='56'/%3E%3C/g%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent-blue: #4A90FF;
+      --accent-blue-hover: #6AADFF;
+      --surface-0: #000000;
+      --surface-1: #0A0A0A;
+      --surface-2: #111111;
+      --surface-3: #161616;
+      --surface-4: #1A1A1A;
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(255, 255, 255, 0.70);
+      --text-tertiary: rgba(255, 255, 255, 0.50);
+      --text-quaternary: rgba(255, 255, 255, 0.35);
+      --border-default: rgba(255, 255, 255, 0.08);
+      --border-visible: rgba(255, 255, 255, 0.12);
+      --border-strong: rgba(255, 255, 255, 0.20);
+      --radius: 8px;
+      --radius-xl: 12px;
+      --radius-full: 9999px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; background: var(--surface-0); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
+    body { min-height: 100vh; background: var(--surface-0); overflow-x: hidden; }
+    ::selection { background: rgba(74, 144, 255, 0.30); color: white; }
+
+    /* Grain */
+    body::after { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"); z-index: 9999; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 48px); }
+
+    /* Header */
+    .admin-header {
+      padding: 100px 0 40px;
+      border-bottom: 1px solid var(--border-default);
+      margin-bottom: 32px;
+    }
+    .admin-header h1 { font-size: clamp(1.5rem, 1rem + 2vw, 2.5rem); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 8px; }
+    .admin-header p { color: var(--text-tertiary); font-size: 0.875rem; }
+
+    /* Nav bar */
+    .admin-nav {
+      position: fixed; top: 0; left: 0; right: 0; height: 64px;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-default);
+      z-index: 50; display: flex; align-items: center;
+    }
+    .admin-nav .container { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .admin-nav-brand { display: flex; align-items: center; gap: 10px; color: var(--text-primary); font-weight: 300; font-size: 1rem; text-decoration: none; }
+    .admin-nav-brand svg { color: var(--accent-blue); }
+    .admin-nav-links { display: flex; gap: 12px; }
+    .admin-nav-links a { color: var(--text-tertiary); font-size: 0.8125rem; text-decoration: none; transition: color 0.2s; }
+    .admin-nav-links a:hover { color: var(--text-primary); }
+
+    /* Stats row */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .stat-card {
+      background: var(--surface-2); border: 1px solid var(--border-default);
+      border-radius: var(--radius-xl); padding: 20px; text-align: center;
+    }
+    .stat-card .num { font-size: 1.75rem; font-weight: 700; color: var(--accent-blue); }
+    .stat-card .label { font-size: 0.75rem; color: var(--text-tertiary); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    /* Filters */
+    .filters { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .filter-btn {
+      padding: 8px 16px; font-size: 0.8125rem; font-weight: 500;
+      background: var(--surface-2); color: var(--text-secondary);
+      border: 1px solid var(--border-default); border-radius: var(--radius-full);
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .filter-btn:hover { border-color: var(--border-visible); color: var(--text-primary); }
+    .filter-btn.active { background: rgba(74,144,255,0.15); border-color: rgba(74,144,255,0.30); color: var(--accent-blue); }
+
+    /* Actions bar */
+    .actions { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .action-btn {
+      padding: 10px 20px; font-size: 0.8125rem; font-weight: 600;
+      background: var(--surface-3); color: var(--text-primary);
+      border: 1px solid var(--border-default); border-radius: var(--radius);
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .action-btn:hover { border-color: var(--border-visible); background: var(--surface-4); }
+    .action-btn.danger { color: #EF4444; border-color: rgba(239,68,68,0.25); }
+    .action-btn.danger:hover { background: rgba(239,68,68,0.1); }
+
+    /* Submission card */
+    .submission-card {
+      background: var(--surface-2); border: 1px solid var(--border-default);
+      border-radius: var(--radius-xl); padding: 24px; margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    .submission-card:hover { border-color: var(--border-visible); }
+    .submission-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+    .submission-type {
+      display: inline-flex; padding: 4px 12px; border-radius: var(--radius-full);
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .type-personal-branding { background: rgba(168,85,247,0.15); color: #C084FC; border: 1px solid rgba(168,85,247,0.25); }
+    .type-movimento { background: rgba(249,115,22,0.15); color: #FB923C; border: 1px solid rgba(249,115,22,0.25); }
+    .type-empresa { background: rgba(34,197,94,0.15); color: #4ADE80; border: 1px solid rgba(34,197,94,0.25); }
+    .type-produto { background: rgba(74,144,255,0.15); color: #93C5FD; border: 1px solid rgba(74,144,255,0.25); }
+    .type-diagnostico { background: rgba(236,72,153,0.15); color: #F472B6; border: 1px solid rgba(236,72,153,0.25); }
+
+    .submission-date { font-size: 0.75rem; color: var(--text-quaternary); }
+    .submission-name { font-size: 1.125rem; font-weight: 600; margin-bottom: 12px; }
+
+    .submission-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 640px) { .submission-fields { grid-template-columns: 1fr; } }
+
+    .field { background: var(--surface-3); border-radius: var(--radius); padding: 12px; }
+    .field-label { font-size: 0.6875rem; color: var(--text-quaternary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .field-value { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5; word-break: break-word; }
+    .field-value:empty::after { content: '—'; color: var(--text-quaternary); }
+    .field.full { grid-column: 1 / -1; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 80px 20px;
+      color: var(--text-tertiary);
+    }
+    .empty-state h3 { color: var(--text-secondary); margin-bottom: 8px; }
+
+    /* Toggle detail */
+    .toggle-detail {
+      font-size: 0.8125rem; color: var(--accent-blue); background: none; border: none;
+      cursor: pointer; font-family: inherit; padding: 8px 0; margin-top: 8px;
+    }
+    .toggle-detail:hover { color: var(--accent-blue-hover); }
+    .submission-detail { display: none; margin-top: 16px; }
+    .submission-detail.open { display: block; }
+
+    .btn-delete {
+      background: none; border: 1px solid rgba(239,68,68,0.25); color: #EF4444;
+      font-size: 0.75rem; font-weight: 500; padding: 5px 12px; border-radius: var(--radius-full);
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .btn-delete:hover { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.4); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface-0); }
+    ::-webkit-scrollbar-thumb { background: var(--border-visible); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="admin-nav">
+    <div class="container">
+      <a href="index.html" class="admin-nav-brand">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" aria-hidden="true">
+          <line x1="14" y1="8" x2="50" y2="8"/><line x1="50" y1="8" x2="14" y2="56"/><line x1="14" y1="8" x2="25" y2="25"/><line x1="39" y1="39" x2="50" y2="56"/><line x1="14" y1="56" x2="50" y2="56"/>
+        </svg>
+        Admin
+      </a>
+      <div class="admin-nav-links">
+        <a href="index.html">Site</a>
+        <a href="formulario-personal-branding.html">Personal</a>
+        <a href="formulario-movimento.html">Movimento</a>
+        <a href="formulario-empresa.html">Empresa</a>
+        <a href="formulario-produto.html">Produto</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- HEADER -->
+    <div class="admin-header">
+      <h1>Painel de Respostas</h1>
+      <p>Todas as respostas dos formulários de intake ficam armazenadas aqui.</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row" id="stats-row"></div>
+
+    <!-- FILTERS -->
+    <div class="filters" id="filters">
+      <button class="filter-btn active" data-filter="all">Todos</button>
+      <button class="filter-btn" data-filter="personal-branding">Personal Branding</button>
+      <button class="filter-btn" data-filter="movimento">Movimento</button>
+      <button class="filter-btn" data-filter="empresa">Empresa</button>
+      <button class="filter-btn" data-filter="produto">Produto</button>
+      <button class="filter-btn" data-filter="diagnostico">Diagnóstico</button>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+      <button class="action-btn" id="btn-export-json">Exportar JSON</button>
+      <button class="action-btn" id="btn-export-csv">Exportar CSV</button>
+      <button class="action-btn danger" id="btn-clear">Limpar tudo</button>
+    </div>
+
+    <!-- SUBMISSIONS LIST -->
+    <div id="submissions-list"></div>
+  </div>
+
+  <script>
+    let allSubmissions = [];
+    let currentFilter = 'all';
+    let isLoading = true;
+
+    async function fetchSubmissions() {
+      try {
+        const res = await fetch('/api/submissions');
+        if (!res.ok) throw new Error('API error');
+        allSubmissions = await res.json();
+      } catch (err) {
+        console.error('Fetch error:', err);
+        allSubmissions = [];
+      }
+      isLoading = false;
+    }
+
+    function getSubmissions() {
+      return allSubmissions;
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso);
+      return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function typeLabel(type) {
+      const labels = {
+        'personal-branding': 'Personal Branding',
+        'movimento': 'Movimento',
+        'empresa': 'Empresa',
+        'produto': 'Produto',
+        'diagnostico': 'Diagnóstico'
+      };
+      return labels[type] || type;
+    }
+
+    function fieldLabel(key) {
+      const labels = {
+        nome: 'Nome', nome_empresa: 'Empresa', nome_movimento: 'Movimento', nome_produto: 'Produto',
+        cargo: 'Cargo', empresa: 'Empresa', setor: 'Setor', bio: 'Bio',
+        linkedin: 'LinkedIn', instagram: 'Instagram', site: 'Site',
+        origem_carreira: 'Origem da carreira', momento_virada: 'Momento de virada',
+        fracassos: 'Fracassos', conquistas: 'Conquistas',
+        tres_palavras: '3 Palavras', outros_descrevem: 'Como outros descrevem',
+        arquetipos: 'Arquétipos', anti_moroni: 'Anti-eu', valores: 'Valores',
+        publico_ideal: 'Público ideal', conhecido_por: 'Conhecido por',
+        concorrentes: 'Concorrentes', diferencial: 'Diferencial',
+        frase_assinatura: 'Frase assinatura', conteudo: 'Conteúdo',
+        pilares_conteudo: 'Pilares de conteúdo', tom_comunicacao: 'Tom',
+        frases_repete: 'Frases recorrentes', estetica: 'Estética',
+        visual_referencias: 'Referências visuais', vestimenta: 'Vestimenta',
+        cores: 'Cores', objetivo: 'Objetivo', visao_12_meses: 'Visão 12 meses',
+        comunidade: 'Comunidade', observacoes: 'Observações',
+        causa: 'Causa', frustracao_origem: 'Frustração de origem',
+        mundo_ideal: 'Mundo ideal', inimigo_externo: 'Inimigo externo',
+        inimigo_interno: 'Inimigo interno', alternativas_ruins: 'Alternativas ruins',
+        perfil_tribo: 'Perfil da tribo', identidade_tribo: 'Identidade',
+        exclusao: 'Exclusão', tamanho_atual: 'Tamanho atual',
+        lider: 'Líder', papel_lider: 'Papel do líder', historia_lider: 'História do líder',
+        rituais: 'Rituais', vocabulario: 'Vocabulário', simbolos: 'Símbolos',
+        slogan: 'Slogan', niveis: 'Níveis', niveis_descricao: 'Descrição dos níveis',
+        plataforma: 'Plataforma', crencas: 'Crenças', manifesto_rascunho: 'Manifesto',
+        meta: 'Meta', descricao: 'Descrição', faturamento: 'Faturamento',
+        tamanho: 'Tamanho equipe', tempo: 'Tempo de existência',
+        produtos: 'Produtos', carro_chefe: 'Carro-chefe', submarcas: 'Sub-marcas',
+        cliente_ideal: 'Cliente ideal', dores_clientes: 'Dores',
+        desejos_clientes: 'Desejos', objecoes: 'Objeções',
+        percepcao_atual: 'Percepção atual', percepcao_desejada: 'Percepção desejada',
+        promessa: 'Promessa', personalidade: 'Personalidade', tom: 'Tom',
+        nao_somos: 'Não somos', estilo_visual: 'Estilo visual',
+        referencias_visuais: 'Referências visuais', modo: 'Modo visual',
+        logo_atual: 'Logo atual', objetivo_12m: 'Objetivo 12m',
+        objetivo_marca: 'Objetivo da marca', visao_5_anos: 'Visão 5 anos',
+        historia: 'História', estado_marca: 'Estado da marca',
+        tipo_produto: 'Tipo', empresa_mae: 'Empresa-mãe', preco: 'Preço',
+        duracao: 'Duração', fase: 'Fase', cliente_antes: 'Cliente antes',
+        cliente_depois: 'Cliente depois', provas: 'Provas', icp: 'ICP',
+        nao_para: 'Não é para', decisor: 'Decisor',
+        satisfeito_nome: 'Satisfeito com nome', ideias_nomes: 'Ideias de nomes',
+        sensacao_nome: 'Sensação do nome', idioma_nome: 'Idioma do nome',
+        relacao_marca: 'Relação com marca-mãe', modulos: 'Módulos',
+        entregaveis: 'Entregáveis', garantia: 'Garantia', escassez: 'Escassez',
+        bonus: 'Bônus', processo_venda: 'Processo de venda',
+        posicionamento_visual: 'Posicionamento visual', referencias: 'Referências',
+        onboarding: 'Onboarding', certificacao: 'Certificação'
+      };
+      return labels[key] || key.replace(/_/g, ' ');
+    }
+
+    function renderStats() {
+      const subs = getSubmissions();
+      const counts = { total: subs.length, 'personal-branding': 0, movimento: 0, empresa: 0, produto: 0, diagnostico: 0 };
+      subs.forEach(s => { if (counts[s.form_type] !== undefined) counts[s.form_type]++; });
+
+      document.getElementById('stats-row').innerHTML = `
+        <div class="stat-card"><div class="num">${counts.total}</div><div class="label">Total</div></div>
+        <div class="stat-card"><div class="num">${counts['personal-branding']}</div><div class="label">Personal</div></div>
+        <div class="stat-card"><div class="num">${counts.movimento}</div><div class="label">Movimento</div></div>
+        <div class="stat-card"><div class="num">${counts.empresa}</div><div class="label">Empresa</div></div>
+        <div class="stat-card"><div class="num">${counts.produto}</div><div class="label">Produto</div></div>
+        <div class="stat-card"><div class="num">${counts.diagnostico}</div><div class="label">Diagnóstico</div></div>
+      `;
+    }
+
+    function renderSubmissions() {
+      const subs = getSubmissions();
+      const filtered = currentFilter === 'all' ? subs : subs.filter(s => s.form_type === currentFilter);
+      const list = document.getElementById('submissions-list');
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="empty-state"><h3>Nenhuma resposta${currentFilter !== 'all' ? ' nesta categoria' : ''}</h3><p>As respostas dos formulários aparecerão aqui.</p></div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map((sub, i) => {
+        const data = sub.data || {};
+        const topFields = Object.entries(data).slice(0, 4);
+        const allFields = Object.entries(data);
+
+        return `
+          <div class="submission-card">
+            <div class="submission-header">
+              <span class="submission-type type-${sub.form_type}">${typeLabel(sub.form_type)}</span>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="submission-date">${formatDate(sub.created_at)}</span>
+                <button class="btn-delete" onclick="deleteSubmission('${sub.id}')">Excluir</button>
+              </div>
+            </div>
+            <div class="submission-name">${sub.name || 'Sem nome'}</div>
+            <div class="submission-fields">
+              ${topFields.map(([k, v]) => `
+                <div class="field">
+                  <div class="field-label">${fieldLabel(k)}</div>
+                  <div class="field-value">${Array.isArray(v) ? v.join(', ') : (v || '')}</div>
+                </div>
+              `).join('')}
+            </div>
+            <button class="toggle-detail" onclick="toggleDetail(${i})">Ver todos os campos (${allFields.length})</button>
+            <div class="submission-detail" id="detail-${i}">
+              <div class="submission-fields">
+                ${allFields.map(([k, v]) => {
+                  const val = Array.isArray(v) ? v.join(', ') : (v || '');
+                  const isLong = val.length > 100;
+                  return `
+                    <div class="field${isLong ? ' full' : ''}">
+                      <div class="field-label">${fieldLabel(k)}</div>
+                      <div class="field-value">${val}</div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleDetail(index) {
+      const detail = document.getElementById(`detail-${index}`);
+      detail.classList.toggle('open');
+      const btn = detail.previousElementSibling;
+      btn.textContent = detail.classList.contains('open') ? 'Fechar detalhes' : `Ver todos os campos`;
+    }
+
+    // Filters
+    document.getElementById('filters').addEventListener('click', async (e) => {
+      if (!e.target.classList.contains('filter-btn')) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      currentFilter = e.target.dataset.filter;
+      await fetchSubmissions();
+      renderStats();
+      renderSubmissions();
+    });
+
+    // Export JSON
+    document.getElementById('btn-export-json').addEventListener('click', () => {
+      const subs = getSubmissions();
+      const filtered = currentFilter === 'all' ? subs : subs.filter(s => s.form_type === currentFilter);
+      const blob = new Blob([JSON.stringify(filtered, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `reis-marketing-respostas-${currentFilter}-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Export CSV
+    document.getElementById('btn-export-csv').addEventListener('click', () => {
+      const subs = getSubmissions();
+      const filtered = currentFilter === 'all' ? subs : subs.filter(s => s.form_type === currentFilter);
+      if (!filtered.length) return;
+
+      const allKeys = new Set();
+      filtered.forEach(s => Object.keys(s.data || {}).forEach(k => allKeys.add(k)));
+      const keys = ['form_type', 'name', 'created_at', ...allKeys];
+
+      const escape = (val) => `"${String(val || '').replace(/"/g, '""')}"`;
+      const rows = [keys.map(k => escape(fieldLabel(k))).join(',')];
+      filtered.forEach(s => {
+        const row = keys.map(k => {
+          if (k === 'form_type') return escape(s.form_type);
+          if (k === 'name') return escape(s.name);
+          if (k === 'created_at') return escape(s.created_at);
+          const val = s.data?.[k];
+          return escape(Array.isArray(val) ? val.join(', ') : val);
+        });
+        rows.push(row.join(','));
+      });
+
+      const blob = new Blob(['\ufeff' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `reis-marketing-respostas-${currentFilter}-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Delete single submission
+    async function deleteSubmission(id) {
+      if (!confirm('Excluir esta resposta?')) return;
+      try {
+        const res = await fetch(`/api/delete?id=${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          await fetchSubmissions();
+          renderStats();
+          renderSubmissions();
+        }
+      } catch (err) { console.error('Delete error:', err); }
+    }
+
+    // Clear all
+    document.getElementById('btn-clear').addEventListener('click', async () => {
+      if (!confirm('Tem certeza que deseja apagar TODAS as respostas? Esta ação não pode ser desfeita.')) return;
+      const subs = getSubmissions();
+      for (const s of subs) {
+        await fetch(`/api/delete?id=${s.id}`, { method: 'DELETE' });
+      }
+      await fetchSubmissions();
+      renderStats();
+      renderSubmissions();
+    });
+    document.getElementById('btn-clear').style.display = '';
+
+    // Initial render
+    async function init() {
+      document.getElementById('submissions-list').innerHTML = '<div class="empty-state"><h3>Carregando...</h3></div>';
+      await fetchSubmissions();
+      renderStats();
+      renderSubmissions();
+    }
+    init();
+
+    // Auto-refresh every 30 seconds
+    setInterval(async () => { await fetchSubmissions(); renderStats(); renderSubmissions(); }, 30000);
+  </script>
+</body>
+</html>
