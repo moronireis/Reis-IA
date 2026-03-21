@@ -1,0 +1,538 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import ColorSwatch from '../../components/ColorSwatch.astro';
+import TokenTable from '../../components/TokenTable.astro';
+import TypeSpecimen from '../../components/TypeSpecimen.astro';
+import SpacingBar from '../../components/SpacingBar.astro';
+import CopyButton from '../../components/CopyButton.tsx';
+---
+
+<BrandbookLayout
+  title="Foundations"
+  pageName="FOUNDATIONS"
+  description="Complete design token reference — colors, typography, spacing, surfaces, borders, and shadows."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Design Foundations
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          The complete token reference for the Reis IA design system. Every color, typeface, spacing value, and visual property is defined here as a CSS custom property.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: Brand Colors -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Brand Colors" />
+
+      <div class="mb-12">
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--text-primary);">Accent Blue</h3>
+        <p class="text-sm mb-6" style="color: var(--text-tertiary);">
+          The primary accent color. Used for CTAs, brand icons, and emphasis. Maximum 2 blue elements per viewport.
+        </p>
+        <div class="flex flex-wrap gap-6">
+          <ColorSwatch name="Blue" cssVar="--accent-blue" hex="#4A90FF" usage="Primary CTAs, brand icons" />
+          <ColorSwatch name="Hover" cssVar="--accent-blue-hover" hex="#6AADFF" usage="Hover state" />
+          <ColorSwatch name="Muted" cssVar="--accent-blue-muted" hex="#3570CC" usage="Active/pressed state" />
+          <ColorSwatch name="Bright" cssVar="--accent-blue-bright" hex="#8DC4FF" usage="Special emphasis" />
+        </div>
+      </div>
+
+      <div class="mb-12">
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--text-primary);">Core Palette</h3>
+        <p class="text-sm mb-6" style="color: var(--text-tertiary);">
+          The brand is built on black and white with blue as the sole accent color.
+        </p>
+        <div class="flex flex-wrap gap-6">
+          <ColorSwatch name="Black" cssVar="--surface-0" hex="#000000" usage="Page background" />
+          <div class="flex-shrink-0">
+            <div
+              class="w-20 h-20 rounded-lg mb-2 border"
+              style="background: #FFFFFF; border-color: var(--border-default);"
+            ></div>
+            <div class="text-xs font-medium mb-0.5" style="color: var(--text-secondary);">White</div>
+            <div class="text-[11px] font-mono" style="color: var(--text-quaternary);">#FFFFFF</div>
+            <div class="text-[10px] mt-1" style="color: var(--text-tertiary);">Primary headlines</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accent Opacity Ladder -->
+      <div>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--text-primary);">Accent Opacity Ladder</h3>
+        <p class="text-sm mb-6" style="color: var(--text-tertiary);">
+          12-step graduated opacity scale for composable blue accent usage across backgrounds, borders, shadows, and fills.
+        </p>
+
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+          {[
+            { name: '02', opacity: '2%' },
+            { name: '04', opacity: '4%' },
+            { name: '06', opacity: '6%' },
+            { name: '08', opacity: '8%' },
+            { name: '10', opacity: '10%' },
+            { name: '12', opacity: '12%' },
+            { name: '15', opacity: '15%' },
+            { name: '20', opacity: '20%' },
+            { name: '30', opacity: '30%' },
+            { name: '40', opacity: '40%' },
+            { name: '50', opacity: '50%' },
+            { name: '80', opacity: '80%' },
+          ].map(step => (
+            <div class="text-center">
+              <div
+                class="w-full h-14 rounded-lg mb-2 border"
+                style={`background: var(--blue-${step.name}); border-color: var(--border-default);`}
+              ></div>
+              <div class="flex items-center justify-center gap-1">
+                <span class="text-[11px] font-mono" style="color: var(--text-quaternary);">
+                  {step.opacity}
+                </span>
+                <CopyButton client:visible text={`var(--blue-${step.name})`} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Surface System -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Surface System" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Depth is communicated through 5 tiers of background values. Each tier is a step closer to the viewer. Elevation comes from background lightness, not shadow darkness.
+      </p>
+
+      <!-- Live Surface Demo -->
+      <div class="space-y-4 mb-8">
+        {[
+          { tier: '0', name: 'Void', hex: '#000000', usage: 'Page background, deepest layer' },
+          { tier: '1', name: 'Base', hex: '#0A0A0A', usage: 'Alternating section backgrounds' },
+          { tier: '2', name: 'Raised', hex: '#111111', usage: 'Card backgrounds (default)' },
+          { tier: '3', name: 'Elevated', hex: '#161616', usage: 'Card hover, input backgrounds' },
+          { tier: '4', name: 'Float', hex: '#1A1A1A', usage: 'Dropdowns, tooltips, floating elements' },
+        ].map(surface => (
+          <div
+            class="flex flex-col sm:flex-row sm:items-center gap-4 p-5 rounded-xl border transition-colors duration-200"
+            style={`background: var(--surface-${surface.tier}); border-color: var(--border-default);`}
+          >
+            <div class="flex items-center gap-4 flex-1">
+              <div
+                class="w-12 h-12 rounded-lg border flex-shrink-0"
+                style={`background: var(--surface-${surface.tier}); border-color: var(--border-visible);`}
+              ></div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold" style="color: var(--text-primary);">
+                    Surface {surface.tier} — {surface.name}
+                  </span>
+                  <CopyButton client:visible text={`var(--surface-${surface.tier})`} />
+                </div>
+                <span class="text-xs font-mono" style="color: var(--text-quaternary);">{surface.hex}</span>
+              </div>
+            </div>
+            <span class="text-xs" style="color: var(--text-tertiary);">{surface.usage}</span>
+          </div>
+        ))}
+      </div>
+
+      <div
+        class="p-5 rounded-xl border"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+      >
+        <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-2" style="color: var(--accent-blue);">
+          Section Alternation Rule
+        </div>
+        <p class="text-sm" style="color: var(--text-secondary);">
+          Sections alternate between Surface-0 and Surface-1. Hero always starts on Surface-0. Never jump more than one surface tier between adjacent sections.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Text Opacity Scale -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Text Opacity Scale" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Text hierarchy is achieved through opacity of white, not through different gray hex values. This creates visual unity and ensures text harmonizes with any background tier.
+      </p>
+
+      <!-- Live Text Demo -->
+      <div class="space-y-6">
+        {[
+          { name: 'Primary', cssVar: '--text-primary', value: '#FFFFFF (100%)', sample: 'Headlines, strong emphasis', usage: 'Headlines, hero text' },
+          { name: 'Secondary', cssVar: '--text-secondary', value: 'rgba(255,255,255, 0.70)', sample: 'Body copy and descriptions', usage: 'Body copy, descriptions' },
+          { name: 'Tertiary', cssVar: '--text-tertiary', value: 'rgba(255,255,255, 0.50)', sample: 'Captions, metadata, labels', usage: 'Captions, metadata' },
+          { name: 'Quaternary', cssVar: '--text-quaternary', value: 'rgba(255,255,255, 0.35)', sample: 'Decorative text, disabled states', usage: 'Decorative, disabled' },
+          { name: 'Muted', cssVar: '--text-muted', value: 'rgba(255,255,255, 0.20)', sample: 'Watermark text, ghost elements', usage: 'Watermarks only' },
+        ].map(text => (
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 py-4 border-b" style="border-color: var(--border-subtle);">
+            <div class="w-32 flex-shrink-0">
+              <div class="flex items-center gap-1">
+                <span class="font-mono text-xs" style="color: var(--text-secondary);">{text.name}</span>
+                <CopyButton client:visible text={`var(${text.cssVar})`} />
+              </div>
+              <span class="text-[10px] font-mono" style="color: var(--text-muted);">{text.value}</span>
+            </div>
+            <div class="flex-1">
+              <span class="text-lg font-semibold" style={`color: var(${text.cssVar});`}>
+                {text.sample}
+              </span>
+            </div>
+            <span class="text-xs flex-shrink-0" style="color: var(--text-tertiary);">{text.usage}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Border Scale -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Border Opacity Scale" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Borders use white at varying opacities, ensuring they harmonize with any surface tier. One accent variant adds blue emphasis to featured elements.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {[
+          { name: 'Subtle', cssVar: '--border-subtle', value: '5% white', usage: 'Ghost borders' },
+          { name: 'Default', cssVar: '--border-default', value: '8% white', usage: 'Card borders, dividers' },
+          { name: 'Visible', cssVar: '--border-visible', value: '12% white', usage: 'Hover borders' },
+          { name: 'Strong', cssVar: '--border-strong', value: '20% white', usage: 'Active, focus' },
+          { name: 'Accent', cssVar: '--border-accent', value: '30% blue', usage: 'Featured cards' },
+        ].map(border => (
+          <div class="text-center">
+            <div
+              class="w-full h-20 rounded-lg mb-3 flex items-center justify-center"
+              style={`border: 2px solid var(${border.cssVar}); background: var(--surface-1);`}
+            >
+              <span class="text-[10px] font-mono" style="color: var(--text-quaternary);">
+                {border.value}
+              </span>
+            </div>
+            <div class="flex items-center justify-center gap-1 mb-1">
+              <span class="text-xs font-semibold" style="color: var(--text-secondary);">
+                {border.name}
+              </span>
+              <CopyButton client:visible text={`var(${border.cssVar})`} />
+            </div>
+            <span class="text-[10px]" style="color: var(--text-tertiary);">{border.usage}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Typography -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Typography Scale" />
+
+      <div class="mb-8 max-w-[680px]">
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--text-primary);">Inter Variable</h3>
+        <p class="text-sm" style="color: var(--text-tertiary); text-wrap: pretty;">
+          Single font family with continuous weight adjustment (100-900). All sizes use clamp() for fluid scaling between mobile (375px) and desktop (1280px).
+        </p>
+      </div>
+
+      <!-- Live Type Specimens -->
+      <div class="mb-8">
+        <TypeSpecimen
+          name="Display"
+          cssVar="--text-display"
+          weight="700"
+          lineHeight="1.05"
+          letterSpacing="-0.03em"
+          sample="Reis IA"
+          clampValue="clamp(2.5rem, 1.5rem + 3.5vw, 4.5rem)"
+        />
+        <TypeSpecimen
+          name="H1"
+          cssVar="--text-h1"
+          weight="700"
+          lineHeight="1.08"
+          letterSpacing="-0.025em"
+          sample="Design System"
+          clampValue="clamp(2.25rem, 1.5rem + 2.75vw, 3.5rem)"
+        />
+        <TypeSpecimen
+          name="H2"
+          cssVar="--text-h2"
+          weight="600"
+          lineHeight="1.10"
+          letterSpacing="-0.02em"
+          sample="Brand Identity"
+          clampValue="clamp(1.875rem, 1.25rem + 2.25vw, 3rem)"
+        />
+        <TypeSpecimen
+          name="H3"
+          cssVar="--text-h3"
+          weight="600"
+          lineHeight="1.15"
+          letterSpacing="-0.015em"
+          sample="Components & Tokens"
+          clampValue="clamp(1.625rem, 1.25rem + 1.25vw, 2.25rem)"
+        />
+        <TypeSpecimen
+          name="H4"
+          cssVar="--text-h4"
+          weight="600"
+          lineHeight="1.20"
+          letterSpacing="-0.01em"
+          sample="Patterns and Guidelines"
+          clampValue="clamp(1.375rem, 1.125rem + 0.75vw, 1.75rem)"
+        />
+        <TypeSpecimen
+          name="H5"
+          cssVar="--text-h5"
+          weight="600"
+          lineHeight="1.25"
+          letterSpacing="-0.005em"
+          sample="Section Heading Five"
+          clampValue="clamp(1.25rem, 1.125rem + 0.5vw, 1.5rem)"
+        />
+        <TypeSpecimen
+          name="Body Lg"
+          cssVar="--text-body-lg"
+          weight="400"
+          lineHeight="1.60"
+          letterSpacing="0"
+          sample="Large body text for lead paragraphs and descriptions."
+          clampValue="clamp(1.125rem, 1rem + 0.25vw, 1.25rem)"
+        />
+        <TypeSpecimen
+          name="Body"
+          cssVar="--text-body"
+          weight="400"
+          lineHeight="1.65"
+          letterSpacing="0"
+          sample="Standard body text for paragraphs and content blocks."
+          clampValue="1rem (16px, static)"
+        />
+        <TypeSpecimen
+          name="Body Sm"
+          cssVar="--text-body-sm"
+          weight="400"
+          lineHeight="1.55"
+          letterSpacing="0"
+          sample="Small body text for secondary content and compact layouts."
+          clampValue="0.875rem (14px, static)"
+        />
+        <TypeSpecimen
+          name="Caption"
+          cssVar="--text-caption"
+          weight="500"
+          lineHeight="1.45"
+          letterSpacing="0.01em"
+          sample="Caption text for metadata and annotations."
+          clampValue="clamp(0.75rem, 0.75rem + 0.1vw, 0.8125rem)"
+        />
+        <TypeSpecimen
+          name="Label"
+          cssVar="--text-label"
+          weight="600"
+          lineHeight="1.40"
+          letterSpacing="0.05em"
+          sample="LABEL TEXT FOR BADGES AND SECTIONS"
+          clampValue="0.75rem (12px, static)"
+        />
+      </div>
+
+      <!-- Typography Rules Summary -->
+      <div
+        class="p-6 rounded-xl border"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+      >
+        <h4 class="text-sm font-semibold mb-4" style="color: var(--text-primary);">Typography Rules</h4>
+        <ul class="space-y-2 text-sm" style="color: var(--text-secondary);">
+          <li>Letter-spacing tightens as size increases: Display (-0.03em) to Label (+0.05em)</li>
+          <li>Line-height loosens as size decreases: Display (1.05) to Body (1.65)</li>
+          <li>Weight: 700 for Display/H1, 600 for H2-H5/labels, 500 for captions, 400 for body</li>
+          <li><code>text-wrap: balance</code> on all headings, <code>text-wrap: pretty</code> on body text</li>
+          <li><code>font-variant-numeric: tabular-nums</code> on all metric/stat displays</li>
+          <li>No uppercase except Label token (badges, section labels)</li>
+          <li>Maximum body text width: 680px (65-75 characters per line)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Spacing -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Spacing System" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Fluid spacing tokens using clamp() for seamless scaling between mobile and desktop. 8 tokens cover all needs from micro-interactions to hero-level breathing room.
+      </p>
+
+      <!-- Visual Spacing Rulers -->
+      <div
+        class="p-6 rounded-xl border mb-8"
+        style="background: var(--surface-1); border-color: var(--border-default);"
+      >
+        <SpacingBar name="xs" cssVar="--space-xs" value="4px" />
+        <SpacingBar name="sm" cssVar="--space-sm" value="8px" />
+        <SpacingBar name="md" cssVar="--space-md" value="16px" />
+        <SpacingBar name="lg" cssVar="--space-lg" value="24-32px" />
+        <SpacingBar name="xl" cssVar="--space-xl" value="32-48px" />
+        <SpacingBar name="2xl" cssVar="--space-2xl" value="48-80px" />
+        <SpacingBar name="3xl" cssVar="--space-3xl" value="64-120px" />
+        <SpacingBar name="4xl" cssVar="--space-4xl" value="80-160px" />
+      </div>
+
+      <!-- Container Widths -->
+      <h3 class="text-lg font-semibold mb-4" style="color: var(--text-primary);">Container Widths</h3>
+      <TokenTable tokens={[
+        { name: 'Wide', value: '1280px', cssVar: '--container-wide', usage: 'Full-bleed sections, navigation' },
+        { name: 'Standard', value: '1200px', cssVar: '--container-standard', usage: 'Primary content container' },
+        { name: 'Narrow', value: '800px', cssVar: '--container-narrow', usage: 'Text-heavy sections, forms' },
+        { name: 'Text', value: '680px', cssVar: '--container-text', usage: 'Body copy paragraphs (optimal line length)' },
+        { name: 'Headline', value: '900px', cssVar: '--container-headline', usage: 'Centered headline max-width' },
+      ]} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Shadows -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Shadow Palette" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Shadows are used sparingly. On dark backgrounds, elevation is communicated through surface layering, not shadows. Shadows are reserved for floating elements only.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          { name: 'Subtle', cssVar: '--shadow-subtle', desc: 'Minimal depth hint' },
+          { name: 'Default', cssVar: '--shadow-default', desc: 'Dropdowns, floating panels' },
+          { name: 'Elevated', cssVar: '--shadow-elevated', desc: 'Modals, popovers' },
+          { name: 'Dramatic', cssVar: '--shadow-dramatic', desc: 'Full-screen overlays' },
+          { name: 'Blue Glow', cssVar: '--shadow-blue-glow', desc: 'Featured card hover, CTA emphasis' },
+        ].map(shadow => (
+          <div
+            class="p-6 rounded-xl border"
+            style={`background: var(--surface-2); border-color: var(--border-default); box-shadow: var(${shadow.cssVar});`}
+          >
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-sm font-semibold" style="color: var(--text-primary);">{shadow.name}</span>
+              <CopyButton client:visible text={`var(${shadow.cssVar})`} />
+            </div>
+            <span class="text-xs" style="color: var(--text-tertiary);">{shadow.desc}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 08: Gradients -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Gradients" />
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { name: 'Blue Ambient', cssVar: '--gradient-blue-ambient', desc: 'Ambient glow behind key sections' },
+          { name: 'Blue Sweep', cssVar: '--gradient-blue-sweep', desc: 'Accent gradient for borders' },
+          { name: 'Surface Fade', cssVar: '--gradient-surface-fade', desc: 'Section transitions' },
+          { name: 'Divider', cssVar: '--gradient-divider', desc: 'Horizontal gradient dividers' },
+          { name: 'Marquee Edge', cssVar: '--gradient-marquee-edge', desc: 'Logo carousel edge fade' },
+        ].map(gradient => (
+          <div
+            class="rounded-xl border overflow-hidden"
+            style="border-color: var(--border-default);"
+          >
+            <div
+              class="h-24"
+              style={`background: var(${gradient.cssVar}); background-color: var(--surface-1);`}
+            ></div>
+            <div class="p-4" style="background: var(--surface-2);">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs font-semibold" style="color: var(--text-secondary);">{gradient.name}</span>
+                <CopyButton client:visible text={`var(${gradient.cssVar})`} />
+              </div>
+              <span class="text-[10px]" style="color: var(--text-tertiary);">{gradient.desc}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 09: Signal Colors -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="09" title="Signal Colors" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Signal colors for form validation, status indicators, and user feedback. These are the only non-blue, non-white colors in the system.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { name: 'Error', hex: '#EF4444', cssVar: '--color-error', bgVar: '--color-error-bg', borderVar: '--color-error-border' },
+          { name: 'Warning', hex: '#F59E0B', cssVar: '--color-warning', bgVar: '--color-warning-bg', borderVar: '--color-warning-border' },
+          { name: 'Success', hex: '#22C55E', cssVar: '--color-success', bgVar: '--color-success-bg', borderVar: '--color-success-border' },
+          { name: 'Info', hex: '#4A90FF', cssVar: '--color-info', bgVar: '--color-info-bg', borderVar: '--color-info-border' },
+        ].map(signal => (
+          <div
+            class="p-5 rounded-xl border"
+            style={`background: var(${signal.bgVar}); border-color: var(${signal.borderVar});`}
+          >
+            <div class="flex items-center gap-3 mb-3">
+              <div
+                class="w-4 h-4 rounded-full"
+                style={`background: var(${signal.cssVar});`}
+              ></div>
+              <span class="text-sm font-semibold" style={`color: var(${signal.cssVar});`}>
+                {signal.name}
+              </span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="font-mono text-[11px]" style="color: var(--text-quaternary);">{signal.hex}</span>
+              <CopyButton client:visible text={`var(${signal.cssVar})`} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</BrandbookLayout>

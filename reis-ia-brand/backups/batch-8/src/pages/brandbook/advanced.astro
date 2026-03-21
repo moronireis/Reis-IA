@@ -1,0 +1,616 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import AccordionDemo from '../../components/AccordionDemo.tsx';
+import TabsDemo from '../../components/TabsDemo.tsx';
+import StatCounter from '../../components/StatCounter.tsx';
+import MarqueeDemo from '../../components/MarqueeDemo.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+
+const codeAccordion = `.accordion {
+  border-radius: 12px;
+  border: 1px solid var(--border-default);
+  overflow: hidden;
+}
+
+.accordion-item {
+  border-bottom: 1px solid var(--border-default);
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.accordion-trigger:hover {
+  background: var(--surface-2);
+}
+
+.accordion-trigger__text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.accordion-trigger__icon {
+  transition: transform 300ms var(--ease-out),
+              color 200ms;
+}
+
+.accordion-item[open] .accordion-trigger__icon {
+  transform: rotate(45deg);
+  color: var(--accent-blue);
+}`;
+
+const codeTestimonial = `.testimonial {
+  border-left: 2px solid var(--accent-blue);
+  padding-left: 24px;
+  position: relative;
+}
+
+.testimonial__quote-mark {
+  position: absolute;
+  top: -8px;
+  left: -4px;
+  font-size: 48px;
+  color: rgba(74, 144, 255, 0.20);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.testimonial__text {
+  font-size: 18px;
+  font-style: italic;
+  color: var(--text-secondary);
+  line-height: 1.70;
+  margin-bottom: 16px;
+}
+
+.testimonial__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.testimonial__role {
+  font-size: 14px;
+  color: var(--text-tertiary);
+}`;
+
+const codeStats = `.stat-block__value {
+  font-size: clamp(40px, 5vw, 56px);
+  font-weight: 700;
+  color: var(--accent-blue);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.stat-block__label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin-top: 8px;
+}`;
+
+const codeBanner = `.highlight-banner {
+  background: var(--blue-08);
+  border: 1px solid var(--blue-20);
+  border-radius: 12px;
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}`;
+
+const codeBadges = `/* Badge variants */
+.badge-accent {
+  background: var(--blue-10);
+  border: 1px solid var(--blue-20);
+  color: var(--accent-blue);
+}
+
+.badge-success {
+  background: var(--color-success-bg);
+  border: 1px solid rgba(34, 197, 94, 0.20);
+  color: var(--color-success);
+}
+
+.badge-warning {
+  background: var(--color-warning-bg);
+  border: 1px solid rgba(245, 158, 11, 0.20);
+  color: var(--color-warning);
+}
+
+.badge-error {
+  background: var(--color-error-bg);
+  border: 1px solid rgba(239, 68, 68, 0.20);
+  color: var(--color-error);
+}
+
+.badge-neutral {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-visible);
+  color: var(--text-secondary);
+}`;
+
+const codeTabs = `.tab-list {
+  display: flex;
+  border-bottom: 1px solid var(--border-default);
+  overflow-x: auto;
+}
+
+.tab-trigger {
+  flex-shrink: 0;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 200ms, border-color 200ms;
+}
+
+.tab-trigger[aria-selected="true"] {
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom-color: var(--accent-blue);
+}`;
+
+const codeMarquee = `.marquee-container {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    90deg, transparent 0%,
+    black 8%, black 92%,
+    transparent 100%
+  );
+}
+
+.marquee-track {
+  display: flex;
+  gap: 80px;
+  animation: marquee 35s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}`;
+---
+
+<BrandbookLayout
+  title="Advanced"
+  pageName="ADVANCED"
+  description="Advanced UI components: FAQ accordion, testimonials, stat blocks, badges, tabs, highlight banners, and logo marquee."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Advanced Components
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Composite components that combine base elements into complete UI patterns. Each component is built from the design system primitives (surfaces, borders, typography tokens) and follows the same interaction rules.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: FAQ Accordion -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="FAQ Accordion" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Expandable FAQ-style sections with smooth max-height animation. The plus icon rotates 45 degrees to form an X when open and shifts to accent blue. Only one item opens at a time (single-select).
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Animation:</strong> 300ms ease-out</span>
+          <span><strong style="color: var(--text-secondary);">Answer max-width:</strong> 680px</span>
+          <span><strong style="color: var(--text-secondary);">Hover:</strong> Surface-2 bg</span>
+        </div>
+      </div>
+
+      <div class="max-w-[800px] mb-8">
+        <AccordionDemo client:visible />
+      </div>
+
+      <CodeBlock client:visible label="Accordion CSS" code={codeAccordion} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Testimonial Block -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Testimonial Block" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Quote block with a 2px blue left border, italic text, and attribution. The decorative quote mark appears at 20% accent blue opacity.
+        </p>
+      </div>
+
+      <div
+        class="grid-hairline rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(2, 1fr);"
+      >
+        <div class="p-6 md:p-8" style="background: var(--surface-0);">
+          <div class="relative" style="border-left: 2px solid var(--accent-blue); padding-left: 24px;">
+            <span style="position: absolute; top: -8px; left: -4px; font-size: 48px; color: rgba(74, 144, 255, 0.20); line-height: 1; pointer-events: none;">&ldquo;</span>
+            <p style="font-size: 18px; font-style: italic; color: var(--text-secondary); line-height: 1.70; margin-bottom: 16px;">
+              Reis IA transformed our operations. We automated 80% of our manual processes and saw ROI within 60 days.
+            </p>
+            <div>
+              <span style="font-size: 15px; font-weight: 600; color: var(--text-primary); display: block;">Carlos Mendes</span>
+              <span style="font-size: 14px; color: var(--text-tertiary);">CTO, TechBrazil Inc.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-6 md:p-8" style="background: var(--surface-0);">
+          <div class="relative" style="border-left: 2px solid var(--accent-blue); padding-left: 24px;">
+            <span style="position: absolute; top: -8px; left: -4px; font-size: 48px; color: rgba(74, 144, 255, 0.20); line-height: 1; pointer-events: none;">&ldquo;</span>
+            <p style="font-size: 18px; font-style: italic; color: var(--text-secondary); line-height: 1.70; margin-bottom: 16px;">
+              The strategy-first approach is what sets Moroni apart. Every system we built together is still running and generating results.
+            </p>
+            <div>
+              <span style="font-size: 15px; font-weight: 600; color: var(--text-primary); display: block;">Ana Vieira</span>
+              <span style="font-size: 14px; color: var(--text-tertiary);">Founder, Vieira Digital</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Testimonial CSS" code={codeTestimonial} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Stat Block with Counter Animation -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Stat Block (Animated Counter)" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Large numeric display for key metrics with scroll-triggered counter animation. Value counts up with ease-out cubic when the element enters the viewport. Use in 3-column grids on desktop.
+        </p>
+      </div>
+
+      <!-- Animated stats -->
+      <div
+        class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(3, 1fr);"
+      >
+        <div class="p-8 text-center" style="background: var(--surface-1);">
+          <StatCounter client:visible value={50} suffix="+" />
+          <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-top: 8px;">
+            AI Deployments
+          </div>
+          <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
+            Across 12 industries
+          </div>
+        </div>
+        <div class="p-8 text-center" style="background: var(--surface-1);">
+          <StatCounter client:visible value={83} suffix="%" />
+          <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-top: 8px;">
+            Time Reduction
+          </div>
+          <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
+            Average manual process savings
+          </div>
+        </div>
+        <div class="p-8 text-center" style="background: var(--surface-1);">
+          <StatCounter client:visible value={245} suffix="K" />
+          <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-top: 8px;">
+            Hours Automated
+          </div>
+          <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
+            Annual cumulative impact
+          </div>
+        </div>
+      </div>
+
+      <!-- Static stats with dividers -->
+      <div
+        class="rounded-xl border p-8 mb-8"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:divide-x" style="--tw-divide-opacity: 1; border-color: var(--border-default);">
+          {[
+            { value: '6', label: 'Week Timeline', context: 'Discovery to deployment' },
+            { value: '3-5x', label: 'ROI Multiple', context: 'Within first 90 days' },
+            { value: '24/7', label: 'System Uptime', context: 'Continuous monitoring' },
+          ].map((stat, i) => (
+            <div class={`text-center ${i > 0 ? 'md:pl-8' : ''}`}>
+              <div style="font-size: clamp(36px, 4vw, 48px); font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; line-height: 1.1;">
+                {stat.value}
+              </div>
+              <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-top: 8px;">
+                {stat.label}
+              </div>
+              <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
+                {stat.context}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Stat Block CSS" code={codeStats} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Highlight Banner -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Highlight Banner" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          A blue-tinted background banner with a badge, text content, and CTA button. Used for announcements, promotions, or mid-page conversion touchpoints.
+        </p>
+      </div>
+
+      <div
+        class="rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6 mb-8"
+        style="background: var(--blue-08); border: 1px solid var(--blue-20);"
+      >
+        <div>
+          <span class="badge-accent mb-2 inline-block">Limited Availability</span>
+          <p style="font-size: 16px; color: var(--text-secondary); max-width: 500px;">
+            Only 3 strategy call slots remaining this month. Book now to secure your AI implementation roadmap.
+          </p>
+        </div>
+        <a
+          href="/agendar"
+          style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; text-decoration: none; white-space: nowrap; flex-shrink: 0; transition: all 200ms;"
+          onmouseover="this.style.background='var(--accent-blue-hover)'"
+          onmouseout="this.style.background='var(--accent-blue)'"
+        >
+          Agendar Reuniao
+        </a>
+      </div>
+
+      <CodeBlock client:visible label="Highlight Banner CSS" code={codeBanner} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Badge System -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Badge System" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Five semantic badge variants for status indicators, category labels, and feature flags. All badges share: 12px font, weight 600, uppercase, 0.05em tracking, 6px radius.
+        </p>
+      </div>
+
+      <!-- All 5 badges in hairline grid -->
+      <div
+        class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(5, 1fr);"
+      >
+        {[
+          { name: 'Accent', class: 'badge-accent', usage: 'Category labels, info tags' },
+          { name: 'Success', class: 'badge-success', usage: 'Active status, verified' },
+          { name: 'Warning', class: 'badge-warning', usage: 'Beta, pending, caution' },
+          { name: 'Error', class: 'badge-error', usage: 'Failed, rejected, critical' },
+          { name: 'Neutral', class: 'badge-neutral', usage: 'Default, archived, generic' },
+        ].map(badge => (
+          <div class="p-6 flex flex-col items-center gap-4 text-center" style="background: var(--surface-1);">
+            <span class={badge.class}>{badge.name}</span>
+            <span class="text-xs" style="color: var(--text-quaternary);">{badge.usage}</span>
+          </div>
+        ))}
+      </div>
+
+      <!-- Usage context cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="rounded-xl border p-5" style="background: var(--surface-2); border-color: var(--border-default);">
+          <span class="badge-accent mb-3 inline-block">AI Consulting</span>
+          <p class="text-sm" style="color: var(--text-secondary);">Category label on a card header</p>
+        </div>
+        <div class="rounded-xl border p-5" style="background: var(--surface-2); border-color: var(--border-default);">
+          <span class="badge-success mb-3 inline-block">Active</span>
+          <p class="text-sm" style="color: var(--text-secondary);">Status indicator for projects</p>
+        </div>
+        <div class="rounded-xl border p-5" style="background: var(--surface-2); border-color: var(--border-default);">
+          <span class="badge-warning mb-3 inline-block">Beta</span>
+          <p class="text-sm" style="color: var(--text-secondary);">Feature flag or release stage</p>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Badge Variants CSS" code={codeBadges} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Tabs -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Tabs Component" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Tabbed content with keyboard navigation (arrow keys, Enter/Space). The active tab is indicated by a 2px blue underline and bold weight. Follows WAI-ARIA tabs specification for accessibility.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Active:</strong> text-primary, weight 600, blue underline</span>
+          <span><strong style="color: var(--text-secondary);">Inactive:</strong> text-tertiary, weight 500</span>
+          <span><strong style="color: var(--text-secondary);">Transition:</strong> 200ms fade</span>
+        </div>
+      </div>
+
+      <div
+        class="rounded-xl border p-6 md:p-8 mb-8"
+        style="background: var(--surface-1); border-color: var(--border-default);"
+      >
+        <TabsDemo client:visible />
+      </div>
+
+      <CodeBlock client:visible label="Tabs CSS" code={codeTabs} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Logo Marquee -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Logo Marquee" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Continuously scrolling logo strip for social proof / trust signals. Animation pauses on hover. Edge fade mask using gradient for seamless looping. Logos rendered with reduced opacity, brightening on hover.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Duration:</strong> 35s linear infinite</span>
+          <span><strong style="color: var(--text-secondary);">Logo opacity:</strong> 35%, full on hover</span>
+          <span><strong style="color: var(--text-secondary);">Gap:</strong> 80px</span>
+        </div>
+      </div>
+
+      <div
+        class="rounded-xl border overflow-hidden mb-8"
+        style="border-color: var(--border-default); background: var(--surface-0);"
+      >
+        <MarqueeDemo client:visible />
+        <div class="text-center pb-4">
+          <span class="font-mono text-[10px] font-bold uppercase tracking-wider" style="color: var(--text-muted);">
+            Trusted by leading companies
+          </span>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Logo Marquee CSS" code={codeMarquee} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 08: Navigation Patterns -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Navigation Patterns" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          The site navigation uses a fixed header with dropdown menus. Three mega-dropdowns group all pages. On mobile, a full-screen overlay replaces the dropdowns. See the site header above for a live reference.
+        </p>
+      </div>
+
+      <div
+        class="grid-hairline rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(2, 1fr);"
+      >
+        <div class="p-6" style="background: var(--surface-0);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Header Bar
+          </div>
+          <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <div><strong style="color: var(--text-primary);">Position:</strong> Fixed, z-index 50</div>
+            <div><strong style="color: var(--text-primary);">Height:</strong> 60px</div>
+            <div><strong style="color: var(--text-primary);">Background:</strong> Surface-1 + backdrop-blur(12px)</div>
+            <div><strong style="color: var(--text-primary);">Border:</strong> 1px bottom, border-default</div>
+          </div>
+        </div>
+        <div class="p-6" style="background: var(--surface-0);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Dropdown Menu
+          </div>
+          <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <div><strong style="color: var(--text-primary);">Trigger:</strong> Click on nav item</div>
+            <div><strong style="color: var(--text-primary);">Background:</strong> Surface-2</div>
+            <div><strong style="color: var(--text-primary);">Border:</strong> 1px, border-default</div>
+            <div><strong style="color: var(--text-primary);">Width:</strong> auto (min 200px)</div>
+          </div>
+        </div>
+        <div class="p-6" style="background: var(--surface-0);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Mobile Menu
+          </div>
+          <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <div><strong style="color: var(--text-primary);">Type:</strong> Full-screen overlay</div>
+            <div><strong style="color: var(--text-primary);">Background:</strong> rgba(0,0,0,0.95) + blur</div>
+            <div><strong style="color: var(--text-primary);">Links:</strong> 24px, weight 600, centered</div>
+            <div><strong style="color: var(--text-primary);">Breakpoint:</strong> Below 1024px</div>
+          </div>
+        </div>
+        <div class="p-6" style="background: var(--surface-0);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Footer
+          </div>
+          <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <div><strong style="color: var(--text-primary);">Layout:</strong> 4-column grid</div>
+            <div><strong style="color: var(--text-primary);">Background:</strong> Surface-1</div>
+            <div><strong style="color: var(--text-primary);">Links:</strong> 14px, text-tertiary, hover text-primary</div>
+            <div><strong style="color: var(--text-primary);">Copyright:</strong> 13px, text-quaternary</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 09: Usage Rules -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="09" title="Usage Rules" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Use single-select accordion — only one item open at a time' },
+        { type: 'do', text: 'Use testimonial blocks with real attribution (name + role)' },
+        { type: 'do', text: 'Duplicate marquee logos for seamless looping' },
+        { type: 'do', text: 'Include keyboard navigation for tabs (arrow keys)' },
+        { type: 'do', text: 'Use semantic badge variants (accent for info, success/warning/error for status)' },
+        { type: 'dont', text: 'Stack more than 8 accordion items — split into sections' },
+        { type: 'dont', text: 'Use testimonials without real names and roles' },
+        { type: 'dont', text: 'Animate the marquee faster than 30s — it becomes distracting' },
+        { type: 'dont', text: 'Create more than 5 tabs — consider a different navigation pattern' },
+        { type: 'dont', text: 'Use highlight banners more than once per page' },
+      ]} />
+    </div>
+  </section>
+</BrandbookLayout>

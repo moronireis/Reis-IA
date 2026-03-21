@@ -1,0 +1,368 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import ButtonShowcase from '../../components/ButtonShowcase.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+
+const codePrimary = `/* Primary Button (Blue CTA) */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-blue);
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 13px 32px 15px; /* optical centering */
+  border-radius: 8px;
+  border: none;
+  min-width: 200px;
+  cursor: pointer;
+  transition: all 200ms var(--ease-base);
+}
+
+.btn-primary:hover {
+  background: var(--accent-blue-hover);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  background: var(--accent-blue-muted);
+  transform: translateY(0);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid #4D65FF;
+  outline-offset: 2px;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}`;
+
+const codeHero = `/* Hero Variant — larger CTA for hero sections */
+.btn-hero {
+  /* Inherits primary button base */
+  font-size: 18px;
+  padding: 17px 40px 19px;
+  border-radius: 10px;
+}`;
+
+const codeSecondary = `/* Secondary Button (Outline) */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 14px 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border-visible);
+  cursor: pointer;
+  transition: all 200ms var(--ease-base);
+}
+
+.btn-secondary:hover {
+  border-color: var(--border-strong);
+  background: rgba(255, 255, 255, 0.03);
+}`;
+
+const codeGhost = `/* Ghost Button (Text Link with Arrow) */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: 8px 0;
+  border: none;
+  cursor: pointer;
+  transition: color 200ms var(--ease-base);
+}
+
+.btn-ghost .arrow {
+  margin-left: 4px;
+  transition: transform 200ms var(--ease-base);
+}
+
+.btn-ghost:hover {
+  color: var(--text-primary);
+}
+
+.btn-ghost:hover .arrow {
+  transform: translateX(4px);
+}`;
+
+const codeLink = `/* Link Button (Inline) */
+.btn-link {
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: color 200ms;
+}
+
+.btn-link:hover {
+  color: var(--accent-blue-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}`;
+
+const codeAsLink = `<!-- Button styled as <a> tag -->
+<a
+  href="/agendar"
+  class="btn-primary"
+  role="button"
+>
+  Agendar Reuniao
+</a>
+
+<!-- Ghost link pattern -->
+<a href="/brandbook/strategy" class="btn-ghost">
+  View strategy
+  <span class="arrow">&rarr;</span>
+</a>`;
+---
+
+<BrandbookLayout
+  title="Buttons"
+  pageName="BUTTONS"
+  description="Button component system with primary, secondary, ghost, hero, and link variants. All states, sizes, and interactive demos."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Buttons
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Five button variants cover every interaction pattern. Primary and Hero buttons are reserved for conversion actions (routes to /agendar or /aplicar only). Secondary and Ghost buttons handle navigation and secondary actions. Link buttons work inline within body text.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: Interactive Showcase -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Interactive Showcase" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Every button variant with live hover, focus, active, and disabled states. Interact with the buttons below to see real state transitions — these are not screenshots.
+        </p>
+      </div>
+
+      <div
+        class="rounded-xl border p-6 md:p-8"
+        style="background: var(--surface-0); border-color: var(--border-default);"
+      >
+        <ButtonShowcase client:visible />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Primary Button -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Primary Button" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          The primary blue CTA button is the highest-emphasis action element. It uses asymmetric vertical padding (13px top, 15px bottom) adapted from Stripe's optical centering technique. At our larger padding, 1px difference is sufficient to make the text appear perfectly centered.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Background:</strong> var(--accent-blue)</span>
+          <span><strong style="color: var(--text-secondary);">Min width:</strong> 200px</span>
+          <span><strong style="color: var(--text-secondary);">Border radius:</strong> 8px</span>
+        </div>
+      </div>
+
+      <!-- Spec table -->
+      <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: var(--surface-2);">
+              <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); border-bottom: 1px solid var(--border-default);">Property</th>
+              <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); border-bottom: 1px solid var(--border-default);">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ['Background', 'var(--accent-blue) (#4A90FF)'],
+              ['Text color', '#FFFFFF'],
+              ['Font size', '16px'],
+              ['Font weight', '600'],
+              ['Letter spacing', '0.01em'],
+              ['Padding', '13px 32px 15px (optical centering)'],
+              ['Border radius', '8px'],
+              ['Min width', '200px'],
+              ['Hover', 'var(--accent-hover), translateY(-2px)'],
+              ['Active', 'var(--accent-muted), translateY(0)'],
+              ['Transition', 'all 200ms var(--ease-base)'],
+            ].map(([prop, value]) => (
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
+                <td style="padding: 10px 16px; font-size: 14px; color: var(--text-secondary);">{prop}</td>
+                <td style="padding: 10px 16px; font-size: 13px; font-family: ui-monospace, monospace; color: var(--text-tertiary);">{value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <CodeBlock client:visible label="Primary Button CSS" code={codePrimary} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Hero Variant -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Hero Variant" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          A larger version of the primary button for hero sections. Same visual weight, increased tap target and prominence. Use only once per page, above the fold.
+        </p>
+      </div>
+
+      <div
+        class="rounded-xl border p-8 mb-8 flex items-center justify-center"
+        style="background: var(--surface-0); border-color: var(--border-default); min-height: 160px;"
+      >
+        <a
+          href="/agendar"
+          style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #FFFFFF; font-size: 18px; font-weight: 600; padding: 17px 40px 19px; border-radius: 10px; text-decoration: none; transition: all 200ms; min-width: 240px;"
+        >
+          Agendar Reuniao Estrategica
+        </a>
+      </div>
+
+      <CodeBlock client:visible label="Hero Variant CSS" code={codeHero} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Secondary & Ghost -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Secondary & Ghost Buttons" />
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div>
+          <h3 class="text-lg font-semibold mb-3" style="color: var(--text-primary);">Secondary (Outline)</h3>
+          <p class="text-sm mb-4" style="color: var(--text-secondary);">
+            Transparent background with a visible border. Used for alternative actions next to a primary button, or as a standalone non-conversion action.
+          </p>
+          <CodeBlock client:visible label="Secondary Button CSS" code={codeSecondary} />
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-3" style="color: var(--text-primary);">Ghost (Text + Arrow)</h3>
+          <p class="text-sm mb-4" style="color: var(--text-secondary);">
+            Minimal text button with an arrow suffix that shifts right on hover. Used for tertiary navigation and content links within cards.
+          </p>
+          <CodeBlock client:visible label="Ghost Button CSS" code={codeGhost} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Link Button & Button as Link -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Link Button & Anchor Patterns" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Link buttons appear inline within body copy. For CTA buttons that navigate to a URL, use an <code>&lt;a&gt;</code> tag styled as a button. This preserves accessibility semantics while maintaining visual consistency.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <CodeBlock client:visible label="Link Button CSS" code={codeLink} />
+        </div>
+        <div>
+          <CodeBlock client:visible label="Button as <a> Tag" language="html" code={codeAsLink} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: CTA Routing Rules -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="CTA Routing Rules" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          All primary and hero CTA buttons must route to one of two conversion endpoints. There are no other valid CTA destinations.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="rounded-xl border p-6" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            /agendar
+          </div>
+          <p class="text-sm" style="color: var(--text-secondary);">
+            Strategy call booking. Use for buttons like "Agendar Reuniao", "Book a Call", "Schedule Strategy Session".
+          </p>
+        </div>
+        <div class="rounded-xl border p-6" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            /aplicar
+          </div>
+          <p class="text-sm" style="color: var(--text-secondary);">
+            Application form. Use for buttons like "Aplicar Agora", "Apply Now", "Start Your Application".
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Usage Rules -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Usage Rules" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Use primary/hero buttons only for conversion CTAs (/agendar or /aplicar)' },
+        { type: 'do', text: 'Pair primary + secondary together (never two primaries side by side)' },
+        { type: 'do', text: 'Use ghost buttons for card CTAs and in-content navigation' },
+        { type: 'do', text: 'Use link buttons for inline text references' },
+        { type: 'do', text: 'Include focus-visible styles for keyboard navigation' },
+        { type: 'dont', text: 'Place more than one primary button per viewport' },
+        { type: 'dont', text: 'Use primary buttons for non-conversion actions (Learn More, Read Article)' },
+        { type: 'dont', text: 'Animate button text or icons with bounce/spring easing' },
+        { type: 'dont', text: 'Use blue background on secondary buttons — blue is reserved for primary' },
+        { type: 'dont', text: 'Remove the min-width from primary buttons — it prevents visual inconsistency' },
+      ]} />
+    </div>
+  </section>
+</BrandbookLayout>

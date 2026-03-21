@@ -1,5 +1,7 @@
 ---
 import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import RelatedPages from '../../components/RelatedPages.astro';
+import { relatedLinksMap } from '../../data/navigation';
 import SectionLabel from '../../components/SectionLabel.astro';
 import CodeBlock from '../../components/CodeBlock.tsx';
 import ButtonShowcase from '../../components/ButtonShowcase.tsx';
@@ -50,6 +52,7 @@ const codeHero = `/* Hero Variant — larger CTA for hero sections */
   font-size: 18px;
   padding: 17px 40px 19px;
   border-radius: 10px;
+  min-width: 240px;
 }`;
 
 const codeSecondary = `/* Secondary Button (Outline) */
@@ -115,25 +118,20 @@ const codeLink = `/* Link Button (Inline) */
 }`;
 
 const codeAsLink = `<!-- Button styled as <a> tag -->
-<a
-  href="/agendar"
-  class="btn-primary"
-  role="button"
->
-  Agendar Reuniao
+<a href="/agendar" class="btn-primary" role="button">
+  Agendar Reunião
 </a>
 
 <!-- Ghost link pattern -->
 <a href="/brandbook/strategy" class="btn-ghost">
-  View strategy
-  <span class="arrow">&rarr;</span>
+  View strategy <span class="arrow">&rarr;</span>
 </a>`;
 ---
 
 <BrandbookLayout
-  title="Buttons"
-  pageName="BUTTONS"
-  description="Button component system with primary, secondary, ghost, hero, and link variants. All states, sizes, and interactive demos."
+  title="Botões"
+  pageName="BOTÕES"
+  description="Sistema de botões com variantes primário, secundário, ghost, hero e link. Todos os estados, tamanhos e demos interativos."
 >
   <!-- Title Area -->
   <section style="background: var(--surface-0);">
@@ -143,7 +141,7 @@ const codeAsLink = `<!-- Button styled as <a> tag -->
           class="font-bold tracking-tight mb-6"
           style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
         >
-          Buttons
+          Botões
         </h1>
         <p
           class="max-w-[680px]"
@@ -160,11 +158,11 @@ const codeAsLink = `<!-- Button styled as <a> tag -->
   <!-- Section 01: Interactive Showcase -->
   <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="01" title="Interactive Showcase" />
+      <SectionLabel number="01" title="Demonstração Interativa" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
-          Every button variant with live hover, focus, active, and disabled states. Interact with the buttons below to see real state transitions — these are not screenshots.
+          Every button variant with live hover, focus, active, and disabled states. Use the tabs to switch variants. All states in the grid are rendered as static CSS snapshots. The "Interactive" section below each grid uses real event handlers.
         </p>
       </div>
 
@@ -179,52 +177,41 @@ const codeAsLink = `<!-- Button styled as <a> tag -->
 
   <div class="gradient-divider"></div>
 
-  <!-- Section 02: Primary Button -->
+  <!-- Section 02: Primary Button Spec -->
   <section style="background: var(--surface-0);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="02" title="Primary Button" />
+      <SectionLabel number="02" title="Botão Primário" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
           The primary blue CTA button is the highest-emphasis action element. It uses asymmetric vertical padding (13px top, 15px bottom) adapted from Stripe's optical centering technique. At our larger padding, 1px difference is sufficient to make the text appear perfectly centered.
         </p>
-        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
-          <span><strong style="color: var(--text-secondary);">Background:</strong> var(--accent-blue)</span>
-          <span><strong style="color: var(--text-secondary);">Min width:</strong> 200px</span>
-          <span><strong style="color: var(--text-secondary);">Border radius:</strong> 8px</span>
-        </div>
       </div>
 
-      <!-- Spec table -->
-      <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
-        <table style="width: 100%; border-collapse: collapse;">
-          <thead>
-            <tr style="background: var(--surface-2);">
-              <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); border-bottom: 1px solid var(--border-default);">Property</th>
-              <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); border-bottom: 1px solid var(--border-default);">Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              ['Background', 'var(--accent-blue) (#4A90FF)'],
-              ['Text color', '#FFFFFF'],
-              ['Font size', '16px'],
-              ['Font weight', '600'],
-              ['Letter spacing', '0.01em'],
-              ['Padding', '13px 32px 15px (optical centering)'],
-              ['Border radius', '8px'],
-              ['Min width', '200px'],
-              ['Hover', 'var(--accent-hover), translateY(-2px)'],
-              ['Active', 'var(--accent-muted), translateY(0)'],
-              ['Transition', 'all 200ms var(--ease-base)'],
-            ].map(([prop, value]) => (
-              <tr style="border-bottom: 1px solid var(--border-subtle);">
-                <td style="padding: 10px 16px; font-size: 14px; color: var(--text-secondary);">{prop}</td>
-                <td style="padding: 10px 16px; font-size: 13px; font-family: ui-monospace, monospace; color: var(--text-tertiary);">{value}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <!-- Spec table in hairline grid -->
+      <div
+        class="grid-hairline rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: 200px 1fr;"
+      >
+        {[
+          ['Background', 'var(--accent-blue) (#4A90FF)'],
+          ['Text color', '#FFFFFF'],
+          ['Font size', '16px'],
+          ['Font weight', '600'],
+          ['Letter spacing', '0.01em'],
+          ['Padding', '13px 32px 15px (optical centering)'],
+          ['Border radius', '8px'],
+          ['Min width', '200px'],
+          ['Hover', 'var(--accent-hover), translateY(-2px)'],
+          ['Active', 'var(--accent-muted), translateY(0)'],
+          ['Focus', '2px solid #4D65FF, offset 2px'],
+          ['Transition', 'all 200ms var(--ease-base)'],
+        ].map(([prop, value]) => (
+          <Fragment>
+            <div class="p-3" style="background: var(--surface-0); font-size: 14px; font-weight: 500; color: var(--text-secondary);">{prop}</div>
+            <div class="p-3" style="background: var(--surface-0); font-size: 13px; font-family: ui-monospace, monospace; color: var(--text-tertiary);">{value}</div>
+          </Fragment>
+        ))}
       </div>
 
       <CodeBlock client:visible label="Primary Button CSS" code={codePrimary} />
@@ -236,7 +223,7 @@ const codeAsLink = `<!-- Button styled as <a> tag -->
   <!-- Section 03: Hero Variant -->
   <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="03" title="Hero Variant" />
+      <SectionLabel number="03" title="Variante Hero" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
@@ -251,8 +238,10 @@ const codeAsLink = `<!-- Button styled as <a> tag -->
         <a
           href="/agendar"
           style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #FFFFFF; font-size: 18px; font-weight: 600; padding: 17px 40px 19px; border-radius: 10px; text-decoration: none; transition: all 200ms; min-width: 240px;"
+          onmouseover="this.style.background='var(--accent-blue-hover)';this.style.transform='translateY(-2px)'"
+          onmouseout="this.style.background='var(--accent-blue)';this.style.transform='translateY(0)'"
         >
-          Agendar Reuniao Estrategica
+          Agendar Reunião Estratégica
         </a>
       </div>
 
@@ -265,21 +254,50 @@ const codeAsLink = `<!-- Button styled as <a> tag -->
   <!-- Section 04: Secondary & Ghost -->
   <section style="background: var(--surface-0);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="04" title="Secondary & Ghost Buttons" />
+      <SectionLabel number="04" title="Botões Secundário e Ghost" />
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div>
           <h3 class="text-lg font-semibold mb-3" style="color: var(--text-primary);">Secondary (Outline)</h3>
-          <p class="text-sm mb-4" style="color: var(--text-secondary);">
+          <p class="text-sm mb-6" style="color: var(--text-secondary);">
             Transparent background with a visible border. Used for alternative actions next to a primary button, or as a standalone non-conversion action.
           </p>
+          <!-- Live demo -->
+          <div
+            class="rounded-xl border p-6 mb-6 flex items-center justify-center"
+            style="background: var(--surface-1); border-color: var(--border-default); min-height: 100px;"
+          >
+            <button
+              style="display: inline-flex; align-items: center; justify-content: center; background: transparent; color: var(--text-primary); font-size: 16px; font-weight: 600; padding: 14px 32px; border-radius: 8px; border: 1px solid var(--border-visible); cursor: pointer; transition: all 200ms; font-family: inherit;"
+              onmouseover="this.style.borderColor='var(--border-strong)';this.style.background='rgba(255,255,255,0.03)'"
+              onmouseout="this.style.borderColor='var(--border-visible)';this.style.background='transparent'"
+            >
+              View Details
+            </button>
+          </div>
           <CodeBlock client:visible label="Secondary Button CSS" code={codeSecondary} />
         </div>
         <div>
           <h3 class="text-lg font-semibold mb-3" style="color: var(--text-primary);">Ghost (Text + Arrow)</h3>
-          <p class="text-sm mb-4" style="color: var(--text-secondary);">
+          <p class="text-sm mb-6" style="color: var(--text-secondary);">
             Minimal text button with an arrow suffix that shifts right on hover. Used for tertiary navigation and content links within cards.
           </p>
+          <!-- Live demo -->
+          <div
+            class="rounded-xl border p-6 mb-6 flex items-center justify-center"
+            style="background: var(--surface-1); border-color: var(--border-default); min-height: 100px;"
+          >
+            <a
+              href="#"
+              class="ghost-link-demo"
+              style="display: inline-flex; align-items: center; color: var(--text-secondary); font-weight: 500; font-size: 16px; text-decoration: none; transition: color 200ms;"
+              onmouseover="this.style.color='var(--text-primary)';this.querySelector('.arrow').style.transform='translateX(4px)'"
+              onmouseout="this.style.color='var(--text-secondary)';this.querySelector('.arrow').style.transform='translateX(0)'"
+            >
+              View case study
+              <span class="arrow" style="margin-left: 4px; display: inline-block; transition: transform 200ms;">&rarr;</span>
+            </a>
+          </div>
           <CodeBlock client:visible label="Ghost Button CSS" code={codeGhost} />
         </div>
       </div>
@@ -291,7 +309,7 @@ const codeAsLink = `<!-- Button styled as <a> tag -->
   <!-- Section 05: Link Button & Button as Link -->
   <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="05" title="Link Button & Anchor Patterns" />
+      <SectionLabel number="05" title="Botão Link e Padrões Anchor" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
@@ -315,7 +333,7 @@ const codeAsLink = `<!-- Button styled as <a> tag -->
   <!-- Section 06: CTA Routing Rules -->
   <section style="background: var(--surface-0);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="06" title="CTA Routing Rules" />
+      <SectionLabel number="06" title="Regras de Roteamento CTA" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
@@ -323,16 +341,19 @@ const codeAsLink = `<!-- Button styled as <a> tag -->
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div class="rounded-xl border p-6" style="background: var(--surface-2); border-color: var(--border-default);">
+      <div
+        class="grid-hairline rounded-xl overflow-hidden"
+        style="grid-template-columns: repeat(2, 1fr);"
+      >
+        <div class="p-6" style="background: var(--surface-0);">
           <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
             /agendar
           </div>
           <p class="text-sm" style="color: var(--text-secondary);">
-            Strategy call booking. Use for buttons like "Agendar Reuniao", "Book a Call", "Schedule Strategy Session".
+            Strategy call booking. Use for buttons like "Agendar Reunião", "Book a Call", "Schedule Strategy Session".
           </p>
         </div>
-        <div class="rounded-xl border p-6" style="background: var(--surface-2); border-color: var(--border-default);">
+        <div class="p-6" style="background: var(--surface-0);">
           <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
             /aplicar
           </div>
@@ -346,10 +367,64 @@ const codeAsLink = `<!-- Button styled as <a> tag -->
 
   <div class="gradient-divider"></div>
 
-  <!-- Section 07: Usage Rules -->
+  <!-- Section 07: Button with Icon Variants -->
   <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="07" title="Usage Rules" />
+      <SectionLabel number="07" title="Variantes de Botão com Ícone" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Icons can be placed on the left (action emphasis) or right (directional/navigation). Icons are 16px inline SVGs that inherit button text color. Maintain 8px gap between icon and text.
+        </p>
+      </div>
+
+      <div
+        class="grid-hairline rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));"
+      >
+        <div class="p-8 flex flex-col items-center gap-4" style="background: var(--surface-1);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Left Icon</span>
+          <button
+            style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent-blue); color: #fff; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; border: none; cursor: pointer; transition: all 200ms; font-family: inherit;"
+            onmouseover="this.style.background='var(--accent-blue-hover)';this.style.transform='translateY(-2px)'"
+            onmouseout="this.style.background='var(--accent-blue)';this.style.transform='translateY(0)'"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+            Create New
+          </button>
+        </div>
+        <div class="p-8 flex flex-col items-center gap-4" style="background: var(--surface-1);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Right Icon</span>
+          <button
+            style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent-blue); color: #fff; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; border: none; cursor: pointer; transition: all 200ms; font-family: inherit;"
+            onmouseover="this.style.background='var(--accent-blue-hover)';this.style.transform='translateY(-2px)'"
+            onmouseout="this.style.background='var(--accent-blue)';this.style.transform='translateY(0)'"
+          >
+            Get Started
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+          </button>
+        </div>
+        <div class="p-8 flex flex-col items-center gap-4" style="background: var(--surface-1);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Icon Only</span>
+          <button
+            style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: var(--accent-blue); color: #fff; border-radius: 8px; border: none; cursor: pointer; transition: all 200ms;"
+            onmouseover="this.style.background='var(--accent-blue-hover)'"
+            onmouseout="this.style.background='var(--accent-blue)'"
+            aria-label="Add item"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 08: Usage Rules -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Regras de Uso" />
 
       <DosDonts items={[
         { type: 'do', text: 'Use primary/hero buttons only for conversion CTAs (/agendar or /aplicar)' },
@@ -365,4 +440,9 @@ const codeAsLink = `<!-- Button styled as <a> tag -->
       ]} />
     </div>
   </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Related Pages -->
+  <RelatedPages links={relatedLinksMap['/brandbook/buttons'] || []} />
 </BrandbookLayout>

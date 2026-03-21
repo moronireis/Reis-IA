@@ -1,0 +1,852 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import RelatedPages from '../../components/RelatedPages.astro';
+import { relatedLinksMap } from '../../data/navigation';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import AuroraDemo from '../../components/AuroraDemo.tsx';
+import MeshGradientDemo from '../../components/MeshGradientDemo.tsx';
+import ParallaxDemo from '../../components/ParallaxDemo.tsx';
+import SectionTransitionDemo from '../../components/SectionTransitionDemo.tsx';
+import TextRevealDemo from '../../components/TextRevealDemo.tsx';
+import CounterDemo from '../../components/CounterDemo.tsx';
+import MagneticDemo from '../../components/MagneticDemo.tsx';
+import GradientBorderGlowDemo from '../../components/GradientBorderGlowDemo.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+
+const codeAurora = `.aurora-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%,
+      rgba(74, 144, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 20%,
+      rgba(141, 196, 255, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 50% 80%,
+      rgba(53, 112, 204, 0.06) 0%, transparent 60%);
+  animation: aurora-shift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes aurora-shift {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  33%  { transform: translate(-5%, 3%) scale(1.05); opacity: 0.8; }
+  66%  { transform: translate(3%, -2%) scale(0.98); opacity: 1; }
+  100% { transform: translate(-2%, 5%) scale(1.02); opacity: 0.9; }
+}`;
+
+const codeMesh = `.mesh-gradient {
+  background:
+    radial-gradient(at 40% 20%,
+      rgba(74, 144, 255, 0.07) 0%, transparent 50%),
+    radial-gradient(at 80% 0%,
+      rgba(53, 112, 204, 0.05) 0%, transparent 50%),
+    radial-gradient(at 0% 50%,
+      rgba(141, 196, 255, 0.04) 0%, transparent 50%),
+    radial-gradient(at 60% 100%,
+      rgba(74, 144, 255, 0.06) 0%, transparent 50%),
+    var(--surface-0);
+}`;
+
+const codeParallax = `/* CSS parallax layers */
+.parallax-slow   { transform: translateY(calc(var(--scroll-y) * -0.05)); }
+.parallax-medium { transform: translateY(calc(var(--scroll-y) * -0.1)); }
+.parallax-fast   { transform: translateY(calc(var(--scroll-y) * -0.15)); }
+
+/* JS: update scroll variable */
+window.addEventListener('scroll', () => {
+  document.documentElement.style.setProperty(
+    '--scroll-y',
+    window.scrollY + 'px'
+  );
+}, { passive: true });`;
+
+const codeSectionTransition = `.section-transition-bottom {
+  position: relative;
+}
+
+.section-transition-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--surface-next)
+  );
+  pointer-events: none;
+}`;
+
+const codeTextReveal = `/* Each word wrapped in a span */
+.text-reveal-word {
+  display: inline-block;
+  color: var(--text-muted);
+  transition: color 800ms var(--ease-out);
+  transition-delay: calc(var(--word-index) * 60ms);
+}
+
+.text-reveal.in-view .text-reveal-word {
+  color: var(--text-primary);
+}`;
+
+const codeCounter = `function animateCounter(element, target, suffix = '') {
+  const duration = 2000;
+  const start = performance.now();
+
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(target * eased);
+    element.textContent = current + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+
+  requestAnimationFrame(update);
+}`;
+
+const codeMagnetic = `function initMagneticHover(element) {
+  const maxOffset = 8;
+
+  element.addEventListener('mousemove', (e) => {
+    const rect = element.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    const offsetX = Math.max(-maxOffset,
+      Math.min(maxOffset, x * 0.15));
+    const offsetY = Math.max(-maxOffset,
+      Math.min(maxOffset, y * 0.15));
+    element.style.transform =
+      \`translate(\${offsetX}px, \${offsetY}px)\`;
+  });
+
+  element.addEventListener('mouseleave', () => {
+    element.style.transform = 'translate(0, 0)';
+  });
+}
+
+.magnetic-hover {
+  transition: transform 300ms var(--ease-out);
+}`;
+
+const codeGradientBorder = `.card-gradient-border {
+  background:
+    linear-gradient(135deg, var(--surface-2), var(--surface-3)) padding-box,
+    linear-gradient(90deg,
+      rgba(74,144,255,0.4) 0%,
+      rgba(74,144,255,0) 50%,
+      rgba(74,144,255,0.4) 100%
+    ) border-box;
+  border: 1px solid transparent;
+  border-radius: 12px;
+}
+
+/* Hover glow */
+.card-gradient-border:hover {
+  box-shadow: 0 0 50px rgba(74, 144, 255, 0.12);
+}`;
+---
+
+<BrandbookLayout
+  title="VFX"
+  pageName="VFX"
+  description="Advanced visual effects: aurora backgrounds, mesh gradients, parallax, text reveals, counters, magnetic hover, and gradient border glow."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          VFX System
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Advanced visual effects that add atmospheric depth and interactive delight. Each effect is CSS-first where possible, with JavaScript only when interaction or scroll-linking requires it. Performance is non-negotiable -- all effects must maintain 60fps.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: Aurora Background -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Aurora Background" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Slow-moving gradient orbs create an ethereal atmospheric backdrop. Configure the orb count (1-3), cycle speed (10-40s), and play/pause to explore different configurations. Used behind hero sections for ambient depth.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Duration:</strong> 20s default</span>
+          <span><strong style="color: var(--text-secondary);">Usage:</strong> Hero sections only</span>
+          <span><strong style="color: var(--text-secondary);">Performance:</strong> GPU-composited</span>
+        </div>
+      </div>
+
+      <AuroraDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Aurora CSS" code={codeAurora} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Mesh Gradient -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Mesh Gradient" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Multi-stop radial gradients overlaid to create organic, flowing background patterns. Static (no animation), used for section backgrounds where aurora would be too much motion. Four gradient points at different positions create natural depth variation.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Type:</strong> Static (CSS only)</span>
+          <span><strong style="color: var(--text-secondary);">Usage:</strong> Section backgrounds</span>
+          <span><strong style="color: var(--text-secondary);">Points:</strong> 4 radial-gradient stops</span>
+        </div>
+      </div>
+
+      <MeshGradientDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Mesh Gradient CSS" code={codeMesh} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Section Transitions -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Section Transitions" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Gradient fade overlays create smooth visual transitions between sections with different background tiers. The 120px fade height matches the maximum value of --space-3xl, creating seamless blending.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Height:</strong> 80-120px</span>
+          <span><strong style="color: var(--text-secondary);">Type:</strong> CSS only (pseudo-element)</span>
+        </div>
+      </div>
+
+      <SectionTransitionDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Section Transition CSS" code={codeSectionTransition} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Text Reveal -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Text Reveal" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Words transition from 20% opacity to 100% with staggered delays, creating a reading-pace reveal. Each word gets 60ms delay offset, so a 15-word sentence completes in under 1 second. Click "Replay" to see the effect again.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Delay per word:</strong> 60ms</span>
+          <span><strong style="color: var(--text-secondary);">Word transition:</strong> 800ms ease-out</span>
+          <span><strong style="color: var(--text-secondary);">Usage:</strong> Manifesto-style hero text</span>
+        </div>
+      </div>
+
+      <TextRevealDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Text Reveal CSS" code={codeTextReveal} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Counter Animation -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Counter Animation" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Numbers animate from 0 to their target value when the stats section enters the viewport. Uses requestAnimationFrame for smooth 60fps updates with an ease-out deceleration curve. Click "Replay" to see the count-up animation.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Duration:</strong> 2000ms</span>
+          <span><strong style="color: var(--text-secondary);">Easing:</strong> Cubic ease-out</span>
+          <span><strong style="color: var(--text-secondary);">Supports:</strong> %, +, x suffixes</span>
+        </div>
+      </div>
+
+      <CounterDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Counter JS" language="javascript" code={codeCounter} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Magnetic Hover -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Magnetic Hover" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Elements subtly follow cursor position within their bounds, creating an interactive magnetic feel. Max offset: 8px in any direction (restrained compared to Stripe's 12px). Move your cursor over the button to see the effect.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Max offset:</strong> 8px</span>
+          <span><strong style="color: var(--text-secondary);">Transition:</strong> 300ms ease-out</span>
+          <span><strong style="color: var(--text-secondary);">Usage:</strong> Hero CTA buttons only</span>
+          <span><strong style="color: var(--text-secondary);">Touch:</strong> Disabled</span>
+        </div>
+      </div>
+
+      <MagneticDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Magnetic Hover JS" language="javascript" code={codeMagnetic} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Gradient Border Glow -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Gradient Border Glow" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          The background-clip gradient border technique creates a blue sweep effect around cards. On hover, a configurable blue glow shadow appears. Adjust the intensity slider and hover the gradient border card to see the effect.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Technique:</strong> background-clip: padding-box / border-box</span>
+          <span><strong style="color: var(--text-secondary);">Hover:</strong> box-shadow glow at 500ms ease-card</span>
+        </div>
+      </div>
+
+      <GradientBorderGlowDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Gradient Border CSS" code={codeGradientBorder} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 08: Parallax Layers -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Parallax Layers" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Background elements move at different speeds during scroll, creating depth. Three speed tiers: slow (-0.05), medium (-0.10), and fast (-0.15). Scroll within the container to see the layers separate.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Requires:</strong> JS scroll listener</span>
+          <span><strong style="color: var(--text-secondary);">Performance:</strong> transform only (GPU)</span>
+          <span><strong style="color: var(--text-secondary);">Applied to:</strong> Decorative elements only</span>
+        </div>
+      </div>
+
+      <ParallaxDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Parallax CSS + JS" code={codeParallax} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 09: Ampulheta H1-B — Interacoes -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="09" title="Ampulheta H1-B — Interacoes" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Efeitos visuais aplicados a ampulheta H1-B — a marca visual do ecossistema Reis IA.
+          Cada efeito usa a geometria SVG da ampulheta (viewBox 64x64) e respeita a regra de nao
+          rotacionar ou flipar o simbolo fora de contextos de loading.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Simbolo:</strong> H1-B Hourglass</span>
+          <span><strong style="color: var(--text-secondary);">Origem:</strong> hourglass-vfx-preview.html</span>
+          <span><strong style="color: var(--text-secondary);">Efeitos:</strong> 6 variacoes</span>
+        </div>
+      </div>
+
+      <!-- Hourglass Effects Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Hover Glow Pulsante -->
+        <div
+          class="p-6 rounded-xl border text-center group"
+          style="background: var(--surface-2); border-color: var(--border-default);"
+        >
+          <div class="font-mono text-[10px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Hover Glow Pulsante
+          </div>
+          <div
+            class="inline-flex items-center justify-center w-16 h-16 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_16px_6px_rgba(74,144,255,0.4)] hover:bg-[rgba(74,144,255,0.03)]"
+          >
+            <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#4A90FF" stroke-width="2" stroke-linecap="round">
+              <path d="M14,8 L50,8" /><path d="M50,8 L14,56" /><path d="M14,8 L25,25" /><path d="M39,39 L50,56" /><path d="M14,56 L50,56" />
+            </svg>
+          </div>
+          <p class="text-[11px] mt-3" style="color: var(--text-tertiary);">Passe o mouse sobre o icone</p>
+          <div class="font-mono text-[10px] mt-1" style="color: var(--text-quaternary);">hover: box-shadow pulse</div>
+        </div>
+
+        <!-- Watermark Breathing -->
+        <div
+          class="p-6 rounded-xl border text-center relative overflow-hidden"
+          style="background: var(--surface-2); border-color: var(--border-default);"
+        >
+          <div class="font-mono text-[10px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Watermark Breathing
+          </div>
+          <div class="relative w-full h-20 flex items-center justify-center">
+            <svg
+              class="absolute opacity-[0.04]"
+              width="120" height="120" viewBox="0 0 64 64" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"
+              style="animation: watermark-breathe 8s ease-in-out infinite;"
+            >
+              <path d="M14,8 L50,8" /><path d="M50,8 L14,56" /><path d="M14,8 L25,25" /><path d="M39,39 L50,56" /><path d="M14,56 L50,56" />
+            </svg>
+            <span class="relative z-10 text-xs font-semibold" style="color: var(--text-secondary);">Conteudo por cima</span>
+          </div>
+          <div class="font-mono text-[10px] mt-3" style="color: var(--text-quaternary);">8s · scale(1.02) · opacity 4-5%</div>
+        </div>
+
+        <!-- Line-by-Line Construction -->
+        <div
+          class="p-6 rounded-xl border text-center"
+          style="background: var(--surface-2); border-color: var(--border-default);"
+          id="construction-demo"
+        >
+          <div class="font-mono text-[10px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Construcao Linha a Linha
+          </div>
+          <div class="inline-flex items-center justify-center w-16 h-16">
+            <svg id="construction-svg" width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#4A90FF" stroke-width="2" stroke-linecap="round">
+              <line x1="14" y1="8" x2="50" y2="8" style="stroke-dasharray: 80; stroke-dashoffset: 80; animation: draw-line-vfx 0.35s ease forwards 0ms;" />
+              <line x1="50" y1="8" x2="14" y2="56" style="stroke-dasharray: 80; stroke-dashoffset: 80; animation: draw-line-vfx 0.35s ease forwards 200ms;" />
+              <line x1="14" y1="8" x2="25" y2="25" style="stroke-dasharray: 80; stroke-dashoffset: 80; animation: draw-line-vfx 0.35s ease forwards 400ms;" />
+              <line x1="39" y1="39" x2="50" y2="56" style="stroke-dasharray: 80; stroke-dashoffset: 80; animation: draw-line-vfx 0.35s ease forwards 600ms;" />
+              <line x1="14" y1="56" x2="50" y2="56" style="stroke-dasharray: 80; stroke-dashoffset: 80; animation: draw-line-vfx 0.35s ease forwards 800ms;" />
+            </svg>
+          </div>
+          <button
+            class="mt-3 inline-flex items-center gap-1 text-[11px] font-medium px-3 py-1 rounded border transition-colors duration-200 hover:bg-[rgba(74,144,255,0.08)]"
+            style="color: var(--accent-blue); border-color: var(--blue-20);"
+            onclick="const svg = document.getElementById('construction-svg'); const clone = svg.cloneNode(true); svg.parentNode.replaceChild(clone, svg); clone.id = 'construction-svg';"
+          >
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            Replay
+          </button>
+          <div class="font-mono text-[10px] mt-1" style="color: var(--text-quaternary);">350ms por linha · stagger 200ms</div>
+        </div>
+
+        <!-- Aurora Temporal -->
+        <div
+          class="p-6 rounded-xl border text-center relative overflow-hidden"
+          style="background: var(--surface-2); border-color: var(--border-default);"
+        >
+          <div class="font-mono text-[10px] font-bold uppercase tracking-wider mb-4 relative z-10" style="color: var(--accent-blue);">
+            Aurora Temporal
+          </div>
+          <div class="relative w-full h-20 flex items-center justify-center">
+            <div class="absolute inset-0 pointer-events-none">
+              <div class="absolute rounded-full" style="width: 80px; height: 80px; top: 10%; left: 20%; background: radial-gradient(circle, rgba(74,144,255,0.09) 0%, transparent 70%); filter: blur(20px); animation: aurora-orbit-a 20s linear infinite;"></div>
+              <div class="absolute rounded-full" style="width: 60px; height: 60px; top: 30%; right: 20%; background: radial-gradient(circle, rgba(0,180,255,0.07) 0%, transparent 70%); filter: blur(15px); animation: aurora-orbit-b 25s linear infinite;"></div>
+            </div>
+            <svg class="relative z-10" width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#4A90FF" stroke-width="2" stroke-linecap="round">
+              <path d="M14,8 L50,8" /><path d="M50,8 L14,56" /><path d="M14,8 L25,25" /><path d="M39,39 L50,56" /><path d="M14,56 L50,56" />
+            </svg>
+          </div>
+          <div class="font-mono text-[10px] mt-3" style="color: var(--text-quaternary);">Orbs flutuantes · 20-25s · blur(40px)</div>
+        </div>
+
+        <!-- Scanner Line -->
+        <div
+          class="p-6 rounded-xl border text-center"
+          style="background: var(--surface-2); border-color: var(--border-default);"
+        >
+          <div class="font-mono text-[10px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Scanner Line
+          </div>
+          <div class="relative inline-flex items-center justify-center w-16 h-16 rounded-lg overflow-hidden" style="background: rgba(74,144,255,0.02);">
+            <div
+              class="absolute left-[-10%] right-[-10%] h-px pointer-events-none z-20"
+              style="background: linear-gradient(to right, transparent 0%, rgba(74,144,255,0.1) 15%, rgba(74,144,255,0.3) 50%, rgba(74,144,255,0.1) 85%, transparent 100%); animation: scanner-sweep-vfx 6s linear infinite;"
+            ></div>
+            <svg class="relative z-10" width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#4A90FF" stroke-width="2" stroke-linecap="round">
+              <path d="M14,8 L50,8" /><path d="M50,8 L14,56" /><path d="M14,8 L25,25" /><path d="M39,39 L50,56" /><path d="M14,56 L50,56" />
+            </svg>
+          </div>
+          <div class="font-mono text-[10px] mt-3" style="color: var(--text-quaternary);">6s · linear · varredura vertical</div>
+        </div>
+
+        <!-- Easter Egg 7 Clicks -->
+        <div
+          class="p-6 rounded-xl border text-center"
+          style="background: var(--surface-2); border-color: var(--border-default);"
+        >
+          <div class="font-mono text-[10px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Easter Egg — 7 Cliques
+          </div>
+          <div class="inline-flex flex-col items-center gap-2">
+            <div
+              id="easter-icon"
+              class="cursor-pointer inline-flex items-center justify-center w-16 h-16"
+              onclick="
+                const el = this;
+                if (!el.dataset.count) el.dataset.count = '0';
+                el.dataset.count = String(Number(el.dataset.count) + 1);
+                document.getElementById('easter-counter').textContent = el.dataset.count + '/7';
+                if (Number(el.dataset.count) >= 7) {
+                  el.dataset.count = '0';
+                  document.getElementById('easter-counter').textContent = 'Z7!';
+                  el.style.animation = 'spin-360-easter 1s cubic-bezier(0.25,0.46,0.45,0.94) forwards';
+                  setTimeout(() => { el.style.animation = ''; document.getElementById('easter-counter').textContent = '0/7'; }, 1200);
+                }
+              "
+            >
+              <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#4A90FF" stroke-width="2" stroke-linecap="round">
+                <path d="M14,8 L50,8" /><path d="M50,8 L14,56" /><path d="M14,8 L25,25" /><path d="M39,39 L50,56" /><path d="M14,56 L50,56" />
+              </svg>
+            </div>
+            <span id="easter-counter" class="font-mono text-[11px]" style="color: var(--text-tertiary);">0/7</span>
+          </div>
+          <div class="font-mono text-[10px] mt-1" style="color: var(--text-quaternary);">Clique 7x para ativar</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 10: Z7 Loading Animations -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="10" title="Z7 Loading Animations" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Animacoes de loading usando a ampulheta H1-B. 7 variacoes de rotacao para diferentes
+          contextos de carregamento. Cada variacao respeita o easing do design system.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Geometria:</strong> viewBox 64x64</span>
+          <span><strong style="color: var(--text-secondary);">Origem:</strong> z7-loading-animations-preview.html</span>
+          <span><strong style="color: var(--text-secondary);">Variacoes:</strong> 7 rotacoes</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {[
+          { name: 'Rotacao 360', css: 'animation: spin-360-vfx 2s linear infinite;', timing: '2s linear' },
+          { name: 'Flip 180', css: 'animation: flip-180-vfx 3s ease-in-out infinite;', timing: '3s ease-in-out' },
+          { name: 'Easing Spring', css: 'animation: spin-360-vfx 2.5s cubic-bezier(0.68,-0.55,0.27,1.55) infinite;', timing: '2.5s spring' },
+          { name: 'Pendulo', css: 'animation: pendulum-vfx 2s ease-in-out infinite alternate;', timing: '2s alternate' },
+          { name: 'Pulse + Spin', css: 'animation: spin-pulse-vfx 2s ease-in-out infinite;', timing: '2s pulse' },
+          { name: 'Rotacao 3D', css: 'animation: spin-3d-vfx 3s ease-in-out infinite;', timing: '3s 3D' },
+        ].map(anim => (
+          <div
+            class="p-5 rounded-xl border text-center"
+            style="background: var(--surface-2); border-color: var(--border-default);"
+          >
+            <div class="inline-flex items-center justify-center w-12 h-12 mb-3">
+              <svg width="32" height="32" viewBox="0 0 64 64" fill="none" stroke="#4A90FF" stroke-width="2" stroke-linecap="round" style={anim.css}>
+                <path d="M14,8 L50,8" /><path d="M50,8 L14,56" /><path d="M14,8 L25,25" /><path d="M39,39 L50,56" /><path d="M14,56 L50,56" />
+              </svg>
+            </div>
+            <div class="text-xs font-semibold" style="color: var(--text-secondary);">{anim.name}</div>
+            <div class="font-mono text-[10px]" style="color: var(--text-quaternary);">{anim.timing}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 11: Tipografia Cinetica "O Tempo e Rei" -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="11" title='Tipografia Cinetica — "O Tempo e Rei"' />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Tratamento tipografico animado da frase central da marca. Cada palavra revela com stagger,
+          e "Rei" recebe destaque em azul para reforcar o duplo significado.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Origem:</strong> branding-elements-preview.html</span>
+          <span><strong style="color: var(--text-secondary);">Uso:</strong> Hero sections, intro de video</span>
+        </div>
+      </div>
+
+      <!-- Kinetic Type Demo -->
+      <div
+        class="p-8 md:p-12 rounded-xl border relative overflow-hidden"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+        id="kinetic-demo"
+      >
+        <div class="text-center">
+          <div
+            class="inline-block text-3xl md:text-5xl font-bold tracking-tight"
+            style="color: var(--text-primary); letter-spacing: -0.03em;"
+            id="kinetic-text"
+          >
+            <span class="inline-block" style="opacity: 0; animation: kinetic-word-vfx 0.6s ease-out forwards 0ms;">O</span>
+            <span class="inline-block ml-2 md:ml-4" style="opacity: 0; animation: kinetic-word-vfx 0.6s ease-out forwards 200ms;">Tempo</span>
+            <span class="inline-block ml-2 md:ml-4" style="opacity: 0; animation: kinetic-word-vfx 0.6s ease-out forwards 400ms;">e</span>
+            <span class="inline-block ml-2 md:ml-4" style="opacity: 0; color: var(--accent-blue); animation: kinetic-word-vfx 0.6s ease-out forwards 600ms;">Rei</span>
+          </div>
+        </div>
+        <button
+          class="absolute bottom-4 right-4 inline-flex items-center gap-1 text-[11px] font-medium px-3 py-1 rounded border transition-colors duration-200 hover:bg-[rgba(74,144,255,0.08)]"
+          style="color: var(--accent-blue); border-color: var(--blue-20);"
+          onclick="const el = document.getElementById('kinetic-text'); const clone = el.cloneNode(true); el.parentNode.replaceChild(clone, el); clone.id = 'kinetic-text';"
+        >
+          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 12: Compressao 7:7 Visual -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="12" title="Compressao 7:7 — Demonstracao Visual" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Representacao visual da compressao temporal Z7: 7 horas com IA = 7 anos de aprendizado
+          convencional. A barra comprime visualmente para demonstrar o conceito.
+        </p>
+      </div>
+
+      <div
+        class="p-8 rounded-xl border relative overflow-hidden"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+      >
+        <!-- Before bar -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold" style="color: var(--text-secondary);">Aprendizado Convencional</span>
+            <span class="font-mono text-xs" style="color: var(--text-quaternary);">7 anos</span>
+          </div>
+          <div class="h-3 rounded-full overflow-hidden" style="background: var(--surface-3);">
+            <div class="h-full rounded-full" style="background: var(--text-quaternary); width: 100%;"></div>
+          </div>
+        </div>
+        <!-- After bar -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold" style="color: var(--accent-blue);">Com IA (Z7)</span>
+            <span class="font-mono text-xs" style="color: var(--accent-blue);">7 horas</span>
+          </div>
+          <div class="h-3 rounded-full overflow-hidden" style="background: var(--surface-3);">
+            <div
+              class="h-full rounded-full"
+              style="background: var(--accent-blue); width: 0.0114%; min-width: 12px; animation: compress-bar-vfx 2s ease-out forwards;"
+            ></div>
+          </div>
+        </div>
+        <!-- Label -->
+        <div class="text-center mt-6">
+          <span class="inline-block px-4 py-2 rounded-lg text-sm font-bold" style="background: var(--accent-08); color: var(--accent-blue);">
+            Compressao 7:7
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 13: Constelacao Operacional (Systems) -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="13" title="Constelacao Operacional (Systems)" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Visualizacao do sistema multiagente como constelacao: nos interconectados
+          representam agentes, linhas pulsantes mostram comunicacao ativa. Cada no
+          tem funcao especifica dentro da operacao.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Origem:</strong> systems-vfx-preview.html</span>
+          <span><strong style="color: var(--text-secondary);">Uso:</strong> Secao Systems na home, pagina de servicos</span>
+        </div>
+      </div>
+
+      <!-- Constellation Demo -->
+      <div
+        class="p-8 rounded-xl border relative overflow-hidden"
+        style="background: var(--surface-2); border-color: var(--border-default); min-height: 300px;"
+      >
+        <svg class="w-full" viewBox="0 0 600 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Connection lines -->
+          <line x1="300" y1="60" x2="150" y2="150" stroke="rgba(74,144,255,0.15)" stroke-width="1">
+            <animate attributeName="stroke-opacity" values="0.1;0.3;0.1" dur="3s" repeatCount="indefinite" />
+          </line>
+          <line x1="300" y1="60" x2="450" y2="150" stroke="rgba(74,144,255,0.15)" stroke-width="1">
+            <animate attributeName="stroke-opacity" values="0.1;0.3;0.1" dur="4s" repeatCount="indefinite" />
+          </line>
+          <line x1="300" y1="60" x2="300" y2="200" stroke="rgba(74,144,255,0.15)" stroke-width="1">
+            <animate attributeName="stroke-opacity" values="0.15;0.35;0.15" dur="2.5s" repeatCount="indefinite" />
+          </line>
+          <line x1="150" y1="150" x2="300" y2="200" stroke="rgba(74,144,255,0.1)" stroke-width="1">
+            <animate attributeName="stroke-opacity" values="0.08;0.2;0.08" dur="3.5s" repeatCount="indefinite" />
+          </line>
+          <line x1="450" y1="150" x2="300" y2="200" stroke="rgba(74,144,255,0.1)" stroke-width="1">
+            <animate attributeName="stroke-opacity" values="0.08;0.2;0.08" dur="4.5s" repeatCount="indefinite" />
+          </line>
+          <line x1="150" y1="150" x2="80" y2="240" stroke="rgba(0,180,255,0.1)" stroke-width="1">
+            <animate attributeName="stroke-opacity" values="0.05;0.15;0.05" dur="5s" repeatCount="indefinite" />
+          </line>
+          <line x1="450" y1="150" x2="520" y2="240" stroke="rgba(0,180,255,0.1)" stroke-width="1">
+            <animate attributeName="stroke-opacity" values="0.05;0.15;0.05" dur="4s" repeatCount="indefinite" />
+          </line>
+
+          <!-- Nodes -->
+          <!-- Orchestrator -->
+          <circle cx="300" cy="60" r="8" fill="rgba(74,144,255,0.2)" stroke="#4A90FF" stroke-width="1.5">
+            <animate attributeName="r" values="8;9;8" dur="3s" repeatCount="indefinite" />
+          </circle>
+          <text x="300" y="40" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Inter, sans-serif" font-weight="600">ORCHESTRATOR</text>
+
+          <!-- Research Agent -->
+          <circle cx="150" cy="150" r="6" fill="rgba(74,144,255,0.15)" stroke="#4A90FF" stroke-width="1" />
+          <text x="150" y="175" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="Inter, sans-serif">Research</text>
+
+          <!-- Strategy Agent -->
+          <circle cx="450" cy="150" r="6" fill="rgba(74,144,255,0.15)" stroke="#4A90FF" stroke-width="1" />
+          <text x="450" y="175" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="Inter, sans-serif">Strategy</text>
+
+          <!-- Copy Agent -->
+          <circle cx="300" cy="200" r="6" fill="rgba(74,144,255,0.15)" stroke="#4A90FF" stroke-width="1" />
+          <text x="300" y="225" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="Inter, sans-serif">Copy</text>
+
+          <!-- Dev Agent -->
+          <circle cx="80" cy="240" r="5" fill="rgba(0,180,255,0.1)" stroke="#00B4FF" stroke-width="1" />
+          <text x="80" y="260" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter, sans-serif">Dev</text>
+
+          <!-- Design Agent -->
+          <circle cx="520" cy="240" r="5" fill="rgba(0,180,255,0.1)" stroke="#00B4FF" stroke-width="1" />
+          <text x="520" y="260" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter, sans-serif">Design</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 14: Performance Notes -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="14" title="Performance Notes" />
+
+      <!-- Hairline grid: safe vs avoid -->
+      <div
+        class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(2, 1fr);"
+      >
+        <div class="p-6">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--color-success);">
+            GPU-Composited (Safe)
+          </div>
+          <ul class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">transform</code> -- translate, scale, rotate</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">opacity</code> -- fade effects</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">filter</code> -- blur, saturate</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">background-position</code> -- gradient shifts</li>
+          </ul>
+        </div>
+        <div class="p-6">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--color-error);">
+            Layout-Triggering (Avoid)
+          </div>
+          <ul class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">width / height</code> -- triggers reflow</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">margin / padding</code> -- triggers reflow</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">top / left</code> -- triggers reflow</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">font-size</code> -- triggers reflow + repaint</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+        <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+          Scroll Listener Best Practices
+        </div>
+        <ul class="space-y-2 text-sm" style="color: var(--text-secondary);">
+          <li>Always use <code style="background: none; border: none; padding: 0; font-size: inherit;">passive: true</code> on scroll event listeners</li>
+          <li>Throttle with <code style="background: none; border: none; padding: 0; font-size: inherit;">requestAnimationFrame</code>, not setInterval</li>
+          <li>Prefer <code style="background: none; border: none; padding: 0; font-size: inherit;">IntersectionObserver</code> over scroll position checks</li>
+          <li>Use <code style="background: none; border: none; padding: 0; font-size: inherit;">will-change: transform</code> on animated elements (remove after animation)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 15: Usage Rules -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="15" title="Usage Rules" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Use aurora only on hero sections -- one per page' },
+        { type: 'do', text: 'Animate only transform and opacity for 60fps' },
+        { type: 'do', text: 'Use IntersectionObserver instead of scroll position checks' },
+        { type: 'do', text: 'Disable magnetic hover on touch devices via @media (hover: hover)' },
+        { type: 'do', text: 'Use passive: true on all scroll event listeners' },
+        { type: 'dont', text: 'Apply parallax to content elements -- decorative only' },
+        { type: 'dont', text: 'Use counter animation for numbers below 10 (not impactful)' },
+        { type: 'dont', text: 'Combine aurora + mesh gradient on the same section' },
+        { type: 'dont', text: 'Use text reveal on body paragraphs -- headlines only' },
+        { type: 'dont', text: 'Animate width, height, margin, or padding (causes layout thrash)' },
+      ]} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Related Pages -->
+  <RelatedPages links={relatedLinksMap['/brandbook/vfx'] || []} />
+</BrandbookLayout>

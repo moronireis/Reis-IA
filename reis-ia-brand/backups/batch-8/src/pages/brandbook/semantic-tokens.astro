@@ -1,0 +1,629 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CopyButton from '../../components/CopyButton.tsx';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import TokenTable from '../../components/TokenTable.astro';
+import EasingDemo from '../../components/EasingDemo.tsx';
+import DurationDemo from '../../components/DurationDemo.tsx';
+
+const blueLadder = [
+  { name: '02', opacity: '2%', usage: 'Row/cell hover tint', cssValue: 'rgba(74, 144, 255, 0.02)' },
+  { name: '04', opacity: '4%', usage: 'Ambient light pools', cssValue: 'rgba(74, 144, 255, 0.04)' },
+  { name: '06', opacity: '6%', usage: 'Section ambient glow', cssValue: 'rgba(74, 144, 255, 0.06)' },
+  { name: '08', opacity: '8%', usage: 'Subtle glow shadow', cssValue: 'rgba(74, 144, 255, 0.08)' },
+  { name: '10', opacity: '10%', usage: 'Badge/tag background', cssValue: 'rgba(74, 144, 255, 0.10)' },
+  { name: '12', opacity: '12%', usage: 'Blue glow shadow', cssValue: 'rgba(74, 144, 255, 0.12)' },
+  { name: '15', opacity: '15%', usage: 'Card hover inset', cssValue: 'rgba(74, 144, 255, 0.15)' },
+  { name: '20', opacity: '20%', usage: 'Badge border, accent border', cssValue: 'rgba(74, 144, 255, 0.20)' },
+  { name: '30', opacity: '30%', usage: 'Border accent', cssValue: 'rgba(74, 144, 255, 0.30)' },
+  { name: '40', opacity: '40%', usage: 'Strong accent fill, focus ring', cssValue: 'rgba(74, 144, 255, 0.40)' },
+  { name: '50', opacity: '50%', usage: 'Rotating border highlight peak', cssValue: 'rgba(74, 144, 255, 0.50)' },
+  { name: '80', opacity: '80%', usage: 'Near-solid accent', cssValue: 'rgba(74, 144, 255, 0.80)' },
+];
+
+const ladderCode = `/* Blue Accent Opacity Ladder */
+--blue-02: rgba(74, 144, 255, 0.02);  /* hover tint     */
+--blue-04: rgba(74, 144, 255, 0.04);  /* ambient pools   */
+--blue-06: rgba(74, 144, 255, 0.06);  /* section glow    */
+--blue-08: rgba(74, 144, 255, 0.08);  /* subtle glow     */
+--blue-10: rgba(74, 144, 255, 0.10);  /* badge bg        */
+--blue-12: rgba(74, 144, 255, 0.12);  /* blue glow       */
+--blue-15: rgba(74, 144, 255, 0.15);  /* card hover      */
+--blue-20: rgba(74, 144, 255, 0.20);  /* badge border    */
+--blue-30: rgba(74, 144, 255, 0.30);  /* border accent   */
+--blue-40: rgba(74, 144, 255, 0.40);  /* focus ring      */
+--blue-50: rgba(74, 144, 255, 0.50);  /* rotating border */
+--blue-80: rgba(74, 144, 255, 0.80);  /* near-solid      */`;
+
+const shadowCode = `/* Shadow System */
+--shadow-subtle:    0 1px 2px rgba(0,0,0,0.3);
+--shadow-default:   0 4px 16px rgba(0,0,0,0.25);
+--shadow-elevated:  0 8px 30px rgba(0,0,0,0.4);
+--shadow-dramatic:  0 16px 70px rgba(0,0,0,0.5);
+--shadow-blue-glow: 0 0 50px rgba(74,144,255,0.12);`;
+---
+
+<BrandbookLayout
+  title="Semantic Tokens"
+  pageName="SEMANTIC TOKENS"
+  description="Accent opacity ladder, signal colors, text & border scales, shadows, gradients, motion, and z-index."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Semantic Tokens
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          The complete semantic token mapping -- from accent opacity ladders and signal colors through text, border, and shadow scales, to motion curves, durations, gradients, and z-index layers. Every token has a purpose-driven name that describes intent, not appearance.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: Accent Blue Opacity Ladder (hairline grid) -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Accent Blue Opacity Ladder" />
+
+      <p class="text-sm mb-4 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        12-step graduated opacity scale for composable blue accent usage. Click any swatch to copy its CSS variable. Hover to see the usage context.
+      </p>
+
+      <!-- Hairline grid of swatches -->
+      <div class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden mb-6" style="grid-template-columns: repeat(6, 1fr);">
+        {blueLadder.map(step => (
+          <div
+            class="p-4 text-center transition-all duration-200 cursor-pointer"
+            onmouseenter="this.style.background='var(--surface-2)'"
+            onmouseleave="this.style.background=''"
+          >
+            <div
+              class="w-full h-16 rounded-lg mb-3 border"
+              style={`background: var(--blue-${step.name}); border-color: var(--border-default);`}
+            ></div>
+            <div class="flex items-center justify-center gap-1 mb-1">
+              <span class="text-[12px] font-mono font-bold" style="color: var(--text-secondary);">
+                {step.opacity}
+              </span>
+              <CopyButton client:visible text={`var(--blue-${step.name})`} />
+            </div>
+            <span class="text-[9px] leading-tight block" style="color: var(--text-tertiary);">{step.usage}</span>
+          </div>
+        ))}
+      </div>
+
+      <!-- Code block -->
+      <CodeBlock client:visible code={ladderCode} language="css" label="Opacity Ladder Variables" />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Signal Colors (live alert components) -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Signal Colors" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Signal colors for form validation, status indicators, and user feedback. These are the only non-blue, non-white colors in the system. Each signal has 3 tokens: foreground, background, and border. The live alerts below use the actual tokens.
+      </p>
+
+      <!-- Signal cards in hairline grid -->
+      <div class="grid-hairline rounded-xl overflow-hidden mb-6" style="grid-template-columns: repeat(4, 1fr);">
+        {[
+          { name: 'Error', hex: '#EF4444', base: '--color-error', bg: '--color-error-bg', border: '--color-error-border' },
+          { name: 'Warning', hex: '#F59E0B', base: '--color-warning', bg: '--color-warning-bg', border: '--color-warning-border' },
+          { name: 'Success', hex: '#22C55E', base: '--color-success', bg: '--color-success-bg', border: '--color-success-border' },
+          { name: 'Info', hex: '#4A90FF', base: '--color-info', bg: '--color-info-bg', border: '--color-info-border' },
+        ].map(signal => (
+          <div>
+            {/* Color header */}
+            <div class="p-4 flex items-center gap-3" style={`background: var(${signal.bg});`}>
+              <div class="w-5 h-5 rounded-full flex-shrink-0" style={`background: var(${signal.base});`}></div>
+              <span class="text-sm font-semibold" style={`color: var(${signal.base});`}>{signal.name}</span>
+            </div>
+            {/* Token list */}
+            <div class="p-4 space-y-2">
+              {[
+                { label: 'Foreground', var: signal.base, val: signal.hex },
+                { label: 'Background', var: signal.bg, val: '10%' },
+                { label: 'Border', var: signal.border, val: '25%' },
+              ].map(token => (
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-mono" style="color: var(--text-tertiary);">{token.label}</span>
+                  <div class="flex items-center gap-1">
+                    <span class="text-[10px] font-mono" style="color: var(--text-quaternary);">{token.val}</span>
+                    <CopyButton client:visible text={`var(${token.var})`} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Live alert demos -->
+      <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--text-quaternary);">
+        Live Alert Components
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          { name: 'Error', base: '--color-error', bg: '--color-error-bg', border: '--color-error-border', msg: 'This field is required.', icon: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+          { name: 'Warning', base: '--color-warning', bg: '--color-warning-bg', border: '--color-warning-border', msg: 'Changes not saved yet.', icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z' },
+          { name: 'Success', base: '--color-success', bg: '--color-success-bg', border: '--color-success-border', msg: 'Changes saved successfully.', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+          { name: 'Info', base: '--color-info', bg: '--color-info-bg', border: '--color-info-border', msg: 'Tip: You can customize this.', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+        ].map(alert => (
+          <div
+            class="p-4 rounded-lg border flex gap-3"
+            style={`background: var(${alert.bg}); border-color: var(${alert.border});`}
+          >
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style={`stroke: var(${alert.base});`}>
+              <path d={alert.icon} />
+            </svg>
+            <div>
+              <span class="text-sm font-semibold block" style={`color: var(${alert.base});`}>{alert.name}</span>
+              <p class="text-xs mt-1" style="color: var(--text-secondary);">{alert.msg}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Text Opacity Scale -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Text Opacity Scale" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Text hierarchy through opacity of white. Never use raw hex grays. Each level renders live below at its actual opacity.
+      </p>
+
+      <!-- Hairline grid of text levels -->
+      <div class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden mb-6">
+        {[
+          { name: 'Primary', cssVar: '--text-primary', value: '#FFFFFF (100%)', sample: 'Headlines and strong emphasis', usage: 'Headlines, hero text, primary labels' },
+          { name: 'Secondary', cssVar: '--text-secondary', value: 'rgba(255,255,255, 0.70)', sample: 'Body copy and descriptions', usage: 'Body text, card descriptions' },
+          { name: 'Tertiary', cssVar: '--text-tertiary', value: 'rgba(255,255,255, 0.50)', sample: 'Captions, metadata, and labels', usage: 'Captions, timestamps' },
+          { name: 'Quaternary', cssVar: '--text-quaternary', value: 'rgba(255,255,255, 0.35)', sample: 'Decorative text and disabled states', usage: 'Placeholder, disabled' },
+          { name: 'Muted', cssVar: '--text-muted', value: 'rgba(255,255,255, 0.20)', sample: 'Watermark text and ghost elements', usage: 'Watermarks, ghost labels' },
+        ].map(text => (
+          <div class="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div class="w-40 flex-shrink-0">
+              <div class="flex items-center gap-1">
+                <span class="font-mono text-xs font-semibold" style="color: var(--text-secondary);">{text.name}</span>
+                <CopyButton client:visible text={`var(${text.cssVar})`} />
+              </div>
+              <span class="text-[10px] font-mono block mt-1" style="color: var(--text-muted);">{text.value}</span>
+            </div>
+            <div class="flex-1">
+              <span class="text-lg font-semibold" style={`color: var(${text.cssVar});`}>
+                {text.sample}
+              </span>
+            </div>
+            <span class="text-xs flex-shrink-0 max-w-[200px]" style="color: var(--text-tertiary);">{text.usage}</span>
+          </div>
+        ))}
+      </div>
+
+      <div
+        class="p-5 rounded-xl border"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+      >
+        <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-2" style="color: var(--accent-blue);">
+          Key Rule
+        </div>
+        <p class="text-sm" style="color: var(--text-secondary);">
+          Never use raw hex grays (#666, #999, #ccc). Always use the opacity scale tokens. This ensures text naturally adapts to any surface background.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Border Opacity Scale -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Border Opacity Scale" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Borders use white at varying opacities. Hover each box to see the border more prominently.
+      </p>
+
+      <!-- Hairline grid of border demos -->
+      <div class="grid-hairline rounded-xl overflow-hidden mb-6" style="grid-template-columns: repeat(5, 1fr);">
+        {[
+          { name: 'Subtle', cssVar: '--border-subtle', value: '5% white', usage: 'Ghost borders, barely visible' },
+          { name: 'Default', cssVar: '--border-default', value: '8% white', usage: 'Card borders, dividers' },
+          { name: 'Visible', cssVar: '--border-visible', value: '12% white', usage: 'Hover borders' },
+          { name: 'Strong', cssVar: '--border-strong', value: '20% white', usage: 'Active, focus borders' },
+          { name: 'Accent', cssVar: '--border-accent', value: '30% blue', usage: 'Featured card borders' },
+        ].map(border => (
+          <div class="p-5 text-center">
+            <div
+              class="w-full h-20 rounded-lg mb-3 flex items-center justify-center transition-transform duration-200"
+              style={`border: 2px solid var(${border.cssVar}); background: transparent;`}
+              onmouseenter="this.style.transform='scale(1.05)'"
+              onmouseleave="this.style.transform='scale(1)'"
+            >
+              <span class="text-[10px] font-mono" style="color: var(--text-quaternary);">
+                {border.value}
+              </span>
+            </div>
+            <div class="flex items-center justify-center gap-1 mb-1">
+              <span class="text-xs font-semibold" style="color: var(--text-secondary);">{border.name}</span>
+              <CopyButton client:visible text={`var(${border.cssVar})`} />
+            </div>
+            <span class="text-[10px]" style="color: var(--text-tertiary);">{border.usage}</span>
+          </div>
+        ))}
+      </div>
+
+      <TokenTable tokens={[
+        { name: 'Subtle', value: 'rgba(255, 255, 255, 0.05)', cssVar: '--border-subtle', usage: 'Ghost borders, barely visible structure' },
+        { name: 'Default', value: 'rgba(255, 255, 255, 0.08)', cssVar: '--border-default', usage: 'Card borders, dividers, standard' },
+        { name: 'Visible', value: 'rgba(255, 255, 255, 0.12)', cssVar: '--border-visible', usage: 'Hover borders, emphasized dividers' },
+        { name: 'Strong', value: 'rgba(255, 255, 255, 0.20)', cssVar: '--border-strong', usage: 'Active borders, input focus (non-blue)' },
+        { name: 'Accent', value: 'rgba(74, 144, 255, 0.30)', cssVar: '--border-accent', usage: 'Blue-tinted borders on featured cards' },
+      ]} showPreview previewType="border" />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Shadow System -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Shadow System" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Shadows are used sparingly. On dark backgrounds, elevation comes from surface layering. Shadows are reserved for floating elements. Hover each card to see the shadow in context.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px rounded-xl overflow-hidden mb-6" style="background: var(--border-default);">
+        {[
+          { name: 'Subtle', cssVar: '--shadow-subtle', value: '0 1px 2px rgba(0,0,0,0.3)', desc: 'Minimal depth hint' },
+          { name: 'Default', cssVar: '--shadow-default', value: '0 4px 16px rgba(0,0,0,0.25)', desc: 'Dropdowns, floating panels' },
+          { name: 'Elevated', cssVar: '--shadow-elevated', value: '0 8px 30px rgba(0,0,0,0.4)', desc: 'Modals, popovers' },
+          { name: 'Dramatic', cssVar: '--shadow-dramatic', value: '0 16px 70px rgba(0,0,0,0.5)', desc: 'Full-screen overlays' },
+          { name: 'Blue Glow', cssVar: '--shadow-blue-glow', value: '0 0 50px rgba(74,144,255,0.12)', desc: 'Featured card hover, CTA emphasis' },
+        ].map(shadow => (
+          <div
+            class="p-6 transition-all duration-300 cursor-pointer"
+            style={`background: var(--surface-1);`}
+            onmouseenter={`this.style.boxShadow='var(${shadow.cssVar})';this.style.background='var(--surface-2)'`}
+            onmouseleave={`this.style.boxShadow='none';this.style.background='var(--surface-1)'`}
+          >
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-sm font-semibold" style="color: var(--text-primary);">{shadow.name}</span>
+              <CopyButton client:visible text={`var(${shadow.cssVar})`} />
+            </div>
+            <div class="text-[10px] font-mono mb-2" style="color: var(--text-muted);">{shadow.value}</div>
+            <span class="text-xs" style="color: var(--text-tertiary);">{shadow.desc}</span>
+          </div>
+        ))}
+      </div>
+
+      <CodeBlock client:visible code={shadowCode} language="css" label="Shadow Variables" />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Interactive State Tokens -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Interactive State Tokens" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Tokens for focus indicators, text selection, and hover tints. These ensure consistent interactive behavior across all components.
+      </p>
+
+      <div class="grid-hairline grid-hairline-3 rounded-xl overflow-hidden">
+        <!-- Focus ring demo -->
+        <div class="p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-sm font-semibold" style="color: var(--text-primary);">Focus Ring</span>
+            <CopyButton client:visible text="var(--focus-ring)" />
+          </div>
+          <div
+            class="w-full h-12 rounded-lg flex items-center justify-center"
+            style="background: var(--surface-3); border: 2px solid var(--accent-blue); box-shadow: 0 0 0 3px var(--focus-ring);"
+          >
+            <span class="text-xs font-mono" style="color: var(--text-secondary);">Focused element</span>
+          </div>
+          <div class="text-[10px] font-mono mt-2" style="color: var(--text-quaternary);">
+            --focus-ring: var(--blue-40)
+          </div>
+        </div>
+
+        <!-- Selection demo -->
+        <div class="p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-sm font-semibold" style="color: var(--text-primary);">Selection</span>
+            <CopyButton client:visible text="var(--selection-bg)" />
+          </div>
+          <div class="text-sm" style="color: var(--text-secondary);">
+            <span>Try selecting </span>
+            <span style="background: var(--selection-bg); color: var(--selection-fg); padding: 2px 4px; border-radius: 2px;">this highlighted text</span>
+            <span> to see the selection color.</span>
+          </div>
+          <div class="text-[10px] font-mono mt-2" style="color: var(--text-quaternary);">
+            --selection-bg: var(--blue-30)
+          </div>
+        </div>
+
+        <!-- Hover tint demo -->
+        <div class="p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-sm font-semibold" style="color: var(--text-primary);">Hover Tint</span>
+            <CopyButton client:visible text="var(--blue-02)" />
+          </div>
+          <div class="space-y-1">
+            {[1, 2, 3].map(i => (
+              <div
+                class="px-3 py-2 rounded transition-colors duration-200 cursor-pointer"
+                style="color: var(--text-secondary);"
+                onmouseenter={`this.style.background='var(--blue-02)'`}
+                onmouseleave={`this.style.background='transparent'`}
+              >
+                <span class="text-xs">List item {i} -- hover me</span>
+              </div>
+            ))}
+          </div>
+          <div class="text-[10px] font-mono mt-2" style="color: var(--text-quaternary);">
+            --blue-02 for subtle row hover
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Gradient Tokens -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Gradient Tokens" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Named gradient tokens for ambient effects, border accents, surface transitions, and utility patterns. Gradients are blue-tinted or surface-relative, never multi-color.
+      </p>
+
+      <div class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden" style="grid-template-columns: repeat(3, 1fr);">
+        {[
+          { name: 'Blue Ambient', cssVar: '--gradient-blue-ambient', desc: 'Radial glow behind key sections' },
+          { name: 'Blue Sweep', cssVar: '--gradient-blue-sweep', desc: 'Linear accent gradient for borders' },
+          { name: 'Surface Fade', cssVar: '--gradient-surface-fade', desc: 'Vertical section transitions S-0 to S-1' },
+          { name: 'Divider', cssVar: '--gradient-divider', desc: 'Horizontal gradient dividers' },
+          { name: 'Marquee Edge', cssVar: '--gradient-marquee-edge', desc: 'Horizontal carousel edge fade' },
+        ].map(gradient => (
+          <div>
+            <div
+              class="h-24"
+              style={`background: var(${gradient.cssVar}); background-color: var(--surface-1);`}
+            ></div>
+            <div class="p-4">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs font-semibold" style="color: var(--text-secondary);">{gradient.name}</span>
+                <CopyButton client:visible text={`var(${gradient.cssVar})`} />
+              </div>
+              <span class="text-[10px]" style="color: var(--text-tertiary);">{gradient.desc}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 08: Easing Curves (interactive, with bezier visualization) -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Easing Curves" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        5 custom easing curves, each engineered for specific interaction types. Click each demo to replay the animation and see the bezier curve visualization. No default CSS <code>ease</code> or <code>linear</code>.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <EasingDemo
+          client:visible
+          name="Base"
+          cssVar="--ease-base"
+          value="cubic-bezier(0.25, 0.1, 0.25, 1)"
+          description="Default for most transitions. Nearly identical to CSS ease but engineered."
+        />
+        <EasingDemo
+          client:visible
+          name="Out"
+          cssVar="--ease-out"
+          value="cubic-bezier(0.16, 1, 0.3, 1)"
+          description="Elements appearing, scroll reveals. Fast start, gentle deceleration."
+        />
+        <EasingDemo
+          client:visible
+          name="In"
+          cssVar="--ease-in"
+          value="cubic-bezier(0.4, 0, 0.5, 1)"
+          description="Elements exiting view. Quick acceleration, gentle landing."
+        />
+        <EasingDemo
+          client:visible
+          name="Dramatic"
+          cssVar="--ease-dramatic"
+          value="cubic-bezier(0.65, 0, 0.35, 1)"
+          description="Hero entrances, major section reveals. Symmetrical S-curve."
+        />
+        <EasingDemo
+          client:visible
+          name="Card"
+          cssVar="--ease-card"
+          value="cubic-bezier(0.7, 0, 0, 1)"
+          description="Card hover scale + shadow. Heavy, weighted feel."
+        />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 09: Duration Tokens (click-to-replay progress bars) -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="09" title="Duration Tokens" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        7 duration tiers, each roughly 1.5-2x the previous. Click to replay. The bar fills over the exact duration with a gradient fill.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <DurationDemo client:visible name="Instant" cssVar="--duration-instant" value="100ms" usage="Opacity micro-hints" />
+        <DurationDemo client:visible name="Fast" cssVar="--duration-fast" value="200ms" usage="Hover color, border transitions" />
+        <DurationDemo client:visible name="Normal" cssVar="--duration-normal" value="300ms" usage="Standard transitions, card hover" />
+        <DurationDemo client:visible name="Moderate" cssVar="--duration-moderate" value="500ms" usage="Card scale + shadow" />
+        <DurationDemo client:visible name="Slow" cssVar="--duration-slow" value="800ms" usage="Scroll-triggered entrance animations" />
+        <DurationDemo client:visible name="Dramatic" cssVar="--duration-dramatic" value="1200ms" usage="Hero entrance, 3D perspective reveals" />
+        <DurationDemo client:visible name="Ambient" cssVar="--duration-ambient" value="13000ms" usage="Continuous ambient effects (capped at 2s in demo)" />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 10: Z-Index Layer System (visual stack) -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="10" title="Z-Index Layer System" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        8-layer z-index scale. Never use arbitrary z-index values. The bars are proportionally stacked to visualize the layer hierarchy. Higher layers are closer to the viewer.
+      </p>
+
+      <!-- Visual stack using descending width -->
+      <div class="space-y-1 mb-8">
+        {[
+          { name: 'Toast', cssVar: '--z-toast', value: '200', usage: 'Toast notifications', width: '100%' },
+          { name: 'Modal', cssVar: '--z-modal', value: '100', usage: 'Modal dialogs', width: '92%' },
+          { name: 'Overlay', cssVar: '--z-modal-overlay', value: '90', usage: 'Dark overlay behind modals', width: '84%' },
+          { name: 'Dropdown', cssVar: '--z-dropdown', value: '60', usage: 'Nav dropdowns, tooltips', width: '76%' },
+          { name: 'Navigation', cssVar: '--z-nav', value: '50', usage: 'Fixed navigation bar', width: '68%' },
+          { name: 'Raised', cssVar: '--z-raised', value: '10', usage: 'Overlapping elements, sticky', width: '60%' },
+          { name: 'Base', cssVar: '--z-base', value: '0', usage: 'Default content', width: '52%' },
+          { name: 'Background', cssVar: '--z-bg', value: '-1', usage: 'Decorative behind content', width: '44%' },
+        ].map((layer, i) => (
+          <div
+            class="flex items-center gap-4 py-3 px-4 rounded-lg border transition-all duration-200 cursor-pointer"
+            style={`background: var(--surface-${i < 4 ? '2' : '1'}); border-color: var(--border-subtle); max-width: ${layer.width};`}
+            onmouseenter="this.style.borderColor='var(--border-accent)';this.style.background='var(--surface-3)'"
+            onmouseleave={`this.style.borderColor='var(--border-subtle)';this.style.background='var(--surface-${i < 4 ? '2' : '1'})'`}
+          >
+            <div class="w-24 flex-shrink-0 flex items-center gap-1">
+              <span class="font-mono text-xs font-semibold" style="color: var(--text-secondary);">{layer.name}</span>
+              <CopyButton client:visible text={`var(${layer.cssVar})`} />
+            </div>
+            <span class="font-mono text-[13px] font-bold w-12 flex-shrink-0" style="color: var(--accent-blue);">{layer.value}</span>
+            <span class="text-xs" style="color: var(--text-tertiary);">{layer.usage}</span>
+          </div>
+        ))}
+      </div>
+
+      <div
+        class="p-5 rounded-xl border"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+      >
+        <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-2" style="color: var(--accent-blue);">
+          Key Rule
+        </div>
+        <p class="text-sm" style="color: var(--text-secondary);">
+          Never use <code>z-index: 9999</code> or arbitrary values. The 8-layer system provides clear stacking order for every UI element. If you need a new layer, discuss with the design system maintainer.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 11: Container Width Tokens -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="11" title="Container & Icon Tokens" />
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Container Widths
+          </div>
+          <TokenTable tokens={[
+            { name: 'Wide', value: '1280px', cssVar: '--container-wide', usage: 'Full-bleed sections, navigation' },
+            { name: 'Standard', value: '1200px', cssVar: '--container-standard', usage: 'Primary content container' },
+            { name: 'Headline', value: '900px', cssVar: '--container-headline', usage: 'Centered headlines' },
+            { name: 'Narrow', value: '800px', cssVar: '--container-narrow', usage: 'Text-heavy sections, forms' },
+            { name: 'Text', value: '680px', cssVar: '--container-text', usage: 'Body copy (65-75 chars/line)' },
+            { name: 'Padding', value: 'clamp(20px, 5vw, 48px)', cssVar: '--container-padding', usage: 'Horizontal padding' },
+          ]} />
+        </div>
+
+        <div>
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Icon Sizes
+          </div>
+          <div class="flex flex-wrap items-end gap-8 mb-4">
+            {[
+              { name: 'xs', cssVar: '--icon-xs', value: '12px' },
+              { name: 'sm', cssVar: '--icon-sm', value: '16px' },
+              { name: 'md', cssVar: '--icon-md', value: '20px' },
+              { name: 'lg', cssVar: '--icon-lg', value: '24px' },
+              { name: 'xl', cssVar: '--icon-xl', value: '32px' },
+            ].map(icon => (
+              <div class="text-center">
+                <div
+                  class="mx-auto mb-2 rounded border flex items-center justify-center"
+                  style={`width: var(${icon.cssVar}); height: var(${icon.cssVar}); border-color: var(--border-visible); background: var(--surface-2);`}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={`width: calc(var(${icon.cssVar}) * 0.7); height: calc(var(${icon.cssVar}) * 0.7);`}>
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  </svg>
+                </div>
+                <div class="flex items-center justify-center gap-1">
+                  <span class="text-xs font-semibold" style="color: var(--text-secondary);">{icon.name}</span>
+                  <CopyButton client:visible text={`var(${icon.cssVar})`} />
+                </div>
+                <span class="font-mono text-[10px]" style="color: var(--text-quaternary);">{icon.value}</span>
+              </div>
+            ))}
+          </div>
+
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4 mt-6" style="color: var(--accent-blue);">
+            Border Radius
+          </div>
+          <TokenTable tokens={[
+            { name: 'None', value: '0px', cssVar: '--radius-none', usage: 'Sharp corners' },
+            { name: 'sm', value: '4px', cssVar: '--radius-sm', usage: 'Badges, tags' },
+            { name: 'md', value: '6px', cssVar: '--radius-md', usage: 'Small buttons' },
+            { name: 'base', value: '8px', cssVar: '--radius', usage: 'Default (most components)' },
+            { name: 'lg', value: '10px', cssVar: '--radius-lg', usage: 'Large buttons' },
+            { name: 'xl', value: '12px', cssVar: '--radius-xl', usage: 'Cards, panels' },
+            { name: '2xl', value: '16px', cssVar: '--radius-2xl', usage: 'Glass cards' },
+            { name: 'full', value: '9999px', cssVar: '--radius-full', usage: 'Pills, avatars' },
+          ]} />
+        </div>
+      </div>
+    </div>
+  </section>
+</BrandbookLayout>

@@ -1,0 +1,537 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import SpacingRuler from '../../components/SpacingRuler.tsx';
+import CopyButton from '../../components/CopyButton.tsx';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+import TokenTable from '../../components/TokenTable.astro';
+
+const namedTokens = [
+  { name: 'xs', cssVar: '--space-xs', value: '4px (static)', description: 'Icon gaps, inline micro-adjustments' },
+  { name: 'sm', cssVar: '--space-sm', value: '8px (static)', description: 'Tight element groups, tag padding' },
+  { name: 'md', cssVar: '--space-md', value: '16px (static)', description: 'Standard element spacing, paragraph gaps' },
+  { name: 'lg', cssVar: '--space-lg', value: '24px \u2192 32px', description: 'Card padding, grid gutters' },
+  { name: 'xl', cssVar: '--space-xl', value: '32px \u2192 48px', description: 'Content group spacing' },
+  { name: '2xl', cssVar: '--space-2xl', value: '48px \u2192 80px', description: 'Section padding (compact)' },
+  { name: '3xl', cssVar: '--space-3xl', value: '64px \u2192 120px', description: 'Section padding (standard)' },
+  { name: '4xl', cssVar: '--space-4xl', value: '80px \u2192 160px', description: 'Hero padding, max breathing room' },
+];
+
+const numericTokens = [
+  { name: 'gap-0', cssVar: '--gap-0', value: '0px' },
+  { name: 'gap-1', cssVar: '--gap-1', value: '4px' },
+  { name: 'gap-2', cssVar: '--gap-2', value: '8px' },
+  { name: 'gap-3', cssVar: '--gap-3', value: '12px' },
+  { name: 'gap-4', cssVar: '--gap-4', value: '16px' },
+  { name: 'gap-5', cssVar: '--gap-5', value: '20px' },
+  { name: 'gap-6', cssVar: '--gap-6', value: '24px' },
+  { name: 'gap-7', cssVar: '--gap-7', value: '32px' },
+  { name: 'gap-8', cssVar: '--gap-8', value: '40px' },
+  { name: 'gap-9', cssVar: '--gap-9', value: '48px' },
+  { name: 'gap-10', cssVar: '--gap-10', value: '64px' },
+];
+
+const containerTokens = [
+  { name: 'Wide', cssVar: '--container-wide', value: '1280px', usage: 'Full-bleed sections, navigation' },
+  { name: 'Standard', cssVar: '--container-standard', value: '1200px', usage: 'Primary content container' },
+  { name: 'Headline', cssVar: '--container-headline', value: '900px', usage: 'Centered headlines max-width' },
+  { name: 'Narrow', cssVar: '--container-narrow', value: '800px', usage: 'Text-heavy sections, forms, FAQs' },
+  { name: 'Text', cssVar: '--container-text', value: '680px', usage: 'Body copy paragraphs (65-75 chars/line)' },
+];
+
+const radiusTokens = [
+  { name: 'none', cssVar: '--radius-none', value: '0px' },
+  { name: 'sm', cssVar: '--radius-sm', value: '4px' },
+  { name: 'md', cssVar: '--radius-md', value: '6px' },
+  { name: 'base', cssVar: '--radius', value: '8px' },
+  { name: 'lg', cssVar: '--radius-lg', value: '10px' },
+  { name: 'xl', cssVar: '--radius-xl', value: '12px' },
+  { name: '2xl', cssVar: '--radius-2xl', value: '16px' },
+  { name: 'full', cssVar: '--radius-full', value: '9999px' },
+];
+
+const clampCode = `/* Fluid Spacing Tokens */
+--space-xs:  4px;
+--space-sm:  8px;
+--space-md:  16px;
+--space-lg:  clamp(24px, 1vw + 20px, 32px);
+--space-xl:  clamp(32px, 2vw + 24px, 48px);
+--space-2xl: clamp(48px, 4vw + 32px, 80px);
+--space-3xl: clamp(64px, 7vw + 36px, 120px);
+--space-4xl: clamp(80px, 10vw + 40px, 160px);`;
+
+const numericCode = `/* Static Component Spacing */
+--gap-0:  0px;    --gap-1:  4px;
+--gap-2:  8px;    --gap-3:  12px;
+--gap-4:  16px;   --gap-5:  20px;
+--gap-6:  24px;   --gap-7:  32px;
+--gap-8:  40px;   --gap-9:  48px;
+--gap-10: 64px;`;
+---
+
+<BrandbookLayout
+  title="Spacing Scale"
+  pageName="SPACING SCALE"
+  description="Fluid spacing tokens, component gaps, container widths, border radii, and section padding rules."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Spacing Scale
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Two complementary spacing systems: fluid named tokens that scale with viewport for section-level spacing, and a static numeric scale for component-level gaps. Every value is a CSS custom property with a purpose-driven name.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: Named Fluid Spacing -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Named Fluid Spacing" />
+
+      <p class="text-sm mb-4 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        8 tokens using <code>clamp()</code> for seamless scaling between mobile (375px) and desktop (1280px). The bars below show the ACTUAL computed pixel width at your current viewport. Resize the browser to see them change.
+      </p>
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-quaternary);">
+        Click any row to copy the CSS variable. The first three (xs, sm, md) are static. The last five scale fluidly. Each step is roughly 1.5-2x the previous.
+      </p>
+
+      <!-- Visual Spacing Rulers with JS-computed widths -->
+      <div
+        class="p-6 rounded-xl border mb-6"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+      >
+        <SpacingRuler client:visible items={namedTokens} showPixels={true} />
+      </div>
+
+      <!-- Code block -->
+      <CodeBlock client:visible code={clampCode} language="css" label="Fluid Clamp Formulas" />
+
+      <!-- Usage callout -->
+      <div
+        class="mt-6 p-5 rounded-xl border"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+      >
+        <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-2" style="color: var(--accent-blue);">
+          When to use Named Spacing
+        </div>
+        <ul class="space-y-2 text-sm" style="color: var(--text-secondary);">
+          <li>Section vertical padding: <code>--space-3xl</code> (standard) or <code>--space-4xl</code> (hero)</li>
+          <li>Major content breaks between sections</li>
+          <li>Hero breathing room and page-level vertical rhythm</li>
+          <li>Any spacing that should scale fluidly with viewport</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Numeric Component Spacing -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Numeric Component Spacing" />
+
+      <p class="text-sm mb-4 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        11-step static scale for component-level gaps, padding, and margins. These do not scale with viewport. Based on a 4px grid with intermediate values (12px, 20px) for common UI needs.
+      </p>
+
+      <!-- Hairline grid of numeric tokens -->
+      <div class="grid-hairline rounded-xl overflow-hidden mb-6">
+        {numericTokens.map(item => (
+          <div class="p-4 flex items-center gap-4" style="min-height: 56px;">
+            <div class="w-20 flex-shrink-0 flex items-center gap-1">
+              <span class="font-mono text-xs font-semibold" style="color: var(--text-secondary);">
+                {item.name}
+              </span>
+            </div>
+            <div class="flex-1">
+              <div
+                class="h-7 rounded-sm"
+                style={`width: ${item.value}; background: linear-gradient(90deg, var(--blue-15), var(--blue-08)); border: 1px solid var(--blue-20); min-width: 2px;`}
+              ></div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="font-mono text-[11px]" style="color: var(--text-quaternary);">
+                {item.value}
+              </span>
+              <CopyButton client:visible text={`var(${item.cssVar})`} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Code block -->
+      <CodeBlock client:visible code={numericCode} language="css" label="Static Gap Scale" />
+
+      <!-- Usage callout -->
+      <div
+        class="mt-6 p-5 rounded-xl border"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+      >
+        <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-2" style="color: var(--accent-blue);">
+          When to use Numeric Spacing
+        </div>
+        <ul class="space-y-2 text-sm" style="color: var(--text-secondary);">
+          <li>Grid gaps: <code>gap: var(--gap-4)</code></li>
+          <li>Card internal padding: <code>padding: var(--gap-6)</code> or <code>var(--gap-7)</code></li>
+          <li>Icon-to-label gaps: <code>gap: var(--gap-2)</code></li>
+          <li>Button padding, badge spacing, form element gaps</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Side-by-Side Comparison (hairline 2-col grid) -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Named vs Numeric \u2014 Comparison" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        The two scales serve different purposes. Named tokens define the page-level rhythm. Numeric tokens define the component-level rhythm. They work together but should not be mixed in the wrong context.
+      </p>
+
+      <div class="grid-hairline grid-hairline-2 grid-hairline-s1 rounded-xl overflow-hidden mb-8">
+        <!-- Named column -->
+        <div class="p-6">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Named (Fluid)
+          </div>
+          <ul class="space-y-3 text-sm" style="color: var(--text-secondary);">
+            <li class="flex items-start gap-2">
+              <span style="color: var(--accent-blue);" class="flex-shrink-0 mt-1">--</span>
+              <span>Scales with viewport via <code>clamp()</code></span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span style="color: var(--accent-blue);" class="flex-shrink-0 mt-1">--</span>
+              <span>Section padding, page-level vertical rhythm</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span style="color: var(--accent-blue);" class="flex-shrink-0 mt-1">--</span>
+              <span>Hero breathing room, major content breaks</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span style="color: var(--accent-blue);" class="flex-shrink-0 mt-1">--</span>
+              <span>8 tokens: xs through 4xl</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Numeric column -->
+        <div class="p-6">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--text-secondary);">
+            Numeric (Static)
+          </div>
+          <ul class="space-y-3 text-sm" style="color: var(--text-secondary);">
+            <li class="flex items-start gap-2">
+              <span style="color: var(--text-quaternary);" class="flex-shrink-0 mt-1">--</span>
+              <span>Fixed pixel values, no viewport scaling</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span style="color: var(--text-quaternary);" class="flex-shrink-0 mt-1">--</span>
+              <span>Grid gaps, card padding, component spacing</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span style="color: var(--text-quaternary);" class="flex-shrink-0 mt-1">--</span>
+              <span>Icon gaps, button padding, form fields</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span style="color: var(--text-quaternary);" class="flex-shrink-0 mt-1">--</span>
+              <span>11 tokens: gap-0 through gap-10</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <DosDonts items={[
+        { type: 'do', text: 'Use --space-3xl for section vertical padding' },
+        { type: 'do', text: 'Use --gap-4 or --gap-6 for card internal padding' },
+        { type: 'do', text: 'Use --gap-2 for inline icon-to-text gaps' },
+        { type: 'do', text: 'Use --space-xl between content groups within a section' },
+        { type: 'dont', text: 'Use --gap-10 for section padding (does not scale)' },
+        { type: 'dont', text: 'Use --space-3xl for component grid gaps (over-scales)' },
+        { type: 'dont', text: 'Use arbitrary values like 17px or 22px' },
+        { type: 'dont', text: 'Mix named and numeric in the same property' },
+      ]} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Section Padding Rules -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Section Padding Rules" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Standardized vertical padding for different section types. These demos use ACTUAL token values -- the height of each box is the real computed padding at your viewport width.
+      </p>
+
+      <!-- Live section padding demos in hairline grid -->
+      <div class="grid-hairline rounded-xl overflow-hidden mb-8">
+        {[
+          { label: 'Hero Section', token: '--space-4xl', desc: 'Maximum breathing room', range: '80-160px' },
+          { label: 'Standard Section', token: '--space-3xl', desc: 'Default section rhythm', range: '64-120px' },
+          { label: 'Compact Section', token: '--space-2xl', desc: 'Dense content areas', range: '48-80px' },
+          { label: 'Footer CTA', token: '--space-3xl / --space-2xl', desc: 'Asymmetric: more top, less bottom', range: '64-120px / 48-80px' },
+        ].map(demo => (
+          <div class="relative overflow-hidden">
+            <div
+              style={`padding-top: var(${demo.token.split(' / ')[0]}); padding-bottom: var(${demo.token.includes('/') ? demo.token.split(' / ')[1] : demo.token.split(' / ')[0]}); padding-left: var(--gap-6); padding-right: var(--gap-6);`}
+            >
+              <div class="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <span class="text-sm font-semibold" style="color: var(--text-primary);">{demo.label}</span>
+                  <span class="text-xs ml-3" style="color: var(--text-tertiary);">{demo.desc}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <code class="font-mono text-[11px]" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">
+                    {demo.token}
+                  </code>
+                  <span class="font-mono text-[10px]" style="color: var(--text-muted);">{demo.range}</span>
+                  <CopyButton client:visible text={`padding: var(${demo.token.split(' / ')[0]})`} />
+                </div>
+              </div>
+            </div>
+            <!-- Top/bottom accent indicators -->
+            <div class="absolute top-0 left-0 right-0 h-px" style="background: var(--accent-blue); opacity: 0.3;"></div>
+            <div class="absolute bottom-0 left-0 right-0 h-px" style="background: var(--accent-blue); opacity: 0.3;"></div>
+          </div>
+        ))}
+      </div>
+
+      <TokenTable tokens={[
+        { name: 'Hero', value: '--space-4xl top / --space-3xl bottom', cssVar: '--space-4xl', usage: '80-160px top, 64-120px bottom' },
+        { name: 'Standard', value: '--space-3xl top and bottom', cssVar: '--space-3xl', usage: '64-120px both sides' },
+        { name: 'Compact', value: '--space-2xl top and bottom', cssVar: '--space-2xl', usage: '48-80px both sides' },
+        { name: 'Footer CTA', value: '--space-3xl top / --space-2xl bottom', cssVar: '--space-3xl', usage: '64-120px top, 48-80px bottom' },
+      ]} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Container Widths -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Container Widths" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Content width hierarchy. Each container has a semantic name matching its content type. The bars below show relative proportions at your current viewport width.
+      </p>
+
+      <!-- Visual width bars in hairline grid -->
+      <div class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden mb-6">
+        {containerTokens.map(container => (
+          <div class="p-4 flex items-center gap-4">
+            <div class="w-24 flex-shrink-0 flex items-center gap-1">
+              <span class="font-mono text-xs font-semibold" style="color: var(--text-secondary);">{container.name}</span>
+              <CopyButton client:visible text={`var(${container.cssVar})`} />
+            </div>
+            <div class="flex-1">
+              <div
+                class="h-7 rounded-sm"
+                style={`max-width: ${container.value}; width: 100%; background: linear-gradient(90deg, var(--blue-12), var(--blue-06)); border: 1px solid var(--blue-20);`}
+              ></div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="font-mono text-[11px]" style="color: var(--text-quaternary);">{container.value}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Container padding token -->
+      <div
+        class="p-5 rounded-xl border"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+      >
+        <div class="flex items-center gap-2 mb-2">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--accent-blue);">
+            Container Padding
+          </div>
+          <CopyButton client:visible text="var(--container-padding)" />
+        </div>
+        <p class="text-sm" style="color: var(--text-secondary);">
+          <code>--container-padding: clamp(20px, 5vw, 48px)</code> -- fluid horizontal padding applied to all containers.
+          Mobile (375px): 20px. Tablet (768px): ~38px. Desktop (1280px+): 48px.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Border Radius Scale -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Border Radius Scale" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        8-step radius scale from sharp corners to full pills. The default <code>--radius</code> (8px) is used for most components.
+      </p>
+
+      <!-- Hairline grid of radius demos -->
+      <div class="grid-hairline rounded-xl overflow-hidden mb-6" style="grid-template-columns: repeat(4, 1fr);">
+        {radiusTokens.map(item => (
+          <div class="p-5 flex flex-col items-center text-center">
+            <div
+              class="w-20 h-20 mb-3 border flex items-center justify-center"
+              style={`border-radius: var(${item.cssVar}); border-color: var(--border-visible); background: var(--surface-2); transition: border-color 200ms, background 200ms;`}
+              onmouseenter="this.style.borderColor='var(--accent-blue)';this.style.background='var(--surface-3)'"
+              onmouseleave="this.style.borderColor='var(--border-visible)';this.style.background='var(--surface-2)'"
+            >
+              <span class="text-[10px] font-mono" style="color: var(--text-quaternary);">
+                {item.value}
+              </span>
+            </div>
+            <div class="flex items-center justify-center gap-1 mb-1">
+              <span class="text-xs font-semibold" style="color: var(--text-secondary);">{item.name}</span>
+              <CopyButton client:visible text={`var(${item.cssVar})`} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <TokenTable tokens={radiusTokens.map(r => ({
+        name: r.name,
+        value: r.value,
+        cssVar: r.cssVar,
+        usage: r.name === 'none' ? 'Sharp corners, full-bleed' : r.name === 'sm' ? 'Badges, tags, inline code' : r.name === 'md' ? 'Small buttons, inputs' : r.name === 'base' ? 'Default for most components' : r.name === 'lg' ? 'Large buttons, hero inputs' : r.name === 'xl' ? 'Cards, panels' : r.name === '2xl' ? 'Glass cards, large panels' : 'Pills, avatars, circles',
+      }))} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Spacing in Context -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Spacing in Context" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Live demonstration of spacing tokens applied to a typical card composition, with annotated token values. This card uses the real design system tokens.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Annotated card -->
+        <div>
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            Live Card
+          </div>
+          <div
+            class="rounded-xl border relative"
+            style="background: var(--surface-2); border-color: var(--border-default); padding: var(--gap-7);"
+          >
+            <!-- Icon -->
+            <div
+              class="w-10 h-10 rounded-lg flex items-center justify-center"
+              style="background: var(--blue-10); border: 1px solid var(--blue-20); margin-bottom: var(--gap-6);"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              </svg>
+            </div>
+
+            <!-- Title -->
+            <h4 class="text-lg font-semibold" style="color: var(--text-primary); margin-bottom: var(--gap-3);">
+              Card Title
+            </h4>
+
+            <!-- Description -->
+            <p class="text-sm" style="color: var(--text-secondary); margin-bottom: var(--gap-6); line-height: 1.6;">
+              Card description text demonstrating the spacing between title, description, and internal elements.
+            </p>
+
+            <!-- CTA -->
+            <div class="flex items-center gap-2" style="color: var(--text-tertiary);">
+              <span class="text-sm font-medium">Learn more</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </div>
+
+            <!-- Annotation dots -->
+            <div class="absolute top-3 right-3">
+              <span class="font-mono text-[9px]" style="color: var(--text-muted);">gap-7 padding</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Token annotations in hairline grid -->
+        <div>
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--text-secondary);">
+            Tokens Used
+          </div>
+          <div class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden">
+            {[
+              { label: 'Card padding', token: '--gap-7', value: '32px', note: 'Internal padding (desktop)' },
+              { label: 'Icon to title', token: '--gap-6', value: '24px', note: 'Icon margin-bottom' },
+              { label: 'Title to desc', token: '--gap-3', value: '12px', note: 'Title margin-bottom' },
+              { label: 'Desc to CTA', token: '--gap-6', value: '24px', note: 'Description margin-bottom' },
+              { label: 'CTA icon gap', token: '--gap-2', value: '8px', note: 'Inline text-icon spacing' },
+              { label: 'Border radius', token: '--radius-xl', value: '12px', note: 'Card corner rounding' },
+            ].map(item => (
+              <div class="px-4 py-3 flex items-center gap-3">
+                <span class="text-xs w-24 flex-shrink-0" style="color: var(--text-tertiary);">{item.label}</span>
+                <div class="flex items-center gap-1 flex-1">
+                  <code class="text-[11px] font-mono" style="color: var(--accent-blue); background: none; border: none; padding: 0;">{item.token}</code>
+                  <CopyButton client:visible text={`var(${item.token})`} />
+                </div>
+                <span class="font-mono text-[11px] flex-shrink-0" style="color: var(--text-quaternary);">{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 08: Responsive Spacing Behavior -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Responsive Spacing Behavior" />
+
+      <div class="grid-hairline rounded-xl overflow-hidden max-w-[800px]">
+        <div class="p-5">
+          <h3 class="text-sm font-semibold mb-2" style="color: var(--text-primary);">Fluid vs Static</h3>
+          <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+            Named spacing tokens (space-lg through space-4xl) use <code>clamp()</code> for seamless scaling. There are no breakpoint jumps. Numeric tokens (gap-0 through gap-10) remain fixed at all viewport sizes.
+          </p>
+        </div>
+
+        <div class="p-5">
+          <h3 class="text-sm font-semibold mb-2" style="color: var(--text-primary);">Mobile Surface Rules</h3>
+          <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+            On mobile viewports (below 768px), use a maximum of 2 surface tiers per visible area. Component spacing should use gap-4 (16px) to gap-6 (24px) for card padding on mobile.
+          </p>
+        </div>
+
+        <div class="p-5">
+          <h3 class="text-sm font-semibold mb-2" style="color: var(--text-primary);">Container Padding Progression</h3>
+          <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+            Container horizontal padding is <code>clamp(20px, 5vw, 48px)</code>, providing 20px on mobile, scaling to 48px on wide desktops. This single token replaces the typical <code>px-4 sm:px-6 md:px-8</code>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BrandbookLayout>

@@ -1,10 +1,13 @@
 ---
 import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import RelatedPages from '../../components/RelatedPages.astro';
+import { relatedLinksMap } from '../../data/navigation';
 import SectionLabel from '../../components/SectionLabel.astro';
 import CopyButton from '../../components/CopyButton.tsx';
 import CodeBlock from '../../components/CodeBlock.tsx';
 import RotatingBorderDemo from '../../components/RotatingBorderDemo.tsx';
 import AmbientPoolDemo from '../../components/AmbientPoolDemo.tsx';
+import WatermarkDemo from '../../components/WatermarkDemo.tsx';
 import GrainDemo from '../../components/GrainDemo.tsx';
 import DosDonts from '../../components/DosDonts.astro';
 
@@ -76,12 +79,15 @@ const codeWatermark = `.section-watermark {
   position: absolute;
   top: -20px;
   right: -20px;
-  width: 240px;
-  height: 336px;
+  width: 200px;
+  height: 280px;
   opacity: 0.04;
   pointer-events: none;
   z-index: 0;
 }
+
+/* H1-B "Open Intersection" SVG: stroke-based lines */
+/* 2 horizontal bars + 2 crossing diagonals with open gap at center */
 
 /* Hide on mobile to reduce visual noise */
 @media (max-width: 767px) {
@@ -96,15 +102,36 @@ const codeGrain = `.grain::after {
   inset: 0;
   pointer-events: none;
   opacity: 0.03;
-  background-image: url("data:image/svg+xml,...");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
   z-index: 1;
+}`;
+
+const codeGlassmorphism = `/* Navigation (scrolled) */
+.nav-scrolled {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Glass card */
+.card-glass {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  backdrop-filter: blur(16px) saturate(180%);
+}
+
+/* Mobile menu overlay */
+.menu-overlay {
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(24px);
 }`;
 ---
 
 <BrandbookLayout
-  title="Effects"
-  pageName="EFFECTS"
-  description="Signature visual effects that define the Reis IA aesthetic: Sapphire Scanner, ambient pools, grain texture, and surface depth."
+  title="Efeitos"
+  pageName="EFEITOS"
+  description="Efeitos visuais exclusivos da estética Reis IA: Sapphire Scanner, pools ambientes, marca d'água H1-B, textura grain e glassmorphism."
 >
   <!-- Title Area -->
   <section style="background: var(--surface-0);">
@@ -114,13 +141,13 @@ const codeGrain = `.grain::after {
           class="font-bold tracking-tight mb-6"
           style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
         >
-          Effects Library
+          Biblioteca de Efeitos
         </h1>
         <p
           class="max-w-[680px]"
           style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
         >
-          Four signature effects create the Reis IA visual identity. Each is a unique synthesis, not a direct copy from any reference. Use them with restraint — the effects are powerful precisely because they are rare.
+          Cinco efeitos assinatura criam a identidade visual Reis IA. Cada um é uma síntese única, não uma cópia direta de qualquer referência. Use-os com contenção — os efeitos são poderosos precisamente porque são raros.
         </p>
       </div>
     </div>
@@ -135,11 +162,11 @@ const codeGrain = `.grain::after {
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
-          A rotating conic gradient border where a blue light segment slowly orbits the card perimeter. The narrow beam (~15% of the circle) creates a scanning effect that evokes systematic precision and analytical methodology.
+          Uma borda de gradiente cônico rotativo onde um segmento de luz azul orbita lentamente o perímetro do card. O feixe estreito (~15% do círculo) cria um efeito de escaneamento que evoca precisão sistemática. Ajuste o controle de velocidade para ver como diferentes velocidades de rotação se comportam.
         </p>
         <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
-          <span><strong style="color: var(--text-secondary);">Speed:</strong> 8s default (configurable)</span>
-          <span><strong style="color: var(--text-secondary);">Usage:</strong> 1-2 featured cards per page max</span>
+          <span><strong style="color: var(--text-secondary);">Velocidade:</strong> 2-16s (padrão 8s)</span>
+          <span><strong style="color: var(--text-secondary);">Uso:</strong> máx. 1-2 cards destaque por página</span>
           <span><strong style="color: var(--text-secondary);">Easing:</strong> linear infinite</span>
         </div>
       </div>
@@ -161,12 +188,12 @@ const codeGrain = `.grain::after {
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
-          Subtle radial gradient light pools positioned at section corners. Blue-tinted pools appear on key sections (hero, CTA areas), while neutral white-alpha pools appear on secondary sections. Corner positions alternate to create visual rhythm.
+          Pools de luz com gradiente radial sutil posicionados nos cantos das seções. Alterne entre pools com tons de azul e neutros, e escolha a posição do canto para ver como o padrão de alternância funciona entre seções.
         </p>
         <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
-          <span><strong style="color: var(--text-secondary);">Blue pool:</strong> rgba(74, 144, 255, 0.06)</span>
-          <span><strong style="color: var(--text-secondary);">Neutral pool:</strong> rgba(255, 255, 255, 0.03)</span>
-          <span><strong style="color: var(--text-secondary);">Pattern:</strong> Alternate corners per section</span>
+          <span><strong style="color: var(--text-secondary);">Pool azul:</strong> rgba(74, 144, 255, 0.06)</span>
+          <span><strong style="color: var(--text-secondary);">Pool neutro:</strong> rgba(255, 255, 255, 0.03)</span>
+          <span><strong style="color: var(--text-secondary);">Padrão:</strong> Alternar cantos por seção</span>
         </div>
       </div>
 
@@ -178,38 +205,23 @@ const codeGrain = `.grain::after {
 
       <!-- Placement guide -->
       <div
-        class="mt-8 p-5 rounded-xl border"
-        style="background: var(--surface-2); border-color: var(--border-default);"
+        class="mt-8 grid-hairline rounded-xl overflow-hidden"
+        style="grid-template-columns: repeat(3, 1fr);"
       >
-        <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
-          Placement Guide
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm" style="color: var(--text-secondary);">
-          <div>
-            <span class="font-semibold block mb-1" style="color: var(--text-primary);">Section 1 (Hero)</span>
-            Blue ambient, centered on headline
+        {[
+          { section: 'Section 1 (Hero)', pool: 'Blue ambient', position: 'Centered on headline' },
+          { section: 'Section 2', pool: 'Neutral pool', position: 'Bottom-left corner' },
+          { section: 'Section 3', pool: 'Neutral pool', position: 'Top-right corner' },
+          { section: 'Section 4 (CTA)', pool: 'Blue ambient', position: 'Centered on CTA' },
+          { section: 'Section 5', pool: 'Neutral pool', position: 'Bottom-right corner' },
+          { section: 'Pattern', pool: 'Continue alternating', position: 'Rotate corners clockwise' },
+        ].map(item => (
+          <div class="p-5">
+            <span class="font-semibold text-sm block mb-1" style="color: var(--text-primary);">{item.section}</span>
+            <span class="text-xs block" style="color: var(--text-secondary);">{item.pool}</span>
+            <span class="font-mono text-[10px] block mt-1" style="color: var(--text-quaternary);">{item.position}</span>
           </div>
-          <div>
-            <span class="font-semibold block mb-1" style="color: var(--text-primary);">Section 2</span>
-            Neutral pool, bottom-left corner
-          </div>
-          <div>
-            <span class="font-semibold block mb-1" style="color: var(--text-primary);">Section 3</span>
-            Neutral pool, top-right corner
-          </div>
-          <div>
-            <span class="font-semibold block mb-1" style="color: var(--text-primary);">Section 4 (CTA)</span>
-            Blue ambient, centered on CTA
-          </div>
-          <div>
-            <span class="font-semibold block mb-1" style="color: var(--text-primary);">Section 5</span>
-            Neutral pool, bottom-right corner
-          </div>
-          <div>
-            <span class="font-semibold block mb-1" style="color: var(--text-primary);">Pattern</span>
-            Continue alternating...
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   </section>
@@ -223,53 +235,16 @@ const codeGrain = `.grain::after {
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
-          Large hourglass silhouettes (200-300px) placed as background watermarks at 3-5% opacity behind key sections. The hourglass is the sole brand mark — it appears in time/efficiency/urgency sections and wherever a visual anchor is needed.
+          A marca da ampulheta H1-B "Open Intersection" posicionada como marca d'água de fundo em 3-5% de opacidade. A marca consiste em 5 linhas baseadas em traço: duas barras horizontais mais duas diagonais cruzadas com uma abertura no centro. Ajuste o controle de opacidade e posicionamento para visualizar diferentes configurações.
         </p>
         <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
-          <span><strong style="color: var(--text-secondary);">Size:</strong> 200-300px</span>
-          <span><strong style="color: var(--text-secondary);">Opacity:</strong> 3-5% (0.03-0.05)</span>
-          <span><strong style="color: var(--text-secondary);">Position:</strong> absolute, pointer-events: none</span>
+          <span><strong style="color: var(--text-secondary);">Tamanho:</strong> 200-300px</span>
+          <span><strong style="color: var(--text-secondary);">Opacidade:</strong> 3-5% (0.03-0.05)</span>
+          <span><strong style="color: var(--text-secondary);">Posição:</strong> absolute, pointer-events: none</span>
         </div>
       </div>
 
-      <!-- Watermark demo -->
-      <div
-        class="rounded-xl border overflow-hidden"
-        style="border-color: var(--border-default);"
-      >
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
-          {/* Top-right placement */}
-          {[
-            { label: 'Top-Right', position: 'top: -20px; right: -20px;', opacity: '3%' },
-            { label: 'Center', position: 'top: 50%; left: 50%; transform: translate(-50%, -50%);', opacity: '4%' },
-            { label: 'Bottom-Left', position: 'bottom: -20px; left: -20px;', opacity: '5%' },
-          ].map((placement, i) => (
-            <div
-              class="relative p-8"
-              style={`background: var(--surface-${i % 2 === 0 ? '0' : '1'}); min-height: 200px; ${i > 0 ? 'border-left: 1px solid var(--border-subtle);' : ''}`}
-            >
-              {/* Watermark SVG */}
-              <svg
-                viewBox="0 0 100 140"
-                style={`position: absolute; ${placement.position} width: 120px; height: 168px; pointer-events: none; opacity: ${placement.opacity === '3%' ? '0.03' : placement.opacity === '4%' ? '0.04' : '0.05'};`}
-                fill="white"
-              >
-                <polygon points="10,0 90,0 50,60" />
-                <polygon points="10,140 90,140 50,80" />
-              </svg>
-
-              <div style="position: relative; z-index: 1;">
-                <span class="font-mono text-[10px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">
-                  {placement.label} — {placement.opacity}
-                </span>
-                <p class="text-sm mt-3" style="color: var(--text-secondary); line-height: 1.6;">
-                  Content sits naturally on top of the watermark. The low opacity ensures the mark is felt but never competes with readability.
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <WatermarkDemo client:visible />
 
       <div class="mt-8">
         <CodeBlock client:visible label="Watermark CSS" code={codeWatermark} />
@@ -286,71 +261,44 @@ const codeGrain = `.grain::after {
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
-          The 5-tier surface system combined with white-alpha borders and cool ambient pools creates physical depth perception without shadows. This is the foundational visual technique — all other effects layer on top of this structure.
+          O sistema de superfícies de 5 níveis combinado com bordas white-alpha e pools ambientes cria percepção de profundidade física sem sombras. Esta é a técnica visual fundamental — todos os outros efeitos se sobrepõem a esta estrutura.
         </p>
       </div>
 
-      <!-- Visual diagram -->
+      <!-- Layer stack visualization -->
       <div
-        class="rounded-xl border overflow-hidden"
-        style="border-color: var(--border-default);"
+        class="rounded-xl border overflow-hidden p-8"
+        style="border-color: var(--border-default); background: var(--surface-0);"
       >
-        <!-- Layer stack visualization -->
-        <div class="p-8" style="background: var(--surface-0);">
-          <div class="max-w-[600px] mx-auto space-y-3">
-            {[
-              { tier: 0, name: 'Void', hex: '#000000', desc: 'Page background', w: '100%' },
-              { tier: 1, name: 'Base', hex: '#0A0A0A', desc: 'Alt sections', w: '92%' },
-              { tier: 2, name: 'Raised', hex: '#111111', desc: 'Cards', w: '84%' },
-              { tier: 3, name: 'Elevated', hex: '#161616', desc: 'Hover/inputs', w: '76%' },
-              { tier: 4, name: 'Float', hex: '#1A1A1A', desc: 'Dropdowns', w: '68%' },
-            ].map(layer => (
-              <div
-                class="rounded-lg border p-4 mx-auto flex items-center justify-between transition-colors duration-200"
-                style={`background: var(--surface-${layer.tier}); border-color: var(--border-default); width: ${layer.w};`}
-              >
-                <div class="flex items-center gap-3">
-                  <span class="font-mono text-[11px] font-bold" style="color: var(--accent-blue);">S-{layer.tier}</span>
-                  <span class="text-sm font-semibold" style="color: var(--text-primary);">{layer.name}</span>
-                </div>
-                <div class="flex items-center gap-3">
-                  <span class="text-xs" style="color: var(--text-tertiary);">{layer.desc}</span>
+        <div class="max-w-[600px] mx-auto space-y-3">
+          {[
+            { tier: 0, name: 'Void', hex: '#000000', desc: 'Page background', w: '100%' },
+            { tier: 1, name: 'Base', hex: '#0A0A0A', desc: 'Alt sections', w: '92%' },
+            { tier: 2, name: 'Raised', hex: '#111111', desc: 'Cards', w: '84%' },
+            { tier: 3, name: 'Elevated', hex: '#161616', desc: 'Hover/inputs', w: '76%' },
+            { tier: 4, name: 'Float', hex: '#1A1A1A', desc: 'Dropdowns', w: '68%' },
+          ].map(layer => (
+            <div
+              class="rounded-lg border p-4 mx-auto flex items-center justify-between"
+              style={`background: var(--surface-${layer.tier}); border-color: var(--border-default); width: ${layer.w};`}
+            >
+              <div class="flex items-center gap-3">
+                <span class="font-mono text-[11px] font-bold" style="color: var(--accent-blue);">S-{layer.tier}</span>
+                <span class="text-sm font-semibold" style="color: var(--text-primary);">{layer.name}</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs" style="color: var(--text-tertiary);">{layer.desc}</span>
+                <div class="flex items-center gap-1">
                   <code class="text-[10px] font-mono hidden sm:inline" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">{layer.hex}</code>
+                  <CopyButton client:visible text={layer.hex} />
                 </div>
               </div>
-            ))}
-          </div>
-          <p class="text-center text-xs mt-6" style="color: var(--text-muted);">
-            Each tier narrows visually, representing proximity to the viewer. Closer = lighter = smaller footprint.
-          </p>
+            </div>
+          ))}
         </div>
-      </div>
-
-      <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
-          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-2" style="color: var(--accent-blue);">
-            Surface Tiers
-          </div>
-          <p class="text-sm" style="color: var(--text-secondary);">
-            5 background values from pure black to #1A1A1A. Depth through lightness, not shadows.
-          </p>
-        </div>
-        <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
-          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-2" style="color: var(--accent-blue);">
-            White-Alpha Borders
-          </div>
-          <p class="text-sm" style="color: var(--text-secondary);">
-            5-20% opacity borders that harmonize with any surface tier. Higher tiers get more visible borders.
-          </p>
-        </div>
-        <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
-          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-2" style="color: var(--accent-blue);">
-            Ambient Pools
-          </div>
-          <p class="text-sm" style="color: var(--text-secondary);">
-            Cool blue radial gradients add directional depth to the surface stack. Applied strategically, not globally.
-          </p>
-        </div>
+        <p class="text-center text-xs mt-6" style="color: var(--text-muted);">
+          Cada nível se estreita visualmente, representando proximidade com o observador. Mais perto = mais claro = menor área.
+        </p>
       </div>
     </div>
   </section>
@@ -364,11 +312,11 @@ const codeGrain = `.grain::after {
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
-          A subtle SVG-generated noise texture overlaid at 2-4% opacity on sections to add analog dimension to flat dark backgrounds. The effect prevents the "digital void" feel without being consciously visible.
+          Uma textura de ruído sutil gerada por SVG sobreposta nas seções. Use o controle de opacidade (0-25%) para ver como diferentes intensidades se comportam. O intervalo recomendado é 2-4% — o suficiente para sentir a textura em superfícies escuras grandes sem percebê-la conscientemente.
         </p>
         <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
-          <span><strong style="color: var(--text-secondary);">Opacity:</strong> 2-4% (default 3%)</span>
-          <span><strong style="color: var(--text-secondary);">Technique:</strong> SVG feTurbulence (no external file)</span>
+          <span><strong style="color: var(--text-secondary);">Opacidade:</strong> 2-4% (padrão 3%)</span>
+          <span><strong style="color: var(--text-secondary);">Técnica:</strong> SVG feTurbulence (sem arquivo externo)</span>
           <span><strong style="color: var(--text-secondary);">z-index:</strong> 1 (above bg, below content)</span>
         </div>
       </div>
@@ -390,48 +338,47 @@ const codeGrain = `.grain::after {
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
-          Blur and saturate backdrop-filter effects for navigation, glass cards, and overlays. The saturate(180%) boost prevents blur from washing out underlying content.
+          Efeitos de backdrop-filter com blur e saturação para navegação, cards de vidro e overlays. O boost de saturate(180%) evita que o blur desbote o conteúdo subjacente.
         </p>
       </div>
 
-      <!-- Glassmorphism demo grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Hairline grid of 4 glassmorphism contexts -->
+      <div
+        class="grid-hairline rounded-xl overflow-hidden"
+        style="grid-template-columns: repeat(2, 1fr);"
+      >
         {[
           { name: 'Navigation (scrolled)', bg: 'rgba(0, 0, 0, 0.85)', blur: 'blur(20px)', saturate: 'saturate(180%)', border: 'var(--border-subtle)' },
           { name: 'Glass Card', bg: 'rgba(255, 255, 255, 0.05)', blur: 'blur(16px)', saturate: 'saturate(180%)', border: 'var(--border-subtle)' },
           { name: 'Mobile Menu Overlay', bg: 'rgba(0, 0, 0, 0.95)', blur: 'blur(24px)', saturate: 'none', border: 'none' },
           { name: 'Stats Overlay', bg: 'rgba(10, 10, 10, 0.80)', blur: 'blur(12px)', saturate: 'none', border: 'var(--border-default)' },
-        ].map(spec => (
-          <div
-            class="rounded-xl overflow-hidden"
-            style="border: 1px solid var(--border-default);"
-          >
-            {/* Background content to show through */}
-            <div class="relative p-6" style="background: var(--surface-0); min-height: 160px;">
-              {/* Decorative background element */}
-              <div
-                style="position: absolute; top: 20px; left: 20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(74, 144, 255, 0.15);"
-              ></div>
-              <div
-                style="position: absolute; bottom: 20px; right: 30px; width: 60px; height: 60px; border-radius: 8px; background: rgba(74, 144, 255, 0.10);"
-              ></div>
+        ].map((spec, i) => (
+          <div style="background: var(--surface-0); position: relative; min-height: 200px;">
+            {/* Background decoration */}
+            <div style="position: absolute; top: 20px; left: 20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(74, 144, 255, 0.15);"></div>
+            <div style="position: absolute; bottom: 20px; right: 30px; width: 60px; height: 60px; border-radius: 8px; background: rgba(74, 144, 255, 0.10);"></div>
 
-              {/* Glass overlay */}
-              <div
-                class="absolute inset-4 rounded-lg p-5 flex flex-col justify-end"
-                style={`background: ${spec.bg}; backdrop-filter: ${spec.blur} ${spec.saturate !== 'none' ? spec.saturate : ''}; ${spec.border !== 'none' ? `border: 1px solid ${spec.border};` : ''}`}
-              >
+            {/* Glass overlay */}
+            <div
+              class="absolute inset-4 rounded-lg p-5 flex flex-col justify-between"
+              style={`background: ${spec.bg}; backdrop-filter: ${spec.blur} ${spec.saturate !== 'none' ? spec.saturate : ''}; ${spec.border !== 'none' ? `border: 1px solid ${spec.border};` : ''}`}
+            >
+              <div>
                 <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--accent-blue);">
                   {spec.name}
                 </span>
-                <div class="flex flex-wrap gap-x-4 gap-y-1 mt-2">
-                  <span class="font-mono text-[10px]" style="color: var(--text-quaternary);">{spec.blur}</span>
-                  <span class="font-mono text-[10px]" style="color: var(--text-quaternary);">{spec.saturate}</span>
-                </div>
+              </div>
+              <div class="flex flex-wrap gap-x-4 gap-y-1 mt-2">
+                <span class="font-mono text-[10px]" style="color: var(--text-quaternary);">{spec.blur}</span>
+                <span class="font-mono text-[10px]" style="color: var(--text-quaternary);">{spec.saturate}</span>
               </div>
             </div>
           </div>
         ))}
+      </div>
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Glassmorphism CSS" code={codeGlassmorphism} />
       </div>
     </div>
   </section>
@@ -441,20 +388,25 @@ const codeGrain = `.grain::after {
   <!-- Section 07: Usage Rules -->
   <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="07" title="Usage Rules" />
+      <SectionLabel number="07" title="Regras de Uso" />
 
       <DosDonts items={[
-        { type: 'do', text: 'Use Sapphire Scanner on 1-2 featured cards per page max' },
-        { type: 'do', text: 'Alternate ambient pool positions between sections' },
-        { type: 'do', text: 'Keep grain opacity at 2-4% — subtle, not visible' },
-        { type: 'do', text: 'Hide watermark motifs on mobile screens' },
-        { type: 'do', text: 'Limit blue glow elements to max 2 per viewport' },
-        { type: 'dont', text: 'Apply rotating border to every card — dilutes the effect' },
-        { type: 'dont', text: 'Stack multiple ambient pools in the same corner' },
-        { type: 'dont', text: 'Use grain above 5% opacity — it becomes distracting' },
-        { type: 'dont', text: 'Place watermarks where they interfere with text readability' },
-        { type: 'dont', text: 'Combine glassmorphism with grain on the same element' },
+        { type: 'do', text: 'Usar Sapphire Scanner em máx. 1-2 cards destaque por página' },
+        { type: 'do', text: 'Alternar posições dos ambient pools entre seções' },
+        { type: 'do', text: 'Manter opacidade do grain em 2-4% — sutil, não visível' },
+        { type: 'do', text: 'Esconder motivos de marca d\'água em telas mobile' },
+        { type: 'do', text: 'Limitar elementos de glow azul a máx. 2 por viewport' },
+        { type: 'dont', text: 'Aplicar borda rotativa em todo card — dilui o efeito' },
+        { type: 'dont', text: 'Empilhar múltiplos ambient pools no mesmo canto' },
+        { type: 'dont', text: 'Usar grain acima de 5% de opacidade — se torna distrativo' },
+        { type: 'dont', text: 'Posicionar marcas d\'água onde interferem na legibilidade do texto' },
+        { type: 'dont', text: 'Combinar glassmorphism com grain no mesmo elemento' },
       ]} />
     </div>
   </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Related Pages -->
+  <RelatedPages links={relatedLinksMap['/brandbook/effects'] || []} />
 </BrandbookLayout>

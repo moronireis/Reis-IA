@@ -1,0 +1,885 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+import RelatedPages from '../../components/RelatedPages.astro';
+
+/* ---- CODE SNIPPETS ---- */
+
+const codeMetaTags = `<!-- Standard Meta Tags (BaseLayout handles this) -->
+<meta charset="UTF-8" />
+<meta name="viewport"
+  content="width=device-width, initial-scale=1.0" />
+<meta name="description"
+  content="{pageDescription}" />
+<meta name="color-scheme" content="dark" />
+<title>{pageTitle} — Reis IA Design System</title>
+<link rel="icon"
+  type="image/svg+xml" href="/favicon.svg" />`;
+
+const codeOgTags = `<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:title"
+  content="{pageTitle} — Reis IA" />
+<meta property="og:description"
+  content="{pageDescription}" />
+<meta property="og:image"
+  content="/og/{slug}.png" />
+<meta property="og:url"
+  content="https://brand.reisia.com/brandbook/{slug}" />
+<meta property="og:site_name"
+  content="Reis IA Design System" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card"
+  content="summary_large_image" />
+<meta name="twitter:title"
+  content="{pageTitle} — Reis IA" />
+<meta name="twitter:description"
+  content="{pageDescription}" />
+<meta name="twitter:image"
+  content="/og/{slug}.png" />`;
+
+const codeOgSpec = `/* OG Image Specification */
+Width:  1200px
+Height: 630px
+Format: PNG (optimized, < 300KB)
+Background: var(--surface-0) (#000000)
+
+Layout:
+  - H1-B Hourglass: top-left (32px margin)
+  - Page title: Inter Bold, 60px, #FFFFFF
+  - Subtitle: Inter Regular, 24px, rgba(255,255,255,0.7)
+  - Accent line: 2px solid #4A90FF (bottom third)
+  - Label: Inter Mono, 14px, #4A90FF
+    "Reis IA Design System"`;
+
+const codeTitlePattern = `/* Title Pattern */
+"{Page Title} — Reis IA Design System"
+
+/* Examples: */
+"Foundations — Reis IA Design System"
+"Brand Guidelines — Reis IA Design System"
+"Button Components — Reis IA Design System"
+
+/* Max length: 60 characters */
+/* Brand name always at the end */`;
+
+const codeDescPattern = `/* Description Pattern */
+"[What the page covers] for the Reis IA
+ design system."
+
+/* Examples: */
+"Complete design token reference — colors,
+ typography, spacing, surfaces, and shadows."
+"All button variants — primary, secondary,
+ ghost, hero — with interactive demos."
+
+/* Target: 120-155 characters */
+/* Start with subject, end with context */`;
+
+const codeStructuredData = `<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "{pageTitle}",
+  "description": "{pageDescription}",
+  "url": "https://brand.reisia.com/brandbook/{slug}",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Reis IA Design System",
+    "url": "https://brand.reisia.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Reis IA",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://brand.reisia.com/logo.svg"
+    }
+  }
+}
+</script>`;
+
+const codeConsultingData = `<!-- For the main Reis IA website -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Reis IA",
+  "description": "AI implementation and monetization
+    consulting for businesses.",
+  "url": "https://reisia.com",
+  "founder": {
+    "@type": "Person",
+    "name": "Moroni Reis"
+  },
+  "serviceType": [
+    "AI Consulting",
+    "AI Implementation",
+    "Business Strategy"
+  ],
+  "areaServed": "BR",
+  "priceRange": "$$$$"
+}
+</script>`;
+
+const codeRobots = `# robots.txt
+User-agent: *
+Allow: /
+Sitemap: https://brand.reisia.com/sitemap-index.xml
+
+# Disallow non-page routes
+Disallow: /api/
+Disallow: /_astro/`;
+
+const codeSitemap = `// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
+
+export default defineConfig({
+  site: 'https://brand.reisia.com',
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes('/api/'),
+    }),
+  ],
+});`;
+
+const codeImageOptimization = `<!-- Astro Image component -->
+<Image
+  src={heroImage}
+  alt="Descriptive alt text here"
+  width={1200}
+  height={630}
+  format="webp"
+  quality={80}
+  loading="lazy"
+  decoding="async"
+/>
+
+/* Image size guidelines */
+Hero images:   1200 x 630px (max 200KB)
+Card thumbs:   600 x 400px  (max 80KB)
+Icons/logos:   SVG preferred (inline)
+OG images:     1200 x 630px PNG (max 300KB)
+
+/* Format priority */
+1. SVG    — logos, icons, illustrations
+2. WebP   — photos, complex graphics
+3. AVIF   — if browser support sufficient
+4. PNG    — OG images, transparency needed
+5. JPEG   — fallback for photos
+
+/* Alt text pattern */
+"[Subject] — [context/action]"
+"H1-B Hourglass logo mark on dark background"
+"Surface elevation demo showing 5 tiers"`;
+
+const codeSemanticHtml = `<!-- Correct heading hierarchy -->
+<body>
+  <header role="banner">
+    <!-- Logo + navigation -->
+    <nav role="navigation" aria-label="Main">
+      ...
+    </nav>
+  </header>
+
+  <main role="main">
+    <h1>Page Title</h1>
+    <!-- Only ONE h1 per page -->
+
+    <section aria-labelledby="section-01">
+      <h2 id="section-01">Section Title</h2>
+
+      <h3>Subsection</h3>
+      <p>Content...</p>
+
+      <h3>Another Subsection</h3>
+      <p>Content...</p>
+    </section>
+
+    <section aria-labelledby="section-02">
+      <h2 id="section-02">Next Section</h2>
+      ...
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <nav aria-label="Footer">
+      ...
+    </nav>
+  </footer>
+</body>
+
+<!-- ARIA landmarks summary: -->
+<!-- banner   = <header>   (1 per page) -->
+<!-- navigation = <nav>    (label each) -->
+<!-- main     = <main>     (1 per page) -->
+<!-- region   = <section>  (label each) -->
+<!-- contentinfo = <footer> (1 per page) -->`;
+
+const codeFocusManagement = `/* Focus ring — all interactive elements */
+*:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  /* var(--blue-40) = rgba(74,144,255,0.4) */
+  outline-offset: 2px;
+}
+
+/* Skip link (first focusable element) */
+<a href="#main"
+  class="sr-only focus:not-sr-only
+    focus:fixed focus:top-4 focus:left-4
+    focus:z-[999] focus:px-4 focus:py-2
+    focus:rounded-lg focus:bg-[var(--accent-blue)]
+    focus:text-white focus:text-sm
+    focus:font-semibold">
+  Skip to main content
+</a>
+
+/* Color contrast requirements */
+Text on --surface-0 (#000):
+  --text-primary   (#FFF)    → 21:1  ✓
+  --text-secondary (70% wht) → 14.7:1 ✓
+  --text-tertiary  (50% wht) → 10.5:1 ✓
+  --text-quaternary(35% wht) → 7.35:1 ✓
+  --accent-blue    (#4A90FF) → 5.2:1  ✓
+
+/* Minimum contrast: */
+/* Normal text:  4.5:1 (AA) */
+/* Large text:   3:1   (AA) */
+/* UI components: 3:1  (AA) */`;
+
+const allPages = [
+  { title: 'Design System Overview', path: '/', description: 'Brand identity, design tokens, components, patterns, and guidelines.' },
+  { title: 'Brand Guidelines', path: '/brandbook/guidelines', description: 'Mission, vision, values, brand voice, tone, and personality.' },
+  { title: 'Brand Strategy', path: '/brandbook/strategy', description: 'Positioning, target audience, competitive landscape, and brand promise.' },
+  { title: 'Logo System', path: '/brandbook/logo', description: 'H1-B Hourglass construction, safe space, and usage rules.' },
+  { title: 'Icon System', path: '/brandbook/icons', description: 'Lucide Icons specification with sizes, colors, and usage guidelines.' },
+  { title: 'Moodboard', path: '/brandbook/moodboard', description: 'Visual mood, aesthetic direction, and design references.' },
+  { title: 'Foundations', path: '/brandbook/foundations', description: 'Complete design token reference for colors, typography, spacing, and surfaces.' },
+  { title: 'Spacing Scale', path: '/brandbook/spacing-scale', description: 'Named and numeric spacing tokens with visual rulers.' },
+  { title: 'Surfaces', path: '/brandbook/surfaces', description: '5-tier surface elevation system with interactive demos.' },
+  { title: 'Semantic Tokens', path: '/brandbook/semantic-tokens', description: 'Semantic token mapping for colors, borders, typography, and motion.' },
+  { title: 'Effects', path: '/brandbook/effects', description: 'Signature visual effects with live interactive demos.' },
+  { title: 'Patterns', path: '/brandbook/patterns', description: 'Background patterns, card layouts, and section compositions.' },
+  { title: 'Motion', path: '/brandbook/motion', description: 'Animation system with easing curves, durations, and scroll-triggered effects.' },
+  { title: 'VFX', path: '/brandbook/vfx', description: 'Advanced visual effects including aurora, mesh gradients, and parallax.' },
+  { title: 'Components', path: '/brandbook/components', description: 'Complete component catalog overview and navigation.' },
+  { title: 'Buttons', path: '/brandbook/buttons', description: 'All button variants with interactive demos and code samples.' },
+  { title: 'Cards', path: '/brandbook/cards', description: 'Card component variants with live hover effects and code.' },
+  { title: 'Forms', path: '/brandbook/forms', description: 'Form inputs, validation states, and interactive demos.' },
+  { title: 'Sections', path: '/brandbook/sections', description: 'Section layout patterns, containers, and spacing rules.' },
+  { title: 'Advanced', path: '/brandbook/advanced', description: 'Accordions, tabs, stat counters, and marquee components.' },
+  { title: 'Page Templates', path: '/brandbook/templates', description: 'Reusable page templates and layout guides.' },
+  { title: 'SEO', path: '/brandbook/seo', description: 'SEO rules, meta templates, OG image specs, and structured data.' },
+];
+---
+
+<BrandbookLayout
+  title="SEO e Metadados"
+  pageName="SEO E METADADOS"
+  description="Regras de SEO, templates de meta tags, especificações de imagem OG, dados estruturados, metas de performance e acessibilidade."
+>
+  <!-- ============================================================
+       TITLE AREA
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          SEO e Metadados
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Every page follows consistent SEO patterns — title templates, meta descriptions, Open Graph images,
+          structured data, performance targets, and accessibility standards.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [01] META TAG TEMPLATE
+       ============================================================ -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Template de Meta Tags" />
+
+      <div class="max-w-[680px] mb-6">
+        <p style="color: var(--text-secondary); line-height: 1.6;">
+          Every page includes these base meta tags in the <code>&lt;head&gt;</code>. The BaseLayout component
+          handles this automatically — page-specific values are passed via props.
+        </p>
+      </div>
+
+      <div class="max-w-[900px]">
+        <CodeBlock code={codeMetaTags} language="html" label="Base Meta Tags" client:visible />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [02] TITLE & DESCRIPTION PATTERNS
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Padrões de Título e Descrição" />
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div>
+          <h3 class="text-base font-semibold mb-3" style="color: var(--text-primary);">Title Pattern</h3>
+          <p class="text-sm mb-4" style="color: var(--text-secondary);">
+            All page titles follow: <code>{`{Page Title} — Reis IA Design System`}</code>.
+            Keep under 60 characters. Brand name always at the end.
+          </p>
+          <CodeBlock code={codeTitlePattern} language="css" label="Title Pattern" client:visible />
+        </div>
+        <div>
+          <h3 class="text-base font-semibold mb-3" style="color: var(--text-primary);">Description Pattern</h3>
+          <p class="text-sm mb-4" style="color: var(--text-secondary);">
+            Target 120-155 characters. Start with the main subject, end with design system context.
+          </p>
+          <CodeBlock code={codeDescPattern} language="css" label="Description Pattern" client:visible />
+        </div>
+      </div>
+
+      <!-- Live title examples in hairline grid -->
+      <h4 class="text-sm font-semibold mb-4" style="color: var(--text-primary);">Title Examples</h4>
+      <div class="grid-hairline grid-hairline-2 rounded-xl overflow-hidden mb-8">
+        {allPages.slice(0, 8).map((page) => (
+          <div class="p-4">
+            <div class="text-sm font-medium mb-1 truncate" style="color: var(--text-primary);">
+              {page.title} — Reis IA Design System
+            </div>
+            <div class="text-xs font-mono" style="color: var(--text-quaternary);">
+              {`${page.title} — Reis IA Design System`.length} chars
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Full descriptions table in hairline grid style -->
+      <h4 class="text-sm font-semibold mb-4" style="color: var(--text-primary);">All Page Descriptions</h4>
+      <div class="grid-hairline rounded-xl overflow-hidden" style="grid-template-columns: 180px 1fr 60px; border-radius: 12px;">
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Page</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Description</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Len</span>
+        </div>
+
+        {allPages.map((page) => (
+          <>
+            <div style="padding: 10px 16px;">
+              <span class="text-sm font-medium" style="color: var(--text-secondary);">{page.title}</span>
+            </div>
+            <div style="padding: 10px 16px;">
+              <span class="text-sm" style="color: var(--text-tertiary);">{page.description}</span>
+            </div>
+            <div style="padding: 10px 16px;">
+              <span class="font-mono text-xs" style="color: var(--text-quaternary);">{page.description.length}</span>
+            </div>
+          </>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [03] OPEN GRAPH & TWITTER CARDS
+       ============================================================ -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Open Graph e Twitter Cards" />
+
+      <div class="max-w-[680px] mb-6">
+        <p style="color: var(--text-secondary); line-height: 1.6;">
+          Every page needs an OG image for social sharing. Images follow a consistent template
+          that reinforces brand identity on every platform.
+        </p>
+      </div>
+
+      <div class="max-w-[900px] mb-8">
+        <CodeBlock code={codeOgTags} language="html" label="OG + Twitter Meta Tags" client:visible />
+      </div>
+
+      <!-- OG Image visual preview -->
+      <h4 class="text-sm font-semibold mb-4" style="color: var(--text-primary);">OG Image Template Preview</h4>
+      <div
+        class="aspect-[1200/630] max-w-[600px] rounded-xl border overflow-hidden relative mb-8"
+        style="background: var(--surface-0); border-color: var(--border-default);"
+      >
+        <div class="absolute inset-0 p-8 flex flex-col justify-between">
+          <div class="flex items-center gap-2">
+            <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 4L24 4" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M8 4L16 16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M24 4L16 16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M8 28L16 16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M24 28L16 16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="text-[10px] font-light tracking-wide" style="color: var(--text-tertiary);">Reis IA</span>
+          </div>
+          <div>
+            <div class="text-lg md:text-xl font-bold mb-1" style="color: var(--text-primary);">
+              Page Title
+            </div>
+            <div class="text-xs" style="color: var(--text-tertiary);">
+              Description text for social preview
+            </div>
+          </div>
+          <div>
+            <div class="h-[2px] w-16 rounded-full mb-2" style="background: var(--accent-blue);"></div>
+            <div class="text-[9px] font-mono uppercase tracking-wider" style="color: var(--accent-blue);">
+              Reis IA Design System
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OG Image spec table -->
+      <div class="grid-hairline rounded-xl overflow-hidden mb-8" style="grid-template-columns: 160px 1fr; border-radius: 12px;">
+        {[
+          { prop: 'Dimensions', value: '1200 x 630px' },
+          { prop: 'Format', value: 'PNG (optimized)' },
+          { prop: 'Max Size', value: '< 300KB' },
+          { prop: 'Background', value: 'var(--surface-0) / #000000' },
+          { prop: 'Title Font', value: 'Inter Bold, 60px, #FFFFFF' },
+          { prop: 'Subtitle Font', value: 'Inter Regular, 24px, rgba(255,255,255,0.7)' },
+          { prop: 'Accent Line', value: '2px solid #4A90FF, bottom third' },
+          { prop: 'Brand Label', value: 'Inter Mono, 14px, #4A90FF' },
+        ].map(row => (
+          <>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm font-semibold" style="color: var(--accent-blue);">{row.prop}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm font-mono" style="color: var(--text-secondary);">{row.value}</span>
+            </div>
+          </>
+        ))}
+      </div>
+
+      <CodeBlock code={codeOgSpec} language="css" label="OG Image Specification" client:visible />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [04] STRUCTURED DATA
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Dados Estruturados" />
+
+      <div class="max-w-[680px] mb-6">
+        <p style="color: var(--text-secondary); line-height: 1.6;">
+          JSON-LD structured data helps search engines understand each page's role.
+          Two schemas: one for brand site pages, one for the main consulting website.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <h4 class="text-sm font-semibold mb-3" style="color: var(--text-primary);">Brand Site Pages</h4>
+          <CodeBlock code={codeStructuredData} language="html" label="WebPage Schema" client:visible />
+        </div>
+        <div>
+          <h4 class="text-sm font-semibold mb-3" style="color: var(--text-primary);">Main Website</h4>
+          <CodeBlock code={codeConsultingData} language="html" label="ProfessionalService Schema" client:visible />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [05] IMAGE OPTIMIZATION
+       ============================================================ -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Otimização de Imagens" />
+
+      <div class="max-w-[680px] mb-6">
+        <p style="color: var(--text-secondary); line-height: 1.6;">
+          Optimize every image for performance. Use Astro's built-in Image component for automatic
+          format conversion, resizing, and lazy loading.
+        </p>
+      </div>
+
+      <!-- Image sizes spec -->
+      <div class="grid-hairline rounded-xl overflow-hidden mb-8" style="grid-template-columns: 160px 160px 100px 1fr; border-radius: 12px;">
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Type</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Dimensions</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Max Size</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Format</span>
+        </div>
+
+        {[
+          { type: 'Hero images', dims: '1200 x 630px', max: '200KB', format: 'WebP (AVIF fallback)' },
+          { type: 'Card thumbnails', dims: '600 x 400px', max: '80KB', format: 'WebP' },
+          { type: 'Icons / logos', dims: 'Variable', max: '< 5KB', format: 'SVG (inline preferred)' },
+          { type: 'OG images', dims: '1200 x 630px', max: '300KB', format: 'PNG' },
+          { type: 'Favicon', dims: '32 x 32px', max: '< 2KB', format: 'SVG' },
+          { type: 'Screenshots', dims: '1440 x 900px', max: '150KB', format: 'WebP' },
+        ].map(row => (
+          <>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm font-semibold" style="color: var(--accent-blue);">{row.type}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm font-mono" style="color: var(--text-secondary);">{row.dims}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm font-mono" style="color: var(--text-secondary);">{row.max}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm" style="color: var(--text-tertiary);">{row.format}</span>
+            </div>
+          </>
+        ))}
+      </div>
+
+      <CodeBlock code={codeImageOptimization} language="html" label="Image Optimization" client:visible />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [06] PERFORMANCE TARGETS
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Metas de Performance" />
+
+      <div class="max-w-[680px] mb-6">
+        <p style="color: var(--text-secondary); line-height: 1.6;">
+          Every page must meet these performance benchmarks. Astro's static-first architecture
+          gives us a significant advantage — most pages ship zero JavaScript by default.
+        </p>
+      </div>
+
+      <!-- Lighthouse targets -->
+      <h4 class="text-sm font-semibold mb-4" style="color: var(--text-primary);">Lighthouse Scores (minimum)</h4>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {[
+          { label: 'Performance', score: '90+', color: 'var(--color-success)' },
+          { label: 'Accessibility', score: '90+', color: 'var(--color-success)' },
+          { label: 'Best Practices', score: '90+', color: 'var(--color-success)' },
+          { label: 'SEO', score: '95+', color: 'var(--color-success)' },
+        ].map(metric => (
+          <div
+            class="rounded-xl p-5 border text-center"
+            style="background: var(--surface-2); border-color: var(--border-default);"
+          >
+            <div class="text-3xl font-bold mb-2" style={`color: ${metric.color};`}>
+              {metric.score}
+            </div>
+            <div class="font-mono text-[11px] font-semibold uppercase tracking-wider" style="color: var(--text-tertiary);">
+              {metric.label}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Core Web Vitals -->
+      <h4 class="text-sm font-semibold mb-4" style="color: var(--text-primary);">Core Web Vitals Targets</h4>
+      <div class="grid-hairline rounded-xl overflow-hidden mb-8" style="grid-template-columns: 80px 1fr 120px 120px; border-radius: 12px;">
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Metric</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Description</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Target</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Rating</span>
+        </div>
+
+        {[
+          { metric: 'LCP', desc: 'Largest Contentful Paint — how fast the main content loads', target: '< 2.5s', rating: 'Good' },
+          { metric: 'INP', desc: 'Interaction to Next Paint — responsiveness to user input', target: '< 200ms', rating: 'Good' },
+          { metric: 'CLS', desc: 'Cumulative Layout Shift — visual stability during loading', target: '< 0.1', rating: 'Good' },
+          { metric: 'FCP', desc: 'First Contentful Paint — time to first visible element', target: '< 1.8s', rating: 'Good' },
+          { metric: 'TTFB', desc: 'Time to First Byte — server response time', target: '< 0.8s', rating: 'Good' },
+        ].map(row => (
+          <>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm font-bold" style="color: var(--accent-blue);">{row.metric}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm" style="color: var(--text-secondary);">{row.desc}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <code class="text-xs">{row.target}</code>
+            </div>
+            <div style="padding: 12px 16px;">
+              <span class="badge-success text-[10px]">{row.rating}</span>
+            </div>
+          </>
+        ))}
+      </div>
+
+      <!-- Performance rules -->
+      <h4 class="text-sm font-semibold mb-4" style="color: var(--text-primary);">Performance Rules</h4>
+      <div class="grid-hairline grid-hairline-2 rounded-xl overflow-hidden">
+        {[
+          { rule: 'Static by default', detail: 'Use Astro static rendering. Only add client:visible or client:load when interactivity is required.' },
+          { rule: 'Font optimization', detail: 'Self-host Inter Variable via @fontsource. Subset if possible. Preload the primary weight.' },
+          { rule: 'Lazy load images', detail: 'All images below the fold use loading="lazy" and decoding="async".' },
+          { rule: 'Minimize JS bundles', detail: 'React islands only for interactive demos (copy buttons, form state, animations). Target < 50KB per island.' },
+          { rule: 'CSS custom properties', detail: 'All design tokens are CSS variables, not JS. Zero runtime cost for theming.' },
+          { rule: 'Page load target', detail: 'Every page must load in under 3 seconds on a 3G connection.' },
+        ].map(item => (
+          <div class="p-5">
+            <div class="text-sm font-semibold mb-1" style="color: var(--text-primary);">{item.rule}</div>
+            <div class="text-xs" style="color: var(--text-tertiary);">{item.detail}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [07] SEMANTIC HTML & LANDMARKS
+       ============================================================ -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="HTML Semântico e Landmarks" />
+
+      <div class="max-w-[680px] mb-6">
+        <p style="color: var(--text-secondary); line-height: 1.6;">
+          Proper semantic HTML ensures screen readers and search engines can parse every page.
+          Use landmarks, correct heading hierarchy, and meaningful ARIA attributes.
+        </p>
+      </div>
+
+      <!-- Heading hierarchy rules -->
+      <h4 class="text-sm font-semibold mb-4" style="color: var(--text-primary);">Heading Hierarchy Rules</h4>
+      <div class="grid-hairline rounded-xl overflow-hidden mb-8" style="grid-template-columns: 80px 1fr 200px; border-radius: 12px;">
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Tag</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Usage</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">CSS Token</span>
+        </div>
+
+        {[
+          { tag: '<h1>', usage: 'Page title — exactly one per page', token: 'var(--text-h1)' },
+          { tag: '<h2>', usage: 'Section titles (numbered SectionLabels do not replace these)', token: 'var(--text-h2)' },
+          { tag: '<h3>', usage: 'Subsection within an h2 section', token: 'var(--text-h3)' },
+          { tag: '<h4>', usage: 'Sub-subsection or card title', token: 'var(--text-h4)' },
+          { tag: '<h5>', usage: 'Rare — compact headers in tables, specs', token: 'var(--text-h5)' },
+        ].map(row => (
+          <>
+            <div style="padding: 12px 16px;">
+              <code class="text-sm font-bold" style="color: var(--accent-blue);">{row.tag}</code>
+            </div>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm" style="color: var(--text-secondary);">{row.usage}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <code class="text-xs">{row.token}</code>
+            </div>
+          </>
+        ))}
+      </div>
+
+      <CodeBlock code={codeSemanticHtml} language="html" label="Semantic HTML Structure" client:visible />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [08] ACCESSIBILITY CHECKLIST
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Checklist de Acessibilidade" />
+
+      <div class="max-w-[680px] mb-6">
+        <p style="color: var(--text-secondary); line-height: 1.6;">
+          WCAG 2.1 AA compliance checklist. Every page must pass these checks before shipping.
+        </p>
+      </div>
+
+      <!-- Checklist as hairline grid -->
+      <div class="grid-hairline rounded-xl overflow-hidden mb-8" style="grid-template-columns: 200px 1fr 80px; border-radius: 12px;">
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Requirement</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Detail</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Level</span>
+        </div>
+
+        {[
+          { req: 'Color contrast', detail: 'Text: 4.5:1 (normal) / 3:1 (large). UI components: 3:1 against adjacent colors.', level: 'AA' },
+          { req: 'Keyboard navigation', detail: 'All interactive elements reachable via Tab. Visible focus indicator on every focusable element.', level: 'AA' },
+          { req: 'Focus indicator', detail: '2px solid var(--focus-ring) with 2px offset. Never remove outline without replacement.', level: 'AA' },
+          { req: 'Skip link', detail: 'First focusable element is "Skip to main content" link, visually hidden until focused.', level: 'AA' },
+          { req: 'Alt text', detail: 'Every <img> has descriptive alt text. Decorative images use alt="" and aria-hidden="true".', level: 'A' },
+          { req: 'Heading hierarchy', detail: 'One <h1> per page. No skipped levels (h1 > h3). Headings describe section content.', level: 'A' },
+          { req: 'ARIA landmarks', detail: 'Use <header>, <nav>, <main>, <section>, <footer>. Label nav elements with aria-label.', level: 'A' },
+          { req: 'Reduced motion', detail: 'Respect prefers-reduced-motion. Disable animations, reduce transitions to 0.01ms.', level: 'AA' },
+          { req: 'Form labels', detail: 'Every input has a visible <label>. Error messages linked via aria-describedby.', level: 'A' },
+          { req: 'Touch targets', detail: 'Minimum 44x44px touch target size for mobile. Adequate spacing between targets.', level: 'AAA' },
+          { req: 'Language', detail: 'html lang="en" attribute set. Inline language switches marked with lang attribute.', level: 'A' },
+          { req: 'Zoom support', detail: 'Content readable at 200% zoom. No horizontal scrolling at 320px viewport width.', level: 'AA' },
+        ].map(row => (
+          <>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm font-semibold" style="color: var(--accent-blue);">{row.req}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm" style="color: var(--text-secondary);">{row.detail}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <span class={`badge-${row.level === 'AAA' ? 'warning' : row.level === 'AA' ? 'success' : 'accent'} text-[10px]`}>{row.level}</span>
+            </div>
+          </>
+        ))}
+      </div>
+
+      <CodeBlock code={codeFocusManagement} language="css" label="Focus & Contrast" client:visible />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [09] SITEMAP & ROBOTS
+       ============================================================ -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="09" title="Sitemap e Robots" />
+
+      <div class="max-w-[680px] mb-6">
+        <p style="color: var(--text-secondary); line-height: 1.6;">
+          The Astro sitemap integration generates an XML sitemap automatically.
+          The robots.txt allows full crawling with a sitemap reference.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div>
+          <h4 class="text-sm font-semibold mb-3" style="color: var(--text-primary);">robots.txt</h4>
+          <CodeBlock code={codeRobots} language="text" label="robots.txt" client:visible />
+        </div>
+        <div>
+          <h4 class="text-sm font-semibold mb-3" style="color: var(--text-primary);">Astro Sitemap Config</h4>
+          <CodeBlock code={codeSitemap} language="javascript" label="astro.config.mjs" client:visible />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [10] FULL URL MAP
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="10" title="Mapa Completo de URLs" />
+
+      <div class="max-w-[680px] mb-6">
+        <p style="color: var(--text-secondary); line-height: 1.6;">
+          Complete list of all {allPages.length} pages in the design system with their canonical URLs.
+        </p>
+      </div>
+
+      <div class="grid-hairline rounded-xl overflow-hidden" style="grid-template-columns: 200px 1fr; border-radius: 12px;">
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Page</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Path</span>
+        </div>
+
+        {allPages.map((page) => (
+          <>
+            <div style="padding: 10px 16px;">
+              <span class="text-sm font-medium" style="color: var(--text-secondary);">{page.title}</span>
+            </div>
+            <div style="padding: 10px 16px;">
+              <a href={page.path} class="font-mono text-xs" style="color: var(--accent-blue);">{page.path}</a>
+            </div>
+          </>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [11] DO / DON'T
+       ============================================================ -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="11" title="Diretrizes de SEO" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Use the title pattern: {Page Title} — Reis IA Design System' },
+        { type: 'do', text: 'Keep descriptions between 120-155 characters' },
+        { type: 'do', text: 'Include OG image for every page with consistent template' },
+        { type: 'do', text: 'Use semantic HTML landmarks (header, nav, main, footer)' },
+        { type: 'do', text: 'Maintain one h1 per page with proper heading hierarchy' },
+        { type: 'do', text: 'Respect prefers-reduced-motion for all animations' },
+        { type: 'dont', text: 'Exceed 60 characters in page titles' },
+        { type: 'dont', text: 'Skip heading levels (e.g., h1 directly to h3)' },
+        { type: 'dont', text: 'Remove focus outlines without visible replacement' },
+        { type: 'dont', text: 'Use images without alt text (decorative: alt="")' },
+        { type: 'dont', text: 'Ship pages with Lighthouse scores below 90' },
+        { type: 'dont', text: 'Use JavaScript for styling that CSS custom properties can handle' },
+      ]} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Related Pages -->
+  <RelatedPages links={[
+    { label: 'Page Templates', href: '/brandbook/templates' },
+    { label: 'Foundations', href: '/brandbook/foundations' },
+    { label: 'Components Overview', href: '/brandbook/components' },
+    { label: 'Sections', href: '/brandbook/sections' },
+  ]} />
+</BrandbookLayout>

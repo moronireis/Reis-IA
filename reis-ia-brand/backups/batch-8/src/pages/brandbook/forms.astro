@@ -1,0 +1,418 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import FormDemo from '../../components/FormDemo.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+
+const codeInput = `.input {
+  display: block;
+  width: 100%;
+  height: 48px;
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--surface-3);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  transition: border-color 200ms var(--ease-base),
+              box-shadow 200ms var(--ease-base);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--text-quaternary);
+}
+
+/* Hover */
+.input:hover:not(:focus):not(:disabled):not(.input-error) {
+  border-color: var(--border-visible);
+}
+
+/* Focus */
+.input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(74, 144, 255, 0.15);
+}
+
+/* Error */
+.input-error, .input.is-error {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* Success */
+.input-success, .input.is-success {
+  border-color: var(--color-success);
+}
+
+/* Disabled */
+.input:disabled {
+  background: var(--surface-2);
+  border-color: var(--border-subtle);
+  color: var(--text-quaternary);
+  cursor: not-allowed;
+  opacity: 0.7;
+}`;
+
+const codeTextarea = `/* Textarea variant */
+.input-textarea {
+  height: auto;
+  min-height: 120px;
+  resize: vertical;
+}`;
+
+const codeSelect = `/* Select variant */
+.input-select {
+  appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,...");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+}`;
+
+const codeLabels = `/* Field label */
+.input-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+/* Helper text */
+.input-helper {
+  display: block;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-top: 6px;
+}
+
+/* Error text */
+.input-error-text {
+  display: block;
+  font-size: 13px;
+  color: var(--color-error);
+  margin-top: 6px;
+}`;
+
+const codeGlassInput = `/* Glass-morphism input */
+.input-glass {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(8px);
+  color: var(--text-primary);
+}
+
+.input-glass:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(74, 144, 255, 0.15);
+}`;
+
+const codeFormLayout = `<!-- Stacked layout (default) -->
+<form class="flex flex-col gap-5 max-w-[600px]">
+  <div>
+    <label class="input-label">Name</label>
+    <input class="input" type="text" />
+  </div>
+  <div>
+    <label class="input-label">Email</label>
+    <input class="input" type="email" />
+    <span class="input-helper">We will never share your email.</span>
+  </div>
+  <button class="btn-primary" type="submit">Submit</button>
+</form>`;
+---
+
+<BrandbookLayout
+  title="Forms"
+  pageName="FORMS"
+  description="Form component system with text inputs, textareas, selects, labels, validation, and interactive demos."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Forms
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Form inputs use Surface-3 backgrounds with 8% white-alpha borders. On focus, the border shifts to accent blue with a 15% opacity glow ring. Validation states use the signal color system: red for errors, green for success.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: Interactive Demo -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Interactive Demo" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Click, type, tab through, and blur the inputs below to see every state in action. The form includes real-time validation — try submitting with empty fields.
+        </p>
+      </div>
+
+      <div
+        class="rounded-xl border p-6 md:p-8"
+        style="background: var(--surface-0); border-color: var(--border-default);"
+      >
+        <FormDemo client:visible />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Input States in Hairline Grid -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Input States" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Every input state rendered side-by-side. Height is 48px for comfortable tap targets. Font size is 16px to prevent mobile zoom on iOS.
+        </p>
+      </div>
+
+      <div
+        class="grid-hairline rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(3, 1fr);"
+      >
+        <!-- Default -->
+        <div class="p-6" style="background: var(--surface-0);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 12px;">Default</span>
+          <input class="input" type="text" placeholder="Enter your name..." />
+        </div>
+
+        <!-- Hover -->
+        <div class="p-6" style="background: var(--surface-0);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 12px;">Hover</span>
+          <input class="input" type="text" placeholder="Hover to see..." style="border-color: var(--border-visible);" readonly />
+        </div>
+
+        <!-- Focus -->
+        <div class="p-6" style="background: var(--surface-0);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 12px;">Focus</span>
+          <input class="input" type="text" placeholder="Blue border + glow" style="border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(74, 144, 255, 0.15);" readonly />
+        </div>
+
+        <!-- Error -->
+        <div class="p-6" style="background: var(--surface-0);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 12px;">Error</span>
+          <input class="input input-error" type="text" value="bad@" readonly />
+          <span class="input-error-text">Invalid email format</span>
+        </div>
+
+        <!-- Success -->
+        <div class="p-6" style="background: var(--surface-0);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 12px;">Success</span>
+          <input class="input input-success" type="text" value="moroni@reis.ia" readonly />
+          <span style="display: block; font-size: 13px; color: var(--color-success); margin-top: 6px;">Verified</span>
+        </div>
+
+        <!-- Disabled -->
+        <div class="p-6" style="background: var(--surface-0);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 12px;">Disabled</span>
+          <input class="input" type="text" value="Not editable" disabled />
+        </div>
+      </div>
+
+      <!-- Spec table -->
+      <div
+        class="grid-hairline rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: 200px 1fr;"
+      >
+        {[
+          ['Height', '48px'],
+          ['Padding', '12px 16px'],
+          ['Font size', '16px (prevents iOS zoom)'],
+          ['Background', 'var(--surface-3) (#161616)'],
+          ['Border', '1px solid var(--border-default)'],
+          ['Border radius', '8px'],
+          ['Placeholder', 'var(--text-quaternary) (35% white)'],
+          ['Focus border', 'var(--accent-blue) (#4A90FF)'],
+          ['Focus glow', '0 0 0 3px rgba(74, 144, 255, 0.15)'],
+        ].map(([prop, value]) => (
+          <Fragment>
+            <div class="p-3" style="background: var(--surface-0); font-size: 14px; font-weight: 500; color: var(--text-secondary);">{prop}</div>
+            <div class="p-3" style="background: var(--surface-0); font-size: 13px; font-family: ui-monospace, monospace; color: var(--text-tertiary);">{value}</div>
+          </Fragment>
+        ))}
+      </div>
+
+      <CodeBlock client:visible label="Text Input CSS" code={codeInput} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Textarea & Select -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Textarea & Select" />
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div>
+          <h3 class="text-lg font-semibold mb-3" style="color: var(--text-primary);">Textarea</h3>
+          <p class="text-sm mb-4" style="color: var(--text-secondary);">
+            Multi-line text input. Inherits all base input styles. Height is auto with min-height 120px. Vertical resize only.
+          </p>
+          <div class="rounded-xl border p-6 mb-4" style="background: var(--surface-0); border-color: var(--border-default);">
+            <textarea class="input input-textarea" placeholder="Tell us about your project..."></textarea>
+          </div>
+          <CodeBlock client:visible label="Textarea CSS" code={codeTextarea} />
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-3" style="color: var(--text-primary);">Select</h3>
+          <p class="text-sm mb-4" style="color: var(--text-secondary);">
+            Custom-styled select dropdown. Uses <code>appearance: none</code> with an SVG chevron. Same focus and error states as text input.
+          </p>
+          <div class="rounded-xl border p-6 mb-4" style="background: var(--surface-0); border-color: var(--border-default);">
+            <select class="input input-select">
+              <option value="">Select budget range...</option>
+              <option value="10k">R$ 10,000 - R$ 25,000</option>
+              <option value="25k">R$ 25,000 - R$ 50,000</option>
+              <option value="50k">R$ 50,000+</option>
+            </select>
+          </div>
+          <CodeBlock client:visible label="Select CSS" code={codeSelect} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Labels, Helpers & Validation -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Labels, Helpers & Errors" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Every input needs a label. Helper text below the input provides context. Error text replaces helper text when validation fails. Error messages are announced via <code>aria-describedby</code> for screen readers.
+        </p>
+      </div>
+
+      <div
+        class="grid-hairline rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(3, 1fr);"
+      >
+        <div class="p-6" style="background: var(--surface-0);">
+          <label class="input-label">Label + Helper</label>
+          <input class="input" type="text" placeholder="Your name" />
+          <span class="input-helper">This helps the field below</span>
+        </div>
+        <div class="p-6" style="background: var(--surface-0);">
+          <label class="input-label">Label + Error</label>
+          <input class="input input-error" type="text" value="bad@" readonly />
+          <span class="input-error-text">Invalid email format</span>
+        </div>
+        <div class="p-6" style="background: var(--surface-0);">
+          <label class="input-label">Label + Success</label>
+          <input class="input input-success" type="text" value="moroni@reis.ia" readonly />
+          <span style="display: block; font-size: 13px; color: var(--color-success); margin-top: 6px;">Verified</span>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Labels & Helper Text CSS" code={codeLabels} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Glass-Morphism Input -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Glass-Morphism Input" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          A translucent input variant for use on glass card or modal backgrounds. Uses a lower-opacity background with subtle backdrop blur.
+        </p>
+      </div>
+
+      <div
+        class="relative rounded-xl border overflow-hidden mb-8"
+        style="background: var(--surface-0); border-color: var(--border-default);"
+      >
+        <div style="position: absolute; top: 20%; left: 10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(74,144,255,0.10) 0%, transparent 70%); pointer-events: none;"></div>
+        <div class="relative p-8 md:p-12" style="z-index: 1;">
+          <div
+            class="p-8 rounded-2xl max-w-md mx-auto"
+            style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); backdrop-filter: blur(16px) saturate(180%);"
+          >
+            <h4 class="text-lg font-semibold mb-4" style="color: var(--text-primary);">Newsletter Signup</h4>
+            <div class="flex flex-col gap-3">
+              <input
+                type="email"
+                placeholder="your@email.com"
+                style="display: block; width: 100%; height: 48px; padding: 12px 16px; font-family: inherit; font-size: 16px; color: var(--text-primary); background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); border-radius: 8px; outline: none; box-sizing: border-box;"
+              />
+              <button
+                style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #FFFFFF; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; border: none; cursor: pointer; font-family: inherit; width: 100%;"
+              >
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Glass Input CSS" code={codeGlassInput} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Form Layout Patterns -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Form Layout Patterns" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Two layout patterns: stacked (default, single column, max-width 600px) and inline (grid-based, fields side by side on desktop). Stacked is preferred for conversion forms to reduce cognitive load.
+        </p>
+      </div>
+
+      <CodeBlock client:visible label="Form Layout Patterns" language="html" code={codeFormLayout} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Usage Rules -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Usage Rules" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Use 16px font size to prevent iOS auto-zoom on focus' },
+        { type: 'do', text: 'Always pair inputs with labels (visible, not placeholder-only)' },
+        { type: 'do', text: 'Show validation errors on blur, not on every keystroke' },
+        { type: 'do', text: 'Use aria-describedby to link error messages to inputs' },
+        { type: 'do', text: 'Keep conversion forms stacked and max-width 600px' },
+        { type: 'dont', text: 'Use placeholder text as the only label — always show a visible label' },
+        { type: 'dont', text: 'Validate on every keystroke — wait for blur or submit' },
+        { type: 'dont', text: 'Use custom dropdown components when a native select works' },
+        { type: 'dont', text: 'Remove the focus glow ring — it provides essential visibility' },
+        { type: 'dont', text: 'Mix glass-morphism inputs with standard inputs in the same form' },
+      ]} />
+    </div>
+  </section>
+</BrandbookLayout>

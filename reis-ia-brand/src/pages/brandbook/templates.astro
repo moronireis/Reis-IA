@@ -1,0 +1,1122 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import TemplatePreview from '../../components/TemplatePreview.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+import RelatedPages from '../../components/RelatedPages.astro';
+
+/* ---- CODE SNIPPETS ---- */
+
+const codeHeroSection = `<!-- Hero Section Template -->
+<section
+  class="relative overflow-hidden"
+  style="background: var(--surface-0);"
+>
+  <!-- Ambient glow -->
+  <div
+    class="absolute inset-0 pointer-events-none"
+    style="background: radial-gradient(
+      ellipse at 30% 50%,
+      rgba(74, 144, 255, 0.06) 0%,
+      transparent 70%
+    );"
+    aria-hidden="true"
+  ></div>
+
+  <div class="container-standard relative"
+    style="padding-top: var(--space-4xl);
+           padding-bottom: var(--space-4xl);">
+    <!-- Optional badge -->
+    <span class="badge mb-6">AI Consulting</span>
+
+    <!-- Headline (max container-headline) -->
+    <h1 class="max-w-[900px]"
+      style="font-size: var(--text-h1);
+             color: var(--text-primary);
+             margin-bottom: var(--space-md);">
+      Your hero headline goes here
+    </h1>
+
+    <!-- Subtext (max container-text) -->
+    <p class="max-w-[680px]"
+      style="font-size: var(--text-body-lg);
+             color: var(--text-secondary);
+             margin-bottom: var(--space-xl);">
+      Supporting copy that expands on the headline
+      and builds interest.
+    </p>
+
+    <!-- CTA cluster -->
+    <div class="flex flex-wrap gap-4">
+      <a href="/agendar" class="btn-primary">
+        Agendar Reunião
+      </a>
+      <a href="#" class="btn-secondary">
+        Saiba Mais
+      </a>
+    </div>
+  </div>
+</section>`;
+
+const codeSalesPage = `<!-- Sales Page — Section Order -->
+
+<!-- 1. Hero (Surface 0 + ambient glow) -->
+<section style="background: var(--surface-0);">
+  <!-- Badge + H1 + subtext + CTA cluster -->
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- 2. Trust Bar (Surface 1) -->
+<section style="background: var(--surface-1);">
+  <!-- Logo marquee or stat counters -->
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- 3. Problem (Surface 0) -->
+<section style="background: var(--surface-0);">
+  <SectionLabel number="01" title="The Problem" />
+  <!-- Pain points, enemy narrative -->
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- 4. Solution (Surface 1) -->
+<section style="background: var(--surface-1);">
+  <SectionLabel number="02" title="The Solution" />
+  <!-- Pillar cards, methodology -->
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- 5. Proof (Surface 0) -->
+<section style="background: var(--surface-0);">
+  <SectionLabel number="03" title="Results" />
+  <!-- Testimonials, case studies -->
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- 6. Final CTA (Surface 1 + ambient glow) -->
+<section style="background: var(--surface-1);">
+  <!-- Closing headline + CTA -->
+</section>`;
+
+const codeBookingPage = `<!-- Booking Page — 2-column layout (/agendar) -->
+<section style="background: var(--surface-0);">
+  <div class="container-standard"
+    style="padding-top: var(--space-3xl);
+           padding-bottom: var(--space-3xl);">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2
+      gap-16">
+      <!-- Left: What to expect -->
+      <div>
+        <h2 style="color: var(--text-primary);
+          margin-bottom: var(--space-lg);">
+          Agende sua reuniao estratégica
+        </h2>
+        <p style="color: var(--text-secondary);
+          margin-bottom: var(--space-xl);">
+          Uma sessao de 30 minutos para entender
+          sua situação atual com IA.
+        </p>
+
+        <!-- Checklist -->
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3">
+            <svg class="icon-md icon-accent mt-0.5">
+              <!-- check icon -->
+            </svg>
+            <span style="color: var(--text-secondary);">
+              Diagnostic of your current AI posture
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Right: Cal.com embed -->
+      <div class="rounded-xl overflow-hidden border"
+        style="background: var(--surface-2);
+               border-color: var(--border-default);
+               min-height: 500px;">
+        <div id="cal-embed"></div>
+      </div>
+    </div>
+  </div>
+</section>`;
+
+const codeApplicationPage = `<!-- Application Page — Form + Sidebar (/aplicar) -->
+<section style="background: var(--surface-0);">
+  <div class="container-standard"
+    style="padding-top: var(--space-3xl);
+           padding-bottom: var(--space-3xl);">
+
+    <div class="grid grid-cols-1 lg:grid-cols-3
+      gap-12">
+      <!-- Main: Form (2/3 width) -->
+      <div class="lg:col-span-2">
+        <h2 style="margin-bottom: var(--space-lg);">
+          Apply to Reis IA Partners
+        </h2>
+
+        <form class="space-y-6">
+          <div>
+            <label class="input-label">
+              Full Name
+            </label>
+            <input type="text" class="input"
+              placeholder="Your full name" />
+          </div>
+          <div>
+            <label class="input-label">
+              Tell us about your AI needs
+            </label>
+            <textarea class="input input-textarea"
+              placeholder="Describe your goals..."
+            ></textarea>
+          </div>
+          <button type="submit" class="btn-primary">
+            Submit Application
+          </button>
+        </form>
+      </div>
+
+      <!-- Sidebar (1/3 width) -->
+      <aside>
+        <div class="rounded-xl p-6 border
+          sticky top-24"
+          style="background: var(--surface-2);
+                 border-color: var(--border-default);">
+          <h4 style="margin-bottom: var(--space-md);">
+            What happens next
+          </h4>
+          <ol class="space-y-3 text-sm"
+            style="color: var(--text-secondary);">
+            <li>1. We review your application</li>
+            <li>2. Strategy call within 48h</li>
+            <li>3. Custom proposal delivered</li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>`;
+
+const codeSurfaceAlternation = `/* Surface Alternation Rules */
+
+Section 1  ->  var(--surface-0)   /* #000000 */
+Section 2  ->  var(--surface-1)   /* #0A0A0A */
+Section 3  ->  var(--surface-0)
+Section 4  ->  var(--surface-1)   /* ...repeat */
+
+/* Gradient dividers between sections */
+.gradient-divider {
+  height: 1px;
+  background: var(--gradient-divider);
+}
+
+/* Cards inside sections */
+Cards      ->  var(--surface-2)   /* #111111 */
+Card:hover ->  var(--surface-3)   /* #161616 */
+Dropdowns  ->  var(--surface-4)   /* #1A1A1A */
+
+/* Ambient glow: hero + final CTA only */
+/* Never stack two glowing sections adjacent */`;
+
+const codeContainerHierarchy = `/* Container Width Hierarchy */
+
+.container-wide     { max-width: 1280px; }
+/* Full-width sections, hero backgrounds */
+
+.container-standard { max-width: 1200px; }
+/* Default content container */
+
+.container-headline { max-width: 900px; }
+/* Hero headlines */
+
+.container-narrow   { max-width: 800px; }
+/* Article-style content */
+
+.container-text     { max-width: 680px; }
+/* Body copy, optimal line length */
+
+/* All containers share: */
+margin-inline: auto;
+padding-inline: var(--container-padding);
+/* clamp(20px, 5vw, 48px) */`;
+
+const codeResponsive = `/* Responsive Behavior */
+
+/* Fluid container padding */
+--container-padding: clamp(20px, 5vw, 48px);
+
+/* Fluid section spacing */
+--space-3xl: clamp(64px, 7vw + 36px, 120px);
+--space-4xl: clamp(80px, 10vw + 40px, 160px);
+
+/* Mobile (< 768px) */
+/* - Stack all grids to 1 column */
+/* - Hero headline: reduce via clamp() */
+/* - CTA buttons: full-width on mobile */
+/* - Hairline grids: collapse to 1-2 cols */
+
+/* Tablet (768-1023px) */
+/* - 2-column card grids */
+/* - Booking page: stack columns */
+/* - Sidebar moves below form */
+
+/* Desktop (>= 1024px) */
+/* - Full multi-column layouts */
+/* - Sticky sidebar positioning */
+/* - Max container widths enforced */`;
+
+const codeTemplateA = `<!-- Template A: Token / Component Page -->
+<BrandbookLayout title="Page Name"
+  pageName="PAGE NAME">
+
+  <!-- Title Area (Surface 0) -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard"
+      style="padding-top: var(--space-3xl);
+             padding-bottom: var(--space-2xl);">
+      <h1 style="font-size: var(--text-display);">
+        Page Title
+      </h1>
+      <p style="font-size: var(--text-body-lg);">
+        Description text.
+      </p>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- [01] Section (Surface 1) -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard"
+      style="padding-top: var(--space-3xl);
+             padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01"
+        title="Section Title" />
+      <!-- Content grid / demos -->
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- [02] Section (Surface 0) -->
+  <section style="background: var(--surface-0);">
+    ...
+  </section>
+</BrandbookLayout>`;
+
+const codeTemplateB = `<!-- Template B: Overview / Index Page -->
+<BaseLayout title="Design System Overview">
+
+  <!-- Hero (Surface 0 + ambient glow) -->
+  <section class="relative overflow-hidden"
+    style="background: var(--surface-0);">
+    <div class="container-standard relative
+      py-24 md:py-32 lg:py-40">
+      <div class="font-mono text-[11px]
+        font-semibold uppercase tracking-[0.08em]
+        mb-6" style="color: var(--accent-blue);">
+        Eyebrow Label
+      </div>
+      <h1 style="font-size: var(--text-display);">
+        Main Headline
+      </h1>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Bento Grid (12-column) -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard py-16 md:py-24">
+      <div class="grid grid-cols-12 gap-[1px]
+        rounded-xl border overflow-hidden"
+        style="background: var(--border-default);
+               border-color: var(--border-default);">
+        <!-- Cards: col-span-12 md:col-span-6
+             lg:col-span-4 -->
+      </div>
+    </div>
+  </section>
+</BaseLayout>`;
+
+const codeTemplateC = `<!-- Template C: Strategy / Brand Page -->
+<BrandbookLayout title="Page Title"
+  pageName="PAGE NAME">
+
+  <!-- Hero with ambient glow -->
+  <section class="relative"
+    style="background: var(--surface-0);">
+    <div class="absolute top-1/2 left-1/2
+      -translate-x-1/2 -translate-y-1/2
+      w-[800px] h-[600px] pointer-events-none"
+      style="background:
+        var(--gradient-blue-ambient);
+        opacity: 0.5;"
+      aria-hidden="true">
+    </div>
+
+    <div class="container-standard relative"
+      style="padding-top: var(--space-4xl);
+             padding-bottom: var(--space-3xl);">
+      <div class="font-mono text-[11px]
+        font-semibold uppercase
+        tracking-[0.08em] mb-6"
+        style="color: var(--accent-blue);">
+        Eyebrow
+      </div>
+      <h1 style="font-size: var(--text-display);">
+        Manifesto-style headline
+      </h1>
+    </div>
+  </section>
+
+  <!-- Long-form sections -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard"
+      style="padding-top: var(--space-3xl);
+             padding-bottom: var(--space-3xl);">
+      <div class="max-w-[680px] space-y-8">
+        <!-- Long-form content -->
+      </div>
+    </div>
+  </section>
+</BrandbookLayout>`;
+
+const codeGridSystems = `/* Hairline grid — 1px gap dividers */
+<div class="grid-hairline grid-hairline-3
+  rounded-xl overflow-hidden">
+  <div class="p-6">Cell 1</div>
+  <div class="p-6">Cell 2</div>
+  <div class="p-6">Cell 3</div>
+</div>
+
+/* Bento grid — 12-column with 1px gap */
+<div class="grid grid-cols-12 gap-[1px]
+  rounded-xl border overflow-hidden"
+  style="background: var(--border-default);
+         border-color: var(--border-default);">
+  <div class="col-span-12 md:col-span-6
+    lg:col-span-4 p-6"
+    style="background: var(--surface-1);">
+    Card content
+  </div>
+</div>`;
+
+/* ---- TEMPLATE PREVIEW DATA ---- */
+
+const heroSections = [
+  { name: 'Hero', surface: 0 as const, height: '100px', accent: true, children: 'Badge + H1 + Subtext + CTA' },
+  { name: 'Trust Bar', surface: 1 as const, height: '40px', children: 'Logo marquee / Stats' },
+  { name: 'Content Section', surface: 0 as const, height: '80px', children: '[01] Feature grid' },
+  { name: 'Alt Section', surface: 1 as const, height: '80px', children: '[02] Testimonials' },
+  { name: 'CTA Section', surface: 0 as const, height: '60px', accent: true, children: 'Final CTA' },
+];
+
+const salesSections = [
+  { name: 'Hero', surface: 0 as const, height: '100px', accent: true, children: 'Badge + H1 + CTA' },
+  { name: 'Trust', surface: 1 as const, height: '36px', children: 'Logo marquee' },
+  { name: 'Problem', surface: 0 as const, height: '70px', children: '[01] Pain points' },
+  { name: 'Solution', surface: 1 as const, height: '70px', children: '[02] Pillar cards' },
+  { name: 'Proof', surface: 0 as const, height: '60px', children: '[03] Stats / Testimonials' },
+  { name: 'Final CTA', surface: 1 as const, height: '60px', accent: true, children: 'Closing CTA' },
+];
+
+const bookingSections = [
+  { name: 'Page Header', surface: 1 as const, height: '24px', children: 'REIS IA | AGENDAR | v1.0' },
+  { name: '2-Column Layout', surface: 0 as const, height: '160px', children: 'Checklist | Cal.com Embed' },
+  { name: 'FAQ', surface: 1 as const, height: '50px', children: 'Accordion items' },
+];
+
+const applicationSections = [
+  { name: 'Page Header', surface: 1 as const, height: '24px', children: 'REIS IA | APLICAR | v1.0' },
+  { name: '3-Column Grid', surface: 0 as const, height: '180px', children: 'Form (2/3) | Sidebar (1/3)' },
+  { name: 'Confirmation', surface: 1 as const, height: '40px', children: 'Success message' },
+];
+---
+
+<BrandbookLayout
+  title="Page Templates"
+  pageName="PAGE TEMPLATES"
+  description="Compose full pages from the Reis IA design system. Templates define section order, surface alternation, and responsive behavior."
+>
+  <!-- ============================================================
+       TITLE AREA
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Page Templates
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Four page-type templates and three structural templates cover every page in the Reis IA ecosystem.
+          Each defines the section order, surface alternation, spacing rhythm, and responsive behavior.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [01] PAGE-TYPE TEMPLATES — Interactive previews
+       ============================================================ -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Page-Type Templates" />
+
+      <p class="max-w-[680px]" style="color: var(--text-secondary); margin-bottom: var(--space-xl);">
+        Every page in the Reis IA ecosystem follows one of four page-type patterns.
+        Toggle breakpoints to preview how each template adapts across screen sizes.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TemplatePreview
+          client:visible
+          label="Hero Page"
+          description="Landing pages, home page"
+          sections={heroSections}
+        />
+        <TemplatePreview
+          client:visible
+          label="Sales Page"
+          description="Service pages, offers"
+          sections={salesSections}
+        />
+        <TemplatePreview
+          client:visible
+          label="Booking Page"
+          description="/agendar — Cal.com embed"
+          sections={bookingSections}
+        />
+        <TemplatePreview
+          client:visible
+          label="Application Page"
+          description="/aplicar — Form + sidebar"
+          sections={applicationSections}
+        />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [02] HERO SECTION TEMPLATE
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Hero Section Template" />
+
+      <p class="max-w-[680px]" style="color: var(--text-secondary); margin-bottom: var(--space-xl);">
+        The hero sits on Surface 0 with an optional ambient blue glow.
+        Structure: optional badge, headline (max 900px), subtext (max 680px), CTA cluster.
+      </p>
+
+      <!-- Live mini-preview -->
+      <div
+        class="rounded-xl border overflow-hidden mb-8"
+        style="background: var(--surface-0); border-color: var(--border-default);"
+      >
+        <div class="relative overflow-hidden" style="padding: var(--space-2xl) var(--space-xl);">
+          <div
+            class="absolute inset-0 pointer-events-none"
+            style="background: radial-gradient(ellipse at 30% 50%, rgba(74,144,255,0.06) 0%, transparent 70%);"
+            aria-hidden="true"
+          ></div>
+          <div class="relative">
+            <span class="badge mb-4 inline-block">AI Consulting</span>
+            <h2 class="max-w-[600px]" style="font-size: var(--text-h2); color: var(--text-primary); margin-bottom: var(--space-sm);">
+              Implement AI that actually generates revenue
+            </h2>
+            <p class="max-w-[480px]" style="font-size: var(--text-body); color: var(--text-secondary); margin-bottom: var(--space-lg);">
+              Strategic AI implementation for businesses ready to scale with intelligence.
+            </p>
+            <div class="flex flex-wrap gap-3">
+              <span
+                class="inline-flex items-center justify-center px-6 py-3 rounded-lg text-sm font-semibold"
+                style="background: var(--accent-blue); color: #fff;"
+              >
+                Agendar Reunião
+              </span>
+              <span
+                class="inline-flex items-center justify-center px-6 py-3 rounded-lg text-sm font-semibold border"
+                style="border-color: var(--border-visible); color: var(--text-primary);"
+              >
+                Saiba Mais
+              </span>
+            </div>
+          </div>
+        </div>
+        <div style="padding: 8px 16px; border-top: 1px solid var(--border-subtle); background: var(--surface-2);">
+          <span class="font-mono text-[11px] uppercase tracking-wider" style="color: var(--text-quaternary);">
+            Live Preview — Hero Section
+          </span>
+        </div>
+      </div>
+
+      <CodeBlock client:visible code={codeHeroSection} language="html" label="Hero Section Markup" />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [03] SALES PAGE TEMPLATE
+       ============================================================ -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Sales Page Template" />
+
+      <p class="max-w-[680px]" style="color: var(--text-secondary); margin-bottom: var(--space-xl);">
+        Direct-response structure adapted for the Reis IA brand. Six sections in fixed order,
+        alternating surfaces, with ambient glow reserved for hero and closing CTA.
+      </p>
+
+      <!-- Section order spec table -->
+      <div class="grid-hairline rounded-xl overflow-hidden mb-8" style="grid-template-columns: 60px 1fr 200px; border-radius: 12px;">
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">#</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Section</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Surface</span>
+        </div>
+
+        {[
+          { n: '1', name: 'Hero — badge, H1, subtext, CTA', surface: '--surface-0', extra: '+ glow' },
+          { n: '2', name: 'Trust Bar — logo marquee or stats', surface: '--surface-1', extra: '' },
+          { n: '3', name: 'Problem — pain points, enemy narrative', surface: '--surface-0', extra: '' },
+          { n: '4', name: 'Solution — pillar cards, methodology', surface: '--surface-1', extra: '' },
+          { n: '5', name: 'Proof — testimonials, case studies', surface: '--surface-0', extra: '' },
+          { n: '6', name: 'Final CTA — closing headline + button', surface: '--surface-1', extra: '+ glow' },
+        ].map(row => (
+          <>
+            <div style="padding: 12px 16px;">
+              <span class="font-mono text-sm font-semibold" style="color: var(--accent-blue);">{row.n}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm" style="color: var(--text-secondary);">{row.name}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <code class="text-xs">{row.surface}</code>
+              {row.extra && <span class="text-xs ml-2" style="color: var(--text-quaternary);">{row.extra}</span>}
+            </div>
+          </>
+        ))}
+      </div>
+
+      <CodeBlock client:visible code={codeSalesPage} language="html" label="Sales Page Structure" />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [04] BOOKING PAGE TEMPLATE
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Booking Page Template" />
+
+      <p class="max-w-[680px]" style="color: var(--text-secondary); margin-bottom: var(--space-xl);">
+        The booking page (<code>/agendar</code>) uses a 2-column layout.
+        Left column: meeting expectations and checklist. Right column: Cal.com scheduling embed.
+        On mobile, columns stack vertically.
+      </p>
+
+      <!-- Live preview -->
+      <div
+        class="rounded-xl border overflow-hidden mb-8"
+        style="background: var(--surface-0); border-color: var(--border-default);"
+      >
+        <div style="padding: var(--space-xl);">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 class="text-lg font-semibold mb-3" style="color: var(--text-primary);">
+                Agende sua reuniao estratégica
+              </h3>
+              <p class="text-sm mb-4" style="color: var(--text-secondary);">
+                Uma sessao de 30 minutos para entender sua situação atual com IA.
+              </p>
+              <ul class="space-y-2">
+                {['AI posture diagnostic', 'Quick-win identification', 'Custom roadmap preview'].map(item => (
+                  <li class="flex items-center gap-2 text-sm" style="color: var(--text-secondary);">
+                    <svg class="w-4 h-4 flex-shrink-0" style="color: var(--accent-blue);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div
+              class="rounded-lg border flex items-center justify-center"
+              style="background: var(--surface-2); border-color: var(--border-default); min-height: 180px;"
+            >
+              <div class="text-center">
+                <svg class="w-8 h-8 mx-auto mb-2" style="color: var(--text-quaternary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                <span class="font-mono text-[11px] uppercase tracking-wider" style="color: var(--text-quaternary);">
+                  Cal.com Embed
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="padding: 8px 16px; border-top: 1px solid var(--border-subtle); background: var(--surface-2);">
+          <span class="font-mono text-[11px] uppercase tracking-wider" style="color: var(--text-quaternary);">
+            Live Preview — Booking Layout
+          </span>
+        </div>
+      </div>
+
+      <CodeBlock client:visible code={codeBookingPage} language="html" label="Booking Page Markup" />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [05] APPLICATION PAGE TEMPLATE
+       ============================================================ -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Application Page Template" />
+
+      <p class="max-w-[680px]" style="color: var(--text-secondary); margin-bottom: var(--space-xl);">
+        The application page (<code>/aplicar</code>) uses a 3-column grid.
+        The form takes 2 columns, a sticky sidebar takes 1 column with post-submission context.
+      </p>
+
+      <!-- Live preview -->
+      <div
+        class="rounded-xl border overflow-hidden mb-8"
+        style="background: var(--surface-0); border-color: var(--border-default);"
+      >
+        <div style="padding: var(--space-xl);">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="md:col-span-2 space-y-4">
+              <h3 class="text-lg font-semibold" style="color: var(--text-primary);">
+                Apply to Reis IA Partners
+              </h3>
+              <div>
+                <label class="input-label">Full Name</label>
+                <div class="input" style="opacity: 0.5; cursor: default;">John Doe</div>
+              </div>
+              <div>
+                <label class="input-label">Company</label>
+                <div class="input" style="opacity: 0.5; cursor: default;">Acme Corp</div>
+              </div>
+              <div>
+                <label class="input-label">Message</label>
+                <div class="input" style="opacity: 0.5; cursor: default; height: 80px;">We need help with...</div>
+              </div>
+              <span
+                class="inline-flex items-center justify-center px-6 py-3 rounded-lg text-sm font-semibold"
+                style="background: var(--accent-blue); color: #fff;"
+              >
+                Submit Application
+              </span>
+            </div>
+            <div>
+              <div
+                class="rounded-xl p-5 border"
+                style="background: var(--surface-2); border-color: var(--border-default);"
+              >
+                <h4 class="text-sm font-semibold mb-3" style="color: var(--text-primary);">What happens next</h4>
+                <ol class="space-y-2 text-sm" style="color: var(--text-secondary);">
+                  <li>1. We review your application</li>
+                  <li>2. Strategy call within 48h</li>
+                  <li>3. Custom proposal delivered</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="padding: 8px 16px; border-top: 1px solid var(--border-subtle); background: var(--surface-2);">
+          <span class="font-mono text-[11px] uppercase tracking-wider" style="color: var(--text-quaternary);">
+            Live Preview — Application Layout
+          </span>
+        </div>
+      </div>
+
+      <CodeBlock client:visible code={codeApplicationPage} language="html" label="Application Page Markup" />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [06] STRUCTURAL TEMPLATES (A, B, C)
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Structural Templates" />
+
+      <p class="max-w-[680px]" style="color: var(--text-secondary); margin-bottom: var(--space-xl);">
+        Three structural templates define the chrome and layout pattern for every page in the design system.
+        Each page-type template (above) is built on one of these structural foundations.
+      </p>
+
+      <!-- Template A -->
+      <div class="mb-12">
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--text-primary);">Template A — Token / Component Page</h3>
+        <p class="text-sm mb-6" style="color: var(--text-secondary); max-width: 680px;">
+          The workhorse template. Page Header Bar, title area, numbered sections with alternating surfaces.
+          Used by foundations, spacing, surfaces, buttons, cards, forms, effects, motion, and all other documentation pages.
+        </p>
+
+        <div class="mb-6 p-6 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="space-y-2">
+            <div class="h-8 rounded-lg flex items-center justify-center text-xs font-mono" style="background: var(--surface-3); color: var(--text-tertiary);">
+              Fixed Header (60px)
+            </div>
+            <div class="h-6 rounded flex items-center justify-center text-[10px] font-mono" style="background: var(--accent-05); color: var(--accent-blue); border: 1px solid var(--blue-20);">
+              Page Header Bar
+            </div>
+            <div class="h-16 rounded-lg flex items-center justify-center text-xs font-mono" style="background: var(--surface-0); border: 1px solid var(--border-default); color: var(--text-tertiary);">
+              Title Area (Surface 0)
+            </div>
+            <div class="h-1 rounded" style="background: var(--gradient-divider);"></div>
+            <div class="h-20 rounded-lg flex items-center justify-center text-xs font-mono" style="background: var(--surface-1); border: 1px solid var(--border-default); color: var(--text-tertiary);">
+              [01] Section (Surface 1)
+            </div>
+            <div class="h-1 rounded" style="background: var(--gradient-divider);"></div>
+            <div class="h-20 rounded-lg flex items-center justify-center text-xs font-mono" style="background: var(--surface-0); border: 1px solid var(--border-default); color: var(--text-tertiary);">
+              [02] Section (Surface 0)
+            </div>
+            <div class="h-1 rounded" style="background: var(--gradient-divider);"></div>
+            <div class="h-10 rounded-lg flex items-center justify-center text-xs font-mono" style="background: var(--surface-1); border: 1px solid var(--border-default); color: var(--text-tertiary);">
+              Footer (Surface 1)
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-6">
+          {['Foundations', 'Spacing Scale', 'Surfaces', 'Semantic Tokens', 'Effects', 'Patterns', 'Motion', 'VFX', 'Buttons', 'Cards', 'Forms', 'Sections', 'Advanced', 'Icons', 'Logo', 'Moodboard', 'Templates', 'SEO'].map(page => (
+            <span class="badge-neutral text-[11px]">{page}</span>
+          ))}
+        </div>
+
+        <CodeBlock client:visible code={codeTemplateA} language="html" label="Template A Structure" />
+      </div>
+
+      <!-- Template B -->
+      <div class="mb-12">
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--text-primary);">Template B — Overview / Index Page</h3>
+        <p class="text-sm mb-6" style="color: var(--text-secondary); max-width: 680px;">
+          Used for the home page and component overview. Hero with ambient glow, followed by a bento grid of navigational cards.
+          No Page Header Bar — uses BaseLayout directly.
+        </p>
+
+        <div class="mb-6 p-6 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="space-y-2">
+            <div class="h-8 rounded-lg flex items-center justify-center text-xs font-mono" style="background: var(--surface-3); color: var(--text-tertiary);">
+              Fixed Header (60px)
+            </div>
+            <div class="h-24 rounded-lg flex items-center justify-center text-xs font-mono relative overflow-hidden" style="background: var(--surface-0); border: 1px solid var(--border-default); color: var(--text-tertiary);">
+              <div class="absolute inset-0 opacity-30" style="background: var(--gradient-blue-ambient);"></div>
+              <span class="relative">Hero + Ambient Glow (Surface 0)</span>
+            </div>
+            <div class="h-1 rounded" style="background: var(--gradient-divider);"></div>
+            <div class="grid grid-cols-3 gap-1 h-16">
+              <div class="rounded flex items-center justify-center text-[10px] font-mono" style="background: var(--surface-1); border: 1px solid var(--border-default); color: var(--text-quaternary);">Card</div>
+              <div class="rounded flex items-center justify-center text-[10px] font-mono" style="background: var(--surface-1); border: 1px solid var(--border-default); color: var(--text-quaternary);">Card</div>
+              <div class="rounded flex items-center justify-center text-[10px] font-mono" style="background: var(--surface-1); border: 1px solid var(--border-default); color: var(--text-quaternary);">Card</div>
+            </div>
+            <div class="h-10 rounded-lg flex items-center justify-center text-xs font-mono" style="background: var(--surface-1); border: 1px solid var(--border-default); color: var(--text-tertiary);">
+              Footer (Surface 1)
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-6">
+          {['Home (Index)', 'Components Overview'].map(page => (
+            <span class="badge-neutral text-[11px]">{page}</span>
+          ))}
+        </div>
+
+        <CodeBlock client:visible code={codeTemplateB} language="html" label="Template B Structure" />
+      </div>
+
+      <!-- Template C -->
+      <div>
+        <h3 class="text-lg font-semibold mb-2" style="color: var(--text-primary);">Template C — Strategy / Brand Page</h3>
+        <p class="text-sm mb-6" style="color: var(--text-secondary); max-width: 680px;">
+          For brand narrative pages. Ambient glow hero with eyebrow label, manifesto-style headline,
+          and long-form content sections with generous vertical spacing (container-text width).
+        </p>
+
+        <div class="mb-6 p-6 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="space-y-2">
+            <div class="h-8 rounded-lg flex items-center justify-center text-xs font-mono" style="background: var(--surface-3); color: var(--text-tertiary);">
+              Fixed Header (60px)
+            </div>
+            <div class="h-6 rounded flex items-center justify-center text-[10px] font-mono" style="background: var(--accent-05); color: var(--accent-blue); border: 1px solid var(--blue-20);">
+              Page Header Bar
+            </div>
+            <div class="h-28 rounded-lg flex items-center justify-center text-xs font-mono relative overflow-hidden" style="background: var(--surface-0); border: 1px solid var(--border-default); color: var(--text-tertiary);">
+              <div class="absolute inset-0 opacity-30" style="background: var(--gradient-blue-ambient);"></div>
+              <span class="relative">Hero + Eyebrow + Ambient (space-4xl top)</span>
+            </div>
+            <div class="h-1 rounded" style="background: var(--gradient-divider);"></div>
+            <div class="h-24 rounded-lg flex items-center justify-center text-xs font-mono" style="background: var(--surface-1); border: 1px solid var(--border-default); color: var(--text-tertiary);">
+              Long-form Content (max-w-680px)
+            </div>
+            <div class="h-1 rounded" style="background: var(--gradient-divider);"></div>
+            <div class="h-10 rounded-lg flex items-center justify-center text-xs font-mono" style="background: var(--surface-1); border: 1px solid var(--border-default); color: var(--text-tertiary);">
+              Footer (Surface 1)
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-6">
+          {['Guidelines', 'Strategy'].map(page => (
+            <span class="badge-neutral text-[11px]">{page}</span>
+          ))}
+        </div>
+
+        <CodeBlock client:visible code={codeTemplateC} language="html" label="Template C Structure" />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [07] SECTION COMPOSITION RULES
+       ============================================================ -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Section Composition Rules" />
+
+      <p class="max-w-[680px]" style="color: var(--text-secondary); margin-bottom: var(--space-xl);">
+        How sections connect to form cohesive pages. These rules ensure visual rhythm,
+        proper surface alternation, and consistent spacing.
+      </p>
+
+      <div class="grid-hairline rounded-xl overflow-hidden mb-8" style="grid-template-columns: 200px 1fr; border-radius: 12px;">
+        <div style="background: var(--surface-2); padding: 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Rule</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Description</span>
+        </div>
+
+        {[
+          { rule: 'Surface Alternation', desc: 'Alternate --surface-0 and --surface-1 for consecutive sections. Never use the same surface for adjacent sections.' },
+          { rule: 'Gradient Dividers', desc: 'Place a 1px gradient divider between every section. Uses --gradient-divider which fades from transparent at edges.' },
+          { rule: 'Ambient Glow', desc: 'Only use the blue ambient glow on hero and final CTA sections. Maximum two glowing sections per page.' },
+          { rule: 'Section Spacing', desc: 'Use --space-3xl for standard sections. Use --space-4xl for hero sections only. Never use fixed pixel values.' },
+          { rule: 'Section Labels', desc: 'Every content section (not hero or CTA) starts with a numbered SectionLabel: [01], [02], [03]...' },
+          { rule: 'Card Surfaces', desc: 'Cards: --surface-2 (hover: --surface-3). Dropdowns/tooltips: --surface-4. Never place cards on their own surface tier.' },
+        ].map(item => (
+          <>
+            <div style="padding: 16px;">
+              <span class="text-sm font-semibold" style="color: var(--accent-blue);">{item.rule}</span>
+            </div>
+            <div style="padding: 16px;">
+              <span class="text-sm" style="color: var(--text-secondary);">{item.desc}</span>
+            </div>
+          </>
+        ))}
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <CodeBlock client:visible code={codeSurfaceAlternation} language="css" label="Surface Alternation" />
+        <CodeBlock client:visible code={codeContainerHierarchy} language="css" label="Container Hierarchy" />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [08] GRID SYSTEMS
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Grid Systems" />
+
+      <p class="max-w-[680px]" style="color: var(--text-secondary); margin-bottom: var(--space-xl);">
+        Two primary grid patterns: the hairline grid (1px gap with parent background as dividers)
+        and the bento grid (12-column with hairline gaps for dashboard-style layouts).
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Hairline grid demo -->
+        <div>
+          <h4 class="text-sm font-semibold mb-4" style="color: var(--text-primary);">Hairline Grid (3-column)</h4>
+          <div class="grid-hairline grid-hairline-3 rounded-xl overflow-hidden">
+            <div class="p-6 text-center">
+              <div class="text-2xl font-bold mb-1" style="color: var(--accent-blue);">01</div>
+              <div class="text-xs font-mono" style="color: var(--text-tertiary);">Cell</div>
+            </div>
+            <div class="p-6 text-center">
+              <div class="text-2xl font-bold mb-1" style="color: var(--accent-blue);">02</div>
+              <div class="text-xs font-mono" style="color: var(--text-tertiary);">Cell</div>
+            </div>
+            <div class="p-6 text-center">
+              <div class="text-2xl font-bold mb-1" style="color: var(--accent-blue);">03</div>
+              <div class="text-xs font-mono" style="color: var(--text-tertiary);">Cell</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bento grid demo -->
+        <div>
+          <h4 class="text-sm font-semibold mb-4" style="color: var(--text-primary);">Bento Grid (12-column)</h4>
+          <div
+            class="grid grid-cols-12 gap-[1px] rounded-xl border overflow-hidden"
+            style="background: var(--border-default); border-color: var(--border-default);"
+          >
+            <div class="col-span-8 p-4" style="background: var(--surface-1);">
+              <div class="text-xs font-mono" style="color: var(--text-tertiary);">col-span-8</div>
+            </div>
+            <div class="col-span-4 p-4" style="background: var(--surface-1);">
+              <div class="text-xs font-mono" style="color: var(--text-tertiary);">col-span-4</div>
+            </div>
+            <div class="col-span-4 p-4" style="background: var(--surface-1);">
+              <div class="text-xs font-mono" style="color: var(--text-tertiary);">col-span-4</div>
+            </div>
+            <div class="col-span-4 p-4" style="background: var(--surface-1);">
+              <div class="text-xs font-mono" style="color: var(--text-tertiary);">col-span-4</div>
+            </div>
+            <div class="col-span-4 p-4" style="background: var(--surface-1);">
+              <div class="text-xs font-mono" style="color: var(--text-tertiary);">col-span-4</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <CodeBlock client:visible code={codeGridSystems} language="html" label="Grid Patterns" />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [09] RESPONSIVE BEHAVIOR
+       ============================================================ -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="09" title="Responsive Behavior" />
+
+      <p class="max-w-[680px]" style="color: var(--text-secondary); margin-bottom: var(--space-xl);">
+        All templates are mobile-first. Fluid spacing tokens and clamp() values handle most responsive needs.
+        Grid layouts collapse naturally; no hard breakpoint jumps.
+      </p>
+
+      <!-- Breakpoint table -->
+      <div class="grid-hairline rounded-xl overflow-hidden mb-8" style="grid-template-columns: 120px 120px 1fr; border-radius: 12px;">
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Breakpoint</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Width</span>
+        </div>
+        <div style="background: var(--surface-2); padding: 12px 16px;">
+          <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">Behavior</span>
+        </div>
+
+        {[
+          { name: 'Mobile', range: '< 768px', desc: 'Single column, full-width CTAs, reduced headlines, stacked grids' },
+          { name: 'Tablet', range: '768-1023px', desc: '2-column card grids, booking page stacks, sidebar below form' },
+          { name: 'Desktop', range: '>= 1024px', desc: 'Full multi-column layouts, sticky sidebars, max container widths' },
+        ].map(bp => (
+          <>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm font-semibold" style="color: var(--accent-blue);">{bp.name}</span>
+            </div>
+            <div style="padding: 12px 16px;">
+              <code class="text-xs">{bp.range}</code>
+            </div>
+            <div style="padding: 12px 16px;">
+              <span class="text-sm" style="color: var(--text-secondary);">{bp.desc}</span>
+            </div>
+          </>
+        ))}
+      </div>
+
+      <!-- Container width bars -->
+      <h4 class="text-sm font-semibold mb-4" style="color: var(--text-primary);">Container Width Hierarchy</h4>
+      <div class="space-y-3 mb-8">
+        {[
+          { label: 'container-wide', max: '1280px', pct: '100%' },
+          { label: 'container-standard', max: '1200px', pct: '93.75%' },
+          { label: 'container-headline', max: '900px', pct: '70.3%' },
+          { label: 'container-narrow', max: '800px', pct: '62.5%' },
+          { label: 'container-text', max: '680px', pct: '53.1%' },
+        ].map(w => (
+          <div>
+            <div class="flex items-center gap-3 mb-1">
+              <span class="font-mono text-xs" style="color: var(--text-tertiary);">{w.label}</span>
+              <span class="font-mono text-[11px]" style="color: var(--text-quaternary);">{w.max}</span>
+            </div>
+            <div class="h-3 rounded-full" style={`width: ${w.pct}; background: var(--accent-10); border: 1px solid var(--blue-20);`}></div>
+          </div>
+        ))}
+      </div>
+
+      <CodeBlock client:visible code={codeResponsive} language="css" label="Responsive Patterns" />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- ============================================================
+       [10] DO / DON'T
+       ============================================================ -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="10" title="Template Guidelines" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Alternate surfaces (0, 1, 0, 1) for visual rhythm' },
+        { type: 'do', text: 'Use gradient dividers between every section' },
+        { type: 'do', text: 'Reserve ambient glow for hero and final CTA only' },
+        { type: 'do', text: 'Use fluid spacing tokens (--space-3xl, --space-4xl)' },
+        { type: 'do', text: 'Start content sections with numbered SectionLabels' },
+        { type: 'do', text: 'All CTAs link to /agendar or /aplicar' },
+        { type: 'dont', text: 'Use the same surface for adjacent sections' },
+        { type: 'dont', text: 'Stack two ambient-glow sections next to each other' },
+        { type: 'dont', text: 'Use hard pixel values for section padding' },
+        { type: 'dont', text: 'Place cards on --surface-2 inside a --surface-2 section' },
+        { type: 'dont', text: 'Create pricing tables, tier cards, or SaaS patterns' },
+        { type: 'dont', text: 'Add more than 6 sections to a single page template' },
+      ]} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Related Pages -->
+  <RelatedPages links={[
+    { label: 'Sections', href: '/brandbook/sections' },
+    { label: 'Patterns', href: '/brandbook/patterns' },
+    { label: 'Components Overview', href: '/brandbook/components' },
+    { label: 'Foundations', href: '/brandbook/foundations' },
+    { label: 'SEO', href: '/brandbook/seo' },
+  ]} />
+</BrandbookLayout>

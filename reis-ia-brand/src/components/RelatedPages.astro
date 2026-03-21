@@ -1,0 +1,60 @@
+---
+/**
+ * RelatedPages — cross-linking component shown at the bottom of every brandbook page.
+ * Renders a "See Also" section with links to related pages.
+ */
+interface Link {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  links: Link[];
+}
+
+const { links } = Astro.props;
+---
+
+{links.length > 0 && (
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-2xl); padding-bottom: var(--space-3xl);">
+      <div class="mb-6">
+        <span
+          class="font-mono text-[11px] font-semibold uppercase tracking-[0.08em]"
+          style="color: var(--text-quaternary);"
+        >
+          See Also
+        </span>
+      </div>
+
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+      >
+        {links.map((link) => (
+          <a
+            href={link.href}
+            class="group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 hover:border-[var(--border-visible)] hover:bg-[var(--surface-2)]"
+            style="background: var(--surface-1); border-color: var(--border-default);"
+          >
+            <span
+              class="text-sm font-medium transition-colors duration-200 group-hover:text-[var(--text-primary)]"
+              style="color: var(--text-secondary);"
+            >
+              {link.label}
+            </span>
+            <svg
+              class="w-4 h-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
+              style="color: var(--accent-blue);"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

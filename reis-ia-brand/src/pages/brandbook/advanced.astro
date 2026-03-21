@@ -1,9 +1,13 @@
 ---
 import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import RelatedPages from '../../components/RelatedPages.astro';
+import { relatedLinksMap } from '../../data/navigation';
 import SectionLabel from '../../components/SectionLabel.astro';
 import CodeBlock from '../../components/CodeBlock.tsx';
 import AccordionDemo from '../../components/AccordionDemo.tsx';
 import TabsDemo from '../../components/TabsDemo.tsx';
+import StatCounter from '../../components/StatCounter.tsx';
+import MarqueeDemo from '../../components/MarqueeDemo.tsx';
 import DosDonts from '../../components/DosDonts.astro';
 
 const codeAccordion = `.accordion {
@@ -43,9 +47,6 @@ const codeAccordion = `.accordion {
 }
 
 .accordion-trigger__icon {
-  width: 20px;
-  height: 20px;
-  color: var(--text-tertiary);
   transition: transform 300ms var(--ease-out),
               color 200ms;
 }
@@ -53,17 +54,6 @@ const codeAccordion = `.accordion {
 .accordion-item[open] .accordion-trigger__icon {
   transform: rotate(45deg);
   color: var(--accent-blue);
-}
-
-.accordion-content {
-  padding: 0 24px 24px;
-  max-width: 680px;
-}
-
-.accordion-content p {
-  font-size: 16px;
-  color: var(--text-secondary);
-  line-height: 1.65;
 }`;
 
 const codeTestimonial = `.testimonial {
@@ -101,11 +91,7 @@ const codeTestimonial = `.testimonial {
   color: var(--text-tertiary);
 }`;
 
-const codeStats = `.stat-block {
-  text-align: center;
-}
-
-.stat-block__value {
+const codeStats = `.stat-block__value {
   font-size: clamp(40px, 5vw, 56px);
   font-weight: 700;
   color: var(--accent-blue);
@@ -120,12 +106,6 @@ const codeStats = `.stat-block {
   letter-spacing: 0.05em;
   color: var(--text-tertiary);
   margin-top: 8px;
-}
-
-.stat-block__context {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-top: 4px;
 }`;
 
 const codeBanner = `.highlight-banner {
@@ -138,32 +118,9 @@ const codeBanner = `.highlight-banner {
   justify-content: space-between;
   gap: 24px;
   flex-wrap: wrap;
-}
-
-.highlight-banner__content {
-  flex: 1;
-  min-width: 200px;
-}
-
-.highlight-banner__badge {
-  /* Uses badge-accent class */
-  margin-bottom: 8px;
-}
-
-.highlight-banner__text {
-  font-size: 16px;
-  color: var(--text-secondary);
-}
-
-.highlight-banner__cta {
-  /* Uses btn-primary class */
-  flex-shrink: 0;
 }`;
 
-const codeBadges = `/* Badge variants — 5 semantic options */
-/* Base: 12px, weight 600, uppercase, 0.05em tracking */
-/* Padding: 6px 14px, border-radius: 6px */
-
+const codeBadges = `/* Badge variants */
 .badge-accent {
   background: var(--blue-10);
   border: 1px solid var(--blue-20);
@@ -213,49 +170,29 @@ const codeTabs = `.tab-list {
   transition: color 200ms, border-color 200ms;
 }
 
-.tab-trigger:hover {
-  color: var(--text-secondary);
-}
-
 .tab-trigger[aria-selected="true"] {
   color: var(--text-primary);
   font-weight: 600;
   border-bottom-color: var(--accent-blue);
-}
-
-.tab-panel {
-  padding-top: 24px;
-  min-height: 100px;
-}
-
-.tab-panel[hidden] {
-  display: none;
 }`;
 
 const codeMarquee = `.marquee-container {
   overflow: hidden;
-  position: relative;
-  mask-image: var(--gradient-marquee-edge);
+  mask-image: linear-gradient(
+    90deg, transparent 0%,
+    black 8%, black 92%,
+    transparent 100%
+  );
 }
 
 .marquee-track {
   display: flex;
   gap: 80px;
-  animation: marquee 40s linear infinite;
+  animation: marquee 35s linear infinite;
 }
 
 .marquee-track:hover {
   animation-play-state: paused;
-}
-
-.marquee-logo {
-  filter: grayscale(100%) brightness(0) invert(1);
-  opacity: 0.5;
-  transition: opacity 200ms;
-}
-
-.marquee-logo:hover {
-  opacity: 1;
 }
 
 @keyframes marquee {
@@ -265,9 +202,9 @@ const codeMarquee = `.marquee-container {
 ---
 
 <BrandbookLayout
-  title="Advanced"
-  pageName="ADVANCED"
-  description="Advanced UI components: FAQ accordion, testimonials, stat blocks, badges, tabs, highlight banners, and logo marquee."
+  title="Avançados"
+  pageName="AVANÇADOS"
+  description="Componentes avançados: accordion FAQ, depoimentos, blocos de estatísticas, badges, tabs, banners de destaque e marquee de logos."
 >
   <!-- Title Area -->
   <section style="background: var(--surface-0);">
@@ -277,7 +214,7 @@ const codeMarquee = `.marquee-container {
           class="font-bold tracking-tight mb-6"
           style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
         >
-          Advanced Components
+          Componentes Avançados
         </h1>
         <p
           class="max-w-[680px]"
@@ -294,16 +231,16 @@ const codeMarquee = `.marquee-container {
   <!-- Section 01: FAQ Accordion -->
   <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="01" title="FAQ Accordion" />
+      <SectionLabel number="01" title="Accordion FAQ" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
-          Expandable FAQ-style sections with smooth max-height animation. The plus icon rotates 45 degrees to form an X when open and shifts to accent blue. Only one item opens at a time (single-select). Question text is 18px weight 600, answer text is 16px weight 400.
+          Expandable FAQ-style sections with smooth max-height animation. The plus icon rotates 45 degrees to form an X when open and shifts to accent blue. Only one item opens at a time (single-select).
         </p>
         <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
           <span><strong style="color: var(--text-secondary);">Animation:</strong> 300ms ease-out</span>
           <span><strong style="color: var(--text-secondary);">Answer max-width:</strong> 680px</span>
-          <span><strong style="color: var(--text-secondary);">Hover:</strong> Surface-2 background</span>
+          <span><strong style="color: var(--text-secondary);">Hover:</strong> Surface-2 bg</span>
         </div>
       </div>
 
@@ -320,35 +257,41 @@ const codeMarquee = `.marquee-container {
   <!-- Section 02: Testimonial Block -->
   <section style="background: var(--surface-0);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="02" title="Testimonial Block" />
+      <SectionLabel number="02" title="Bloco de Depoimento" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
-          Quote block with a 2px blue left border, italic text, and attribution. The decorative quote mark appears at 20% accent blue opacity above-left. Use in social proof sections and case studies.
+          Quote block with a 2px blue left border, italic text, and attribution. The decorative quote mark appears at 20% accent blue opacity.
         </p>
       </div>
 
-      <!-- Live demos -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <div class="relative" style="border-left: 2px solid var(--accent-blue); padding-left: 24px;">
-          <span style="position: absolute; top: -8px; left: -4px; font-size: 48px; color: rgba(74, 144, 255, 0.20); line-height: 1; pointer-events: none;">&ldquo;</span>
-          <p style="font-size: 18px; font-style: italic; color: var(--text-secondary); line-height: 1.70; margin-bottom: 16px;">
-            Reis IA transformed our operations. We automated 80% of our manual processes and saw ROI within 60 days.
-          </p>
-          <div>
-            <span style="font-size: 15px; font-weight: 600; color: var(--text-primary); display: block;">Carlos Mendes</span>
-            <span style="font-size: 14px; color: var(--text-tertiary);">CTO, TechBrazil Inc.</span>
+      <div
+        class="grid-hairline rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(2, 1fr);"
+      >
+        <div class="p-6 md:p-8" style="background: var(--surface-0);">
+          <div class="relative" style="border-left: 2px solid var(--accent-blue); padding-left: 24px;">
+            <span style="position: absolute; top: -8px; left: -4px; font-size: 48px; color: rgba(74, 144, 255, 0.20); line-height: 1; pointer-events: none;">&ldquo;</span>
+            <p style="font-size: 18px; font-style: italic; color: var(--text-secondary); line-height: 1.70; margin-bottom: 16px;">
+              Reis IA transformed our operations. We automated 80% of our manual processes and saw ROI within 60 days.
+            </p>
+            <div>
+              <span style="font-size: 15px; font-weight: 600; color: var(--text-primary); display: block;">Carlos Mendes</span>
+              <span style="font-size: 14px; color: var(--text-tertiary);">CTO, TechBrazil Inc.</span>
+            </div>
           </div>
         </div>
 
-        <div class="relative" style="border-left: 2px solid var(--accent-blue); padding-left: 24px;">
-          <span style="position: absolute; top: -8px; left: -4px; font-size: 48px; color: rgba(74, 144, 255, 0.20); line-height: 1; pointer-events: none;">&ldquo;</span>
-          <p style="font-size: 18px; font-style: italic; color: var(--text-secondary); line-height: 1.70; margin-bottom: 16px;">
-            The strategy-first approach is what sets Moroni apart. Every system we built together is still running and generating results.
-          </p>
-          <div>
-            <span style="font-size: 15px; font-weight: 600; color: var(--text-primary); display: block;">Ana Vieira</span>
-            <span style="font-size: 14px; color: var(--text-tertiary);">Founder, Vieira Digital</span>
+        <div class="p-6 md:p-8" style="background: var(--surface-0);">
+          <div class="relative" style="border-left: 2px solid var(--accent-blue); padding-left: 24px;">
+            <span style="position: absolute; top: -8px; left: -4px; font-size: 48px; color: rgba(74, 144, 255, 0.20); line-height: 1; pointer-events: none;">&ldquo;</span>
+            <p style="font-size: 18px; font-style: italic; color: var(--text-secondary); line-height: 1.70; margin-bottom: 16px;">
+              The strategy-first approach is what sets Moroni apart. Every system we built together is still running and generating results.
+            </p>
+            <div>
+              <span style="font-size: 15px; font-weight: 600; color: var(--text-primary); display: block;">Ana Vieira</span>
+              <span style="font-size: 14px; color: var(--text-tertiary);">Founder, Vieira Digital</span>
+            </div>
           </div>
         </div>
       </div>
@@ -359,41 +302,52 @@ const codeMarquee = `.marquee-container {
 
   <div class="gradient-divider"></div>
 
-  <!-- Section 03: Stat Block -->
+  <!-- Section 03: Stat Block with Counter Animation -->
   <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="03" title="Stat Block" />
+      <SectionLabel number="03" title="Bloco de Estatística (Contador Animado)" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
-          Large numeric display for key metrics. Value is 40-56px fluid, weight 700, accent blue or text-primary. Label is 13px uppercase. Optional context line at 14px. Use in 3-column grids on desktop, stacked on mobile.
+          Large numeric display for key metrics with scroll-triggered counter animation. Value counts up with ease-out cubic when the element enters the viewport. Use in 3-column grids on desktop.
         </p>
       </div>
 
-      <!-- Live demo -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        {[
-          { value: '50+', label: 'AI Deployments', context: 'Across 12 industries' },
-          { value: '83%', label: 'Time Reduction', context: 'Average manual process savings' },
-          { value: '245K', label: 'Hours Automated', context: 'Annual cumulative impact' },
-        ].map(stat => (
-          <div class="text-center">
-            <div
-              style="font-size: clamp(40px, 5vw, 56px); font-weight: 700; color: var(--accent-blue); font-variant-numeric: tabular-nums; line-height: 1.1;"
-            >
-              {stat.value}
-            </div>
-            <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-top: 8px;">
-              {stat.label}
-            </div>
-            <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
-              {stat.context}
-            </div>
+      <!-- Animated stats -->
+      <div
+        class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(3, 1fr);"
+      >
+        <div class="p-8 text-center" style="background: var(--surface-1);">
+          <StatCounter client:visible value={50} suffix="+" />
+          <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-top: 8px;">
+            AI Deployments
           </div>
-        ))}
+          <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
+            Across 12 industries
+          </div>
+        </div>
+        <div class="p-8 text-center" style="background: var(--surface-1);">
+          <StatCounter client:visible value={83} suffix="%" />
+          <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-top: 8px;">
+            Time Reduction
+          </div>
+          <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
+            Average manual process savings
+          </div>
+        </div>
+        <div class="p-8 text-center" style="background: var(--surface-1);">
+          <StatCounter client:visible value={245} suffix="K" />
+          <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-top: 8px;">
+            Hours Automated
+          </div>
+          <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
+            Annual cumulative impact
+          </div>
+        </div>
       </div>
 
-      <!-- With dividers -->
+      <!-- Static stats with dividers -->
       <div
         class="rounded-xl border p-8 mb-8"
         style="background: var(--surface-2); border-color: var(--border-default);"
@@ -428,7 +382,7 @@ const codeMarquee = `.marquee-container {
   <!-- Section 04: Highlight Banner -->
   <section style="background: var(--surface-0);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="04" title="Highlight Banner" />
+      <SectionLabel number="04" title="Banner de Destaque" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
@@ -436,7 +390,6 @@ const codeMarquee = `.marquee-container {
         </p>
       </div>
 
-      <!-- Live demo -->
       <div
         class="rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6 mb-8"
         style="background: var(--blue-08); border: 1px solid var(--blue-20);"
@@ -449,9 +402,11 @@ const codeMarquee = `.marquee-container {
         </div>
         <a
           href="/agendar"
-          style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; text-decoration: none; white-space: nowrap; flex-shrink: 0;"
+          style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; text-decoration: none; white-space: nowrap; flex-shrink: 0; transition: all 200ms;"
+          onmouseover="this.style.background='var(--accent-blue-hover)'"
+          onmouseout="this.style.background='var(--accent-blue)'"
         >
-          Agendar Reuniao
+          Agendar Reunião
         </a>
       </div>
 
@@ -464,7 +419,7 @@ const codeMarquee = `.marquee-container {
   <!-- Section 05: Badge System -->
   <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="05" title="Badge System" />
+      <SectionLabel number="05" title="Sistema de Badges" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
@@ -472,16 +427,26 @@ const codeMarquee = `.marquee-container {
         </p>
       </div>
 
-      <!-- Live demo -->
-      <div class="flex flex-wrap gap-3 mb-8">
-        <span class="badge-accent">Accent</span>
-        <span class="badge-success">Success</span>
-        <span class="badge-warning">Warning</span>
-        <span class="badge-error">Error</span>
-        <span class="badge-neutral">Neutral</span>
+      <!-- All 5 badges in hairline grid -->
+      <div
+        class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(5, 1fr);"
+      >
+        {[
+          { name: 'Accent', class: 'badge-accent', usage: 'Category labels, info tags' },
+          { name: 'Success', class: 'badge-success', usage: 'Active status, verified' },
+          { name: 'Warning', class: 'badge-warning', usage: 'Beta, pending, caution' },
+          { name: 'Error', class: 'badge-error', usage: 'Failed, rejected, critical' },
+          { name: 'Neutral', class: 'badge-neutral', usage: 'Default, archived, generic' },
+        ].map(badge => (
+          <div class="p-6 flex flex-col items-center gap-4 text-center" style="background: var(--surface-1);">
+            <span class={badge.class}>{badge.name}</span>
+            <span class="text-xs" style="color: var(--text-quaternary);">{badge.usage}</span>
+          </div>
+        ))}
       </div>
 
-      <!-- Usage context -->
+      <!-- Usage context cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div class="rounded-xl border p-5" style="background: var(--surface-2); border-color: var(--border-default);">
           <span class="badge-accent mb-3 inline-block">AI Consulting</span>
@@ -506,7 +471,7 @@ const codeMarquee = `.marquee-container {
   <!-- Section 06: Tabs -->
   <section style="background: var(--surface-0);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="06" title="Tabs Component" />
+      <SectionLabel number="06" title="Componente de Tabs" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
@@ -535,45 +500,24 @@ const codeMarquee = `.marquee-container {
   <!-- Section 07: Logo Marquee -->
   <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="07" title="Logo Marquee" />
+      <SectionLabel number="07" title="Marquee de Logos" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
-          Continuously scrolling logo strip for social proof / trust signals. All logos rendered in white via CSS filter. Animation pauses on hover. Edge fade mask using gradient for seamless looping.
+          Continuously scrolling logo strip for social proof / trust signals. Animation pauses on hover. Edge fade mask using gradient for seamless looping. Logos rendered with reduced opacity, brightening on hover.
         </p>
         <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
-          <span><strong style="color: var(--text-secondary);">Duration:</strong> 40s linear infinite</span>
-          <span><strong style="color: var(--text-secondary);">Logo opacity:</strong> 50%, 100% on hover</span>
-          <span><strong style="color: var(--text-secondary);">Gap:</strong> 80px desktop, 60px mobile</span>
+          <span><strong style="color: var(--text-secondary);">Duration:</strong> 35s linear infinite</span>
+          <span><strong style="color: var(--text-secondary);">Logo opacity:</strong> 35%, full on hover</span>
+          <span><strong style="color: var(--text-secondary);">Gap:</strong> 80px</span>
         </div>
       </div>
 
-      <!-- Marquee demo with placeholder logos -->
       <div
         class="rounded-xl border overflow-hidden mb-8"
         style="border-color: var(--border-default); background: var(--surface-0);"
       >
-        <div class="py-8 relative overflow-hidden" style="-webkit-mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);">
-          <div class="flex items-center gap-16 md:gap-20" style="animation: marquee 30s linear infinite;">
-            {[...Array(8)].map((_, i) => (
-              <div
-                class="flex-shrink-0 flex items-center justify-center"
-                style="width: 100px; height: 32px; background: rgba(255,255,255,0.08); border-radius: 4px; color: var(--text-quaternary); font-size: 12px; font-weight: 600;"
-              >
-                Logo {i + 1}
-              </div>
-            ))}
-            {/* Duplicate for seamless loop */}
-            {[...Array(8)].map((_, i) => (
-              <div
-                class="flex-shrink-0 flex items-center justify-center"
-                style="width: 100px; height: 32px; background: rgba(255,255,255,0.08); border-radius: 4px; color: var(--text-quaternary); font-size: 12px; font-weight: 600;"
-              >
-                Logo {i + 1}
-              </div>
-            ))}
-          </div>
-        </div>
+        <MarqueeDemo client:visible />
         <div class="text-center pb-4">
           <span class="font-mono text-[10px] font-bold uppercase tracking-wider" style="color: var(--text-muted);">
             Trusted by leading companies
@@ -590,7 +534,7 @@ const codeMarquee = `.marquee-container {
   <!-- Section 08: Navigation Patterns -->
   <section style="background: var(--surface-0);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="08" title="Navigation Patterns" />
+      <SectionLabel number="08" title="Padrões de Navegação" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
@@ -598,10 +542,12 @@ const codeMarquee = `.marquee-container {
         </p>
       </div>
 
-      <!-- Navigation spec cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div class="rounded-xl border p-6" style="background: var(--surface-2); border-color: var(--border-default);">
-          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+      <div
+        class="grid-hairline rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(2, 1fr);"
+      >
+        <div class="p-6" style="background: var(--surface-0);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
             Header Bar
           </div>
           <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
@@ -611,8 +557,8 @@ const codeMarquee = `.marquee-container {
             <div><strong style="color: var(--text-primary);">Border:</strong> 1px bottom, border-default</div>
           </div>
         </div>
-        <div class="rounded-xl border p-6" style="background: var(--surface-2); border-color: var(--border-default);">
-          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+        <div class="p-6" style="background: var(--surface-0);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
             Dropdown Menu
           </div>
           <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
@@ -622,8 +568,8 @@ const codeMarquee = `.marquee-container {
             <div><strong style="color: var(--text-primary);">Width:</strong> auto (min 200px)</div>
           </div>
         </div>
-        <div class="rounded-xl border p-6" style="background: var(--surface-2); border-color: var(--border-default);">
-          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+        <div class="p-6" style="background: var(--surface-0);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
             Mobile Menu
           </div>
           <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
@@ -633,8 +579,8 @@ const codeMarquee = `.marquee-container {
             <div><strong style="color: var(--text-primary);">Breakpoint:</strong> Below 1024px</div>
           </div>
         </div>
-        <div class="rounded-xl border p-6" style="background: var(--surface-2); border-color: var(--border-default);">
-          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+        <div class="p-6" style="background: var(--surface-0);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
             Footer
           </div>
           <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
@@ -653,7 +599,7 @@ const codeMarquee = `.marquee-container {
   <!-- Section 09: Usage Rules -->
   <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="09" title="Usage Rules" />
+      <SectionLabel number="09" title="Regras de Uso" />
 
       <DosDonts items={[
         { type: 'do', text: 'Use single-select accordion — only one item open at a time' },
@@ -669,4 +615,9 @@ const codeMarquee = `.marquee-container {
       ]} />
     </div>
   </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Related Pages -->
+  <RelatedPages links={relatedLinksMap['/brandbook/advanced'] || []} />
 </BrandbookLayout>

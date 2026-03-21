@@ -1,5 +1,7 @@
 ---
 import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import RelatedPages from '../../components/RelatedPages.astro';
+import { relatedLinksMap } from '../../data/navigation';
 import SectionLabel from '../../components/SectionLabel.astro';
 import CodeBlock from '../../components/CodeBlock.tsx';
 import DosDonts from '../../components/DosDonts.astro';
@@ -11,12 +13,10 @@ const codeContainer = `/* Section container widths */
 .container-wide     { max-width: 1280px; }
 
 /* All containers share: */
-.container-* {
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--container-padding);
-  padding-right: var(--container-padding);
-}
+margin-left: auto;
+margin-right: auto;
+padding-left: var(--container-padding);
+padding-right: var(--container-padding);
 
 /* Container padding is fluid: */
 --container-padding: clamp(20px, 5vw, 48px);`;
@@ -97,23 +97,7 @@ const codeWatermark = `/* Hourglass watermark section */
   }
 }`;
 
-const codeTransition = `/* Gradient fade between sections */
-.section-transition-bottom::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 120px;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    var(--surface-next)
-  );
-  pointer-events: none;
-}
-
-/* Gradient divider (1px line) */
+const codeTransition = `/* Gradient divider (1px line) */
 .gradient-divider {
   height: 1px;
   background: linear-gradient(
@@ -123,6 +107,19 @@ const codeTransition = `/* Gradient fade between sections */
     var(--border-default) 80%,
     transparent
   );
+}
+
+/* Gradient fade between sections */
+.section-transition-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom, transparent,
+    var(--surface-next)
+  );
+  pointer-events: none;
 }`;
 
 const codeHero = `<!-- Hero section pattern -->
@@ -136,33 +133,23 @@ const codeHero = `<!-- Hero section pattern -->
       transparent 70%);
       pointer-events: none;">
   </div>
-
   <div class="container-standard relative z-10"
     style="padding-top: var(--space-4xl);
            padding-bottom: var(--space-3xl);">
-    <!-- Badge -->
     <span class="badge-accent mb-6 inline-block">
       AI Consulting
     </span>
-
-    <!-- Headline (max 900px) -->
     <h1 class="max-w-[900px] font-bold"
-      style="font-size: var(--text-display);
-             text-wrap: balance;">
+      style="font-size: var(--text-display);">
       Multiply your revenue with AI systems
     </h1>
-
-    <!-- Subhead (max 680px) -->
     <p class="max-w-[680px] mt-6"
-      style="font-size: var(--text-body-lg);
-             color: var(--text-secondary);">
+      style="color: var(--text-secondary);">
       Description text here.
     </p>
-
-    <!-- CTA pair -->
     <div class="flex flex-wrap gap-4 mt-8">
       <a href="/agendar" class="btn-hero">
-        Agendar Reuniao
+        Agendar Reunião
       </a>
       <a href="/aplicar" class="btn-secondary">
         Aplicar Agora
@@ -181,31 +168,24 @@ const codeCta = `<!-- CTA section pattern -->
       transparent 70%);
       pointer-events: none;">
   </div>
-
-  <div class="container-standard relative z-10
-    text-center"
+  <div class="container-standard relative z-10 text-center"
     style="padding-top: var(--space-3xl);
            padding-bottom: var(--space-3xl);">
-    <h2 class="font-bold mb-4"
-      style="font-size: var(--text-h2);
-             text-wrap: balance;">
-      Ready to transform your business?
-    </h2>
-    <p class="max-w-[600px] mx-auto mb-8"
-      style="color: var(--text-secondary);">
+    <h2>Ready to transform your business?</h2>
+    <p class="max-w-[600px] mx-auto mb-8">
       Schedule a free strategy call.
     </p>
     <a href="/agendar" class="btn-primary">
-      Agendar Reuniao
+      Agendar Reunião
     </a>
   </div>
 </section>`;
 ---
 
 <BrandbookLayout
-  title="Sections"
-  pageName="SECTIONS"
-  description="Section layout patterns: containers, numbered labels, surface alternation, ambient pools, watermarks, and section transitions."
+  title="Seções"
+  pageName="SEÇÕES"
+  description="Padrões de layout de seções: containers, labels numerados, alternância de superfícies, pools ambientes, marcas d'água e transições."
 >
   <!-- Title Area -->
   <section style="background: var(--surface-0);">
@@ -215,7 +195,7 @@ const codeCta = `<!-- CTA section pattern -->
           class="font-bold tracking-tight mb-6"
           style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
         >
-          Sections
+          Seções
         </h1>
         <p
           class="max-w-[680px]"
@@ -232,10 +212,10 @@ const codeCta = `<!-- CTA section pattern -->
   <!-- Section 01: Container System -->
   <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="01" title="Container System" />
+      <SectionLabel number="01" title="Sistema de Container" />
 
       <div class="max-w-[680px] mb-8">
-        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
           Four container widths create a content hierarchy. Headlines use container-headline (900px), body text uses container-text (680px), general content uses container-standard (1200px), and full-bleed layouts use container-wide (1280px).
         </p>
       </div>
@@ -270,56 +250,45 @@ const codeCta = `<!-- CTA section pattern -->
 
   <div class="gradient-divider"></div>
 
-  <!-- Section 02: Section Wrapper Pattern -->
+  <!-- Section 02: Section Wrapper & Label -->
   <section style="background: var(--surface-0);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="02" title="Section Wrapper Pattern" />
+      <SectionLabel number="02" title="Wrapper de Seção e Label" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
-          Every section follows the same structure: a <code>&lt;section&gt;</code> tag with a surface background, a container <code>&lt;div&gt;</code> with fluid padding, and content inside. Padding uses <code>var(--space-3xl)</code> which scales from 64px to 120px.
+          Every section follows the same structure: a <code>&lt;section&gt;</code> tag with a surface background, a container <code>&lt;div&gt;</code> with fluid padding, and content inside. The numbered label is adapted from the AIOX structural pattern.
         </p>
       </div>
 
-      <CodeBlock client:visible label="Section Wrapper" language="html" code={codeSection} />
-    </div>
-  </section>
-
-  <div class="gradient-divider"></div>
-
-  <!-- Section 03: Numbered Label -->
-  <section style="background: var(--surface-1);">
-    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="03" title="Numbered Section Label" />
-
-      <div class="max-w-[680px] mb-8">
-        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
-          Adapted from the AIOX structural pattern. Monospace font, 11px, bold, uppercase with tight letter-spacing. The number appears in accent blue, the title in text-secondary. Used at the top of every documentation section.
-        </p>
-      </div>
-
-      <!-- Live demos -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <!-- Live label demos in hairline grid -->
+      <div
+        class="grid-hairline rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(2, 1fr);"
+      >
         {['01', '02', '03', '04'].map((num, i) => (
-          <div class="rounded-xl border p-6" style={`background: var(--surface-${i % 2}); border-color: var(--border-default);`}>
+          <div class="p-6" style={`background: var(--surface-${i % 2});`}>
             <SectionLabel number={num} title={['Color System', 'Typography', 'Spacing Scale', 'Surfaces'][i]} />
             <p class="text-sm" style="color: var(--text-tertiary);">
-              Section content would appear here beneath the numbered label.
+              Section content appears beneath the numbered label.
             </p>
           </div>
         ))}
       </div>
 
-      <CodeBlock client:visible label="Section Label Component" language="html" code={codeSectionLabel} />
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <CodeBlock client:visible label="Section Wrapper" language="html" code={codeSection} />
+        <CodeBlock client:visible label="Section Label" language="html" code={codeSectionLabel} />
+      </div>
     </div>
   </section>
 
   <div class="gradient-divider"></div>
 
-  <!-- Section 04: Surface Alternation -->
-  <section style="background: var(--surface-0);">
+  <!-- Section 03: Surface Alternation -->
+  <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="04" title="Surface Alternation" />
+      <SectionLabel number="03" title="Alternância de Superfícies" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
@@ -327,20 +296,19 @@ const codeCta = `<!-- CTA section pattern -->
         </p>
       </div>
 
-      <!-- Visual demo: stacked sections -->
       <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
         <div class="p-6" style="background: var(--surface-0);">
-          <div class="font-mono text-[10px] uppercase tracking-wider mb-2" style="color: var(--accent-blue);">Section 1 — Surface-0</div>
+          <div class="font-mono text-[10px] uppercase tracking-wider mb-2" style="color: var(--accent-blue);">Section 1 — Surface-0 (#000000)</div>
           <div class="h-8 rounded" style="background: var(--surface-2); border: 1px solid var(--border-default);"></div>
         </div>
         <div class="gradient-divider"></div>
         <div class="p-6" style="background: var(--surface-1);">
-          <div class="font-mono text-[10px] uppercase tracking-wider mb-2" style="color: var(--accent-blue);">Section 2 — Surface-1</div>
+          <div class="font-mono text-[10px] uppercase tracking-wider mb-2" style="color: var(--accent-blue);">Section 2 — Surface-1 (#0A0A0A)</div>
           <div class="h-8 rounded" style="background: var(--surface-2); border: 1px solid var(--border-default);"></div>
         </div>
         <div class="gradient-divider"></div>
         <div class="p-6" style="background: var(--surface-0);">
-          <div class="font-mono text-[10px] uppercase tracking-wider mb-2" style="color: var(--accent-blue);">Section 3 — Surface-0</div>
+          <div class="font-mono text-[10px] uppercase tracking-wider mb-2" style="color: var(--accent-blue);">Section 3 — Surface-0 (#000000)</div>
           <div class="h-8 rounded" style="background: var(--surface-2); border: 1px solid var(--border-default);"></div>
         </div>
       </div>
@@ -351,18 +319,17 @@ const codeCta = `<!-- CTA section pattern -->
 
   <div class="gradient-divider"></div>
 
-  <!-- Section 05: Ambient Pools -->
-  <section style="background: var(--surface-1);">
+  <!-- Section 04: Ambient Pools -->
+  <section style="background: var(--surface-0);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="05" title="Ambient Pool Background" />
+      <SectionLabel number="04" title="Pool Ambiente de Fundo" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
-          Blue-tinted radial gradients appear on hero and CTA sections. Neutral pools appear on secondary sections. The alternating positions create visual rhythm and directional depth.
+          Blue-tinted radial gradients appear on hero and CTA sections. The alternating positions create visual rhythm and directional depth. Use sparingly — maximum one ambient pool per section.
         </p>
       </div>
 
-      <!-- Visual demo -->
       <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
         <div class="relative p-8" style="background: var(--surface-0); min-height: 200px;">
           <div style="position: absolute; top: -20%; left: -10%; width: 60%; height: 140%; background: radial-gradient(ellipse at center, rgba(74,144,255,0.06) 0%, transparent 70%); pointer-events: none;"></div>
@@ -384,18 +351,17 @@ const codeCta = `<!-- CTA section pattern -->
 
   <div class="gradient-divider"></div>
 
-  <!-- Section 06: Hourglass Watermark -->
-  <section style="background: var(--surface-0);">
+  <!-- Section 05: Hourglass Watermark -->
+  <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="06" title="Hourglass Watermark" />
+      <SectionLabel number="05" title="Marca d'Água da Ampulheta" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
-          Large hourglass silhouettes (200-300px) at 3-5% opacity. Hidden on mobile to reduce visual noise. Place in sections about time, efficiency, urgency, or wherever a visual anchor enhances the narrative.
+          The H1-B Hourglass as a large watermark (200-300px) at 3-5% opacity. Hidden on mobile. Place in sections about time, efficiency, or urgency.
         </p>
       </div>
 
-      <!-- Visual demo -->
       <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
         <div class="relative p-8" style="background: var(--surface-1); min-height: 200px; overflow: hidden;">
           <svg
@@ -423,14 +389,14 @@ const codeCta = `<!-- CTA section pattern -->
 
   <div class="gradient-divider"></div>
 
-  <!-- Section 07: Section Transitions -->
-  <section style="background: var(--surface-1);">
+  <!-- Section 06: Section Transitions -->
+  <section style="background: var(--surface-0);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="07" title="Section Transitions" />
+      <SectionLabel number="06" title="Transições de Seção" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
-          Two transition patterns: the gradient divider (a 1px line fading from transparent to border color and back), and the gradient fade (a 120px tall blend from one surface to the next). Use the divider for same-tier transitions, the fade for tier jumps.
+          Two transition patterns: the gradient divider (a 1px line fading from transparent to border color and back), and the gradient fade (a 120px tall blend from one surface to the next).
         </p>
       </div>
 
@@ -440,10 +406,10 @@ const codeCta = `<!-- CTA section pattern -->
 
   <div class="gradient-divider"></div>
 
-  <!-- Section 08: Hero Section Pattern -->
-  <section style="background: var(--surface-0);">
+  <!-- Section 07: Hero Section Pattern -->
+  <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="08" title="Hero Section Pattern" />
+      <SectionLabel number="07" title="Padrão de Seção Hero" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
@@ -462,8 +428,11 @@ const codeCta = `<!-- CTA section pattern -->
               Strategy, implementation, and ongoing optimization of AI systems that drive measurable business outcomes.
             </p>
             <div class="flex flex-wrap gap-3">
-              <a href="/agendar" style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; text-decoration: none;">
-                Agendar Reuniao
+              <a href="/agendar" style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; text-decoration: none; transition: all 200ms;"
+                onmouseover="this.style.background='var(--accent-blue-hover)'"
+                onmouseout="this.style.background='var(--accent-blue)'"
+              >
+                Agendar Reunião
               </a>
               <a href="/aplicar" style="display: inline-flex; align-items: center; justify-content: center; background: transparent; color: var(--text-primary); font-size: 16px; font-weight: 600; padding: 14px 32px; border-radius: 8px; border: 1px solid var(--border-visible); text-decoration: none;">
                 Aplicar Agora
@@ -479,18 +448,17 @@ const codeCta = `<!-- CTA section pattern -->
 
   <div class="gradient-divider"></div>
 
-  <!-- Section 09: CTA Section Pattern -->
-  <section style="background: var(--surface-1);">
+  <!-- Section 08: CTA Section Pattern -->
+  <section style="background: var(--surface-0);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="09" title="CTA Section Pattern" />
+      <SectionLabel number="08" title="Padrão de Seção CTA" />
 
       <div class="max-w-[680px] mb-8">
         <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
-          Centered CTA section with ambient blue pool. Used as a closing section on every page. Headline + supporting text + single primary CTA. All routes to /agendar or /aplicar.
+          Centered CTA section with ambient blue pool. Used as a closing section on every page. All routes to /agendar or /aplicar.
         </p>
       </div>
 
-      <!-- Mini CTA demo -->
       <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
         <div class="relative" style="background: var(--surface-1);">
           <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(74,144,255,0.06) 0%, transparent 70%); pointer-events: none;"></div>
@@ -501,8 +469,11 @@ const codeCta = `<!-- CTA section pattern -->
             <p class="text-sm max-w-[500px] mx-auto mb-6" style="color: var(--text-secondary);">
               Schedule a free strategy call to discuss your AI implementation goals.
             </p>
-            <a href="/agendar" style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; text-decoration: none;">
-              Agendar Reuniao
+            <a href="/agendar" style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-size: 16px; font-weight: 600; padding: 13px 32px 15px; border-radius: 8px; text-decoration: none;"
+              onmouseover="this.style.background='var(--accent-blue-hover)'"
+              onmouseout="this.style.background='var(--accent-blue)'"
+            >
+              Agendar Reunião
             </a>
           </div>
         </div>
@@ -514,10 +485,10 @@ const codeCta = `<!-- CTA section pattern -->
 
   <div class="gradient-divider"></div>
 
-  <!-- Section 10: Usage Rules -->
-  <section style="background: var(--surface-0);">
+  <!-- Section 09: Usage Rules -->
+  <section style="background: var(--surface-1);">
     <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
-      <SectionLabel number="10" title="Usage Rules" />
+      <SectionLabel number="09" title="Regras de Uso" />
 
       <DosDonts items={[
         { type: 'do', text: 'Alternate Surface-0 and Surface-1 between consecutive sections' },
@@ -533,4 +504,9 @@ const codeCta = `<!-- CTA section pattern -->
       ]} />
     </div>
   </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Related Pages -->
+  <RelatedPages links={relatedLinksMap['/brandbook/sections'] || []} />
 </BrandbookLayout>

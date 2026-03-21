@@ -1,0 +1,580 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CopyButton from '../../components/CopyButton.tsx';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+
+const codeCardPatterns = `/* Standard card hover */
+.card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 32px;
+  transition: border-color 300ms var(--ease-base),
+              background-color 300ms var(--ease-base);
+}
+.card:hover {
+  border-color: var(--border-visible);
+  background-color: var(--surface-3);
+}
+
+/* Accented card */
+.card-accented {
+  border-top: 2px solid var(--accent-blue);
+}
+
+/* Glass card */
+.card-glass {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  backdrop-filter: blur(16px) saturate(180%);
+}
+
+/* Featured card (rotating border) */
+.card-rotating-border {
+  /* See effects page for full implementation */
+  animation: rotate-border 8s linear infinite;
+}`;
+
+const codeSectionPattern = `<section style="background: var(--surface-0);">
+  <div class="container-standard"
+       style="padding-top: var(--space-3xl);
+              padding-bottom: var(--space-3xl);">
+    <SectionLabel number="01" title="Section Title" />
+    <!-- Content here -->
+  </div>
+</section>
+
+<div class="gradient-divider"></div>
+
+<section style="background: var(--surface-1);">
+  <!-- Next section content -->
+</section>`;
+
+const codeHairlineGrid = `.grid-hairline {
+  display: grid;
+  gap: 1px;
+  background: var(--border-default);
+  border: 1px solid var(--border-default);
+}
+
+.grid-hairline > * {
+  background: var(--surface-0);
+}
+
+/* On Surface-1 sections */
+.grid-hairline-s1 > * {
+  background: var(--surface-1);
+}
+
+.grid-hairline-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-hairline-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-hairline-4 { grid-template-columns: repeat(4, 1fr); }`;
+
+const codeBadge = `.badge-accent {
+  background: rgba(74, 144, 255, 0.10);
+  border: 1px solid rgba(74, 144, 255, 0.20);
+  color: #4A90FF;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 6px;
+}
+
+.badge-success { /* green */ }
+.badge-warning { /* amber */ }
+.badge-error   { /* red */ }
+.badge-neutral { /* white/gray */ }`;
+
+const codeFormInput = `.input {
+  display: block;
+  width: 100%;
+  height: 48px;
+  padding: 12px 16px;
+  font-size: 16px;
+  color: var(--text-primary);
+  background: var(--surface-3);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+
+.input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(74, 144, 255, 0.15);
+}
+
+.input-error {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}`;
+---
+
+<BrandbookLayout
+  title="Patterns"
+  pageName="PATTERNS"
+  description="Reusable UI patterns for cards, sections, grids, CTAs, badges, and forms."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Pattern Library
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Reusable compositions that combine tokens, components, and effects into consistent UI patterns. Each pattern includes a live demo, usage guidance, and implementation code.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: Card Patterns -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Card Patterns" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Six card tiers for different emphasis levels. All with real hover states -- interact with each card to see the transition behavior.
+      </p>
+
+      <!-- Hairline grid of 6 card variants -->
+      <div
+        class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(3, 1fr);"
+      >
+        <!-- Standard Card -->
+        <div class="p-6 cursor-pointer" style="min-height: 220px; position: relative;">
+          <div style="position: absolute; top: 12px; left: 12px;">
+            <span class="font-mono text-[11px]" style="color: var(--accent-blue); letter-spacing: 0.2em;">01</span>
+            <span class="block font-mono text-[10px] uppercase tracking-wider mt-0.5" style="color: var(--text-quaternary);">Standard</span>
+          </div>
+          <div class="flex items-center justify-center h-full pt-8">
+            <div
+              class="p-5 rounded-xl border w-full transition-all"
+              style="background: var(--surface-2); border-color: var(--border-default); transition: border-color 300ms var(--ease-base), background-color 300ms var(--ease-base);"
+              onmouseenter="this.style.background='var(--surface-3)';this.style.borderColor='var(--border-visible)'"
+              onmouseleave="this.style.background='var(--surface-2)';this.style.borderColor='var(--border-default)'"
+            >
+              <span class="text-sm font-semibold block mb-1" style="color: var(--text-primary);">Default Card</span>
+              <span class="text-xs" style="color: var(--text-tertiary);">S-2 bg, 8% border. Hover: S-3, 12%.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accented Card -->
+        <div class="p-6 cursor-pointer" style="min-height: 220px; position: relative;">
+          <div style="position: absolute; top: 12px; left: 12px;">
+            <span class="font-mono text-[11px]" style="color: var(--accent-blue); letter-spacing: 0.2em;">02</span>
+            <span class="block font-mono text-[10px] uppercase tracking-wider mt-0.5" style="color: var(--text-quaternary);">Accented</span>
+          </div>
+          <div class="flex items-center justify-center h-full pt-8">
+            <div
+              class="p-5 rounded-xl border w-full transition-all"
+              style="background: var(--surface-2); border-color: var(--border-default); border-top: 2px solid var(--accent-blue); transition: border-color 300ms var(--ease-base), background-color 300ms var(--ease-base);"
+              onmouseenter="this.style.background='var(--surface-3)';this.style.borderColor='var(--border-visible)';this.style.borderTopColor='var(--accent-blue)'"
+              onmouseleave="this.style.background='var(--surface-2)';this.style.borderColor='var(--border-default)';this.style.borderTopColor='var(--accent-blue)'"
+            >
+              <span class="text-sm font-semibold block mb-1" style="color: var(--text-primary);">Featured Card</span>
+              <span class="text-xs" style="color: var(--text-tertiary);">2px blue top border. Same hover behavior.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Glass Card -->
+        <div class="p-6" style="min-height: 220px; position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 12px; left: 12px; z-index: 2;">
+            <span class="font-mono text-[11px]" style="color: var(--accent-blue); letter-spacing: 0.2em;">03</span>
+            <span class="block font-mono text-[10px] uppercase tracking-wider mt-0.5" style="color: var(--text-quaternary);">Glass</span>
+          </div>
+          {/* Background elements */}
+          <div style="position: absolute; top: 25px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: rgba(74, 144, 255, 0.12);"></div>
+          <div style="position: absolute; bottom: 30px; left: 30px; width: 40px; height: 40px; border-radius: 6px; background: rgba(74, 144, 255, 0.08);"></div>
+          <div class="flex items-center justify-center h-full pt-8 relative z-1">
+            <div
+              class="p-5 rounded-2xl w-full"
+              style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); backdrop-filter: blur(16px) saturate(180%);"
+            >
+              <span class="text-sm font-semibold block mb-1" style="color: var(--text-primary);">Glass Card</span>
+              <span class="text-xs" style="color: var(--text-tertiary);">blur(16px), saturate(180%), 5% white bg.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured (blue glow) Card -->
+        <div class="p-6 cursor-pointer" style="min-height: 220px; position: relative;">
+          <div style="position: absolute; top: 12px; left: 12px;">
+            <span class="font-mono text-[11px]" style="color: var(--accent-blue); letter-spacing: 0.2em;">04</span>
+            <span class="block font-mono text-[10px] uppercase tracking-wider mt-0.5" style="color: var(--text-quaternary);">Featured Glow</span>
+          </div>
+          <div class="flex items-center justify-center h-full pt-8">
+            <div
+              class="p-5 rounded-xl border w-full"
+              style="background: var(--surface-2); border-color: var(--border-default); transition: all 500ms cubic-bezier(0.7, 0, 0, 1);"
+              onmouseenter="this.style.borderColor='var(--border-accent)';this.style.boxShadow='0 0 50px rgba(74, 144, 255, 0.12)'"
+              onmouseleave="this.style.borderColor='var(--border-default)';this.style.boxShadow='none'"
+            >
+              <span class="text-sm font-semibold block mb-1" style="color: var(--text-primary);">Blue Glow Card</span>
+              <span class="text-xs" style="color: var(--text-tertiary);">Hover: accent border + blue glow shadow.</span>
+            </div>
+          </div>
+          <span class="absolute bottom-2 right-3 font-mono text-[9px] uppercase tracking-wider" style="color: var(--text-muted);">hover me</span>
+        </div>
+
+        <!-- KPI Card -->
+        <div class="p-6" style="min-height: 220px; position: relative;">
+          <div style="position: absolute; top: 12px; left: 12px;">
+            <span class="font-mono text-[11px]" style="color: var(--accent-blue); letter-spacing: 0.2em;">05</span>
+            <span class="block font-mono text-[10px] uppercase tracking-wider mt-0.5" style="color: var(--text-quaternary);">KPI Card</span>
+          </div>
+          <div class="flex items-center justify-center h-full pt-8">
+            <div class="kpi-card w-full cursor-pointer">
+              <div class="kpi-card__label">Client Retention</div>
+              <div class="kpi-card__value kpi-card__value--accent">97%</div>
+              <div class="kpi-card__trend kpi-card__trend--up">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                +2.3%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rotating Border Card -->
+        <div class="p-6" style="min-height: 220px; position: relative;">
+          <div style="position: absolute; top: 12px; left: 12px; z-index: 2;">
+            <span class="font-mono text-[11px]" style="color: var(--accent-blue); letter-spacing: 0.2em;">06</span>
+            <span class="block font-mono text-[10px] uppercase tracking-wider mt-0.5" style="color: var(--text-quaternary);">Rotating Border</span>
+          </div>
+          <div class="flex items-center justify-center h-full pt-8">
+            <div class="card-rotating-border p-5 rounded-xl w-full">
+              <span class="text-sm font-semibold block mb-1" style="color: var(--text-primary);">Sapphire Scanner</span>
+              <span class="text-xs" style="color: var(--text-tertiary);">Highest emphasis. Max 1-2 per page.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Card Patterns CSS" code={codeCardPatterns} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Section Layout Patterns -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Section Layout Patterns" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Sections alternate between Surface-0 and Surface-1. Gradient dividers provide smooth transitions. Padding uses fluid spacing tokens for responsive behavior.
+      </p>
+
+      <!-- Mini section alternation demo -->
+      <div class="rounded-xl border overflow-hidden mb-8" style="border-color: var(--border-default);">
+        {[
+          { label: 'Hero Section', surface: '0', padding: 'var(--space-4xl) top, var(--space-3xl) bottom' },
+          { label: 'Content Section', surface: '1', padding: 'var(--space-3xl) vertical' },
+          { label: 'Feature Section', surface: '0', padding: 'var(--space-3xl) vertical' },
+          { label: 'CTA Section', surface: '1', padding: 'var(--space-3xl) vertical' },
+        ].map((section, i) => (
+          <Fragment>
+            {i > 0 && <div style="height: 1px; background: var(--gradient-divider);"></div>}
+            <div class="p-5" style={`background: var(--surface-${section.surface});`}>
+              <span class="font-mono text-[10px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">
+                {section.label} -- Surface-{section.surface}
+              </span>
+              <p class="text-xs mt-1" style="color: var(--text-tertiary);">Padding: {section.padding}</p>
+            </div>
+          </Fragment>
+        ))}
+      </div>
+
+      <CodeBlock client:visible label="Section Pattern HTML" code={codeSectionPattern} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Grid Patterns -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Grid Patterns" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        The hairline grid technique uses 1px gap with the parent background color as dividers. This is the primary grid pattern across the design system -- the technique itself is demonstrated here.
+      </p>
+
+      <!-- Hairline Grid Demo: the grid IS the demo -->
+      <h3 class="text-base font-semibold mb-4" style="color: var(--text-primary);">Hairline Grid (gap-1px)</h3>
+      <div
+        class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(3, 1fr);"
+      >
+        {[1, 2, 3, 4, 5, 6].map(i => (
+          <div class="p-5" style="min-height: 100px;">
+            <span class="font-mono text-[11px] font-bold" style="color: var(--accent-blue);">0{i}</span>
+            <p class="text-xs mt-2" style="color: var(--text-secondary);">
+              Cell with 1px hairline divider. Parent bg shows through gap.
+            </p>
+            <div class="flex items-center gap-1 mt-2">
+              <code class="font-mono text-[9px]" style="color: var(--text-muted); background: none; border: none; padding: 0;">.grid-hairline</code>
+              <CopyButton client:visible text=".grid-hairline" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Responsive column demos -->
+      <h3 class="text-base font-semibold mb-4" style="color: var(--text-primary);">Responsive Column Layouts</h3>
+      <div class="space-y-6">
+        {[
+          { label: '2-Column (6+6)', cols: 'grid-cols-1 md:grid-cols-2' },
+          { label: '3-Column (4+4+4)', cols: 'grid-cols-1 md:grid-cols-3' },
+          { label: '4-Column (3+3+3+3)', cols: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' },
+        ].map(layout => (
+          <div>
+            <span class="font-mono text-[10px] font-bold uppercase tracking-wider block mb-3" style="color: var(--text-quaternary);">
+              {layout.label}
+            </span>
+            <div class={`grid ${layout.cols} gap-4`}>
+              {Array.from({ length: parseInt(layout.label.charAt(0)) }, (_, i) => (
+                <div class="p-4 rounded-lg border" style="background: var(--surface-2); border-color: var(--border-default);">
+                  <span class="text-sm" style="color: var(--text-secondary);">Column {i + 1}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Hairline Grid CSS" code={codeHairlineGrid} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: CTA Patterns -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="CTA Patterns" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        All conversion paths lead to /agendar (booking) or /aplicar (application). The blue accent exists primarily for CTA elements -- max 2 accent-colored elements per viewport.
+      </p>
+
+      <!-- Hairline grid of CTA patterns -->
+      <div
+        class="grid-hairline rounded-xl overflow-hidden"
+        style="grid-template-columns: repeat(2, 1fr);"
+      >
+        <!-- Hero dual CTA -->
+        <div class="p-8 text-center" style="background: var(--surface-0);">
+          <span class="font-mono text-[10px] font-bold uppercase tracking-wider block mb-6" style="color: var(--text-quaternary);">
+            Hero CTA (Dual Button)
+          </span>
+          <h3 class="text-lg font-bold mb-2 tracking-tight" style="color: var(--text-primary);">
+            Ready to Transform?
+          </h3>
+          <p class="text-xs mb-5 max-w-xs mx-auto" style="color: var(--text-secondary);">
+            Book a strategy call to explore AI implementation.
+          </p>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href="#" class="inline-flex items-center justify-center px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200"
+              style="background: var(--accent-blue); color: #FFFFFF; min-width: 160px;"
+              onmouseenter="this.style.background='var(--accent-blue-hover)';this.style.transform='translateY(-2px)'"
+              onmouseleave="this.style.background='var(--accent-blue)';this.style.transform='translateY(0)'"
+            >Agendar Reuniao</a>
+            <a href="#" class="inline-flex items-center justify-center px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200"
+              style="background: transparent; color: var(--text-primary); border: 1px solid var(--border-visible);"
+              onmouseenter="this.style.borderColor='var(--border-strong)';this.style.background='rgba(255,255,255,0.03)'"
+              onmouseleave="this.style.borderColor='var(--border-visible)';this.style.background='transparent'"
+            >Aplicar</a>
+          </div>
+        </div>
+
+        <!-- Ghost CTA -->
+        <div class="p-8" style="background: var(--surface-0);">
+          <span class="font-mono text-[10px] font-bold uppercase tracking-wider block mb-6" style="color: var(--text-quaternary);">
+            Ghost CTA (In-Card)
+          </span>
+          <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+            <h4 class="text-sm font-semibold mb-2" style="color: var(--text-primary);">AI Implementation</h4>
+            <p class="text-xs mb-4" style="color: var(--text-secondary);">Custom AI systems for enterprise clients.</p>
+            <a href="#" class="inline-flex items-center gap-1 text-sm font-medium transition-colors duration-200"
+              style="color: var(--text-secondary);"
+              onmouseenter="this.style.color='var(--text-primary)';this.querySelector('svg').style.transform='translateX(4px)'"
+              onmouseleave="this.style.color='var(--text-secondary)';this.querySelector('svg').style.transform='translateX(0)'"
+            >
+              Explore case studies
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 200ms;">
+                <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Badge Patterns -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Badge Patterns" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        5 badge variants for semantic labeling. Each uses its own color token for background, border, and text.
+      </p>
+
+      <!-- Inline badge row -->
+      <div class="flex flex-wrap gap-4 mb-8">
+        <span class="badge-accent">Accent</span>
+        <span class="badge-success">Success</span>
+        <span class="badge-warning">Warning</span>
+        <span class="badge-error">Error</span>
+        <span class="badge-neutral">Neutral</span>
+      </div>
+
+      <!-- Usage context in hairline grid -->
+      <div
+        class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden mb-8"
+        style="grid-template-columns: repeat(5, 1fr);"
+      >
+        {[
+          { badge: 'accent', label: 'AI IMPLEMENTATION', context: 'Feature labels, tech tags' },
+          { badge: 'success', label: 'COMPLETED', context: 'Status, confirmations' },
+          { badge: 'warning', label: 'BETA', context: 'Early access, experimental' },
+          { badge: 'error', label: 'DEPRECATED', context: 'Removed, breaking changes' },
+          { badge: 'neutral', label: 'V1.0', context: 'Versions, metadata' },
+        ].map(item => (
+          <div class="p-4">
+            <span class={`badge-${item.badge} mb-3`}>{item.label}</span>
+            <p class="text-xs mt-3" style="color: var(--text-tertiary);">{item.context}</p>
+          </div>
+        ))}
+      </div>
+
+      <CodeBlock client:visible label="Badge CSS" code={codeBadge} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Form Patterns -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Form Patterns" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Form inputs with consistent states: default, hover, focus, error, success, and disabled. All inputs use Surface-3 background. Click into inputs to see focus states.
+      </p>
+
+      <div class="max-w-[600px] space-y-6 mb-8">
+        <div>
+          <label class="input-label">Full Name</label>
+          <input type="text" class="input" placeholder="Enter your full name" />
+          <span class="input-helper">As it appears on your business card.</span>
+        </div>
+        <div>
+          <label class="input-label">Email Address (Focus State)</label>
+          <input type="email" class="input" placeholder="you@company.com" />
+          <span class="input-helper">Click to see blue border + ring focus state.</span>
+        </div>
+        <div>
+          <label class="input-label">Company Website (Error)</label>
+          <input type="url" class="input input-error" value="not-a-url" />
+          <span class="input-error-text">Please enter a valid URL.</span>
+        </div>
+        <div>
+          <label class="input-label">Revenue Range (Success)</label>
+          <select class="input input-select input-success">
+            <option>R$1M - R$5M annually</option>
+          </select>
+        </div>
+        <div>
+          <label class="input-label">Project Description</label>
+          <textarea class="input input-textarea" placeholder="Describe your AI implementation goals..."></textarea>
+        </div>
+        <div>
+          <label class="input-label">Submission ID (Disabled)</label>
+          <input type="text" class="input" disabled value="RIA-2026-0423" />
+          <span class="input-helper">Auto-generated. Cannot be edited.</span>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Form Input CSS" code={codeFormInput} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Divider Patterns -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Divider Patterns" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Sections use gradient fade dividers rather than hard borders. Three variants for different contexts.
+      </p>
+
+      <div class="space-y-8">
+        {[
+          { name: 'Gradient Divider (Primary)', class: 'gradient-divider', css: '.gradient-divider', height: '1px' },
+          { name: 'Solid Border (Subtle)', class: '', css: 'border-bottom: 1px solid var(--border-default)', height: '1px', bg: 'var(--border-default)' },
+          { name: 'Accent Divider', class: '', css: 'background: linear-gradient(to right, var(--accent-blue), transparent)', height: '2px', bg: 'linear-gradient(to right, var(--accent-blue), transparent)' },
+        ].map(divider => (
+          <div>
+            <span class="font-mono text-[10px] font-bold uppercase tracking-wider block mb-4" style="color: var(--text-quaternary);">
+              {divider.name}
+            </span>
+            {divider.class
+              ? <div class={divider.class}></div>
+              : <div style={`height: ${divider.height}; background: ${divider.bg};`}></div>
+            }
+            <div class="flex items-center gap-2 mt-3">
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">{divider.css}</code>
+              <CopyButton client:visible text={divider.css} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 08: Usage Rules -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Usage Rules" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Use standard cards for most content; reserve accented/rotating for emphasis' },
+        { type: 'do', text: 'Alternate sections between Surface-0 and Surface-1' },
+        { type: 'do', text: 'Use gradient dividers between sections for smooth transitions' },
+        { type: 'do', text: 'Keep max 2 blue accent CTA elements per viewport' },
+        { type: 'do', text: 'All CTAs lead to /agendar or /aplicar' },
+        { type: 'dont', text: 'Put more than 2 rotating border cards on a single page' },
+        { type: 'dont', text: 'Use hard 1px borders between sections (use gradient dividers)' },
+        { type: 'dont', text: 'Create pricing tables or tier comparison patterns' },
+        { type: 'dont', text: 'Mix badge semantic colors (e.g., green badge for errors)' },
+        { type: 'dont', text: 'Use form inputs without labels -- accessibility requirement' },
+      ]} />
+    </div>
+  </section>
+</BrandbookLayout>

@@ -1,0 +1,439 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CopyButton from '../../components/CopyButton.tsx';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import AuroraDemo from '../../components/AuroraDemo.tsx';
+import MeshGradientDemo from '../../components/MeshGradientDemo.tsx';
+import ParallaxDemo from '../../components/ParallaxDemo.tsx';
+import SectionTransitionDemo from '../../components/SectionTransitionDemo.tsx';
+import TextRevealDemo from '../../components/TextRevealDemo.tsx';
+import CounterDemo from '../../components/CounterDemo.tsx';
+import MagneticDemo from '../../components/MagneticDemo.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+
+const codeAurora = `.aurora-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%,
+      rgba(74, 144, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 20%,
+      rgba(141, 196, 255, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 50% 80%,
+      rgba(53, 112, 204, 0.06) 0%, transparent 60%);
+  animation: aurora-shift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes aurora-shift {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  33%  { transform: translate(-5%, 3%) scale(1.05); opacity: 0.8; }
+  66%  { transform: translate(3%, -2%) scale(0.98); opacity: 1; }
+  100% { transform: translate(-2%, 5%) scale(1.02); opacity: 0.9; }
+}`;
+
+const codeMesh = `.mesh-gradient {
+  background:
+    radial-gradient(at 40% 20%,
+      rgba(74, 144, 255, 0.07) 0%, transparent 50%),
+    radial-gradient(at 80% 0%,
+      rgba(53, 112, 204, 0.05) 0%, transparent 50%),
+    radial-gradient(at 0% 50%,
+      rgba(141, 196, 255, 0.04) 0%, transparent 50%),
+    radial-gradient(at 60% 100%,
+      rgba(74, 144, 255, 0.06) 0%, transparent 50%),
+    var(--surface-0);
+}`;
+
+const codeParallax = `/* CSS parallax layers */
+.parallax-slow   { transform: translateY(calc(var(--scroll-y) * -0.05)); }
+.parallax-medium { transform: translateY(calc(var(--scroll-y) * -0.1)); }
+.parallax-fast   { transform: translateY(calc(var(--scroll-y) * -0.15)); }
+
+/* JS: update scroll variable */
+window.addEventListener('scroll', () => {
+  document.documentElement.style.setProperty(
+    '--scroll-y',
+    window.scrollY + 'px'
+  );
+}, { passive: true });`;
+
+const codeSectionTransition = `.section-transition-bottom {
+  position: relative;
+}
+
+.section-transition-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--surface-next)
+  );
+  pointer-events: none;
+}`;
+
+const codeTextReveal = `/* Each word wrapped in a span */
+.text-reveal-word {
+  display: inline-block;
+  color: var(--text-muted);
+  transition: color 800ms var(--ease-out);
+  transition-delay: calc(var(--word-index) * 60ms);
+}
+
+.text-reveal.in-view .text-reveal-word {
+  color: var(--text-primary);
+}`;
+
+const codeCounter = `function animateCounter(element, target, suffix = '') {
+  const duration = 2000;
+  const start = performance.now();
+
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(target * eased);
+    element.textContent = current + suffix;
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
+// Trigger via IntersectionObserver
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        animateCounter(
+          el,
+          parseInt(el.dataset.target),
+          el.dataset.suffix || ''
+        );
+        observer.unobserve(el);
+      }
+    });
+  },
+  { threshold: 0.3 }
+);`;
+
+const codeMagnetic = `function initMagneticHover(element) {
+  const maxOffset = 8;
+
+  element.addEventListener('mousemove', (e) => {
+    const rect = element.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    const offsetX = Math.max(-maxOffset,
+      Math.min(maxOffset, x * 0.15));
+    const offsetY = Math.max(-maxOffset,
+      Math.min(maxOffset, y * 0.15));
+    element.style.transform =
+      'translate(' + offsetX + 'px, ' + offsetY + 'px)';
+  });
+
+  element.addEventListener('mouseleave', () => {
+    element.style.transform = 'translate(0, 0)';
+  });
+}
+
+/* CSS requirement */
+.magnetic-hover {
+  transition: transform 300ms var(--ease-out);
+}
+
+/* Only on hover-capable devices */
+if (window.matchMedia('(hover: hover)').matches) {
+  initMagneticHover(
+    document.querySelector('.hero-cta')
+  );
+}`;
+---
+
+<BrandbookLayout
+  title="VFX"
+  pageName="VFX"
+  description="Advanced visual effects: aurora backgrounds, mesh gradients, parallax, text reveals, counters, and magnetic hover."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          VFX System
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Advanced visual effects that add atmospheric depth and interactive delight. Each effect is CSS-first where possible, with JavaScript only when interaction or scroll-linking requires it. Performance is non-negotiable — all effects must maintain 60fps.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: Aurora Background -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Aurora Background" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Three slow-moving gradient orbs create an ethereal atmospheric backdrop. Used behind hero sections for ambient depth. The 20s cycle is slow enough to feel atmospheric rather than distracting.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Duration:</strong> 20s</span>
+          <span><strong style="color: var(--text-secondary);">Easing:</strong> ease-in-out infinite alternate</span>
+          <span><strong style="color: var(--text-secondary);">Usage:</strong> Hero sections only</span>
+          <span><strong style="color: var(--text-secondary);">Performance:</strong> GPU-composited (transform + opacity only)</span>
+        </div>
+      </div>
+
+      <AuroraDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Aurora CSS" code={codeAurora} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Mesh Gradient -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Mesh Gradient" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Multi-stop radial gradients overlaid to create organic, flowing background patterns. Static (no animation), used for section backgrounds where aurora would be too much motion. Four gradient points create natural depth variation.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Type:</strong> Static (CSS only, no JS)</span>
+          <span><strong style="color: var(--text-secondary);">Usage:</strong> Section backgrounds, feature areas</span>
+          <span><strong style="color: var(--text-secondary);">Points:</strong> 4 radial-gradient stops</span>
+        </div>
+      </div>
+
+      <MeshGradientDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Mesh Gradient CSS" code={codeMesh} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Parallax Layers -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Parallax Layers" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Background elements move at different speeds during scroll, creating depth. Three speed tiers: slow (-0.05), medium (-0.10), and fast (-0.15). Applied to watermark motifs and ambient pools only — never to content.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Requires:</strong> JS (scroll listener updates CSS variable)</span>
+          <span><strong style="color: var(--text-secondary);">Performance:</strong> Uses transform only (GPU composited)</span>
+          <span><strong style="color: var(--text-secondary);">Fallback:</strong> Static positioning when JS disabled</span>
+        </div>
+      </div>
+
+      <ParallaxDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Parallax CSS + JS" code={codeParallax} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Section Transitions -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Section Transitions" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Gradient fade overlays create smooth visual transitions between sections with different background tiers. The 120px fade height matches the maximum value of --space-3xl, creating seamless blending.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Height:</strong> 80-120px</span>
+          <span><strong style="color: var(--text-secondary);">Type:</strong> CSS only (pseudo-element)</span>
+          <span><strong style="color: var(--text-secondary);">Usage:</strong> Alternative to gradient-divider for softer transitions</span>
+        </div>
+      </div>
+
+      <SectionTransitionDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Section Transition CSS" code={codeSectionTransition} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Text Reveal -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Text Reveal" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Words transition from 20% opacity to 100% with staggered delays, creating a reading-pace reveal. Each word gets 60ms delay offset, so a 15-word sentence completes in under 1 second. Used for manifesto-style hero text.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Delay per word:</strong> 60ms</span>
+          <span><strong style="color: var(--text-secondary);">Word transition:</strong> 800ms ease-out</span>
+          <span><strong style="color: var(--text-secondary);">Trigger:</strong> IntersectionObserver or click</span>
+        </div>
+      </div>
+
+      <TextRevealDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Text Reveal CSS" code={codeTextReveal} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Counter Animation -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Counter Animation" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Numbers animate from 0 to their target value when the stats section enters the viewport. Uses requestAnimationFrame for smooth 60fps updates with an ease-out deceleration curve. Duration: 2000ms for premium pacing.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Duration:</strong> 2000ms</span>
+          <span><strong style="color: var(--text-secondary);">Easing:</strong> Cubic ease-out (1 - (1 - t)^3)</span>
+          <span><strong style="color: var(--text-secondary);">Trigger:</strong> IntersectionObserver</span>
+          <span><strong style="color: var(--text-secondary);">Supports:</strong> %, +, x suffixes</span>
+        </div>
+      </div>
+
+      <CounterDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Counter JS" language="javascript" code={codeCounter} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Magnetic Hover -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Magnetic Hover" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Elements subtly follow cursor position within their bounds, creating an interactive magnetic feel. Max offset: 8px in any direction (restrained compared to Stripe's 12px). Applied to hero CTA buttons only — never to body content.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Max offset:</strong> 8px</span>
+          <span><strong style="color: var(--text-secondary);">Transition:</strong> 300ms ease-out</span>
+          <span><strong style="color: var(--text-secondary);">Usage:</strong> Hero CTA buttons only</span>
+          <span><strong style="color: var(--text-secondary);">Touch devices:</strong> Disabled</span>
+        </div>
+      </div>
+
+      <MagneticDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Magnetic Hover JS" language="javascript" code={codeMagnetic} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 08: Performance Notes -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Performance Notes" />
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--color-success);">
+            GPU-Composited (Safe)
+          </div>
+          <ul class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">transform</code> — translate, scale, rotate</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">opacity</code> — fade effects</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">filter</code> — blur, saturate</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">background-position</code> — gradient shifts</li>
+          </ul>
+        </div>
+        <div class="p-5 rounded-xl border" style="background: var(--surface-2); border-color: var(--border-default);">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--color-error);">
+            Layout-Triggering (Avoid)
+          </div>
+          <ul class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">width / height</code> — triggers reflow</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">margin / padding</code> — triggers reflow</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">top / left</code> — triggers reflow</li>
+            <li><code style="background: none; border: none; padding: 0; font-size: inherit;">font-size</code> — triggers reflow + repaint</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="p-5 rounded-xl border mb-8" style="background: var(--surface-2); border-color: var(--border-default);">
+        <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+          Scroll Listener Best Practices
+        </div>
+        <ul class="space-y-2 text-sm" style="color: var(--text-secondary);">
+          <li>Always use <code style="background: none; border: none; padding: 0; font-size: inherit;">passive: true</code> on scroll event listeners</li>
+          <li>Throttle with <code style="background: none; border: none; padding: 0; font-size: inherit;">requestAnimationFrame</code>, not setInterval</li>
+          <li>Prefer <code style="background: none; border: none; padding: 0; font-size: inherit;">IntersectionObserver</code> over scroll position checks</li>
+          <li>Use <code style="background: none; border: none; padding: 0; font-size: inherit;">will-change: transform</code> on animated elements (remove after animation)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 09: Usage Rules -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="09" title="Usage Rules" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Use aurora only on hero sections — one per page' },
+        { type: 'do', text: 'Animate only transform and opacity for 60fps' },
+        { type: 'do', text: 'Use IntersectionObserver instead of scroll position checks' },
+        { type: 'do', text: 'Disable magnetic hover on touch devices via @media (hover: hover)' },
+        { type: 'do', text: 'Use passive: true on all scroll event listeners' },
+        { type: 'dont', text: 'Apply parallax to content elements — decorative only' },
+        { type: 'dont', text: 'Use counter animation for numbers below 10 (not impactful)' },
+        { type: 'dont', text: 'Combine aurora + mesh gradient on the same section' },
+        { type: 'dont', text: 'Use text reveal on body paragraphs — headlines only' },
+        { type: 'dont', text: 'Animate width, height, margin, or padding (causes layout thrash)' },
+      ]} />
+    </div>
+  </section>
+</BrandbookLayout>

@@ -1,0 +1,412 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import RelatedPages from '../../components/RelatedPages.astro';
+import { relatedLinksMap } from '../../data/navigation';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CopyButton from '../../components/CopyButton.tsx';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import RotatingBorderDemo from '../../components/RotatingBorderDemo.tsx';
+import AmbientPoolDemo from '../../components/AmbientPoolDemo.tsx';
+import WatermarkDemo from '../../components/WatermarkDemo.tsx';
+import GrainDemo from '../../components/GrainDemo.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+
+const codeSapphire = `@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.card-rotating-border {
+  background:
+    linear-gradient(135deg, var(--surface-2), var(--surface-3)) padding-box,
+    conic-gradient(
+      from var(--border-angle),
+      rgba(255,255,255,0.08) 0%,
+      rgba(255,255,255,0.08) 75%,
+      rgba(74,144,255,0.5) 85%,
+      rgba(74,144,255,0.8) 90%,
+      rgba(74,144,255,0.5) 95%,
+      rgba(255,255,255,0.08) 100%
+    ) border-box;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  animation: rotate-border 8s linear infinite;
+}
+
+@keyframes rotate-border {
+  to { --border-angle: 360deg; }
+}`;
+
+const codeAmbientPool = `/* Blue ambient pool (hero/CTA sections) */
+.section-hero::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 60%;
+  height: 140%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(74, 144, 255, 0.06) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Neutral pool (secondary sections) */
+.section-alt::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  right: -10%;
+  width: 50%;
+  height: 140%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}`;
+
+const codeWatermark = `.section-watermark {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-watermark .watermark {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 200px;
+  height: 280px;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* H1-B "Open Intersection" SVG: stroke-based lines */
+/* 2 horizontal bars + 2 crossing diagonals with open gap at center */
+
+/* Hide on mobile to reduce visual noise */
+@media (max-width: 767px) {
+  .section-watermark .watermark {
+    display: none;
+  }
+}`;
+
+const codeGrain = `.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  z-index: 1;
+}`;
+
+const codeGlassmorphism = `/* Navigation (scrolled) */
+.nav-scrolled {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Glass card */
+.card-glass {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  backdrop-filter: blur(16px) saturate(180%);
+}
+
+/* Mobile menu overlay */
+.menu-overlay {
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(24px);
+}`;
+---
+
+<BrandbookLayout
+  title="Effects"
+  pageName="EFFECTS"
+  description="Signature visual effects that define the Reis IA aesthetic: Sapphire Scanner, ambient pools, H1-B watermark, grain texture, and glassmorphism."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Effects Library
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Five signature effects create the Reis IA visual identity. Each is a unique synthesis, not a direct copy from any reference. Use them with restraint -- the effects are powerful precisely because they are rare.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: Sapphire Scanner -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Sapphire Scanner" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          A rotating conic gradient border where a blue light segment slowly orbits the card perimeter. The narrow beam (~15% of the circle) creates a scanning effect that evokes systematic precision. Adjust the speed slider to see how different rotation speeds feel.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Speed:</strong> 2-16s (default 8s)</span>
+          <span><strong style="color: var(--text-secondary);">Usage:</strong> 1-2 featured cards per page max</span>
+          <span><strong style="color: var(--text-secondary);">Easing:</strong> linear infinite</span>
+        </div>
+      </div>
+
+      <RotatingBorderDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Sapphire Scanner CSS" code={codeSapphire} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Cool Ambient Pools -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Cool Ambient Pools" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          Subtle radial gradient light pools positioned at section corners. Toggle between blue-tinted and neutral pools, and choose the corner position to see how the alternation pattern works across sections.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Blue pool:</strong> rgba(74, 144, 255, 0.06)</span>
+          <span><strong style="color: var(--text-secondary);">Neutral pool:</strong> rgba(255, 255, 255, 0.03)</span>
+          <span><strong style="color: var(--text-secondary);">Pattern:</strong> Alternate corners per section</span>
+        </div>
+      </div>
+
+      <AmbientPoolDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Ambient Pool CSS" code={codeAmbientPool} />
+      </div>
+
+      <!-- Placement guide -->
+      <div
+        class="mt-8 grid-hairline rounded-xl overflow-hidden"
+        style="grid-template-columns: repeat(3, 1fr);"
+      >
+        {[
+          { section: 'Section 1 (Hero)', pool: 'Blue ambient', position: 'Centered on headline' },
+          { section: 'Section 2', pool: 'Neutral pool', position: 'Bottom-left corner' },
+          { section: 'Section 3', pool: 'Neutral pool', position: 'Top-right corner' },
+          { section: 'Section 4 (CTA)', pool: 'Blue ambient', position: 'Centered on CTA' },
+          { section: 'Section 5', pool: 'Neutral pool', position: 'Bottom-right corner' },
+          { section: 'Pattern', pool: 'Continue alternating', position: 'Rotate corners clockwise' },
+        ].map(item => (
+          <div class="p-5">
+            <span class="font-semibold text-sm block mb-1" style="color: var(--text-primary);">{item.section}</span>
+            <span class="text-xs block" style="color: var(--text-secondary);">{item.pool}</span>
+            <span class="font-mono text-[10px] block mt-1" style="color: var(--text-quaternary);">{item.position}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: H1-B Hourglass Watermarks -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="H1-B Hourglass Watermarks" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          The H1-B "Open Intersection" hourglass mark placed as a background watermark at 3-5% opacity. The mark consists of 5 stroke-based lines: two horizontal bars plus two crossing diagonals with an open gap at center. Adjust the opacity slider and placement to preview different configurations.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Size:</strong> 200-300px</span>
+          <span><strong style="color: var(--text-secondary);">Opacity:</strong> 3-5% (0.03-0.05)</span>
+          <span><strong style="color: var(--text-secondary);">Position:</strong> absolute, pointer-events: none</span>
+        </div>
+      </div>
+
+      <WatermarkDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Watermark CSS" code={codeWatermark} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Surface Depth Harmony -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Surface Depth Harmony" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          The 5-tier surface system combined with white-alpha borders and cool ambient pools creates physical depth perception without shadows. This is the foundational visual technique -- all other effects layer on top of this structure.
+        </p>
+      </div>
+
+      <!-- Layer stack visualization -->
+      <div
+        class="rounded-xl border overflow-hidden p-8"
+        style="border-color: var(--border-default); background: var(--surface-0);"
+      >
+        <div class="max-w-[600px] mx-auto space-y-3">
+          {[
+            { tier: 0, name: 'Void', hex: '#000000', desc: 'Page background', w: '100%' },
+            { tier: 1, name: 'Base', hex: '#0A0A0A', desc: 'Alt sections', w: '92%' },
+            { tier: 2, name: 'Raised', hex: '#111111', desc: 'Cards', w: '84%' },
+            { tier: 3, name: 'Elevated', hex: '#161616', desc: 'Hover/inputs', w: '76%' },
+            { tier: 4, name: 'Float', hex: '#1A1A1A', desc: 'Dropdowns', w: '68%' },
+          ].map(layer => (
+            <div
+              class="rounded-lg border p-4 mx-auto flex items-center justify-between"
+              style={`background: var(--surface-${layer.tier}); border-color: var(--border-default); width: ${layer.w};`}
+            >
+              <div class="flex items-center gap-3">
+                <span class="font-mono text-[11px] font-bold" style="color: var(--accent-blue);">S-{layer.tier}</span>
+                <span class="text-sm font-semibold" style="color: var(--text-primary);">{layer.name}</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs" style="color: var(--text-tertiary);">{layer.desc}</span>
+                <div class="flex items-center gap-1">
+                  <code class="text-[10px] font-mono hidden sm:inline" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">{layer.hex}</code>
+                  <CopyButton client:visible text={layer.hex} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="text-center text-xs mt-6" style="color: var(--text-muted);">
+          Each tier narrows visually, representing proximity to the viewer. Closer = lighter = smaller footprint.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Grain / Noise Texture -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Grain / Noise Texture" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          A subtle SVG-generated noise texture overlaid on sections. Use the opacity slider (0-25%) to see how different intensities feel. The recommended range is 2-4% -- enough to feel the texture on large dark surfaces without seeing it consciously.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Opacity:</strong> 2-4% (default 3%)</span>
+          <span><strong style="color: var(--text-secondary);">Technique:</strong> SVG feTurbulence (no external file)</span>
+          <span><strong style="color: var(--text-secondary);">z-index:</strong> 1 (above bg, below content)</span>
+        </div>
+      </div>
+
+      <GrainDemo client:visible />
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Grain Overlay CSS" code={codeGrain} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Glassmorphism -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Glassmorphism" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Blur and saturate backdrop-filter effects for navigation, glass cards, and overlays. The saturate(180%) boost prevents blur from washing out underlying content.
+        </p>
+      </div>
+
+      <!-- Hairline grid of 4 glassmorphism contexts -->
+      <div
+        class="grid-hairline rounded-xl overflow-hidden"
+        style="grid-template-columns: repeat(2, 1fr);"
+      >
+        {[
+          { name: 'Navigation (scrolled)', bg: 'rgba(0, 0, 0, 0.85)', blur: 'blur(20px)', saturate: 'saturate(180%)', border: 'var(--border-subtle)' },
+          { name: 'Glass Card', bg: 'rgba(255, 255, 255, 0.05)', blur: 'blur(16px)', saturate: 'saturate(180%)', border: 'var(--border-subtle)' },
+          { name: 'Mobile Menu Overlay', bg: 'rgba(0, 0, 0, 0.95)', blur: 'blur(24px)', saturate: 'none', border: 'none' },
+          { name: 'Stats Overlay', bg: 'rgba(10, 10, 10, 0.80)', blur: 'blur(12px)', saturate: 'none', border: 'var(--border-default)' },
+        ].map((spec, i) => (
+          <div style="background: var(--surface-0); position: relative; min-height: 200px;">
+            {/* Background decoration */}
+            <div style="position: absolute; top: 20px; left: 20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(74, 144, 255, 0.15);"></div>
+            <div style="position: absolute; bottom: 20px; right: 30px; width: 60px; height: 60px; border-radius: 8px; background: rgba(74, 144, 255, 0.10);"></div>
+
+            {/* Glass overlay */}
+            <div
+              class="absolute inset-4 rounded-lg p-5 flex flex-col justify-between"
+              style={`background: ${spec.bg}; backdrop-filter: ${spec.blur} ${spec.saturate !== 'none' ? spec.saturate : ''}; ${spec.border !== 'none' ? `border: 1px solid ${spec.border};` : ''}`}
+            >
+              <div>
+                <span class="font-mono text-[11px] font-bold uppercase tracking-wider" style="color: var(--accent-blue);">
+                  {spec.name}
+                </span>
+              </div>
+              <div class="flex flex-wrap gap-x-4 gap-y-1 mt-2">
+                <span class="font-mono text-[10px]" style="color: var(--text-quaternary);">{spec.blur}</span>
+                <span class="font-mono text-[10px]" style="color: var(--text-quaternary);">{spec.saturate}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-8">
+        <CodeBlock client:visible label="Glassmorphism CSS" code={codeGlassmorphism} />
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Usage Rules -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Usage Rules" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Use Sapphire Scanner on 1-2 featured cards per page max' },
+        { type: 'do', text: 'Alternate ambient pool positions between sections' },
+        { type: 'do', text: 'Keep grain opacity at 2-4% -- subtle, not visible' },
+        { type: 'do', text: 'Hide watermark motifs on mobile screens' },
+        { type: 'do', text: 'Limit blue glow elements to max 2 per viewport' },
+        { type: 'dont', text: 'Apply rotating border to every card -- dilutes the effect' },
+        { type: 'dont', text: 'Stack multiple ambient pools in the same corner' },
+        { type: 'dont', text: 'Use grain above 5% opacity -- it becomes distracting' },
+        { type: 'dont', text: 'Place watermarks where they interfere with text readability' },
+        { type: 'dont', text: 'Combine glassmorphism with grain on the same element' },
+      ]} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Related Pages -->
+  <RelatedPages links={relatedLinksMap['/brandbook/effects'] || []} />
+</BrandbookLayout>

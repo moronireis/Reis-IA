@@ -1,0 +1,440 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CopyButton from '../../components/CopyButton.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+import TokenTable from '../../components/TokenTable.astro';
+---
+
+<BrandbookLayout
+  title="Surfaces"
+  pageName="SURFACES"
+  description="5-tier surface system for depth, elevation, and visual hierarchy on dark backgrounds."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Surface System
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Depth is communicated through 5 tiers of background lightness, not through shadows. Each tier is a step closer to the viewer. Elevation comes from background value, creating a layered visual hierarchy on the dark canvas.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: The 5 Surface Tiers -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="Surface Tiers" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        5 tiers from pure black (Void) to the lightest elevated layer (Float). Each step increases lightness by a controlled amount, creating perceptible but subtle depth.
+      </p>
+
+      <!-- Surface tier cards -->
+      <div class="space-y-4 mb-8">
+        {[
+          { tier: '0', name: 'Void', hex: '#000000', usage: 'Page background, deepest layer', desc: 'The absolute base. Used as the page background on all pages. Nothing sits behind this.' },
+          { tier: '1', name: 'Base', hex: '#0A0A0A', usage: 'Alternating section backgrounds', desc: 'Sections alternate between Surface-0 and Surface-1. The lightest page-level background.' },
+          { tier: '2', name: 'Raised', hex: '#111111', usage: 'Card backgrounds (default)', desc: 'The default background for cards, panels, and contained content areas.' },
+          { tier: '3', name: 'Elevated', hex: '#161616', usage: 'Card hover, input backgrounds', desc: 'Used for interactive hover states (card hover shifts from S-2 to S-3) and form input backgrounds.' },
+          { tier: '4', name: 'Float', hex: '#1A1A1A', usage: 'Dropdowns, tooltips, floating elements', desc: 'The topmost layer. Reserved for elements that float above the content plane: dropdowns, tooltips, popovers.' },
+        ].map(surface => (
+          <div
+            class="rounded-xl border overflow-hidden transition-colors duration-200"
+            style={`border-color: var(--border-default);`}
+          >
+            <div class="flex flex-col md:flex-row">
+              {/* Color preview */}
+              <div
+                class="w-full md:w-48 h-24 md:h-auto flex-shrink-0 flex items-center justify-center"
+                style={`background: var(--surface-${surface.tier});`}
+              >
+                <span class="font-mono text-[11px] font-bold" style="color: var(--text-quaternary);">
+                  S-{surface.tier}
+                </span>
+              </div>
+
+              {/* Details */}
+              <div class="flex-1 p-5" style="background: var(--surface-2);">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold" style="color: var(--text-primary);">
+                      Surface {surface.tier} — {surface.name}
+                    </span>
+                    <CopyButton client:visible text={`var(--surface-${surface.tier})`} />
+                  </div>
+                  <span class="font-mono text-[11px]" style="color: var(--text-quaternary);">{surface.hex}</span>
+                </div>
+                <p class="text-sm mb-2" style="color: var(--text-secondary);">
+                  {surface.desc}
+                </p>
+                <span class="text-xs" style="color: var(--text-tertiary);">{surface.usage}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Section alternation rule -->
+      <div
+        class="p-5 rounded-xl border"
+        style="background: var(--surface-2); border-color: var(--border-default);"
+      >
+        <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-2" style="color: var(--accent-blue);">
+          Section Alternation Rule
+        </div>
+        <p class="text-sm" style="color: var(--text-secondary);">
+          Sections alternate between Surface-0 and Surface-1. Hero always starts on Surface-0.
+          Never jump more than one surface tier between adjacent sections.
+          Cards on Surface-0 sections use Surface-2. Cards on Surface-1 sections also use Surface-2.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Nested Surface Demo -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Depth Hierarchy — Nested Demo" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Surfaces create perceived depth through nesting. Each tier inward brings the element visually closer to the viewer. This demo shows the full depth stack from page background through to a floating tooltip.
+      </p>
+
+      <!-- Nested depth demo -->
+      <div
+        class="p-8 rounded-xl border"
+        style="background: var(--surface-0); border-color: var(--border-default);"
+      >
+        <div class="flex items-center gap-2 mb-4">
+          <span class="font-mono text-[10px] font-bold uppercase" style="color: var(--text-muted);">Surface 0 — Page</span>
+        </div>
+
+        <div
+          class="p-6 rounded-xl border"
+          style="background: var(--surface-1); border-color: var(--border-default);"
+        >
+          <div class="flex items-center gap-2 mb-4">
+            <span class="font-mono text-[10px] font-bold uppercase" style="color: var(--text-quaternary);">Surface 1 — Section</span>
+          </div>
+
+          <div
+            class="p-6 rounded-xl border"
+            style="background: var(--surface-2); border-color: var(--border-default);"
+          >
+            <div class="flex items-center gap-2 mb-4">
+              <span class="font-mono text-[10px] font-bold uppercase" style="color: var(--text-tertiary);">Surface 2 — Card</span>
+            </div>
+
+            <div
+              class="p-5 rounded-lg border"
+              style="background: var(--surface-3); border-color: var(--border-visible);"
+            >
+              <div class="flex items-center gap-2 mb-4">
+                <span class="font-mono text-[10px] font-bold uppercase" style="color: var(--text-secondary);">Surface 3 — Card Hover / Input</span>
+              </div>
+
+              <div
+                class="p-4 rounded-lg border inline-block"
+                style="background: var(--surface-4); border-color: var(--border-visible); box-shadow: var(--shadow-default);"
+              >
+                <span class="font-mono text-[10px] font-bold uppercase" style="color: var(--text-primary);">Surface 4 — Tooltip</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Text on Surfaces -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Text on Surfaces" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        The opacity-based text system ensures readable contrast on every surface tier. Because text uses white at varying opacities, it automatically harmonizes with any background lightness. This demo shows all 5 text levels on each surface.
+      </p>
+
+      <!-- Text contrast grid -->
+      <div class="space-y-4">
+        {[
+          { tier: '0', name: 'Void', hex: '#000000' },
+          { tier: '1', name: 'Base', hex: '#0A0A0A' },
+          { tier: '2', name: 'Raised', hex: '#111111' },
+          { tier: '3', name: 'Elevated', hex: '#161616' },
+          { tier: '4', name: 'Float', hex: '#1A1A1A' },
+        ].map(surface => (
+          <div
+            class="rounded-xl border overflow-hidden"
+            style={`border-color: var(--border-default);`}
+          >
+            <div
+              class="p-5"
+              style={`background: var(--surface-${surface.tier});`}
+            >
+              <div class="flex items-center gap-2 mb-4">
+                <span class="font-mono text-[10px] font-bold uppercase tracking-wider" style="color: var(--text-quaternary);">
+                  Surface {surface.tier} — {surface.name}
+                </span>
+                <span class="font-mono text-[10px]" style="color: var(--text-muted);">{surface.hex}</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+                <div>
+                  <span class="text-sm font-semibold" style="color: var(--text-primary);">Primary</span>
+                  <div class="text-[10px] font-mono mt-1" style="color: var(--text-muted);">100%</div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-secondary);">Secondary</span>
+                  <div class="text-[10px] font-mono mt-1" style="color: var(--text-muted);">70%</div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-tertiary);">Tertiary</span>
+                  <div class="text-[10px] font-mono mt-1" style="color: var(--text-muted);">50%</div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-quaternary);">Quaternary</span>
+                  <div class="text-[10px] font-mono mt-1" style="color: var(--text-muted);">35%</div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-muted);">Muted</span>
+                  <div class="text-[10px] font-mono mt-1" style="color: var(--text-muted);">20%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Borders on Surfaces -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Borders on Surfaces" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Like text, borders use white at varying opacities and naturally harmonize with all surface tiers. The accent border uses blue at 30% opacity for featured elements.
+      </p>
+
+      <!-- Border demo grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[
+          { tier: '0', name: 'Void' },
+          { tier: '1', name: 'Base' },
+          { tier: '2', name: 'Raised' },
+          { tier: '3', name: 'Elevated' },
+        ].map(surface => (
+          <div
+            class="p-5 rounded-xl"
+            style={`background: var(--surface-${surface.tier});`}
+          >
+            <span class="font-mono text-[10px] font-bold uppercase tracking-wider block mb-4" style="color: var(--text-quaternary);">
+              Surface {surface.tier} — {surface.name}
+            </span>
+            <div class="grid grid-cols-5 gap-3">
+              {[
+                { name: 'Subtle', cssVar: '--border-subtle' },
+                { name: 'Default', cssVar: '--border-default' },
+                { name: 'Visible', cssVar: '--border-visible' },
+                { name: 'Strong', cssVar: '--border-strong' },
+                { name: 'Accent', cssVar: '--border-accent' },
+              ].map(border => (
+                <div class="text-center">
+                  <div
+                    class="w-full aspect-square rounded-lg mb-2"
+                    style={`border: 2px solid var(${border.cssVar}); background: transparent;`}
+                  ></div>
+                  <span class="text-[9px] font-mono" style="color: var(--text-muted);">{border.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: Surface Usage Patterns -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="Surface Usage Patterns" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Common patterns showing which surface tiers to use for different UI compositions.
+      </p>
+
+      <!-- Pattern cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Page Layout -->
+        <div
+          class="p-5 rounded-xl border"
+          style="background: var(--surface-2); border-color: var(--border-default);"
+        >
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            Page Layout
+          </div>
+          <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <div class="flex justify-between">
+              <span>Page bg:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-0</code>
+            </div>
+            <div class="flex justify-between">
+              <span>Alt sections:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-0 / S-1</code>
+            </div>
+            <div class="flex justify-between">
+              <span>Header:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-1 + blur</code>
+            </div>
+            <div class="flex justify-between">
+              <span>Footer:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-1</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Composition -->
+        <div
+          class="p-5 rounded-xl border"
+          style="background: var(--surface-2); border-color: var(--border-default);"
+        >
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            Card Composition
+          </div>
+          <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <div class="flex justify-between">
+              <span>Card default:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-2</code>
+            </div>
+            <div class="flex justify-between">
+              <span>Card hover:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-3</code>
+            </div>
+            <div class="flex justify-between">
+              <span>Input inside card:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-3</code>
+            </div>
+            <div class="flex justify-between">
+              <span>Nested element:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-3 or S-4</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Elements -->
+        <div
+          class="p-5 rounded-xl border"
+          style="background: var(--surface-2); border-color: var(--border-default);"
+        >
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--accent-blue);">
+            Floating Elements
+          </div>
+          <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
+            <div class="flex justify-between">
+              <span>Dropdown:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-4</code>
+            </div>
+            <div class="flex justify-between">
+              <span>Tooltip:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-4</code>
+            </div>
+            <div class="flex justify-between">
+              <span>Modal:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-3 or S-4</code>
+            </div>
+            <div class="flex justify-between">
+              <span>Popover:</span>
+              <code class="text-[11px] font-mono" style="color: var(--text-quaternary); background: none; border: none; padding: 0;">S-4</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <DosDonts items={[
+        { type: 'do', text: 'Alternate sections between Surface-0 and Surface-1' },
+        { type: 'do', text: 'Start hero sections on Surface-0' },
+        { type: 'do', text: 'Use Surface-2 for all card backgrounds' },
+        { type: 'do', text: 'Shift to Surface-3 on card hover' },
+        { type: 'dont', text: 'Jump more than one tier between adjacent elements' },
+        { type: 'dont', text: 'Put Surface-4 content on a Surface-0 background (skip)' },
+        { type: 'dont', text: 'Use more than 2 surface tiers on mobile' },
+        { type: 'dont', text: 'Use shadows instead of surface tiers for elevation' },
+      ]} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Interactive Card Demo -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Interactive Surface Demo" />
+
+      <p class="text-sm mb-8 max-w-[680px]" style="color: var(--text-tertiary); text-wrap: pretty;">
+        Hover over these cards to see the surface transition from Surface-2 to Surface-3. The border also shifts from <code>--border-default</code> to <code>--border-visible</code>. This is the standard card hover behavior across the design system.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3].map(i => (
+          <div
+            class="p-6 rounded-xl border transition-all duration-200 cursor-pointer"
+            style="background: var(--surface-2); border-color: var(--border-default);"
+            onmouseenter="this.style.background='var(--surface-3)';this.style.borderColor='var(--border-visible)'"
+            onmouseleave="this.style.background='var(--surface-2)';this.style.borderColor='var(--border-default)'"
+          >
+            <div
+              class="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
+              style="background: var(--blue-10); border: 1px solid var(--blue-20);"
+            >
+              <span class="font-mono text-sm font-bold" style="color: var(--accent-blue);">0{i}</span>
+            </div>
+            <h4 class="text-base font-semibold mb-2" style="color: var(--text-primary);">
+              Card Example {i}
+            </h4>
+            <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">
+              Hover to see the surface transition. Background shifts from S-2 to S-3, border from default to visible.
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: CSS Variables Reference -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="CSS Variables Reference" />
+
+      <TokenTable tokens={[
+        { name: 'Surface 0', value: '#000000', cssVar: '--surface-0', usage: 'Page background (Void)' },
+        { name: 'Surface 1', value: '#0A0A0A', cssVar: '--surface-1', usage: 'Alternating sections (Base)' },
+        { name: 'Surface 2', value: '#111111', cssVar: '--surface-2', usage: 'Card backgrounds (Raised)' },
+        { name: 'Surface 3', value: '#161616', cssVar: '--surface-3', usage: 'Card hover, inputs (Elevated)' },
+        { name: 'Surface 4', value: '#1A1A1A', cssVar: '--surface-4', usage: 'Dropdowns, tooltips (Float)' },
+      ]} showPreview previewType="color" />
+    </div>
+  </section>
+</BrandbookLayout>

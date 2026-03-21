@@ -1,0 +1,513 @@
+---
+import BrandbookLayout from '../../layouts/BrandbookLayout.astro';
+import RelatedPages from '../../components/RelatedPages.astro';
+import { relatedLinksMap } from '../../data/navigation';
+import SectionLabel from '../../components/SectionLabel.astro';
+import CodeBlock from '../../components/CodeBlock.tsx';
+import DosDonts from '../../components/DosDonts.astro';
+
+const codeStandard = `.card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 32px;
+  transition:
+    border-color 300ms var(--ease-base),
+    background-color 300ms var(--ease-base);
+}
+
+.card:hover {
+  border-color: var(--border-visible);
+  background: var(--surface-3);
+}
+
+@media (max-width: 767px) {
+  .card { padding: 24px; }
+}`;
+
+const codeAccented = `.card-accented {
+  /* Standard card base + */
+  border-top: 2px solid var(--accent-blue);
+}`;
+
+const codeGlass = `.card-glass {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  backdrop-filter: blur(16px) saturate(180%);
+  padding: 32px;
+}`;
+
+const codeFeatured = `@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.card-rotating-border {
+  background:
+    linear-gradient(135deg, var(--surface-2), var(--surface-3)) padding-box,
+    conic-gradient(
+      from var(--border-angle),
+      rgba(255,255,255,0.08) 0%,
+      rgba(255,255,255,0.08) 75%,
+      rgba(74,144,255,0.5) 85%,
+      rgba(74,144,255,0.8) 90%,
+      rgba(74,144,255,0.5) 95%,
+      rgba(255,255,255,0.08) 100%
+    ) border-box;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  animation: rotateBorder 8s linear infinite;
+}
+
+@keyframes rotateBorder {
+  to { --border-angle: 360deg; }
+}`;
+
+const codeKpi = `.kpi-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 24px;
+  transition: border-color 200ms var(--ease-base),
+              background-color 200ms var(--ease-base);
+}
+
+.kpi-card:hover {
+  border-color: var(--border-visible);
+  background: var(--surface-3);
+}
+
+.kpi-card__label {
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.kpi-card__value {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}`;
+
+const codeGrid = `/* Card grid layouts */
+.card-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.card-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.card-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}`;
+---
+
+<BrandbookLayout
+  title="Cards"
+  pageName="CARDS"
+  description="Card component system with standard, accented, glass, featured, KPI, and content variants. Grid layouts and interactive demos."
+>
+  <!-- Title Area -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-2xl);">
+      <div class="max-w-[900px]">
+        <h1
+          class="font-bold tracking-tight mb-6"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary); text-wrap: balance;"
+        >
+          Cards
+        </h1>
+        <p
+          class="max-w-[680px]"
+          style="font-size: var(--text-body-lg); line-height: 1.6; color: var(--text-secondary); text-wrap: pretty;"
+        >
+          Cards are the primary content container. Six variants handle everything from basic content blocks to featured showcases with the Sapphire Scanner effect. All cards use the Surface system for depth and white-alpha borders for structure.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 01: All Variants at a Glance -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="01" title="All Variants" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Six card variants organized in a hairline grid. Hover each card to see its interactive behavior. The featured card has a continuously rotating blue border.
+        </p>
+      </div>
+
+      <div
+        class="grid-hairline grid-hairline-s1 rounded-xl overflow-hidden"
+        style="grid-template-columns: repeat(3, 1fr);"
+      >
+        <!-- Standard -->
+        <div class="p-6 md:p-8 transition-colors duration-300" style="background: var(--surface-1);"
+          onmouseover="this.style.background='var(--surface-2)'"
+          onmouseout="this.style.background='var(--surface-1)'"
+        >
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 16px;">Standard</span>
+          <div class="rounded-xl border p-5 transition-colors duration-300" style="background: var(--surface-2); border-color: var(--border-default);"
+            onmouseover="this.style.borderColor='var(--border-visible)';this.style.background='var(--surface-3)'"
+            onmouseout="this.style.borderColor='var(--border-default)';this.style.background='var(--surface-2)'"
+          >
+            <h4 class="font-semibold mb-2" style="color: var(--text-primary); font-size: 16px;">Card Title</h4>
+            <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">Surface-2 background with border hover.</p>
+          </div>
+        </div>
+
+        <!-- Accented -->
+        <div class="p-6 md:p-8" style="background: var(--surface-1);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 16px;">Accented</span>
+          <div class="rounded-xl border p-5 transition-colors duration-300" style="background: var(--surface-2); border-color: var(--border-default); border-top: 2px solid var(--accent-blue);"
+            onmouseover="this.style.background='var(--surface-3)'"
+            onmouseout="this.style.background='var(--surface-2)'"
+          >
+            <span class="badge-accent mb-3 inline-block">Featured</span>
+            <h4 class="font-semibold mb-2" style="color: var(--text-primary); font-size: 16px;">Card Title</h4>
+            <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">Blue top border draws attention.</p>
+          </div>
+        </div>
+
+        <!-- Glass -->
+        <div class="p-6 md:p-8 relative overflow-hidden" style="background: var(--surface-1);">
+          <div style="position: absolute; top: 10%; right: -10%; width: 150px; height: 150px; background: radial-gradient(circle, rgba(74,144,255,0.12) 0%, transparent 70%); pointer-events: none;"></div>
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 16px; position: relative; z-index: 1;">Glass</span>
+          <div class="rounded-2xl p-5 relative z-10" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); backdrop-filter: blur(16px) saturate(180%);">
+            <h4 class="font-semibold mb-2" style="color: var(--text-primary); font-size: 16px;">Card Title</h4>
+            <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">Translucent with backdrop blur.</p>
+          </div>
+        </div>
+
+        <!-- Featured (Sapphire Scanner) -->
+        <div class="p-6 md:p-8" style="background: var(--surface-1);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 16px;">Featured</span>
+          <div class="card-rotating-border p-5" style="border-radius: 12px;">
+            <h4 class="font-semibold mb-2" style="color: var(--text-primary); font-size: 16px;">Card Title</h4>
+            <p class="text-sm" style="color: var(--text-secondary); line-height: 1.6;">Sapphire Scanner rotating border.</p>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <div class="p-6 md:p-8" style="background: var(--surface-1);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 16px;">KPI</span>
+          <div class="kpi-card">
+            <div class="kpi-card__label">Deployments</div>
+            <div class="kpi-card__value" style="color: var(--accent-blue);">50+</div>
+            <div class="kpi-card__trend kpi-card__trend--up">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+              +12%
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6 md:p-8" style="background: var(--surface-1);">
+          <span style="font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: block; margin-bottom: 16px;">Content</span>
+          <div class="rounded-xl border p-5 flex flex-col transition-colors duration-300" style="background: var(--surface-2); border-color: var(--border-default);"
+            onmouseover="this.style.borderColor='var(--border-visible)';this.style.background='var(--surface-3)'"
+            onmouseout="this.style.borderColor='var(--border-default)';this.style.background='var(--surface-2)'"
+          >
+            <div class="mb-3" style="color: var(--accent-blue);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+            </div>
+            <h4 class="font-semibold mb-1" style="color: var(--text-primary); font-size: 15px;">Title</h4>
+            <p class="text-xs mb-3" style="color: var(--text-secondary);">Icon + title + desc + CTA.</p>
+            <span class="text-xs font-medium mt-auto" style="color: var(--text-tertiary); display: inline-flex; align-items: center; gap: 4px;">Learn more <span>&rarr;</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 02: Standard Card -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="02" title="Standard Card" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          The foundational card variant. Surface-2 background with 8% white-alpha border. On hover, the border brightens to 12% and background lifts to Surface-3. This is the default — use it unless a specific variant is needed.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {[
+          { title: 'AI Strategy', desc: 'Map your business processes and identify the highest-impact AI implementation opportunities.' },
+          { title: 'System Design', desc: 'Architect AI systems that integrate with your existing tools and scale with your growth.' },
+          { title: 'Implementation', desc: 'Build, test, and deploy AI systems with measurable KPIs and clear timelines.' },
+        ].map(card => (
+          <div
+            class="rounded-xl border p-6 md:p-8 transition-colors duration-300"
+            style="background: var(--surface-2); border-color: var(--border-default);"
+            onmouseover="this.style.borderColor='var(--border-visible)';this.style.background='var(--surface-3)'"
+            onmouseout="this.style.borderColor='var(--border-default)';this.style.background='var(--surface-2)'"
+          >
+            <div class="mb-6" style="color: var(--accent-blue);">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+              </svg>
+            </div>
+            <h4 class="text-lg font-semibold mb-3" style="color: var(--text-primary);">{card.title}</h4>
+            <p class="text-sm" style="color: var(--text-secondary); line-height: 1.65;">{card.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <CodeBlock client:visible label="Standard Card CSS" code={codeStandard} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 03: Featured Card (Sapphire Scanner) -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="03" title="Featured Card (Sapphire Scanner)" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm mb-4" style="color: var(--text-secondary); text-wrap: pretty;">
+          The highest-emphasis card uses the Sapphire Scanner rotating border effect. A blue light segment slowly orbits the card perimeter over 8 seconds. Use on 1-2 featured cards per page maximum — overuse dilutes the effect.
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs" style="color: var(--text-tertiary);">
+          <span><strong style="color: var(--text-secondary);">Animation:</strong> 8s linear infinite</span>
+          <span><strong style="color: var(--text-secondary);">Max per page:</strong> 1-2 cards</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="card-rotating-border p-6 md:p-8" style="border-radius: 12px;">
+          <div class="mb-6" style="color: var(--accent-blue);">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </div>
+          <h4 class="text-xl font-semibold mb-3" style="color: var(--text-primary);">Featured Project</h4>
+          <p class="text-sm mb-4" style="color: var(--text-secondary); line-height: 1.65;">
+            This card uses the Sapphire Scanner rotating border. The subtle blue scanning beam evokes systematic precision and analytical methodology.
+          </p>
+          <span style="color: var(--text-secondary); font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; gap: 4px;">
+            View case study <span>&rarr;</span>
+          </span>
+        </div>
+
+        <div
+          class="rounded-xl p-6 md:p-8"
+          style="background: linear-gradient(135deg, var(--surface-2), var(--surface-3)); border: 1px solid var(--border-accent); border-radius: 12px;"
+        >
+          <div class="mb-6" style="color: var(--accent-blue);">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18" /><path d="M9 21V9" />
+            </svg>
+          </div>
+          <h4 class="text-xl font-semibold mb-3" style="color: var(--text-primary);">Gradient Border</h4>
+          <p class="text-sm mb-4" style="color: var(--text-secondary); line-height: 1.65;">
+            A static accent border variant. The blue-tinted border creates subtle emphasis without animation.
+          </p>
+          <span style="color: var(--text-secondary); font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; gap: 4px;">
+            Learn more <span>&rarr;</span>
+          </span>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Featured Card CSS (Rotating Border)" code={codeFeatured} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 04: Glass Card -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="04" title="Glass Card" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Translucent card with blur and saturate backdrop filters. Best used over sections with ambient light pools or gradient backgrounds where the translucency effect is visible.
+        </p>
+      </div>
+
+      <div
+        class="relative rounded-xl border overflow-hidden mb-8"
+        style="background: var(--surface-0); border-color: var(--border-default); min-height: 300px;"
+      >
+        <div style="position: absolute; top: 20%; left: 10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(74,144,255,0.12) 0%, transparent 70%); pointer-events: none;"></div>
+        <div style="position: absolute; bottom: 10%; right: 15%; width: 200px; height: 200px; background: radial-gradient(circle, rgba(74,144,255,0.08) 0%, transparent 70%); pointer-events: none;"></div>
+
+        <div class="relative p-8 md:p-12 flex items-center justify-center" style="z-index: 1; min-height: 300px;">
+          <div class="p-8 rounded-2xl max-w-md w-full" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); backdrop-filter: blur(16px) saturate(180%);">
+            <h4 class="text-lg font-semibold mb-3" style="color: var(--text-primary);">Glass Card</h4>
+            <p class="text-sm" style="color: var(--text-secondary); line-height: 1.65;">
+              The backdrop-filter creates a frosted glass effect. The saturate(180%) boost prevents blur from washing out the underlying ambient pools.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="Glass Card CSS" code={codeGlass} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 05: KPI Card -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="05" title="KPI Card" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Compact data-display card for key performance indicators. Features a label, large value with tabular-nums, optional trend indicator, and context line.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+        <div class="kpi-card">
+          <div class="kpi-card__label">Deployments</div>
+          <div class="kpi-card__value" style="color: var(--accent-blue);">50+</div>
+          <div class="kpi-card__trend kpi-card__trend--up">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+            +12% this quarter
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__label">Time Saved</div>
+          <div class="kpi-card__value">83%</div>
+          <div class="kpi-card__context">Average reduction in manual processing time</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__label">Hours Automated</div>
+          <div class="kpi-card__value">245K</div>
+          <div class="kpi-card__trend kpi-card__trend--up">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+            +38% year-over-year
+          </div>
+        </div>
+      </div>
+
+      <CodeBlock client:visible label="KPI Card CSS" code={codeKpi} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 06: Content Card Structure -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="06" title="Content Card Structure" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          The standard internal structure for content cards: icon (32-40px, accent blue), title (H4), description (body, text-secondary), and an optional ghost CTA pushed to the bottom with mt-auto.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {[
+          { icon: 'M12 6v6l4 2', circle: true, title: 'Time Multiplication', desc: 'AI systems that give you back 10x the hours you invest in implementation.' },
+          { icon: 'M3 3h18v18H3zM3 9h18M9 21V9', circle: false, title: 'Revenue Systems', desc: 'Automated funnels, lead scoring, and conversion optimization at scale.' },
+          { icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', circle: false, title: 'Process Architecture', desc: 'Map, automate, and monitor your core business processes with AI.' },
+          { icon: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2', circle: false, title: 'Team Enablement', desc: 'Train your team to operate and optimize AI systems independently.' },
+        ].map((card) => (
+          <div
+            class="rounded-xl border p-6 flex flex-col transition-colors duration-300"
+            style="background: var(--surface-2); border-color: var(--border-default);"
+            onmouseover="this.style.borderColor='var(--border-visible)';this.style.background='var(--surface-3)'"
+            onmouseout="this.style.borderColor='var(--border-default)';this.style.background='var(--surface-2)'"
+          >
+            <div class="mb-6" style="color: var(--accent-blue);">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                {card.circle && <circle cx="12" cy="12" r="10" />}
+                <path d={card.icon} />
+              </svg>
+            </div>
+            <h4 class="font-semibold mb-2" style="color: var(--text-primary); font-size: var(--text-h5);">{card.title}</h4>
+            <p class="text-sm mb-6" style="color: var(--text-secondary); line-height: 1.65;">{card.desc}</p>
+            <span class="mt-auto text-sm font-medium" style="color: var(--text-secondary); display: inline-flex; align-items: center; gap: 4px;">
+              Learn more <span>&rarr;</span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 07: Grid Layouts -->
+  <section style="background: var(--surface-1);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="07" title="Grid Layouts" />
+
+      <div class="max-w-[680px] mb-8">
+        <p class="text-sm" style="color: var(--text-secondary); text-wrap: pretty;">
+          Three standard grid configurations using auto-fit with minmax for responsive behavior. Cards flow naturally from the configured maximum down to single-column on mobile.
+        </p>
+      </div>
+
+      {[
+        { label: '2-Column Grid (minmax 340px)', minmax: '340px', count: 2 },
+        { label: '3-Column Grid (minmax 300px)', minmax: '300px', count: 3 },
+        { label: '4-Column Grid (minmax 260px)', minmax: '260px', count: 4 },
+      ].map(grid => (
+        <div class="mb-8">
+          <div class="font-mono text-[11px] font-bold uppercase tracking-wider mb-4" style="color: var(--accent-blue);">
+            {grid.label}
+          </div>
+          <div class="grid gap-4" style={`grid-template-columns: repeat(auto-fit, minmax(${grid.minmax}, 1fr));`}>
+            {Array.from({ length: grid.count }).map((_, n) => (
+              <div class="rounded-xl border p-6" style="background: var(--surface-2); border-color: var(--border-default);">
+                <div class="text-sm" style="color: var(--text-secondary);">Card {n + 1}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <CodeBlock client:visible label="Card Grid CSS" code={codeGrid} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Section 08: Usage Rules -->
+  <section style="background: var(--surface-0);">
+    <div class="container-standard" style="padding-top: var(--space-3xl); padding-bottom: var(--space-3xl);">
+      <SectionLabel number="08" title="Usage Rules" />
+
+      <DosDonts items={[
+        { type: 'do', text: 'Use standard cards as the default — only upgrade to accented/featured when content demands it' },
+        { type: 'do', text: 'Maintain consistent padding within a card grid (all cards same padding)' },
+        { type: 'do', text: 'Use Surface-2 background for cards on Surface-0/Surface-1 sections' },
+        { type: 'do', text: 'Limit Sapphire Scanner cards to 1-2 per page' },
+        { type: 'do', text: 'Use auto-fit grids for responsive card layouts' },
+        { type: 'dont', text: 'Use box-shadows for card elevation — use the surface system instead' },
+        { type: 'dont', text: 'Mix card variants within the same grid (e.g., glass + standard)' },
+        { type: 'dont', text: 'Place cards directly on Surface-2 background — no visual separation' },
+        { type: 'dont', text: 'Skip the hover state — every card must respond to interaction' },
+        { type: 'dont', text: 'Nest cards inside cards — keep the hierarchy flat' },
+      ]} />
+    </div>
+  </section>
+
+  <div class="gradient-divider"></div>
+
+  <!-- Related Pages -->
+  <RelatedPages links={relatedLinksMap['/brandbook/cards'] || []} />
+</BrandbookLayout>
