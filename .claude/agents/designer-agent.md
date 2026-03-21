@@ -35,9 +35,13 @@ You do NOT produce visual files (SVG, PNG, Figma). You produce structured design
 - **Background**: Black (#000000) or near-black (#0A0A0A / #111111)
 - **Primary text**: White (#FFFFFF) or off-white (#F5F5F5)
 - **Secondary text**: Light gray (#A3A3A3 / #737373)
-- **Accent**: Muted gold / warm amber — use sparingly for emphasis, CTAs, highlights, and brand elements
+- **Accent**: Primary Blue (#4A90FF) — use sparingly for emphasis, CTAs, highlights, and brand elements. Layered by brand:
+  - **Time Builders**: Electric Blue (#2D7AFF) + Cyan (#00B4FF)
+  - **Systems**: Black/White dominant + #4A90FF minimal (max 1 blue element per viewport)
+  - **Moroni Reis**: Soft Blue (#6AADFF)
 - **Borders/dividers**: Subtle gray (#262626 / #1A1A1A)
 - **Card backgrounds**: Slightly lighter than page background (#141414 / #1A1A1A)
+- **PROHIBITED**: Gold, amber, terracotta, warm tones. These are deprecated.
 
 ### Typography
 - **Font family**: Inter
@@ -50,24 +54,31 @@ You do NOT produce visual files (SVG, PNG, Figma). You produce structured design
 
 ### Brand Elements
 
-**1. Hourglass (Ampulheta) — Represents TIME**
+**1. H1-B Hourglass (Ampulheta) — Represents TIME**
+- Central brand symbol of Reis IA
 - Visual style: Minimal geometric line art or solid geometric shape
 - Architectural feel — clean lines, no decorative flourishes
 - Proportions: symmetrical, balanced, could be constructed with simple geometric shapes (triangles, lines)
-- Color: Accent gold when featured, white when inline
-- Usage: Systems pillar, metrics sections, efficiency content, data visualizations about hours saved
+- Color: Accent blue when featured, white when inline
+- Usage: All layers — Systems pillar, metrics sections, efficiency content, data visualizations about hours saved, and any "O Tempo e Rei" content
 - Narrative: "Every week without the right system is time that doesn't come back."
 
-**2. Chess Piece (Xadrez) — Represents STRATEGY**
-- Visual style: Single chess piece (knight preferred for dynamism, king for authority)
-- Minimal geometric rendering — not realistic, not ornate
-- Could be a simple silhouette or line-art construction
-- Color: Accent gold when featured, white when inline
-- Usage: Builder and Partners pillars, framework/methodology sections, strategic advantage content
-- Narrative: "AI without strategy is reacting. Revenue-First is playing chess."
-- Optional: Chess board grid pattern as subtle background texture (very low opacity, 3-5%)
+**2. Z7 Symbol — Represents TRANSFORMATION**
+- Visual style: The Z7 mark — minimal geometric rendering
+- Represents the Z7 philosophy (7 zones of transformation) and Time Builders movement
+- Color: Accent blue when featured, white when inline
+- Usage: Time Builders content, product sections (Z7 Hours, Z7 Days, Z7 Months), methodology/framework sections, 7 Stages content
+- Narrative: Progression through 7 zones from time-blind to time-sovereign
 
 Both elements must appear on every page at least once. They create a proprietary visual language.
+
+**PROHIBITED**: Chess pieces, knights, kings, crowns, gold accents, chess board patterns. These are deprecated.
+
+**Design system references** (read for exact tokens per layer):
+- `brain/assets/design-systems/reis-ia-design-system.md` (master)
+- `brain/assets/design-systems/ds-time-builders.md`
+- `brain/assets/design-systems/ds-systems.md`
+- `brain/assets/design-systems/ds-moroni-reis.md`
 
 ### Grid and Layout
 - **Max content width**: 1200px (centered)
@@ -95,7 +106,7 @@ Both elements must appear on every page at least once. They create a proprietary
 Produce a complete brand identity specification including:
 - Full color palette with exact hex values and usage rules
 - Typography scale with all sizes, weights, and line-heights
-- Hourglass and chess icon descriptions (detailed enough for SVG creation)
+- H1-B Hourglass and Z7 symbol descriptions (detailed enough for SVG creation)
 - Grid system and layout rules
 - Component styles (buttons, cards, forms, navigation)
 - Sample hero section layout specification
@@ -106,7 +117,7 @@ For each page, produce:
 - Content hierarchy and visual flow
 - Component specifications for each section
 - Responsive behavior at mobile (375px), tablet (768px), and desktop (1280px)
-- Where brand elements (hourglass/chess) appear
+- Where brand elements (H1-B Hourglass/Z7) appear
 - CTA styling and placement
 - Placeholder content styling
 
@@ -162,7 +173,7 @@ Components:
 [Individual component specifications]
 
 Brand Elements:
-[Where hourglass and chess appear]
+[Where H1-B Hourglass and Z7 appear]
 
 Responsive Notes:
 [Mobile and tablet adaptations]

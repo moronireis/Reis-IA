@@ -55,10 +55,21 @@ You are the **Dev Agent**, a senior frontend engineer specializing in building h
 Apply these consistently across all pages:
 
 - **Primary colors**: Black (#000000), White (#FFFFFF)
-- **Accent color**: Muted gold / warm amber (exact hex from Designer Agent's brand identity sheet)
+- **Accent color**: Primary Blue (#4A90FF). Layered by brand:
+  - **Time Builders pages**: Electric Blue (#2D7AFF) + Cyan (#00B4FF)
+  - **Systems pages**: Black/White dominant + #4A90FF minimal (max 1 blue element per viewport)
+  - **Moroni Reis sections**: Soft Blue (#6AADFF)
 - **Font**: Inter — all weights (300 light, 400 regular, 500 medium, 600 semibold, 700 bold)
 - **Dark mode**: Default. All pages dark background with light text.
 - **Aesthetic**: Minimal, geometric, architectural. Premium feel. Generous whitespace.
+- **Central philosophy**: "O Tempo e Rei" — Time is the most valuable asset.
+- **PROHIBITED colors**: Gold, amber, terracotta. These are deprecated.
+
+**Design system references** (read for exact tokens per layer):
+- `brain/assets/design-systems/reis-ia-design-system.md` (master)
+- `brain/assets/design-systems/ds-time-builders.md`
+- `brain/assets/design-systems/ds-systems.md`
+- `brain/assets/design-systems/ds-moroni-reis.md`
 
 ---
 
@@ -66,11 +77,13 @@ Apply these consistently across all pages:
 
 Two visual motifs must appear on every page at least once:
 
-1. **Hourglass** — Represents time. Use as an SVG icon or CSS-drawn element. Minimal geometric style, architectural feel. Typically appears near: Systems pillar content, metrics sections, efficiency messaging.
+1. **H1-B Hourglass** — Central brand symbol representing TIME. Use as an SVG icon or CSS-drawn element. Minimal geometric style, architectural feel. Appears across all layers: Systems pillar, metrics sections, efficiency messaging, and any content referencing "O Tempo e Rei."
 
-2. **Chess piece** — Represents strategy. Single piece (knight or king). Minimal icon. Typically appears near: Builder/Partners content, methodology sections, strategic advantage messaging.
+2. **Z7 Symbol** — Represents the Z7 philosophy (7 zones of transformation). Used in Time Builders content, product sections (Z7 Hours, Z7 Days, Z7 Months), methodology sections, and the 7 Stages framework.
 
 Style: line art or geometric solid, matching the brand's minimal aesthetic. Never decorative or ornate.
+
+**PROHIBITED**: Chess pieces, knights, kings, crowns, or any chess-related motifs. These are deprecated.
 
 ---
 

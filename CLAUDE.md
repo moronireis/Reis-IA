@@ -14,8 +14,10 @@ Full business context: `brain/context/business-profile.md`
 |-------|------|-------|
 | orchestrator | Coordination, planning, delegation. Never implements directly. | opus |
 | market-research-analyst | Market analysis, competitor research, ICP discovery, positioning gaps. | sonnet |
-| cmo-strategist | Marketing strategy, positioning, offers, funnels, go-to-market planning. | opus |
-| direct-response-copywriter | Persuasive copy execution: sales pages, VSL scripts, emails, ads. | sonnet |
+| cmo-strategist | Marketing strategy, positioning, offers, funnels, go-to-market planning. Copy Squad director. | opus |
+| direct-response-copywriter | Persuasive copy execution: sales pages, VSL scripts, emails, ads. Hormozi framework. | sonnet |
+| humanizer | Eliminates AI patterns, injects natural PT-BR executive voice. Post-copywriter. | sonnet |
+| reviewer | Final quality gate: scores copy against brand voice, Hormozi, humanization. | sonnet |
 | execution | File operations, folder organization, asset generation. | sonnet |
 | dev-agent | Web development: Astro pages, React components, Tailwind styling, project setup. | sonnet |
 | designer-agent | UI/UX design specs, brand identity, page layouts, wireframes-as-text. | opus |
@@ -27,14 +29,34 @@ Full business context: `brain/context/business-profile.md`
 ```
 orchestrator
     +---> market-research-analyst  (produces research)
-    +---> cmo-strategist           (consumes research, produces strategy)
-    +---> direct-response-copywriter (consumes strategy, produces copy)
+    +---> cmo-strategist           (consumes research, produces strategy, directs Copy Squad)
+    |        +---> COPY SQUAD PIPELINE:
+    |        |     cmo-strategist (brief + angles)
+    |        |       → direct-response-copywriter (raw copy + Hormozi)
+    |        |         → humanizer (PT-BR voice + AI pattern removal)
+    |        |           → reviewer (quality gate: APPROVE / REVISE)
+    |        |             → cmo-strategist (final sign-off)
     +---> designer-agent           (consumes copy + strategy, produces design specs)
     +---> dev-agent                (consumes design specs + copy, produces code)
     +---> executor-agent           (configures external platforms and tools)
     +---> analysis-agent           (produces context summaries for any agent)
     +---> execution                (file operations when needed)
 ```
+
+### Copy Squad
+
+The Copy Squad is a 5-agent pipeline managed by the CMO Strategist for all copy production:
+
+1. **CMO Strategist** — creates strategic brief with Hormozi 4-angle material
+2. **Direct-Response Copywriter** — writes raw persuasive copy applying `.claude/rules/hormozi-framework.md`
+3. **Humanizer** — eliminates AI patterns per `.claude/rules/humanization-rules.md`, injects natural PT-BR voice
+4. **Reviewer** — final quality gate scoring against all 3 rule sets in `.claude/rules/`
+5. **CMO Strategist** — final strategic sign-off
+
+**Rule sets** (mandatory for all Copy Squad agents):
+- `.claude/rules/brand-voice.md` — Brand voice and tone
+- `.claude/rules/hormozi-framework.md` — Persuasion framework (value equation, 4 angles, Grand Slam Offer)
+- `.claude/rules/humanization-rules.md` — AI pattern elimination and human voice injection
 
 ### ICP Ownership Split
 
@@ -56,22 +78,28 @@ orchestrator
 
 ## Brand Identity
 
+- **Central philosophy**: "O Tempo e Rei" — Time is the most valuable asset. The brand name (Reis) is embedded in the philosophy.
 - **Primary colors**: Black (#000000), White (#FFFFFF)
-- **Accent color**: Muted gold / warm amber
+- **Accent color**: Primary Blue (#4A90FF). Layered by brand:
+  - **Time Builders**: Electric Blue (#2D7AFF) + Cyan (#00B4FF)
+  - **Systems**: Black/White dominant + #4A90FF minimal
+  - **Moroni Reis**: Soft Blue (#6AADFF)
 - **Mode**: Dark mode default
 - **Aesthetic**: Minimal geometric, architectural, Apple-level premium
 - **Font**: Inter (all weights)
-- **Hourglass motif**: Represents TIME. Minimal geometric icon. Used in Systems pillar, efficiency content.
-- **Chess motif**: Represents STRATEGY. Single piece (knight/king). Used in Builder/Partners, methodology.
-- Both brand elements appear on every page at least once.
+- **H1-B Hourglass motif**: Central brand symbol. Represents TIME. Minimal geometric icon. Used across all layers.
+- **Z7 symbol**: Represents the Z7 philosophy (7 zones of transformation). Used in Time Builders, products (Z7 Hours, Z7 Days, Z7 Months), and the 7 Stages framework.
+- Both brand elements (Hourglass + Z7) appear on every page at least once.
+- **PROHIBITED**: Gold, amber, terracotta, chess pieces, crowns. These are deprecated and must never be used.
 
 ## Folder Structure
 
 ```
 /
     .claude/
-        agents/             # Agent definition files (9 agents)
+        agents/             # Agent definition files (11 agents)
         agent-memory/       # Agent-private persistent memory (per-agent)
+        rules/              # Shared rule sets for Copy Squad (brand-voice, hormozi-framework, humanization-rules)
     brain/                  # Shared project knowledge base
         research/           # Raw research and data
             market/         # Market analyses

@@ -107,7 +107,7 @@ Only produced if the site has a rich component library. Documents each component
 2. **Fetch main page** and identify all linked internal pages
 3. **Systematically analyze** each page, extracting tokens and patterns
 4. **Check Reis IA context** — read `brain/assets/design-systems/` to understand the current Reis IA design system
-5. **Cross-reference** — flag patterns that could enhance OR conflict with Reis IA's system (dark mode, black/white/gold palette, Inter font, minimal geometric aesthetic, hourglass and chess motifs)
+5. **Cross-reference** — flag patterns that could enhance OR conflict with Reis IA's system (dark mode, black/white/blue palette (#4A90FF), Inter font, minimal geometric aesthetic, hourglass and Z7 motifs)
 6. **Compile documentation** into the four output files
 7. **Report summary** with: total pages analyzed, total tokens extracted, total components documented, key takeaways, and recommended patterns for Reis IA consideration
 
@@ -117,7 +117,7 @@ Only produced if the site has a rich component library. Documents each component
 - You NEVER copy designs wholesale. The goal is to extract knowledge for original application.
 - Always note the source URL and date of extraction for attribution.
 - If a site blocks fetching or has limited accessible source, document what IS available and note limitations.
-- When cross-referencing with Reis IA, remember: dark mode default, black/white/gold palette, Inter font, Apple-level premium aesthetic, no SaaS patterns (no pricing tables/tier cards), hourglass and chess motifs.
+- When cross-referencing with Reis IA, remember: dark mode default, black/white/blue palette (#4A90FF primary, layered per brand), Inter font, Apple-level premium aesthetic, no SaaS patterns (no pricing tables/tier cards), hourglass and Z7 motifs. PROHIBITED: gold, amber, terracotta, chess motifs.
 - Handoff extracted knowledge to the Orchestrator for decisions on what to incorporate into the Reis IA design system.
 - All documentation must be in English.
 - Follow file management rules: never overwrite originals, use date tags for additions.
