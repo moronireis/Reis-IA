@@ -1,0 +1,211 @@
+---
+/**
+ * Nav — Fixed top navigation with glassmorphism on scroll.
+ * H1-B hourglass mark + "Reis IA" wordmark (font-weight 300).
+ * Links: Home, Builder, Systems.
+ * CTA: "Agendar" -> /agendar (blue bg, white text).
+ */
+import HourglassIcon from './HourglassIcon.astro';
+
+interface Props {
+  activePage?: 'home' | 'builder' | 'systems' | 'partners' | 'network' | 'about';
+}
+
+const { activePage = 'home' } = Astro.props;
+
+const navLinks = [
+  { label: 'Home', href: '/', key: 'home' },
+  { label: 'Builder', href: '/builder', key: 'builder' },
+  { label: 'Systems', href: '/systems', key: 'systems' },
+];
+---
+
+<nav
+  id="main-nav"
+  class="fixed top-0 left-0 right-0 h-[72px] transition-all"
+  style="z-index: var(--z-nav); background: transparent; border-bottom: 1px solid transparent;"
+  aria-label="Navegacao principal"
+>
+  <div class="container-wide h-full flex items-center justify-between">
+    <!-- Brand mark: H1-B hourglass + "Reis IA" wordmark -->
+    <a
+      href="/"
+      class="flex items-center gap-3 group"
+      aria-label="Reis IA - Home"
+    >
+      <HourglassIcon
+        size={24}
+        class="text-[var(--accent-blue)] transition-colors duration-300 group-hover:text-[var(--accent-blue-hover)]"
+      />
+      <span class="font-light text-[var(--text-primary)] tracking-tight text-sm">
+        REIS IA
+      </span>
+    </a>
+
+    <!-- Desktop nav links -->
+    <div class="hidden lg:flex items-center gap-8">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class:list={[
+            'text-[var(--text-body-sm)] font-normal transition-colors',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] rounded-sm',
+            activePage === link.key
+              ? 'text-[var(--text-primary)] nav-link-active'
+              : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
+          ]}
+          style={`transition-duration: var(--duration-fast); transition-timing-function: var(--ease-base);`}
+          aria-current={activePage === link.key ? 'page' : undefined}
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+
+    <!-- CTA + Mobile menu toggle -->
+    <div class="flex items-center gap-4">
+      <a
+        href="/agendar"
+        class="hidden lg:inline-flex items-center justify-center text-white text-sm font-semibold tracking-[0.01em] px-6 py-[10px] pb-[12px] rounded-[var(--radius)] transition-all btn-press nav-cta-btn"
+        style="background-color: var(--accent-blue); transition-duration: var(--duration-fast);"
+      >
+        Agendar
+      </a>
+
+      <!-- Mobile hamburger -->
+      <button
+        id="mobile-menu-toggle"
+        class="lg:hidden flex items-center justify-center w-11 h-11 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--accent-05)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+        style="transition-duration: var(--duration-fast);"
+        aria-label="Abrir menu de navegacao"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile menu overlay -->
+<div
+  id="mobile-menu"
+  class="fixed inset-0 hidden flex-col items-center justify-center"
+  style="z-index: calc(var(--z-nav) + 1); background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);"
+  aria-hidden="true"
+>
+  <!-- Close button -->
+  <button
+    id="mobile-menu-close"
+    class="absolute top-6 right-5 flex items-center justify-center w-11 h-11 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+    aria-label="Fechar menu de navegacao"
+  >
+    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <path d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+
+  <div class="flex flex-col items-center gap-6">
+    <!-- Brand -->
+    <a href="/" class="flex items-center gap-3 mb-4" aria-label="Reis IA">
+      <HourglassIcon size={28} class="text-[var(--accent-blue)]" />
+      <span class="font-light text-[var(--text-primary)] tracking-tight text-base">REIS IA</span>
+    </a>
+
+    <div class="w-8 h-px" style="background: var(--border-default);"></div>
+
+    {navLinks.map((link) => (
+      <a
+        href={link.href}
+        class="text-[var(--text-h5)] font-semibold text-[var(--text-primary)] transition-colors hover:text-[var(--accent-blue)]"
+        style="transition-duration: var(--duration-fast);"
+      >
+        {link.label}
+      </a>
+    ))}
+
+    <div class="w-8 h-px" style="background: var(--border-default);"></div>
+
+    <a
+      href="/agendar"
+      class="inline-flex items-center justify-center text-white text-lg font-semibold px-10 py-4 rounded-[var(--radius-lg)] w-full max-w-xs text-center btn-press"
+      style="background-color: var(--accent-blue); transition: background-color var(--duration-fast) var(--ease-base);"
+    >
+      Agendar
+    </a>
+  </div>
+</div>
+
+<style>
+  /* Active link indicator — blue bottom border */
+  .nav-link-active {
+    position: relative;
+  }
+  .nav-link-active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent-blue);
+    border-radius: 1px;
+  }
+
+  /* Scrolled state — glassmorphism */
+  #main-nav[data-scrolled] {
+    background: rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom-color: var(--border-subtle) !important;
+  }
+
+  /* CTA hover */
+  .nav-cta-btn:hover {
+    background-color: var(--accent-blue-hover) !important;
+    box-shadow: var(--shadow-blue-glow-sm);
+    transform: translateY(-1px);
+  }
+  .nav-cta-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+</style>
+
+<script>
+  // Mobile menu toggle
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const closeBtn = document.getElementById('mobile-menu-close');
+  const menu = document.getElementById('mobile-menu');
+
+  function openMenu() {
+    menu?.classList.remove('hidden');
+    menu?.classList.add('flex');
+    menu?.setAttribute('aria-hidden', 'false');
+    toggle?.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    menu?.classList.add('hidden');
+    menu?.classList.remove('flex');
+    menu?.setAttribute('aria-hidden', 'true');
+    toggle?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  toggle?.addEventListener('click', openMenu);
+  closeBtn?.addEventListener('click', closeMenu);
+
+  // Close on link click
+  menu?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+</script>

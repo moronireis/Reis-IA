@@ -1,0 +1,52 @@
+---
+/**
+ * HourglassWatermark — Large hourglass at 3-4% opacity for section backgrounds.
+ * H1-B "Open Intersection" variant with gap at center for better visibility at large sizes.
+ */
+interface Props {
+  class?: string;
+  size?: number;
+  opacity?: number;
+  position?: 'top-right' | 'bottom-left' | 'center' | 'bottom-right';
+}
+
+const {
+  class: className = '',
+  size = 240,
+  opacity = 0.04,
+  position = 'top-right'
+} = Astro.props;
+
+const positionStyles: Record<string, string> = {
+  'top-right': 'top: -20px; right: -20px;',
+  'bottom-left': 'bottom: -20px; left: -20px;',
+  'bottom-right': 'bottom: -20px; right: -20px;',
+  'center': 'top: 50%; left: 50%; transform: translate(-50%, -50%);',
+};
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 100 140"
+  fill="none"
+  stroke="white"
+  stroke-width="3"
+  stroke-linecap="round"
+  width={size}
+  height={size * 1.4}
+  class={className}
+  style={`position: absolute; ${positionStyles[position]} pointer-events: none; opacity: ${opacity}; z-index: 0;`}
+  aria-hidden="true"
+  role="presentation"
+>
+  <!-- Top horizontal bar -->
+  <line x1="15" y1="10" x2="85" y2="10" />
+  <!-- Bottom horizontal bar -->
+  <line x1="15" y1="130" x2="85" y2="130" />
+  <!-- Left diagonal: top-left to near-center, then center to bottom-left -->
+  <line x1="15" y1="10" x2="42" y2="62" />
+  <line x1="42" y1="78" x2="15" y2="130" />
+  <!-- Right diagonal: top-right to near-center, then center to bottom-right -->
+  <line x1="85" y1="10" x2="58" y2="62" />
+  <line x1="58" y1="78" x2="85" y2="130" />
+</svg>

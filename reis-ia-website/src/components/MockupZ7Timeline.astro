@@ -1,0 +1,63 @@
+---
+/**
+ * MockupZ7Timeline — Horizontal timeline with 7 day nodes, animated dash connector,
+ * and compression bar "7 meses → 7 dias". Glassmorphism card.
+ * Stripe/Linear style product mockup.
+ */
+---
+
+<div class="mockup-card p-6 rounded-[var(--radius-xl)] flex flex-col gap-5">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <span style="font-size: var(--text-label); font-weight: 600; letter-spacing: 0.03em; color: var(--text-secondary); text-transform: uppercase;">
+      Z7 Days — Timeline
+    </span>
+    <span class="flex items-center gap-1.5">
+      <span class="mockup-live-dot"></span>
+      <span style="font-size: var(--text-micro); color: var(--text-quaternary);">Ativo</span>
+    </span>
+  </div>
+
+  <!-- 7 day nodes -->
+  <div class="flex items-center justify-between gap-0 mt-2 overflow-x-auto pb-2">
+    {[1,2,3,4,5,6,7].map((day) => (
+      <div class="flex items-center flex-1 min-w-0">
+        <div class="flex flex-col items-center gap-1.5 flex-shrink-0">
+          <div
+            class:list={[
+              "w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs font-bold tabular-nums",
+              day === 7 ? "mockup-node-pulse" : ""
+            ]}
+            style={day === 7
+              ? "background: linear-gradient(135deg, rgba(74,144,255,0.2), rgba(74,144,255,0.08)); border: 1px solid rgba(74,144,255,0.4); color: var(--accent-blue);"
+              : day <= 3
+                ? "background: rgba(74,144,255,0.1); border: 1px solid rgba(74,144,255,0.2); color: var(--accent-blue);"
+                : "background: var(--surface-3); border: 1px solid var(--border-subtle); color: var(--text-quaternary);"
+            }
+          >
+            {day}
+          </div>
+          <span style={`font-size: 9px; white-space: nowrap; ${day === 7 ? 'color: var(--accent-blue); font-weight: 600;' : 'color: var(--text-quaternary);'}`}>
+            {['Matéria','Fundição','Forja','Tempera','Entrega','Calibra','Forjado'][day-1]}
+          </span>
+        </div>
+        {day < 7 && (
+          <div class="flex-1 h-px relative mx-1" style="min-width: 8px;">
+            <div class="mockup-dash-line"></div>
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+
+  <!-- Compression bar: 7 meses → 7 dias -->
+  <div class="mt-1">
+    <div class="flex items-center justify-between mb-2">
+      <span style="font-size: var(--text-micro); color: var(--text-quaternary);">7 meses</span>
+      <span style="font-size: var(--text-micro); color: var(--accent-blue); font-weight: 600;">→ 7 dias</span>
+    </div>
+    <div class="h-1.5 rounded-full" style="background: var(--surface-3);">
+      <div class="compress-bar h-full rounded-full" style="background: var(--accent-blue); width: 100%;"></div>
+    </div>
+  </div>
+</div>

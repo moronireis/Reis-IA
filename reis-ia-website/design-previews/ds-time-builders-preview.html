@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS Time Builders — Design System Preview v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ── RESET & BASE ─────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Master Surface System */
+    --surface-0: #000000;
+    --surface-1: #0A0A0A;
+    --surface-2: #111111;
+    --surface-3: #161616;
+    --surface-4: #1A1A1A;
+
+    /* ═══ TIME BUILDERS — AZUL ELÉTRICO ═══ */
+    --builder-blue: #2D7AFF;
+    --builder-blue-hover: #4A90FF;   /* sobe para master no hover */
+    --builder-blue-active: #1A5FDD;
+    --builder-blue-bright: #5A9FFF;
+    --builder-cyan: #00B4FF;
+    --builder-cyan-hover: #26C4FF;
+    --builder-cyan-deep: #0090D9;
+
+    /* Blue Opacity Ladder */
+    --blue-02: rgba(45,122,255,0.02);
+    --blue-04: rgba(45,122,255,0.04);
+    --blue-06: rgba(45,122,255,0.06);
+    --blue-08: rgba(45,122,255,0.08);
+    --blue-10: rgba(45,122,255,0.10);
+    --blue-12: rgba(45,122,255,0.12);
+    --blue-15: rgba(45,122,255,0.15);
+    --blue-20: rgba(45,122,255,0.20);
+    --blue-30: rgba(45,122,255,0.30);
+    --blue-40: rgba(45,122,255,0.40);
+    --blue-50: rgba(45,122,255,0.50);
+    --blue-80: rgba(45,122,255,0.80);
+
+    /* Cyan Opacity Ladder */
+    --cyan-04: rgba(0,180,255,0.04);
+    --cyan-08: rgba(0,180,255,0.08);
+    --cyan-15: rgba(0,180,255,0.15);
+    --cyan-30: rgba(0,180,255,0.30);
+    --cyan-60: rgba(0,180,255,0.60);
+
+    /* Text */
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255,255,255,0.70);
+    --text-tertiary: rgba(255,255,255,0.50);
+    --text-quaternary: rgba(255,255,255,0.35);
+    --text-muted: rgba(255,255,255,0.20);
+
+    --sidebar-width: 220px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--surface-0);
+    color: var(--text-primary);
+    display: flex;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── SIDEBAR ─────────────────────────────────────── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--surface-1);
+    border-right: 1px solid rgba(45,122,255,0.10);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 24px 0;
+  }
+
+  .sidebar-brand {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid rgba(45,122,255,0.08);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-brand-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--builder-cyan);
+    margin-bottom: 4px;
+  }
+
+  .sidebar-brand-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .sidebar nav { padding: 0 12px; }
+
+  .sidebar-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-quaternary);
+    padding: 12px 8px 6px;
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 7px 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar a:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .sidebar a.active {
+    color: var(--builder-blue-bright);
+    background: var(--blue-08);
+    border-left-color: var(--builder-blue);
+  }
+
+  /* ── MAIN CONTENT ────────────────────────────────── */
+  .main {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    padding: 0;
+  }
+
+  /* ── SECTION ─────────────────────────────────────── */
+  .section {
+    padding: 80px 64px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .section:nth-child(even) { background: var(--surface-1); }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--builder-cyan);
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .section-subtitle {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+
+  /* ── HERO SECTION ────────────────────────────────── */
+  #hero {
+    position: relative;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--surface-0);
+    padding: 80px 64px;
+  }
+
+  .hero-aurora {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 50%, rgba(45,122,255,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(0,180,255,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 50% 90%, rgba(45,122,255,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    animation: aurora-shift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes aurora-shift {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-3%, 2%) scale(1.03); }
+    100% { transform: translate(2%, -3%) scale(0.98); }
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    background: var(--blue-10);
+    border: 1px solid var(--blue-30);
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--builder-cyan);
+    margin-bottom: 24px;
+    width: fit-content;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-title {
+    font-size: clamp(40px, 5vw, 72px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-title .electric { color: var(--builder-blue); }
+  .hero-title .cyan { color: var(--builder-cyan); }
+
+  .hero-subtitle {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 560px;
+    margin-bottom: 36px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── BOTÕES ───────────────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--builder-blue);
+    color: #fff;
+    padding: 13px 32px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+
+  .btn-primary:hover {
+    background: var(--builder-blue-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(45,122,255,0.25);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    padding: 13px 32px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .btn-sm {
+    padding: 9px 20px 10px;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+
+  /* ── SWATCHES ─────────────────────────────────────── */
+  .swatches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+
+  .swatch {
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .swatch:hover { transform: translateY(-2px); }
+
+  .swatch-color {
+    height: 72px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .swatch-copy-hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.2s;
+    letter-spacing: 0.04em;
+  }
+
+  .swatch:hover .swatch-copy-hint { opacity: 1; }
+
+  .swatch-info {
+    padding: 10px 12px;
+    background: var(--surface-2);
+  }
+
+  .swatch-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .swatch-value {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-family: monospace;
+  }
+
+  .copied-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface-3);
+    border: 1px solid rgba(45,122,255,0.30);
+    color: var(--text-primary);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s ease;
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  .copied-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── OPACITY LADDER ───────────────────────────────── */
+  .opacity-ladder {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .opacity-rung {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .opacity-swatch {
+    width: 48px;
+    height: 32px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .opacity-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 60px;
+    font-family: monospace;
+  }
+
+  .opacity-value {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-family: monospace;
+  }
+
+  .opacity-use {
+    font-size: 12px;
+    color: var(--text-quaternary);
+    margin-left: auto;
+    text-align: right;
+  }
+
+  /* ── TYPOGRAPHY SPECIMENS ─────────────────────────── */
+  .type-specimen {
+    margin-bottom: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .type-specimen:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .type-meta {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-quaternary);
+    margin-bottom: 12px;
+  }
+
+  /* ── CARDS ────────────────────────────────────────── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--surface-2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 28px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    border-color: rgba(255,255,255,0.14);
+    background: var(--surface-3);
+  }
+
+  .card-electric {
+    border-top: 2px solid var(--builder-blue);
+  }
+
+  .card-electric:hover {
+    box-shadow: 0 0 40px rgba(45,122,255,0.12);
+  }
+
+  .card-cyan {
+    border-top: 2px solid var(--builder-cyan);
+  }
+
+  .card-cyan:hover {
+    box-shadow: 0 0 40px rgba(0,180,255,0.12);
+  }
+
+  /* Rotating border card */
+  @property --border-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  .card-scanner {
+    background:
+      linear-gradient(var(--surface-2), var(--surface-3)) padding-box,
+      conic-gradient(
+        from var(--border-angle),
+        rgba(255,255,255,0.06) 0%,
+        rgba(255,255,255,0.06) 70%,
+        rgba(45,122,255,0.50) 82%,
+        rgba(0,180,255,0.80) 88%,
+        rgba(45,122,255,0.50) 94%,
+        rgba(255,255,255,0.06) 100%
+      ) border-box;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    animation: rotateBorder 6s linear infinite;
+  }
+
+  @keyframes rotateBorder {
+    to { --border-angle: 360deg; }
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 20px;
+  }
+
+  .card-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--builder-cyan);
+    margin-bottom: 8px;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .card-body {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .card-cta {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--builder-blue);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .card-cta:hover {
+    color: var(--builder-cyan);
+    gap: 8px;
+  }
+
+  /* ── Z7 BADGE ─────────────────────────────────────── */
+  .z7-badge {
+    display: inline-flex;
+    align-items: center;
+    background: var(--blue-08);
+    border: 1px solid var(--blue-20);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--builder-blue);
+  }
+
+  .z7-badge.cyan {
+    background: var(--cyan-08);
+    border-color: var(--cyan-30);
+    color: var(--builder-cyan);
+  }
+
+  /* ── Z7 PULSE ─────────────────────────────────────── */
+  @keyframes z7-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(45,122,255,0.30); transform: scale(1); }
+    50% { box-shadow: 0 0 0 16px rgba(45,122,255,0); transform: scale(1.02); }
+    100% { box-shadow: 0 0 0 0 rgba(45,122,255,0); transform: scale(1); }
+  }
+
+  .z7-pulse-demo {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background: var(--blue-10);
+    border: 1px solid var(--blue-30);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--builder-blue);
+    letter-spacing: -0.04em;
+    animation: z7-pulse 2.5s ease infinite;
+    margin: 0 auto 8px;
+  }
+
+  /* ── TIME SCANNER ─────────────────────────────────── */
+  @keyframes time-scanner-anim {
+    0% { top: -1px; opacity: 0; }
+    5% { opacity: 1; }
+    95% { opacity: 1; }
+    100% { top: calc(100% + 1px); opacity: 0; }
+  }
+
+  .scanner-demo {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--surface-2);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 28px;
+  }
+
+  .scanner-demo::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: -1px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(0,180,255,0.30) 20%, rgba(0,180,255,0.70) 50%, rgba(0,180,255,0.30) 80%, transparent 100%);
+    animation: time-scanner-anim 1.8s cubic-bezier(0.65,0,0.35,1) infinite;
+    animation-delay: 1s;
+  }
+
+  /* ── METRICS / STATS ──────────────────────────────── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .stat-cell {
+    background: var(--surface-2);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-cell::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--builder-blue), var(--builder-cyan));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .stat-cell:hover::before { opacity: 1; }
+
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-quaternary);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-value.electric { color: var(--builder-blue); }
+  .stat-value.cyan { color: var(--builder-cyan); }
+  .stat-value.white { color: var(--text-primary); }
+
+  .stat-context {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    line-height: 1.4;
+  }
+
+  /* ── PRODUCT Z7 ROW ───────────────────────────────── */
+  .z7-products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(45,122,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(45,122,255,0.15);
+  }
+
+  .z7-product {
+    background: var(--surface-1);
+    padding: 32px 28px;
+  }
+
+  .z7-product-code {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--builder-blue);
+    margin-bottom: 4px;
+  }
+
+  .z7-product-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .z7-product-ratio {
+    font-size: 13px;
+    color: var(--builder-cyan);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .z7-product-desc {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    line-height: 1.5;
+  }
+
+  /* ── COMPARISON VS MASTER ─────────────────────────── */
+  .comparison-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .comparison-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-quaternary);
+    margin-bottom: 8px;
+  }
+
+  .color-compare-bar {
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  /* ── SECTION DIVIDER ──────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.06) 80%, transparent);
+    margin: 0;
+  }
+
+  /* ── AMPULHETA WATERMARK ──────────────────────────── */
+  .hourglass-mark {
+    font-size: 200px;
+    position: absolute;
+    right: 40px;
+    bottom: -30px;
+    opacity: 0.03;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+  }
+
+  /* ── EFFECT DEMOS ─────────────────────────────────── */
+  .effect-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .effect-demo-box {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .effect-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-top: 16px;
+    margin-bottom: 4px;
+  }
+
+  .effect-desc {
+    font-size: 12px;
+    color: var(--text-quaternary);
+    line-height: 1.5;
+  }
+
+  /* ── SCROLL TRACKING ──────────────────────────────── */
+  .scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--builder-blue), var(--builder-cyan));
+    z-index: 9999;
+    transition: width 0.05s linear;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="copied-toast" id="copiedToast">Copiado!</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-tag">Camada</div>
+    <div class="sidebar-brand-name">Time Builders<br><span style="color:var(--builder-cyan);font-size:12px">Design System v2</span></div>
+  </div>
+  <nav>
+    <div class="sidebar-section-label">Identidade</div>
+    <a href="#hero" class="active">Visão Geral</a>
+    <a href="#cores">Cores</a>
+    <a href="#opacity">Escala de Opacidade</a>
+
+    <div class="sidebar-section-label">Elementos</div>
+    <a href="#tipografia">Tipografia</a>
+    <a href="#botoes">Botões</a>
+    <a href="#cards">Cards</a>
+    <a href="#z7">Elemento Z7</a>
+
+    <div class="sidebar-section-label">Efeitos</div>
+    <a href="#efeitos">Z7 Pulse & Scanner</a>
+    <a href="#produtos">Produtos Z7</a>
+    <a href="#metricas">Métricas</a>
+
+    <div class="sidebar-section-label">Sistema</div>
+    <a href="#comparacao">vs. Master</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <section class="section" id="hero" style="position:relative;overflow:hidden;">
+    <div class="hero-aurora"></div>
+    <div class="hourglass-mark" aria-hidden="true">⧗</div>
+    <div class="hero-badge">
+      <span class="z7-badge cyan">Z7</span>
+      Time Builders — Design System v2
+    </div>
+    <h1 class="hero-title">
+      <span class="electric">Construtores</span><br>
+      do <span class="cyan">Tempo</span>
+    </h1>
+    <p class="hero-subtitle">
+      Design system da camada Time Builders. Azul elétrico <strong style="color:var(--builder-blue)">#2D7AFF</strong> + Cyan <strong style="color:var(--builder-cyan)">#00B4FF</strong>. Energia de quem opera no tempo Z7.
+    </p>
+    <div class="hero-ctas">
+      <a href="#cores" class="btn btn-primary">Explorar Cores</a>
+      <a href="#efeitos" class="btn btn-secondary">Ver Efeitos Z7</a>
+    </div>
+  </section>
+
+  <!-- CORES -->
+  <section class="section" id="cores">
+    <div class="section-label">Paleta de Cores</div>
+    <h2 class="section-title">Azul Elétrico + Cyan</h2>
+    <p class="section-subtitle">Substituição total do amber anterior. A camada Time Builders opera com azul elétrico (#2D7AFF) como primary e cyan (#00B4FF) exclusivamente para highlights e efeitos de scan.</p>
+
+    <div class="swatches-grid">
+      <div class="swatch" onclick="copyColor('#2D7AFF')">
+        <div class="swatch-color" style="background:#2D7AFF">
+          <div class="swatch-copy-hint">COPIAR</div>
+        </div>
+        <div class="swatch-info">
+          <div class="swatch-name">Azul Elétrico</div>
+          <div class="swatch-value">#2D7AFF — Primary</div>
+        </div>
+      </div>
+      <div class="swatch" onclick="copyColor('#4A90FF')">
+        <div class="swatch-color" style="background:#4A90FF">
+          <div class="swatch-copy-hint">COPIAR</div>
+        </div>
+        <div class="swatch-info">
+          <div class="swatch-name">Blue Hover</div>
+          <div class="swatch-value">#4A90FF — Sobe ao Master</div>
+        </div>
+      </div>
+      <div class="swatch" onclick="copyColor('#00B4FF')">
+        <div class="swatch-color" style="background:#00B4FF">
+          <div class="swatch-copy-hint">COPIAR</div>
+        </div>
+        <div class="swatch-info">
+          <div class="swatch-name">Cyan</div>
+          <div class="swatch-value">#00B4FF — Exclusivo TB</div>
+        </div>
+      </div>
+      <div class="swatch" onclick="copyColor('#26C4FF')">
+        <div class="swatch-color" style="background:#26C4FF">
+          <div class="swatch-copy-hint">COPIAR</div>
+        </div>
+        <div class="swatch-info">
+          <div class="swatch-name">Cyan Hover</div>
+          <div class="swatch-value">#26C4FF</div>
+        </div>
+      </div>
+      <div class="swatch" onclick="copyColor('#1A5FDD')">
+        <div class="swatch-color" style="background:#1A5FDD">
+          <div class="swatch-copy-hint">COPIAR</div>
+        </div>
+        <div class="swatch-info">
+          <div class="swatch-name">Blue Active</div>
+          <div class="swatch-value">#1A5FDD — Pressed</div>
+        </div>
+      </div>
+      <div class="swatch" onclick="copyColor('#000000')">
+        <div class="swatch-color" style="background:#000;border:1px solid rgba(255,255,255,0.06)">
+          <div class="swatch-copy-hint">COPIAR</div>
+        </div>
+        <div class="swatch-info">
+          <div class="swatch-name">Void</div>
+          <div class="swatch-value">#000000 — Surface-0</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPACITY LADDER -->
+  <section class="section" id="opacity">
+    <div class="section-label">Escala de Opacidade</div>
+    <h2 class="section-title">Blue Ladder — 12 Passos</h2>
+    <p class="section-subtitle">O azul elétrico (#2D7AFF) em 12 níveis de opacidade. Time Builders usa opacidades ligeiramente mais altas que o master para comunicar maior energia.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:16px">Azul Elétrico #2D7AFF</div>
+        <div class="opacity-ladder">
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(45,122,255,0.02)"></div><span class="opacity-label">2%</span><span class="opacity-value">rgba(45,122,255,0.02)</span><span class="opacity-use">Row hover tint</span></div>
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(45,122,255,0.06)"></div><span class="opacity-label">6%</span><span class="opacity-value">rgba(45,122,255,0.06)</span><span class="opacity-use">Section wash</span></div>
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(45,122,255,0.10)"></div><span class="opacity-label">10%</span><span class="opacity-value">rgba(45,122,255,0.10)</span><span class="opacity-use">Badge bg</span></div>
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(45,122,255,0.15)"></div><span class="opacity-label">15%</span><span class="opacity-value">rgba(45,122,255,0.15)</span><span class="opacity-use">Card hover glow</span></div>
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(45,122,255,0.20)"></div><span class="opacity-label">20%</span><span class="opacity-value">rgba(45,122,255,0.20)</span><span class="opacity-use">Badge border</span></div>
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(45,122,255,0.40)"></div><span class="opacity-label">40%</span><span class="opacity-value">rgba(45,122,255,0.40)</span><span class="opacity-use">Strong border</span></div>
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(45,122,255,0.80)"></div><span class="opacity-label">80%</span><span class="opacity-value">rgba(45,122,255,0.80)</span><span class="opacity-use">Scanner peak</span></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:16px">Cyan #00B4FF — Exclusivo TB</div>
+        <div class="opacity-ladder">
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(0,180,255,0.04)"></div><span class="opacity-label">4%</span><span class="opacity-value">rgba(0,180,255,0.04)</span><span class="opacity-use">Ambient subtle</span></div>
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(0,180,255,0.08)"></div><span class="opacity-label">8%</span><span class="opacity-value">rgba(0,180,255,0.08)</span><span class="opacity-use">Badge bg cyan</span></div>
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(0,180,255,0.15)"></div><span class="opacity-label">15%</span><span class="opacity-value">rgba(0,180,255,0.15)</span><span class="opacity-use">Highlight fill</span></div>
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(0,180,255,0.30)"></div><span class="opacity-label">30%</span><span class="opacity-value">rgba(0,180,255,0.30)</span><span class="opacity-use">Scanner start</span></div>
+          <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(0,180,255,0.60)"></div><span class="opacity-label">60%</span><span class="opacity-value">rgba(0,180,255,0.60)</span><span class="opacity-use">Scanner peak</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIPOGRAFIA -->
+  <section class="section" id="tipografia">
+    <div class="section-label">Tipografia</div>
+    <h2 class="section-title">Inter Variable — Escala Time Builders</h2>
+    <p class="section-subtitle">A mesma escala tipográfica do master com ênfase em peso 800 para títulos de produto e código Z7. O cyan aparece como cor de destaque em palavras-chave de headlines.</p>
+
+    <div class="type-specimen">
+      <div class="type-meta">Display — 72px / 800 / -0.03em</div>
+      <div style="font-size:clamp(36px,6vw,72px);font-weight:800;letter-spacing:-0.03em;line-height:1.05;color:var(--text-primary)">
+        <span style="color:var(--builder-blue)">7 horas</span> = 7 anos
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">H1 — 56px / 800 / -0.025em</div>
+      <div style="font-size:clamp(32px,4vw,56px);font-weight:800;letter-spacing:-0.025em;line-height:1.08">
+        Construa no ritmo da <span style="color:var(--builder-cyan)">criação</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">H2 — 48px / 700 / -0.02em</div>
+      <div style="font-size:clamp(28px,3.5vw,48px);font-weight:700;letter-spacing:-0.02em;line-height:1.10">
+        Compressão <span style="color:var(--builder-blue)">Z7</span> aplicada
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">Body Large — 20px / 400 / 0 / lh 1.60</div>
+      <div style="font-size:20px;font-weight:400;line-height:1.60;color:var(--text-secondary);max-width:640px">
+        Time Builders não estudam IA. Time Builders constroem com IA. Cada hora investida vale 7 anos de aprendizado convencional.
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">Label — 12px / 700 / 0.06em / uppercase</div>
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--builder-cyan)">
+        Programa Z7 Days — Camada Time Builders
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTÕES -->
+  <section class="section" id="botoes">
+    <div class="section-label">Componentes</div>
+    <h2 class="section-title">Botões</h2>
+    <p class="section-subtitle">O azul elétrico substitui o azul master em todos os CTAs da camada Time Builders. No hover, a cor sobe para #4A90FF (master), criando continuidade de ecossistema.</p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+      <a href="#" class="btn btn-primary" style="background:var(--builder-blue)">Aplicar ao Z7 Days</a>
+      <a href="#" class="btn btn-primary btn-sm" style="background:var(--builder-blue)">Z7 Hours</a>
+      <a href="#" class="btn btn-secondary">Saber Mais</a>
+      <a href="#" style="font-size:14px;font-weight:600;color:var(--builder-blue);text-decoration:none;transition:all 0.2s;display:inline-flex;align-items:center;gap:4px" onmouseover="this.style.color='var(--builder-cyan)'" onmouseout="this.style.color='var(--builder-blue)'">Ver Framework →</a>
+    </div>
+
+    <div style="margin-top:32px;padding:24px;background:var(--surface-2);border-radius:12px;border:1px solid rgba(255,255,255,0.06)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Hover State — sobe para Master</div>
+      <p style="font-size:14px;color:var(--text-tertiary);line-height:1.5">Cor default: <code style="color:var(--builder-blue)">#2D7AFF</code> → Hover: <code style="color:var(--builder-blue-hover)">#4A90FF</code> (master). Esta transição é intencional: no momento de ação, o Time Builder se conecta ao ecossistema maior.</p>
+    </div>
+  </section>
+
+  <!-- CARDS -->
+  <section class="section" id="cards">
+    <div class="section-label">Componentes</div>
+    <h2 class="section-title">Cards</h2>
+    <p class="section-subtitle">Três variações de card para a camada Time Builders. O scanner rotativo usa azul elétrico + cyan alternados para criar o efeito de varredura dupla.</p>
+
+    <div class="cards-grid">
+      <div class="card card-electric">
+        <div class="card-tag">Super Poder</div>
+        <div class="card-title">Aprender 1.000 anos à frente</div>
+        <div class="card-body">Com IA, um Time Builder acessa e sintetiza conhecimento que levaria décadas para acumular convencionalmente.</div>
+        <a href="#" class="card-cta">Explorar →</a>
+      </div>
+
+      <div class="card card-cyan">
+        <div class="card-tag">Compressão Z7</div>
+        <div class="card-title">7 horas = 7 anos</div>
+        <div class="card-body">A unidade de medida dos Time Builders. Uma sessão focada de 7 horas entrega o equivalente a 7 anos de aprendizado convencional.</div>
+        <a href="#" class="card-cta" style="color:var(--builder-cyan)">Ver comparação →</a>
+      </div>
+
+      <div class="card card-scanner">
+        <div class="card-tag" style="color:var(--builder-cyan)">Card Scanner — Destaque</div>
+        <div class="card-title">Sapphire + Cyan Scanner</div>
+        <div class="card-body">Borda giratória com segmento duplo: azul elétrico + cyan. 6s de rotação. Reservado para 1-2 cards por página — o mais alto nível de destaque.</div>
+        <a href="#" class="card-cta">Aplicar →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Z7 ELEMENTO VISUAL -->
+  <section class="section" id="z7">
+    <div class="section-label">Elemento Visual Z7</div>
+    <h2 class="section-title">Z7 como Silhueta de Ampulheta</h2>
+    <p class="section-subtitle">Z + 7 com Inter Extra Bold (800) e letter-spacing -0.04em formam a silhueta de uma ampulheta. O espaço negativo entre os caracteres cria o gargalo central.</p>
+
+    <div style="display:flex;align-items:center;gap:64px;flex-wrap:wrap;margin-bottom:48px">
+      <!-- Display size -->
+      <div style="text-align:center">
+        <div style="font-size:120px;font-weight:800;letter-spacing:-0.04em;color:var(--builder-blue);line-height:1;margin-bottom:8px">Z7</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary)">Display — 120px</div>
+      </div>
+
+      <!-- Large -->
+      <div style="text-align:center">
+        <div style="font-size:64px;font-weight:800;letter-spacing:-0.04em;color:var(--builder-blue);line-height:1;margin-bottom:8px">Z7</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary)">H1 — 64px</div>
+      </div>
+
+      <!-- Medium -->
+      <div style="text-align:center">
+        <div style="font-size:36px;font-weight:800;letter-spacing:-0.04em;color:var(--builder-blue);line-height:1;margin-bottom:8px">Z7</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary)">H2 — 36px</div>
+      </div>
+
+      <!-- Cyan variant -->
+      <div style="text-align:center">
+        <div style="font-size:64px;font-weight:800;letter-spacing:-0.04em;color:var(--builder-cyan);line-height:1;margin-bottom:8px">Z7</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary)">Variante Cyan</div>
+      </div>
+    </div>
+
+    <!-- Produtos Z7 com os nomes -->
+    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:32px">
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span style="font-size:24px;font-weight:800;letter-spacing:-0.04em;color:var(--builder-blue)">Z7</span>
+        <span style="font-size:18px;font-weight:500;color:var(--text-secondary)">Hours</span>
+      </div>
+      <div style="width:1px;height:24px;background:rgba(255,255,255,0.08)"></div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span style="font-size:24px;font-weight:800;letter-spacing:-0.04em;color:var(--builder-blue)">Z7</span>
+        <span style="font-size:18px;font-weight:500;color:var(--text-secondary)">Days</span>
+      </div>
+      <div style="width:1px;height:24px;background:rgba(255,255,255,0.08)"></div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span style="font-size:24px;font-weight:800;letter-spacing:-0.04em;color:var(--builder-blue)">Z7</span>
+        <span style="font-size:18px;font-weight:500;color:var(--text-secondary)">Months</span>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <span class="z7-badge">Z7</span>
+      <span class="z7-badge cyan">Z7</span>
+      <span class="z7-badge" style="font-size:9px;padding:2px 6px">Z7</span>
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:4px 12px;background:var(--blue-10);border:1px solid var(--blue-30);border-radius:4px;font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--builder-blue)">
+        <span style="font-weight:800;letter-spacing:-0.04em">Z7</span> Days — Badge completo
+      </span>
+    </div>
+  </section>
+
+  <!-- EFEITOS Z7 -->
+  <section class="section" id="efeitos">
+    <div class="section-label">Efeitos Exclusivos</div>
+    <h2 class="section-title">Z7 Pulse + Time Scanner</h2>
+    <p class="section-subtitle">Dois efeitos de assinatura conectados à filosofia de compressão temporal. O Pulse em 2.5s (mais enérgico que o master). O Scanner passa uma vez ao entrar em viewport.</p>
+
+    <div class="effect-grid">
+      <!-- Z7 Pulse -->
+      <div class="effect-demo-box">
+        <div class="z7-pulse-demo">Z7</div>
+        <div class="effect-title">Z7 Pulse — 2.5s</div>
+        <div class="effect-desc">Pulso concêntrico em azul elétrico. Mais enérgico que o master (4s). Usado no ícone de destaque do hero e no CTA principal hover.</div>
+      </div>
+
+      <!-- Time Scanner -->
+      <div>
+        <div class="scanner-demo">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:8px">Case Study</div>
+          <div style="font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:6px">47h/mês recuperadas</div>
+          <div style="font-size:14px;color:var(--text-secondary)">Agência de marketing automatizou relatórios e qualificação de leads com sistema multiagente Z7.</div>
+        </div>
+        <div class="effect-title">Time Scanner — Cyan</div>
+        <div class="effect-desc">Varredura horizontal em cyan. Passa uma vez ao entrar em viewport. Precede counters animados em seções de métricas.</div>
+      </div>
+
+      <!-- Aurora background -->
+      <div>
+        <div style="border-radius:12px;overflow:hidden;height:180px;position:relative;background:var(--surface-2);border:1px solid rgba(255,255,255,0.06)">
+          <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 10% 50%, rgba(45,122,255,0.15) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 20%, rgba(0,180,255,0.10) 0%, transparent 60%);pointer-events:none"></div>
+          <div style="position:relative;padding:24px;z-index:1">
+            <div style="font-size:28px;font-weight:800;letter-spacing:-0.04em;color:var(--builder-blue)">Z7</div>
+            <div style="font-size:13px;color:var(--text-tertiary);margin-top:4px">Aurora ambient — 20s</div>
+          </div>
+        </div>
+        <div class="effect-title">Aurora Background</div>
+        <div class="effect-desc">Gradiente atmosférico duplo. Azul elétrico bottom-left + Cyan top-right. Movimento lento de 20s em alternância.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUTOS Z7 -->
+  <section class="section" id="produtos">
+    <div class="section-label">Produtos</div>
+    <h2 class="section-title">Escala Z7 — Hours, Days, Months</h2>
+    <p class="section-subtitle">Cada produto é um nível de compressão temporal. A escala é temporal, não financeira — cada produto comprime mais tempo e entrega mais profundidade.</p>
+
+    <div class="z7-products">
+      <div class="z7-product">
+        <div class="z7-product-code">Z7</div>
+        <div class="z7-product-name">Hours</div>
+        <div class="z7-product-ratio" style="color:var(--builder-blue)">7 horas = 7 anos</div>
+        <div class="z7-product-desc">A faísca. Compressão imediata sentida no corpo e no relógio. Prova que o tempo pode ser comprimido.</div>
+      </div>
+      <div class="z7-product" style="background:var(--surface-2)">
+        <div class="z7-product-code" style="color:var(--builder-blue)">Z7</div>
+        <div class="z7-product-name">Days</div>
+        <div class="z7-product-ratio">7 dias = 7 meses</div>
+        <div class="z7-product-desc">O forjamento. O ciclo completo de criação em 7 dias. Negócio estruturado, posicionado, pronto para vender.</div>
+      </div>
+      <div class="z7-product" style="background:var(--surface-3)">
+        <div class="z7-product-code" style="color:var(--builder-cyan)">Z7</div>
+        <div class="z7-product-name" style="color:var(--builder-cyan)">Months</div>
+        <div class="z7-product-ratio" style="color:var(--builder-cyan)">meses = anos de vantagem</div>
+        <div class="z7-product-desc">A evolução. Multiplicação composta. Proximidade estratégica contínua com Moroni Reis.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MÉTRICAS -->
+  <section class="section" id="metricas">
+    <div class="section-label">Dados & Métricas</div>
+    <h2 class="section-title">Stats Block — Compressão Z7</h2>
+    <p class="section-subtitle">Valores em azul elétrico ou cyan dependendo da hierarquia. A borda superior aparece em hover — azul para valores de negócio, cyan para valores de compressão temporal.</p>
+
+    <div class="stats-grid">
+      <div class="stat-cell">
+        <div class="stat-label">Compressão</div>
+        <div class="stat-value electric">7:7</div>
+        <div class="stat-context">Horas com IA vs. anos de aprendizado convencional</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Time Builders ativos</div>
+        <div class="stat-value white">400<span style="color:var(--builder-blue)">+</span></div>
+        <div class="stat-context">Construtores operando no tempo Z7</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Horas comprimidas</div>
+        <div class="stat-value cyan">47k</div>
+        <div class="stat-context">Horas recuperadas pelo ecossistema este mês</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARAÇÃO VS MASTER -->
+  <section class="section" id="comparacao">
+    <div class="section-label">Sistema</div>
+    <h2 class="section-title">Time Builders vs. Master</h2>
+    <p class="section-subtitle">A camada Time Builders opera com azul mais saturado e elétrico que o master. No hover, a cor sobe para o master (#4A90FF), mantendo continuidade de ecossistema.</p>
+
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div class="comparison-row">
+        <div>
+          <div class="comparison-label">Reis IA Master</div>
+          <div class="color-compare-bar" style="background:#4A90FF">#4A90FF — Accent Blue</div>
+        </div>
+        <div>
+          <div class="comparison-label">Time Builders Primary</div>
+          <div class="color-compare-bar" style="background:#2D7AFF">#2D7AFF — Azul Elétrico</div>
+        </div>
+      </div>
+      <div class="comparison-row">
+        <div>
+          <div class="comparison-label">Master — Sem Secundário</div>
+          <div class="color-compare-bar" style="background:rgba(74,144,255,0.12);border:1px solid rgba(74,144,255,0.20);color:rgba(255,255,255,0.50);font-size:12px">Apenas azul master</div>
+        </div>
+        <div>
+          <div class="comparison-label">Time Builders — Cyan Exclusivo</div>
+          <div class="color-compare-bar" style="background:linear-gradient(90deg,#2D7AFF,#00B4FF)">Azul Elétrico → Cyan</div>
+        </div>
+      </div>
+
+      <div style="margin-top:8px;padding:24px;background:var(--surface-2);border-radius:12px;border-left:3px solid var(--builder-blue)">
+        <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:8px">Regras de Moderação — Time Builders</div>
+        <ul style="font-size:14px;color:var(--text-secondary);line-height:1.8;list-style:none;display:flex;flex-direction:column;gap:4px">
+          <li style="display:flex;gap:8px"><span style="color:var(--builder-blue)">◆</span> Máx. 3 elementos azuis por viewport (vs. 2 no master)</li>
+          <li style="display:flex;gap:8px"><span style="color:var(--builder-cyan)">◆</span> Cyan aparece em highlights, scanners e estatísticas de compressão</li>
+          <li style="display:flex;gap:8px"><span style="color:var(--text-quaternary)">◆</span> Cyan NUNCA domina — é sempre complementar ao azul elétrico</li>
+          <li style="display:flex;gap:8px"><span style="color:var(--text-quaternary)">◆</span> Hover do CTA primário sobe para #4A90FF (master), conectando ao ecossistema</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Scroll progress bar
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = Math.min(100, (scrolled / total) * 100);
+    document.getElementById('scrollProgress').style.width = progress + '%';
+  });
+
+  // Sidebar active tracking
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('.sidebar a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Copy color
+  function copyColor(hex) {
+    navigator.clipboard.writeText(hex).catch(() => {});
+    const toast = document.getElementById('copiedToast');
+    toast.textContent = hex + ' copiado!';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS Systems — Design System Preview v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* ═══ SYSTEMS — PRETO/BRANCO DOMINANTE + AZUL MÍNIMO ═══ */
+    --surface-0: #000000;
+    --surface-1: #0A0A0A;
+    --surface-2: #111111;
+    --surface-3: #161616;
+    --surface-4: #1A1A1A;
+
+    /* Azul — usado com EXTREMA moderação */
+    --systems-blue: #4A90FF;
+    --systems-blue-hover: #6AADFF;
+    --systems-blue-muted: #3570CC;
+
+    /* Opacidades mínimas */
+    --blue-04: rgba(74,144,255,0.04);
+    --blue-08: rgba(74,144,255,0.08);
+    --blue-20: rgba(74,144,255,0.20);
+    --blue-50: rgba(74,144,255,0.50);
+
+    /* Texto */
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255,255,255,0.70);
+    --text-tertiary: rgba(255,255,255,0.50);
+    --text-quaternary: rgba(255,255,255,0.35);
+    --text-muted: rgba(255,255,255,0.20);
+
+    /* Bordas */
+    --border-subtle: rgba(255,255,255,0.05);
+    --border-default: rgba(255,255,255,0.08);
+    --border-visible: rgba(255,255,255,0.12);
+    --border-strong: rgba(255,255,255,0.20);
+
+    --sidebar-width: 220px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--surface-0);
+    color: var(--text-primary);
+    display: flex;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── SIDEBAR ─────────────────────────────────────── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--surface-1);
+    border-right: 1px solid var(--border-subtle);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 24px 0;
+  }
+
+  .sidebar-brand {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-brand-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+  }
+
+  .sidebar-brand-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .sidebar nav { padding: 0 12px; }
+
+  .sidebar-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-quaternary);
+    padding: 12px 8px 6px;
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 7px 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar a:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .sidebar a.active {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.05);
+    border-left-color: var(--text-tertiary);
+  }
+
+  /* ── MAIN ────────────────────────────────────────── */
+  .main { margin-left: var(--sidebar-width); flex: 1; }
+
+  .section {
+    padding: 80px 64px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .section:nth-child(even) { background: var(--surface-1); }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-quaternary);
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .section-subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+
+  /* ── HERO ────────────────────────────────────────── */
+  #hero {
+    position: relative;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 80px 64px;
+  }
+
+  .hero-ambient {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 60% at 0% 100%, rgba(74,144,255,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 30% 40% at 100% 0%, rgba(255,255,255,0.02) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hourglass-watermark {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 300px;
+    opacity: 0.025;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-visible);
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 24px;
+    width: fit-content;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-title {
+    font-size: clamp(40px, 5vw, 72px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-title .accent { color: var(--systems-blue); }
+
+  .hero-subtitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 560px;
+    margin-bottom: 36px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── BOTÕES ───────────────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background: var(--systems-blue);
+    color: #fff;
+    padding: 13px 32px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+
+  .btn-primary:hover {
+    background: var(--systems-blue-hover);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    padding: 13px 32px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    border: 1px solid var(--border-visible);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--border-strong);
+  }
+
+  /* ── SWATCHES ─────────────────────────────────────── */
+  .swatches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+
+  .swatch {
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    border: 1px solid var(--border-default);
+  }
+
+  .swatch:hover { transform: translateY(-2px); }
+
+  .swatch-color {
+    height: 72px;
+    position: relative;
+  }
+
+  .swatch-copy-hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .swatch:hover .swatch-copy-hint { opacity: 1; }
+
+  .swatch-info {
+    padding: 10px 12px;
+    background: var(--surface-2);
+  }
+
+  .swatch-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .swatch-value {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-family: monospace;
+  }
+
+  .copied-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface-3);
+    border: 1px solid var(--border-visible);
+    color: var(--text-primary);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s ease;
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  .copied-toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── OPACITY LADDER ───────────────────────────────── */
+  .opacity-ladder { display: flex; flex-direction: column; gap: 8px; }
+
+  .opacity-rung {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .opacity-swatch {
+    width: 48px;
+    height: 32px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .opacity-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 60px;
+    font-family: monospace;
+  }
+
+  .opacity-value {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-family: monospace;
+  }
+
+  .opacity-use {
+    font-size: 12px;
+    color: var(--text-quaternary);
+    margin-left: auto;
+  }
+
+  /* ── CARDS ────────────────────────────────────────── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: 28px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .card:hover {
+    border-color: var(--border-visible);
+    background: var(--surface-3);
+  }
+
+  .card-precision {
+    border-top: 2px solid var(--systems-blue);
+  }
+
+  .card-precision:hover {
+    box-shadow: 0 0 40px rgba(74,144,255,0.08);
+  }
+
+  .card-mono {
+    border-top: 2px solid rgba(255,255,255,0.20);
+  }
+
+  .card-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-quaternary);
+    margin-bottom: 8px;
+  }
+
+  .card-tag.blue { color: var(--systems-blue); }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .card-body {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .card-metric {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--systems-blue);
+    letter-spacing: -0.03em;
+    margin-bottom: 4px;
+  }
+
+  .card-metric-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-quaternary);
+  }
+
+  /* ── HAIRLINE GRID ────────────────────────────────── */
+  .hairline-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border-default);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-default);
+  }
+
+  .hairline-cell {
+    background: var(--surface-0);
+    padding: 28px 24px;
+  }
+
+  .hairline-cell:nth-child(even) { background: var(--surface-1); }
+
+  /* ── PROCESS STEPS ────────────────────────────────── */
+  .process-steps { display: flex; flex-direction: column; gap: 0; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 24px;
+    padding-bottom: 40px;
+    position: relative;
+  }
+
+  .step:last-child { padding-bottom: 0; }
+
+  .step-num-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .step-num {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--systems-blue);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: rgba(74,144,255,0.08);
+    border: 1px solid rgba(74,144,255,0.20);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-connector {
+    width: 1px;
+    flex: 1;
+    background: var(--border-default);
+    margin-top: 8px;
+  }
+
+  .step:last-child .step-connector { display: none; }
+
+  .step-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .step-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 540px;
+    padding-bottom: 8px;
+  }
+
+  /* ── TIME SCANNER ─────────────────────────────────── */
+  @keyframes time-scanner-systems {
+    0% { top: -1px; opacity: 0; }
+    5% { opacity: 1; }
+    95% { opacity: 1; }
+    100% { top: calc(100% + 1px); opacity: 0; }
+  }
+
+  .scanner-demo {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-default);
+    padding: 28px;
+  }
+
+  .scanner-demo::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: -1px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(74,144,255,0.20) 20%, rgba(74,144,255,0.50) 50%, rgba(74,144,255,0.20) 80%, transparent 100%);
+    animation: time-scanner-systems 2.5s cubic-bezier(0.65,0,0.35,1) infinite;
+    animation-delay: 0.5s;
+  }
+
+  /* ── SCROLL PROGRESS ──────────────────────────────── */
+  .scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--systems-blue);
+    z-index: 9999;
+    transition: width 0.05s linear;
+  }
+
+  /* ── TYPE ─────────────────────────────────────────── */
+  .type-specimen {
+    margin-bottom: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .type-specimen:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .type-meta {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-quaternary);
+    margin-bottom: 12px;
+  }
+
+  /* ── TESTIMONIAL ──────────────────────────────────── */
+  .testimonial {
+    border-left: 2px solid var(--systems-blue);
+    padding-left: 24px;
+    position: relative;
+  }
+
+  .testimonial::before {
+    content: '"';
+    position: absolute;
+    top: -8px;
+    left: 16px;
+    font-size: 48px;
+    color: var(--systems-blue);
+    opacity: 0.20;
+    line-height: 1;
+  }
+
+  .testimonial-quote {
+    font-size: 18px;
+    font-style: italic;
+    color: var(--text-secondary);
+    line-height: 1.70;
+    margin-bottom: 16px;
+  }
+
+  .testimonial-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .testimonial-role {
+    font-size: 14px;
+    color: var(--text-tertiary);
+  }
+
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="copied-toast" id="copiedToast">Copiado!</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-tag">Camada</div>
+    <div class="sidebar-brand-name">Systems<br><span style="color:var(--text-tertiary);font-size:12px">Design System v2</span></div>
+  </div>
+  <nav>
+    <div class="sidebar-section-label">Identidade</div>
+    <a href="#hero" class="active">Visão Geral</a>
+    <a href="#filosofia">Filosofia Visual</a>
+    <a href="#cores">Cores</a>
+
+    <div class="sidebar-section-label">Elementos</div>
+    <a href="#tipografia">Tipografia</a>
+    <a href="#botoes">Botões</a>
+    <a href="#cards">Cards</a>
+
+    <div class="sidebar-section-label">Padrões</div>
+    <a href="#processo">Processo</a>
+    <a href="#metricas">Métricas</a>
+    <a href="#efeitos">Efeitos</a>
+
+    <div class="sidebar-section-label">Sistema</div>
+    <a href="#regras">Regras de Moderação</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <section class="section" id="hero" style="position:relative;overflow:hidden;">
+    <div class="hero-ambient"></div>
+    <div class="hourglass-watermark" aria-hidden="true">⧗</div>
+    <div class="hero-badge">Camada — Systems Design System v2</div>
+    <h1 class="hero-title">
+      Precisão técnica.<br>
+      <span class="accent">Azul mínimo.</span>
+    </h1>
+    <p class="hero-subtitle">
+      Systems opera com preto/branco dominante. O azul <strong style="color:var(--systems-blue)">#4A90FF</strong> — idêntico ao master — aparece com extrema moderação: somente em CTAs e elementos de precisão. Máx. 1 elemento azul por viewport.
+    </p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a href="#cores" class="btn btn-primary">Explorar Sistema</a>
+      <a href="#regras" class="btn btn-secondary">Ver Regras</a>
+    </div>
+  </section>
+
+  <!-- FILOSOFIA VISUAL -->
+  <section class="section" id="filosofia">
+    <div class="section-label">Filosofia</div>
+    <h2 class="section-title">Por que o azul é quase invisível</h2>
+    <p class="section-subtitle">Systems é o serviço de implementação técnica. A paleta monocromática comunica rigor, precisão e confiabilidade. O azul aparece apenas onde é um sinal de ação — tornando cada elemento azul inequívoco.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-default);border-radius:12px;overflow:hidden;border:1px solid var(--border-default);">
+      <div style="background:var(--surface-1);padding:28px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Master</div>
+        <div style="font-size:28px;font-weight:700;color:var(--text-primary);margin-bottom:8px">2 por viewport</div>
+        <div style="font-size:14px;color:var(--text-tertiary)">Máximo de elementos azuis por viewport no ecossistema</div>
+      </div>
+      <div style="background:var(--surface-2);padding:28px;border-top:2px solid var(--systems-blue)">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--systems-blue);margin-bottom:12px">Systems</div>
+        <div style="font-size:28px;font-weight:700;color:var(--systems-blue);margin-bottom:8px">1 por viewport</div>
+        <div style="font-size:14px;color:var(--text-tertiary)">Máximo de elementos azuis. Mais restrito que o master por design.</div>
+      </div>
+      <div style="background:var(--surface-1);padding:28px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Resultado</div>
+        <div style="font-size:28px;font-weight:700;color:var(--text-primary);margin-bottom:8px">100% sinal</div>
+        <div style="font-size:14px;color:var(--text-tertiary)">Quando há azul, é uma instrução de ação. Sem exceções.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORES -->
+  <section class="section" id="cores">
+    <div class="section-label">Paleta de Cores</div>
+    <h2 class="section-title">Preto, Branco e Azul Mínimo</h2>
+    <p class="section-subtitle">A paleta Systems é a mais contida do ecossistema. O ouro anterior foi completamente removido. A hierarquia visual opera inteiramente através de variações de opacidade do branco.</p>
+
+    <div class="swatches-grid">
+      <div class="swatch" onclick="copyColor('#000000')">
+        <div class="swatch-color" style="background:#000;border:1px solid rgba(255,255,255,0.06)"><div class="swatch-copy-hint">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Void</div><div class="swatch-value">#000000 — Base</div></div>
+      </div>
+      <div class="swatch" onclick="copyColor('#0A0A0A')">
+        <div class="swatch-color" style="background:#0A0A0A"><div class="swatch-copy-hint">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Surface-1</div><div class="swatch-value">#0A0A0A</div></div>
+      </div>
+      <div class="swatch" onclick="copyColor('#111111')">
+        <div class="swatch-color" style="background:#111"><div class="swatch-copy-hint">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Surface-2</div><div class="swatch-value">#111111 — Cards</div></div>
+      </div>
+      <div class="swatch" onclick="copyColor('#1A1A1A')">
+        <div class="swatch-color" style="background:#1A1A1A"><div class="swatch-copy-hint">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Surface-4</div><div class="swatch-value">#1A1A1A</div></div>
+      </div>
+      <div class="swatch" onclick="copyColor('#FFFFFF')">
+        <div class="swatch-color" style="background:linear-gradient(135deg,#fff,#e0e0e0)"><div class="swatch-copy-hint" style="color:#000">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Branco</div><div class="swatch-value">#FFFFFF — Headlines</div></div>
+      </div>
+      <div class="swatch" onclick="copyColor('#4A90FF')">
+        <div class="swatch-color" style="background:#4A90FF"><div class="swatch-copy-hint">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Azul — Mínimo</div><div class="swatch-value">#4A90FF — CTAs apenas</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:16px">Escala de Opacidade do Texto (hierarquia monocromática)</div>
+      <div class="opacity-ladder">
+        <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(255,255,255,1.0)"></div><span class="opacity-label">100%</span><span class="opacity-value">#FFFFFF</span><span class="opacity-use">Headlines</span></div>
+        <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(255,255,255,0.70)"></div><span class="opacity-label">70%</span><span class="opacity-value">rgba(255,255,255,0.70)</span><span class="opacity-use">Body, descrições</span></div>
+        <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(255,255,255,0.50)"></div><span class="opacity-label">50%</span><span class="opacity-value">rgba(255,255,255,0.50)</span><span class="opacity-use">Captions, metadata</span></div>
+        <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(255,255,255,0.35)"></div><span class="opacity-label">35%</span><span class="opacity-value">rgba(255,255,255,0.35)</span><span class="opacity-use">Labels, disabled</span></div>
+        <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(255,255,255,0.20)"></div><span class="opacity-label">20%</span><span class="opacity-value">rgba(255,255,255,0.20)</span><span class="opacity-use">Watermark, ghost</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIPOGRAFIA -->
+  <section class="section" id="tipografia">
+    <div class="section-label">Tipografia</div>
+    <h2 class="section-title">Inter Variable — Escala Systems</h2>
+    <p class="section-subtitle">A mesma escala do master sem color highlights frequentes. O azul em texto é reservado para métricas de destaque e o CTA final. Todo o restante opera em branco com variações de opacidade.</p>
+
+    <div class="type-specimen">
+      <div class="type-meta">Display — 72px / 700 / -0.03em</div>
+      <div style="font-size:clamp(36px,6vw,72px);font-weight:700;letter-spacing:-0.03em;line-height:1.05">
+        47 horas por mês <span style="color:var(--systems-blue)">recuperadas</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">H1 — 56px / 700 / -0.025em</div>
+      <div style="font-size:clamp(32px,4vw,56px);font-weight:700;letter-spacing:-0.025em;line-height:1.08">
+        Sistemas que devolvem<br>o seu tempo
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">Body — 16px / 400 / 0 / lh 1.65</div>
+      <div style="font-size:16px;font-weight:400;line-height:1.65;color:var(--text-secondary);max-width:640px">
+        Reis IA Systems não diz "construímos agentes de IA." Systems diz "devolvemos X horas por semana para você." Cada entregável é enquadrado como tempo recuperado.
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">Métricas — Stat Block</div>
+      <div style="display:flex;gap:48px;align-items:baseline;flex-wrap:wrap">
+        <div>
+          <div style="font-size:56px;font-weight:700;letter-spacing:-0.03em;color:var(--systems-blue);line-height:1">47h</div>
+          <div style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-quaternary);margin-top:4px">por mês</div>
+        </div>
+        <div>
+          <div style="font-size:56px;font-weight:700;letter-spacing:-0.03em;color:var(--text-primary);line-height:1">3x</div>
+          <div style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-quaternary);margin-top:4px">mais rápido</div>
+        </div>
+        <div>
+          <div style="font-size:56px;font-weight:700;letter-spacing:-0.03em;color:var(--text-primary);line-height:1">0h</div>
+          <div style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-quaternary);margin-top:4px">manuais restantes</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTÕES -->
+  <section class="section" id="botoes">
+    <div class="section-label">Componentes</div>
+    <h2 class="section-title">Botões — Azul Idêntico ao Master</h2>
+    <p class="section-subtitle">Systems usa o mesmo azul #4A90FF do master em seus CTAs. Sem variação. A diferença está na frequência de uso — não na cor.</p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+      <a href="#" class="btn btn-primary">Recupere seu Tempo</a>
+      <a href="#" class="btn btn-secondary">Ver Case Studies</a>
+      <a href="#" style="font-size:14px;font-weight:600;color:var(--systems-blue);text-decoration:none;transition:all 0.2s;display:inline-flex;align-items:center;gap:4px">Como funciona →</a>
+    </div>
+
+    <div style="margin-top:32px;padding:24px;background:var(--surface-2);border-radius:12px;border:1px solid var(--border-default)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Azul = Instrução, não decoração</div>
+      <p style="font-size:14px;color:var(--text-tertiary);line-height:1.5">Em Systems, quando um elemento é azul, o usuário deve agir. Não há azul decorativo, não há ícones azuis sem função, não há badges azuis informativos. Azul = "aja aqui" — sem exceções.</p>
+    </div>
+  </section>
+
+  <!-- CARDS -->
+  <section class="section" id="cards">
+    <div class="section-label">Componentes</div>
+    <h2 class="section-title">Cards de Serviço e KPI</h2>
+    <p class="section-subtitle">Cards de serviço usam borda superior branca (não azul — reservado para o card de destaque máximo). Cards KPI mostram a métrica em azul como o único ponto de cor na tela.</p>
+
+    <div class="cards-grid" style="margin-bottom:32px">
+      <div class="card card-mono">
+        <div class="card-tag">Serviço</div>
+        <div class="card-title">Agente de Suporte</div>
+        <div class="card-body">47 horas/mês que sua equipe não gasta mais respondendo as mesmas 50 perguntas.</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--text-quaternary)">Tempo recuperado</div>
+      </div>
+
+      <div class="card card-mono">
+        <div class="card-tag">Serviço</div>
+        <div class="card-title">Automação Operacional</div>
+        <div class="card-body">O fim do relatório de 2 horas que seu gerente monta na mão todo dia.</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--text-quaternary)">Tempo recuperado</div>
+      </div>
+
+      <div class="card card-precision">
+        <div class="card-tag blue">Destaque — 1 por página</div>
+        <div class="card-title">Agente Comercial</div>
+        <div class="card-body">3 horas/dia que seu time comercial recupera para focar em fechar, não em qualificar.</div>
+        <a href="#" class="btn btn-primary" style="font-size:14px;padding:10px 20px;border-radius:6px;display:inline-flex">Agendar →</a>
+      </div>
+    </div>
+
+    <!-- Hairline grid KPI -->
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:16px">Hairline Grid — KPI Cards</div>
+    <div class="hairline-grid">
+      <div class="hairline-cell">
+        <div style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:8px">Tempo recuperado</div>
+        <div style="font-size:36px;font-weight:700;letter-spacing:-0.02em;color:var(--systems-blue);line-height:1.1">47h</div>
+        <div style="font-size:13px;color:var(--text-tertiary);margin-top:4px">por mês, média</div>
+      </div>
+      <div class="hairline-cell">
+        <div style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:8px">Implementações</div>
+        <div style="font-size:36px;font-weight:700;letter-spacing:-0.02em;color:var(--text-primary);line-height:1.1">200<span style="color:var(--systems-blue)">+</span></div>
+        <div style="font-size:13px;color:var(--text-tertiary);margin-top:4px">sistemas entregues</div>
+      </div>
+      <div class="hairline-cell">
+        <div style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:8px">Prazo médio</div>
+        <div style="font-size:36px;font-weight:700;letter-spacing:-0.02em;color:var(--text-primary);line-height:1.1">14<span style="font-size:20px;color:var(--text-tertiary)"> dias</span></div>
+        <div style="font-size:13px;color:var(--text-tertiary);margin-top:4px">do diagnóstico ao go-live</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESSO -->
+  <section class="section" id="processo">
+    <div class="section-label">Padrões</div>
+    <h2 class="section-title">Process Steps — Metodologia</h2>
+    <p class="section-subtitle">Números de passo em azul (#4A90FF) como únicos elementos coloridos. Todo o restante do componente opera em branco com opacidades. A linha de conexão é a borda padrão (8% branco).</p>
+
+    <div class="process-steps">
+      <div class="step">
+        <div class="step-num-col">
+          <div class="step-num">1</div>
+          <div class="step-connector"></div>
+        </div>
+        <div>
+          <div class="step-title">Diagnóstico de Tempo</div>
+          <div class="step-desc">Mapeamos onde as horas estão sendo gastas. Antes de construir qualquer sistema, entendemos o custo real em tempo de cada processo manual.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num-col">
+          <div class="step-num">2</div>
+          <div class="step-connector"></div>
+        </div>
+        <div>
+          <div class="step-title">Arquitetura de Solução</div>
+          <div class="step-desc">Projetamos o sistema de IA com uma métrica antes de qualquer outra: quantas horas isso recupera por semana?</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num-col">
+          <div class="step-num">3</div>
+          <div class="step-connector"></div>
+        </div>
+        <div>
+          <div class="step-title">Implementação e Entrega</div>
+          <div class="step-desc">14 dias do diagnóstico ao go-live. Sem ambiguidade sobre o que é entregue. Sem meetings que poderiam ser mensagens.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num-col">
+          <div class="step-num">4</div>
+        </div>
+        <div>
+          <div class="step-title">Medição de Tempo Recuperado</div>
+          <div class="step-desc">30 dias após o go-live, medimos. Horas recuperadas. Tempo redirecionado para alto valor. Receita gerada por hora recuperada.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MÉTRICAS -->
+  <section class="section" id="metricas">
+    <div class="section-label">Dados</div>
+    <h2 class="section-title">Testimonial + Time Scanner</h2>
+    <p class="section-subtitle">Testimonials com borda esquerda azul (2px). O Time Scanner em Systems usa intensidade de azul reduzida — uma varredura mais lenta e contida que comunica análise técnica.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+      <div class="testimonial">
+        <div class="testimonial-quote">"Recuperamos 47 horas por mês. Esse tempo foi direto para fechamento de contratos. Três meses depois, batemos o maior mês da história da empresa."</div>
+        <div class="testimonial-name">Carlos Mendes</div>
+        <div class="testimonial-role">CEO, Agência de Performance</div>
+      </div>
+
+      <div class="scanner-demo">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Resultado — 90 dias pós-implementação</div>
+        <div style="display:flex;gap:32px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:28px;font-weight:700;color:var(--systems-blue);letter-spacing:-0.02em">47h</div>
+            <div style="font-size:12px;color:var(--text-quaternary);margin-top:2px">por mês</div>
+          </div>
+          <div>
+            <div style="font-size:28px;font-weight:700;color:var(--text-primary);letter-spacing:-0.02em">3x</div>
+            <div style="font-size:12px;color:var(--text-quaternary);margin-top:2px">mais fechamentos</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;font-size:14px;color:var(--text-tertiary)">Time Scanner em azul mínimo — 50% de intensidade vs. Time Builders. Transmite análise técnica, não energia.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EFEITOS -->
+  <section class="section" id="efeitos">
+    <div class="section-label">Efeitos</div>
+    <h2 class="section-title">Z7 Pulse — 6s (máxima calma)</h2>
+    <p class="section-subtitle">Em Systems, o Z7 Pulse tem ciclo de 6 segundos — mais lento que o master (4s) e muito mais lento que Time Builders (2.5s). Comunica precisão técnica, não energia.</p>
+
+    <div style="display:flex;gap:48px;align-items:center;flex-wrap:wrap">
+      <div style="text-align:center">
+        <div style="width:80px;height:80px;border-radius:12px;background:rgba(74,144,255,0.06);border:1px solid rgba(74,144,255,0.20);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--systems-blue);margin:0 auto 8px;animation:systems-pulse 6s ease infinite">⧗</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text-secondary)">Z7 Pulse — 6s</div>
+        <div style="font-size:12px;color:var(--text-quaternary)">Precisão técnica</div>
+      </div>
+
+      <div style="padding:24px;background:var(--surface-2);border-radius:12px;border:1px solid var(--border-default);flex:1;min-width:200px">
+        <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:12px">Comparação de Ciclos</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:12px;color:var(--text-quaternary);min-width:110px">Time Builders</div>
+            <div style="height:4px;background:rgba(45,122,255,0.50);border-radius:2px;width:40px"></div>
+            <div style="font-size:12px;color:var(--text-secondary)">2.5s — Energia</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:12px;color:var(--text-quaternary);min-width:110px">Master</div>
+            <div style="height:4px;background:rgba(74,144,255,0.50);border-radius:2px;width:64px"></div>
+            <div style="font-size:12px;color:var(--text-secondary)">4s — Padrão</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:12px;color:var(--text-primary);min-width:110px;font-weight:600">Systems</div>
+            <div style="height:4px;background:rgba(74,144,255,0.50);border-radius:2px;width:96px"></div>
+            <div style="font-size:12px;color:var(--systems-blue);font-weight:600">6s — Precisão</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGRAS -->
+  <section class="section" id="regras">
+    <div class="section-label">Sistema</div>
+    <h2 class="section-title">Regras de Moderação — Systems</h2>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="padding:20px 24px;background:var(--surface-2);border-radius:10px;border-left:3px solid var(--text-muted);display:flex;gap:16px;align-items:flex-start">
+        <span style="font-size:16px;color:var(--systems-blue);flex-shrink:0">◆</span>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px">Máx. 1 elemento azul por viewport</div>
+          <div style="font-size:13px;color:var(--text-tertiary)">Mais restrito que o master (2). O único azul visível é o CTA ou o número de destaque da seção.</div>
+        </div>
+      </div>
+      <div style="padding:20px 24px;background:var(--surface-2);border-radius:10px;border-left:3px solid var(--text-muted);display:flex;gap:16px;align-items:flex-start">
+        <span style="font-size:16px;color:var(--systems-blue);flex-shrink:0">◆</span>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px">Sem cyan — sistemas é monocromático</div>
+          <div style="font-size:13px;color:var(--text-tertiary)">Cyan é exclusivo da camada Time Builders. Systems usa apenas #4A90FF (master) sem variações secundárias.</div>
+        </div>
+      </div>
+      <div style="padding:20px 24px;background:var(--surface-2);border-radius:10px;border-left:3px solid var(--text-muted);display:flex;gap:16px;align-items:flex-start">
+        <span style="font-size:16px;color:var(--systems-blue);flex-shrink:0">◆</span>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px">Hierarquia opera por opacidade de branco</div>
+          <div style="font-size:13px;color:var(--text-tertiary)">100% → 70% → 50% → 35% → 20%. Sem grays hexadecimais. A escala de opacidade IS a hierarquia visual.</div>
+        </div>
+      </div>
+      <div style="padding:20px 24px;background:var(--surface-2);border-radius:10px;border-left:3px solid var(--systems-blue);display:flex;gap:16px;align-items:flex-start">
+        <span style="font-size:16px;color:var(--systems-blue);flex-shrink:0">⧗</span>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px">Toda métrica enquadrada como tempo</div>
+          <div style="font-size:13px;color:var(--text-tertiary)">Nunca "automatizamos seus processos." Sempre "devolvemos X horas/mês." O tempo é a métrica primária de cada card, case study e CTA.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<style>
+@keyframes systems-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(74,144,255,0.15); transform: scale(1); }
+  50% { box-shadow: 0 0 0 20px rgba(74,144,255,0); transform: scale(1.015); }
+  100% { box-shadow: 0 0 0 0 rgba(74,144,255,0); transform: scale(1); }
+}
+</style>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const progress = Math.min(100, (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100);
+    document.getElementById('scrollProgress').style.width = progress + '%';
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.sidebar a').forEach(l => l.classList.remove('active'));
+        const a = document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
+
+  function copyColor(hex) {
+    navigator.clipboard.writeText(hex).catch(() => {});
+    const t = document.getElementById('copiedToast');
+    t.textContent = hex + ' copiado!';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+</script>
+</body>
+</html>

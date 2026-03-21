@@ -1,48 +1,60 @@
 ---
+/**
+ * StatBlock -- Stat value + label + blue divider, data-counter for animation.
+ */
 interface Props {
   value: string;
   label: string;
   context?: string;
-  muted?: boolean;
+  color?: 'blue' | 'white';
+  class?: string;
 }
 
-const { value, label, context, muted = false } = Astro.props;
+const {
+  value,
+  label,
+  context,
+  color = 'blue',
+  class: className = '',
+} = Astro.props;
 
-// Parse numeric value and suffix for counter animation
-// e.g. "91%" → target=91, suffix="%"
-// e.g. "300+" → target=300, suffix="+"
-const match = value.match(/^(\d+)(.*)$/);
-const numericTarget = match ? parseInt(match[1], 10) : null;
-const numericSuffix = match ? match[2] : '';
-const canAnimate = numericTarget !== null && !muted;
+const valueColor = color === 'blue' ? 'text-[var(--accent-blue)]' : 'text-[var(--text-primary)]';
+
+// Parse numeric value for counter animation
+const match = value.match(/^([^0-9]*)(\d+)(.*)$/);
+const numericPrefix = match ? match[1] : '';
+const numericTarget = match ? parseInt(match[2], 10) : null;
+const numericSuffix = match ? match[3] : '';
+const canAnimate = numericTarget !== null;
 ---
 
-<div class="text-center">
-  <!-- Gold accent line above number — premium touch -->
-  {!muted && (
-    <div
-      class="w-8 h-px mx-auto mb-4"
-      style="background: linear-gradient(to right, transparent, rgba(201,168,76,0.5), transparent);"
-      aria-hidden="true"
-    ></div>
-  )}
+<div class:list={['text-center md:text-left', className]}>
+  <!-- Blue accent divider -->
+  <div
+    class="w-10 h-px mb-4 mx-auto md:mx-0"
+    style="background: linear-gradient(to right, var(--accent-blue), transparent);"
+    aria-hidden="true"
+  ></div>
+
   <p
-    class={`leading-none ${muted ? 'text-neutral-600' : 'text-accent'}`}
-    style={!muted
-      ? 'font-weight: 300; font-size: clamp(48px, 6vw, 72px);'
-      : 'font-weight: 700; font-size: clamp(40px, 5vw, 56px);'}
+    class:list={['font-bold tabular-nums leading-none', valueColor]}
+    style="font-size: clamp(2.5rem, 1.5rem + 3.5vw, 3.5rem);"
     data-counter={canAnimate ? '' : undefined}
     data-target={canAnimate ? numericTarget : undefined}
     data-suffix={canAnimate ? numericSuffix : undefined}
-    data-prefix=""
-    aria-label={`${value} — ${label}`}
+    data-prefix={canAnimate ? numericPrefix : undefined}
+    aria-label={`${value} - ${label}`}
   >
     {value}
   </p>
-  <p class="text-xs uppercase tracking-widest mt-3 max-w-[180px] mx-auto leading-snug" style="color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">
+
+  <p class="text-[var(--text-label)] uppercase tracking-[0.05em] font-semibold text-[var(--text-tertiary)] mt-3 max-w-[200px] mx-auto md:mx-0 leading-snug">
     {label}
   </p>
+
   {context && (
-    <p class="text-sm mt-1" style="color: rgba(255,255,255,0.35);">{context}</p>
+    <p class="text-[var(--text-body-sm)] text-[var(--text-secondary)] mt-1 leading-relaxed">
+      {context}
+    </p>
   )}
 </div>

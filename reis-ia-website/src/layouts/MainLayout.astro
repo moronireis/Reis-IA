@@ -1,4 +1,10 @@
 ---
+/**
+ * MainLayout -- Base layout for all pages.
+ * lang="pt-BR", dark mode, Surface-0 base, Inter Variable font, grain overlay.
+ * Includes Nav, Footer, scroll reveal observer, counter animation, nav scroll state,
+ * hardware-adaptive rendering, grid stagger observer, text reveal observer.
+ */
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
@@ -7,14 +13,14 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
-  activePage?: 'home' | 'builder' | 'systems' | 'partners' | 'network' | 'about';
+  activePage?: 'home' | 'builder' | 'systems' | 'about' | 'none';
 }
 
 const {
   title,
-  description = 'A Reis IA constrói sistemas de AI que geram receita, treina agências para vender soluções de AI e cria as parcerias que escalam tudo. Comece com o Revenue-First AI Framework.',
+  description = 'A Reis IA constrói sistemas de IA que geram receita, treina equipes para dominar o tempo e cria parcerias que escalam tudo.',
   ogImage,
-  activePage = 'home'
+  activePage = 'home',
 } = Astro.props;
 ---
 
@@ -23,6 +29,7 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
     <meta name="description" content={description} />
     <title>{title} | Reis IA</title>
 
@@ -39,56 +46,120 @@ const {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <!-- Fonts: Inter Variable via Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
-  <body style="background-color: #080808; color: rgba(255,255,255,0.75);" class="font-sans">
+  <body class="font-sans grain">
+    <!-- Skip to content (acessibilidade) -->
+    <a href="#main-content" class="skip-to-content">
+      Pular para o conteúdo
+    </a>
+
     <Nav activePage={activePage} />
+
     <main id="main-content">
       <slot />
     </main>
+
     <Footer />
 
     <!-- ============================================================
-         SCROLL REVEAL — Intersection Observer (Task E)
-         Counter Animations (Task F)
+         Scripts: Hardware-Adaptive Rendering, Scroll Reveal, Grid
+         Stagger, Text Reveal, Counter Animation, Nav Scroll State
          ============================================================ -->
     <script>
-      // ---- Scroll reveal ----------------------------------------
-      const revealObserver = new IntersectionObserver((entries) => {
+      // ---- Hardware-adaptive rendering (3 tiers) -----------------
+      (function detectPerformance() {
+        const nav = navigator as any;
+        const hardwareConcurrency = nav.hardwareConcurrency || 4;
+        const deviceMemory = nav.deviceMemory || 4;
+        let perf = 'high';
+        if (hardwareConcurrency <= 2 || deviceMemory <= 2) perf = 'low';
+        else if (hardwareConcurrency <= 4 || deviceMemory <= 4) perf = 'medium';
+        document.documentElement.setAttribute('data-perf', perf);
+      })();
+
+      // ---- Scroll reveal (animate-on-scroll) --------------------
+      const scrollObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('revealed');
-            revealObserver.unobserve(entry.target);
+            entry.target.classList.add('is-visible');
+            scrollObserver.unobserve(entry.target);
           }
         });
       }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-      document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+      document.querySelectorAll('.animate-on-scroll, .animate-fade-in, .animate-scale-reveal, .animate-perspective-up').forEach(el => {
+        scrollObserver.observe(el);
+      });
 
-      // ---- Counter animation (Task F) --------------------------
+      // ---- Grid stagger reveal ---------------------------------
+      const staggerObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            staggerObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      document.querySelectorAll('.grid-stagger').forEach(el => {
+        staggerObserver.observe(el);
+      });
+
+      // ---- Text reveal -----------------------------------------
+      const textRevealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            textRevealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+
+      document.querySelectorAll('.text-reveal').forEach(el => {
+        textRevealObserver.observe(el);
+      });
+
+      // ---- Compression bar reveal ------------------------------
+      const compressObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            compressObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('.compress-bar').forEach(el => {
+        compressObserver.observe(el);
+      });
+
+      // ---- Counter animation ------------------------------------
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
       function animateCounter(el: Element) {
         const target = parseInt((el as HTMLElement).dataset.target ?? '0', 10);
         const suffix = (el as HTMLElement).dataset.suffix ?? '';
         const prefix = (el as HTMLElement).dataset.prefix ?? '';
-        const duration = 1500;
+        const duration = 2000;
         const start = performance.now();
 
         function update(now: number) {
           const elapsed = now - start;
           const progress = Math.min(elapsed / duration, 1);
-          // ease-out cubic
           const eased = 1 - Math.pow(1 - progress, 3);
           el.textContent = prefix + Math.round(target * eased).toLocaleString('pt-BR') + suffix;
           if (progress < 1) requestAnimationFrame(update);
         }
         requestAnimationFrame(update);
       }
-
-      // Respect reduced motion: skip animation, show final value
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       const counterObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -106,7 +177,7 @@ const {
 
       document.querySelectorAll('[data-counter]').forEach(el => counterObserver.observe(el));
 
-      // ---- Sticky nav scroll border (Task J) -------------------
+      // ---- Sticky nav scroll state ------------------------------
       const nav = document.getElementById('main-nav');
       if (nav) {
         const onScroll = () => {
@@ -117,7 +188,7 @@ const {
           }
         };
         window.addEventListener('scroll', onScroll, { passive: true });
-        onScroll(); // run on load
+        onScroll();
       }
     </script>
   </body>

@@ -1,0 +1,180 @@
+---
+/**
+ * MainLayout — Base layout for all pages.
+ * Dark mode, Surface-0 base, Inter Variable font, grain overlay.
+ * Includes Nav, Footer, scroll reveal observer, counter animation, nav scroll state.
+ */
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  activePage?: 'home' | 'builder' | 'systems' | 'partners' | 'network' | 'about';
+}
+
+const {
+  title,
+  description = 'A Reis IA constroi sistemas de IA que geram receita, treina agencias para vender solucoes de IA e cria as parcerias que escalam tudo.',
+  ogImage,
+  activePage = 'home'
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content={description} />
+    <title>{title} | Reis IA</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Reis IA" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <!-- Fonts: Inter Variable via Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="font-sans grain">
+    <!-- Skip to content (accessibility) -->
+    <a href="#main-content" class="skip-to-content">
+      Pular para o conteudo
+    </a>
+
+    <Nav activePage={activePage} />
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <!-- ============================================================
+         Scripts: Scroll Reveal, Counter Animation, Nav Scroll State,
+         Hardware-Adaptive Rendering, Grid Stagger
+         ============================================================ -->
+    <script>
+      // ---- Hardware-adaptive rendering -------------------------
+      (function detectPerformance() {
+        const nav = navigator as any;
+        const hardwareConcurrency = nav.hardwareConcurrency || 4;
+        const deviceMemory = nav.deviceMemory || 4;
+        let perf = 'high';
+        if (hardwareConcurrency <= 2 || deviceMemory <= 2) perf = 'low';
+        else if (hardwareConcurrency <= 4 || deviceMemory <= 4) perf = 'medium';
+        document.documentElement.setAttribute('data-perf', perf);
+      })();
+
+      // ---- Scroll reveal (animate-on-scroll) --------------------
+      const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            scrollObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+      document.querySelectorAll('.animate-on-scroll, .animate-fade-in, .animate-scale-reveal, .animate-perspective-up').forEach(el => {
+        scrollObserver.observe(el);
+      });
+
+      // ---- Grid stagger reveal ---------------------------------
+      const staggerObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            staggerObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      document.querySelectorAll('.grid-stagger').forEach(el => {
+        staggerObserver.observe(el);
+      });
+
+      // ---- Text reveal -----------------------------------------
+      const textRevealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            textRevealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+
+      document.querySelectorAll('.text-reveal').forEach(el => {
+        textRevealObserver.observe(el);
+      });
+
+      // ---- Counter animation ------------------------------------
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function animateCounter(el: Element) {
+        const target = parseInt((el as HTMLElement).dataset.target ?? '0', 10);
+        const suffix = (el as HTMLElement).dataset.suffix ?? '';
+        const prefix = (el as HTMLElement).dataset.prefix ?? '';
+        const duration = 2000;
+        const start = performance.now();
+
+        function update(now: number) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = prefix + Math.round(target * eased).toLocaleString('pt-BR') + suffix;
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+      }
+
+      const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (prefersReducedMotion) {
+              const el = entry.target as HTMLElement;
+              el.textContent = (el.dataset.prefix ?? '') + parseInt(el.dataset.target ?? '0').toLocaleString('pt-BR') + (el.dataset.suffix ?? '');
+            } else {
+              animateCounter(entry.target);
+            }
+            counterObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('[data-counter]').forEach(el => counterObserver.observe(el));
+
+      // ---- Sticky nav scroll state ------------------------------
+      const nav = document.getElementById('main-nav');
+      if (nav) {
+        const onScroll = () => {
+          if (window.scrollY > 20) {
+            nav.setAttribute('data-scrolled', 'true');
+          } else {
+            nav.removeAttribute('data-scrolled');
+          }
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      }
+    </script>
+  </body>
+</html>

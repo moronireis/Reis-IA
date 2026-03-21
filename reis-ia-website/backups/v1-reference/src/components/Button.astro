@@ -1,0 +1,51 @@
+---
+/**
+ * Button — Design system button with blue accent.
+ * Variants: primary (blue bg, white text), secondary (outline), ghost (text+arrow), hero (larger primary).
+ */
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'hero';
+  href?: string;
+  class?: string;
+  type?: 'button' | 'submit';
+  size?: 'default' | 'sm';
+}
+
+const {
+  variant = 'primary',
+  href,
+  class: className = '',
+  type = 'button',
+  size = 'default'
+} = Astro.props;
+
+const baseClasses = 'inline-flex items-center justify-center font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-0)]';
+
+const variantClasses: Record<string, string> = {
+  'primary': `${baseClasses} bg-[var(--accent-blue)] text-white text-base tracking-[0.01em] px-8 py-[13px] pb-[15px] rounded-[var(--radius)] hover:bg-[var(--accent-blue-hover)] hover:-translate-y-0.5 active:bg-[var(--accent-blue-muted)] active:translate-y-0 duration-200 min-w-[200px] text-center btn-press`,
+  'hero': `${baseClasses} bg-[var(--accent-blue)] text-white text-lg tracking-[0.01em] px-10 py-[17px] pb-[19px] rounded-[var(--radius-lg)] hover:bg-[var(--accent-blue-hover)] hover:-translate-y-0.5 active:bg-[var(--accent-blue-muted)] active:translate-y-0 duration-200 min-w-[220px] text-center btn-press`,
+  'secondary': `${baseClasses} bg-transparent text-[var(--text-primary)] text-base px-8 py-[14px] rounded-[var(--radius)] border border-[var(--border-visible)] hover:border-[var(--border-strong)] hover:bg-white/[0.03] duration-200 min-w-[200px] text-center`,
+  'ghost': `${baseClasses} bg-transparent text-[var(--text-secondary)] text-base font-medium py-2 px-0 hover:text-[var(--text-primary)] duration-200 gap-2 arrow-hover`,
+};
+
+const smOverrides: Record<string, string> = {
+  'primary': 'text-sm px-6 py-[10px] pb-[12px] min-w-0 rounded-[var(--radius)]',
+  'hero': '',
+  'secondary': 'text-sm px-6 py-[10px] min-w-0',
+  'ghost': 'text-sm',
+};
+
+const classes = `${variantClasses[variant]} ${size === 'sm' ? smOverrides[variant] : ''} ${className}`;
+---
+
+{href ? (
+  <a href={href} class={classes}>
+    <slot />
+    {variant === 'ghost' && <span class="arrow-icon">&rarr;</span>}
+  </a>
+) : (
+  <button type={type} class={classes}>
+    <slot />
+    {variant === 'ghost' && <span class="arrow-icon">&rarr;</span>}
+  </button>
+)}

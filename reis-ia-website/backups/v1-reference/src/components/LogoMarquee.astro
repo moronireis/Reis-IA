@@ -1,0 +1,119 @@
+---
+/**
+ * LogoMarquee — Auto-scrolling infinite horizontal marquee.
+ * Grayscale treatment, edge fade mask, pure CSS animation.
+ * Accepts either image logos or text-based logo names.
+ */
+interface Props {
+  logos?: Array<{ src: string; alt: string }>;
+  label?: string;
+  class?: string;
+}
+
+const {
+  logos,
+  label = 'Tecnologias e plataformas que integramos',
+  class: className = ''
+} = Astro.props;
+
+// Default text logos when no image logos provided
+const textLogos = ['OpenAI', 'n8n', 'Make', 'WhatsApp Business', 'HubSpot', 'Salesforce', 'Pipedrive', 'Slack', 'Zapier', 'Vercel', 'Python', 'React'];
+---
+
+<div class:list={['logo-marquee-wrapper', className]} aria-label={label}>
+  <p class="marquee-label" aria-hidden="true">{label}</p>
+
+  <div class="marquee-container marquee-mask" aria-hidden="true">
+    <div class="marquee-track" style="width: max-content;">
+      {logos ? (
+        /* Image-based logos (repeated 3x for seamless loop) */
+        [...logos, ...logos, ...logos].map(logo => (
+          <div class="marquee-item">
+            <img
+              src={logo.src}
+              alt={logo.alt}
+              class="h-8 w-auto opacity-50 hover:opacity-100 transition-opacity grayscale brightness-0 invert"
+              loading="lazy"
+            />
+          </div>
+        ))
+      ) : (
+        /* Text-based logos (repeated 2x for seamless loop) */
+        [...textLogos, ...textLogos].map((name, i) => (
+          <span
+            class="marquee-logo"
+            aria-hidden={i >= textLogos.length ? 'true' : undefined}
+          >{name}</span>
+        ))
+      )}
+    </div>
+  </div>
+</div>
+
+<style>
+  .logo-marquee-wrapper {
+    padding: 40px 0 56px;
+    overflow: hidden;
+  }
+
+  .marquee-label {
+    text-align: center;
+    font-size: var(--text-micro);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-quaternary);
+    margin: 0 0 28px 0;
+  }
+
+  .marquee-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .marquee-track {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    animation: marquee 40s linear infinite;
+    will-change: transform;
+  }
+
+  @media (max-width: 768px) {
+    .marquee-track {
+      gap: 60px;
+    }
+  }
+
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+
+  .marquee-item {
+    flex-shrink: 0;
+  }
+
+  .marquee-logo {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-quaternary);
+    white-space: nowrap;
+    opacity: 0.5;
+    transition: opacity var(--duration-normal) var(--ease-base);
+    cursor: default;
+  }
+
+  .marquee-logo:hover {
+    opacity: 0.85;
+    color: var(--text-secondary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation-play-state: paused;
+    }
+  }
+</style>

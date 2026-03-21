@@ -1,0 +1,58 @@
+---
+/**
+ * Z7Icon -- Z7 combined SVG brand mark.
+ * Z at 0.7 opacity, 7 at 1.0 opacity.
+ * Props: size, variant (stroke/fill/glow), class.
+ */
+interface Props {
+  size?: number;
+  variant?: 'stroke' | 'fill' | 'glow';
+  class?: string;
+}
+
+const {
+  size = 24,
+  variant = 'stroke',
+  class: className = '',
+} = Astro.props;
+
+const glowFilter = variant === 'glow' ? 'drop-shadow(0 0 6px rgba(74, 144, 255, 0.4))' : 'none';
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 48 32"
+  width={size * 1.5}
+  height={size}
+  class={className}
+  aria-hidden="true"
+  role="presentation"
+  style={variant === 'glow' ? `filter: ${glowFilter};` : undefined}
+>
+  {variant === 'fill' ? (
+    <>
+      <!-- Z (filled, 0.7 opacity) -->
+      <g opacity="0.7" fill="currentColor">
+        <path d="M2 4h18L2 28h18" />
+      </g>
+      <!-- 7 (filled, 1.0 opacity) -->
+      <g opacity="1.0" fill="currentColor">
+        <path d="M28 4h18L34 28" />
+      </g>
+    </>
+  ) : (
+    <>
+      <!-- Z (stroke, 0.7 opacity) -->
+      <g opacity="0.7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="2,4 20,4" />
+        <line x1="20" y1="4" x2="2" y2="28" />
+        <polyline points="2,28 20,28" />
+      </g>
+      <!-- 7 (stroke, 1.0 opacity) -->
+      <g opacity="1.0" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="28,4 46,4" />
+        <line x1="46" y1="4" x2="34" y2="28" />
+      </g>
+    </>
+  )}
+</svg>

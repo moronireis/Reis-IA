@@ -1,23 +1,42 @@
 ---
+/**
+ * TestimonialBlock -- Quote with blue left border, attribution.
+ */
 interface Props {
   quote: string;
   name: string;
   role: string;
   isPlaceholder?: boolean;
+  class?: string;
 }
 
-const { quote, name, role, isPlaceholder = false } = Astro.props;
+const { quote, name, role, isPlaceholder = false, class: className = '' } = Astro.props;
 ---
 
-<div class={`border-l-2 border-accent pl-6 ${isPlaceholder ? 'placeholder-content p-4 rounded-r' : ''}`}>
+<blockquote class:list={[
+  'border-l-2 border-[var(--accent-blue)] pl-6 relative',
+  isPlaceholder && 'placeholder-content rounded-r',
+  className,
+]}>
+  <!-- Decorative quote mark -->
+  <div
+    class="absolute -top-4 -left-2 text-[48px] font-serif leading-none select-none"
+    style="color: rgba(74, 144, 255, 0.20);"
+    aria-hidden="true"
+  >&ldquo;</div>
+
   {isPlaceholder && (
-    <span class="text-xs uppercase tracking-widest text-neutral-600 block mb-3">Placeholder Testimonial</span>
+    <span class="badge-neutral text-[10px] mb-3 block w-fit">Placeholder</span>
   )}
-  <blockquote class="text-lg italic text-neutral-300 leading-relaxed">
-    "{quote}"
-  </blockquote>
-  <div class="mt-4">
-    <p class="text-[15px] font-semibold text-white">{name}</p>
-    <p class="text-sm text-neutral-500">{role}</p>
-  </div>
-</div>
+
+  <p class="text-[var(--text-body-lg)] italic text-[var(--text-secondary)] leading-[1.70] mb-4">
+    &ldquo;{quote}&rdquo;
+  </p>
+
+  <footer>
+    <cite class="not-italic">
+      <span class="text-[15px] font-semibold text-[var(--text-primary)] block">{name}</span>
+      <span class="text-[var(--text-body-sm)] text-[var(--text-tertiary)]">{role}</span>
+    </cite>
+  </footer>
+</blockquote>

@@ -1,11 +1,11 @@
 ---
 name: Icon System
-description: Inline SVG icon system — design standards, component location, and placement rules
+description: Inline SVG icon system — design standards, component location, brand mark rules after Phase 1 rebuild
 type: project
 ---
 
 ## Icon component location
-`src/components/icons/` — 32 Astro components, all inline SVG, no npm icon libraries.
+`src/components/icons/` — 31 Astro components (IconMenu, IconX removed from Nav, now inline SVG), all inline SVG, no npm icon libraries.
 
 ## Design standards (every icon must follow)
 - Style: outline only (no filled icons)
@@ -16,26 +16,23 @@ type: project
 - Props: `size` (default 24) and `class`
 - Always `aria-hidden="true"` on decorative icons
 
-## Brand icons updated to match system
-- `HourglassIcon.astro` — updated to stroke-width 1.5, round caps, 24x24 viewBox
-- `ChessKnightIcon.astro` — updated from filled to outline style, same standards
+## Brand Mark: H1-B Hourglass ONLY
+- `HourglassIcon.astro` — H1-B Variation A (viewBox 0 0 64 64, 6 lines). Used for inline brand mark.
+- `HourglassWatermark.astro` — H1-B Open Intersection (viewBox 0 0 100 140, gap at center). Used for section watermarks at 3-4% opacity.
+- `ChessKnightIcon.astro` — DEPRECATED STUB. Renders HourglassIcon. Remove when pages are rebuilt.
+- NO chess pieces, crowns, or non-hourglass brand marks.
+
+## Icon color in new design system
+- Accent icons: `text-[var(--accent-blue)]` or `class="icon-accent"`
+- Default icons: `class="icon-default"` (text-secondary)
+- Sizes via classes: `.icon-xs` (12px) through `.icon-xl` (32px)
 
 ## Icon placement rules
-- Feature/pillar cards: size 28–32, `text-accent`, add `icon-hover` + `group` on parent
-- Process steps: size 22, `text-accent`, next to step number
-- Benefit lists: size 16–18, accent or green
-- Guarantee/shield icons: size 32–48, standalone above heading
-- Nav: size 24, `IconMenu` and `IconX`
+- Feature/pillar cards: size 28-32, accent blue
+- Process steps: size 22, accent blue
+- Nav brand lockup: HourglassIcon size 24 + "REIS IA" font-weight 300 (light)
+- Footer brand lockup: same pattern as nav
+- Section watermarks: HourglassWatermark at 200-300px, 3-4% opacity, positioned at section corners
 
-## Icon hover animation
-Add `class="icon-hover"` to icon + `class="... group"` to parent card.
-CSS in global.css: `.group:hover .icon-hover { transform: scale(1.1); color: var(--color-accent) }`
-
-## Existing inline SVG X/close icons
-For "not for" qualifier lists, use inline SVG directly (not IconX component) to keep color customization via style attribute: `style="color: rgba(239,68,68,0.45);"`.
-
-## Green checkmarks
-Use `IconCheckCircle` with `style="color: #4ade80;"` — not class, because Tailwind text-green-500 may not purge correctly in all contexts.
-
-**Why:** Consistent visual DNA across all 3 pages. No external network requests. Full control over stroke/color/size.
-**How to apply:** Every new icon added to this project should be an Astro component in `src/components/icons/` following these standards.
+**Why:** Unified visual identity with hourglass as sole brand mark. Blue accent replaces gold.
+**How to apply:** Every new icon should be an Astro component in `src/components/icons/`. Brand mark is always HourglassIcon or HourglassWatermark.

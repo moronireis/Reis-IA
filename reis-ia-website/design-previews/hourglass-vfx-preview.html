@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hourglass H1-B — VFX Preview</title>
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-primary:  #4A90FF;
+      --blue-alt:      #2D7AFF;
+      --blue-bright:   #00B4FF;
+      --bg:            #000000;
+      --surface-1:     #0A0A0A;
+      --surface-2:     #111111;
+      --surface-3:     #161616;
+      --border:        rgba(255,255,255,0.08);
+      --text-primary:  #FFFFFF;
+      --text-secondary:rgba(255,255,255,0.55);
+      --text-tertiary: rgba(255,255,255,0.30);
+      --sidebar-w:     260px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ─── Sidebar ───────────────────────────────────────────────────────── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--surface-1);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      z-index: 100;
+      padding: 24px 0 40px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-logo-svg {
+      color: var(--blue-primary);
+      flex-shrink: 0;
+    }
+
+    .sidebar-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text-primary);
+      text-transform: uppercase;
+    }
+
+    .sidebar-subtitle {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.03em;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      padding: 8px 20px 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 20px;
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      color: var(--text-secondary);
+    }
+
+    .nav-item:hover {
+      color: var(--text-primary);
+      background: rgba(74,144,255,0.05);
+    }
+
+    .nav-item.active {
+      color: var(--blue-primary);
+      border-left-color: var(--blue-primary);
+      background: rgba(74,144,255,0.06);
+    }
+
+    .nav-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--blue-primary);
+      opacity: 0.6;
+      min-width: 18px;
+      margin-top: 1px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .nav-item.active .nav-num { opacity: 1; }
+
+    .nav-text { font-size: 12px; line-height: 1.4; }
+    .nav-text-main { font-weight: 500; display: block; }
+    .nav-text-sub { font-size: 10px; color: var(--text-tertiary); display: block; margin-top: 1px; }
+
+    /* ─── Main content ──────────────────────────────────────────────────── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 0;
+    }
+
+    /* ─── Section ───────────────────────────────────────────────────────── */
+    .vfx-section {
+      min-height: 100vh;
+      padding: 80px 64px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .vfx-section:nth-child(even) { background: var(--surface-1); }
+
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(74,144,255,0.08);
+      border: 1px solid rgba(74,144,255,0.2);
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--blue-primary);
+      margin-bottom: 20px;
+    }
+
+    .section-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--blue-primary);
+      opacity: 0.5;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+
+    .section-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 8px;
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    .meta-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--blue-primary);
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    /* Stage area */
+    .stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .stage-inner {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Replay button */
+    .btn-replay {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: 1px solid rgba(74,144,255,0.3);
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--blue-primary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: var(--font);
+      letter-spacing: 0.02em;
+    }
+
+    .btn-replay:hover {
+      background: rgba(74,144,255,0.08);
+      border-color: rgba(74,144,255,0.5);
+    }
+
+    .btn-replay svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* ─── Hourglass base SVG ─────────────────────────────────────────────── */
+    .hourglass-svg {
+      stroke: var(--blue-primary);
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       EFEITO 1 — Hover Glow Pulsante
+    ══════════════════════════════════════════════════════════════════════ */
+
+    @keyframes heartbeat-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(74,144,255,0); }
+      8%   { box-shadow: 0 0 12px 6px rgba(74,144,255,0.55); }
+      15%  { box-shadow: 0 0 4px 2px rgba(74,144,255,0.15); }
+      22%  { box-shadow: 0 0 16px 8px rgba(74,144,255,0.6); }
+      36%  { box-shadow: 0 0 0 0 rgba(74,144,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(74,144,255,0); }
+    }
+
+    .hover-glow-wrap {
+      padding: 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .hover-glow-wrap:hover {
+      animation: heartbeat-pulse 0.7s ease-in-out infinite;
+      background: rgba(74,144,255,0.03);
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       EFEITO 2 — Watermark Breathing
+    ══════════════════════════════════════════════════════════════════════ */
+
+    @keyframes watermark-breathe {
+      0%, 100% { transform: scale(1.0); opacity: 0.04; }
+      50%       { transform: scale(1.02); opacity: 0.05; }
+    }
+
+    .watermark-demo {
+      position: relative;
+      width: 320px;
+      height: 180px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .watermark-bg-icon {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .watermark-bg-icon svg {
+      width: 160px;
+      height: 160px;
+      stroke: #ffffff;
+      animation: watermark-breathe 8s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    .watermark-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .watermark-content .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .watermark-content .sublabel {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       EFEITO 3 — Hero Particle Formation
+    ══════════════════════════════════════════════════════════════════════ */
+
+    #canvas-formation {
+      border-radius: 8px;
+      background: transparent;
+      display: block;
+      cursor: pointer;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       EFEITO 4 — Line-by-Line Construction
+    ══════════════════════════════════════════════════════════════════════ */
+
+    .construction-svg line {
+      stroke-dasharray: 80;
+      stroke-dashoffset: 80;
+    }
+
+    .construction-svg.animate line:nth-child(1) {
+      animation: draw-line 0.35s ease forwards 0ms;
+    }
+    .construction-svg.animate line:nth-child(2) {
+      animation: draw-line 0.35s ease forwards 200ms;
+    }
+    .construction-svg.animate line:nth-child(3) {
+      animation: draw-line 0.35s ease forwards 400ms;
+    }
+    .construction-svg.animate line:nth-child(4) {
+      animation: draw-line 0.35s ease forwards 600ms;
+    }
+    .construction-svg.animate line:nth-child(5) {
+      animation: draw-line 0.35s ease forwards 800ms;
+    }
+
+    @keyframes draw-line {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       EFEITO 5 — Scroll Fill Progression
+    ══════════════════════════════════════════════════════════════════════ */
+
+    .scroll-demo-outer {
+      width: 320px;
+      height: 260px;
+      overflow-y: scroll;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-2);
+      position: relative;
+      scroll-behavior: auto;
+    }
+
+    .scroll-demo-outer::-webkit-scrollbar { width: 4px; }
+    .scroll-demo-outer::-webkit-scrollbar-track { background: transparent; }
+    .scroll-demo-outer::-webkit-scrollbar-thumb { background: rgba(74,144,255,0.2); border-radius: 4px; }
+
+    .scroll-demo-inner {
+      height: 900px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 40px;
+      position: relative;
+    }
+
+    .scroll-fill-icon {
+      position: sticky;
+      top: 90px;
+      transition: none;
+    }
+
+    .scroll-fill-icon svg {
+      stroke: var(--blue-primary);
+      opacity: 0.15;
+      transition: opacity 0.05s linear;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--text-tertiary);
+      pointer-events: none;
+      animation: scroll-bounce 2s ease-in-out infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes scroll-bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(4px); }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       EFEITO 6 — Easter Egg 7 Cliques
+    ══════════════════════════════════════════════════════════════════════ */
+
+    .easter-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .easter-icon-wrap {
+      position: relative;
+      cursor: pointer;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .easter-click-counter {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .easter-icon-wrap svg {
+      transition: transform 0s;
+    }
+
+    @keyframes easter-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .easter-icon-wrap.spinning svg {
+      animation: easter-spin 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    #easter-toast {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(74,144,255,0.12);
+      border: 1px solid rgba(74,144,255,0.35);
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--blue-primary);
+      letter-spacing: 0.04em;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      white-space: nowrap;
+    }
+
+    #easter-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #easter-canvas {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       EFEITO 7 — Aurora Temporal
+    ══════════════════════════════════════════════════════════════════════ */
+
+    .aurora-stage {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .aurora-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      pointer-events: none;
+    }
+
+    .aurora-orb-1 {
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle, rgba(74,144,255,0.09) 0%, transparent 70%);
+      animation: aurora-orbit-1 20s linear infinite;
+    }
+
+    .aurora-orb-2 {
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(0,180,255,0.07) 0%, transparent 70%);
+      animation: aurora-orbit-2 25s linear infinite;
+    }
+
+    .aurora-orb-3 {
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, rgba(45,122,255,0.10) 0%, transparent 70%);
+      animation: aurora-orbit-3 18s linear infinite reverse;
+    }
+
+    @keyframes aurora-orbit-1 {
+      0%   { transform: translate(0px, 0px); }
+      25%  { transform: translate(60px, -30px); }
+      50%  { transform: translate(30px, -60px); }
+      75%  { transform: translate(-40px, -20px); }
+      100% { transform: translate(0px, 0px); }
+    }
+
+    @keyframes aurora-orbit-2 {
+      0%   { transform: translate(0px, 0px); }
+      25%  { transform: translate(-50px, 25px); }
+      50%  { transform: translate(-20px, 55px); }
+      75%  { transform: translate(45px, 30px); }
+      100% { transform: translate(0px, 0px); }
+    }
+
+    @keyframes aurora-orbit-3 {
+      0%   { transform: translate(0px, 0px); }
+      33%  { transform: translate(35px, 40px); }
+      66%  { transform: translate(-40px, 25px); }
+      100% { transform: translate(0px, 0px); }
+    }
+
+    .aurora-icon {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       EFEITO 8 — Scanner Line
+    ══════════════════════════════════════════════════════════════════════ */
+
+    .scanner-stage {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+
+    .scanner-line {
+      position: absolute;
+      left: -10%;
+      right: -10%;
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(74,144,255,0.1) 15%,
+        rgba(74,144,255,0.3) 50%,
+        rgba(74,144,255,0.1) 85%,
+        transparent 100%
+      );
+      animation: scanner-sweep 6s linear infinite;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    @keyframes scanner-sweep {
+      0%   { top: -2px; opacity: 0; }
+      3%   { opacity: 1; }
+      97%  { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    .scanner-icon {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─── Reduced Motion ─────────────────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ─── Misc ───────────────────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(74,144,255,0.15) 30%, rgba(74,144,255,0.15) 70%, transparent);
+      margin: 0;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      font-size: 10px;
+      padding: 2px 9px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--text-tertiary);
+      letter-spacing: 0.03em;
+    }
+
+    .tag.blue {
+      background: rgba(74,144,255,0.07);
+      border-color: rgba(74,144,255,0.2);
+      color: rgba(74,144,255,0.8);
+    }
+
+    /* ─── Page header ─────────────────────────────────────────────────────── */
+    .page-header {
+      padding: 64px 64px 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-header-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue-primary);
+      opacity: 0.7;
+      margin-bottom: 12px;
+    }
+
+    .page-header-title {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      line-height: 1.1;
+    }
+
+    .page-header-title span { color: var(--blue-primary); }
+
+    .page-header-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 520px;
+      line-height: 1.7;
+    }
+
+    /* Two-column layout inside section */
+    .section-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .section-body.centered {
+      grid-template-columns: 1fr;
+      place-items: center;
+    }
+
+    .section-info { max-width: 440px; }
+
+  </style>
+</head>
+<body>
+
+  <!-- ─── Toast (Easter Egg) ─────────────────────────────────────────── -->
+  <div id="easter-toast">O Tempo é Rei</div>
+
+  <!-- ─── Sidebar ────────────────────────────────────────────────────── -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <svg class="sidebar-logo-svg" width="20" height="20" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="14" y1="8"  x2="50" y2="8"/>
+          <line x1="14" y1="8"  x2="50" y2="56"/>
+          <line x1="14" y1="8"  x2="25" y2="25"/>
+          <line x1="39" y1="39" x2="50" y2="56"/>
+          <line x1="14" y1="56" x2="50" y2="56"/>
+        </svg>
+        <div>
+          <div class="sidebar-title">Hourglass H1-B</div>
+          <div class="sidebar-subtitle">VFX Preview — Brief C</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-label">8 Efeitos</div>
+
+    <a class="nav-item active" href="#effect-1" data-target="effect-1">
+      <span class="nav-num">01</span>
+      <span class="nav-text">
+        <span class="nav-text-main">Hover Glow Pulsante</span>
+        <span class="nav-text-sub">Heartbeat · Hover trigger</span>
+      </span>
+    </a>
+    <a class="nav-item" href="#effect-2" data-target="effect-2">
+      <span class="nav-num">02</span>
+      <span class="nav-text">
+        <span class="nav-text-main">Watermark Breathing</span>
+        <span class="nav-text-sub">8s loop · 4% opacity</span>
+      </span>
+    </a>
+    <a class="nav-item" href="#effect-3" data-target="effect-3">
+      <span class="nav-num">03</span>
+      <span class="nav-text">
+        <span class="nav-text-main">Hero Particle Formation</span>
+        <span class="nav-text-sub">Canvas 2D · Click-to-replay</span>
+      </span>
+    </a>
+    <a class="nav-item" href="#effect-4" data-target="effect-4">
+      <span class="nav-num">04</span>
+      <span class="nav-text">
+        <span class="nav-text-main">Line-by-Line Construction</span>
+        <span class="nav-text-sub">SVG stroke · 1.5s total</span>
+      </span>
+    </a>
+    <a class="nav-item" href="#effect-5" data-target="effect-5">
+      <span class="nav-num">05</span>
+      <span class="nav-text">
+        <span class="nav-text-main">Scroll Fill Progression</span>
+        <span class="nav-text-sub">15% → 100% opacity</span>
+      </span>
+    </a>
+    <a class="nav-item" href="#effect-6" data-target="effect-6">
+      <span class="nav-num">06</span>
+      <span class="nav-text">
+        <span class="nav-text-main">Easter Egg 7 Cliques</span>
+        <span class="nav-text-sub">Spin + partículas + toast</span>
+      </span>
+    </a>
+    <a class="nav-item" href="#effect-7" data-target="effect-7">
+      <span class="nav-num">07</span>
+      <span class="nav-text">
+        <span class="nav-text-main">Aurora Temporal</span>
+        <span class="nav-text-sub">Orbs CSS · 20s/25s ciclo</span>
+      </span>
+    </a>
+    <a class="nav-item" href="#effect-8" data-target="effect-8">
+      <span class="nav-num">08</span>
+      <span class="nav-text">
+        <span class="nav-text-main">Scanner Line</span>
+        <span class="nav-text-sub">Horizontal sweep · 6s loop</span>
+      </span>
+    </a>
+  </nav>
+
+  <!-- ─── Main ────────────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Page Header -->
+    <header class="page-header">
+      <div class="page-header-label">Brief C — Reis IA Design System</div>
+      <h1 class="page-header-title">Ampulheta <span>H1-B</span><br>Interações VFX</h1>
+      <p class="page-header-desc">8 efeitos visuais para a Variation A da ampulheta H1-B. Cada efeito é independente, auto-contido e pronto para integração no site. Paleta exclusiva #4A90FF / #2D7AFF / #00B4FF.</p>
+    </header>
+
+    <!-- ═══ EFEITO 1 ══════════════════════════════════════════════════════ -->
+    <section class="vfx-section" id="effect-1">
+      <div class="section-body">
+        <div class="section-info">
+          <div class="section-num">Efeito 01 / 08</div>
+          <h2 class="section-title">Hover Glow Pulsante</h2>
+          <p class="section-desc">
+            Padrão heartbeat: 2 pulsos rápidos (0.15s cada) seguidos de pausa (0.4s), em loop.
+            O <code style="color:var(--blue-primary);background:rgba(74,144,255,0.08);padding:1px 5px;border-radius:3px;font-size:12px;">box-shadow</code> azul cresce e diminui em sincronia com o ritmo cardíaco.
+            Ativa apenas no hover — sem animação quando o cursor não está sobre o elemento.
+          </p>
+          <div class="tag-row">
+            <span class="tag blue">Trigger: hover</span>
+            <span class="tag">Duração: 0.7s/ciclo</span>
+            <span class="tag">Loop: infinito</span>
+            <span class="tag">Método: CSS keyframes</span>
+          </div>
+          <div class="tag-row">
+            <span class="tag blue">Uso: ícone de nav, hero badge, CTA icon</span>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="stage-inner">
+            <div class="hover-glow-wrap" title="Passe o mouse para ver o efeito">
+              <svg class="hourglass-svg" width="80" height="80" viewBox="0 0 64 64" stroke-width="1.5">
+                <line x1="14" y1="8"  x2="50" y2="8"/>
+                <line x1="14" y1="8"  x2="50" y2="56"/>
+                <line x1="14" y1="8"  x2="25" y2="25"/>
+                <line x1="39" y1="39" x2="50" y2="56"/>
+                <line x1="14" y1="56" x2="50" y2="56"/>
+              </svg>
+            </div>
+          </div>
+          <p style="font-size:11px;color:var(--text-tertiary);text-align:center;">Passe o cursor sobre a ampulheta</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ EFEITO 2 ══════════════════════════════════════════════════════ -->
+    <section class="vfx-section" id="effect-2">
+      <div class="section-body">
+        <div class="section-info">
+          <div class="section-num">Efeito 02 / 08</div>
+          <h2 class="section-title">Watermark Breathing</h2>
+          <p class="section-desc">
+            Respiração sutil de 8 segundos: scale 1.0 → 1.02 → 1.0 com ease-in-out.
+            Ampulheta posicionada como marca d'água em 3–4% de opacidade no background de seções ou cards.
+            O movimento é quase imperceptível — cria vida sem distrair o conteúdo principal.
+          </p>
+          <div class="tag-row">
+            <span class="tag blue">Trigger: auto (loop)</span>
+            <span class="tag">Duração: 8s</span>
+            <span class="tag">Escala: 1.0 → 1.02</span>
+            <span class="tag">Opacidade: 4%</span>
+          </div>
+          <div class="tag-row">
+            <span class="tag blue">Uso: background de seções, hero watermark</span>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="watermark-demo">
+            <div class="watermark-bg-icon">
+              <svg viewBox="0 0 64 64" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="14" y1="8"  x2="50" y2="8"/>
+                <line x1="14" y1="8"  x2="50" y2="56"/>
+                <line x1="14" y1="8"  x2="25" y2="25"/>
+                <line x1="39" y1="39" x2="50" y2="56"/>
+                <line x1="14" y1="56" x2="50" y2="56"/>
+              </svg>
+            </div>
+            <div class="watermark-content">
+              <div class="label">Conteúdo da seção</div>
+              <div class="sublabel">Watermark visível atrás</div>
+            </div>
+          </div>
+          <p style="font-size:11px;color:var(--text-tertiary);text-align:center;margin-top:8px;">Animação automática — 8s loop</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ EFEITO 3 ══════════════════════════════════════════════════════ -->
+    <section class="vfx-section" id="effect-3">
+      <div class="section-body">
+        <div class="section-info">
+          <div class="section-num">Efeito 03 / 08</div>
+          <h2 class="section-title">Hero Particle Formation</h2>
+          <p class="section-desc">
+            Canvas 2D com 60 partículas azuis que partem de posições aleatórias e convergem para desenhar as 5 linhas da ampulheta H1-B em ~2 segundos.
+            Cada partícula viaja com easing suave até sua posição final. Partículas iniciam com variação de velocidade para criar fluidez orgânica.
+          </p>
+          <div class="tag-row">
+            <span class="tag blue">Trigger: auto + click-to-replay</span>
+            <span class="tag">Duração: ~2s formação</span>
+            <span class="tag">Partículas: 60</span>
+            <span class="tag">Método: Canvas 2D + rAF</span>
+          </div>
+          <div class="tag-row">
+            <span class="tag blue">Uso: hero section, loading state, intro animado</span>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="stage-inner" style="flex-direction:column;gap:12px;">
+            <canvas id="canvas-formation" width="200" height="200" title="Clique para repetir"></canvas>
+            <button class="btn-replay" id="btn-replay-formation">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <path d="M10 6A4 4 0 1 1 7 2.3"/>
+                <path d="M7 2l3 0.3L10.3 5"/>
+              </svg>
+              Repetir animação
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ EFEITO 4 ══════════════════════════════════════════════════════ -->
+    <section class="vfx-section" id="effect-4">
+      <div class="section-body">
+        <div class="section-info">
+          <div class="section-num">Efeito 04 / 08</div>
+          <h2 class="section-title">Line-by-Line Construction</h2>
+          <p class="section-desc">
+            Cada uma das 5 linhas da ampulheta aparece sequencialmente usando SVG <code style="color:var(--blue-primary);background:rgba(74,144,255,0.08);padding:1px 5px;border-radius:3px;font-size:12px;">stroke-dashoffset</code>.
+            Delay de 200ms entre linhas. Total de ~1.5s para construir o ícone completo.
+            Ordem: barra top → diagonal esq → diagonal dir sup → diagonal dir inf → barra bottom.
+          </p>
+          <div class="tag-row">
+            <span class="tag blue">Trigger: click replay</span>
+            <span class="tag">Duração total: ~1.5s</span>
+            <span class="tag">Por linha: 350ms</span>
+            <span class="tag">Método: stroke-dashoffset CSS</span>
+          </div>
+          <div class="tag-row">
+            <span class="tag blue">Uso: hero entrance, page load, reveal on scroll</span>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="stage-inner" style="flex-direction:column;gap:12px;">
+            <svg id="svg-construction" class="hourglass-svg construction-svg animate" width="100" height="100" viewBox="0 0 64 64" stroke-width="1.5">
+              <line x1="14" y1="8"  x2="50" y2="8"/>
+              <line x1="14" y1="8"  x2="50" y2="56"/>
+              <line x1="14" y1="8"  x2="25" y2="25"/>
+              <line x1="39" y1="39" x2="50" y2="56"/>
+              <line x1="14" y1="56" x2="50" y2="56"/>
+            </svg>
+            <button class="btn-replay" id="btn-replay-construction">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <path d="M10 6A4 4 0 1 1 7 2.3"/>
+                <path d="M7 2l3 0.3L10.3 5"/>
+              </svg>
+              Repetir animação
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ EFEITO 5 ══════════════════════════════════════════════════════ -->
+    <section class="vfx-section" id="effect-5">
+      <div class="section-body">
+        <div class="section-info">
+          <div class="section-num">Efeito 05 / 08</div>
+          <h2 class="section-title">Scroll Fill Progression</h2>
+          <p class="section-desc">
+            A opacidade da ampulheta é mapeada ao progresso de scroll do container.
+            No topo: 15% de opacidade (quase invisível). No final: 100% (totalmente visível).
+            O ícone "emerge" conforme o usuário rola a página — reforça a metáfora do tempo que passa.
+          </p>
+          <div class="tag-row">
+            <span class="tag blue">Trigger: scroll event</span>
+            <span class="tag">Opacidade: 15% → 100%</span>
+            <span class="tag">Método: JS scroll listener</span>
+            <span class="tag">Performance: throttled</span>
+          </div>
+          <div class="tag-row">
+            <span class="tag blue">Uso: hero fixo, seção de metodologia, parallax</span>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="scroll-demo-outer" id="scroll-demo-container">
+            <div class="scroll-demo-inner">
+              <div class="scroll-fill-icon" id="scroll-fill-icon">
+                <svg class="hourglass-svg" width="80" height="80" viewBox="0 0 64 64" stroke-width="1.5" id="scroll-fill-svg">
+                  <line x1="14" y1="8"  x2="50" y2="8"/>
+                  <line x1="14" y1="8"  x2="50" y2="56"/>
+                  <line x1="14" y1="8"  x2="25" y2="25"/>
+                  <line x1="39" y1="39" x2="50" y2="56"/>
+                  <line x1="14" y1="56" x2="50" y2="56"/>
+                </svg>
+              </div>
+            </div>
+            <div class="scroll-hint">↓ Role para ver o efeito</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ EFEITO 6 ══════════════════════════════════════════════════════ -->
+    <section class="vfx-section" id="effect-6">
+      <div class="section-body">
+        <div class="section-info">
+          <div class="section-num">Efeito 06 / 08</div>
+          <h2 class="section-title">Easter Egg — 7 Cliques</h2>
+          <p class="section-desc">
+            No sétimo clique: a ampulheta gira 360° (1s), 12 partículas azuis explodem radialmente e desaparecem em 2s, e o toast "O Tempo é Rei" aparece por 2 segundos. Contador exibido abaixo do ícone. Após o evento, o contador reseta.
+          </p>
+          <div class="tag-row">
+            <span class="tag blue">Trigger: 7 cliques</span>
+            <span class="tag">Spin: 360° em 1s</span>
+            <span class="tag">Partículas: 12</span>
+            <span class="tag">Toast: 2s</span>
+          </div>
+          <div class="tag-row">
+            <span class="tag blue">Uso: hidden delight, brand storytelling, retenção</span>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="easter-wrap">
+            <div class="easter-icon-wrap" id="easter-icon-wrap" title="Clique 7 vezes...">
+              <canvas id="easter-canvas" width="200" height="200"></canvas>
+              <svg class="hourglass-svg" width="72" height="72" viewBox="0 0 64 64" stroke-width="1.5" id="easter-svg">
+                <line x1="14" y1="8"  x2="50" y2="8"/>
+                <line x1="14" y1="8"  x2="50" y2="56"/>
+                <line x1="14" y1="8"  x2="25" y2="25"/>
+                <line x1="39" y1="39" x2="50" y2="56"/>
+                <line x1="14" y1="56" x2="50" y2="56"/>
+              </svg>
+            </div>
+            <div class="easter-click-counter" id="easter-counter">Cliques: 0 / 7</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ EFEITO 7 ══════════════════════════════════════════════════════ -->
+    <section class="vfx-section" id="effect-7">
+      <div class="section-body">
+        <div class="section-info">
+          <div class="section-num">Efeito 07 / 08</div>
+          <h2 class="section-title">Aurora Temporal</h2>
+          <p class="section-desc">
+            Três orbs de radial-gradient (#4A90FF, #2D7AFF, #00B4FF em 6–10% de opacidade) orbitam lentamente ao redor da ampulheta em ciclos de 18s, 20s e 25s com filter blur. Cada orb tem uma trajetória elíptica independente. O efeito cria uma aura atmosférica premium ao redor do ícone.
+          </p>
+          <div class="tag-row">
+            <span class="tag blue">Trigger: auto (loop)</span>
+            <span class="tag">Ciclos: 18s / 20s / 25s</span>
+            <span class="tag">Opacidade: 6–10%</span>
+            <span class="tag">Método: CSS transforms + filter blur</span>
+          </div>
+          <div class="tag-row">
+            <span class="tag blue">Uso: hero principal, seção de destaque, about section</span>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="aurora-stage">
+            <div class="aurora-orb aurora-orb-1"></div>
+            <div class="aurora-orb aurora-orb-2"></div>
+            <div class="aurora-orb aurora-orb-3"></div>
+            <div class="aurora-icon">
+              <svg class="hourglass-svg" width="72" height="72" viewBox="0 0 64 64" stroke-width="1.5">
+                <line x1="14" y1="8"  x2="50" y2="8"/>
+                <line x1="14" y1="8"  x2="50" y2="56"/>
+                <line x1="14" y1="8"  x2="25" y2="25"/>
+                <line x1="39" y1="39" x2="50" y2="56"/>
+                <line x1="14" y1="56" x2="50" y2="56"/>
+              </svg>
+            </div>
+          </div>
+          <p style="font-size:11px;color:var(--text-tertiary);text-align:center;margin-top:8px;">Animação automática — 3 orbs em órbita</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ EFEITO 8 ══════════════════════════════════════════════════════ -->
+    <section class="vfx-section" id="effect-8">
+      <div class="section-body">
+        <div class="section-info">
+          <div class="section-num">Efeito 08 / 08</div>
+          <h2 class="section-title">Scanner Line</h2>
+          <p class="section-desc">
+            Linha horizontal fina (#4A90FF a 30% de opacidade) percorre verticalmente de cima para baixo em um loop de 6 segundos. Gradiente linear de transparência nas extremidades para entrada/saída suave. Efeito de scan tecnológico que reforça a identidade de precisão e análise da Reis IA.
+          </p>
+          <div class="tag-row">
+            <span class="tag blue">Trigger: auto (loop)</span>
+            <span class="tag">Duração: 6s/ciclo</span>
+            <span class="tag">Opacidade: 30%</span>
+            <span class="tag">Método: CSS pseudo-element + keyframes</span>
+          </div>
+          <div class="tag-row">
+            <span class="tag blue">Uso: ícone de loading, card hover state, data visualization</span>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="stage-inner" style="flex-direction:column;gap:16px;">
+            <div class="scanner-stage">
+              <div class="scanner-line"></div>
+              <div class="scanner-icon">
+                <svg class="hourglass-svg" width="64" height="64" viewBox="0 0 64 64" stroke-width="1.5">
+                  <line x1="14" y1="8"  x2="50" y2="8"/>
+                  <line x1="14" y1="8"  x2="50" y2="56"/>
+                  <line x1="14" y1="8"  x2="25" y2="25"/>
+                  <line x1="39" y1="39" x2="50" y2="56"/>
+                  <line x1="14" y1="56" x2="50" y2="56"/>
+                </svg>
+              </div>
+            </div>
+            <p style="font-size:11px;color:var(--text-tertiary);text-align:center;">Animação automática — 6s loop</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* ──────────────────────────────────────────────────────────────────────
+       Reduced Motion guard
+    ──────────────────────────────────────────────────────────────────────── */
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ──────────────────────────────────────────────────────────────────────
+       Sidebar scroll tracking
+    ──────────────────────────────────────────────────────────────────────── */
+    (function initScrollTracking() {
+      const sections = document.querySelectorAll('.vfx-section');
+      const navItems = document.querySelectorAll('.nav-item[data-target]');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            navItems.forEach(item => item.classList.remove('active'));
+            const active = document.querySelector(`.nav-item[data-target="${entry.target.id}"]`);
+            if (active) {
+              active.classList.add('active');
+              active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+          }
+        });
+      }, { threshold: 0.35 });
+
+      sections.forEach(s => observer.observe(s));
+    })();
+
+    /* ──────────────────────────────────────────────────────────────────────
+       EFEITO 3 — Hero Particle Formation (Canvas 2D)
+    ──────────────────────────────────────────────────────────────────────── */
+    (function initFormation() {
+      const canvas = document.getElementById('canvas-formation');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+      const scale = W / 64; // viewBox is 64x64, canvas is 200x200
+
+      /* The 5 lines of H1-B Variation A — in viewBox coords */
+      const lines = [
+        { x1: 14, y1: 8,  x2: 50, y2: 8  },   // top bar
+        { x1: 14, y1: 8,  x2: 50, y2: 56 },   // diagonal left (crossing)
+        { x1: 14, y1: 8,  x2: 25, y2: 25 },   // diagonal right gap top
+        { x1: 39, y1: 39, x2: 50, y2: 56 },   // diagonal right gap bottom
+        { x1: 14, y1: 56, x2: 50, y2: 56 },   // bottom bar
+      ];
+
+      /* Build target positions: sample N points per line */
+      function sampleLine(line, n) {
+        const pts = [];
+        for (let i = 0; i < n; i++) {
+          const t = i / (n - 1);
+          pts.push({
+            tx: (line.x1 + (line.x2 - line.x1) * t) * scale,
+            ty: (line.y1 + (line.y2 - line.y1) * t) * scale,
+          });
+        }
+        return pts;
+      }
+
+      const pointsPerLine = 12;
+      let targets = [];
+      lines.forEach(l => targets = targets.concat(sampleLine(l, pointsPerLine)));
+
+      const COLORS = ['#4A90FF', '#2D7AFF', '#00B4FF'];
+
+      let particles = [];
+      let animId = null;
+      let startTime = null;
+      const DURATION = 2000; // ms
+
+      function createParticles() {
+        particles = targets.map((t, i) => ({
+          x:  Math.random() * W,
+          y:  Math.random() * H,
+          tx: t.tx,
+          ty: t.ty,
+          r:  Math.random() * 1.2 + 0.6,
+          color: COLORS[i % COLORS.length],
+          delay: Math.random() * 400, // stagger start
+        }));
+      }
+
+      function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+
+      function draw(ts) {
+        if (!startTime) startTime = ts;
+        const elapsed = ts - startTime;
+
+        ctx.clearRect(0, 0, W, H);
+
+        let allDone = true;
+
+        particles.forEach(p => {
+          const particleElapsed = elapsed - p.delay;
+          if (particleElapsed < 0) {
+            // not started yet — draw at origin
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color + '60';
+            ctx.fill();
+            allDone = false;
+            return;
+          }
+
+          const progress = Math.min(particleElapsed / DURATION, 1);
+          const eased = easeInOutCubic(progress);
+
+          const cx = p.x + (p.tx - p.x) * eased;
+          const cy = p.y + (p.ty - p.y) * eased;
+
+          const alpha = progress < 0.5
+            ? 0.4 + progress * 1.2
+            : 1.0;
+
+          ctx.beginPath();
+          ctx.arc(cx, cy, p.r * (0.8 + eased * 0.4), 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = alpha;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+
+          if (progress < 1) allDone = false;
+        });
+
+        if (allDone) {
+          // Draw final clean SVG lines over canvas
+          drawFinalLines();
+          return;
+        }
+
+        animId = requestAnimationFrame(draw);
+      }
+
+      function drawFinalLines() {
+        ctx.clearRect(0, 0, W, H);
+        ctx.strokeStyle = '#4A90FF';
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = 'round';
+        lines.forEach(l => {
+          ctx.beginPath();
+          ctx.moveTo(l.x1 * scale, l.y1 * scale);
+          ctx.lineTo(l.x2 * scale, l.y2 * scale);
+          ctx.stroke();
+        });
+      }
+
+      function startAnimation() {
+        if (prefersReducedMotion) { drawFinalLines(); return; }
+        if (animId) cancelAnimationFrame(animId);
+        startTime = null;
+        createParticles();
+        animId = requestAnimationFrame(draw);
+      }
+
+      canvas.addEventListener('click', startAnimation);
+      document.getElementById('btn-replay-formation').addEventListener('click', startAnimation);
+
+      // Auto-start
+      startAnimation();
+    })();
+
+    /* ──────────────────────────────────────────────────────────────────────
+       EFEITO 4 — Line-by-Line Construction replay
+    ──────────────────────────────────────────────────────────────────────── */
+    (function initConstruction() {
+      const svg = document.getElementById('svg-construction');
+      const btn = document.getElementById('btn-replay-construction');
+      if (!svg || !btn) return;
+
+      function replay() {
+        svg.classList.remove('animate');
+        // Force reflow
+        void svg.offsetWidth;
+        svg.classList.add('animate');
+      }
+
+      btn.addEventListener('click', replay);
+    })();
+
+    /* ──────────────────────────────────────────────────────────────────────
+       EFEITO 5 — Scroll Fill Progression
+    ──────────────────────────────────────────────────────────────────────── */
+    (function initScrollFill() {
+      const container = document.getElementById('scroll-demo-container');
+      const svgEl = document.getElementById('scroll-fill-svg');
+      if (!container || !svgEl) return;
+
+      let ticking = false;
+
+      function update() {
+        const scrollTop = container.scrollTop;
+        const maxScroll = container.scrollHeight - container.clientHeight;
+        const progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
+        // Map 0→1 to opacity 0.15→1.0
+        const opacity = 0.15 + progress * 0.85;
+        svgEl.style.opacity = opacity.toFixed(3);
+        ticking = false;
+      }
+
+      container.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      }, { passive: true });
+
+      update();
+    })();
+
+    /* ──────────────────────────────────────────────────────────────────────
+       EFEITO 6 — Easter Egg 7 Cliques
+    ──────────────────────────────────────────────────────────────────────── */
+    (function initEasterEgg() {
+      const wrap    = document.getElementById('easter-icon-wrap');
+      const counter = document.getElementById('easter-counter');
+      const toast   = document.getElementById('easter-toast');
+      const canvas  = document.getElementById('easter-canvas');
+      const svgEl   = document.getElementById('easter-svg');
+      if (!wrap || !counter || !toast || !canvas || !svgEl) return;
+
+      const ctx = canvas.getContext('2d');
+      let clickCount = 0;
+      let toastTimer = null;
+      let particleAnimId = null;
+
+      const COLORS = ['#4A90FF', '#2D7AFF', '#00B4FF', '#6AADFF'];
+
+      function showToast() {
+        toast.classList.add('show');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+      }
+
+      function emitParticles() {
+        if (prefersReducedMotion) return;
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const NUM = 12;
+        const particles = [];
+
+        for (let i = 0; i < NUM; i++) {
+          const angle = (i / NUM) * Math.PI * 2;
+          const speed = 1.5 + Math.random() * 2.5;
+          particles.push({
+            x: cx, y: cy,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            r: 2.5 + Math.random() * 2,
+            alpha: 1,
+            color: COLORS[i % COLORS.length],
+          });
+        }
+
+        let startTs = null;
+        const DURATION = 2000;
+
+        function drawParticles(ts) {
+          if (!startTs) startTs = ts;
+          const elapsed = ts - startTs;
+          const progress = elapsed / DURATION;
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          let alive = false;
+          particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vx *= 0.97;
+            p.vy *= 0.97;
+            p.alpha = Math.max(0, 1 - progress * 1.2);
+
+            if (p.alpha > 0) {
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+              ctx.fillStyle = p.color;
+              ctx.globalAlpha = p.alpha;
+              ctx.fill();
+              ctx.globalAlpha = 1;
+              alive = true;
+            }
+          });
+
+          if (alive) {
+            particleAnimId = requestAnimationFrame(drawParticles);
+          } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+
+        if (particleAnimId) cancelAnimationFrame(particleAnimId);
+        particleAnimId = requestAnimationFrame(drawParticles);
+      }
+
+      function triggerEasterEgg() {
+        // Spin
+        if (!prefersReducedMotion) {
+          wrap.classList.add('spinning');
+          setTimeout(() => wrap.classList.remove('spinning'), 1100);
+        }
+        emitParticles();
+        showToast();
+        // Reset counter
+        setTimeout(() => {
+          clickCount = 0;
+          counter.textContent = 'Cliques: 0 / 7';
+        }, 1200);
+      }
+
+      wrap.addEventListener('click', () => {
+        clickCount++;
+        if (clickCount >= 7) {
+          triggerEasterEgg();
+        } else {
+          counter.textContent = `Cliques: ${clickCount} / 7`;
+          // Subtle scale feedback
+          if (!prefersReducedMotion) {
+            svgEl.style.transform = 'scale(1.12)';
+            svgEl.style.transition = 'transform 0.1s ease';
+            setTimeout(() => {
+              svgEl.style.transform = 'scale(1)';
+            }, 100);
+          }
+        }
+      });
+    })();
+
+  </script>
+</body>
+</html>

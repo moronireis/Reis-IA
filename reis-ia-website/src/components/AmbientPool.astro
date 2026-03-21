@@ -1,0 +1,48 @@
+---
+/**
+ * AmbientPool -- Floating blue radial gradient for section depth.
+ */
+interface Props {
+  class?: string;
+  size?: number;
+  position?: 'top-right' | 'bottom-left' | 'bottom-right' | 'top-left' | 'center';
+  color?: 'blue' | 'neutral';
+  opacity?: number;
+}
+
+const {
+  class: className = '',
+  size = 400,
+  position = 'bottom-left',
+  color = 'blue',
+  opacity = 0.06,
+} = Astro.props;
+
+const positionStyles: Record<string, string> = {
+  'top-right': 'top: -15%; right: -10%;',
+  'top-left': 'top: -15%; left: -10%;',
+  'bottom-left': 'bottom: -15%; left: -10%;',
+  'bottom-right': 'bottom: -15%; right: -10%;',
+  'center': 'top: 50%; left: 50%; transform: translate(-50%, -50%);',
+};
+
+const bgColor = color === 'blue'
+  ? `rgba(74, 144, 255, ${opacity})`
+  : `rgba(255, 255, 255, ${opacity * 0.5})`;
+---
+
+<div
+  class={className}
+  style={`
+    position: absolute;
+    ${positionStyles[position]}
+    width: ${size}px;
+    height: ${size}px;
+    border-radius: 50%;
+    background: radial-gradient(circle, ${bgColor} 0%, transparent 70%);
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+  `}
+  aria-hidden="true"
+></div>

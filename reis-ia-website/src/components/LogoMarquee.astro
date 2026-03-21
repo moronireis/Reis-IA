@@ -1,43 +1,47 @@
 ---
-// LogoMarquee — Auto-scrolling infinite horizontal marquee of tech logos
-// Grayscale treatment, fade edges, pure CSS animation
+/**
+ * LogoMarquee -- Auto-scrolling infinite horizontal marquee.
+ * Hover pause, edge fade mask, pure CSS animation.
+ */
+interface Props {
+  logos?: Array<{ src: string; alt: string }>;
+  label?: string;
+  class?: string;
+}
+
+const {
+  logos,
+  label = 'Tecnologias e plataformas que integramos',
+  class: className = '',
+} = Astro.props;
+
+const textLogos = ['OpenAI', 'n8n', 'Make', 'WhatsApp Business', 'HubSpot', 'Salesforce', 'Pipedrive', 'Slack', 'Zapier', 'Vercel', 'Python', 'React'];
 ---
 
-<div class="logo-marquee-wrapper" aria-label="Tecnologias e plataformas que integramos">
-  <p class="marquee-label" aria-hidden="true">Tecnologias e plataformas que integramos</p>
+<div class:list={['logo-marquee-wrapper', className]} aria-label={label}>
+  <p class="marquee-label" aria-hidden="true">{label}</p>
 
-  <div class="marquee-container" aria-hidden="true">
-    <!-- Edge fade overlays -->
-    <div class="marquee-fade marquee-fade-left"></div>
-    <div class="marquee-fade marquee-fade-right"></div>
-
-    <div class="marquee-track">
-      <!-- Set 1 -->
-      <span class="marquee-logo">OpenAI</span>
-      <span class="marquee-logo">n8n</span>
-      <span class="marquee-logo">Make</span>
-      <span class="marquee-logo">WhatsApp Business</span>
-      <span class="marquee-logo">HubSpot</span>
-      <span class="marquee-logo">Salesforce</span>
-      <span class="marquee-logo">Pipedrive</span>
-      <span class="marquee-logo">Slack</span>
-      <span class="marquee-logo">Zapier</span>
-      <span class="marquee-logo">Vercel</span>
-      <span class="marquee-logo">Python</span>
-      <span class="marquee-logo">React</span>
-      <!-- Set 2 — exact duplicate for seamless loop -->
-      <span class="marquee-logo" aria-hidden="true">OpenAI</span>
-      <span class="marquee-logo" aria-hidden="true">n8n</span>
-      <span class="marquee-logo" aria-hidden="true">Make</span>
-      <span class="marquee-logo" aria-hidden="true">WhatsApp Business</span>
-      <span class="marquee-logo" aria-hidden="true">HubSpot</span>
-      <span class="marquee-logo" aria-hidden="true">Salesforce</span>
-      <span class="marquee-logo" aria-hidden="true">Pipedrive</span>
-      <span class="marquee-logo" aria-hidden="true">Slack</span>
-      <span class="marquee-logo" aria-hidden="true">Zapier</span>
-      <span class="marquee-logo" aria-hidden="true">Vercel</span>
-      <span class="marquee-logo" aria-hidden="true">Python</span>
-      <span class="marquee-logo" aria-hidden="true">React</span>
+  <div class="marquee-container marquee-mask" aria-hidden="true">
+    <div class="marquee-track" style="width: max-content;">
+      {logos ? (
+        [...logos, ...logos, ...logos].map(logo => (
+          <div class="marquee-item">
+            <img
+              src={logo.src}
+              alt={logo.alt}
+              class="h-8 w-auto opacity-50 hover:opacity-100 transition-opacity grayscale brightness-0 invert"
+              loading="lazy"
+            />
+          </div>
+        ))
+      ) : (
+        [...textLogos, ...textLogos].map((name, i) => (
+          <span
+            class="marquee-logo"
+            aria-hidden={i >= textLogos.length ? 'true' : undefined}
+          >{name}</span>
+        ))
+      )}
     </div>
   </div>
 </div>
@@ -50,11 +54,11 @@
 
   .marquee-label {
     text-align: center;
-    font-size: 10px;
+    font-size: var(--text-micro);
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.24);
+    color: var(--text-quaternary);
     margin: 0 0 28px 0;
   }
 
@@ -64,42 +68,10 @@
     width: 100%;
   }
 
-  /* Left and right edge fade gradients */
-  .marquee-fade {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 100px;
-    z-index: 2;
-    pointer-events: none;
-  }
-
-  .marquee-fade-left {
-    left: 0;
-    background: linear-gradient(90deg, #080808 0%, transparent 100%);
-  }
-
-  .marquee-fade-right {
-    right: 0;
-    background: linear-gradient(270deg, #080808 0%, transparent 100%);
-  }
-
-  @media (max-width: 768px) {
-    .marquee-fade {
-      width: 50px;
-    }
-  }
-
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-
   .marquee-track {
     display: flex;
     align-items: center;
     gap: 80px;
-    width: max-content;
     animation: marquee 40s linear infinite;
     will-change: transform;
   }
@@ -114,25 +86,27 @@
     animation-play-state: paused;
   }
 
+  .marquee-item {
+    flex-shrink: 0;
+  }
+
   .marquee-logo {
     font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.35);
+    color: var(--text-quaternary);
     white-space: nowrap;
-    filter: grayscale(1) brightness(0.6);
     opacity: 0.5;
-    transition: opacity 0.3s ease, filter 0.3s ease;
+    transition: opacity var(--duration-normal) var(--ease-base);
     cursor: default;
   }
 
   .marquee-logo:hover {
     opacity: 0.85;
-    filter: grayscale(0) brightness(1);
+    color: var(--text-secondary);
   }
 
-  /* Pause marquee for users who prefer reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .marquee-track {
       animation-play-state: paused;

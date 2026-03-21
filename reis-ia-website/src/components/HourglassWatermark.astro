@@ -1,0 +1,50 @@
+---
+/**
+ * HourglassWatermark -- H1-B at 3-4% opacity for section backgrounds.
+ * Breathing animation, absolute positioned.
+ */
+interface Props {
+  class?: string;
+  size?: number;
+  opacity?: number;
+  position?: 'top-right' | 'bottom-left' | 'center' | 'bottom-right';
+  animate?: boolean;
+}
+
+const {
+  class: className = '',
+  size = 240,
+  opacity = 0.04,
+  position = 'top-right',
+  animate = true,
+} = Astro.props;
+
+const positionStyles: Record<string, string> = {
+  'top-right': 'top: -20px; right: -20px;',
+  'bottom-left': 'bottom: -20px; left: -20px;',
+  'bottom-right': 'bottom: -20px; right: -20px;',
+  'center': 'top: 50%; left: 50%; transform: translate(-50%, -50%);',
+};
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  fill="none"
+  stroke="white"
+  stroke-width="3"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  width={size}
+  height={size}
+  class:list={[animate && 'hourglass-watermark-animate', className]}
+  style={`position: absolute; ${positionStyles[position]} pointer-events: none; opacity: ${opacity}; z-index: 0;`}
+  aria-hidden="true"
+  role="presentation"
+>
+  <line x1="14" y1="8" x2="50" y2="8" />
+  <line x1="50" y1="8" x2="14" y2="56" />
+  <line x1="14" y1="8" x2="25" y2="25" />
+  <line x1="39" y1="39" x2="50" y2="56" />
+  <line x1="14" y1="56" x2="50" y2="56" />
+</svg>

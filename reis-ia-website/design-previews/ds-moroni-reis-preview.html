@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS Moroni Reis — Design System Preview v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Master Surface System */
+    --surface-0: #000000;
+    --surface-1: #0A0A0A;
+    --surface-2: #111111;
+    --surface-3: #161616;
+    --surface-4: #1A1A1A;
+
+    /* ═══ MORONI REIS — SOFT BLUE ═══ */
+    --moroni-blue: #6AADFF;          /* O hover do master vira o primary aqui */
+    --moroni-blue-hover: #8DC4FF;    /* O accent-bright do master vira hover */
+    --moroni-blue-muted: #4A90FF;    /* O master vira muted */
+    --moroni-blue-deep: #3570CC;
+
+    /* Soft Blue Opacity Ladder */
+    --softblue-03: rgba(106,173,255,0.03);
+    --softblue-06: rgba(106,173,255,0.06);
+    --softblue-10: rgba(106,173,255,0.10);
+    --softblue-15: rgba(106,173,255,0.15);
+    --softblue-25: rgba(106,173,255,0.25);
+    --softblue-40: rgba(106,173,255,0.40);
+    --softblue-60: rgba(106,173,255,0.60);
+
+    /* Texto */
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255,255,255,0.70);
+    --text-tertiary: rgba(255,255,255,0.50);
+    --text-quaternary: rgba(255,255,255,0.35);
+    --text-muted: rgba(255,255,255,0.20);
+
+    /* Bordas */
+    --border-subtle: rgba(255,255,255,0.05);
+    --border-default: rgba(255,255,255,0.08);
+    --border-visible: rgba(255,255,255,0.12);
+
+    --sidebar-width: 220px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--surface-0);
+    color: var(--text-primary);
+    display: flex;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── SIDEBAR ─────────────────────────────────────── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--surface-1);
+    border-right: 1px solid rgba(106,173,255,0.08);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 24px 0;
+  }
+
+  .sidebar-brand {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid rgba(106,173,255,0.08);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-brand-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--moroni-blue);
+    margin-bottom: 4px;
+    opacity: 0.7;
+  }
+
+  .sidebar-brand-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .sidebar nav { padding: 0 12px; }
+
+  .sidebar-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-quaternary);
+    padding: 12px 8px 6px;
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 7px 8px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar a:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .sidebar a.active {
+    color: var(--moroni-blue);
+    background: var(--softblue-06);
+    border-left-color: var(--moroni-blue);
+  }
+
+  /* ── MAIN ────────────────────────────────────────── */
+  .main { margin-left: var(--sidebar-width); flex: 1; }
+
+  .section {
+    padding: 80px 64px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .section:nth-child(even) { background: var(--surface-1); }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--moroni-blue);
+    opacity: 0.7;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .section-subtitle {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+
+  /* ── HERO ────────────────────────────────────────── */
+  #hero {
+    position: relative;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 80px 64px;
+  }
+
+  .hero-ambient {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 0% 60%, rgba(106,173,255,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 90% 10%, rgba(141,196,255,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hourglass-watermark {
+    position: absolute;
+    right: 60px;
+    bottom: -20px;
+    font-size: 280px;
+    opacity: 0.025;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+  }
+
+  .hero-eyebrow {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--moroni-blue);
+    margin-bottom: 20px;
+    opacity: 0.8;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-title {
+    font-size: clamp(40px, 5vw, 64px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-title .accent { color: var(--moroni-blue); }
+
+  .hero-subtitle {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    max-width: 520px;
+    margin-bottom: 36px;
+    position: relative;
+    z-index: 1;
+    font-style: italic;
+  }
+
+  /* ── BOTÕES ───────────────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background: var(--moroni-blue);
+    color: var(--surface-0);   /* texto escuro sobre azul suave */
+    padding: 13px 32px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+
+  .btn-primary:hover {
+    background: var(--moroni-blue-hover);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    padding: 13px 32px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    border: 1px solid var(--border-visible);
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(106,173,255,0.30);
+  }
+
+  /* ── SWATCHES ─────────────────────────────────────── */
+  .swatches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+
+  .swatch {
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    border: 1px solid var(--border-default);
+  }
+
+  .swatch:hover { transform: translateY(-2px); }
+
+  .swatch-color {
+    height: 72px;
+    position: relative;
+  }
+
+  .swatch-copy-hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.4);
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .swatch:hover .swatch-copy-hint { opacity: 1; }
+
+  .swatch-info {
+    padding: 10px 12px;
+    background: var(--surface-2);
+  }
+
+  .swatch-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .swatch-value {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-family: monospace;
+  }
+
+  .copied-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface-3);
+    border: 1px solid rgba(106,173,255,0.25);
+    color: var(--text-primary);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s ease;
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  .copied-toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── OPACITY LADDER ───────────────────────────────── */
+  .opacity-ladder { display: flex; flex-direction: column; gap: 8px; }
+
+  .opacity-rung { display: flex; align-items: center; gap: 16px; }
+
+  .opacity-swatch {
+    width: 48px;
+    height: 32px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .opacity-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 60px;
+    font-family: monospace;
+  }
+
+  .opacity-value {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-family: monospace;
+  }
+
+  .opacity-use { font-size: 12px; color: var(--text-quaternary); margin-left: auto; }
+
+  /* ── QUOTE BLOCK ──────────────────────────────────── */
+  .quote-block {
+    border-left: 2px solid var(--moroni-blue);
+    padding-left: 24px;
+    margin: 0;
+  }
+
+  .quote-text {
+    font-size: 20px;
+    font-style: italic;
+    color: var(--text-primary);
+    line-height: 1.60;
+    font-weight: 300;
+    margin-bottom: 12px;
+  }
+
+  .quote-attribution {
+    font-size: 13px;
+    color: var(--moroni-blue);
+    font-weight: 500;
+  }
+
+  /* ── BIO CARDS ────────────────────────────────────── */
+  .bio-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: 32px;
+    transition: all 0.3s ease;
+  }
+
+  .bio-card:hover {
+    border-color: rgba(106,173,255,0.20);
+  }
+
+  .bio-card.featured {
+    border-color: rgba(106,173,255,0.20);
+    background: linear-gradient(135deg, var(--surface-2), var(--surface-3));
+  }
+
+  /* ── Z7 PULSE MORONI ──────────────────────────────── */
+  @keyframes moroni-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(106,173,255,0.20); transform: scale(1); }
+    50% { box-shadow: 0 0 0 18px rgba(106,173,255,0); transform: scale(1.015); }
+    100% { box-shadow: 0 0 0 0 rgba(106,173,255,0); transform: scale(1); }
+  }
+
+  /* ── SOCIAL / LINK ────────────────────────────────── */
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    transition: color 0.2s;
+    padding: 8px 0;
+  }
+
+  .social-link:hover { color: var(--moroni-blue); }
+
+  /* ── SCROLL PROGRESS ──────────────────────────────── */
+  .scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--moroni-blue-muted), var(--moroni-blue));
+    z-index: 9999;
+    transition: width 0.05s linear;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="copied-toast" id="copiedToast">Copiado!</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-tag">Camada Pessoal</div>
+    <div class="sidebar-brand-name">Moroni Reis<br><span style="color:var(--text-tertiary);font-size:12px">Design System v2</span></div>
+  </div>
+  <nav>
+    <div class="sidebar-section-label">Identidade</div>
+    <a href="#hero" class="active">Visão Geral</a>
+    <a href="#filosofia">Duplo Significado</a>
+    <a href="#cores">Cores</a>
+
+    <div class="sidebar-section-label">Elementos</div>
+    <a href="#tipografia">Tipografia</a>
+    <a href="#botoes">Botões</a>
+    <a href="#quotes">Citações</a>
+
+    <div class="sidebar-section-label">Componentes</div>
+    <a href="#bio">Cards de Bio</a>
+    <a href="#z7">Elemento Z7</a>
+    <a href="#efeitos">Z7 Pulse</a>
+
+    <div class="sidebar-section-label">Sistema</div>
+    <a href="#comparacao">vs. Master</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <section class="section" id="hero" style="position:relative;overflow:hidden;">
+    <div class="hero-ambient"></div>
+    <div class="hourglass-watermark" aria-hidden="true">⧗</div>
+    <div class="hero-eyebrow">Moroni Reis — Marca Pessoal</div>
+    <h1 class="hero-title">
+      O Tempo é <span class="accent">Rei</span>
+    </h1>
+    <p class="hero-subtitle">
+      "O Tempo é Rei" — uma frase que contém o sobrenome. A filosofia e o fundador são linguisticamente inseparáveis.
+    </p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a href="#cores" class="btn btn-primary">Explorar Sistema</a>
+      <a href="#filosofia" class="btn btn-secondary">O Duplo Significado</a>
+    </div>
+  </section>
+
+  <!-- FILOSOFIA / DUPLO SIGNIFICADO -->
+  <section class="section" id="filosofia">
+    <div class="section-label">Filosofia</div>
+    <h2 class="section-title">O Duplo Significado Visual</h2>
+    <p class="section-subtitle">Quando "O Tempo é Rei" aparece como headline hero na camada pessoal, a palavra "Rei" pode receber destaque em soft blue — ativando o duplo significado sem explicar.</p>
+
+    <div style="margin-bottom:48px">
+      <!-- Versão branca -->
+      <div style="margin-bottom:32px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Versão Padrão — Todo em Branco</div>
+        <div style="font-size:clamp(36px,5vw,64px);font-weight:600;letter-spacing:-0.025em;line-height:1.05">O Tempo é Rei</div>
+      </div>
+
+      <!-- Versão com Rei destacado -->
+      <div style="margin-bottom:32px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Versão Premium — "Rei" em Soft Blue (hero pages da marca pessoal)</div>
+        <div style="font-size:clamp(36px,5vw,64px);font-weight:600;letter-spacing:-0.025em;line-height:1.05">O Tempo é <span style="color:var(--moroni-blue)">Rei</span></div>
+        <div style="font-size:14px;color:var(--text-tertiary);margin-top:8px;font-style:italic">Deixe as pessoas descobrirem. O clique acontece.</div>
+      </div>
+
+      <!-- Tagline -->
+      <div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Tagline — Footer e Assinatura</div>
+        <div style="display:inline-flex;align-items:center;gap:10px">
+          <span style="font-size:14px;color:var(--moroni-blue);opacity:0.7">⧗</span>
+          <span style="font-size:14px;font-weight:500;color:var(--text-tertiary)">O Tempo é Rei</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div style="padding:24px;background:var(--surface-2);border-radius:10px;border:1px solid var(--border-default)">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:8px">Primeira Leitura</div>
+        <div style="font-size:16px;font-weight:500;color:var(--text-primary);margin-bottom:8px">Tempo é Rei</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.5">O tempo é o recurso mais valioso. Quem o domina lidera.</div>
+      </div>
+      <div style="padding:24px;background:var(--surface-2);border-radius:10px;border:1px solid rgba(106,173,255,0.15)">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--moroni-blue);opacity:0.7;margin-bottom:8px">Segunda Leitura</div>
+        <div style="font-size:16px;font-weight:500;color:var(--text-primary);margin-bottom:8px">Tempo é <span style="color:var(--moroni-blue)">Reis</span></div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.5">A marca É o rei do tempo. Filosofia e identidade colapsadas em uma frase.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORES -->
+  <section class="section" id="cores">
+    <div class="section-label">Paleta de Cores</div>
+    <h2 class="section-title">Soft Blue — #6AADFF</h2>
+    <p class="section-subtitle">O hover blue do master (#6AADFF) vira o primary desta camada. Tom mais suave e acessível — confiança sem agressividade. O terracota e warm white anteriores foram completamente removidos.</p>
+
+    <div class="swatches-grid">
+      <div class="swatch" onclick="copyColor('#6AADFF')">
+        <div class="swatch-color" style="background:#6AADFF"><div class="swatch-copy-hint" style="color:#000">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Soft Blue</div><div class="swatch-value">#6AADFF — Primary</div></div>
+      </div>
+      <div class="swatch" onclick="copyColor('#8DC4FF')">
+        <div class="swatch-color" style="background:#8DC4FF"><div class="swatch-copy-hint" style="color:#000">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Blue Hover</div><div class="swatch-value">#8DC4FF — accent-bright</div></div>
+      </div>
+      <div class="swatch" onclick="copyColor('#4A90FF')">
+        <div class="swatch-color" style="background:#4A90FF"><div class="swatch-copy-hint">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Blue Muted</div><div class="swatch-value">#4A90FF — Master como muted</div></div>
+      </div>
+      <div class="swatch" onclick="copyColor('#000000')">
+        <div class="swatch-color" style="background:#000;border:1px solid rgba(255,255,255,0.06)"><div class="swatch-copy-hint">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Void</div><div class="swatch-value">#000000 — Base</div></div>
+      </div>
+      <div class="swatch" onclick="copyColor('#111111')">
+        <div class="swatch-color" style="background:#111"><div class="swatch-copy-hint">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Surface-2</div><div class="swatch-value">#111111 — Cards</div></div>
+      </div>
+      <div class="swatch" onclick="copyColor('#FFFFFF')">
+        <div class="swatch-color" style="background:linear-gradient(135deg,#fff,#e0e0e0)"><div class="swatch-copy-hint" style="color:#000">COPIAR</div></div>
+        <div class="swatch-info"><div class="swatch-name">Branco</div><div class="swatch-value">#FFFFFF — Headlines</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:40px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:16px">Soft Blue (#6AADFF) — Escala de Opacidade</div>
+      <div class="opacity-ladder">
+        <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(106,173,255,0.03)"></div><span class="opacity-label">3%</span><span class="opacity-value">rgba(106,173,255,0.03)</span><span class="opacity-use">Section wash</span></div>
+        <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(106,173,255,0.06)"></div><span class="opacity-label">6%</span><span class="opacity-value">rgba(106,173,255,0.06)</span><span class="opacity-use">Sidebar active bg</span></div>
+        <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(106,173,255,0.10)"></div><span class="opacity-label">10%</span><span class="opacity-value">rgba(106,173,255,0.10)</span><span class="opacity-use">Card hover tint</span></div>
+        <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(106,173,255,0.15)"></div><span class="opacity-label">15%</span><span class="opacity-use">Card featured border</span></div>
+        <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(106,173,255,0.25)"></div><span class="opacity-label">25%</span><span class="opacity-value">rgba(106,173,255,0.25)</span><span class="opacity-use">Badge border</span></div>
+        <div class="opacity-rung"><div class="opacity-swatch" style="background:rgba(106,173,255,0.60)"></div><span class="opacity-label">60%</span><span class="opacity-value">rgba(106,173,255,0.60)</span><span class="opacity-use">Emphasis</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIPOGRAFIA -->
+  <section class="section" id="tipografia">
+    <div class="section-label">Tipografia</div>
+    <h2 class="section-title">Inter Variable — Voz Direta e Filosófica</h2>
+    <p class="section-subtitle">Moroni Reis usa a mesma escala do master com peso 600 dominante (não 700/800 como Time Builders). A voz é direta, pessoal, filosófica — não energizada. Itálico é permitido em subtítulos hero.</p>
+
+    <div style="margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid var(--border-subtle)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Display — 64px / 600 / -0.025em</div>
+      <div style="font-size:clamp(36px,5vw,64px);font-weight:600;letter-spacing:-0.025em;line-height:1.05">
+        Start with the money
+      </div>
+    </div>
+
+    <div style="margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid var(--border-subtle)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">H1 — 56px / 600 / itálico opcional</div>
+      <div style="font-size:clamp(32px,4vw,56px);font-weight:600;letter-spacing:-0.025em;line-height:1.08;font-style:italic;color:var(--text-secondary)">
+        Eu não vendo IA. Eu devolvo tempo.
+      </div>
+    </div>
+
+    <div style="margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid var(--border-subtle)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Body Large — 20px / 400 / lh 1.65</div>
+      <div style="font-size:20px;font-weight:400;line-height:1.65;color:var(--text-secondary);max-width:640px">
+        Moroni não é apenas alguém que fala sobre o valor do tempo. O nome dele literalmente contém a resposta. A filosofia e o fundador são linguisticamente inseparáveis.
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Assinatura — 14px / 500 com ícone</div>
+      <div style="display:inline-flex;align-items:center;gap:8px">
+        <span style="color:var(--moroni-blue);opacity:0.8;font-size:16px">⧗</span>
+        <span style="font-size:14px;font-weight:500;color:var(--text-tertiary)">O Tempo é Rei — Moroni Reis</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTÕES -->
+  <section class="section" id="botoes">
+    <div class="section-label">Componentes</div>
+    <h2 class="section-title">Botões — Soft Blue com Texto Escuro</h2>
+    <p class="section-subtitle">O CTA primário usa soft blue (#6AADFF) como fundo com texto escuro — contraste alto, visual suave. O hover sobe para #8DC4FF. Os botões da camada pessoal são menos urgentes que Time Builders.</p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+      <a href="#" class="btn btn-primary">Agendar Conversa</a>
+      <a href="#" class="btn btn-secondary">Ver Trajetória</a>
+      <a href="#" style="font-size:14px;font-weight:500;color:var(--moroni-blue);text-decoration:none;transition:color 0.2s;opacity:0.8" onmouseover="this.style.color='var(--moroni-blue-hover)';this.style.opacity='1'" onmouseout="this.style.color='var(--moroni-blue)';this.style.opacity='0.8'">Leia o manifesto →</a>
+    </div>
+
+    <div style="margin-top:24px;padding:20px 24px;background:var(--surface-2);border-radius:10px;border:1px solid var(--border-default)">
+      <div style="font-size:12px;color:var(--text-tertiary);line-height:1.5">
+        O botão primário usa <code style="color:var(--moroni-blue)">#6AADFF</code> com texto preto (<code style="color:var(--text-tertiary)">#000000</code>) — contraste 4.8:1, passa WCAG AA. O soft blue exige texto escuro, não branco, para contraste adequado.
+      </div>
+    </div>
+  </section>
+
+  <!-- CITAÇÕES -->
+  <section class="section" id="quotes">
+    <div class="section-label">Componentes</div>
+    <h2 class="section-title">Citações e Frases de Assinatura</h2>
+    <p class="section-subtitle">O quote block usa borda esquerda em soft blue — mais suave que o azul master. Moroni Reis é o único contexto onde o underline azul pode aparecer em texto não-CTA (para warmth na leitura de bio).</p>
+
+    <div style="display:flex;flex-direction:column;gap:32px">
+      <blockquote class="quote-block">
+        <div class="quote-text">"Tempo perdido não se recupera. Mas tempo mal investido pode ser redirecionado."</div>
+        <div class="quote-attribution">— Moroni Reis</div>
+      </blockquote>
+
+      <blockquote class="quote-block">
+        <div class="quote-text">"O rei do tempo não corre. Ele posiciona."</div>
+        <div class="quote-attribution">— Moroni Reis</div>
+      </blockquote>
+
+      <blockquote class="quote-block">
+        <div class="quote-text">"Sua agenda conta a verdade que seu faturamento esconde."</div>
+        <div class="quote-attribution">— Moroni Reis</div>
+      </blockquote>
+
+      <div style="padding:24px;background:var(--surface-2);border-radius:10px;border:1px solid var(--border-default)">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Underline azul em bio text — apenas nesta camada</div>
+        <p style="font-size:16px;color:var(--text-secondary);line-height:1.65">
+          Moroni Reis é especialista em <a href="#" style="color:var(--moroni-blue);text-decoration:none;border-bottom:1px solid rgba(106,173,255,0.40);transition:border-color 0.2s">implementação de IA para receita</a> e fundador do ecossistema <a href="#" style="color:var(--moroni-blue);text-decoration:none;border-bottom:1px solid rgba(106,173,255,0.40)">Reis IA</a>. O underline em soft blue cria warmth na leitura — exclusivo da marca pessoal.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BIO CARDS -->
+  <section class="section" id="bio">
+    <div class="section-label">Componentes</div>
+    <h2 class="section-title">Cards de Bio e Credencial</h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px">
+      <div class="bio-card">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Founder</div>
+        <div style="font-size:22px;font-weight:600;color:var(--text-primary);margin-bottom:4px">Moroni Reis</div>
+        <div style="font-size:14px;color:var(--moroni-blue);margin-bottom:16px;opacity:0.8">Revenue-First AI Strategist</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.6">Especialista em IA com foco em receita e recuperação de tempo. Fundador do ecossistema Reis IA.</div>
+      </div>
+
+      <div class="bio-card featured">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--moroni-blue);opacity:0.7;margin-bottom:12px">Filosofia</div>
+        <div style="font-size:18px;font-weight:600;color:var(--text-primary);margin-bottom:8px;letter-spacing:-0.01em">Start with the money</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.6;">A tagline primária de Moroni. Antes de qualquer discussão técnica, a pergunta é: qual o impacto no faturamento?</div>
+      </div>
+
+      <div class="bio-card">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:12px">Contato</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <a href="#" class="social-link">LinkedIn →</a>
+          <a href="#" class="social-link">Instagram →</a>
+          <a href="#" class="social-link">Agendar conversa →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Z7 -->
+  <section class="section" id="z7">
+    <div class="section-label">Elemento Visual</div>
+    <h2 class="section-title">Z7 na Camada Moroni Reis</h2>
+    <p class="section-subtitle">O Z7 aparece em soft blue (#6AADFF) nesta camada. Contextos de produto Z7 (Hours, Days, Months) — quando referenciados na bio ou na página pessoal — usam o soft blue, não o azul elétrico de Time Builders.</p>
+
+    <div style="display:flex;align-items:center;gap:48px;flex-wrap:wrap;margin-bottom:40px">
+      <div style="text-align:center">
+        <div style="font-size:80px;font-weight:800;letter-spacing:-0.04em;color:var(--moroni-blue);line-height:1;margin-bottom:8px">Z7</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary)">Soft Blue — 80px</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:40px;font-weight:800;letter-spacing:-0.04em;color:var(--moroni-blue);line-height:1;margin-bottom:8px">Z7</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary)">40px</div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px">
+          <span style="font-size:20px;font-weight:800;letter-spacing:-0.04em;color:var(--moroni-blue)">Z7</span>
+          <span style="font-size:16px;font-weight:400;color:var(--text-secondary)">Hours</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px">
+          <span style="font-size:20px;font-weight:800;letter-spacing:-0.04em;color:var(--moroni-blue)">Z7</span>
+          <span style="font-size:16px;font-weight:400;color:var(--text-secondary)">Days</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-size:20px;font-weight:800;letter-spacing:-0.04em;color:var(--moroni-blue)">Z7</span>
+          <span style="font-size:16px;font-weight:400;color:var(--text-secondary)">Months</span>
+        </div>
+      </div>
+      <div>
+        <span style="display:inline-flex;align-items:center;background:var(--softblue-06);border:1px solid var(--softblue-25);border-radius:4px;padding:3px 8px;font-size:11px;font-weight:800;letter-spacing:-0.04em;color:var(--moroni-blue)">Z7</span>
+        <div style="font-size:11px;color:var(--text-quaternary);margin-top:6px">Badge soft</div>
+      </div>
+    </div>
+
+    <div style="padding:20px 24px;background:var(--surface-2);border-radius:10px;border-left:2px solid var(--moroni-blue)">
+      <div style="font-size:13px;color:var(--text-secondary);line-height:1.5">
+        Moroni Reis é o único contexto onde o Z7 em soft blue aparece junto ao sobrenome na mesma headline — colapsando filosofia e identidade. O Z7 em soft blue é mais suave e pessoal que o azul elétrico de Time Builders, alinhado com a voz filosófica e direta da camada pessoal.
+      </div>
+    </div>
+  </section>
+
+  <!-- EFEITOS -->
+  <section class="section" id="efeitos">
+    <div class="section-label">Efeitos</div>
+    <h2 class="section-title">Z7 Pulse — 4s (padrão master)</h2>
+    <p class="section-subtitle">Moroni Reis usa o ciclo padrão de 4s — não a urgência de 2.5s de Time Builders nem a lentidão técnica de 6s de Systems. O pulso é suave, em soft blue, e aparece somente no ícone de ampulheta do hero.</p>
+
+    <div style="display:flex;gap:48px;align-items:center;flex-wrap:wrap">
+      <div style="text-align:center">
+        <div style="width:72px;height:72px;border-radius:12px;background:var(--softblue-06);border:1px solid var(--softblue-25);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--moroni-blue);margin:0 auto 8px;animation:moroni-pulse 4s ease infinite">⧗</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text-secondary)">Z7 Pulse — 4s</div>
+        <div style="font-size:12px;color:var(--text-quaternary)">Soft blue, suave</div>
+      </div>
+
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:16px">Uso nesta camada</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="color:var(--moroni-blue);font-size:14px;flex-shrink:0;margin-top:1px">◆</span>
+            <div style="font-size:14px;color:var(--text-secondary)">Ícone de ampulheta no hero da bio (1 por página, apenas)</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="color:var(--text-quaternary);font-size:14px;flex-shrink:0;margin-top:1px">◆</span>
+            <div style="font-size:14px;color:var(--text-tertiary)">NÃO no CTA principal (reservado para Time Builders)</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="color:var(--text-quaternary);font-size:14px;flex-shrink:0;margin-top:1px">◆</span>
+            <div style="font-size:14px;color:var(--text-tertiary)">Time Scanner NÃO é usado nesta camada (muito técnico para bio pessoal)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARAÇÃO -->
+  <section class="section" id="comparacao">
+    <div class="section-label">Sistema</div>
+    <h2 class="section-title">Moroni Reis vs. Master</h2>
+
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:8px">Master Primary</div>
+          <div style="height:48px;border-radius:8px;background:#4A90FF;display:flex;align-items:center;padding:0 16px;font-size:13px;font-weight:600;color:#fff">#4A90FF — Accent Blue</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:8px">Moroni Reis Primary</div>
+          <div style="height:48px;border-radius:8px;background:#6AADFF;display:flex;align-items:center;padding:0 16px;font-size:13px;font-weight:600;color:#000">#6AADFF — Soft Blue</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:8px">Master Hover</div>
+          <div style="height:48px;border-radius:8px;background:#6AADFF;display:flex;align-items:center;padding:0 16px;font-size:13px;font-weight:600;color:#000">#6AADFF → Vira Primary em MR</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-quaternary);margin-bottom:8px">Moroni Reis Hover</div>
+          <div style="height:48px;border-radius:8px;background:#8DC4FF;display:flex;align-items:center;padding:0 16px;font-size:13px;font-weight:600;color:#000">#8DC4FF — accent-bright</div>
+        </div>
+      </div>
+
+      <div style="padding:24px;background:var(--surface-2);border-radius:12px;border:1px solid var(--border-default)">
+        <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:12px">Lógica de rotação de cores</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.7">
+          No Master: primary = <span style="color:#4A90FF">#4A90FF</span>, hover = <span style="color:#6AADFF">#6AADFF</span>, bright = <span style="color:#8DC4FF">#8DC4FF</span><br>
+          Em Moroni Reis: primary = <span style="color:#6AADFF">#6AADFF</span>, hover = <span style="color:#8DC4FF">#8DC4FF</span>, muted = <span style="color:#4A90FF">#4A90FF</span><br>
+          <span style="color:var(--text-tertiary);font-size:13px">A escala inteira rotaciona um nível — o master fica muted, o hover vira primary, o bright vira hover.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<style>
+@keyframes moroni-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(106,173,255,0.20); transform: scale(1); }
+  50% { box-shadow: 0 0 0 18px rgba(106,173,255,0); transform: scale(1.015); }
+  100% { box-shadow: 0 0 0 0 rgba(106,173,255,0); transform: scale(1); }
+}
+</style>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const progress = Math.min(100, (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100);
+    document.getElementById('scrollProgress').style.width = progress + '%';
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.sidebar a').forEach(l => l.classList.remove('active'));
+        const a = document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
+
+  function copyColor(hex) {
+    navigator.clipboard.writeText(hex).catch(() => {});
+    const t = document.getElementById('copiedToast');
+    t.textContent = hex + ' copiado!';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+</script>
+</body>
+</html>

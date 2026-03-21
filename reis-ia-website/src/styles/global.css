@@ -1,525 +1,611 @@
 @import "tailwindcss";
+@import "./design-system.css";
+@import "./animations.css";
+
+/* ==========================================================================
+   REIS IA -- Global Styles
+   Rebuilt: Phase 6.1 Foundation
+   ========================================================================== */
 
 @theme {
   /* Brand Colors */
-  --color-accent: #C9A84C;
-  --color-accent-hover: #D4B85E;
-  --color-accent-muted: #A68B3C;
-  --color-accent-bright: #E4C46A;
+  --color-accent: #4A90FF;
+  --color-accent-hover: #6AADFF;
+  --color-accent-muted: #3570CC;
+  --color-accent-bright: #8DC4FF;
 
-  /* Surface system (Task B) */
-  --color-surface-0: #080808;
-  --color-surface-1: #111113;
-  --color-surface-2: #1c1c1e;
-  --color-surface-3: #242427;
+  /* Surface system */
+  --color-surface-0: #000000;
+  --color-surface-1: #0A0A0A;
+  --color-surface-2: #111111;
+  --color-surface-3: #161616;
+  --color-surface-4: #1A1A1A;
 
-  /* Text opacity system (Task C) */
+  /* Text opacity system */
   --color-text-primary:    rgba(255,255,255,1.0);
-  --color-text-secondary:  rgba(255,255,255,0.75);
-  --color-text-tertiary:   rgba(255,255,255,0.45);
-  --color-text-quaternary: rgba(255,255,255,0.25);
+  --color-text-secondary:  rgba(255,255,255,0.70);
+  --color-text-tertiary:   rgba(255,255,255,0.50);
+  --color-text-quaternary: rgba(255,255,255,0.35);
+  --color-text-muted:      rgba(255,255,255,0.20);
 
   /* Borders */
-  --color-border-subtle:   rgba(255,255,255,0.06);
-  --color-border-default:  rgba(255,255,255,0.10);
-  --color-border-strong:   rgba(255,255,255,0.18);
-
-  /* Neutral extensions (kept for backward compat) */
-  --color-neutral-850: #1A1A1A;
-  --color-neutral-950: #0A0A0A;
+  --color-border-subtle:   rgba(255,255,255,0.05);
+  --color-border-default:  rgba(255,255,255,0.08);
+  --color-border-visible:  rgba(255,255,255,0.12);
+  --color-border-strong:   rgba(255,255,255,0.20);
 
   /* Font */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', 'Inter Variable', system-ui, -apple-system, sans-serif;
 }
 
+/* ---- BASE STYLES ---- */
 @layer base {
   html {
-    background-color: var(--color-surface-0);
-    color: var(--color-text-secondary);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Inter', 'Inter Variable', system-ui, -apple-system, sans-serif;
+    background-color: var(--surface-0);
+    color: var(--text-secondary);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--surface-0);
+    overflow-x: hidden;
   }
 
   * {
     box-sizing: border-box;
   }
 
-  /* Typography refinements (Task K) */
-  h1, h2, h3 {
-    color: var(--color-text-primary);
+  /* Heading defaults using design system tokens */
+  h1 {
+    font-size: var(--text-h1);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-wrap: balance;
+  }
+  h2 {
+    font-size: var(--text-h2);
+    line-height: 1.10;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-wrap: balance;
+  }
+  h3 {
+    font-size: var(--text-h3);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-wrap: balance;
+  }
+  h4 {
+    font-size: var(--text-h4);
+    line-height: 1.20;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  h5 {
+    font-size: var(--text-h5);
+    line-height: 1.25;
+    letter-spacing: -0.005em;
+    font-weight: 600;
+    color: var(--text-primary);
   }
 
+  /* Body text */
   p {
-    color: var(--color-text-secondary);
+    font-size: var(--text-body);
+    line-height: 1.65;
+    color: var(--text-secondary);
+    text-wrap: pretty;
+  }
+
+  /* Links */
+  a {
+    color: var(--accent-blue);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-base);
+  }
+  a:hover {
+    color: var(--accent-blue-hover);
+  }
+
+  /* Code */
+  code {
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.875em;
+    background: var(--surface-2);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    border: 1px solid var(--border-default);
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    border: none;
+    border-radius: 0;
   }
 }
 
-@layer utilities {
-  /* Surface system utilities (Task B) */
-  .bg-surface-0 { background-color: var(--color-surface-0); }
-  .bg-surface-1 { background-color: var(--color-surface-1); }
-  .bg-surface-2 { background-color: var(--color-surface-2); }
-  .bg-surface-3 { background-color: var(--color-surface-3); }
-
-  /* Text opacity system utilities (Task C) */
-  .text-primary   { color: var(--color-text-primary); }
-  .text-secondary { color: var(--color-text-secondary); }
-  .text-tertiary  { color: var(--color-text-tertiary); }
-  .text-quaternary { color: var(--color-text-quaternary); }
-
-  /* Gold accent glow (Task D) */
-  .accent-glow {
-    box-shadow: 0 0 20px rgba(201, 168, 76, 0.15), 0 0 40px rgba(201, 168, 76, 0.05);
-  }
-  .accent-glow-strong {
-    box-shadow: 0 8px 24px rgba(201, 168, 76, 0.3), 0 0 40px rgba(201, 168, 76, 0.1);
-  }
-
-  /* Legacy utilities (kept for backward compat) */
-  .chess-grid {
-    background-image:
-      linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(255,255,255,0.03) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.03) 75%),
-      linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.03) 75%);
-    background-size: 48px 48px;
-    background-position: 0 0, 0 24px, 24px -24px, -24px 0;
-  }
-
-  .divider-fade {
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.06) 80%, transparent);
-  }
-
-  /* Gold divider (Task H) */
-  .divider-gold {
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgba(201,168,76,0.3) 20%, rgba(201,168,76,0.3) 80%, transparent);
-  }
-
-  .text-accent { color: var(--color-accent); }
-  .text-accent-muted { color: var(--color-accent-muted); }
-  .bg-accent { background-color: var(--color-accent); }
-  .bg-accent-hover { background-color: var(--color-accent-hover); }
-  .bg-neutral-850 { background-color: var(--color-neutral-850); }
-  .bg-neutral-950 { background-color: var(--color-neutral-950); }
-  .border-neutral-850 { border-color: var(--color-neutral-850); }
-  .border-accent { border-color: var(--color-accent); }
-
-  .placeholder-content {
-    border: 1px dashed #404040;
-    background-color: rgba(255,255,255,0.02);
-    color: #525252;
-  }
-
-  /* ---- Icon hover animation (Task: Icon Upgrade) ---- */
-  .icon-hover {
-    transition: transform 0.2s ease, color 0.2s ease;
-  }
-  .group:hover .icon-hover {
-    transform: scale(1.1);
-    color: var(--color-accent, #C9A84C);
-  }
-
-  /* ---- Gradient orb (Task: Subtle graphic elements) ---- */
-  .gradient-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    pointer-events: none;
-  }
-  .gradient-orb-gold {
-    background: rgba(201, 168, 76, 0.06);
-  }
-  .gradient-orb-blue {
-    background: rgba(100, 130, 200, 0.03);
-  }
-
-  /* ---- Premium card border (Task: Subtle graphic elements) ---- */
-  .card-premium {
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  .card-premium:hover {
-    border-color: rgba(201, 168, 76, 0.2);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.08);
-  }
-
-  /* ---- Divider accent (gold gradient) ---- */
-  .divider-accent {
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.3), transparent);
-  }
-
-  /* Letter spacing for headlines (Task K) */
-  .tracking-headline { letter-spacing: -0.03em; }
-  .tracking-display  { letter-spacing: -0.04em; }
+/* ---- CONTAINER UTILITIES ---- */
+.container-standard {
+  max-width: var(--container-standard);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
 }
 
-/* ============================================================
-   HERO LOAD ANIMATIONS (Task I)
-   ============================================================ */
-@keyframes heroFadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to   { opacity: 1; transform: translateY(0); }
+.container-narrow {
+  max-width: var(--container-narrow);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
 }
 
-.hero-animate {
-  opacity: 0;
-  animation: heroFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.hero-animate-1 { animation-delay: 0.1s; }
-.hero-animate-2 { animation-delay: 0.25s; }
-.hero-animate-3 { animation-delay: 0.4s; }
-.hero-animate-4 { animation-delay: 0.55s; }
-.hero-animate-5 { animation-delay: 0.7s; }
-
-/* ============================================================
-   SCROLL REVEAL ANIMATIONS (Task E)
-   ============================================================ */
-.reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal.revealed {
-  opacity: 1;
-  transform: translateY(0);
+.container-text {
+  max-width: var(--container-text);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
 }
 
-/* Staggered reveals for grids/lists */
-.reveal-stagger > .reveal:nth-child(1) { transition-delay: 0ms; }
-.reveal-stagger > .reveal:nth-child(2) { transition-delay: 100ms; }
-.reveal-stagger > .reveal:nth-child(3) { transition-delay: 200ms; }
-.reveal-stagger > .reveal:nth-child(4) { transition-delay: 300ms; }
-.reveal-stagger > .reveal:nth-child(5) { transition-delay: 400ms; }
-.reveal-stagger > .reveal:nth-child(6) { transition-delay: 500ms; }
+.container-wide {
+  max-width: var(--container-wide);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
 
-/* ============================================================
-   COUNTER ANIMATION (Task F) — JS-driven, only needs reset state
-   ============================================================ */
-[data-counter] {
+.container-headline {
+  max-width: var(--container-headline);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+/* ---- ICON SYSTEM ---- */
+.icon-xs  { width: var(--icon-xs);  height: var(--icon-xs); }
+.icon-sm  { width: var(--icon-sm);  height: var(--icon-sm); }
+.icon-md  { width: var(--icon-md);  height: var(--icon-md); }
+.icon-lg  { width: var(--icon-lg);  height: var(--icon-lg); }
+.icon-xl  { width: var(--icon-xl);  height: var(--icon-xl); }
+
+.icon-default { color: var(--text-secondary); }
+.icon-primary { color: var(--text-primary); }
+.icon-accent  { color: var(--accent-blue); }
+.icon-muted   { color: var(--text-quaternary); }
+.icon-error   { color: var(--color-error); }
+
+.icon-inline {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: -0.125em;
+}
+
+/* ---- BADGE VARIANTS ---- */
+.badge,
+.badge-accent,
+.badge-success,
+.badge-warning,
+.badge-error,
+.badge-neutral {
   display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  border-width: 1px;
+  border-style: solid;
 }
 
-/* ============================================================
-   CARD HOVER EFFECTS (Task G)
-   ============================================================ */
-.card-interactive {
-  background-color: var(--color-surface-1);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: 16px;
-  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 300ms ease,
-              border-color 300ms ease,
-              background-color 300ms ease;
-}
-.card-interactive:hover {
-  background-color: var(--color-surface-2);
-  border-color: rgba(201, 168, 76, 0.18);
-  transform: translateY(-3px);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.08);
+.badge,
+.badge-accent {
+  background: var(--blue-10);
+  border-color: var(--blue-20);
+  color: var(--accent-blue);
 }
 
-/* ============================================================
-   SECTION GRADIENT TRANSITIONS (Task H)
-   ============================================================ */
-.section-transition-top {
-  position: relative;
-}
-.section-transition-top::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: linear-gradient(to bottom, var(--color-surface-0), transparent);
-  pointer-events: none;
-  z-index: 1;
+.badge-success {
+  background: var(--color-success-bg);
+  border-color: rgba(34, 197, 94, 0.20);
+  color: var(--color-success);
 }
 
-/* ============================================================
-   LEGACY REVEAL (backward compat — keep for existing classes)
-   ============================================================ */
-@keyframes reveal-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.badge-warning {
+  background: var(--color-warning-bg);
+  border-color: rgba(245, 158, 11, 0.20);
+  color: var(--color-warning);
 }
 
-.reveal-up {
-  animation: reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+.badge-error {
+  background: var(--color-error-bg);
+  border-color: rgba(239, 68, 68, 0.20);
+  color: var(--color-error);
 }
 
-.reveal-delay-1 { animation-delay: 100ms; }
-.reveal-delay-2 { animation-delay: 200ms; }
-.reveal-delay-3 { animation-delay: 300ms; }
-.reveal-delay-4 { animation-delay: 400ms; }
-
-/* ============================================================
-   NOISE TEXTURE OVERLAY — subtle grain for dark surface richness
-   ============================================================ */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.015;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+.badge-neutral {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border-visible);
+  color: var(--text-secondary);
 }
 
-/* ============================================================
-   HERO CARD (floating card hero — Academy Lendária pattern)
-   ============================================================ */
-.hero-card {
-  margin: 8px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: linear-gradient(180deg, #0c0b09 0%, #080808 100%);
-  overflow: hidden;
-  position: relative;
+/* ---- FORM INPUTS ---- */
+.input {
+  display: block;
+  width: 100%;
+  height: 48px;
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--surface-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  transition: border-color 200ms var(--ease-base),
+              box-shadow 200ms var(--ease-base);
+  outline: none;
 }
 
-/* ============================================================
-   CARD GRID GROUP HOVER DIMMING
-   (Non-hovered cards dim; hovered card stays bright)
-   ============================================================ */
-.card-grid-hover:hover .card-item {
-  opacity: 0.55;
-  transition: opacity 0.3s ease;
-}
-.card-grid-hover:hover .card-item:hover {
-  opacity: 1;
-}
-.card-grid-hover .card-item {
-  transition: opacity 0.3s ease;
+.input::placeholder {
+  color: var(--text-quaternary);
 }
 
-/* ============================================================
-   ANIMATED ROTATING BORDER (conic-gradient, @property)
-   ============================================================ */
-@property --border-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
+.input:hover:not(:focus):not(:disabled):not(.input-error) {
+  border-color: var(--border-visible);
 }
 
-@keyframes rotateBorder {
-  to { --border-angle: 360deg; }
+.input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px var(--blue-15);
 }
 
-.rotating-border {
-  background:
-    linear-gradient(#111113, #111113) padding-box,
-    conic-gradient(
-      from var(--border-angle),
-      rgba(36, 36, 39, 1) 60%,
-      rgba(201, 168, 76, 0.55) 78%,
-      rgba(228, 196, 106, 0.8) 86%,
-      rgba(201, 168, 76, 0.55) 94%,
-      rgba(36, 36, 39, 1) 100%
-    ) border-box;
-  border: 1px solid transparent;
-  border-radius: 16px;
-  animation: rotateBorder 6s linear infinite;
+.input-error,
+.input.is-error {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 
-/* ============================================================
-   CARD GOLD UNDERLINE CTA LINK
-   Width grows 0 → 100% on hover
-   ============================================================ */
-.card-cta-link {
-  position: relative;
-  display: inline-block;
-  text-decoration: none;
-  color: rgba(255, 255, 255, 0.45);
+.input-success,
+.input.is-success {
+  border-color: var(--color-success);
+}
+
+.input:disabled,
+.input.is-disabled {
+  background: var(--surface-2);
+  border-color: var(--border-subtle);
+  color: var(--text-quaternary);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.input-textarea {
+  height: auto;
+  min-height: 120px;
+  resize: vertical;
+}
+
+.input-select {
+  appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+}
+
+.input-label {
+  display: block;
   font-size: 14px;
   font-weight: 500;
-  transition: color 0.2s ease;
-  padding-bottom: 2px;
-}
-.card-cta-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: linear-gradient(to right, #C9A84C, #E4C46A);
-  transition: width 0.3s ease;
-}
-.card-cta-link:hover {
-  color: rgba(255, 255, 255, 0.9);
-}
-.card-cta-link:hover::after {
-  width: 100%;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
 }
 
-/* ============================================================
-   GLASSMORPHISM INPUT FIELDS (lead capture section)
-   ============================================================ */
-.glass-input {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 16px 20px;
-  font-size: 15px;
-  color: #ffffff;
-  font-family: 'Inter', system-ui, sans-serif;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  width: 100%;
-  outline: none;
-  transition: border-color 200ms ease, background 200ms ease;
-}
-.glass-input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
-}
-.glass-input:focus {
-  border-color: rgba(201, 168, 76, 0.35);
-  background: rgba(255, 255, 255, 0.08);
+.input-helper {
+  display: block;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-top: 6px;
 }
 
-/* ============================================================
-   LEAD CAPTURE SECTION
-   ============================================================ */
-.lead-capture-section {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(180deg, #0c0b09 0%, #080808 100%);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+.input-error-text {
+  display: block;
+  font-size: 13px;
+  color: var(--color-error);
+  margin-top: 6px;
 }
 
-/* ============================================================
-   COMMUNITY AVATAR GRID — staggered fade-in
-   ============================================================ */
-.avatar-circle {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background-color: #1c1c1e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
+/* ---- HAIRLINE GRID ---- */
+.grid-hairline {
+  display: grid;
+  gap: 1px;
+  background: var(--border-default);
+  border: 1px solid var(--border-default);
+}
+
+.grid-hairline > * {
+  background: var(--surface-0);
+}
+
+.grid-hairline-s1 > * {
+  background: var(--surface-1);
+}
+
+.grid-hairline-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-hairline-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-hairline-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 767px) {
+  .grid-hairline-2,
+  .grid-hairline-3,
+  .grid-hairline-4 {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .grid-hairline-3,
+  .grid-hairline-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---- CARD INTERACTIVE ---- */
+.card-interactive {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  transition: border-color var(--duration-normal) var(--ease-base),
+              background-color var(--duration-normal) var(--ease-base);
+}
+.card-interactive:hover {
+  background-color: var(--surface-3);
+  border-color: var(--border-visible);
+}
+
+/* Featured card hover with blue glow */
+.card-featured:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-blue-glow);
+  transition: all var(--duration-moderate) var(--ease-card);
+}
+
+/* ---- BUTTON SYSTEM ---- */
+
+/* Base button */
+.btn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-family: inherit;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.45);
-  letter-spacing: 0.03em;
-  transition: border-color 0.3s ease, transform 0.3s ease;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-base);
+  text-decoration: none;
+  border: none;
+  outline: none;
+  white-space: nowrap;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.btn:active {
+  transform: scale(0.98);
+  transition: transform 50ms;
+}
+
+/* Sizes */
+.btn-md {
+  font-size: 14px;
+  padding: 10px 20px;
+  gap: 8px;
+}
+
+.btn-lg {
+  font-size: 16px;
+  padding: 14px 28px;
+  gap: 10px;
+}
+
+.btn-hero {
+  font-size: 18px;
+  padding: 16px 36px;
+  gap: 10px;
+  border-radius: var(--radius-lg);
+}
+
+/* Primary: blue bg, white text */
+.btn-primary {
+  background-color: var(--accent-blue);
+  color: white;
+}
+.btn-primary:hover {
+  background-color: var(--accent-blue-hover);
+  color: white;
+  box-shadow: var(--shadow-blue-glow-sm);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  background-color: var(--accent-blue-muted);
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
+
+/* Secondary: transparent bg, border */
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-visible);
+}
+.btn-secondary:hover {
+  border-color: var(--border-strong);
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+}
+
+/* Ghost: no border, no bg */
+.btn-ghost {
+  background-color: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* ---- SKIP TO CONTENT ---- */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 999;
+  background: var(--accent-blue);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 0 0 var(--radius) var(--radius);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: top var(--duration-fast) var(--ease-out);
+}
+.skip-to-content:focus {
+  top: 0;
+  color: white;
+}
+
+/* ---- PLACEHOLDER CONTENT ---- */
+.placeholder-content {
+  border: 1px dashed rgba(74, 144, 255, 0.25);
+  background-color: rgba(74, 144, 255, 0.03);
+  color: var(--text-quaternary);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+/* ---- KPI CARD ---- */
+.kpi-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  transition: border-color 200ms var(--ease-base),
+              background-color 200ms var(--ease-base);
+}
+
+.kpi-card:hover {
+  border-color: var(--border-visible);
+  background: var(--surface-3);
+}
+
+.kpi-card__label {
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+
+.kpi-card__value {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-card__value--accent {
+  color: var(--accent-blue);
+}
+
+/* ---- TABS ---- */
+.tab-list {
+  display: flex;
+  border-bottom: 1px solid var(--border-default);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tab-list::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-trigger {
   flex-shrink: 0;
-}
-.avatar-circle:hover {
-  border-color: rgba(201, 168, 76, 0.4);
-  transform: scale(1.08);
-}
-
-/* Staggered entrance for avatar items */
-.avatar-item {
-  opacity: 0;
-  transform: scale(0.85);
-  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.avatar-item.revealed {
-  opacity: 1;
-  transform: scale(1);
-}
-.avatar-item:nth-child(1)  { transition-delay: 0ms;   }
-.avatar-item:nth-child(2)  { transition-delay: 60ms;  }
-.avatar-item:nth-child(3)  { transition-delay: 120ms; }
-.avatar-item:nth-child(4)  { transition-delay: 180ms; }
-.avatar-item:nth-child(5)  { transition-delay: 240ms; }
-.avatar-item:nth-child(6)  { transition-delay: 300ms; }
-.avatar-item:nth-child(7)  { transition-delay: 360ms; }
-.avatar-item:nth-child(8)  { transition-delay: 420ms; }
-.avatar-item:nth-child(9)  { transition-delay: 480ms; }
-.avatar-item:nth-child(10) { transition-delay: 540ms; }
-
-/* ============================================================
-   FOUNDER SECTION — rotating border on photo placeholder
-   ============================================================ */
-@property --angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 200ms var(--ease-base),
+              border-color 200ms var(--ease-base);
+  white-space: nowrap;
 }
 
-@keyframes rotateBorderFounder {
-  to { --angle: 360deg; }
+.tab-trigger:hover {
+  color: var(--text-secondary);
 }
 
-.founder-photo-border {
-  background:
-    linear-gradient(#111113, #111113) padding-box,
-    conic-gradient(
-      from var(--angle),
-      rgba(36, 36, 39, 1) 60%,
-      rgba(201, 168, 76, 0.6) 80%,
-      rgba(228, 196, 106, 0.9) 88%,
-      rgba(201, 168, 76, 0.6) 96%,
-      rgba(36, 36, 39, 1) 100%
-    ) border-box;
-  border: 2px solid transparent;
-  border-radius: 16px;
-  animation: rotateBorderFounder 6s linear infinite;
+.tab-trigger[aria-selected="true"],
+.tab-trigger.is-active {
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom-color: var(--accent-blue);
 }
 
-/* ============================================================
-   SECTION VISUAL DEPTH CARDS — upgraded card style
-   ============================================================ */
-.card-visual-top {
-  border-radius: 16px 16px 0 0;
-  height: 120px;
-  position: relative;
-  overflow: hidden;
+.tab-panel {
+  padding-top: 24px;
+  min-height: 100px;
 }
 
-/* ============================================================
-   REDUCED MOTION — ALWAYS LAST (Task E rule)
-   ============================================================ */
-@media (prefers-reduced-motion: reduce) {
-  .hero-animate {
-    opacity: 1;
-    animation: none;
-  }
-  .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-  .reveal-up {
-    animation: none;
-    opacity: 1;
-  }
-  .card-interactive {
-    transition: none;
-  }
-  .marquee-track {
-    animation-play-state: paused;
-  }
-  .rotating-border,
-  .founder-photo-border {
-    animation: none;
-  }
-  .avatar-item {
-    opacity: 1;
-    transform: scale(1);
-    transition: none;
-  }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+.tab-panel[hidden] {
+  display: none;
+}
+
+/* ---- CUSTOM TYPOGRAPHY UTILITIES ---- */
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty  { text-wrap: pretty; }
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+}
+
+/* ---- HARDWARE-ADAPTIVE RENDERING ---- */
+[data-perf="low"] .grain::after,
+[data-perf="low"] .aurora-bg,
+[data-perf="low"] .ambient-pool,
+[data-perf="low"] .sapphire-scanner,
+[data-perf="low"] .card-rotating-border {
+  display: none !important;
+}
+
+[data-perf="medium"] .aurora-bg {
+  animation: none !important;
+}
+
+[data-perf="medium"] .sapphire-scanner,
+[data-perf="medium"] .card-rotating-border {
+  animation-duration: 16s !important;
 }

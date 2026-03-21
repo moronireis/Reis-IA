@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Systems VFX Preview — Brief A</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --surface-0: #000000;
+    --surface-1: #0A0A0A;
+    --surface-2: #111111;
+    --surface-3: #161616;
+    --surface-4: #1A1A1A;
+    --gray-900: #1A1A1A;
+    --gray-700: #2D2D2D;
+    --gray-500: #525252;
+    --gray-300: #A3A3A3;
+    --gray-100: #D4D4D4;
+    --systems-blue: #4A90FF;
+    --systems-blue-hover: #6AADFF;
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255,255,255,0.70);
+    --text-tertiary: rgba(255,255,255,0.50);
+    --text-quaternary: rgba(255,255,255,0.35);
+    --text-muted: rgba(255,255,255,0.20);
+    --ease-precision: cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--surface-0);
+    color: var(--text-primary);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ---- SIDEBAR NAV ---- */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 220px;
+    background: var(--surface-1);
+    border-right: 1px solid rgba(255,255,255,0.06);
+    padding: 32px 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+  }
+
+  .sidebar-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-quaternary);
+    text-transform: uppercase;
+    padding: 0 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+
+  .sidebar-title span {
+    display: block;
+    font-size: 10px;
+    color: var(--systems-blue);
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 9px 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    transition: color 150ms var(--ease-precision), background 150ms var(--ease-precision);
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar a:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.04);
+    border-left-color: var(--systems-blue);
+  }
+
+  /* ---- MAIN CONTENT ---- */
+  .main {
+    margin-left: 220px;
+    flex: 1;
+    padding: 48px;
+    max-width: 1100px;
+  }
+
+  .page-header {
+    margin-bottom: 64px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .page-header .label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--systems-blue);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .page-header p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    max-width: 640px;
+  }
+
+  /* ---- EFFECT BLOCKS ---- */
+  .effect-block {
+    margin-bottom: 80px;
+    scroll-margin-top: 32px;
+  }
+
+  .effect-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .effect-num {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-quaternary);
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .effect-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+  }
+
+  .effect-desc {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 560px;
+    letter-spacing: 0.01em;
+  }
+
+  .effect-stage {
+    background: var(--surface-1);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .replay-btn {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 150ms var(--ease-precision);
+  }
+
+  .replay-btn:hover {
+    color: var(--text-primary);
+    border-color: rgba(255,255,255,0.20);
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* ========================================
+     EFEITO 1: CONSTELAÇÃO OPERACIONAL
+     ======================================== */
+
+  #constellation-svg {
+    width: 100%;
+    max-width: 540px;
+    height: 300px;
+    overflow: visible;
+  }
+
+  .const-node {
+    cursor: pointer;
+  }
+
+  .const-node circle.node-bg {
+    transition: r 200ms var(--ease-precision), filter 200ms var(--ease-precision);
+  }
+
+  .const-node:hover circle.node-bg {
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.4));
+  }
+
+  .const-line {
+    stroke: rgba(255,255,255,0.12);
+    stroke-width: 0.5;
+    fill: none;
+  }
+
+  .const-line.from-center {
+    stroke: rgba(255,255,255,0.20);
+  }
+
+  @keyframes line-pulse {
+    0%, 100% { stroke-opacity: 0.08; }
+    50% { stroke-opacity: 0.25; }
+  }
+
+  .const-line.animated {
+    animation: line-pulse 2s ease-in-out infinite;
+  }
+
+  .const-line.from-center.animated {
+    animation: line-pulse-center 2s ease-in-out infinite;
+  }
+
+  @keyframes line-pulse-center {
+    0%, 100% { stroke-opacity: 0.15; }
+    50% { stroke-opacity: 0.40; }
+  }
+
+  /* Node entrance */
+  @keyframes node-enter {
+    from { opacity: 0; transform: scale(0.8); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* Line draw */
+  @keyframes line-draw {
+    from { stroke-dashoffset: 200; }
+    to   { stroke-dashoffset: 0; }
+  }
+
+  .const-tooltip {
+    position: absolute;
+    background: var(--surface-3);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 200ms var(--ease-precision);
+    white-space: nowrap;
+    z-index: 10;
+  }
+
+  .const-tooltip::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--systems-blue), transparent);
+    margin-bottom: 6px;
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: tooltip-line 200ms var(--ease-precision) forwards;
+  }
+
+  @keyframes tooltip-line {
+    to { transform: scaleX(1); }
+  }
+
+  .const-tooltip.visible { opacity: 1; }
+
+  .const-tooltip .tt-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+
+  .const-tooltip .tt-func {
+    color: var(--text-tertiary);
+    font-size: 11px;
+  }
+
+  /* ========================================
+     EFEITO 2: ORGANOGRAMA VIVO
+     ======================================== */
+
+  .org-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    position: relative;
+  }
+
+  .org-node {
+    background: var(--surface-2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.4s var(--ease-precision), border-color 200ms, box-shadow 200ms;
+  }
+
+  .org-node.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .org-node:hover {
+    border-color: rgba(255,255,255,0.16);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+  }
+
+  @keyframes org-breathe {
+    0%, 100% { transform: scale(1.0); }
+    50% { transform: scale(1.05); }
+  }
+
+  .org-node.central {
+    background: var(--surface-3);
+    border-color: rgba(255,255,255,0.12);
+    color: var(--text-primary);
+  }
+
+  .org-connector-v {
+    width: 1px;
+    height: 32px;
+    background: rgba(255,255,255,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .org-connector-v.animated::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -1px;
+    width: 3px;
+    height: 6px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 2px;
+    animation: dot-travel-v 2s linear infinite;
+  }
+
+  @keyframes dot-travel-v {
+    from { top: -6px; opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    to   { top: 100%; opacity: 0; }
+  }
+
+  .org-agents {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    position: relative;
+  }
+
+  .org-h-line {
+    position: absolute;
+    top: -32px;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: rgba(255,255,255,0.12);
+  }
+
+  .org-agent-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .org-node.agent {
+    padding: 8px 16px;
+    font-size: 11px;
+    animation-duration: 4s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-name: org-breathe;
+  }
+
+  .org-node.agent:nth-child(1) { animation-delay: 0s; }
+  .org-node.agent:nth-child(3) { animation-delay: 1s; }
+
+  .org-node .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--systems-blue);
+    opacity: 0.7;
+  }
+
+  /* ========================================
+     EFEITO 3: DASHBOARD CONCEITUAL
+     ======================================== */
+
+  .dash-container {
+    display: grid;
+    grid-template-columns: 180px 1fr 160px;
+    gap: 24px;
+    width: 100%;
+    align-items: start;
+  }
+
+  .dash-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    background: var(--surface-2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 6px;
+  }
+
+  .dash-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .dash-bar-label {
+    font-size: 10px;
+    color: var(--text-quaternary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    width: 36px;
+    flex-shrink: 0;
+  }
+
+  .dash-bar-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .dash-bar-fill {
+    height: 100%;
+    background: #FFFFFF;
+    border-radius: 3px;
+    width: 0;
+    transition: width 1s var(--ease-precision);
+  }
+
+  .dash-bar-fill.blue { background: var(--systems-blue); }
+
+  .dash-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    gap: 4px;
+  }
+
+  .dash-metric-num {
+    font-size: clamp(48px, 7vw, 72px);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    color: var(--systems-blue);
+    line-height: 1;
+  }
+
+  .dash-metric-unit {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-tertiary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .dash-metric-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-quaternary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Trend line */
+  .dash-trend-svg {
+    width: 100%;
+    height: 40px;
+    margin-top: 12px;
+  }
+
+  .trend-path {
+    stroke: rgba(255,255,255,0.3);
+    stroke-width: 1.5;
+    fill: none;
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    transition: stroke-dashoffset 1.5s var(--ease-precision);
+  }
+
+  .trend-path.drawn { stroke-dashoffset: 0; }
+
+  .dash-mini-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dash-mini-card {
+    background: var(--surface-2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 6px;
+    padding: 12px 14px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.4s var(--ease-precision);
+  }
+
+  .dash-mini-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .dash-mini-num {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  .dash-mini-label {
+    font-size: 10px;
+    color: var(--text-quaternary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* ========================================
+     EFEITO 4: ÍCONES DE AGENTES
+     ======================================== */
+
+  .agents-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+
+  .agent-card {
+    background: var(--surface-2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 28px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color 250ms var(--ease-precision), box-shadow 250ms var(--ease-precision), transform 250ms var(--ease-precision);
+  }
+
+  .agent-card:hover {
+    border-color: rgba(255,255,255,0.14);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    transform: translateY(-2px);
+  }
+
+  .agent-icon-wrap {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .agent-icon-wrap svg {
+    width: 36px;
+    height: 36px;
+    opacity: 0.5;
+    transition: opacity 200ms var(--ease-precision);
+  }
+
+  .agent-card:hover .agent-icon-wrap svg {
+    opacity: 1;
+  }
+
+  .agent-name {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    transition: color 200ms var(--ease-precision);
+  }
+
+  .agent-card:hover .agent-name {
+    color: var(--text-secondary);
+  }
+
+  /* Icon idle animations */
+
+  /* Gestão: grid pulse */
+  @keyframes grid-idle {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.7; }
+  }
+
+  .icon-gestao { animation: grid-idle 3s ease-in-out infinite; }
+  .agent-card:hover .icon-gestao { animation: none; }
+
+  /* Marketing: wave expand */
+  @keyframes wave1 {
+    0%, 100% { r: 6; opacity: 0.5; }
+    50% { r: 8; opacity: 0.3; }
+  }
+
+  @keyframes wave2 {
+    0%, 100% { r: 11; opacity: 0.3; }
+    50% { r: 13; opacity: 0.15; }
+  }
+
+  @keyframes wave3 {
+    0%, 100% { r: 16; opacity: 0.15; }
+    50% { r: 18; opacity: 0.05; }
+  }
+
+  .wave-c1 { animation: wave1 2.5s ease-in-out infinite; }
+  .wave-c2 { animation: wave2 2.5s ease-in-out infinite 0.3s; }
+  .wave-c3 { animation: wave3 2.5s ease-in-out infinite 0.6s; }
+
+  .agent-card:hover .wave-c1,
+  .agent-card:hover .wave-c2,
+  .agent-card:hover .wave-c3 {
+    stroke: rgba(255,255,255,0.8);
+  }
+
+  /* Vendas: arrow float */
+  @keyframes arrow-idle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+  }
+
+  .icon-vendas { animation: arrow-idle 2s ease-in-out infinite; }
+  .agent-card:hover .icon-vendas { animation: none; transform: translateY(-3px); }
+
+  /* Suporte: pulse ring */
+  @keyframes pulse-ring {
+    0%, 100% { r: 14; opacity: 0.15; }
+    50% { r: 17; opacity: 0.05; }
+  }
+
+  .pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
+
+  /* Agent glow on hover */
+  .agent-card:hover .agent-icon-wrap {
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.15));
+  }
+
+  /* ========================================
+     SHARED
+     ======================================== */
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent 100%);
+    margin: 0 0 80px;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-title">
+    Systems VFX<span>Brief A — Reis IA</span>
+  </div>
+  <a href="#ef1">A1 — Constelação Operacional</a>
+  <a href="#ef2">A2 — Organograma Vivo</a>
+  <a href="#ef3">A3 — Dashboard Conceitual</a>
+  <a href="#ef4">A4 — Ícones de Agentes</a>
+  <a href="#ef5">A5 — Hover Intelligence</a>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="page-header">
+    <div class="label">Brief A — Systems</div>
+    <h1>Representação Visual de Times de IA</h1>
+    <p>Paleta predominantemente branco/cinza sobre preto. #4A90FF com extrema moderação. Sofisticação pela ausência de cor.</p>
+  </div>
+
+  <!-- ===== EFEITO 1: CONSTELAÇÃO OPERACIONAL ===== -->
+  <section class="effect-block" id="ef1">
+    <div class="effect-header">
+      <span class="effect-num">A1</span>
+      <h2 class="effect-title">Constelação Operacional</h2>
+    </div>
+    <p class="effect-desc">5 nós SVG (4 agentes + orquestrador central) conectados por linhas finas stroke 0.5px. Pulso com stroke-dasharray animation 2s. Hover sobre nó revela tooltip com função.</p>
+    <div class="effect-stage" style="position:relative;">
+      <svg id="constellation-svg" viewBox="0 0 540 300">
+        <!-- Lines (drawn after nodes) -->
+        <g id="const-lines">
+          <!-- center to top-left -->
+          <line class="const-line from-center" id="l1" x1="270" y1="150" x2="110" y2="70" stroke-dasharray="200" stroke-dashoffset="200"/>
+          <!-- center to top-right -->
+          <line class="const-line from-center" id="l2" x1="270" y1="150" x2="430" y2="70" stroke-dasharray="200" stroke-dashoffset="200"/>
+          <!-- center to bottom-left -->
+          <line class="const-line from-center" id="l3" x1="270" y1="150" x2="110" y2="240" stroke-dasharray="200" stroke-dashoffset="200"/>
+          <!-- center to bottom-right -->
+          <line class="const-line from-center" id="l4" x1="270" y1="150" x2="430" y2="240" stroke-dasharray="200" stroke-dashoffset="200"/>
+          <!-- peripheral connections -->
+          <line class="const-line" id="l5" x1="110" y1="70" x2="430" y2="70" stroke-dasharray="200" stroke-dashoffset="200"/>
+          <line class="const-line" id="l6" x1="110" y1="240" x2="430" y2="240" stroke-dasharray="200" stroke-dashoffset="200"/>
+        </g>
+
+        <!-- Nodes -->
+        <g class="const-node" id="n-orch" data-label="Orquestrador" data-func="Coordenação e delegação">
+          <circle cx="270" cy="150" r="0" class="node-bg" fill="#FFFFFF" opacity="0.9"/>
+          <!-- inner ring -->
+          <circle cx="270" cy="150" r="0" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.5" id="n-orch-ring"/>
+          <!-- icon: small cross/hub -->
+          <line x1="264" y1="150" x2="276" y2="150" stroke="#000" stroke-width="1.5" stroke-linecap="round" id="n-orch-h" opacity="0"/>
+          <line x1="270" y1="144" x2="270" y2="156" stroke="#000" stroke-width="1.5" stroke-linecap="round" id="n-orch-v" opacity="0"/>
+        </g>
+
+        <g class="const-node" id="n-gestao" data-label="Gestão" data-func="Operações · 12h/semana recuperadas">
+          <circle cx="110" cy="70" r="0" class="node-bg" fill="#FFFFFF" opacity="0.8"/>
+          <rect x="104" y="64" width="4" height="4" fill="#000" opacity="0" id="n-gestao-icon"/>
+          <rect x="110" y="64" width="4" height="4" fill="#000" opacity="0"/>
+          <rect x="104" y="70" width="4" height="4" fill="#000" opacity="0"/>
+          <rect x="110" y="70" width="4" height="4" fill="#000" opacity="0"/>
+        </g>
+
+        <g class="const-node" id="n-mkt" data-label="Marketing" data-func="Conteúdo · 18h/semana recuperadas">
+          <circle cx="430" cy="70" r="0" class="node-bg" fill="#FFFFFF" opacity="0.8"/>
+        </g>
+
+        <g class="const-node" id="n-vendas" data-label="Vendas" data-func="Pipeline · 15h/semana recuperadas">
+          <circle cx="110" cy="240" r="0" class="node-bg" fill="#FFFFFF" opacity="0.8"/>
+        </g>
+
+        <g class="const-node" id="n-suporte" data-label="Suporte" data-func="Atendimento · 20h/semana recuperadas">
+          <circle cx="430" cy="240" r="0" class="node-bg" fill="#FFFFFF" opacity="0.8"/>
+        </g>
+      </svg>
+
+      <!-- Tooltip overlay -->
+      <div class="const-tooltip" id="const-tooltip">
+        <div class="tt-name" id="tt-name">—</div>
+        <div class="tt-func" id="tt-func">—</div>
+      </div>
+
+      <button class="replay-btn" onclick="replayConstellation()">↺ Replay</button>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== EFEITO 2: ORGANOGRAMA VIVO ===== -->
+  <section class="effect-block" id="ef2">
+    <div class="effect-header">
+      <span class="effect-num">A2</span>
+      <h2 class="effect-title">Organograma Vivo</h2>
+    </div>
+    <p class="effect-desc">Hierarquia vertical CEO → Orquestrador → 4 agentes. Nós expandem/contraem (scale 1.0→1.05, 4s staggered). Linhas com pontos viajando para mostrar fluxo descendente.</p>
+    <div class="effect-stage">
+      <div class="org-container" id="org-root">
+        <!-- CEO -->
+        <div class="org-node central" id="org-ceo" style="transition-delay: 0ms;">
+          <span class="dot"></span>
+          CEO / Estratégia
+        </div>
+        <!-- V connector -->
+        <div class="org-connector-v animated" style="opacity:0; transition: opacity 0.4s 0.4s;"></div>
+        <!-- Orquestrador -->
+        <div class="org-node" id="org-orch" style="transition-delay: 400ms; animation: org-breathe 4s ease-in-out 0.5s infinite;">
+          Orquestrador IA
+        </div>
+        <!-- V connector -->
+        <div class="org-connector-v" style="opacity:0; transition: opacity 0.4s 0.8s;"></div>
+        <!-- Agents row -->
+        <div class="org-agents" style="opacity:0; transition: opacity 0.4s 1s; position:relative;">
+          <div class="org-h-line"></div>
+          <div class="org-agent-col">
+            <div class="org-connector-v" style="height:32px; opacity:0.5;"></div>
+            <div class="org-node agent">Gestão</div>
+          </div>
+          <div class="org-agent-col">
+            <div class="org-connector-v" style="height:32px; opacity:0.5;"></div>
+            <div class="org-node agent" style="animation-delay:1s;">Marketing</div>
+          </div>
+          <div class="org-agent-col">
+            <div class="org-connector-v" style="height:32px; opacity:0.5;"></div>
+            <div class="org-node agent" style="animation-delay:2s;">Vendas</div>
+          </div>
+          <div class="org-agent-col">
+            <div class="org-connector-v" style="height:32px; opacity:0.5;"></div>
+            <div class="org-node agent" style="animation-delay:3s;">Suporte</div>
+          </div>
+        </div>
+      </div>
+      <button class="replay-btn" onclick="replayOrg()">↺ Replay</button>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== EFEITO 3: DASHBOARD CONCEITUAL ===== -->
+  <section class="effect-block" id="ef3">
+    <div class="effect-header">
+      <span class="effect-num">A3</span>
+      <h2 class="effect-title">Dashboard Conceitual C-Level</h2>
+    </div>
+    <p class="effect-desc">Mock de dashboard com 3 barras horizontais (crescem ao entrar no viewport), 2 counters animados, e linha de tendência que se desenha (stroke-dasharray). Paleta branco/cinza.</p>
+    <div class="effect-stage" id="dash-stage">
+      <div class="dash-container">
+        <!-- Bars left -->
+        <div class="dash-bars">
+          <div style="font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-quaternary); margin-bottom:8px;">Atividade</div>
+          <div class="dash-bar-row">
+            <span class="dash-bar-label">Seg</span>
+            <div class="dash-bar-track"><div class="dash-bar-fill" data-width="82"></div></div>
+          </div>
+          <div class="dash-bar-row">
+            <span class="dash-bar-label">Ter</span>
+            <div class="dash-bar-track"><div class="dash-bar-fill" data-width="67"></div></div>
+          </div>
+          <div class="dash-bar-row">
+            <span class="dash-bar-label">Qua</span>
+            <div class="dash-bar-track"><div class="dash-bar-fill blue" data-width="91"></div></div>
+          </div>
+          <div class="dash-bar-row">
+            <span class="dash-bar-label">Qui</span>
+            <div class="dash-bar-track"><div class="dash-bar-fill" data-width="74"></div></div>
+          </div>
+          <div class="dash-bar-row">
+            <span class="dash-bar-label">Sex</span>
+            <div class="dash-bar-track"><div class="dash-bar-fill" data-width="58"></div></div>
+          </div>
+
+          <!-- Trend line -->
+          <svg class="dash-trend-svg" viewBox="0 0 180 40" preserveAspectRatio="none">
+            <path class="trend-path" d="M0,35 L30,28 L60,20 L90,14 L120,8 L150,5 L180,2" id="trend-line"/>
+          </svg>
+        </div>
+
+        <!-- Center metric -->
+        <div class="dash-center">
+          <div class="dash-metric-label">Horas recuperadas</div>
+          <div class="dash-metric-num" id="dash-counter-1">0</div>
+          <div class="dash-metric-unit">horas / semana</div>
+        </div>
+
+        <!-- Mini cards right -->
+        <div class="dash-mini-cards">
+          <div class="dash-mini-card" style="transition-delay: 0ms;">
+            <div class="dash-mini-num" id="dash-counter-2">0</div>
+            <div class="dash-mini-label">Tarefas/semana</div>
+          </div>
+          <div class="dash-mini-card" style="transition-delay: 150ms;">
+            <div class="dash-mini-num">89%</div>
+            <div class="dash-mini-label">Redução manual</div>
+          </div>
+          <div class="dash-mini-card" style="transition-delay: 300ms;">
+            <div class="dash-mini-num">3d</div>
+            <div class="dash-mini-label">Tempo impl.</div>
+          </div>
+        </div>
+      </div>
+      <button class="replay-btn" onclick="replayDash()">↺ Replay</button>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== EFEITO 4: ÍCONES DE AGENTES ===== -->
+  <section class="effect-block" id="ef4">
+    <div class="effect-header">
+      <span class="effect-num">A4</span>
+      <h2 class="effect-title">Ícones dos 4 Agentes</h2>
+    </div>
+    <p class="effect-desc">SVGs minimalistas abstratos para cada agente. Idle animation 2-3s. Hover glow sutil. Stroke-only, 1.5px, brancos (50% repouso, 100% hover).</p>
+    <div class="effect-stage">
+      <div class="agents-grid">
+
+        <!-- Gestão: grid 3x3 -->
+        <div class="agent-card">
+          <div class="agent-icon-wrap">
+            <svg class="icon-gestao" viewBox="0 0 36 36" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <!-- 3x3 grid of squares -->
+              <rect x="4"  y="4"  width="8" height="8" rx="1"/>
+              <rect x="14" y="4"  width="8" height="8" rx="1"/>
+              <rect x="24" y="4"  width="8" height="8" rx="1"/>
+              <rect x="4"  y="14" width="8" height="8" rx="1"/>
+              <rect x="14" y="14" width="8" height="8" rx="1"/>
+              <rect x="24" y="14" width="8" height="8" rx="1"/>
+              <rect x="4"  y="24" width="8" height="8" rx="1"/>
+              <rect x="14" y="24" width="8" height="8" rx="1"/>
+              <rect x="24" y="24" width="8" height="8" rx="1"/>
+            </svg>
+          </div>
+          <span class="agent-name">Gestão</span>
+        </div>
+
+        <!-- Marketing: 3 ondas concêntricas -->
+        <div class="agent-card">
+          <div class="agent-icon-wrap">
+            <svg viewBox="0 0 36 36" fill="none" stroke-linecap="round">
+              <circle class="wave-c1" cx="18" cy="18" r="6"  stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none"/>
+              <circle class="wave-c2" cx="18" cy="18" r="11" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none"/>
+              <circle class="wave-c3" cx="18" cy="18" r="16" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none"/>
+              <!-- center dot -->
+              <circle cx="18" cy="18" r="2" fill="rgba(255,255,255,0.9)"/>
+            </svg>
+          </div>
+          <span class="agent-name">Marketing</span>
+        </div>
+
+        <!-- Vendas: seta diagonal ascendente -->
+        <div class="agent-card">
+          <div class="agent-icon-wrap">
+            <svg class="icon-vendas" viewBox="0 0 36 36" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <!-- base line -->
+              <line x1="4" y1="32" x2="32" y2="32"/>
+              <!-- diagonal ascending line -->
+              <line x1="6" y1="28" x2="28" y2="6"/>
+              <!-- arrowhead -->
+              <polyline points="16,6 28,6 28,18"/>
+            </svg>
+          </div>
+          <span class="agent-name">Vendas</span>
+        </div>
+
+        <!-- Suporte: escudo/círculo com pulso -->
+        <div class="agent-card">
+          <div class="agent-icon-wrap">
+            <svg viewBox="0 0 36 36" fill="none" stroke-linecap="round">
+              <!-- pulse ring -->
+              <circle class="pulse-ring" cx="18" cy="18" r="14" stroke="rgba(255,255,255,0.4)" stroke-width="0.5" fill="none"/>
+              <!-- shield -->
+              <path d="M18 4 L30 9 L30 18 C30 24 24 29 18 32 C12 29 6 24 6 18 L6 9 Z"
+                    stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none"/>
+              <!-- check inside -->
+              <polyline points="12,18 16,22 24,14" stroke="rgba(255,255,255,0.9)" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <span class="agent-name">Suporte</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== EFEITO 5: HOVER INTELLIGENCE (combined with A1) ===== -->
+  <section class="effect-block" id="ef5">
+    <div class="effect-header">
+      <span class="effect-num">A5</span>
+      <h2 class="effect-title">Hover Intelligence</h2>
+    </div>
+    <p class="effect-desc">Ao hover sobre qualquer agente: nó se ilumina, conexões brilham, tooltip aparece com função e métrica. Linha azul no topo do tooltip se desenha antes do conteúdo. Transição 200ms.</p>
+    <div class="effect-stage" style="min-height:320px;">
+      <svg id="hover-svg" viewBox="0 0 540 260" style="width:100%; max-width:540px; height:260px; overflow:visible;">
+
+        <!-- Background lines always visible -->
+        <line x1="270" y1="130" x2="100" y2="60"  stroke="rgba(255,255,255,0.08)" stroke-width="0.5" id="hl1"/>
+        <line x1="270" y1="130" x2="440" y2="60"  stroke="rgba(255,255,255,0.08)" stroke-width="0.5" id="hl2"/>
+        <line x1="270" y1="130" x2="100" y2="210" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" id="hl3"/>
+        <line x1="270" y1="130" x2="440" y2="210" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" id="hl4"/>
+
+        <!-- Agent nodes with hover -->
+        <g class="hover-node" data-name="Orquestrador" data-func="Coordenação" data-metric="47h/sem recuperadas" style="cursor:pointer;">
+          <circle cx="270" cy="130" r="10" fill="rgba(255,255,255,0.9)"/>
+          <circle cx="270" cy="130" r="18" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+        </g>
+
+        <g class="hover-node" data-name="Gestão" data-func="Operações e delegação" data-metric="12h/sem recuperadas" style="cursor:pointer;">
+          <circle cx="100" cy="60" r="8" fill="rgba(255,255,255,0.8)"/>
+        </g>
+
+        <g class="hover-node" data-name="Marketing" data-func="Conteúdo e campanha" data-metric="18h/sem recuperadas" style="cursor:pointer;">
+          <circle cx="440" cy="60" r="8" fill="rgba(255,255,255,0.8)"/>
+        </g>
+
+        <g class="hover-node" data-name="Vendas" data-func="Pipeline e conversão" data-metric="15h/sem recuperadas" style="cursor:pointer;">
+          <circle cx="100" cy="210" r="8" fill="rgba(255,255,255,0.8)"/>
+        </g>
+
+        <g class="hover-node" data-name="Suporte" data-func="Atendimento 24/7" data-metric="20h/sem recuperadas" style="cursor:pointer;">
+          <circle cx="440" cy="210" r="8" fill="rgba(255,255,255,0.8)"/>
+        </g>
+
+      </svg>
+
+      <!-- Rich tooltip -->
+      <div id="hover-tooltip" style="
+        position:absolute;
+        top:20px; left:50%; transform:translateX(-50%);
+        background: #161616;
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius:6px;
+        padding: 14px 18px;
+        font-size:12px;
+        min-width:200px;
+        opacity:0;
+        pointer-events:none;
+        transition: opacity 200ms ease;
+      ">
+        <div id="ht-bar" style="height:1px; background:var(--systems-blue); transform:scaleX(0); transform-origin:left; transition: transform 200ms ease; margin-bottom:10px;"></div>
+        <div id="ht-name" style="font-weight:600; color:#fff; font-size:13px; margin-bottom:4px;">—</div>
+        <div id="ht-func" style="color:rgba(255,255,255,0.5); font-size:11px; margin-bottom:6px;">—</div>
+        <div id="ht-metric" style="color:var(--systems-blue); font-size:11px; font-weight:600; letter-spacing:0.04em;">—</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* =============================================
+   EFEITO 1: CONSTELAÇÃO OPERACIONAL
+   ============================================= */
+
+const NODES = [
+  { id: 'n-orch',   cx: 270, cy: 150, r: 10 },
+  { id: 'n-gestao', cx: 110, cy: 70,  r: 8  },
+  { id: 'n-mkt',    cx: 430, cy: 70,  r: 8  },
+  { id: 'n-vendas', cx: 110, cy: 240, r: 8  },
+  { id: 'n-suporte',cx: 430, cy: 240, r: 8  },
+];
+
+const LINES = ['l1','l2','l3','l4','l5','l6'];
+
+function replayConstellation() {
+  // Reset lines
+  LINES.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove('animated');
+      el.style.strokeDashoffset = '200';
+    }
+  });
+
+  // Reset nodes
+  NODES.forEach(n => {
+    const node = document.getElementById(n.id);
+    if (node) {
+      const circle = node.querySelector('circle.node-bg');
+      if (circle) circle.setAttribute('r', '0');
+      const orchIcons = ['n-orch-h','n-orch-v'];
+      orchIcons.forEach(ic => {
+        const el = document.getElementById(ic);
+        if (el) el.setAttribute('opacity','0');
+      });
+    }
+  });
+
+  playConstellation();
+}
+
+function playConstellation() {
+  // Animate nodes in with stagger
+  NODES.forEach((n, i) => {
+    setTimeout(() => {
+      const node = document.getElementById(n.id);
+      if (!node) return;
+      const circle = node.querySelector('circle.node-bg');
+      if (circle) {
+        circle.style.transition = 'r 0.4s ease-out, opacity 0.4s ease-out';
+        circle.setAttribute('r', String(n.r));
+      }
+      // Orquestrador icon
+      if (n.id === 'n-orch') {
+        setTimeout(() => {
+          ['n-orch-h','n-orch-v'].forEach(ic => {
+            const el = document.getElementById(ic);
+            if (el) el.setAttribute('opacity','1');
+          });
+        }, 200);
+      }
+    }, i * 120);
+  });
+
+  // Draw lines after nodes
+  setTimeout(() => {
+    LINES.forEach((id, i) => {
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.transition = 'stroke-dashoffset 0.8s ease-out';
+          el.style.strokeDashoffset = '0';
+          setTimeout(() => el.classList.add('animated'), 900);
+        }
+      }, i * 80);
+    });
+  }, NODES.length * 120 + 200);
+}
+
+// Hover intelligence for constelation
+document.querySelectorAll('.const-node').forEach(node => {
+  node.addEventListener('mouseenter', (e) => {
+    const svg = document.getElementById('constellation-svg');
+    const rect = svg.getBoundingClientRect();
+    const stageRect = node.closest('.effect-stage').getBoundingClientRect();
+    const tooltip = document.getElementById('const-tooltip');
+    const name = node.dataset.label;
+    const func = node.dataset.func;
+    if (!tooltip || !name) return;
+    document.getElementById('tt-name').textContent = name;
+    document.getElementById('tt-func').textContent = func;
+
+    // Position tooltip near node
+    const cx = parseFloat(node.querySelector('circle').getAttribute('cx') || 270);
+    const cy = parseFloat(node.querySelector('circle').getAttribute('cy') || 150);
+    const svgW = 540;
+    const svgH = 300;
+    const stageW = stageRect.width;
+    const stageH = stageRect.height;
+    const px = (cx / svgW) * stageW;
+    const py = (cy / svgH) * stageH;
+
+    tooltip.style.left = Math.min(px + 16, stageW - 180) + 'px';
+    tooltip.style.top  = Math.max(py - 40, 8) + 'px';
+    tooltip.classList.add('visible');
+  });
+
+  node.addEventListener('mouseleave', () => {
+    const tooltip = document.getElementById('const-tooltip');
+    if (tooltip) tooltip.classList.remove('visible');
+  });
+
+  // Glow on hover
+  const circle = node.querySelector('circle.node-bg');
+  if (circle) {
+    node.addEventListener('mouseenter', () => {
+      circle.style.filter = 'drop-shadow(0 0 8px rgba(255,255,255,0.5))';
+    });
+    node.addEventListener('mouseleave', () => {
+      circle.style.filter = '';
+    });
+  }
+});
+
+// Line brighten on center node hover
+const orchNode = document.getElementById('n-orch');
+if (orchNode) {
+  orchNode.addEventListener('mouseenter', () => {
+    ['l1','l2','l3','l4'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.stroke = 'rgba(255,255,255,0.35)';
+    });
+  });
+  orchNode.addEventListener('mouseleave', () => {
+    ['l1','l2','l3','l4'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.stroke = '';
+    });
+  });
+}
+
+/* =============================================
+   EFEITO 2: ORGANOGRAMA VIVO
+   ============================================= */
+
+function replayOrg() {
+  const container = document.getElementById('org-root');
+  if (!container) return;
+
+  // Reset
+  container.querySelectorAll('.org-node').forEach(n => n.classList.remove('visible'));
+  const connectors = container.querySelectorAll('.org-connector-v');
+  connectors.forEach(c => c.style.opacity = '0');
+  const agentRow = container.querySelector('.org-agents');
+  if (agentRow) agentRow.style.opacity = '0';
+
+  playOrg();
+}
+
+function playOrg() {
+  const ceo = document.getElementById('org-ceo');
+  const orch = document.getElementById('org-orch');
+  if (ceo) ceo.classList.add('visible');
+
+  const connectors = document.querySelectorAll('#org-root .org-connector-v');
+  // First connector
+  setTimeout(() => {
+    if (connectors[0]) connectors[0].style.opacity = '1';
+  }, 400);
+
+  setTimeout(() => {
+    if (orch) orch.classList.add('visible');
+  }, 600);
+
+  // Second connector
+  setTimeout(() => {
+    if (connectors[1]) connectors[1].style.opacity = '1';
+  }, 1000);
+
+  // Agent row
+  setTimeout(() => {
+    const agentRow = document.querySelector('#org-root .org-agents');
+    if (agentRow) agentRow.style.opacity = '1';
+    agentRow?.querySelectorAll('.org-node.agent').forEach((n, i) => {
+      setTimeout(() => n.classList.add('visible'), i * 100);
+    });
+  }, 1200);
+}
+
+/* =============================================
+   EFEITO 3: DASHBOARD CONCEITUAL
+   ============================================= */
+
+let dashAnimated = false;
+
+function replayDash() {
+  dashAnimated = false;
+  // Reset bars
+  document.querySelectorAll('.dash-bar-fill').forEach(b => b.style.width = '0');
+  // Reset counters
+  document.getElementById('dash-counter-1').textContent = '0';
+  document.getElementById('dash-counter-2').textContent = '0';
+  // Reset trend
+  const trend = document.getElementById('trend-line');
+  if (trend) trend.classList.remove('drawn');
+  // Reset mini cards
+  document.querySelectorAll('.dash-mini-card').forEach(c => c.classList.remove('visible'));
+
+  setTimeout(playDash, 100);
+}
+
+function animateCounter(el, target, duration) {
+  const start = Date.now();
+  const tick = () => {
+    const elapsed = Date.now() - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(eased * target);
+    if (progress < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function playDash() {
+  // Bars
+  setTimeout(() => {
+    document.querySelectorAll('.dash-bar-fill').forEach((b, i) => {
+      setTimeout(() => {
+        b.style.width = b.dataset.width + '%';
+      }, i * 120);
+    });
+  }, 0);
+
+  // Counter 1
+  setTimeout(() => {
+    const el = document.getElementById('dash-counter-1');
+    if (el) animateCounter(el, 47, 1500);
+  }, 400);
+
+  // Trend line
+  setTimeout(() => {
+    const trend = document.getElementById('trend-line');
+    if (trend) trend.classList.add('drawn');
+  }, 600);
+
+  // Counter 2
+  setTimeout(() => {
+    const el = document.getElementById('dash-counter-2');
+    if (el) animateCounter(el, 342, 1200);
+  }, 800);
+
+  // Mini cards
+  setTimeout(() => {
+    document.querySelectorAll('.dash-mini-card').forEach((c, i) => {
+      setTimeout(() => c.classList.add('visible'), i * 150);
+    });
+  }, 1000);
+}
+
+/* =============================================
+   EFEITO 5: HOVER INTELLIGENCE
+   ============================================= */
+
+const hoverSvg = document.getElementById('hover-svg');
+const hoverTooltip = document.getElementById('hover-tooltip');
+const htName = document.getElementById('ht-name');
+const htFunc = document.getElementById('ht-func');
+const htMetric = document.getElementById('ht-metric');
+const htBar = document.getElementById('ht-bar');
+
+let hoverTimer = null;
+let currentNode = null;
+
+document.querySelectorAll('.hover-node').forEach(node => {
+  node.addEventListener('mouseenter', () => {
+    clearTimeout(hoverTimer);
+    hoverTimer = setTimeout(() => {
+      const name = node.dataset.name;
+      const func = node.dataset.func;
+      const metric = node.dataset.metric;
+
+      // Update tooltip
+      htName.textContent = name;
+      htFunc.textContent = func;
+      htMetric.textContent = metric;
+
+      // Glow the lines
+      const circle = node.querySelector('circle');
+      if (circle) {
+        const cx = parseFloat(circle.getAttribute('cx'));
+        const cy = parseFloat(circle.getAttribute('cy'));
+        // Brighten lines connected to this node
+        document.querySelectorAll('#hover-svg line').forEach(line => {
+          const x1 = parseFloat(line.getAttribute('x1'));
+          const y1 = parseFloat(line.getAttribute('y1'));
+          const x2 = parseFloat(line.getAttribute('x2'));
+          const y2 = parseFloat(line.getAttribute('y2'));
+          if ((x1 === cx && y1 === cy) || (x2 === cx && y2 === cy)) {
+            line.style.stroke = 'rgba(255,255,255,0.35)';
+            line.style.strokeWidth = '1';
+          }
+        });
+        // Glow circle
+        circle.style.filter = 'drop-shadow(0 0 10px rgba(255,255,255,0.5))';
+      }
+
+      // Show tooltip
+      htBar.style.transform = 'scaleX(0)';
+      hoverTooltip.style.opacity = '1';
+      setTimeout(() => {
+        htBar.style.transform = 'scaleX(1)';
+      }, 50);
+    }, 150);
+  });
+
+  node.addEventListener('mouseleave', () => {
+    clearTimeout(hoverTimer);
+    hoverTooltip.style.opacity = '0';
+    htBar.style.transform = 'scaleX(0)';
+
+    // Reset lines and glow
+    document.querySelectorAll('#hover-svg line').forEach(line => {
+      line.style.stroke = '';
+      line.style.strokeWidth = '';
+    });
+    const circle = node.querySelector('circle');
+    if (circle) circle.style.filter = '';
+  });
+});
+
+/* =============================================
+   AUTO-INIT: IntersectionObserver
+   ============================================= */
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const id = entry.target.id;
+
+    if (id === 'ef1') {
+      setTimeout(playConstellation, 300);
+    }
+    if (id === 'ef2') {
+      setTimeout(playOrg, 300);
+    }
+    if (id === 'ef3' && !dashAnimated) {
+      dashAnimated = true;
+      setTimeout(playDash, 300);
+    }
+  });
+}, { threshold: 0.2 });
+
+['ef1','ef2','ef3'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) observer.observe(el);
+});
+
+// prefers-reduced-motion
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  // Show final states immediately
+  NODES.forEach(n => {
+    const circle = document.querySelector(`#${n.id} circle.node-bg`);
+    if (circle) circle.setAttribute('r', String(n.r));
+  });
+  LINES.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.strokeDashoffset = '0';
+  });
+  playOrg();
+  playDash();
+}
+</script>
+</body>
+</html>

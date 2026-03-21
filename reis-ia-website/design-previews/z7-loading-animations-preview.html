@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z7 Loading Animations — Preview Completo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --surface-0: #000000;
+  --surface-1: #0A0A0A;
+  --surface-2: #111111;
+  --surface-3: #161616;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.12);
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255,255,255,0.70);
+  --text-tertiary: rgba(255,255,255,0.50);
+  --text-quaternary: rgba(255,255,255,0.35);
+  --text-muted: rgba(255,255,255,0.20);
+  --blue-master: #4A90FF;
+  --electric: #2D7AFF;
+  --electric-hover: #4D90FF;
+  --cyan: #00B4FF;
+  --cyan-text: #55CCFF;
+  --sidebar-w: 240px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════════ SIDEBAR ═══════════ */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--surface-1);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 24px 0 40px;
+}
+.sidebar-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--electric);
+  padding: 0 16px;
+  margin-bottom: 20px;
+}
+.sidebar-group {
+  margin-bottom: 16px;
+}
+.sidebar-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-quaternary);
+  padding: 8px 16px 4px;
+}
+.sidebar a {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  padding: 5px 16px 5px 24px;
+  border-left: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.03);
+}
+.sidebar a.active {
+  color: var(--electric);
+  border-left-color: var(--electric);
+  background: rgba(45,122,255,0.06);
+}
+
+/* ═══════════ MAIN ═══════════ */
+.main {
+  margin-left: var(--sidebar-w);
+}
+.section {
+  padding: 72px 48px 80px;
+  border-bottom: 1px solid var(--border);
+}
+.section:nth-child(even) {
+  background: var(--surface-1);
+}
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--electric);
+  margin-bottom: 6px;
+}
+.section-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+.section-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin-bottom: 40px;
+  line-height: 1.7;
+}
+
+/* ═══════════ VARIATION CARD ═══════════ */
+.var-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 32px;
+  transition: border-color 0.2s ease;
+}
+.section:nth-child(even) .var-card {
+  background: var(--surface-2);
+}
+.var-card:hover {
+  border-color: rgba(45,122,255,0.15);
+}
+.var-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.var-name {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.var-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cyan-text);
+  background: rgba(0,180,255,0.08);
+  border: 1px solid rgba(0,180,255,0.15);
+  border-radius: 6px;
+  padding: 4px 10px;
+  letter-spacing: 0.02em;
+}
+.var-use {
+  font-size: 12px;
+  color: var(--text-quaternary);
+  margin-top: 16px;
+  font-style: italic;
+}
+.var-sizes {
+  display: flex;
+  align-items: flex-end;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.var-size-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.var-size-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-quaternary);
+  letter-spacing: 0.04em;
+}
+.var-size-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+  min-width: 60px;
+  min-height: 60px;
+  padding: 12px;
+}
+
+/* ═══════════ REPLAY BUTTON ═══════════ */
+.replay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.replay-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.08);
+  border-color: var(--border-strong);
+}
+
+/* ═══════════ TRANSITION STAGE CARD (Seção 2) ═══════════ */
+.transition-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+/* ═══════════ GRADIENT DIVIDER ═══════════ */
+.gradient-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(74,144,255,0.15) 30%, rgba(74,144,255,0.15) 70%, transparent);
+  margin: 0;
+}
+
+/* ═══════════ ANIMATIONS — Seção 1 ═══════════ */
+
+/* 1.1 Rotação Completa 360° */
+@keyframes spin-360 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.anim-spin-360 { animation: spin-360 2s linear infinite; }
+
+/* 1.2 Rotação 180° Flip */
+@keyframes flip-180 {
+  0%    { transform: rotate(0deg); }
+  20%   { transform: rotate(180deg); }
+  47%   { transform: rotate(180deg); }
+  67%   { transform: rotate(360deg); }
+  100%  { transform: rotate(360deg); }
+}
+.anim-flip-180 { animation: flip-180 3s ease-in-out infinite; }
+
+/* 1.3 Rotação com Easing */
+@keyframes spin-eased {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.anim-spin-eased { animation: spin-eased 2.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite; }
+
+/* 1.4 Rotação 3D */
+@keyframes spin-3d {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+.anim-spin-3d-wrap { perspective: 200px; }
+.anim-spin-3d { animation: spin-3d 3s ease-in-out infinite; }
+
+/* 1.5 Pêndulo */
+@keyframes pendulum {
+  0%   { transform: rotate(-30deg); }
+  100% { transform: rotate(30deg); }
+}
+.anim-pendulum { animation: pendulum 2s ease-in-out infinite alternate; transform-origin: center top; }
+
+/* 1.6 Rotação com Pulse */
+@keyframes spin-pulse {
+  0%   { transform: rotate(0deg) scale(1.0); }
+  50%  { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1.0); }
+}
+.anim-spin-pulse { animation: spin-pulse 2s ease-in-out infinite; }
+
+/* 1.7 Rotação com Trail */
+@keyframes spin-trail {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.trail-container { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+.trail-container .trail-main { animation: spin-trail 2s linear infinite; position: relative; z-index: 2; }
+.trail-container .trail-ghost {
+  position: absolute;
+  top: 0; left: 0;
+  animation: spin-trail 2s linear infinite;
+}
+.trail-container .trail-ghost-1 { animation-delay: -0.05s; opacity: 0.5; filter: blur(1px); z-index: 1; }
+.trail-container .trail-ghost-2 { animation-delay: -0.1s; opacity: 0.25; filter: blur(2px); z-index: 0; }
+.trail-container .trail-ghost-3 { animation-delay: -0.15s; opacity: 0.12; filter: blur(3px); z-index: -1; }
+
+/* ═══════════ REDUCED MOTION ═══════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-play-state: paused !important;
+    transition-duration: 0s !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-title">Z7 Loading</div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Seção 1 — Ampulheta</div>
+    <a href="#s1-1" data-target="s1-1">1.1 Rotação 360°</a>
+    <a href="#s1-2" data-target="s1-2">1.2 Flip 180°</a>
+    <a href="#s1-3" data-target="s1-3">1.3 Easing</a>
+    <a href="#s1-4" data-target="s1-4">1.4 Rotação 3D</a>
+    <a href="#s1-5" data-target="s1-5">1.5 Pêndulo</a>
+    <a href="#s1-6" data-target="s1-6">1.6 Pulse</a>
+    <a href="#s1-7" data-target="s1-7">1.7 Trail</a>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Seção 2 — Z Flip → 7 → Ampulheta</div>
+    <a href="#s2-1" data-target="s2-1">2.1 Hero (Longa)</a>
+    <a href="#s2-2" data-target="s2-2">2.2 Transição (Curta)</a>
+    <a href="#s2-3" data-target="s2-3">2.3 Loop</a>
+    <a href="#s2-4" data-target="s2-4">2.4 Hover</a>
+    <a href="#s2-5" data-target="s2-5">2.5 Aproximação</a>
+    <a href="#s2-6" data-target="s2-6">2.6 Encaixe Lateral</a>
+    <a href="#s2-7" data-target="s2-7">2.7 Construção Alternada</a>
+  </div>
+</nav>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<div class="main">
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!--  SEÇÃO 1 — AMPULHETA LOADING                                      -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section" id="s1-header">
+    <div class="section-label">Seção 1</div>
+    <h1 class="section-title">Ampulheta Loading — 7 Variações de Rotação</h1>
+    <p class="section-desc">
+      Cada variação da ampulheta H1-B (Variation A) mostrada em 3 tamanhos (24px, 48px, 96px) com botão de replay e badge de timing. Geometria em viewBox 64×64.
+    </p>
+  </section>
+
+  <!-- 1.1 Rotação Completa 360° -->
+  <section class="section" id="s1-1">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">1.1 Rotação Completa 360°</div>
+        <div class="var-badge">2s · linear · infinite</div>
+        <button class="replay-btn" onclick="replayAnim(this, 'anim-spin-360')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box">
+            <svg class="anim-spin-360" width="24" height="24" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box">
+            <svg class="anim-spin-360" width="48" height="48" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box">
+            <svg class="anim-spin-360" width="96" height="96" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: loading genérico, inline spinners.</div>
+    </div>
+  </section>
+
+  <!-- 1.2 Rotação 180° Flip -->
+  <section class="section" id="s1-2">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">1.2 Rotação 180° Flip</div>
+        <div class="var-badge">3s · ease-in-out · infinite</div>
+        <button class="replay-btn" onclick="replayAnim(this, 'anim-flip-180')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box">
+            <svg class="anim-flip-180" width="24" height="24" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box">
+            <svg class="anim-flip-180" width="48" height="48" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box">
+            <svg class="anim-flip-180" width="96" height="96" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: loading com sensação de "tempo passando". Simula virar uma ampulheta real.</div>
+    </div>
+  </section>
+
+  <!-- 1.3 Rotação com Easing -->
+  <section class="section" id="s1-3">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">1.3 Rotação com Easing</div>
+        <div class="var-badge">2.5s · cubic-bezier · infinite</div>
+        <button class="replay-btn" onclick="replayAnim(this, 'anim-spin-eased')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box">
+            <svg class="anim-spin-eased" width="24" height="24" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box">
+            <svg class="anim-spin-eased" width="48" height="48" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box">
+            <svg class="anim-spin-eased" width="96" height="96" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: loading premium. Rápido no meio, desacelera nas pontas — tipo momentum de ampulheta.</div>
+    </div>
+  </section>
+
+  <!-- 1.4 Rotação 3D -->
+  <section class="section" id="s1-4">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">1.4 Rotação 3D</div>
+        <div class="var-badge">3s · ease-in-out · infinite</div>
+        <button class="replay-btn" onclick="replayAnim(this, 'anim-spin-3d')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box anim-spin-3d-wrap">
+            <svg class="anim-spin-3d" width="24" height="24" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box anim-spin-3d-wrap">
+            <svg class="anim-spin-3d" width="48" height="48" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box anim-spin-3d-wrap">
+            <svg class="anim-spin-3d" width="96" height="96" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: fullscreen loading, splash screens. Perspectiva 200px cria profundidade.</div>
+    </div>
+  </section>
+
+  <!-- 1.5 Pêndulo -->
+  <section class="section" id="s1-5">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">1.5 Pêndulo</div>
+        <div class="var-badge">2s · ease-in-out · alternate</div>
+        <button class="replay-btn" onclick="replayAnim(this, 'anim-pendulum')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box" style="min-height:80px;">
+            <svg class="anim-pendulum" width="24" height="24" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box" style="min-height:100px;">
+            <svg class="anim-pendulum" width="48" height="48" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box" style="min-height:140px;">
+            <svg class="anim-pendulum" width="96" height="96" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: estados de "aguardando", idle animations. Pivô no topo, oscila sem completar volta.</div>
+    </div>
+  </section>
+
+  <!-- 1.6 Rotação com Pulse -->
+  <section class="section" id="s1-6">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">1.6 Rotação com Pulse</div>
+        <div class="var-badge">2s · ease-in-out · infinite</div>
+        <button class="replay-btn" onclick="replayAnim(this, 'anim-spin-pulse')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box">
+            <svg class="anim-spin-pulse" width="24" height="24" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box">
+            <svg class="anim-spin-pulse" width="48" height="48" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box">
+            <svg class="anim-spin-pulse" width="96" height="96" viewBox="0 0 64 64" fill="none">
+              <path d="M14,8 L50,8" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M50,8 L14,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,8 L25,25" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M39,39 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14,56 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: loading com ênfase, "processando". Rotação + scale simultâneos.</div>
+    </div>
+  </section>
+
+  <!-- 1.7 Rotação com Trail -->
+  <section class="section" id="s1-7">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">1.7 Rotação com Trail</div>
+        <div class="var-badge">2s · linear · infinite · 3 ghosts</div>
+        <button class="replay-btn" onclick="replayAnim(this, 'trail-main')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box">
+            <div class="trail-container" style="width:24px;height:24px;">
+              <svg class="trail-ghost trail-ghost-3" width="24" height="24" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+              <svg class="trail-ghost trail-ghost-2" width="24" height="24" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+              <svg class="trail-ghost trail-ghost-1" width="24" height="24" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+              <svg class="trail-main" width="24" height="24" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box">
+            <div class="trail-container" style="width:48px;height:48px;">
+              <svg class="trail-ghost trail-ghost-3" width="48" height="48" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <svg class="trail-ghost trail-ghost-2" width="48" height="48" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <svg class="trail-ghost trail-ghost-1" width="48" height="48" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <svg class="trail-main" width="48" height="48" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box">
+            <div class="trail-container" style="width:96px;height:96px;">
+              <svg class="trail-ghost trail-ghost-3" width="96" height="96" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <svg class="trail-ghost trail-ghost-2" width="96" height="96" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <svg class="trail-ghost trail-ghost-1" width="96" height="96" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <svg class="trail-main" width="96" height="96" viewBox="0 0 64 64" fill="none">
+                <path d="M14,8 L50,8 M50,8 L14,56 M14,8 L25,25 M39,39 L50,56 M14,56 L50,56" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: loading dinâmico, transições. 3 cópias ghost com opacity e blur decrescentes.</div>
+    </div>
+  </section>
+
+  <!-- ═══════════ GRADIENT DIVIDER ═══════════ -->
+  <div class="gradient-divider" style="height:2px;"></div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!--  SEÇÃO 2 — Z FLIP → 7 → AMPULHETA                                -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section" id="s2-header">
+    <div class="section-label">Seção 2</div>
+    <h1 class="section-title">Z Flip → 7 → Ampulheta — 7 Variações</h1>
+    <p class="section-desc">
+      Sequência de transformação: o Z e o 7 se combinam para formar a ampulheta H1-B. Z = metade inferior (diagonal + barra horizontal inferior). 7 = metade superior (barra horizontal + diagonal descendente).
+    </p>
+  </section>
+
+  <!-- 2.1 Versão Longa (Hero) -->
+  <section class="section" id="s2-1">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">2.1 Versão Longa (Hero)</div>
+        <div class="var-badge">3.5s · 5 estágios</div>
+        <button class="replay-btn" onclick="replayHero()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box">
+            <svg class="hero-anim" width="24" height="24" viewBox="0 0 64 64" fill="none" data-size="24"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box">
+            <svg class="hero-anim" width="48" height="48" viewBox="0 0 64 64" fill="none" data-size="48"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box">
+            <svg class="hero-anim" width="96" height="96" viewBox="0 0 64 64" fill="none" data-size="96"></svg>
+          </div>
+        </div>
+      </div>
+      <!-- Stage breakdown -->
+      <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-top:20px; max-width:700px;">
+        <div style="text-align:center;"><div style="font-size:10px;font-weight:700;color:var(--electric);margin-bottom:2px;">Estágio 1</div><div style="font-size:10px;color:var(--text-quaternary);">Z draw-on<br/>0–0.8s</div></div>
+        <div style="text-align:center;"><div style="font-size:10px;font-weight:700;color:var(--electric);margin-bottom:2px;">Estágio 2</div><div style="font-size:10px;color:var(--text-quaternary);">Z flip → 7<br/>0.8–1.6s</div></div>
+        <div style="text-align:center;"><div style="font-size:10px;font-weight:700;color:var(--electric);margin-bottom:2px;">Estágio 3</div><div style="font-size:10px;color:var(--text-quaternary);">Z reaparece<br/>1.6–2.4s</div></div>
+        <div style="text-align:center;"><div style="font-size:10px;font-weight:700;color:var(--electric);margin-bottom:2px;">Estágio 4</div><div style="font-size:10px;color:var(--text-quaternary);">Fusão<br/>2.4–3.0s</div></div>
+        <div style="text-align:center;"><div style="font-size:10px;font-weight:700;color:var(--cyan);margin-bottom:2px;">Estágio 5</div><div style="font-size:10px;color:var(--text-quaternary);">Glow pulse<br/>3.0–3.5s</div></div>
+      </div>
+      <div class="var-use">Uso: hero sections, splash screens. Sequência completa de formação da marca.</div>
+    </div>
+  </section>
+
+  <!-- 2.2 Versão Curta (Transição) -->
+  <section class="section" id="s2-2">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">2.2 Versão Curta (Transição)</div>
+        <div class="var-badge">1.5s · condensada</div>
+        <button class="replay-btn" onclick="replayShort()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box">
+            <svg class="short-anim" width="24" height="24" viewBox="0 0 64 64" fill="none" data-size="24"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box">
+            <svg class="short-anim" width="48" height="48" viewBox="0 0 64 64" fill="none" data-size="48"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box">
+            <svg class="short-anim" width="96" height="96" viewBox="0 0 64 64" fill="none" data-size="96"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: transições de página, loading entre seções. Mesma sequência, mais fluida.</div>
+    </div>
+  </section>
+
+  <!-- 2.3 Versão Loop -->
+  <section class="section" id="s2-3">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">2.3 Versão Loop</div>
+        <div class="var-badge">4s · formação + decomposição · infinite</div>
+        <button class="replay-btn" onclick="replayLoop()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box">
+            <svg class="loop-anim" width="24" height="24" viewBox="0 0 64 64" fill="none" data-size="24"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box">
+            <svg class="loop-anim" width="48" height="48" viewBox="0 0 64 64" fill="none" data-size="48"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box">
+            <svg class="loop-anim" width="96" height="96" viewBox="0 0 64 64" fill="none" data-size="96"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: loading contínuo. Ampulheta se decompõe em Z + 7, pausa, recompõe.</div>
+    </div>
+  </section>
+
+  <!-- 2.4 Versão Hover -->
+  <section class="section" id="s2-4">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">2.4 Versão Hover</div>
+        <div class="var-badge">1s · interativa · hover trigger</div>
+      </div>
+      <p style="font-size:12px;color:var(--text-quaternary);margin-bottom:16px;">Passe o mouse sobre cada ícone para ativar a transição.</p>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box hover-target" style="cursor:pointer;">
+            <svg class="hover-anim" width="24" height="24" viewBox="0 0 64 64" fill="none" data-size="24"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box hover-target" style="cursor:pointer;">
+            <svg class="hover-anim" width="48" height="48" viewBox="0 0 64 64" fill="none" data-size="48"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box hover-target" style="cursor:pointer;">
+            <svg class="hover-anim" width="96" height="96" viewBox="0 0 64 64" fill="none" data-size="96"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: ícones de navegação, botões interativos. Estática como Z7, ao hover transforma em ampulheta.</div>
+    </div>
+  </section>
+
+  <!-- 2.5 Aproximação -->
+  <section class="section" id="s2-5">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">2.5 Aproximação (Z desce, 7 sobe)</div>
+        <div class="var-badge">2s · translateY · ease-out</div>
+        <button class="replay-btn" onclick="replayApproach()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box">
+            <svg class="approach-anim" width="24" height="24" viewBox="0 0 64 64" fill="none" data-size="24"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box">
+            <svg class="approach-anim" width="48" height="48" viewBox="0 0 64 64" fill="none" data-size="48"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box">
+            <svg class="approach-anim" width="96" height="96" viewBox="0 0 64 64" fill="none" data-size="96"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: loading com sensação de convergência. Z vem de cima, 7 vem de baixo.</div>
+    </div>
+  </section>
+
+  <!-- 2.6 Encaixe Lateral -->
+  <section class="section" id="s2-6">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">2.6 Encaixe Lateral</div>
+        <div class="var-badge">2s · translateX · ease-out</div>
+        <button class="replay-btn" onclick="replayLateral()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box">
+            <svg class="lateral-anim" width="24" height="24" viewBox="0 0 64 64" fill="none" data-size="24"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box">
+            <svg class="lateral-anim" width="48" height="48" viewBox="0 0 64 64" fill="none" data-size="48"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box">
+            <svg class="lateral-anim" width="96" height="96" viewBox="0 0 64 64" fill="none" data-size="96"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: transições de conteúdo. Z vem da esquerda, 7 vem da direita, encaixam no centro.</div>
+    </div>
+  </section>
+
+  <!-- 2.7 Construção Alternada -->
+  <section class="section" id="s2-7">
+    <div class="var-card">
+      <div class="var-header">
+        <div class="var-name">2.7 Construção Alternada</div>
+        <div class="var-badge">2.5s · stroke-dasharray · staggered</div>
+        <button class="replay-btn" onclick="replayAlternate()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Replay
+        </button>
+      </div>
+      <div class="var-sizes">
+        <div class="var-size-item">
+          <div class="var-size-label">24px</div>
+          <div class="var-size-box">
+            <svg class="alternate-anim" width="24" height="24" viewBox="0 0 64 64" fill="none" data-size="24"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">48px</div>
+          <div class="var-size-box">
+            <svg class="alternate-anim" width="48" height="48" viewBox="0 0 64 64" fill="none" data-size="48"></svg>
+          </div>
+        </div>
+        <div class="var-size-item">
+          <div class="var-size-label">96px</div>
+          <div class="var-size-box">
+            <svg class="alternate-anim" width="96" height="96" viewBox="0 0 64 64" fill="none" data-size="96"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="var-use">Uso: loading sofisticado. Linhas do Z e do 7 se desenham alternadamente até completar a ampulheta.</div>
+    </div>
+  </section>
+
+</div><!-- /main -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  GEOMETRY DEFINITIONS
+// ═══════════════════════════════════════════════════════════════════
+
+// 7 (top half): horizontal bar + diagonal down-left
+const SEVEN_PATH = "M16,10 L52,10 L28,54";
+// Z (bottom half): diagonal + horizontal bar bottom
+const Z_PATH = "M36,10 L12,54 L48,54";
+
+// Hourglass H1-B lines (5 separate paths)
+const HG_LINES = [
+  "M14,8 L50,8",      // top bar
+  "M50,8 L14,56",     // main diagonal cross
+  "M14,8 L25,25",     // upper gap diagonal
+  "M39,39 L50,56",    // lower gap diagonal
+  "M14,56 L50,56"     // bottom bar
+];
+
+// Stroke widths per size
+function sw(size) {
+  if (size <= 24) return 2.5;
+  if (size <= 48) return 2;
+  return 1.5;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  SIDEBAR SCROLL TRACKING
+// ═══════════════════════════════════════════════════════════════════
+const sidebarLinks = document.querySelectorAll('.sidebar a[data-target]');
+const sections = [];
+sidebarLinks.forEach(link => {
+  const id = link.getAttribute('data-target');
+  const el = document.getElementById(id);
+  if (el) sections.push({ id, el, link });
+});
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    const match = sections.find(s => s.el === entry.target);
+    if (match) {
+      if (entry.isIntersecting) {
+        sidebarLinks.forEach(l => l.classList.remove('active'));
+        match.link.classList.add('active');
+      }
+    }
+  });
+}, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+
+sections.forEach(s => observer.observe(s.el));
+
+// ═══════════════════════════════════════════════════════════════════
+//  SECTION 1 — REPLAY HELPER
+// ═══════════════════════════════════════════════════════════════════
+function replayAnim(btn, className) {
+  const card = btn.closest('.var-card');
+  const els = card.querySelectorAll('.' + className);
+  els.forEach(el => {
+    el.style.animation = 'none';
+    el.offsetHeight; // force reflow
+    el.style.animation = '';
+  });
+  // Also restart trail ghosts if trail
+  if (className === 'trail-main') {
+    card.querySelectorAll('.trail-ghost').forEach(el => {
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  SECTION 2 — JS ANIMATION ENGINE
+// ═══════════════════════════════════════════════════════════════════
+
+// Utility: create path element
+function makePath(d, color, strokeW, opts = {}) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const p = document.createElementNS(ns, 'path');
+  p.setAttribute('d', d);
+  p.setAttribute('fill', 'none');
+  p.setAttribute('stroke', color || '#4A90FF');
+  p.setAttribute('stroke-width', strokeW || 1.5);
+  p.setAttribute('stroke-linecap', 'round');
+  p.setAttribute('stroke-linejoin', 'round');
+  if (opts.dasharray) p.setAttribute('stroke-dasharray', opts.dasharray);
+  if (opts.dashoffset) p.setAttribute('stroke-dashoffset', opts.dashoffset);
+  if (opts.opacity !== undefined) p.setAttribute('opacity', opts.opacity);
+  return p;
+}
+
+// Utility: get path total length (approximate for our simple lines)
+function approxLen(d) {
+  const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  tmp.setAttribute('viewBox', '0 0 64 64');
+  tmp.style.position = 'absolute';
+  tmp.style.width = '0';
+  tmp.style.height = '0';
+  document.body.appendChild(tmp);
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  p.setAttribute('d', d);
+  tmp.appendChild(p);
+  const len = p.getTotalLength();
+  document.body.removeChild(tmp);
+  return len;
+}
+
+// Animate a property with requestAnimationFrame
+function animateProp(el, attr, from, to, dur, easing, cb) {
+  const start = performance.now();
+  function tick(now) {
+    let t = Math.min((now - start) / dur, 1);
+    if (easing) t = easing(t);
+    const v = from + (to - from) * t;
+    el.setAttribute(attr, v);
+    if (t < 1) requestAnimationFrame(tick);
+    else if (cb) cb();
+  }
+  requestAnimationFrame(tick);
+}
+
+// Easing functions
+function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+function easeOut(t) { return t*(2-t); }
+function easeIn(t) { return t*t; }
+
+// ─────────── 2.1 Hero ───────────
+function initHero(svgs) {
+  svgs.forEach(svg => {
+    svg.innerHTML = '';
+    const s = parseInt(svg.dataset.size);
+    const w = sw(s);
+
+    // Z path (draw-on) — Z at 0.7 opacity when combined with 7
+    const zLen = approxLen(Z_PATH);
+    const zPath = makePath(Z_PATH, '#4A90FF', w, { dasharray: zLen, dashoffset: zLen });
+    zPath.classList.add('hero-z');
+
+    // 7 path (hidden initially)
+    const sLen = approxLen(SEVEN_PATH);
+    const sPath = makePath(SEVEN_PATH, '#2D7AFF', w, { opacity: 0, dasharray: sLen, dashoffset: sLen });
+    sPath.classList.add('hero-7');
+
+    // Hourglass paths (hidden)
+    HG_LINES.forEach((d, i) => {
+      const hLen = approxLen(d);
+      const hp = makePath(d, '#4A90FF', w, { opacity: 0, dasharray: hLen, dashoffset: hLen });
+      hp.classList.add('hero-hg');
+      hp.dataset.idx = i;
+      svg.appendChild(hp);
+    });
+
+    // Glow circle
+    const ns = 'http://www.w3.org/2000/svg';
+    const circle = document.createElementNS(ns, 'circle');
+    circle.setAttribute('cx', '32');
+    circle.setAttribute('cy', '32');
+    circle.setAttribute('r', '0');
+    circle.setAttribute('fill', 'none');
+    circle.setAttribute('stroke', '#4A90FF');
+    circle.setAttribute('stroke-width', '0.5');
+    circle.setAttribute('opacity', '0');
+    circle.classList.add('hero-glow');
+    svg.appendChild(circle);
+
+    svg.appendChild(zPath);
+    svg.appendChild(sPath);
+  });
+}
+
+function runHero(svgs, speed = 1) {
+  svgs.forEach(svg => {
+    const zPath = svg.querySelector('.hero-z');
+    const sPath = svg.querySelector('.hero-7');
+    const hgPaths = svg.querySelectorAll('.hero-hg');
+    const glow = svg.querySelector('.hero-glow');
+    const zLen = approxLen(Z_PATH);
+    const sLen = approxLen(SEVEN_PATH);
+
+    // Stage 1: Z draw-on (0 - 800ms)
+    animateProp(zPath, 'stroke-dashoffset', zLen, 0, 800/speed, easeInOut, () => {
+      // Stage 2: Z fades, 7 appears via flip (800 - 1600ms)
+      zPath.setAttribute('opacity', '1');
+      sPath.setAttribute('opacity', '1');
+
+      // Animate Z fade while 7 draws — Z at 0.7 when combined (7 leads, Z complements)
+      animateProp(zPath, 'opacity', 1, 0.3, 400/speed, easeIn);
+      animateProp(sPath, 'stroke-dashoffset', sLen, 0, 800/speed, easeInOut, () => {
+        // Stage 3: Z reappears beside 7 — Z stays at 0.7 (hierarchy: 7 leads)
+        animateProp(zPath, 'opacity', 0.3, 0.7, 400/speed, easeOut, () => {
+          // Stage 4: Z + 7 fade, hourglass lines draw (2400 - 3000ms)
+          animateProp(zPath, 'opacity', 0.7, 0, 300/speed, easeIn);
+          animateProp(sPath, 'opacity', 1, 0, 300/speed, easeIn);
+
+          hgPaths.forEach((hp, i) => {
+            setTimeout(() => {
+              hp.setAttribute('opacity', '1');
+              const hLen = approxLen(HG_LINES[i]);
+              animateProp(hp, 'stroke-dashoffset', hLen, 0, 400/speed, easeOut);
+            }, (i * 80) / speed);
+          });
+
+          // Stage 5: Glow pulse (3000 - 3500ms)
+          setTimeout(() => {
+            glow.setAttribute('opacity', '0.6');
+            glow.setAttribute('stroke', '#4A90FF');
+            animateProp(glow, 'r', 4, 20, 300/speed, easeOut, () => {
+              animateProp(glow, 'opacity', 0.6, 0, 200/speed, easeIn);
+            });
+          }, 600 / speed);
+        });
+      });
+    });
+  });
+}
+
+function replayHero() {
+  const svgs = document.querySelectorAll('.hero-anim');
+  initHero(svgs);
+  setTimeout(() => runHero(svgs), 50);
+}
+
+// ─────────── 2.2 Short ───────────
+function replayShort() {
+  const svgs = document.querySelectorAll('.short-anim');
+  initHero(svgs); // same init
+  setTimeout(() => runHero(svgs, 2.33), 50); // 3.5s / 1.5s = 2.33x speed
+}
+
+// ─────────── 2.3 Loop ───────────
+let loopTimers = [];
+function initLoop(svgs) {
+  loopTimers.forEach(t => clearTimeout(t));
+  loopTimers = [];
+  svgs.forEach(svg => {
+    svg.innerHTML = '';
+    const s = parseInt(svg.dataset.size);
+    const w = sw(s);
+
+    // Start as hourglass (formed)
+    HG_LINES.forEach((d, i) => {
+      const hp = makePath(d, '#4A90FF', w, { opacity: 1 });
+      hp.classList.add('loop-hg');
+      hp.dataset.idx = i;
+      svg.appendChild(hp);
+    });
+
+    // Z + 7 hidden — Z at 0.7 max opacity when visible (7 leads)
+    const zPath = makePath(Z_PATH, '#2D7AFF', w, { opacity: 0 });
+    zPath.classList.add('loop-z');
+    const sPath = makePath(SEVEN_PATH, '#00B4FF', w, { opacity: 0 });
+    sPath.classList.add('loop-7');
+    svg.appendChild(zPath);
+    svg.appendChild(sPath);
+  });
+}
+
+function runLoopCycle(svgs) {
+  svgs.forEach(svg => {
+    const hgPaths = svg.querySelectorAll('.loop-hg');
+    const zPath = svg.querySelector('.loop-z');
+    const sPath = svg.querySelector('.loop-7');
+
+    // Phase 1: Decompose hourglass → Z + 7 (0 - 1s)
+    hgPaths.forEach((hp, i) => {
+      loopTimers.push(setTimeout(() => {
+        animateProp(hp, 'opacity', 1, 0, 300, easeIn);
+      }, i * 100));
+    });
+
+    loopTimers.push(setTimeout(() => {
+      animateProp(zPath, 'opacity', 0, 0.7, 400, easeOut);  // Z at 0.7 — 7 leads
+      animateProp(sPath, 'opacity', 0, 1, 400, easeOut);
+    }, 600));
+
+    // Phase 2: Pause (1 - 1.5s) — just wait
+
+    // Phase 3: Recompose Z + 7 → hourglass (1.5 - 3s)
+    loopTimers.push(setTimeout(() => {
+      animateProp(zPath, 'opacity', 0.7, 0, 300, easeIn);  // Z fades from 0.7
+      animateProp(sPath, 'opacity', 1, 0, 300, easeIn);
+
+      loopTimers.push(setTimeout(() => {
+        hgPaths.forEach((hp, i) => {
+          loopTimers.push(setTimeout(() => {
+            animateProp(hp, 'opacity', 0, 1, 300, easeOut);
+          }, i * 80));
+        });
+      }, 300));
+    }, 1500));
+
+    // Phase 4: Pause (3 - 4s) then loop
+    loopTimers.push(setTimeout(() => {
+      runLoopCycle(svgs);
+    }, 4000));
+  });
+}
+
+function replayLoop() {
+  const svgs = document.querySelectorAll('.loop-anim');
+  initLoop(svgs);
+  setTimeout(() => runLoopCycle(svgs), 200);
+}
+
+// ─────────── 2.4 Hover ───────────
+function initHoverSvgs() {
+  document.querySelectorAll('.hover-anim').forEach(svg => {
+    svg.innerHTML = '';
+    const s = parseInt(svg.dataset.size);
+    const w = sw(s);
+
+    // Show Z + 7 as static "Z7" — Z at 0.7 (7 leads, Z complements)
+    const zPath = makePath(Z_PATH, '#2D7AFF', w, { opacity: 0.7 });
+    zPath.classList.add('hov-z');
+    zPath.style.transition = 'opacity 0.5s ease';
+    const sPath = makePath(SEVEN_PATH, '#4A90FF', w, { opacity: 1 });
+    sPath.classList.add('hov-7');
+    sPath.style.transition = 'opacity 0.5s ease';
+
+    // Hourglass hidden
+    HG_LINES.forEach((d, i) => {
+      const hLen = approxLen(d);
+      const hp = makePath(d, '#4A90FF', w, { opacity: 0, dasharray: hLen, dashoffset: hLen });
+      hp.classList.add('hov-hg');
+      hp.style.transition = 'opacity 0.3s ease';
+      svg.appendChild(hp);
+    });
+
+    svg.appendChild(zPath);
+    svg.appendChild(sPath);
+  });
+}
+
+document.querySelectorAll('.hover-target').forEach(box => {
+  box.addEventListener('mouseenter', () => {
+    const svg = box.querySelector('.hover-anim');
+    const zPath = svg.querySelector('.hov-z');
+    const sPath = svg.querySelector('.hov-7');
+    const hgPaths = svg.querySelectorAll('.hov-hg');
+
+    // Fade out Z+7
+    zPath.setAttribute('opacity', '0');
+    sPath.setAttribute('opacity', '0');
+
+    // Draw in hourglass
+    hgPaths.forEach((hp, i) => {
+      setTimeout(() => {
+        hp.setAttribute('opacity', '1');
+        const hLen = approxLen(HG_LINES[i]);
+        animateProp(hp, 'stroke-dashoffset', hLen, 0, 500, easeOut);
+      }, i * 60);
+    });
+  });
+
+  box.addEventListener('mouseleave', () => {
+    const svg = box.querySelector('.hover-anim');
+    const zPath = svg.querySelector('.hov-z');
+    const sPath = svg.querySelector('.hov-7');
+    const hgPaths = svg.querySelectorAll('.hov-hg');
+
+    // Fade out hourglass
+    hgPaths.forEach((hp, i) => {
+      hp.setAttribute('opacity', '0');
+      const hLen = approxLen(HG_LINES[i]);
+      hp.setAttribute('stroke-dashoffset', hLen);
+    });
+
+    // Fade in Z+7 — Z at 0.7 (7 leads)
+    setTimeout(() => {
+      zPath.setAttribute('opacity', '0.7');
+      sPath.setAttribute('opacity', '1');
+    }, 200);
+  });
+});
+
+// ─────────── 2.5 Approach (Y axis) ───────────
+function initApproach(svgs) {
+  svgs.forEach(svg => {
+    svg.innerHTML = '';
+    const s = parseInt(svg.dataset.size);
+    const w = sw(s);
+
+    // 7 group (comes from top, translateY: -20 → 0)
+    const ns = 'http://www.w3.org/2000/svg';
+    const g7 = document.createElementNS(ns, 'g');
+    g7.classList.add('approach-7');
+    g7.setAttribute('transform', 'translate(0, -20)');
+    g7.setAttribute('opacity', '0');
+    const p7 = makePath(SEVEN_PATH, '#4A90FF', w);
+    g7.appendChild(p7);
+    svg.appendChild(g7);
+
+    // Z group (comes from bottom, translateY: 20 → 0)
+    const gZ = document.createElementNS(ns, 'g');
+    gZ.classList.add('approach-z');
+    gZ.setAttribute('transform', 'translate(0, 20)');
+    gZ.setAttribute('opacity', '0');
+    const pZ = makePath(Z_PATH, '#2D7AFF', w);
+    gZ.appendChild(pZ);
+    svg.appendChild(gZ);
+
+    // Hourglass hidden
+    HG_LINES.forEach((d) => {
+      const hp = makePath(d, '#4A90FF', w, { opacity: 0 });
+      hp.classList.add('approach-hg');
+      svg.appendChild(hp);
+    });
+  });
+}
+
+function runApproach(svgs) {
+  svgs.forEach(svg => {
+    const g7 = svg.querySelector('.approach-7');
+    const gZ = svg.querySelector('.approach-z');
+    const hgPaths = svg.querySelectorAll('.approach-hg');
+
+    // Fade in + translate
+    const startTime = performance.now();
+    function tick(now) {
+      const t = Math.min((now - startTime) / 1000, 1);
+      const e = easeOut(t);
+
+      g7.setAttribute('transform', `translate(0, ${-20 * (1 - e)})`);
+      g7.setAttribute('opacity', e);  // 7 at full opacity
+      gZ.setAttribute('transform', `translate(0, ${20 * (1 - e)})`);
+      gZ.setAttribute('opacity', e * 0.7);  // Z at 0.7 max — 7 leads
+
+      if (t < 1) requestAnimationFrame(tick);
+      else {
+        // Merge into hourglass
+        setTimeout(() => {
+          animateProp(g7, 'opacity', 1, 0, 300, easeIn);
+          animateProp(gZ, 'opacity', 0.7, 0, 300, easeIn);  // Z fades from 0.7
+
+          setTimeout(() => {
+            hgPaths.forEach((hp, i) => {
+              setTimeout(() => {
+                animateProp(hp, 'opacity', 0, 1, 300, easeOut);
+              }, i * 60);
+            });
+          }, 200);
+        }, 200);
+      }
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+function replayApproach() {
+  const svgs = document.querySelectorAll('.approach-anim');
+  initApproach(svgs);
+  setTimeout(() => runApproach(svgs), 50);
+}
+
+// ─────────── 2.6 Lateral ───────────
+function initLateral(svgs) {
+  svgs.forEach(svg => {
+    svg.innerHTML = '';
+    const s = parseInt(svg.dataset.size);
+    const w = sw(s);
+    const ns = 'http://www.w3.org/2000/svg';
+
+    // Z from left
+    const gZ = document.createElementNS(ns, 'g');
+    gZ.classList.add('lateral-z');
+    gZ.setAttribute('transform', 'translate(-30, 0)');
+    gZ.setAttribute('opacity', '0');
+    gZ.appendChild(makePath(Z_PATH, '#2D7AFF', w));
+    svg.appendChild(gZ);
+
+    // 7 from right
+    const g7 = document.createElementNS(ns, 'g');
+    g7.classList.add('lateral-7');
+    g7.setAttribute('transform', 'translate(30, 0)');
+    g7.setAttribute('opacity', '0');
+    g7.appendChild(makePath(SEVEN_PATH, '#4A90FF', w));
+    svg.appendChild(g7);
+
+    // Hourglass hidden
+    HG_LINES.forEach(d => {
+      const hp = makePath(d, '#4A90FF', w, { opacity: 0 });
+      hp.classList.add('lateral-hg');
+      svg.appendChild(hp);
+    });
+  });
+}
+
+function runLateral(svgs) {
+  svgs.forEach(svg => {
+    const gZ = svg.querySelector('.lateral-z');
+    const g7 = svg.querySelector('.lateral-7');
+    const hgPaths = svg.querySelectorAll('.lateral-hg');
+
+    const startTime = performance.now();
+    function tick(now) {
+      const t = Math.min((now - startTime) / 1000, 1);
+      const e = easeOut(t);
+
+      gZ.setAttribute('transform', `translate(${-30 * (1 - e)}, 0)`);
+      gZ.setAttribute('opacity', e * 0.7);  // Z at 0.7 max — 7 leads
+      g7.setAttribute('transform', `translate(${30 * (1 - e)}, 0)`);
+      g7.setAttribute('opacity', e);  // 7 at full opacity
+
+      if (t < 1) requestAnimationFrame(tick);
+      else {
+        setTimeout(() => {
+          animateProp(gZ, 'opacity', 0.7, 0, 300, easeIn);  // Z fades from 0.7
+          animateProp(g7, 'opacity', 1, 0, 300, easeIn);
+
+          setTimeout(() => {
+            hgPaths.forEach((hp, i) => {
+              setTimeout(() => {
+                animateProp(hp, 'opacity', 0, 1, 300, easeOut);
+              }, i * 60);
+            });
+          }, 200);
+        }, 200);
+      }
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+function replayLateral() {
+  const svgs = document.querySelectorAll('.lateral-anim');
+  initLateral(svgs);
+  setTimeout(() => runLateral(svgs), 50);
+}
+
+// ─────────── 2.7 Alternate Construction ───────────
+// Lines alternate: Z-line, 7-line, Z-line, 7-line, Z-line
+// Z has 3 segments (top bar of Z_PATH: M36,10 L12,54 = diag; L48,54 = bottom bar)
+// 7 has 2 segments (M16,10 L52,10 = top bar; L28,54 = diag)
+// Map to hourglass lines alternating
+const ALT_LINES = [
+  { d: HG_LINES[0], color: '#4A90FF', source: '7' },  // top bar (from 7)
+  { d: HG_LINES[1], color: '#2D7AFF', source: 'Z' },  // main diagonal (from Z)
+  { d: HG_LINES[2], color: '#4A90FF', source: '7' },  // upper gap (from 7)
+  { d: HG_LINES[3], color: '#2D7AFF', source: 'Z' },  // lower gap (from Z)
+  { d: HG_LINES[4], color: '#00B4FF', source: 'Z' },  // bottom bar (from Z)
+];
+
+function initAlternate(svgs) {
+  svgs.forEach(svg => {
+    svg.innerHTML = '';
+    const s = parseInt(svg.dataset.size);
+    const w = sw(s);
+
+    ALT_LINES.forEach((line, i) => {
+      const len = approxLen(line.d);
+      const targetOpacity = line.source === 'Z' ? 0.7 : 1;  // Z at 0.7 — 7 leads
+      const hp = makePath(line.d, line.color, w, { dasharray: len, dashoffset: len, opacity: targetOpacity });
+      hp.classList.add('alt-line');
+      hp.dataset.idx = i;
+      hp.dataset.len = len;
+      svg.appendChild(hp);
+    });
+  });
+}
+
+function runAlternate(svgs) {
+  svgs.forEach(svg => {
+    const lines = svg.querySelectorAll('.alt-line');
+    const stagger = 400; // ms between each line
+
+    lines.forEach((line, i) => {
+      const len = parseFloat(line.dataset.len);
+      setTimeout(() => {
+        animateProp(line, 'stroke-dashoffset', len, 0, 500, easeInOut);
+      }, i * stagger);
+    });
+
+    // Glow pulse at end
+    setTimeout(() => {
+      lines.forEach(line => {
+        const origColor = line.getAttribute('stroke');
+        line.setAttribute('stroke', '#00B4FF');
+        setTimeout(() => line.setAttribute('stroke', origColor), 200);
+      });
+    }, ALT_LINES.length * stagger + 400);
+  });
+}
+
+function replayAlternate() {
+  const svgs = document.querySelectorAll('.alternate-anim');
+  initAlternate(svgs);
+  setTimeout(() => runAlternate(svgs), 50);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  INIT ON LOAD
+// ═══════════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Init and auto-play all Section 2 animations
+  const heroSvgs = document.querySelectorAll('.hero-anim');
+  initHero(heroSvgs);
+  setTimeout(() => runHero(heroSvgs), 300);
+
+  const shortSvgs = document.querySelectorAll('.short-anim');
+  initHero(shortSvgs);
+  setTimeout(() => runHero(shortSvgs, 2.33), 300);
+
+  const loopSvgs = document.querySelectorAll('.loop-anim');
+  initLoop(loopSvgs);
+  setTimeout(() => runLoopCycle(loopSvgs), 300);
+
+  initHoverSvgs();
+
+  const approachSvgs = document.querySelectorAll('.approach-anim');
+  initApproach(approachSvgs);
+  setTimeout(() => runApproach(approachSvgs), 300);
+
+  const lateralSvgs = document.querySelectorAll('.lateral-anim');
+  initLateral(lateralSvgs);
+  setTimeout(() => runLateral(lateralSvgs), 300);
+
+  const altSvgs = document.querySelectorAll('.alternate-anim');
+  initAlternate(altSvgs);
+  setTimeout(() => runAlternate(altSvgs), 300);
+});
+</script>
+</body>
+</html>

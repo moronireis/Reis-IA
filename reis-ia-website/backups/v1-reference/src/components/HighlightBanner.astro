@@ -1,0 +1,123 @@
+---
+/**
+ * HighlightBanner — Blue-tinted background banner with badge, title, description, CTA.
+ * Used for events, offers, announcements.
+ */
+interface Props {
+  badge?: string;
+  title: string;
+  description: string;
+  ctaText: string;
+  ctaHref: string;
+}
+
+const { badge, title, description, ctaText, ctaHref } = Astro.props;
+---
+
+<section class="highlight-banner-section" aria-label={title}>
+  <div class="highlight-banner-inner">
+    <!-- Background decorative gradient -->
+    <div class="highlight-bg-glow" aria-hidden="true"></div>
+
+    <div class="container-standard relative z-10">
+      <div class="highlight-content animate-on-scroll">
+        {badge && (
+          <span class="badge-accent">{badge}</span>
+        )}
+        <h2 class="highlight-title">{title}</h2>
+        <p class="highlight-description">{description}</p>
+        <a href={ctaHref} class="highlight-cta btn-press">
+          {ctaText}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="arrow-icon">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .highlight-banner-section {
+    padding: 4px 0;
+    background: var(--surface-0);
+  }
+
+  .highlight-banner-inner {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(74, 144, 255, 0.03) 0%, var(--surface-1) 40%, var(--surface-0) 100%);
+    border-top: 1px solid rgba(74, 144, 255, 0.12);
+    border-bottom: 1px solid rgba(74, 144, 255, 0.12);
+    padding: 64px 0;
+  }
+
+  .highlight-bg-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(74, 144, 255, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .highlight-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .highlight-title {
+    font-size: var(--text-h3);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .highlight-description {
+    font-size: var(--text-body);
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 0;
+    max-width: 520px;
+  }
+
+  .highlight-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #FFFFFF;
+    background: var(--accent-blue);
+    border: none;
+    border-radius: var(--radius);
+    padding: 14px 28px;
+    text-decoration: none;
+    transition: background-color 200ms var(--ease-base), transform 150ms var(--ease-base), box-shadow 200ms var(--ease-base);
+    margin-top: 4px;
+  }
+
+  .highlight-cta:hover {
+    background-color: var(--accent-blue-hover);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-blue-glow);
+  }
+
+  .highlight-cta:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  .highlight-cta:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--surface-0), 0 0 0 4px var(--focus-ring);
+  }
+</style>

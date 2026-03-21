@@ -1,926 +1,1235 @@
 ---
+/**
+ * Builder — Time Builders Movement Landing Page
+ * v3.0 copy from FINAL-builder-landing-copy.md [REALIGNED — Brand Ecosystem]
+ * 15 sections: Hero, Logo Marquee, Viloes, A Virada, Z7 Days + 7 Stages,
+ * Transformacao, Objecoes, Para Quem E/Nao E, Investimento, Garantia,
+ * Testemunhos, Credibilidade/Fundador, FAQ, CTA Final, Floating CTA
+ *
+ * Colors: Builder Electric #2D7AFF + Cyan #00B4FF for content.
+ * Nav/footer remain master #4A90FF.
+ */
 import MainLayout from '../layouts/MainLayout.astro';
 import Badge from '../components/Badge.astro';
 import Button from '../components/Button.astro';
 import SectionLabel from '../components/SectionLabel.astro';
+import StatBlock from '../components/StatBlock.astro';
+import TestimonialBlock from '../components/TestimonialBlock.astro';
 import HourglassIcon from '../components/HourglassIcon.astro';
-import ChessKnightIcon from '../components/ChessKnightIcon.astro';
-import IconCheckCircle from '../components/icons/IconCheckCircle.astro';
-import IconStar from '../components/icons/IconStar.astro';
-import IconShield from '../components/icons/IconShield.astro';
-import IconPuzzle from '../components/icons/IconPuzzle.astro';
-import IconTarget from '../components/icons/IconTarget.astro';
-import IconUsers from '../components/icons/IconUsers.astro';
-import IconLayers from '../components/icons/IconLayers.astro';
-import IconRocket from '../components/icons/IconRocket.astro';
-import IconGraduationCap from '../components/icons/IconGraduationCap.astro';
-import IconCalendar from '../components/icons/IconCalendar.astro';
-import IconMessageCircle from '../components/icons/IconMessageCircle.astro';
-import IconAward from '../components/icons/IconAward.astro';
-import IconTrendingUp from '../components/icons/IconTrendingUp.astro';
+import HourglassWatermark from '../components/HourglassWatermark.astro';
+import SapphireScanner from '../components/SapphireScanner.astro';
+import AmbientPool from '../components/AmbientPool.astro';
 import LogoMarquee from '../components/LogoMarquee.astro';
-import HighlightBanner from '../components/HighlightBanner.astro';
+import Z7Icon from '../components/Z7Icon.astro';
+import FaqAccordion from '../components/FaqAccordion.tsx';
+import MockupZ7Timeline from '../components/MockupZ7Timeline.astro';
+import MockupTransformation from '../components/MockupTransformation.astro';
+import MockupQualifier from '../components/MockupQualifier.astro';
+
+const objectionFaqItems = [
+  {
+    question: 'Não tenho tempo pra mais um programa agora.',
+    answer: 'Essa é exatamente a razão pra estar aqui. Você está sangrando tempo em processos manuais, tentativas sem direção e pesquisa que não leva a receita. Z7 Days comprime 7 meses em 7 dias. O programa existe pra devolver tempo, não pra roubar mais.',
+  },
+  {
+    question: 'Já tentei outros cursos de IA e não funcionou.',
+    answer: 'Cursos ensinam teoria. Z7 Days é consultoria onde implementamos junto. Você não recebe uma planilha e um "boa sorte." Moroni e a equipe constroem ao seu lado. Oferta, precificação, sistema de aquisição, primeiro projeto entregue. A diferença é que nós não viramos as costas.',
+  },
+  {
+    question: 'Não sou técnico. Não sei programar.',
+    answer: 'Perfeito. Time Builders não são engenheiros. Somos profissionais de negócio que entendem onde IA gera receita. Você traz experiência em vendas, ofertas e relacionamento. Nós damos os frameworks de implementação. Quem sabe vender é quem deveria estar liderando IA.',
+  },
+  {
+    question: 'O mercado de IA muda toda semana. E se ficar obsoleto?',
+    answer: 'Ferramentas mudam. A habilidade de encontrar oportunidade de receita, construir oferta e vender não muda. Z7 Days ensina o framework — não a ferramenta do momento. Você sai com capacidade de adaptação, não com dependência de uma plataforma.',
+  },
+];
+
+const faqItems = [
+  {
+    question: 'O que é Time Builders?',
+    answer: 'Time Builders é um movimento de profissionais de negócio que dominam IA como ferramenta de compressão de tempo. Não somos alunos. Não somos mentorados. Somos construtores — e medimos tudo pela única métrica que importa: como usamos o tempo que temos.',
+  },
+  {
+    question: 'O que é o Z7 Days?',
+    answer: 'Z7 Days é o programa principal dos Time Builders. 7 dias de consultoria intensiva onde Moroni Reis e a equipe constroem ao seu lado. Você sai com oferta estruturada, sistema de aquisição de clientes e primeiro projeto entregue ou em andamento. Não é curso. É construção junto.',
+  },
+  {
+    question: 'Preciso de experiência técnica?',
+    answer: 'Não. Time Builders são profissionais de negócio — donos de agência, gestores de tráfego, especialistas em automação, estrategistas de marketing. Você traz a experiência em vendas e estratégia. Nós damos os frameworks de implementação de IA.',
+  },
+  {
+    question: 'Como funciona o processo seletivo?',
+    answer: 'Cada candidatura é lida pelo Moroni. Turmas são pequenas porque Moroni trabalha diretamente com cada participante. Buscamos profissionais com experiência em serviços, fome de agir e disposição de construir. Não é elitismo — é compromisso com resultado.',
+  },
+  {
+    question: 'Qual o investimento?',
+    answer: 'O investimento é discutido durante o processo seletivo porque depende do seu contexto e momento. O que podemos garantir: o retorno é medido em semanas, não meses. E se você não chegar ao resultado, nós não terminamos.',
+  },
+  {
+    question: 'Funciona pra quem já trabalha com IA?',
+    answer: 'Sim. Se você já mexe com IA mas não estruturou oferta, precificação ou sistema de aquisição de clientes, Z7 Days comprime meses de tentativa e erro. Se você já vende IA, os frameworks de entrega e escala aceleram tudo.',
+  },
+];
 ---
 
 <MainLayout
-  title="Builder — Adicione Receita de AI à Sua Agência em 12 Semanas"
-  description="O programa Reis IA Builder te dá uma oferta vendável de AI, um sistema de aquisição de clientes e seu primeiro projeto entregue — em 12 semanas. Sem precisar virar engenheiro."
+  title="Time Builders — O Movimento | Enquanto Outros Esperam, Nós Construímos"
+  description="Time Builders é um movimento de profissionais que dominam IA como ferramenta de compressão de tempo. Z7 Days: 7 dias que substituem 7 meses. Aplique agora."
   activePage="builder"
 >
 
-  <!-- SECTION 1: HERO — floating card style matching Home -->
-  <section class="hero-card-outer" style="background-color: #080808; padding: 48px 8px 0;">
-    <div
-      class="hero-card relative overflow-hidden"
-      style="padding: 80px 0 72px; min-height: 560px;"
-    >
-      <!-- Radial hero glow (gold signature) -->
-      <div
-        class="absolute inset-0 pointer-events-none"
-        aria-hidden="true"
-        style="background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201, 168, 76, 0.10) 0%, transparent 70%);"
-      ></div>
-      <!-- Secondary subtle orb — left side depth -->
-      <div
-        class="gradient-orb gradient-orb-blue"
-        aria-hidden="true"
-        style="width: 500px; height: 350px; top: 40%; left: -8%; opacity: 0.5;"
-      ></div>
+  <!-- ============================================================
+       SECTION 1: HERO — Surface-0, Aurora BG, stagger entrance
+       ============================================================ -->
+  <section
+    class="relative overflow-hidden"
+    style="background: var(--surface-0); padding-top: var(--space-4xl); padding-bottom: var(--space-3xl); min-height: 90vh;"
+    aria-labelledby="hero-heading"
+  >
+    <!-- Aurora background with Builder electric tones -->
+    <div class="builder-aurora-bg" aria-hidden="true"></div>
 
-      <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-12 relative z-10">
-        <!-- Chess pre-headline with knight icon — functional, not decorative -->
-        <div class="hero-animate hero-animate-1 flex items-center gap-2 mb-4">
-          <ChessKnightIcon size={16} class="text-accent" />
-          <p class="text-[13px] font-semibold tracking-widest uppercase text-accent">
-            Para Donos de Agência Prontos para Parar de Reagir ao AI — e Começar a Liderar
+    <AmbientPool position="top-right" size={500} opacity={0.05} />
+    <AmbientPool position="bottom-left" size={400} opacity={0.04} />
+
+    <div class="container-standard relative z-10">
+      <div class="flex flex-col items-center text-center" style="max-width: 900px; margin: 0 auto;">
+
+        <!-- Badge -->
+        <div class="hero-animate hero-animate-1">
+          <span class="builder-badge">
+            Time Builders — O Movimento
+          </span>
+        </div>
+
+        <!-- Z7 Icon -->
+        <div class="hero-animate hero-animate-2 mt-8 mb-6">
+          <Z7Icon size={48} variant="glow" class="builder-z7-glow" />
+        </div>
+
+        <!-- Headline -->
+        <h1
+          id="hero-heading"
+          class="hero-animate hero-animate-2"
+          style="font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.03em; max-width: 800px;"
+        >
+          Enquanto Outros Esperam, <span class="builder-electric-text">Nós Construímos.</span>
+        </h1>
+
+        <!-- Subheadline -->
+        <p
+          class="hero-animate hero-animate-3 mt-6"
+          style="font-size: var(--text-body-lg); line-height: 1.65; color: var(--text-secondary); max-width: 680px;"
+        >
+          Time Builders é um movimento de profissionais de negócio que dominam IA como ferramenta de compressão de tempo. Não somos alunos. Não somos mentorados. Somos construtores — e medimos tudo pela única métrica que importa: como usamos o tempo que temos.
+        </p>
+
+        <!-- Hero Body -->
+        <div class="hero-animate hero-animate-3 mt-6" style="max-width: 680px;">
+          <p style="font-size: var(--text-body); line-height: 1.70; color: var(--text-secondary);">
+            O mercado está cheio de gente que fala sobre IA. Poucos constroem. Menos ainda vendem. E quase ninguém entrega resultado real pra um cliente de verdade.
+          </p>
+          <p class="mt-4" style="font-size: var(--text-body); line-height: 1.70; color: var(--text-secondary);">
+            A ampulheta está correndo. A areia não pausa pra indecisão.
           </p>
         </div>
 
-        <h1
-          class="hero-animate hero-animate-2 max-w-[900px]"
-          style="font-size: clamp(36px, 7vw, 80px); font-weight: 800; line-height: 0.97; letter-spacing: -0.04em; color: #ffffff;"
-        >
-          AI sem estratégia é chute.<br />
-          Em 12 semanas, você poderia estar jogando um jogo completamente diferente.
-        </h1>
-
-        <p
-          class="hero-animate hero-animate-3 mt-6 max-w-[640px]"
-          style="font-size: clamp(16px, 1.8vw, 18px); font-weight: 400; line-height: 1.7; color: rgba(255,255,255,0.55);"
-        >
-          O programa Reis IA Builder te dá uma oferta vendável de AI, um sistema de aquisição de clientes e seu primeiro projeto entregue — em 12 semanas. Com suporte direto de quem construiu isso do zero.
-        </p>
-
-        <div class="hero-animate hero-animate-4 flex flex-col sm:flex-row items-stretch sm:items-start gap-4 mt-10">
-          <Button variant="hero" href="/aplicar" class="w-full sm:w-auto text-center">Quero me candidatar à próxima turma &#8594;</Button>
+        <!-- Stat Anchors -->
+        <div class="hero-animate hero-animate-4 mt-10 grid grid-cols-3 gap-8 w-full" style="max-width: 560px;">
+          <div class="text-center">
+            <p
+              class="font-bold tabular-nums builder-electric-text"
+              style="font-size: clamp(1.75rem, 1.25rem + 2vw, 2.5rem);"
+              data-counter
+              data-target="7"
+              data-suffix=" dias"
+            >7 dias</p>
+            <p class="text-[var(--text-label)] uppercase tracking-[0.05em] font-semibold text-[var(--text-quaternary)] mt-1">= 7 meses</p>
+          </div>
+          <div class="text-center">
+            <p
+              class="font-bold tabular-nums builder-electric-text"
+              style="font-size: clamp(1.75rem, 1.25rem + 2vw, 2.5rem);"
+              data-counter
+              data-target="7"
+              data-suffix="h"
+            >7h</p>
+            <p class="text-[var(--text-label)] uppercase tracking-[0.05em] font-semibold text-[var(--text-quaternary)] mt-1">= 7 anos</p>
+          </div>
+          <div class="text-center">
+            <p
+              class="font-bold tabular-nums builder-electric-text"
+              style="font-size: clamp(1.75rem, 1.25rem + 2vw, 2.5rem);"
+              data-counter
+              data-target="100"
+              data-suffix="%"
+            >100%</p>
+            <p class="text-[var(--text-label)] uppercase tracking-[0.05em] font-semibold text-[var(--text-quaternary)] mt-1">junto</p>
+          </div>
         </div>
-        <p class="hero-animate hero-animate-5 text-xs mt-3" style="color: rgba(255,255,255,0.3);">Vagas limitadas. Candidaturas abertas.</p>
+
+        <!-- CTA -->
+        <div class="hero-animate hero-animate-5 mt-10 flex flex-col items-center gap-3">
+          <a href="/aplicar" class="builder-cta-primary btn-hero btn-press">
+            Aplicar para Time Builders
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+          </a>
+          <p style="font-size: var(--text-body-sm); color: var(--text-quaternary);">
+            Não é formulário de contato. É candidatura. Turmas pequenas. Processo seletivo real.
+          </p>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- LOGO MARQUEE — after hero -->
-  <div style="background-color: #080808;">
-    <div class="mx-auto max-w-[1200px]">
-      <LogoMarquee />
-    </div>
+
+  <!-- ============================================================
+       SECTION 2: LOGO MARQUEE — Surface-0, trust strip
+       ============================================================ -->
+  <div style="background: var(--surface-0);" aria-label="Tecnologias e plataformas">
+    <div class="gradient-divider"></div>
+    <LogoMarquee label="Tecnologias e plataformas que integramos" />
+    <div class="gradient-divider"></div>
   </div>
 
-  <!-- Gold section divider -->
-  <div class="divider-gold mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0"></div>
 
-  <!-- Sticky CTA bar (desktop only, shown after scroll) -->
-  <div
-    id="sticky-cta"
-    class="hidden lg:flex fixed bottom-0 left-0 right-0 z-40 h-[72px] items-center translate-y-full transition-transform duration-300"
-    style="background: rgba(17,17,19,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,0.07);"
-    aria-hidden="true"
+  <!-- ============================================================
+       SECTION 3: VILOES — Surface-1
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-1); padding: var(--space-4xl) 0;"
+    aria-labelledby="viloes-heading"
   >
-    <div class="mx-auto max-w-[1200px] px-8 w-full flex items-center justify-between">
-      <p class="text-sm" style="color: rgba(255,255,255,0.45);">Vagas limitadas &nbsp;|&nbsp; Máximo de 12 participantes por turma</p>
-      <a
-        href="/aplicar"
-        class="text-black text-sm font-semibold px-6 py-3 rounded-md transition-all duration-200"
-        style="background-color: #C9A84C;"
-        onmouseover="this.style.backgroundColor='#D4B85E'; this.style.boxShadow='0 8px 20px rgba(201,168,76,0.3)';"
-        onmouseout="this.style.backgroundColor='#C9A84C'; this.style.boxShadow='none';"
+    <AmbientPool position="top-right" size={350} opacity={0.03} />
+
+    <div class="container-standard relative z-10">
+
+      <div class="text-center mb-16 animate-on-scroll">
+        <SectionLabel number="02" class="mb-4 builder-label">O inimigo</SectionLabel>
+        <h2 id="viloes-heading" style="max-width: 700px; margin: 0 auto;">
+          Tudo que desperdiça seu tempo é inimigo. E o mercado de IA está cheio deles.
+        </h2>
+      </div>
+
+      <!-- Villain cards: 2x2 grid -->
+      <div class="grid md:grid-cols-2 gap-6 grid-stagger" style="max-width: 960px; margin: 0 auto;">
+
+        <!-- Vilao 1: Falsos Profetas -->
+        <div class="villain-card">
+          <div class="villain-card-inner">
+            <div class="villain-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+            <h3 class="text-[var(--text-h5)] font-semibold mb-3">Os mentores que viram as costas.</h3>
+            <p class="text-[var(--text-body-sm)] leading-relaxed" style="color: var(--text-secondary);">
+              Vendem esperança. Entregam PowerPoint. Prometem que um prompt milagroso resolve tudo — e somem quando você descobre que não resolve. Seus "alunos" investem semanas consumindo conteúdo que não gera uma única venda.
+            </p>
+            <p class="mt-3 text-[var(--text-body-sm)] font-semibold builder-electric-text">
+              Nós falamos, nós criamos. Eles falam e somem.
+            </p>
+            <p class="villain-time-stolen">Tempo roubado: semanas de estudo sem receita.</p>
+          </div>
+        </div>
+
+        <!-- Vilao 2: Hype Vazio -->
+        <div class="villain-card">
+          <div class="villain-card-inner">
+            <div class="villain-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <h3 class="text-[var(--text-h5)] font-semibold mb-3">As vozes falsas que desperdicam seu tempo.</h3>
+            <p class="text-[var(--text-body-sm)] leading-relaxed" style="color: var(--text-secondary);">
+              "IA vai substituir todo mundo." "Este prompt vale R$ 100 mil." "Basta apertar um botão." Influencers, posts virais e vídeos sensacionalistas que criam expectativas irreais e levam a implementações fracassadas.
+            </p>
+            <p class="villain-time-stolen">Tempo roubado: o custo composto de perseguir miragens.</p>
+          </div>
+        </div>
+
+        <!-- Vilao 3: Template Milagroso -->
+        <div class="villain-card">
+          <div class="villain-card-inner">
+            <div class="villain-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            </div>
+            <h3 class="text-[var(--text-h5)] font-semibold mb-3">A mentira de que existe atalho sem construção.</h3>
+            <p class="text-[var(--text-body-sm)] leading-relaxed" style="color: var(--text-secondary);">
+              Template milagroso. Curso milagroso. Automação que se monta sozinha. Tudo o que promete resultado sem que você coloque a mão na massa. Isso não existe. Nunca existiu.
+            </p>
+            <p class="villain-time-stolen">Tempo roubado: meses de busca por algo que não existe.</p>
+          </div>
+        </div>
+
+        <!-- Vilao 4: Cultura do Espera -->
+        <div class="villain-card">
+          <div class="villain-card-inner">
+            <div class="villain-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3 class="text-[var(--text-h5)] font-semibold mb-3">A permissão socialmente aceita pra desperdiçar tempo.</h3>
+            <p class="text-[var(--text-body-sm)] leading-relaxed" style="color: var(--text-secondary);">
+              "Espere a IA amadurecer." "Ainda é cedo." Parece conselho responsável. Na prática, é a desculpa mais cara que existe. Enquanto você espera, a janela fecha. Cada mês parado é um mês de vantagem entregue ao concorrente.
+            </p>
+            <p class="villain-time-stolen">Tempo roubado: o custo irreversivel da inacao.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Closing statement -->
+      <div class="text-center mt-12 animate-on-scroll">
+        <p style="font-size: var(--text-body-lg); color: var(--text-secondary); max-width: 600px; margin: 0 auto;">
+          O fio condutor? Todos roubam tempo. E num mundo onde <strong class="text-[var(--text-primary)]">O Tempo é Rei</strong>, roubo de tempo é o crime supremo.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 4: A VIRADA — Surface-0, Revenue-First + O Tempo e Rei
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-0); padding: var(--space-4xl) 0;"
+    aria-labelledby="virada-heading"
+  >
+    <HourglassWatermark position="bottom-right" size={280} opacity={0.03} />
+    <AmbientPool position="bottom-left" size={400} opacity={0.05} />
+
+    <div class="container-narrow relative z-10">
+      <div class="animate-on-scroll">
+        <SectionLabel number="03" class="mb-4 builder-label">A virada</SectionLabel>
+        <h2 id="virada-heading" class="mb-6">
+          Z7 Days: <span class="builder-electric-text">7 Dias Que Substituem 7 Meses.</span>
+        </h2>
+      </div>
+
+      <div class="animate-on-scroll mt-6" style="max-width: var(--container-text);">
+        <p class="text-[var(--text-body-lg)] leading-relaxed" style="color: var(--text-secondary);">
+          Z7 Days é o programa principal dos Time Builders. Não é curso. Não é mentoria onde viram as costas. É consultoria onde implementamos JUNTO.
+        </p>
+        <p class="mt-5 text-[var(--text-body-lg)] leading-relaxed" style="color: var(--text-secondary);">
+          Assim como o mundo foi criado em 7 dias, o negócio de IA do participante é criado — estruturado, posicionado, precificado, pronto pra vender — em 7 dias.
+        </p>
+        <p class="mt-5 text-[var(--text-body-lg)] leading-relaxed" style="color: var(--text-secondary);">
+          Você não recebe uma planilha e um "boa sorte." Moroni Reis e a equipe constroem ao seu lado. Oferta, precificação, sistema de aquisição de clientes, primeiro projeto entregue. Em 7 dias. Não em 7 meses.
+        </p>
+      </div>
+
+      <!-- Z7 Timeline mockup -->
+      <div class="animate-on-scroll mt-10 grid-stagger in-view" style="max-width: 640px;">
+        <MockupZ7Timeline />
+      </div>
+
+      <!-- Z7 meaning -->
+      <div class="builder-z7-meaning animate-on-scroll mt-10">
+        <Z7Icon size={32} variant="stroke" class="builder-electric-text" />
+        <p class="mt-4" style="font-size: var(--text-body); line-height: 1.70; color: var(--text-secondary);">
+          <strong class="text-[var(--text-primary)]">O que Z7 significa:</strong> Z é a última letra. O fim. O encerramento. 7 é o número da criação e da completude. Juntos, Z e 7 formam a silhueta de uma ampulheta — o tempo contido num código. Z7 é a linguagem dos que comprimem tempo com perfeição.
+        </p>
+      </div>
+
+      <!-- What you build -->
+      <div class="animate-on-scroll mt-10">
+        <h3 class="text-[var(--text-h4)] font-semibold mb-5">O que você constrói no Z7 Days</h3>
+        <ul class="builder-checklist">
+          <li>Uma oferta de IA vendável — precificada e posicionada pro seu mercado</li>
+          <li>Sistema de aquisição de clientes que funciona de verdade</li>
+          <li>Primeiro projeto entregue ou em andamento — com suporte completo</li>
+          <li>Frameworks de entrega e precificação testados em campo</li>
+          <li>Acesso direto a Moroni Reis durante todo o programa</li>
+        </ul>
+      </div>
+
+      <!-- Commitment + Inline CTA -->
+      <div class="animate-on-scroll mt-10 p-6 rounded-lg" style="background: var(--surface-1); border: 1px solid var(--border-default);">
+        <p class="text-[var(--text-body-lg)] font-semibold text-[var(--text-primary)] mb-2">
+          "Trabalhamos ate ver resultados reais. Nao projetos que morrem no caminho."
+        </p>
+        <p style="font-size: var(--text-body); color: var(--text-secondary);">
+          Se você não chegou ao resultado, nós não terminamos. Simples assim.
+        </p>
+        <div class="mt-5">
+          <a href="/aplicar" class="builder-cta-primary btn-md btn-press">
+            Aplicar para Time Builders
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 5: Z7 DAYS + 7 STAGES — Surface-1
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-1); padding: var(--space-4xl) 0;"
+    aria-labelledby="stages-heading"
+  >
+    <HourglassWatermark position="top-right" size={300} opacity={0.03} />
+
+    <div class="container-standard relative z-10">
+
+      <div class="text-center mb-16 animate-on-scroll">
+        <SectionLabel number="04" class="mb-4 builder-label">O programa</SectionLabel>
+        <h2 id="stages-heading">
+          7 Dias. 7 Estágios. Uma Criação Completa.
+        </h2>
+        <p class="mt-4" style="font-size: var(--text-body-lg); color: var(--text-secondary); max-width: 600px; margin: 0 auto;">
+          Nós implementamos JUNTO. Cada dia é um estágio de construção.
+        </p>
+      </div>
+
+      <!-- 7 Stages grid -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 grid-stagger" style="max-width: 1000px; margin: 0 auto;">
+
+        <!-- Day 1 -->
+        <div class="stage-card">
+          <span class="stage-day">Dia 1</span>
+          <h4 class="stage-name">Matéria-Prima</h4>
+          <p class="stage-desc">Mapeamento de mercado, identificação de oportunidades, autoavaliação. Você chega como matéria bruta.</p>
+        </div>
+
+        <!-- Day 2 -->
+        <div class="stage-card">
+          <span class="stage-day">Dia 2</span>
+          <h4 class="stage-name">Fundição</h4>
+          <p class="stage-desc">Arquitetura de oferta, frameworks de precificação, posicionamento. A matéria bruta é derretida e remodelada.</p>
+        </div>
+
+        <!-- Day 3 -->
+        <div class="stage-card">
+          <span class="stage-day">Dia 3</span>
+          <h4 class="stage-name">Forjamento</h4>
+          <p class="stage-desc">Aquisição de clientes, sistemas de venda, prospecção. O metal é martelado sob calor e pressão.</p>
+        </div>
+
+        <!-- Day 4 -->
+        <div class="stage-card">
+          <span class="stage-day">Dia 4</span>
+          <h4 class="stage-name">Tempera</h4>
+          <p class="stage-desc">Framework de implementação, preparação pra entrega. A têmpera torna o metal resiliente.</p>
+        </div>
+
+        <!-- Day 5 -->
+        <div class="stage-card">
+          <span class="stage-day">Dia 5</span>
+          <h4 class="stage-name">Entrega</h4>
+          <p class="stage-desc">Implementação do primeiro projeto real. Mão na massa junto com a equipe Reis IA.</p>
+        </div>
+
+        <!-- Day 6 -->
+        <div class="stage-card">
+          <span class="stage-day">Dia 6</span>
+          <h4 class="stage-name">Calibração</h4>
+          <p class="stage-desc">Otimização, ajustes, sistematização. O acabamento que transforma trabalho bruto em peça finalizada.</p>
+        </div>
+
+        <!-- Day 7: Featured card with SapphireScanner -->
+        <SapphireScanner class="stage-card stage-card-featured md:col-span-2 lg:col-span-1">
+          <span class="stage-day stage-day-featured">Dia 7</span>
+          <h4 class="stage-name">Acabamento</h4>
+          <p class="stage-desc">Sistematização final, preparação pra escala. O 7o dia: a criação está completa. <strong class="text-[var(--text-primary)]">Você é Forjado.</strong></p>
+        </SapphireScanner>
+
+      </div>
+
+      <!-- Narrative arc -->
+      <div class="text-center mt-12 animate-on-scroll" style="max-width: 700px; margin-left: auto; margin-right: auto;">
+        <p style="font-size: var(--text-body); line-height: 1.70; color: var(--text-secondary);">
+          No Dia 1, Matéria-Prima — você chega como é. No Dia 7, Acabamento — a criação está completa. <strong class="builder-electric-text">7 dias. 7 meses comprimidos. Você é Forjado.</strong>
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 6: TRANSFORMACAO — Surface-0, stats + counter
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-0); padding: var(--space-4xl) 0;"
+    aria-labelledby="transform-heading"
+  >
+    <AmbientPool position="center" size={500} opacity={0.04} />
+
+    <div class="container-standard relative z-10">
+
+      <div class="text-center mb-16 animate-on-scroll">
+        <SectionLabel number="05" class="mb-4 builder-label">A compressão Z7</SectionLabel>
+        <h2 id="transform-heading">
+          7 Horas = 7 Anos. <span class="builder-electric-text">7 Dias = 7 Meses.</span>
+        </h2>
+      </div>
+
+      <!-- Compression stats -->
+      <div class="grid md:grid-cols-3 gap-8 mb-12 grid-stagger" style="max-width: 900px; margin: 0 auto;">
+        <div class="text-center animate-on-scroll">
+          <div class="builder-compression-badge">
+            <span class="builder-electric-text font-bold" style="font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem);">7h</span>
+          </div>
+          <p class="text-[var(--text-body-lg)] font-semibold text-[var(--text-primary)] mt-4">= 7 anos</p>
+          <p class="text-[var(--text-body-sm)] text-[var(--text-secondary)] mt-2 leading-relaxed">
+            Uma pessoa que dedica 7 horas focadas com IA acelera ao equivalente de 7 anos de aprendizado convencional.
+          </p>
+        </div>
+
+        <div class="text-center animate-on-scroll">
+          <div class="builder-compression-badge">
+            <span class="builder-electric-text font-bold" style="font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem);">7d</span>
+          </div>
+          <p class="text-[var(--text-body-lg)] font-semibold text-[var(--text-primary)] mt-4">= 7 meses</p>
+          <p class="text-[var(--text-body-sm)] text-[var(--text-secondary)] mt-2 leading-relaxed">
+            O Z7 Days comprime em 7 dias o que levaria meses de tentativa e erro sozinho. Com frameworks, acompanhamento e resultado.
+          </p>
+        </div>
+
+        <div class="text-center animate-on-scroll">
+          <div class="builder-compression-badge">
+            <span class="builder-electric-text font-bold" style="font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem);">7a</span>
+          </div>
+          <p class="text-[var(--text-body-lg)] font-semibold text-[var(--text-primary)] mt-4">a frente</p>
+          <p class="text-[var(--text-body-sm)] text-[var(--text-secondary)] mt-2 leading-relaxed">
+            Negócios que implementam IA estrategicamente operam num patamar que empresas sem IA levarão 7 anos pra alcançar.
+          </p>
+        </div>
+      </div>
+
+      <!-- Transformation mockup -->
+      <div class="animate-on-scroll mt-12 grid-stagger in-view" style="max-width: 520px; margin: 0 auto;">
+        <MockupTransformation />
+      </div>
+
+      <!-- Result cards -->
+      <div class="grid md:grid-cols-2 gap-5 mt-12 grid-stagger" style="max-width: 800px; margin: 0 auto;">
+        <div class="builder-result-card animate-on-scroll">
+          <h4 class="text-[var(--text-h5)] font-semibold mb-2">Quem Entra</h4>
+          <p class="text-[var(--text-body-sm)] leading-relaxed" style="color: var(--text-secondary);">
+            Profissional com experiência em negócios, curioso ou frustrado com IA, sem saber como precificar ou vender.
+          </p>
+        </div>
+        <div class="builder-result-card builder-result-card-highlight animate-on-scroll">
+          <h4 class="text-[var(--text-h5)] font-semibold mb-2">Quem Sai</h4>
+          <p class="text-[var(--text-body-sm)] leading-relaxed" style="color: var(--text-secondary);">
+            Operador de IA completo. Oferta estruturada. Sistema de aquisição. Primeiro projeto entregue. Não é alguém que "sabe sobre IA" — é alguém que FAZ dinheiro com IA. Construiu junto com Moroni. Em 7 dias.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 7: OBJECOES — Surface-1, FaqAccordion
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-1); padding: var(--space-4xl) 0;"
+    aria-labelledby="objections-heading"
+  >
+    <div class="container-narrow relative z-10">
+      <div class="text-center mb-12 animate-on-scroll">
+        <SectionLabel number="06" class="mb-4 builder-label">Objeções</SectionLabel>
+        <h2 id="objections-heading">O que você provavelmente está pensando agora.</h2>
+      </div>
+
+      <FaqAccordion items={objectionFaqItems} client:visible />
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 8: PARA QUEM E / NAO E — Surface-0, two columns
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-0); padding: var(--space-4xl) 0;"
+    aria-labelledby="qualifier-heading"
+  >
+    <div class="container-standard relative z-10">
+
+      <div class="text-center mb-12 animate-on-scroll">
+        <SectionLabel number="07" class="mb-4 builder-label">Pra quem é</SectionLabel>
+        <h2 id="qualifier-heading">
+          Para quem não dorme enquanto o mundo muda.
+        </h2>
+      </div>
+
+      <!-- Qualifier mockup -->
+      <div class="animate-on-scroll mb-10">
+        <MockupQualifier />
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8" style="max-width: 960px; margin: 0 auto;">
+
+        <!-- Para quem e -->
+        <div class="animate-on-scroll">
+          <h3 class="text-[var(--text-h4)] font-semibold mb-6 builder-electric-text">Pra quem é</h3>
+          <ul class="builder-qualifier-list builder-qualifier-yes">
+            <li>Dono de agência digital que quer adicionar IA à oferta ou pivotar pra IA</li>
+            <li>Gestor de tráfego, especialista em automação ou estrategista de marketing que quer monetizar IA</li>
+            <li>Profissional com experiência em serviços que sabe vender e entregar — mas não sabe como entrar em IA</li>
+            <li>Quem tem a fome de se mexer agora, não a paciência de esperar o "momento certo"</li>
+            <li>Quem se recusa a desperdiçar mais uma hora em curso que não gera receita</li>
+          </ul>
+        </div>
+
+        <!-- Para quem nao e -->
+        <div class="animate-on-scroll">
+          <h3 class="text-[var(--text-h4)] font-semibold mb-6" style="color: var(--text-tertiary);">Pra quem NÃO é</h3>
+          <ul class="builder-qualifier-list builder-qualifier-no">
+            <li>Quem quer aprender IA como hobby intelectual sem intenção de vender</li>
+            <li>Quem espera mágica sem esforço — um curso que faz chover dinheiro</li>
+            <li>Quem busca a opção mais barata, não a mais eficaz</li>
+            <li>Quem trata tempo como infinito — gente de "um dia" não pertence a um movimento que constrói hoje</li>
+            <li>Quem não tem habilidades profissionais existentes pra construir em cima — Time Builders é acelerador, não ponto de partida</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 9: INVESTIMENTO — Surface-1, consultation-style
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-1); padding: var(--space-4xl) 0;"
+    aria-labelledby="investment-heading"
+  >
+    <AmbientPool position="bottom-left" size={400} opacity={0.04} />
+
+    <div class="container-narrow relative z-10">
+      <div class="text-center mb-10 animate-on-scroll">
+        <SectionLabel number="08" class="mb-4 builder-label">Investimento</SectionLabel>
+        <h2 id="investment-heading">Investimento discutido na conversa.</h2>
+      </div>
+
+      <SapphireScanner class="p-8 md:p-10 animate-on-scroll">
+        <div class="text-center">
+          <Z7Icon size={32} variant="glow" class="builder-electric-text mx-auto mb-6" />
+          <h3 class="text-[var(--text-h3)] font-bold mb-4">Z7 Days</h3>
+          <p class="text-[var(--text-body-lg)] leading-relaxed mb-4" style="color: var(--text-secondary); max-width: 520px; margin-left: auto; margin-right: auto;">
+            O investimento é discutido durante o processo seletivo porque depende do seu contexto e momento. O que podemos garantir: o retorno é medido em semanas, não meses.
+          </p>
+          <p class="text-[var(--text-body)] leading-relaxed mb-6" style="color: var(--text-tertiary); max-width: 480px; margin-left: auto; margin-right: auto;">
+            Turmas pequenas. Moroni trabalha diretamente com cada participante. Cada candidatura é lida pessoalmente.
+          </p>
+          <a href="/aplicar" class="builder-cta-primary btn-lg btn-press inline-flex">
+            Enviar Minha Candidatura
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+          </a>
+        </div>
+      </SapphireScanner>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 10: GARANTIA — Surface-0, blue border card
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-0); padding: var(--space-4xl) 0;"
+    aria-labelledby="guarantee-heading"
+  >
+    <div class="container-narrow relative z-10">
+      <div class="text-center mb-10 animate-on-scroll">
+        <SectionLabel number="09" class="mb-4 builder-label">Garantia</SectionLabel>
+      </div>
+
+      <div class="builder-guarantee-card animate-on-scroll">
+        <HourglassIcon size={32} class="builder-electric-text mb-4" />
+        <h2 id="guarantee-heading" class="text-[var(--text-h3)] font-bold mb-4">
+          Trabalhamos ate ver resultados reais.
+        </h2>
+        <p class="text-[var(--text-body-lg)] leading-relaxed" style="color: var(--text-secondary);">
+          Se você não chegou ao resultado, nós não terminamos. Simples assim.
+          Não projetos que morrem no caminho. Não teoria sem aplicação.
+          Moroni e a equipe ficam até o resultado aparecer — porque se você não fatura, nós não cumprimos.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 11: TESTEMUNHOS — Surface-1, placeholder
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-1); padding: var(--space-4xl) 0;"
+    aria-labelledby="testimonials-heading"
+  >
+    <div class="container-standard relative z-10">
+      <div class="text-center mb-12 animate-on-scroll">
+        <SectionLabel number="10" class="mb-4 builder-label">Depoimentos</SectionLabel>
+        <h2 id="testimonials-heading">Quem já construiu com a gente.</h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8 grid-stagger" style="max-width: 900px; margin: 0 auto;">
+        <TestimonialBlock
+          quote="[DEPOIMENTO TIME BUILDER — resultado com IA em X dias]"
+          name="[Nome do Participante]"
+          role="[Cargo / Empresa]"
+          isPlaceholder={true}
+          class="animate-on-scroll"
+        />
+        <TestimonialBlock
+          quote="[DEPOIMENTO TIME BUILDER — transformacao apos Z7 Days]"
+          name="[Nome do Participante]"
+          role="[Cargo / Empresa]"
+          isPlaceholder={true}
+          class="animate-on-scroll"
+        />
+        <TestimonialBlock
+          quote="[DEPOIMENTO TIME BUILDER — receita gerada com IA]"
+          name="[Nome do Participante]"
+          role="[Cargo / Empresa]"
+          isPlaceholder={true}
+          class="animate-on-scroll"
+        />
+        <TestimonialBlock
+          quote="[DEPOIMENTO TIME BUILDER — experiência com Moroni]"
+          name="[Nome do Participante]"
+          role="[Cargo / Empresa]"
+          isPlaceholder={true}
+          class="animate-on-scroll"
+        />
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 12: CREDIBILIDADE / FUNDADOR — Surface-0
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-0); padding: var(--space-4xl) 0;"
+    aria-labelledby="founder-heading"
+  >
+    <HourglassWatermark position="bottom-left" size={320} opacity={0.03} />
+    <AmbientPool position="top-right" size={350} opacity={0.04} />
+
+    <div class="container-standard relative z-10">
+
+      <div class="text-center mb-12 animate-on-scroll">
+        <SectionLabel number="11" class="mb-4 builder-label">O lider</SectionLabel>
+        <h2 id="founder-heading">Moroni Reis — O Primeiro Time Builder</h2>
+      </div>
+
+      <div class="grid md:grid-cols-5 gap-10 items-start" style="max-width: 960px; margin: 0 auto;">
+
+        <!-- Photo placeholder with SapphireScanner -->
+        <div class="md:col-span-2 animate-on-scroll">
+          <SapphireScanner class="aspect-[3/4] flex items-center justify-center">
+            <div class="placeholder-content flex flex-col items-center justify-center text-center p-6 w-full h-full rounded-lg" style="min-height: 300px;">
+              <span class="text-[48px] mb-3" style="color: var(--text-muted);">&#9670;</span>
+              <p style="font-size: var(--text-body-sm); color: var(--text-quaternary);">[Foto Moroni Reis]</p>
+            </div>
+          </SapphireScanner>
+        </div>
+
+        <!-- Bio text -->
+        <div class="md:col-span-3 animate-on-scroll">
+          <p class="text-[var(--text-body-lg)] leading-relaxed" style="color: var(--text-secondary);">
+            Moroni não é guru. Não é visionário num palco distribuindo sabedoria do alto. É um construtor que foi primeiro.
+          </p>
+          <p class="mt-4 text-[var(--text-body)] leading-relaxed" style="color: var(--text-secondary);">
+            Veio do marketing digital. Funis, lançamentos, aquisição de clientes — as mesmas trincheiras onde você opera. Quando a IA chegou, não fez pivot pra virar tech bro. Fez a pergunta que qualquer profissional de negócio faria: "Como eu ganho dinheiro com isso?"
+          </p>
+          <p class="mt-4 text-[var(--text-body)] leading-relaxed" style="color: var(--text-secondary);">
+            E construiu a resposta. Não com diploma de ciência da computação. Com senso de negócio, pensamento estratégico e a disposição de construir antes de ter todas as respostas.
+          </p>
+          <p class="mt-4 text-[var(--text-body)] leading-relaxed" style="color: var(--text-secondary);">
+            Moroni dita o tempo. Suas calls são de 30 minutos, não 60. Seu feedback é direto, não embrulhado. Seus frameworks são prontos pra aplicar, não pra estudar. Ele trata o tempo de cada membro como o recurso sagrado que é.
+          </p>
+
+          <!-- The promise -->
+          <blockquote class="mt-6 pl-5" style="border-left: 2px solid var(--builder-electric);">
+            <p class="text-[var(--text-body)] italic leading-relaxed" style="color: var(--text-secondary);">
+              "Eu vou te mostrar o caminho que percorri. Vou te dar os frameworks que construí. Vou te empurrar mais forte do que você se empurra. Mas você tem que andar. Eu não carrego ninguém. E a gente não anda devagar — a ampulheta está correndo."
+            </p>
+            <cite class="block mt-3 not-italic text-[var(--text-body-sm)] font-semibold text-[var(--text-primary)]">— Moroni Reis</cite>
+          </blockquote>
+
+          <!-- Strategy motif with hourglass -->
+          <div class="mt-6 flex items-center gap-3" style="color: var(--text-quaternary);">
+            <HourglassIcon size={20} class="text-[var(--text-quaternary)]" />
+            <span class="text-[var(--text-micro)] uppercase tracking-[0.1em] font-semibold">O Par Que Foi Primeiro</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 13: FAQ — Surface-1
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-1); padding: var(--space-4xl) 0;"
+    aria-labelledby="faq-heading"
+  >
+    <div class="container-narrow relative z-10">
+      <div class="text-center mb-12 animate-on-scroll">
+        <SectionLabel number="12" class="mb-4 builder-label">Perguntas Frequentes</SectionLabel>
+        <h2 id="faq-heading">FAQ</h2>
+      </div>
+
+      <FaqAccordion items={faqItems} client:visible />
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 14: CTA FINAL — Surface-0, ambient glow
+       ============================================================ -->
+  <section
+    class="relative"
+    style="background: var(--surface-0); padding: var(--space-4xl) 0;"
+    aria-labelledby="final-cta-heading"
+  >
+    <!-- Ambient glow -->
+    <div class="builder-final-glow" aria-hidden="true"></div>
+    <AmbientPool position="center" size={600} opacity={0.06} />
+
+    <div class="container-narrow relative z-10 text-center">
+
+      <div class="animate-on-scroll">
+        <HourglassIcon size={48} class="builder-electric-text mx-auto mb-6" />
+      </div>
+
+      <h2
+        id="final-cta-heading"
+        class="animate-on-scroll"
+        style="font-size: var(--text-h1); max-width: 600px; margin: 0 auto;"
       >
-        Candidatar-se agora &#8594;
+        A Janela Está Aberta. <span class="builder-electric-text">Não Vai Ficar.</span>
+      </h2>
+
+      <div class="animate-on-scroll mt-6" style="max-width: 600px; margin: 0 auto;">
+        <p class="text-[var(--text-body-lg)] leading-relaxed" style="color: var(--text-secondary);">
+          Cada dia que passa é um dia que outro profissional usou pra fechar um projeto de IA que deveria ser seu. Cada semana de "vou pensar" é uma semana de posição de mercado entregue.
+        </p>
+        <p class="mt-4 text-[var(--text-body)] leading-relaxed" style="color: var(--text-secondary);">
+          Time Builders são poucos por turma. O processo é seletivo. Não porque somos elitistas — porque Moroni trabalha diretamente com cada participante. Turmas pequenas. Acompanhamento real. Construção junto.
+        </p>
+        <p class="mt-4 text-[var(--text-body)] leading-relaxed" style="color: var(--text-secondary);">
+          7 dias. 7 meses comprimidos. O relógio não para. Nós também não.
+        </p>
+      </div>
+
+      <div class="animate-on-scroll mt-10 flex flex-col items-center gap-3">
+        <a href="/aplicar" class="builder-cta-primary btn-hero btn-press">
+          Enviar Minha Candidatura
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+        </a>
+        <p style="font-size: var(--text-body-sm); color: var(--text-quaternary);">
+          Turmas pequenas. Processo seletivo. Cada candidatura é lida pelo Moroni.
+        </p>
+      </div>
+
+      <!-- Signature -->
+      <div class="mt-16 animate-on-scroll">
+        <p class="text-[var(--text-body-sm)] font-semibold builder-electric-text mb-1">O Tempo é Rei.</p>
+        <p style="font-size: var(--text-body-sm); color: var(--text-quaternary);">
+          Nós falamos. Nós criamos. Nós somos Time Builders.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION 15: FLOATING CTA — Mobile-only sticky bar
+       ============================================================ -->
+  <div
+    id="floating-cta"
+    class="builder-floating-cta"
+    role="complementary"
+    aria-label="Candidatura rápida"
+  >
+    <div class="builder-floating-inner">
+      <span class="builder-floating-text">Time Builders</span>
+      <a href="/aplicar" class="builder-floating-btn">
+        Aplicar
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
       </a>
     </div>
   </div>
 
-  <script>
-    const stickyCta = document.getElementById('sticky-cta');
-    const heroSection = document.querySelector('section');
-
-    if (stickyCta) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) {
-              stickyCta.classList.remove('translate-y-full');
-              stickyCta.setAttribute('aria-hidden', 'false');
-            } else {
-              stickyCta.classList.add('translate-y-full');
-              stickyCta.setAttribute('aria-hidden', 'true');
-            }
-          });
-        },
-        { threshold: 0.1 }
-      );
-      if (heroSection) observer.observe(heroSection);
-    }
-  </script>
-
-  <!-- SECTION 2: PROBLEM / AGITATION -->
-  <section style="background-color: #111113; padding: 96px 0;" class="md:py-28 lg:py-32">
-    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
-      <div class="max-w-[720px]">
-        <h2
-          class="reveal leading-tight"
-          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
-        >
-          Seus Concorrentes Já Estão Vendendo AI. O Que Isso Significa para Você.
-        </h2>
-
-        <div class="mt-8 space-y-5 text-base md:text-[17px] leading-relaxed reveal" style="color: rgba(255,255,255,0.65);">
-          <p>Você já viu isso acontecer.</p>
-          <p>Uma agência que você conhece — talvez menor do que a sua — se reposicionou em torno de serviços de AI. Os preços subiram. Os clientes ficaram. Eles estão ganhando trabalhos que antes iam para você só pela reputação.</p>
-          <p>Enquanto isso, você está observando.</p>
-          <p>Não porque não entende a oportunidade. Você entende. AI é a maior virada no mercado de agências desde as redes sociais — e você sabe exatamente para onde isso vai.</p>
-          <p>O problema não é a tecnologia.</p>
-          <p><strong style="color: #ffffff; font-weight: 600;">O problema é que você não tem uma oferta empacotada, um processo de entrega claro nem uma conversa de vendas que fecha — e construir tudo isso do zero é um projeto de tempo integral enquanto você já toca uma agência de tempo integral.</strong></p>
-          <p>Provavelmente você já tentou alguma versão disso:</p>
-        </div>
-
-        <ul class="mt-6 space-y-3 reveal">
-          {[
-            'Assistiu dezenas de horas de tutoriais de AI e ainda não sabe o que vender',
-            'Experimentou ChatGPT, Make.com ou n8n e chegou no limite de tentar descobrir sozinho',
-            'Vendeu uma capacidade de "fazemos AI" para um cliente — e depois teve que se virar para entregar',
-            'Precificou um projeto de AI no achômetro, deixou dinheiro na mesa e não sabia como estruturar o próximo',
-            'Perdeu um cliente — ou quase perdeu — para uma agência que se moveu mais rápido',
-          ].map(item => (
-            <li class="flex items-start gap-3 text-[15px]" style="color: rgba(255,255,255,0.55);">
-              <span style="color: rgba(255,255,255,0.3); margin-top: 2px;" aria-hidden="true">—</span>
-              {item}
-            </li>
-          ))}
-        </ul>
-
-        <div class="mt-8 space-y-4 text-base md:text-[17px] leading-relaxed reveal" style="color: rgba(255,255,255,0.65);">
-          <p>Isso não é falta de conhecimento. É falta de estrutura.</p>
-          <p>Você não precisa de mais tutoriais. Você precisa de um framework, uma metodologia e alguém que já abriu esse caminho — para parar de experimentar e começar a faturar.</p>
-        </div>
-
-        <!-- Market data callout box -->
-        <div
-          class="mt-8 rounded-2xl p-6 sm:p-8 reveal"
-          style="background-color: #1c1c1e; border: 1px solid rgba(255,255,255,0.06);"
-        >
-          <p class="text-base md:text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
-            Os 60–70% de baixo das agências digitais vão entrar em uma corrida para o fundo em 2–3 anos. Não porque são ruins no que fazem. Porque não se diferenciaram.
-          </p>
-          <p class="text-lg sm:text-xl font-semibold mt-4" style="color: #ffffff;">Projetos de AI vendem por $5.000–$20.000.</p>
-          <p class="text-base md:text-[17px] mt-2 leading-relaxed" style="color: rgba(255,255,255,0.65);">
-            As agências que os vendem estão adicionando novos fluxos de receita por cima dos retainers existentes — não substituindo um pelo outro. A janela está aberta agora. Mas não vai ficar aberta para sempre.
-          </p>
-        </div>
-
-        <!-- Hourglass inline functional closer -->
-        <div class="mt-8 space-y-3 reveal">
-          <p class="flex items-start gap-3 text-base md:text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
-            <HourglassIcon size={20} class="text-accent flex-shrink-0 mt-1" />
-            <span>Esse é o custo que não aparece em nenhuma nota fiscal. A cada mês que você espera, um concorrente fecha um cliente de AI que você poderia ter fechado. A cada mês, a curva de aprendizado fica mais comprimida — mas a janela de oportunidade também. A cada mês, as agências que se moveram antes acumulam mais casos de sucesso, sobem preços e fidelizam clientes em retainer.</span>
-          </p>
-          <p class="text-base md:text-[17px] leading-relaxed pl-8" style="color: rgba(255,255,255,0.65);">O tempo não passa simplesmente. Ele se acumula — a favor deles.</p>
-          <p class="text-lg sm:text-xl font-semibold pl-8" style="color: #ffffff;">O verdadeiro custo de esperar não é dinheiro. É o tempo que não volta.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 3: SOLUTION REVEAL -->
-  <section style="background-color: #080808; padding: 96px 0;" class="md:py-28 lg:py-32">
-    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
-      <div class="max-w-[720px]">
-        <div class="reveal">
-          <SectionLabel>A Solução</SectionLabel>
-        </div>
-        <h2
-          class="reveal mt-5 leading-tight"
-          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
-        >
-          É para Isso que o Programa Reis IA Builder Foi Criado.
-        </h2>
-
-        <div class="mt-8 space-y-5 text-base md:text-[17px] leading-relaxed reveal" style="color: rgba(255,255,255,0.65);">
-          <p>Pense assim.</p>
-          <p>Um curso te dá as peças. O Builder te ensina a jogar a partida.</p>
-          <p>A cada semana, você não está só aprendendo AI — você está se posicionando. Estruturando sua oferta. Mapeando seu mercado. Construindo o sistema de vendas. Entregando o primeiro projeto. Cada etapa é intencional. Cada módulo te aproxima de uma posição de receita que seus concorrentes ainda não ocuparam.</p>
-          <p class="text-lg sm:text-xl font-semibold" style="color: #ffffff;">Não construímos AI. Posicionamos as peças certas antes de mover.</p>
-          <p>É isso que separa as agências que fecham clientes de AI das agências que só "fazem AI."</p>
-        </div>
-      </div>
-
-      <!-- Comparison table -->
-      <div class="mt-10 max-w-[800px] reveal">
-        <div
-          class="rounded-2xl overflow-hidden"
-          style="background-color: #111113; border: 1px solid rgba(255,255,255,0.06);"
-        >
-          <div class="grid grid-cols-2" style="background-color: #1c1c1e;">
-            <div class="px-4 sm:px-5 py-4 text-[13px] uppercase tracking-widest" style="color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">Curso</div>
-            <div class="px-4 sm:px-5 py-4 text-[13px] uppercase tracking-widest text-accent" style="letter-spacing: 0.08em;">Builder</div>
-          </div>
-          {[
-            ['Informação', 'Aplicação'],
-            ['Assistir passivamente', 'Sessões semanais de trabalho real'],
-            ['Templates genéricos', 'Sua oferta específica, precificada, empacotada e pronta para vender'],
-            ['Implementação solitária', 'Suporte direto nos seus primeiros 1–2 projetos com clientes'],
-            ['Você corre atrás de clientes sozinho', 'Sistema de aquisição de clientes construído durante o programa'],
-            ['Certificado na parede, sem receita', 'Receita antes de o programa terminar'],
-          ].map(([course, builder]) => (
-            <div class="grid grid-cols-2" style="border-top: 1px solid rgba(255,255,255,0.06);">
-              <div class="px-4 sm:px-5 py-4 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.35);">{course}</div>
-              <div class="px-4 sm:px-5 py-4 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.85);">{builder}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <p class="mt-8 text-base md:text-[17px] leading-relaxed max-w-[720px] reveal" style="color: rgba(255,255,255,0.65);">
-        O Builder foi feito para quem é sério em adicionar AI como um fluxo de receita real — não para quem quer algo bonito para colocar no LinkedIn.
-      </p>
-
-      <!-- Inline CTA after comparison -->
-      <div class="mt-10 reveal text-center sm:text-left">
-        <Button variant="primary" href="/aplicar" class="w-full sm:w-auto text-center">Quero me candidatar à próxima turma &#8594;</Button>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 4: PROGRAM DETAIL -->
-  <section style="background-color: #111113; padding: 96px 0;" class="md:py-28 lg:py-32">
-    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
-      <div class="reveal">
-        <SectionLabel>O Programa</SectionLabel>
-        <h2
-          class="mt-5 leading-tight"
-          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
-        >
-          12 Semanas. Quatro Módulos. Um Objetivo — Receita.
-        </h2>
-      </div>
-
-      <p class="text-base md:text-lg lg:text-xl mt-4 max-w-[720px] leading-relaxed reveal" style="color: rgba(255,255,255,0.55);">
-        Pense nas 12 semanas como uma partida jogada em quatro lances. A maioria das agências perde no AI não por falta de habilidade — mas por mover peças sem ter uma posição. O Builder inverte isso. Cada módulo é um lance deliberado. Cada um constrói sua posição antes de avançar para o próximo.
-      </p>
-
-      <!-- Module cards — premium journey map -->
-      <div class="mt-14 space-y-6 reveal-stagger">
-
-        <!-- Module 01 -->
-        <div class="reveal card-interactive group overflow-hidden" style="border-radius: 16px;">
-          <!-- Card visual header -->
-          <div
-            class="flex items-end gap-4 p-6 pb-5"
-            style="background: linear-gradient(135deg, rgba(201,168,76,0.12) 0%, rgba(201,168,76,0.03) 100%); border-bottom: 1px solid rgba(255,255,255,0.06);"
-          >
-            <span class="text-[56px] font-light text-accent leading-none" style="font-weight: 200;">01</span>
-            <div>
-              <div class="flex flex-wrap items-center gap-3 mb-1">
-                <h3 class="text-xl sm:text-2xl font-semibold" style="color: #ffffff;">Arquitetura da Oferta de AI</h3>
-                <ChessKnightIcon size={20} class="text-accent icon-hover" />
-              </div>
-              <span class="text-xs uppercase tracking-widest px-2 py-0.5 rounded" style="background-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">SEMANAS 1–2</span>
-            </div>
-          </div>
-          <div class="p-6 sm:p-8">
-            <p class="text-sm font-medium italic mb-4 text-accent-muted">O lance de abertura. Você não pode vencer um jogo que não configurou.</p>
-            <p class="text-sm md:text-base leading-relaxed mb-5" style="color: rgba(255,255,255,0.55);">Antes de vender AI, você precisa saber exatamente o que está vendendo. A maioria das agências comete o erro de dizer "fazemos AI" — e isso não é uma oferta. É uma categoria.</p>
-            <ul class="space-y-2">
-              {['Mapeie seu mercado e identifique as oportunidades de AI de maior valor para seus clientes', 'Estruture sua oferta de AI — entregáveis, posicionamento, precificação e apresentação', 'Crie sua documentação de oferta: template de proposta, calculadora de precificação, framework de escopo', 'Saia com um serviço de AI específico e empacotado que sua agência pode vender esta semana'].map(bullet => (
-                <li class="flex items-start gap-2 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.55);">
-                  <IconCheckCircle size={16} class="text-accent flex-shrink-0 mt-0.5" />
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <!-- Module 02 -->
-        <div class="reveal card-interactive group overflow-hidden" style="border-radius: 16px;">
-          <div
-            class="flex items-end gap-4 p-6 pb-5"
-            style="background: linear-gradient(135deg, rgba(201,168,76,0.09) 0%, rgba(201,168,76,0.02) 100%); border-bottom: 1px solid rgba(255,255,255,0.06);"
-          >
-            <span class="text-[56px] font-light text-accent leading-none" style="font-weight: 200;">02</span>
-            <div>
-              <div class="flex flex-wrap items-center gap-3 mb-1">
-                <h3 class="text-xl sm:text-2xl font-semibold" style="color: #ffffff;">Aquisição de Clientes</h3>
-                <IconTrendingUp size={20} class="text-accent icon-hover" />
-              </div>
-              <span class="text-xs uppercase tracking-widest px-2 py-0.5 rounded" style="background-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">SEMANAS 3–4</span>
-            </div>
-          </div>
-          <div class="p-6 sm:p-8">
-            <p class="text-sm font-medium italic mb-4 text-accent-muted">Posicione antes de avançar. Uma oferta sem prospects é só um documento.</p>
-            <p class="text-sm md:text-base leading-relaxed mb-5" style="color: rgba(255,255,255,0.55);">Uma oferta sem um sistema de vendas não vale nada.</p>
-            <ul class="space-y-2">
-              {['Construa seu sistema de prospecção e outreach — LinkedIn, e-mail, caminhos de indicação', 'Desenvolva conteúdo que atrai compradores de AI até você — sem precisar correr atrás', 'Domine a conversa de vendas de AI: como posicionar o valor, lidar com objeções e fechar pelo resultado', 'Conduza suas primeiras conversas de vendas com prospects reais — com coaching sobre o que ajustar'].map(bullet => (
-                <li class="flex items-start gap-2 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.55);">
-                  <IconCheckCircle size={16} class="text-accent flex-shrink-0 mt-0.5" />
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <!-- Module 03 -->
-        <div class="reveal card-interactive group overflow-hidden" style="border-radius: 16px;">
-          <div
-            class="flex items-end gap-4 p-6 pb-5"
-            style="background: linear-gradient(135deg, rgba(201,168,76,0.09) 0%, rgba(201,168,76,0.02) 100%); border-bottom: 1px solid rgba(255,255,255,0.06);"
-          >
-            <span class="text-[56px] font-light text-accent leading-none" style="font-weight: 200;">03</span>
-            <div>
-              <div class="flex flex-wrap items-center gap-3 mb-1">
-                <h3 class="text-xl sm:text-2xl font-semibold" style="color: #ffffff;">Framework de Implementação</h3>
-                <IconLayers size={20} class="text-accent icon-hover" />
-              </div>
-              <span class="text-xs uppercase tracking-widest px-2 py-0.5 rounded" style="background-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">SEMANAS 5–8</span>
-            </div>
-          </div>
-          <div class="p-6 sm:p-8">
-            <p class="text-sm font-medium italic mb-4 text-accent-muted">Execute com precisão. Você vendeu — agora é hora de entregar direito.</p>
-            <p class="text-sm md:text-base leading-relaxed mb-5" style="color: rgba(255,255,255,0.55);">Você vendeu. Agora entrega — e entrega bem.</p>
-            <ul class="space-y-2">
-              {['Aprenda a metodologia Revenue-First de implementação — construa a coisa certa, não qualquer coisa', 'Configure sua infraestrutura de entrega: ferramentas, processos, templates e checklists de qualidade', 'Entregue seu primeiro projeto de AI com cliente — com a Reis IA como backup técnico e estratégico', 'Documente a entrega para que cada projeto futuro seja repetível e escalável'].map(bullet => (
-                <li class="flex items-start gap-2 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.55);">
-                  <IconCheckCircle size={16} class="text-accent flex-shrink-0 mt-0.5" />
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <!-- Module 04 -->
-        <div class="reveal card-interactive group overflow-hidden" style="border-radius: 16px;">
-          <div
-            class="flex items-end gap-4 p-6 pb-5"
-            style="background: linear-gradient(135deg, rgba(201,168,76,0.12) 0%, rgba(201,168,76,0.03) 100%); border-bottom: 1px solid rgba(255,255,255,0.06);"
-          >
-            <span class="text-[56px] font-light text-accent leading-none" style="font-weight: 200;">04</span>
-            <div>
-              <div class="flex flex-wrap items-center gap-3 mb-1">
-                <h3 class="text-xl sm:text-2xl font-semibold" style="color: #ffffff;">Escalar e Sistematizar</h3>
-                <IconRocket size={20} class="text-accent icon-hover" />
-              </div>
-              <span class="text-xs uppercase tracking-widest px-2 py-0.5 rounded" style="background-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">SEMANAS 9–12</span>
-            </div>
-          </div>
-          <div class="p-6 sm:p-8">
-            <p class="text-sm font-medium italic mb-4 text-accent-muted">Endgame. Transforme uma vitória em um sistema que continua vencendo.</p>
-            <p class="text-sm md:text-base leading-relaxed mb-5" style="color: rgba(255,255,255,0.55);">Transforme um cliente em um pipeline. Transforme uma entrega em um processo.</p>
-            <ul class="space-y-2">
-              {['Construa um sistema de indicação e recompra — para a receita de AI não parar quando o outreach parar', 'Estruture a entrega para não depender só de você — você pode trazer suporte à medida que cresce', 'Explore o caminho para o Reis IA Partners — venda projetos que não consegue entregar sozinho, com a Reis IA como espinha dorsal', 'Planeje seu próximo milestone de receita com um sistema documentado por trás'].map(bullet => (
-                <li class="flex items-start gap-2 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.55);">
-                  <IconCheckCircle size={16} class="text-accent flex-shrink-0 mt-0.5" />
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- Deliverables block -->
-      <div
-        class="mt-10 sm:mt-14 rounded-2xl p-6 sm:p-8 reveal"
-        style="background-color: #1c1c1e; border: 1px solid rgba(255,255,255,0.06);"
-      >
-        <h3 class="text-xl sm:text-2xl font-semibold mb-6 sm:mb-8" style="color: #ffffff;">Tudo que Vem com o Programa</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <p class="text-sm font-semibold uppercase tracking-widest mb-4" style="color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">Entregáveis Principais</p>
-            <ul class="space-y-3">
-              {[
-                'Sessões ao vivo semanais (em grupo ou 1:1 — depende do tier)',
-                'Acesso completo aos templates, frameworks e SOPs de implementação da Reis IA',
-                'Acesso direto ao Moroni via WhatsApp e Slack para dúvidas entre sessões',
-                'Suporte de implementação nos seus primeiros 1–2 projetos com clientes',
-                'Acesso vitalício à comunidade Reis IA Network',
-              ].map(item => (
-                <li class="flex items-start gap-3 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.65);">
-                  <IconCheckCircle size={16} class="flex-shrink-0 mt-0.5" style="color: #4ade80;" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p class="text-sm font-semibold uppercase tracking-widest mb-4" style="color: rgba(255,255,255,0.4); letter-spacing: 0.08em;">Bônus Inclusos</p>
-            <ul class="space-y-3">
-              {[
-                'Templates de proposta de AI prontos para usar e editar',
-                'Calculadora de precificação de projetos de AI',
-                'Scripts para quebrar objeções em conversas de vendas de AI',
-                'Acesso ao caminho para o Reis IA Partners ao concluir o programa',
-              ].map(item => (
-                <li class="flex items-start gap-3 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.65);">
-                  <IconStar size={16} class="text-accent flex-shrink-0 mt-0.5" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 5: WHO IT'S FOR — card grid with hover dimming -->
-  <section style="background-color: #080808; padding: 96px 0;" class="md:py-28 lg:py-32">
-    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
-      <div class="text-center mb-12 reveal">
-        <SectionLabel>Para Quem É</SectionLabel>
-        <h2
-          class="mt-5"
-          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
-        >
-          O Builder É para Você?
-        </h2>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 card-grid-hover reveal-stagger">
-        <!-- For You -->
-        <div class="card-item reveal card-interactive p-6 sm:p-8 group">
-          <div
-            class="card-visual-top mb-6 rounded-xl flex items-end p-4"
-            style="background: linear-gradient(135deg, rgba(74,222,128,0.08) 0%, rgba(74,222,128,0.02) 100%); border: 1px solid rgba(74,222,128,0.12);"
-            aria-hidden="true"
-          >
-            <IconCheckCircle size={28} class="icon-hover" style="color: #4ade80;" />
-          </div>
-          <h3 class="text-xl sm:text-2xl font-semibold mb-5" style="color: #ffffff;">Este Programa É para Você Se:</h3>
-          <ul class="space-y-4">
-            {[
-              'Você tem uma agência digital ou negócio de serviços e quer AI como fluxo de receita real',
-              'Você enxerga a oportunidade mas trava no que vender, como precificar ou como entregar',
-              'Você está perdendo clientes ou leads para concorrentes com oferta de AI — ou já vê isso vindo',
-              'Você está disposto a aparecer, implementar e fechar clientes reais durante as 12 semanas',
-              'Você entende que um único cliente de AI já paga o investimento no programa',
-            ].map(item => (
-              <li class="flex items-start gap-3 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.65);">
-                <IconCheckCircle size={18} class="flex-shrink-0 mt-0.5" style="color: #4ade80;" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <!-- Not For You -->
-        <div class="card-item reveal card-interactive p-6 sm:p-8 group">
-          <div
-            class="card-visual-top mb-6 rounded-xl flex items-end p-4"
-            style="background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255,255,255,0.06);"
-            aria-hidden="true"
-          >
-            <svg class="icon-hover" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: rgba(239,68,68,0.5);">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </div>
-          <h3 class="text-xl sm:text-2xl font-semibold mb-5" style="color: #ffffff;">Este Programa NÃO É para Você Se:</h3>
-          <ul class="space-y-4">
-            {[
-              'Você está buscando atalho ou renda passiva sem esforço — o Builder exige trabalho real',
-              'Você quer que o Moroni gerencie sua agência por você — isso é mentoria, não terceirização',
-              'Você ainda não tem nenhuma receita no negócio — o Builder é acelerador, não kit inicial',
-              'Você é apenas "curioso sobre AI" sem intenção de implementar — este programa é focado em resultado',
-              'Você está caçando a opção mais barata — os clientes do Builder são sérios sobre ROI',
-            ].map(item => (
-              <li class="flex items-start gap-3 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.45);">
-                <svg class="w-[18px] h-[18px] mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: rgba(239,68,68,0.45);">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- HIGHLIGHT BANNER — Builder cohort -->
-  <HighlightBanner
-    badge="Próxima Turma Builder"
-    title="Reis IA Builder — Abril 2026"
-    description="Vagas limitadas. O próximo grupo começa em Abril. Se você quer posicionar sua agência para vender AI de alto valor, esta é a entrada."
-    ctaText="Quero garantir minha vaga"
-    ctaHref="/aplicar"
-  />
-
-  <!-- SECTION 6: OBJECTION HANDLING -->
-  <section style="background-color: #111113; padding: 96px 0;" class="md:py-28 lg:py-32">
-    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
-      <div class="reveal">
-        <SectionLabel>Perguntas Frequentes</SectionLabel>
-        <h2
-          class="mt-5 mb-10"
-          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
-        >
-          O Que Você Está Pensando — e a Resposta Honesta.
-        </h2>
-      </div>
-
-      <div class="max-w-[800px] space-y-10">
-        <!-- Objection 1 -->
-        <div class="pb-10 reveal" style="border-bottom: 1px solid rgba(255,255,255,0.07);">
-          <h3 class="text-xl sm:text-2xl font-semibold mb-4" style="color: #ffffff;">Consigo vender AI sem ser técnico?</h3>
-          <div class="space-y-4 text-base md:text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
-            <p>Essa é a dúvida mais comum — e o equívoco mais importante a desfazer.</p>
-            <p>Os melhores vendedores de AI não são os mais técnicos. São os melhores estrategistas de negócio.</p>
-            <p>Seu papel como dono de agência é identificar a oportunidade de receita no negócio do cliente e vender o resultado. A implementação técnica é a camada de execução — e é exatamente isso que o Builder te ensina a estruturar, terceirizar ou entregar pelo ecossistema Reis IA.</p>
-            <p>83% dos líderes de tecnologia terceirizam ao menos parte das iniciativas de AI. Até as pessoas técnicas terceirizam. Você não precisa entender redes neurais. Você precisa entender onde AI gera dinheiro — e isso é uma habilidade de estratégia de negócio, não de programação.</p>
-          </div>
-        </div>
-
-        <!-- Objection 2 -->
-        <div class="pb-10 reveal" style="border-bottom: 1px solid rgba(255,255,255,0.07);">
-          <h3 class="text-xl sm:text-2xl font-semibold mb-4" style="color: #ffffff;">E se eu não fechar nenhum cliente durante o programa?</h3>
-          <div class="space-y-4 text-base md:text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
-            <p>O programa é estruturado exatamente para evitar isso.</p>
-            <p>O Módulo 2 é dedicado inteiramente à aquisição de clientes. Você vai construir seu sistema de outreach, conduzir conversas de vendas ao vivo e receber coaching direto sobre o que ajustar. Até a Semana 4, você deve ter prospects ativos no seu pipeline.</p>
-            <p>E se você completar todos os módulos e ainda não tiver uma oferta vendável de AI? Reembolso total.</p>
-            <p>Damos essa garantia porque a metodologia funciona — e porque só aceitamos quem acreditamos que vai colocar o trabalho em prática.</p>
-          </div>
-        </div>
-
-        <!-- Objection 3 -->
-        <div class="pb-10 reveal" style="border-bottom: 1px solid rgba(255,255,255,0.07);">
-          <h3 class="text-xl sm:text-2xl font-semibold mb-4" style="color: #ffffff;">$4.000–$15.000 é muito para investir agora?</h3>
-          <div class="space-y-4 text-base md:text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
-            <p>Vamos fazer as contas juntos.</p>
-            <p>Um projeto de AI vende por $5.000–$20.000.</p>
-            <p>O programa Builder se paga no primeiro cliente — muitas vezes antes de o programa terminar.</p>
-            <p>A pergunta real não é se o investimento vale. É: quanto custa mais 12 meses esperando?</p>
-            <p>A cada mês, agências estão adicionando serviços de AI, subindo preços e levando clientes que antes te consideravam. Esse custo é invisível. Mas é real.</p>
-          </div>
-        </div>
-
-        <!-- Objection 4: Hourglass variation -->
-        <div class="pb-10 reveal" style="border-bottom: 1px solid rgba(255,255,255,0.07);">
-          <h3 class="text-xl sm:text-2xl font-semibold mb-4 flex items-center gap-2 flex-wrap" style="color: #ffffff;">
-            <HourglassIcon size={20} class="text-accent flex-shrink-0" />
-            E se eu não tiver tempo enquanto toco minha agência?
-          </h3>
-          <div class="space-y-4 text-base md:text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
-            <p>O Builder foi projetado para fundadores com negócios existentes — não para estudantes com agenda livre.</p>
-            <p>As sessões são estruturadas, não abertas. Templates e frameworks reduzem em até 80% o tempo que levaria descobrir isso sozinho. E o programa é desenhado para gerar receita durante as 12 semanas — então ele paga pelo tempo que exige.</p>
-            <p>Se você consegue comprometer 5–8 horas por semana durante 12 semanas, você consegue fazer isso.</p>
-            <p>A pergunta real sobre tempo não é "tenho 5–8 horas por semana?" — você tem, se olhar o que essas horas produzem hoje. A pergunta real é: como serão os próximos 12 meses se você os gastar da mesma forma que gastou os últimos 12?</p>
-            <p>As agências que passaram pelo Builder gastaram 5–8 horas por semana por 12 semanas. As que não passaram gastaram esse mesmo tempo da mesma forma que fizeram nos meses anteriores — vendo concorrentes avançar, travadas no que vender, perdendo terreno que não volta mais.</p>
-            <p>O tempo no Builder não é custo. É o único investimento onde o que você constrói paga de volta o tempo que você colocou.</p>
-          </div>
-        </div>
-
-        <!-- Objection 5: Chess variation -->
-        <div class="reveal">
-          <h3 class="text-xl sm:text-2xl font-semibold mb-4 flex items-center gap-2 flex-wrap" style="color: #ffffff;">
-            <ChessKnightIcon size={20} class="text-accent flex-shrink-0" />
-            Já investi em programas antes e não tive resultado.
-          </h3>
-          <div class="space-y-4 text-base md:text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
-            <p>Essa é uma preocupação legítima — e eu levo a sério.</p>
-            <p>O que é diferente aqui: o Builder não é um curso com vídeos pré-gravados. É uma mentoria ao vivo com acesso direto, accountability semanal e suporte de implementação em projetos reais com clientes.</p>
-            <p>A garantia existe porque sei a diferença entre quem aparece e executa e quem compra e some. Quero o primeiro tipo — e protejo os dois com a garantia.</p>
-            <p>Pergunta de diagnóstico que eu faria antes de qualquer programa: ele foi construído em torno de entregar informação, ou em torno de construir uma posição de receita real?</p>
-            <p>A maioria dos programas te entrega as peças e chama de xadrez. Você sai sabendo o que uma torre faz — mas nunca jogou uma partida de verdade.</p>
-            <p>O Builder é diferente de um jeito específico: o objetivo não é você saber mais sobre AI. O objetivo é você ter uma oferta vendável, um cliente no pipeline e um primeiro projeto em entrega — antes de as 12 semanas acabarem. Cada sessão, cada módulo, cada acesso ao Moroni foi desenhado em torno desse único resultado.</p>
-            <p>Você não estuda até chegar a uma posição de receita. Você tem que construir uma. Isso é o Builder.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 7: GUARANTEE -->
-  <section style="background-color: #080808; padding: 96px 0;" class="md:py-28 lg:py-32">
-    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
-      <div class="max-w-[720px] mx-auto text-center reveal">
-        <!-- Shield icon -->
-        <div
-          class="w-20 h-20 rounded-2xl mx-auto mb-8 flex items-center justify-center"
-          style="background: linear-gradient(135deg, rgba(201,168,76,0.12) 0%, rgba(201,168,76,0.04) 100%); border: 1px solid rgba(201,168,76,0.18);"
-        >
-          <IconShield size={40} class="text-accent" />
-        </div>
-
-        <h2
-          class="leading-tight"
-          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
-        >
-          A Garantia Builder: Construa Sua Oferta ou Receba Seu Dinheiro de Volta
-        </h2>
-
-        <div class="mt-8 space-y-5 text-base md:text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
-          <p>Complete todos os módulos do programa Builder.</p>
-          <p>Se você fizer o trabalho — aparecer nas sessões, completar os exercícios, conduzir conversas de vendas reais, tentar entregar o primeiro projeto — e não sair com uma oferta vendável de AI, você recebe um reembolso total.</p>
-          <p>Sem letras miúdas. Sem pegadinhas.</p>
-          <p>Estruturamos assim porque a garantia protege os dois lados. Queremos clientes sérios — e queremos provar que a metodologia funciona.</p>
-          <p>O requisito é a conclusão, não a perfeição. Faça o trabalho. Tenha os resultados ou receba seu dinheiro de volta.</p>
-
-          <!-- Hourglass guarantee closing -->
-          <p>Tem só uma coisa que a garantia não cobre.</p>
-          <div class="flex items-center justify-center gap-3 my-4">
-            <HourglassIcon size={20} class="text-accent" />
-            <p class="text-[26px] sm:text-[30px] font-bold" style="color: #ffffff; font-weight: 300;">Tempo.</p>
-          </div>
-          <p>Se você esperar mais três meses antes de se candidatar, nenhuma política de reembolso devolve esses meses. As agências que estão se movendo agora estão construindo vantagem de tempo — casos de sucesso, relacionamentos com clientes, posicionamento de mercado — que se acumula enquanto outros ainda deliberam.</p>
-          <p class="font-semibold" style="color: #ffffff;">Faça o trabalho. Construa a oferta. Ou receba seu dinheiro de volta. Mas não deixe a garantia ser o motivo de você esperar.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMPACT AUTHORITY SECTION -->
-  <section style="background-color: #111113; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06);">
-    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
-      <div class="flex flex-col md:flex-row items-center justify-center gap-6 text-center md:text-left reveal">
-        <div>
-          <p class="text-sm font-semibold" style="color: rgba(255,255,255,0.45); letter-spacing: 0.06em; text-transform: uppercase; font-size: 11px;">Por trás do programa</p>
-          <p class="text-base font-bold mt-1" style="color: #ffffff;">Reis IA</p>
-        </div>
-        <div class="hidden md:block w-px h-10" style="background: rgba(255,255,255,0.08);"></div>
-        <div class="flex flex-wrap items-center justify-center gap-2">
-          {['+50 implementações', 'Revenue-First Framework', 'Ecossistema completo de AI', '12 semanas, resultado real'].map(pill => (
-            <span
-              class="text-[11px] font-medium px-3 py-1.5 rounded-full"
-              style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2); color: rgba(201,168,76,0.85); letter-spacing: 0.04em;"
-            >{pill}</span>
-          ))}
-        </div>
-        <div class="hidden md:block w-px h-10" style="background: rgba(255,255,255,0.08);"></div>
-        <p class="text-sm" style="color: rgba(255,255,255,0.4); max-width: 260px;">Metodologia construída para agências, por quem já vendeu e entregou AI.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 8: PRICING AND APPLICATION -->
-  <section style="background-color: #080808; padding: 96px 0;" class="md:py-28 lg:py-32" id="apply">
-    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
-      <div class="text-center mb-4 reveal">
-        <SectionLabel>Investimento</SectionLabel>
-        <h2
-          class="mt-5"
-          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
-        >
-          Garanta Sua Vaga na Próxima Turma
-        </h2>
-        <p class="text-sm sm:text-base font-medium mt-3" style="color: rgba(255,255,255,0.45);">
-          Vagas disponíveis: máximo de 12 participantes por turma
-        </p>
-      </div>
-
-      <!-- Pricing cards — card-grid-hover with premium styling -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 card-grid-hover reveal-stagger">
-        <!-- Group -->
-        <div class="card-item reveal card-interactive p-6 sm:p-8 flex flex-col group overflow-hidden" style="border-radius: 16px;">
-          <div
-            class="card-visual-top mb-6 rounded-xl flex items-end p-4"
-            style="background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255,255,255,0.06);"
-            aria-hidden="true"
-          >
-            <IconUsers size={28} class="text-accent icon-hover" style="opacity: 0.7;" />
-          </div>
-          <Badge variant="neutral" class="self-start mb-4">Em Grupo</Badge>
-          <p class="leading-none mb-1 text-accent" style="font-size: clamp(32px, 4vw, 44px); font-weight: 300;">A partir de $4.000</p>
-          <p class="text-sm mb-5" style="color: rgba(255,255,255,0.35);">por participante</p>
-          <ul class="space-y-3 flex-1 mb-6">
-            {['Sessões semanais de coaching em grupo', 'Acesso completo a templates e frameworks', 'Comunidade e suporte entre pares', 'Suporte de implementação no primeiro projeto', 'Reis IA Network (vitalício)'].map(item => (
-              <li class="flex items-start gap-2 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.65);">
-                <IconCheckCircle size={16} class="flex-shrink-0 mt-0.5" style="color: #4ade80;" />
-                {item}
-              </li>
-            ))}
-          </ul>
-          <p class="text-sm italic mb-5" style="color: rgba(255,255,255,0.35);">Ideal para: agências que estão começando a jornada com AI e empreendedores em fase inicial.</p>
-          <Button variant="secondary" href="/aplicar" class="w-full text-center">Candidatar-se agora &#8594;</Button>
-        </div>
-
-        <!-- Premium (highlighted) -->
-        <div
-          class="card-item reveal card-interactive flex flex-col relative group overflow-hidden"
-          style="border-radius: 16px; padding: 24px 32px 32px; background-color: rgba(201,168,76,0.03); border: 1px solid rgba(201,168,76,0.2) !important;"
-        >
-          <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-            <Badge variant="recommended">Recomendado</Badge>
-          </div>
-          <div
-            class="card-visual-top mb-6 rounded-xl flex items-end p-4 mt-4"
-            style="background: linear-gradient(135deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.04) 100%); border: 1px solid rgba(201,168,76,0.18);"
-            aria-hidden="true"
-          >
-            <ChessKnightIcon size={28} class="text-accent icon-hover" />
-          </div>
-          <Badge variant="accent" class="self-start mb-4">Premium</Badge>
-          <p class="leading-none mb-1 text-accent" style="font-size: clamp(32px, 4vw, 44px); font-weight: 300;">A partir de $8.000</p>
-          <p class="text-sm mb-5" style="color: rgba(255,255,255,0.35);">por participante</p>
-          <ul class="space-y-3 flex-1 mb-6">
-            {['Tudo do Em Grupo', 'Calls 1:1 semanais com o Moroni', 'Acesso prioritário via WhatsApp', 'Revisão direta de ofertas, propostas e primeiro projeto', 'Fast-track para o Reis IA Partners'].map(item => (
-              <li class="flex items-start gap-2 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.65);">
-                <IconCheckCircle size={16} class="flex-shrink-0 mt-0.5" style="color: #4ade80;" />
-                {item}
-              </li>
-            ))}
-          </ul>
-          <p class="text-sm italic mb-5" style="color: rgba(255,255,255,0.35);">Ideal para: agências estabelecidas fazendo uma virada séria para AI como serviço principal.</p>
-          <Button variant="primary" href="/aplicar" class="w-full text-center">Candidatar-se agora &#8594;</Button>
-        </div>
-
-        <!-- VIP -->
-        <div class="card-item reveal card-interactive p-6 sm:p-8 flex flex-col group overflow-hidden" style="border-radius: 16px;">
-          <div
-            class="card-visual-top mb-6 rounded-xl flex items-end p-4"
-            style="background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.02) 100%); border: 1px solid rgba(201,168,76,0.1);"
-            aria-hidden="true"
-          >
-            <IconAward size={28} class="text-accent icon-hover" />
-          </div>
-          <Badge variant="neutral" class="self-start mb-4">VIP</Badge>
-          <p class="leading-none mb-1 text-accent" style="font-size: clamp(32px, 4vw, 44px); font-weight: 300;">A partir de $12.000</p>
-          <p class="text-sm mb-5" style="color: rgba(255,255,255,0.35);">por participante</p>
-          <ul class="space-y-3 flex-1 mb-6">
-            {['Tudo do Premium', 'Primeiro projeto feito junto, do começo ao fim', 'Acesso imediato ao Reis IA Partners', 'Vantagem de primeiro movimento no seu mercado'].map(item => (
-              <li class="flex items-start gap-2 text-sm md:text-[15px]" style="color: rgba(255,255,255,0.65);">
-                <IconCheckCircle size={16} class="flex-shrink-0 mt-0.5" style="color: #4ade80;" />
-                {item}
-              </li>
-            ))}
-          </ul>
-          <p class="text-sm italic mb-5" style="color: rgba(255,255,255,0.35);">Ideal para: agências prontas para agir imediatamente e ir all-in nos serviços de AI.</p>
-          <Button variant="secondary" href="/aplicar" class="w-full text-center">Candidatar-se agora &#8594;</Button>
-        </div>
-      </div>
-
-      <p class="text-sm text-center mt-6 reveal" style="color: rgba(255,255,255,0.35);">Investimento à vista (recomendado). Opção de 2 parcelas disponível para os tiers Em Grupo e Premium.</p>
-
-      <!-- Application process -->
-      <div class="mt-10 sm:mt-14 max-w-[800px] mx-auto reveal">
-        <h3 class="text-xl sm:text-2xl font-semibold mb-6 sm:mb-8" style="color: #ffffff;">Como Funciona a Candidatura</h3>
-
-        <div class="space-y-5 sm:space-y-6">
-          {[
-            { step: '1', text: 'Preencha o formulário de candidatura (10 minutos)' },
-            { step: '2', text: 'Sua candidatura é analisada em até 48 horas' },
-            { step: '3', text: 'Se aprovado, você agenda uma conversa de 20 minutos com o Moroni' },
-            { step: '4', text: 'Conversa → decisão → se der match, você garante sua vaga' },
-            { step: '5', text: 'Onboarding em até 48 horas após a inscrição' },
-          ].map(({ step, text }) => (
-            <div class="flex items-start gap-4 sm:gap-6">
-              <div
-                class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 text-accent"
-                style="border: 1px solid rgba(201,168,76,0.3);"
-              >
-                {step}
-              </div>
-              <p class="text-sm md:text-[15px] mt-2" style="color: rgba(255,255,255,0.65);">{text}</p>
-            </div>
-          ))}
-        </div>
-
-        <p class="text-sm md:text-[15px] italic mt-8" style="color: rgba(255,255,255,0.4);">
-          Analisamos cada candidatura pessoalmente. Não aceitamos todo mundo — isso mantém a qualidade da turma alta e os seus resultados consistentes.
-        </p>
-
-        <div class="text-center mt-8 sm:mt-10">
-          <Button variant="hero" href="/aplicar" class="w-full sm:w-auto text-center">Quero me candidatar agora &#8594;</Button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- LEAD CAPTURE SECTION -->
-  <section class="lead-capture-section relative" style="padding: 96px 0;" aria-label="Receba conteúdo exclusivo sobre agências de AI">
-    <!-- Background glow -->
-    <div
-      class="absolute inset-0 pointer-events-none"
-      aria-hidden="true"
-      style="background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 70%);"
-    ></div>
-
-    <div class="relative z-10 mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
-      <div class="max-w-[560px] mx-auto text-center reveal">
-        <SectionLabel>Newsletter</SectionLabel>
-        <h2
-          class="mt-5 leading-tight"
-          style="font-size: clamp(24px, 3.5vw, 40px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
-        >
-          Receba conteúdo exclusivo sobre como construir uma agência de AI lucrativa
-        </h2>
-        <p class="mt-5" style="font-size: 16px; line-height: 1.7; color: rgba(255,255,255,0.5);">
-          Frameworks, casos práticos e estratégias para posicionar sua agência e fechar clientes de AI. Sem teoria. Só o que funciona.
-        </p>
-      </div>
-
-      <!-- Replace PLACEHOLDER_FORM_ID with your Formspree form ID -->
-      <form
-        class="mt-10 max-w-[480px] mx-auto reveal"
-        action="https://formspree.io/f/PLACEHOLDER_FORM_ID"
-        method="POST"
-        aria-label="Formulário de inscrição na newsletter"
-      >
-        <input type="hidden" name="_source" value="newsletter-builder" />
-        <div class="flex flex-col sm:flex-row gap-3">
-          <input
-            type="email"
-            name="email"
-            placeholder="seu@email.com"
-            class="glass-input flex-1"
-            required
-            aria-label="Seu endereço de email"
-          />
-          <button
-            type="submit"
-            style="background: #C9A84C; color: #000000; font-size: 15px; font-weight: 600; padding: 16px 24px; border-radius: 8px; border: 1px solid #C9A84C; white-space: nowrap; cursor: pointer; transition: background-color 200ms ease, transform 150ms ease, box-shadow 200ms ease; letter-spacing: -0.01em;"
-            onmouseover="this.style.backgroundColor='#D4B85E'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 8px 24px rgba(201,168,76,0.3)'"
-            onmouseout="this.style.backgroundColor='#C9A84C'; this.style.transform='translateY(0)'; this.style.boxShadow='none'"
-          >
-            Quero receber
-          </button>
-        </div>
-        <p class="mt-4 text-center" style="font-size: 12px; color: rgba(255,255,255,0.25); letter-spacing: 0.03em;">
-          Sem spam. Cancele quando quiser.
-        </p>
-      </form>
-    </div>
-  </section>
-
-  <!-- SECTION 9: FINAL CTA -->
-  <section class="relative overflow-hidden" style="background-color: #080808; padding: 112px 0;">
-    <!-- Radial glow -->
-    <div
-      class="absolute inset-0 pointer-events-none"
-      aria-hidden="true"
-      style="background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(201, 168, 76, 0.06) 0%, transparent 65%);"
-    ></div>
-    <!-- Gold gradient orb -->
-    <div
-      class="gradient-orb gradient-orb-gold"
-      aria-hidden="true"
-      style="width: 500px; height: 500px; top: 50%; left: 50%; transform: translate(-50%, -50%);"
-    ></div>
-
-    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0 relative z-10">
-      <div class="max-w-[720px] mx-auto text-center reveal">
-        <h2
-          class="leading-tight"
-          style="font-size: clamp(28px, 4vw, 48px); font-weight: 600; letter-spacing: -0.02em; color: #ffffff;"
-        >
-          As Agências que se Movem Agora Vão Dominar Este Mercado.
-        </h2>
-
-        <div class="mt-8 space-y-5 text-base md:text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
-          <p>As agências que se movem agora não têm mais sorte do que você. Não são mais técnicas. Não têm mais capital.</p>
-          <p>Tomaram uma decisão antes.</p>
-          <p>AI não é complicado. Posicionar sua agência à frente do mercado — antes que a janela feche — isso é estratégia. Esse é o lance de xadrez. E agora mesmo, a maioria dos seus concorrentes ainda está olhando para o tabuleiro.</p>
-        </div>
-
-        <p class="text-lg sm:text-xl font-semibold mt-6" style="color: #ffffff;">Em 12 semanas, você poderia ter uma oferta de AI vendida e um cliente em entrega.</p>
-        <p class="text-base md:text-[17px] mt-2" style="color: rgba(255,255,255,0.45);">Ou poderia ainda estar observando.</p>
-
-        <div class="mt-8">
-          <Button variant="hero" href="/aplicar" class="w-full sm:w-auto text-center">Quero me candidatar à próxima turma &#8594;</Button>
-        </div>
-        <p class="text-xs mt-4" style="color: rgba(255,255,255,0.3);">Vagas limitadas. Candidaturas revisadas pessoalmente.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 10: P.S. -->
-  <section style="background-color: #111113; padding: 64px 0;" class="md:py-20">
-    <div class="mx-auto max-w-[1200px] px-5 md:px-8 lg:px-0">
-      <div class="max-w-[640px] reveal">
-        <p class="text-base md:text-[17px] font-semibold mb-4" style="color: rgba(255,255,255,0.4);">P.S.</p>
-        <div class="space-y-4 text-base md:text-[17px] leading-relaxed" style="color: rgba(255,255,255,0.65);">
-          <p>A coisa mais comum que os clientes do Builder me dizem quando terminam: "Devia ter feito isso seis meses atrás."</p>
-          <p>Não porque o programa foi fácil. Mas porque o tempo que gastaram esperando foi o custo real — não o investimento.</p>
-          <p>Cada mês sem um fluxo de receita de AI é um mês que seus concorrentes aproveitaram.</p>
-          <p>A candidatura leva 10 minutos. A decisão é sobre você estar pronto para parar de observar e começar a construir.</p>
-        </div>
-        <div class="mt-6">
-          <Button variant="primary" href="/aplicar" class="w-full sm:w-auto text-center">Candidatar-se agora &#8594;</Button>
-        </div>
-      </div>
-    </div>
-  </section>
-
 </MainLayout>
+
+
+<!-- ============================================================
+     BUILDER PAGE STYLES
+     ============================================================ -->
+<style>
+  /* ---- BUILDER AURORA (more intense than master) ---- */
+  .builder-aurora-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 40%, rgba(45, 122, 255, 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(0, 180, 255, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 50% 80%, rgba(45, 122, 255, 0.06) 0%, transparent 60%);
+    animation: aurora-shift 20s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  /* ---- BUILDER BADGE ---- */
+  .builder-badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: var(--radius-md);
+    background: rgba(45, 122, 255, 0.12);
+    border: 1px solid rgba(45, 122, 255, 0.25);
+    color: var(--builder-electric);
+  }
+
+  /* ---- BUILDER SECTION LABEL ---- */
+  .builder-label {
+    color: var(--builder-electric) !important;
+  }
+
+  /* ---- BUILDER ELECTRIC TEXT ---- */
+  .builder-electric-text {
+    color: var(--builder-electric);
+  }
+
+  /* ---- BUILDER Z7 GLOW ---- */
+  .builder-z7-glow {
+    filter: drop-shadow(0 0 12px rgba(45, 122, 255, 0.4));
+  }
+
+  /* ---- BUILDER CTA PRIMARY ---- */
+  .builder-cta-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    outline: none;
+    white-space: nowrap;
+    background: var(--builder-electric);
+    color: white;
+    transition: all var(--duration-fast) var(--ease-base);
+  }
+  .builder-cta-primary:hover {
+    background: var(--builder-electric-hover);
+    color: white;
+    box-shadow: 0 0 30px rgba(45, 122, 255, 0.25);
+    transform: translateY(-1px);
+  }
+  .builder-cta-primary:active {
+    background: var(--builder-electric-active);
+    transform: translateY(0) scale(0.98);
+    box-shadow: none;
+  }
+  .builder-cta-primary:focus-visible {
+    outline: 2px solid rgba(45, 122, 255, 0.5);
+    outline-offset: 2px;
+  }
+
+  /* ---- VILLAIN CARDS ---- */
+  .villain-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    transition: border-color var(--duration-normal) var(--ease-base),
+                background-color var(--duration-normal) var(--ease-base);
+    overflow: hidden;
+  }
+  .villain-card:hover {
+    border-color: var(--border-visible);
+    background: var(--surface-3);
+  }
+  .villain-card-inner {
+    padding: 28px;
+  }
+  .villain-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-quaternary);
+    margin-bottom: 16px;
+  }
+  .villain-time-stolen {
+    font-size: var(--text-caption);
+    color: var(--text-quaternary);
+    font-style: italic;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  /* ---- Z7 MEANING BOX ---- */
+  .builder-z7-meaning {
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    background: rgba(45, 122, 255, 0.04);
+    border: 1px solid rgba(45, 122, 255, 0.12);
+  }
+
+  /* ---- BUILDER CHECKLIST ---- */
+  .builder-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .builder-checklist li {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 12px;
+    font-size: var(--text-body);
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+  .builder-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--builder-electric);
+    opacity: 0.7;
+  }
+
+  /* ---- STAGE CARDS ---- */
+  .stage-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    transition: border-color var(--duration-normal) var(--ease-base),
+                background-color var(--duration-normal) var(--ease-base);
+  }
+  .stage-card:hover {
+    border-color: var(--border-visible);
+    background: var(--surface-3);
+  }
+  .stage-card-featured {
+    padding: 24px;
+  }
+  .stage-day {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--builder-electric);
+    background: rgba(45, 122, 255, 0.10);
+    padding: 3px 10px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+  }
+  .stage-day-featured {
+    background: rgba(0, 180, 255, 0.15);
+    color: var(--builder-cyan);
+  }
+  .stage-name {
+    font-size: var(--text-h5);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1.25;
+  }
+  .stage-desc {
+    font-size: var(--text-body-sm);
+    line-height: 1.60;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* ---- COMPRESSION BADGES ---- */
+  .builder-compression-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 1px solid rgba(45, 122, 255, 0.20);
+    background: rgba(45, 122, 255, 0.05);
+  }
+
+  /* ---- RESULT CARDS ---- */
+  .builder-result-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+  }
+  .builder-result-card-highlight {
+    border-color: rgba(45, 122, 255, 0.25);
+    background: rgba(45, 122, 255, 0.04);
+  }
+
+  /* ---- QUALIFIER LISTS ---- */
+  .builder-qualifier-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .builder-qualifier-list li {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 14px;
+    font-size: var(--text-body);
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+  .builder-qualifier-yes li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 12px;
+    height: 6px;
+    border-left: 2px solid var(--builder-electric);
+    border-bottom: 2px solid var(--builder-electric);
+    transform: rotate(-45deg);
+    opacity: 0.8;
+  }
+  .builder-qualifier-no li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-quaternary);
+    opacity: 0.4;
+  }
+
+  /* ---- GUARANTEE CARD ---- */
+  .builder-guarantee-card {
+    padding: 40px;
+    border-radius: var(--radius-xl);
+    border: 2px solid rgba(45, 122, 255, 0.30);
+    background: rgba(45, 122, 255, 0.03);
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* ---- FINAL CTA GLOW ---- */
+  .builder-final-glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 50% 50%, rgba(45, 122, 255, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ---- FLOATING CTA ---- */
+  .builder-floating-cta {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-nav);
+    transform: translateY(100%);
+    transition: transform 0.3s var(--ease-out);
+    pointer-events: none;
+  }
+  .builder-floating-cta.is-visible {
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .builder-floating-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-top: 1px solid rgba(45, 122, 255, 0.15);
+  }
+  .builder-floating-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: -0.01em;
+  }
+  .builder-floating-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background: var(--builder-electric);
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: background var(--duration-fast) var(--ease-base);
+  }
+  .builder-floating-btn:hover {
+    background: var(--builder-electric-hover);
+    color: white;
+  }
+
+  /* Show floating CTA only on mobile */
+  @media (min-width: 768px) {
+    .builder-floating-cta {
+      display: none;
+    }
+  }
+</style>
+
+
+<!-- ============================================================
+     FLOATING CTA SCROLL BEHAVIOR
+     ============================================================ -->
+<script>
+  const floatingCta = document.getElementById('floating-cta');
+  const heroSection = document.querySelector('[aria-labelledby="hero-heading"]');
+
+  if (floatingCta && heroSection) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          floatingCta.classList.remove('is-visible');
+        } else {
+          floatingCta.classList.add('is-visible');
+        }
+      });
+    }, { threshold: 0 });
+
+    observer.observe(heroSection);
+  }
+</script>

@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z7 Visual System — Complete Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --surface-0: #000000;
+    --surface-1: #0A0A0A;
+    --surface-2: #111111;
+    --surface-3: #161616;
+    --surface-4: #1A1A1A;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.12);
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255,255,255,0.70);
+    --text-tertiary: rgba(255,255,255,0.50);
+    --text-quaternary: rgba(255,255,255,0.35);
+    --text-muted: rgba(255,255,255,0.20);
+    --blue-master: #4A90FF;
+    --electric: #2D7AFF;
+    --electric-hover: #4D90FF;
+    --electric-bright: #5599FF;
+    --electric-deep: #1050BB;
+    --electric-text: #7AB0FF;
+    --cyan: #00B4FF;
+    --cyan-text: #55CCFF;
+  }
+  body {
+    background: var(--surface-0);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ========== SIDEBAR NAV ========== */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 220px;
+    height: 100vh;
+    background: var(--surface-1);
+    border-right: 1px solid var(--border);
+    padding: 32px 16px;
+    z-index: 100;
+    overflow-y: auto;
+  }
+  .sidebar h2 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--electric);
+    margin-bottom: 20px;
+  }
+  .sidebar a {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    transition: all 0.15s ease;
+  }
+  .sidebar a:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+  .sidebar a.active { color: var(--electric); background: rgba(45,122,255,0.08); }
+
+  /* ========== MAIN ========== */
+  .main { margin-left: 220px; }
+  .section {
+    padding: 80px 48px;
+    border-bottom: 1px solid var(--border);
+    min-height: 100vh;
+  }
+  .section:nth-child(even) { background: var(--surface-1); }
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--electric);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .section-desc {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 640px;
+    margin-bottom: 48px;
+    line-height: 1.7;
+  }
+
+  /* ========== GRIDS ========== */
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 32px;
+  }
+  .icon-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 32px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-2);
+    transition: all 0.2s ease;
+  }
+  .icon-cell:hover {
+    border-color: rgba(45,122,255,0.20);
+    box-shadow: 0 0 40px rgba(45,122,255,0.06);
+  }
+  .icon-cell .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    letter-spacing: 0.02em;
+  }
+  .icon-cell .sublabel {
+    font-size: 11px;
+    color: var(--text-quaternary);
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* ========== SIZE ROW ========== */
+  .size-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .size-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .size-item .size-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-quaternary);
+    letter-spacing: 0.04em;
+  }
+  .size-item .size-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface-2);
+    padding: 12px;
+  }
+
+  /* ========== CONSTRUCTION ========== */
+  .construction-row {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+  .construction-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .construction-cell .label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  .plus-sign, .equals-sign {
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--text-quaternary);
+  }
+
+  /* ========== PRODUCT CARDS ========== */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+  }
+  .product-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-2);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.25s ease;
+  }
+  .product-card:hover {
+    border-color: rgba(45,122,255,0.30);
+    box-shadow: 0 0 50px rgba(45,122,255,0.10);
+  }
+  .product-card .product-name {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--electric-text);
+  }
+  .product-card .product-desc {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* ========== ANIMATION SECTION ========== */
+  .anim-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  .anim-container {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--surface-2);
+    position: relative;
+    overflow: hidden;
+  }
+  .replay-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid rgba(45,122,255,0.30);
+    border-radius: 8px;
+    background: rgba(45,122,255,0.08);
+    color: var(--electric-text);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .replay-btn:hover {
+    background: rgba(45,122,255,0.15);
+    border-color: rgba(45,122,255,0.50);
+  }
+
+  /* ========== PATTERN SECTION ========== */
+  .pattern-demo {
+    width: 100%;
+    height: 400px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 32px;
+  }
+  .pattern-demo .overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    text-align: center;
+    z-index: 2;
+  }
+
+  /* ========== APPLICATION SECTION ========== */
+  .app-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 32px;
+  }
+  .app-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .app-card-header {
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    border-bottom: 1px solid var(--border);
+  }
+  .app-card-body {
+    padding: 20px 24px;
+  }
+  .app-card-body .app-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .app-card-body .app-desc {
+    font-size: 12px;
+    color: var(--text-quaternary);
+    line-height: 1.5;
+  }
+
+  /* ========== CONTRAST SECTION ========== */
+  .contrast-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .contrast-box {
+    flex: 1;
+    min-width: 280px;
+    padding: 48px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid var(--border);
+  }
+  .contrast-box.dark { background: #000000; }
+  .contrast-box.light { background: #F9FAFB; }
+  .contrast-box .label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; }
+  .contrast-box.dark .label { color: var(--text-tertiary); }
+  .contrast-box.light .label { color: #6B7280; }
+
+  /* ========== ANIMATION KEYFRAMES ========== */
+
+  /* Z7 Construction Animation */
+  @keyframes z7-draw-z {
+    0% { stroke-dashoffset: 200; opacity: 0; }
+    5% { opacity: 1; }
+    40% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 0; }
+  }
+  @keyframes z7-draw-7 {
+    0%, 35% { stroke-dashoffset: 120; opacity: 0; }
+    40% { opacity: 1; }
+    70% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 0; }
+  }
+  @keyframes z7-merge {
+    0%, 65% { opacity: 0; }
+    80% { opacity: 1; }
+    100% { opacity: 1; }
+  }
+  @keyframes z7-glow-pulse {
+    0%, 70% { opacity: 0; filter: drop-shadow(0 0 0px rgba(45,122,255,0)); }
+    85% { opacity: 1; filter: drop-shadow(0 0 20px rgba(45,122,255,0.50)); }
+    95% { filter: drop-shadow(0 0 12px rgba(45,122,255,0.25)); }
+    100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(45,122,255,0.15)); }
+  }
+
+  /* Product-specific pulses */
+  @keyframes z7-hours-pulse {
+    0%, 100% { filter: drop-shadow(0 0 8px rgba(85,153,255,0.10)); }
+    50% { filter: drop-shadow(0 0 20px rgba(85,153,255,0.45)); }
+  }
+  @keyframes z7-days-pulse {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(45,122,255,0.10)); transform: rotate(-0.5deg); }
+    50% { filter: drop-shadow(0 0 24px rgba(45,122,255,0.30)); transform: rotate(0.5deg); }
+  }
+  @keyframes z7-months-pulse {
+    0%, 100% { filter: drop-shadow(0 0 16px rgba(16,80,187,0.05)); }
+    50% { filter: drop-shadow(0 0 32px rgba(16,80,187,0.18)); }
+  }
+  @keyframes z7-stages-rotate {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  /* Badge scanner */
+  @keyframes badge-scan {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Watermark float */
+  @keyframes wm-float {
+    0%, 100% { opacity: 0.025; }
+    50% { opacity: 0.04; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     SVG SYMBOL DEFINITIONS
+     All Z7 mark variations defined here for reuse via <use>
+     ================================================================ -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+
+  <!-- ============================================================
+       CORE GEOMETRY EXPLANATION:
+
+       The Z7 mark is constructed within a 64x64 viewBox.
+
+       The "7" occupies the RIGHT side and forms the UPPER triangle
+       of the hourglass:
+       - Horizontal bar at top: from center-right area
+       - Diagonal descending left: from right top to center bottom
+
+       The "Z" occupies the LEFT side and forms the LOWER triangle:
+       - Diagonal from upper-right to lower-left
+       - Horizontal bar at bottom
+       - When flipped/overlaid, completes the hourglass
+
+       COMBINED: The overlapping diagonals cross at the center point
+       (the waist of the hourglass), horizontal bars form top and
+       bottom edges.
+
+       Key coordinates (64x64 grid):
+       - Top bar: y=10
+       - Bottom bar: y=54
+       - Center waist: y=32, x=32
+       - Left edge: x=12
+       - Right edge: x=52
+       ============================================================ -->
+
+  <!-- Z7-SEVEN: The number 7 isolated — upper half of hourglass
+       The 7 has: horizontal top bar + diagonal descending to lower-left
+       This forms the upper triangle (sand falling down) -->
+  <symbol id="z7-seven" viewBox="0 0 64 64">
+    <path d="M16,10 L52,10 L28,54"
+          fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- Z7-ZEE: The letter Z isolated — lower half of hourglass
+       The Z has: diagonal from top-right to bottom-left + horizontal bottom bar
+       When overlaid with the 7, the diagonals cross at center forming the waist -->
+  <symbol id="z7-zee" viewBox="0 0 64 64">
+    <path d="M36,10 L12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- Z7-COMBINED: Full hourglass — Z and 7 overlaid
+       The 7's top bar + the Z's bottom bar = top and bottom of hourglass
+       The 7's diagonal (top-right to bottom-left) + Z's diagonal (top-right to bottom-left)
+       cross at center = hourglass waist -->
+  <symbol id="z7-combined" viewBox="0 0 64 64">
+    <!-- The 7: top bar + descending diagonal (leads at full opacity) -->
+    <path d="M16,10 L52,10 L28,54"
+          fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"
+          opacity="1"/>
+    <!-- The Z: ascending diagonal + bottom bar (complements at 0.7 opacity) -->
+    <path d="M36,10 L12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"
+          opacity="0.7"/>
+  </symbol>
+
+  <!-- Z7-HOURGLASS: Clean hourglass reading — emphasizing the shape -->
+  <symbol id="z7-hourglass" viewBox="0 0 64 64">
+    <!-- Top bar (from 7) -->
+    <line x1="16" y1="10" x2="52" y2="10"
+          stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round"/>
+    <!-- Right diagonal down (from 7): top-right to center -->
+    <line x1="52" y1="10" x2="32" y2="32"
+          stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round"/>
+    <!-- Left diagonal down (from Z): top to center -->
+    <line x1="16" y1="10" x2="32" y2="32"
+          stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round"/>
+    <!-- Right diagonal down (from Z): center to bottom-right -->
+    <line x1="32" y1="32" x2="48" y2="54"
+          stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round"/>
+    <!-- Left diagonal down (from 7): center to bottom-left -->
+    <line x1="32" y1="32" x2="12" y2="54"
+          stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round"/>
+    <!-- Bottom bar (from Z) -->
+    <line x1="12" y1="54" x2="48" y2="54"
+          stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round"/>
+  </symbol>
+
+  <!-- Z7-STROKE: Clean stroke version (primary mark) -->
+  <symbol id="z7-stroke" viewBox="0 0 64 64">
+    <path d="M16,10 L52,10 L28,54 M36,10 L12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- Z7-FILL: Filled version for badges/certifications -->
+  <symbol id="z7-fill" viewBox="0 0 64 64">
+    <!-- Upper triangle (from 7) -->
+    <polygon points="16,10 52,10 32,32"
+             fill="currentColor" opacity="0.6"/>
+    <!-- Lower triangle (from Z) -->
+    <polygon points="32,32 12,54 48,54"
+             fill="currentColor" opacity="0.6"/>
+    <!-- Overlap center point glows brighter -->
+    <circle cx="32" cy="32" r="3" fill="currentColor" opacity="0.9"/>
+  </symbol>
+
+  <!-- Z7-OUTLINE: Thin outline for watermarks -->
+  <symbol id="z7-outline" viewBox="0 0 64 64">
+    <path d="M16,10 L52,10 L28,54 M36,10 L12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="0.75"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- ============================================================
+       SIZE-OPTIMIZED VARIANTS
+       ============================================================ -->
+
+  <!-- Z7-OPT-16: Favicon — thicker strokes, simplified -->
+  <symbol id="z7-opt-16" viewBox="0 0 64 64">
+    <path d="M16,10 L52,10 L28,54 M36,10 L12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="4"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- Z7-OPT-24: Nav/inline — medium strokes -->
+  <symbol id="z7-opt-24" viewBox="0 0 64 64">
+    <path d="M16,10 L52,10 L28,54 M36,10 L12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- Z7-OPT-32: Cards/badges — balanced -->
+  <symbol id="z7-opt-32" viewBox="0 0 64 64">
+    <path d="M16,10 L52,10 L28,54 M36,10 L12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- Z7-OPT-64: Feature — full detail -->
+  <symbol id="z7-opt-64" viewBox="0 0 64 64">
+    <path d="M16,10 L52,10 L28,54 M36,10 L12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- Z7-OPT-128: Hero — finest strokes -->
+  <symbol id="z7-opt-128" viewBox="0 0 64 64">
+    <path d="M16,10 L52,10 L28,54 M36,10 L12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="1.25"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- ============================================================
+       PRODUCT VARIANTS
+       ============================================================ -->
+
+  <!-- Z7-HOURS: Faster, sharper — integrated clock tick marks -->
+  <symbol id="z7-hours" viewBox="0 0 64 64">
+    <!-- Main Z7 mark -->
+    <path d="M16,10 L52,10 L28,54 M36,10 L12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Clock tick marks around the waist (subtle) -->
+    <line x1="32" y1="24" x2="32" y2="26" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <line x1="38" y1="26" x2="37" y2="28" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
+    <line x1="26" y1="26" x2="27" y2="28" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
+  </symbol>
+
+  <!-- Z7-DAYS: Standard — the primary mark with center emphasis -->
+  <symbol id="z7-days" viewBox="0 0 64 64">
+    <path d="M16,10 L52,10 L28,54 M36,10 L12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Center waist dot — the focal point -->
+    <circle cx="32" cy="32" r="2" fill="currentColor" opacity="0.5"/>
+  </symbol>
+
+  <!-- Z7-STAGES: The 7 with seven segment markers -->
+  <symbol id="z7-stages" viewBox="0 0 64 64">
+    <!-- Just the 7 path -->
+    <path d="M16,10 L52,10 L28,54"
+          fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- 7 dots along the diagonal of the 7 (representing 7 stages) -->
+    <circle cx="49.5" cy="13" r="1.5" fill="currentColor" opacity="0.9"/>
+    <circle cx="46" cy="17.3" r="1.5" fill="currentColor" opacity="0.8"/>
+    <circle cx="42.5" cy="21.6" r="1.5" fill="currentColor" opacity="0.7"/>
+    <circle cx="39" cy="25.9" r="1.5" fill="currentColor" opacity="0.6"/>
+    <circle cx="35.5" cy="30.2" r="1.5" fill="currentColor" opacity="0.5"/>
+    <circle cx="32" cy="34.5" r="1.5" fill="currentColor" opacity="0.4"/>
+    <circle cx="28.5" cy="38.8" r="1.5" fill="currentColor" opacity="0.35"/>
+  </symbol>
+
+  <!-- Z7-MONTHS: Softer, continuous — flowing curves -->
+  <symbol id="z7-months" viewBox="0 0 64 64">
+    <!-- Smoother version with subtle curve at the waist -->
+    <path d="M16,10 L52,10 Q42,32 28,54 M36,10 Q22,32 12,54 L48,54"
+          fill="none" stroke="currentColor" stroke-width="1.25"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+</svg>
+
+<!-- ================================================================
+     SIDEBAR NAVIGATION
+     ================================================================ -->
+<nav class="sidebar">
+  <h2>Z7 System</h2>
+  <a href="#construction">1. Construction</a>
+  <a href="#treatments">2. Treatments</a>
+  <a href="#sizes">3. Size Scale</a>
+  <a href="#products">4. Product Variants</a>
+  <a href="#animation">5. Animation</a>
+  <a href="#pattern">6. Pattern/Texture</a>
+  <a href="#applications">7. Applications</a>
+  <a href="#contrast">8. Contrast Test</a>
+</nav>
+
+<!-- ================================================================
+     MAIN CONTENT
+     ================================================================ -->
+<div class="main">
+
+<!-- ===================== SECTION 1: CONSTRUCTION ===================== -->
+<section id="construction" class="section">
+  <div class="section-label">Section 1</div>
+  <h1 class="section-title">Z7 Construction</h1>
+  <p class="section-desc">
+    The Z7 mark is built from a fundamental geometric insight: the number 7 and the letter Z, when overlaid, form the silhouette of an hourglass. The 7 provides the upper triangle (top bar + descending diagonal). The Z provides the lower triangle (ascending diagonal + bottom bar). Where their diagonals cross at the center, the hourglass waist emerges.
+  </p>
+
+  <!-- Step 1: The 7 alone -->
+  <h3 style="font-size: 16px; font-weight: 700; color: var(--text-secondary); margin-bottom: 24px;">
+    Step-by-step construction
+  </h3>
+  <div class="construction-row">
+    <div class="construction-cell">
+      <div class="label">The 7</div>
+      <div style="width: 128px; height: 128px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); display: flex; align-items: center; justify-content: center;">
+        <svg width="96" height="96" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-seven" style="color: #2D7AFF"/>
+        </svg>
+      </div>
+      <span class="sublabel" style="font-size: 12px; color: var(--text-quaternary);">Upper triangle of hourglass<br/>Top bar + descending diagonal</span>
+    </div>
+
+    <div class="plus-sign">+</div>
+
+    <div class="construction-cell">
+      <div class="label">The Z</div>
+      <div style="width: 128px; height: 128px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); display: flex; align-items: center; justify-content: center;">
+        <svg width="96" height="96" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-zee" style="color: #2D7AFF"/>
+        </svg>
+      </div>
+      <span class="sublabel" style="font-size: 12px; color: var(--text-quaternary);">Lower triangle of hourglass<br/>Ascending diagonal + bottom bar</span>
+    </div>
+
+    <div class="equals-sign">=</div>
+
+    <div class="construction-cell">
+      <div class="label" style="color: var(--electric);">Z7 Combined</div>
+      <div style="width: 128px; height: 128px; border: 1px solid rgba(45,122,255,0.20); border-radius: 12px; background: var(--surface-2); display: flex; align-items: center; justify-content: center;">
+        <svg width="96" height="96" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-combined" style="color: #2D7AFF"/>
+        </svg>
+      </div>
+      <span class="sublabel" style="font-size: 12px; color: var(--text-quaternary);">Diagonals cross at center<br/>Hourglass silhouette revealed</span>
+    </div>
+
+    <div class="equals-sign">=</div>
+
+    <div class="construction-cell">
+      <div class="label" style="color: var(--cyan);">Hourglass</div>
+      <div style="width: 128px; height: 128px; border: 1px solid rgba(0,180,255,0.15); border-radius: 12px; background: var(--surface-2); display: flex; align-items: center; justify-content: center;">
+        <svg width="96" height="96" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-hourglass" style="color: #00B4FF"/>
+        </svg>
+      </div>
+      <span class="sublabel" style="font-size: 12px; color: var(--text-quaternary);">Clean hourglass reading<br/>The shape of time itself</span>
+    </div>
+  </div>
+
+  <!-- Overlay comparison -->
+  <h3 style="font-size: 16px; font-weight: 700; color: var(--text-secondary); margin-bottom: 24px; margin-top: 48px;">
+    Overlay analysis
+  </h3>
+  <div style="display: flex; gap: 48px; flex-wrap: wrap;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+      <div style="width: 200px; height: 200px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; position: relative;">
+        <!-- 7 in blue -->
+        <svg width="160" height="160" viewBox="0 0 64 64" fill="none" style="position: absolute;">
+          <path d="M16,10 L52,10 L28,54" fill="none" stroke="#2D7AFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+        </svg>
+        <!-- Z in cyan -->
+        <svg width="160" height="160" viewBox="0 0 64 64" fill="none" style="position: absolute;">
+          <path d="M36,10 L12,54 L48,54" fill="none" stroke="#00B4FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+        </svg>
+        <!-- Intersection highlight -->
+        <svg width="160" height="160" viewBox="0 0 64 64" fill="none" style="position: absolute;">
+          <circle cx="32" cy="32" r="4" fill="none" stroke="rgba(255,255,255,0.20)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        </svg>
+      </div>
+      <span style="font-size: 12px; color: var(--text-tertiary);">
+        <span style="color: #2D7AFF;">7</span> + <span style="color: #00B4FF;">Z</span> — color separated
+      </span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+      <div style="width: 200px; height: 200px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface-2); display: flex; align-items: center; justify-content: center;">
+        <svg width="160" height="160" viewBox="0 0 64 64" fill="none">
+          <!-- Filled triangles showing the hourglass -->
+          <polygon points="16,10 52,10 32,32" fill="rgba(45,122,255,0.12)" stroke="rgba(45,122,255,0.30)" stroke-width="0.5"/>
+          <polygon points="32,32 12,54 48,54" fill="rgba(45,122,255,0.12)" stroke="rgba(45,122,255,0.30)" stroke-width="0.5"/>
+          <!-- Stroke overlay -->
+          <path d="M16,10 L52,10 L28,54 M36,10 L12,54 L48,54" fill="none" stroke="#2D7AFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Center dot -->
+          <circle cx="32" cy="32" r="2.5" fill="#2D7AFF" opacity="0.8"/>
+        </svg>
+      </div>
+      <span style="font-size: 12px; color: var(--text-tertiary);">
+        Hourglass area highlighted
+      </span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+      <div style="width: 200px; height: 200px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface-2); display: flex; align-items: center; justify-content: center;">
+        <svg width="160" height="160" viewBox="0 0 64 64" fill="none">
+          <!-- Grid lines for geometry reference -->
+          <line x1="0" y1="32" x2="64" y2="32" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+          <line x1="32" y1="0" x2="32" y2="64" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+          <!-- Z7 with measurement annotations -->
+          <path d="M16,10 L52,10 L28,54 M36,10 L12,54 L48,54" fill="none" stroke="rgba(255,255,255,0.30)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Key points -->
+          <circle cx="16" cy="10" r="2" fill="#2D7AFF" opacity="0.6"/>
+          <circle cx="52" cy="10" r="2" fill="#2D7AFF" opacity="0.6"/>
+          <circle cx="36" cy="10" r="2" fill="#00B4FF" opacity="0.6"/>
+          <circle cx="32" cy="32" r="2.5" fill="#FFFFFF" opacity="0.8"/>
+          <circle cx="28" cy="54" r="2" fill="#2D7AFF" opacity="0.6"/>
+          <circle cx="12" cy="54" r="2" fill="#00B4FF" opacity="0.6"/>
+          <circle cx="48" cy="54" r="2" fill="#00B4FF" opacity="0.6"/>
+        </svg>
+      </div>
+      <span style="font-size: 12px; color: var(--text-tertiary);">
+        Geometric construction points
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SECTION 2: TREATMENTS ===================== -->
+<section id="treatments" class="section">
+  <div class="section-label">Section 2</div>
+  <h1 class="section-title">Visual Treatments</h1>
+  <p class="section-desc">
+    Four core treatments of the Z7 mark, each suited to different contexts. Stroke for general use, glow for Time Builders emphasis, fill for badges, and outline for watermarks.
+  </p>
+
+  <div class="icon-grid">
+    <!-- Stroke Only -->
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-stroke" style="color: #FFFFFF"/>
+      </svg>
+      <div class="label">Stroke — White</div>
+      <div class="sublabel">General use, dark backgrounds<br/>1.5px stroke, round caps</div>
+    </div>
+
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-stroke" style="color: #2D7AFF"/>
+      </svg>
+      <div class="label">Stroke — Electric</div>
+      <div class="sublabel">Time Builders accent<br/>Primary mark color</div>
+    </div>
+
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-stroke" style="color: #4A90FF"/>
+      </svg>
+      <div class="label">Stroke — Blue Master</div>
+      <div class="sublabel">Ecosystem connection<br/>Nav/footer contexts</div>
+    </div>
+
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-stroke" style="color: #00B4FF"/>
+      </svg>
+      <div class="label">Stroke — Cyan</div>
+      <div class="sublabel">Maximum urgency<br/>1 per page, decisive moment</div>
+    </div>
+
+    <!-- Glow -->
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="filter: drop-shadow(0 0 12px rgba(45,122,255,0.40));">
+        <use href="#z7-stroke" style="color: #2D7AFF"/>
+      </svg>
+      <div class="label">Glow — Electric</div>
+      <div class="sublabel">Hero/feature emphasis<br/>12px blur, 40% opacity</div>
+    </div>
+
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="filter: drop-shadow(0 0 16px rgba(0,180,255,0.35));">
+        <use href="#z7-stroke" style="color: #00B4FF"/>
+      </svg>
+      <div class="label">Glow — Cyan</div>
+      <div class="sublabel">Urgency highlight<br/>Maximum energy moment</div>
+    </div>
+
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="filter: drop-shadow(0 0 20px rgba(45,122,255,0.25)) drop-shadow(0 0 40px rgba(45,122,255,0.10));">
+        <use href="#z7-stroke" style="color: #2D7AFF"/>
+      </svg>
+      <div class="label">Glow — Double Layer</div>
+      <div class="sublabel">Hero prominence<br/>Dual blur for depth</div>
+    </div>
+
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="filter: drop-shadow(0 0 8px rgba(85,153,255,0.30));">
+        <use href="#z7-stroke" style="color: #5599FF"/>
+      </svg>
+      <div class="label">Glow — Bright</div>
+      <div class="sublabel">Special emphasis<br/>Electric Bright variant</div>
+    </div>
+
+    <!-- Fill -->
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <use href="#z7-fill" style="color: #2D7AFF"/>
+      </svg>
+      <div class="label">Fill — Electric</div>
+      <div class="sublabel">Badges, certifications<br/>Solid triangles at 60%</div>
+    </div>
+
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <use href="#z7-fill" style="color: #FFFFFF"/>
+      </svg>
+      <div class="label">Fill — White</div>
+      <div class="sublabel">Formal contexts<br/>Documents, proposals</div>
+    </div>
+
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <use href="#z7-fill" style="color: #00B4FF"/>
+      </svg>
+      <div class="label">Fill — Cyan</div>
+      <div class="sublabel">Urgency badge<br/>Maximum impact</div>
+    </div>
+
+    <!-- Outline -->
+    <div class="icon-cell">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-outline" style="color: rgba(255,255,255,0.15)"/>
+      </svg>
+      <div class="label">Outline — Watermark</div>
+      <div class="sublabel">0.75px stroke<br/>Background decorative use</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SECTION 3: SIZE SCALE ===================== -->
+<section id="sizes" class="section">
+  <div class="section-label">Section 3</div>
+  <h1 class="section-title">Size Scale</h1>
+  <p class="section-desc">
+    Each size uses optimized stroke weights for maximum legibility. Smaller sizes use thicker strokes; larger sizes use finer strokes. The mark remains recognizable from 16px favicon to 128px+ hero placement.
+  </p>
+
+  <!-- Electric Blue versions -->
+  <h3 style="font-size: 14px; font-weight: 700; color: var(--electric-text); margin-bottom: 24px;">
+    Electric Blue (#2D7AFF)
+  </h3>
+  <div class="size-row" style="margin-bottom: 48px;">
+    <div class="size-item">
+      <div class="size-box" style="width: 48px; height: 48px;">
+        <svg width="16" height="16" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-opt-16" style="color: #2D7AFF"/>
+        </svg>
+      </div>
+      <span class="size-label">16px</span>
+      <span style="font-size: 10px; color: var(--text-quaternary);">4px stroke</span>
+    </div>
+    <div class="size-item">
+      <div class="size-box" style="width: 56px; height: 56px;">
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-opt-24" style="color: #2D7AFF"/>
+        </svg>
+      </div>
+      <span class="size-label">24px</span>
+      <span style="font-size: 10px; color: var(--text-quaternary);">2.5px stroke</span>
+    </div>
+    <div class="size-item">
+      <div class="size-box" style="width: 64px; height: 64px;">
+        <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-opt-32" style="color: #2D7AFF"/>
+        </svg>
+      </div>
+      <span class="size-label">32px</span>
+      <span style="font-size: 10px; color: var(--text-quaternary);">2px stroke</span>
+    </div>
+    <div class="size-item">
+      <div class="size-box" style="width: 96px; height: 96px;">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-opt-64" style="color: #2D7AFF"/>
+        </svg>
+      </div>
+      <span class="size-label">64px</span>
+      <span style="font-size: 10px; color: var(--text-quaternary);">1.5px stroke</span>
+    </div>
+    <div class="size-item">
+      <div class="size-box" style="width: 160px; height: 160px;">
+        <svg width="128" height="128" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-opt-128" style="color: #2D7AFF"/>
+        </svg>
+      </div>
+      <span class="size-label">128px</span>
+      <span style="font-size: 10px; color: var(--text-quaternary);">1.25px stroke</span>
+    </div>
+  </div>
+
+  <!-- White versions -->
+  <h3 style="font-size: 14px; font-weight: 700; color: var(--text-tertiary); margin-bottom: 24px;">
+    White (#FFFFFF)
+  </h3>
+  <div class="size-row" style="margin-bottom: 48px;">
+    <div class="size-item">
+      <div class="size-box" style="width: 48px; height: 48px;">
+        <svg width="16" height="16" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-opt-16" style="color: #FFFFFF"/>
+        </svg>
+      </div>
+      <span class="size-label">16px</span>
+    </div>
+    <div class="size-item">
+      <div class="size-box" style="width: 56px; height: 56px;">
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-opt-24" style="color: #FFFFFF"/>
+        </svg>
+      </div>
+      <span class="size-label">24px</span>
+    </div>
+    <div class="size-item">
+      <div class="size-box" style="width: 64px; height: 64px;">
+        <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-opt-32" style="color: #FFFFFF"/>
+        </svg>
+      </div>
+      <span class="size-label">32px</span>
+    </div>
+    <div class="size-item">
+      <div class="size-box" style="width: 96px; height: 96px;">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-opt-64" style="color: #FFFFFF"/>
+        </svg>
+      </div>
+      <span class="size-label">64px</span>
+    </div>
+    <div class="size-item">
+      <div class="size-box" style="width: 160px; height: 160px;">
+        <svg width="128" height="128" viewBox="0 0 64 64" fill="none">
+          <use href="#z7-opt-128" style="color: #FFFFFF"/>
+        </svg>
+      </div>
+      <span class="size-label">128px</span>
+    </div>
+  </div>
+
+  <!-- Favicon context -->
+  <h3 style="font-size: 14px; font-weight: 700; color: var(--text-tertiary); margin-bottom: 24px;">
+    Favicon Context (16px on colored background)
+  </h3>
+  <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+    <div style="width: 32px; height: 32px; background: #2D7AFF; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+      <svg width="16" height="16" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-opt-16" style="color: #FFFFFF"/>
+      </svg>
+    </div>
+    <div style="width: 32px; height: 32px; background: #000000; border: 1px solid rgba(255,255,255,0.10); border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+      <svg width="16" height="16" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-opt-16" style="color: #2D7AFF"/>
+      </svg>
+    </div>
+    <div style="width: 32px; height: 32px; background: #111111; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+      <svg width="16" height="16" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-opt-16" style="color: #FFFFFF"/>
+      </svg>
+    </div>
+    <div style="width: 32px; height: 32px; background: #1050BB; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+      <svg width="16" height="16" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-opt-16" style="color: #FFFFFF"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SECTION 4: PRODUCT VARIANTS ===================== -->
+<section id="products" class="section">
+  <div class="section-label">Section 4</div>
+  <h1 class="section-title">Product Variants</h1>
+  <p class="section-desc">
+    Each Z7 product receives a distinct visual treatment reflecting its temporal personality. Z7 Hours is fast and sharp. Z7 Days is the primary mark. 7 Stages marks progression. Z7 Months is continuous and flowing.
+  </p>
+
+  <div class="product-grid">
+    <!-- Z7 Hours -->
+    <div class="product-card">
+      <svg width="80" height="80" viewBox="0 0 64 64" fill="none"
+           style="animation: z7-hours-pulse 1.2s ease-in-out infinite;">
+        <use href="#z7-hours" style="color: #5599FF"/>
+      </svg>
+      <div class="product-name">Z7 Hours</div>
+      <div class="product-desc">
+        The spark. Fast 1.2s pulse cycle. Electric Bright (#5599FF) for immediacy. Clock tick marks at the waist signal compressed time.
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <span style="font-size: 10px; padding: 2px 8px; border-radius: 4px; background: rgba(85,153,255,0.12); color: #5599FF; font-weight: 600;">RAPID</span>
+        <span style="font-size: 10px; padding: 2px 8px; border-radius: 4px; background: rgba(85,153,255,0.08); color: rgba(85,153,255,0.70); font-weight: 600;">7 HOURS</span>
+      </div>
+    </div>
+
+    <!-- Z7 Days -->
+    <div class="product-card" style="border-color: rgba(45,122,255,0.20);">
+      <svg width="80" height="80" viewBox="0 0 64 64" fill="none"
+           style="animation: z7-days-pulse 2.5s ease-in-out infinite;">
+        <use href="#z7-days" style="color: #2D7AFF"/>
+      </svg>
+      <div class="product-name" style="color: #2D7AFF;">Z7 Days</div>
+      <div class="product-desc">
+        The forging. Medium 2.5s pulse with subtle rotation. Electric Primary (#2D7AFF). Center dot marks the hourglass waist.
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <span style="font-size: 10px; padding: 2px 8px; border-radius: 4px; background: rgba(45,122,255,0.15); color: #2D7AFF; font-weight: 600;">PRIMARY</span>
+        <span style="font-size: 10px; padding: 2px 8px; border-radius: 4px; background: rgba(45,122,255,0.08); color: rgba(45,122,255,0.70); font-weight: 600;">7 DAYS</span>
+      </div>
+    </div>
+
+    <!-- 7 Stages -->
+    <div class="product-card">
+      <svg width="80" height="80" viewBox="0 0 64 64" fill="none"
+           style="animation: z7-stages-rotate 3s ease-in-out infinite;">
+        <use href="#z7-stages" style="color: #2D7AFF"/>
+      </svg>
+      <div class="product-name">7 Stages</div>
+      <div class="product-desc">
+        The journey. Only the 7 path, with 7 dots along the diagonal representing each stage. Opacity gradient from bright to subtle.
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <span style="font-size: 10px; padding: 2px 8px; border-radius: 4px; background: rgba(45,122,255,0.12); color: #7AB0FF; font-weight: 600;">PROGRESSION</span>
+        <span style="font-size: 10px; padding: 2px 8px; border-radius: 4px; background: rgba(45,122,255,0.08); color: rgba(45,122,255,0.70); font-weight: 600;">7 STEPS</span>
+      </div>
+    </div>
+
+    <!-- Z7 Months -->
+    <div class="product-card">
+      <svg width="80" height="80" viewBox="0 0 64 64" fill="none"
+           style="animation: z7-months-pulse 5s ease-in-out infinite;">
+        <use href="#z7-months" style="color: #5599FF"/>
+      </svg>
+      <div class="product-name" style="color: #5599FF;">Z7 Months</div>
+      <div class="product-desc">
+        The evolution. Slow 5s breath. Softer curves at the waist (Bezier paths). Electric Bright for maturity. 1.25px stroke for elegance.
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <span style="font-size: 10px; padding: 2px 8px; border-radius: 4px; background: rgba(85,153,255,0.08); color: #5599FF; font-weight: 600;">CONTINUOUS</span>
+        <span style="font-size: 10px; padding: 2px 8px; border-radius: 4px; background: rgba(85,153,255,0.06); color: rgba(85,153,255,0.60); font-weight: 600;">MONTHS</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Static comparison at 32px -->
+  <h3 style="font-size: 14px; font-weight: 700; color: var(--text-tertiary); margin-top: 48px; margin-bottom: 24px;">
+    Static comparison at 32px (badge/card size)
+  </h3>
+  <div style="display: flex; gap: 32px; flex-wrap: wrap;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+      <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-hours" style="color: #5599FF"/>
+      </svg>
+      <span style="font-size: 10px; color: var(--text-quaternary);">Hours</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+      <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-days" style="color: #2D7AFF"/>
+      </svg>
+      <span style="font-size: 10px; color: var(--text-quaternary);">Days</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+      <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-stages" style="color: #2D7AFF"/>
+      </svg>
+      <span style="font-size: 10px; color: var(--text-quaternary);">Stages</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+      <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
+        <use href="#z7-months" style="color: #5599FF"/>
+      </svg>
+      <span style="font-size: 10px; color: var(--text-quaternary);">Months</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SECTION 5: ANIMATION ===================== -->
+<section id="animation" class="section">
+  <div class="section-label">Section 5</div>
+  <h1 class="section-title">Construction Animation</h1>
+  <p class="section-desc">
+    The Z7 construction animation reveals how the mark is born: Z draws first (stroke-dasharray), then the 7 materializes, then both merge to form the hourglass. A glow pulse confirms the formation. Total duration: ~3.5 seconds.
+  </p>
+
+  <div class="anim-stage">
+    <div class="anim-container" id="anim-main">
+      <svg id="anim-svg" width="160" height="160" viewBox="0 0 64 64" fill="none">
+        <!-- Stage 1: Z draws -->
+        <path id="anim-z" d="M36,10 L12,54 L48,54"
+              fill="none" stroke="#2D7AFF" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"
+              stroke-dasharray="200" stroke-dashoffset="200"/>
+        <!-- Stage 2-3: 7 draws -->
+        <path id="anim-7" d="M16,10 L52,10 L28,54"
+              fill="none" stroke="#2D7AFF" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"
+              stroke-dasharray="120" stroke-dashoffset="120"
+              opacity="0"/>
+        <!-- Stage 4: Glow center -->
+        <circle id="anim-glow" cx="32" cy="32" r="8"
+                fill="none" opacity="0">
+          <animate attributeName="r" values="4;12;8" dur="0.6s" begin="indefinite" fill="freeze"/>
+        </circle>
+      </svg>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+      <button class="replay-btn" onclick="replayAnimation()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"/>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+        </svg>
+        Replay
+      </button>
+      <button class="replay-btn" onclick="replayAnimationSlow()">
+        Slow (6s)
+      </button>
+    </div>
+
+    <!-- Stage breakdown -->
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; width: 100%; max-width: 800px; margin-top: 32px;">
+      <div style="text-align: center;">
+        <div style="font-size: 11px; font-weight: 700; color: var(--electric); margin-bottom: 4px;">Stage 1</div>
+        <div style="font-size: 11px; color: var(--text-quaternary);">Z draws<br/>0-800ms</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 11px; font-weight: 700; color: var(--electric); margin-bottom: 4px;">Stage 2</div>
+        <div style="font-size: 11px; color: var(--text-quaternary);">Pause<br/>800-1000ms</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 11px; font-weight: 700; color: var(--electric); margin-bottom: 4px;">Stage 3</div>
+        <div style="font-size: 11px; color: var(--text-quaternary);">7 draws<br/>1000-2000ms</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 11px; font-weight: 700; color: var(--electric); margin-bottom: 4px;">Stage 4</div>
+        <div style="font-size: 11px; color: var(--text-quaternary);">Merge<br/>2000-2800ms</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 11px; font-weight: 700; color: var(--cyan); margin-bottom: 4px;">Stage 5</div>
+        <div style="font-size: 11px; color: var(--text-quaternary);">Glow pulse<br/>2800-3500ms</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SECTION 6: PATTERN/TEXTURE ===================== -->
+<section id="pattern" class="section">
+  <div class="section-label">Section 6</div>
+  <h1 class="section-title">Pattern / Texture</h1>
+  <p class="section-desc">
+    Z7 as a repeated background pattern at very low opacity (2-4%). Subliminal branding that distinguishes Time Builders sections without competing for attention. Three variants: regular grid, rotated grid, and focal cluster.
+  </p>
+
+  <!-- Pattern 1: Regular grid -->
+  <h3 style="font-size: 14px; font-weight: 700; color: var(--text-tertiary); margin-bottom: 16px;">
+    Regular Grid — 2% opacity, uniform orientation
+  </h3>
+  <div class="pattern-demo" id="pattern-regular">
+    <div class="overlay-text">
+      <span style="color: var(--electric);">Z7</span> Days
+    </div>
+  </div>
+
+  <!-- Pattern 2: Rotated grid -->
+  <h3 style="font-size: 14px; font-weight: 700; color: var(--text-tertiary); margin-bottom: 16px;">
+    Rotated Grid — 3% opacity, varied angles
+  </h3>
+  <div class="pattern-demo" id="pattern-rotated">
+    <div class="overlay-text">
+      Time<br/><span style="color: var(--electric);">Builders</span>
+    </div>
+  </div>
+
+  <!-- Pattern 3: Focal cluster -->
+  <h3 style="font-size: 14px; font-weight: 700; color: var(--text-tertiary); margin-bottom: 16px;">
+    Focal Cluster — density gradient from center
+  </h3>
+  <div class="pattern-demo" id="pattern-cluster" style="background: radial-gradient(ellipse at 70% 60%, rgba(45,122,255,0.03) 0%, transparent 60%);">
+    <div class="overlay-text" style="text-align: right; right: 10%; left: auto; transform: translate(0, -50%);">
+      The Time<br/>is <span style="color: var(--electric);">Now</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SECTION 7: APPLICATIONS ===================== -->
+<section id="applications" class="section">
+  <div class="section-label">Section 7</div>
+  <h1 class="section-title">Applications</h1>
+  <p class="section-desc">
+    The Z7 mark in real-world contexts: badges, card headers, certifications, and watermarks.
+  </p>
+
+  <div class="app-grid">
+    <!-- Badge -->
+    <div class="app-card">
+      <div class="app-card-header" style="background: var(--surface-1);">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; border: 1px solid rgba(45,122,255,0.30); border-radius: 6px; background: rgba(45,122,255,0.08);">
+          <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+            <use href="#z7-opt-24" style="color: #2D7AFF"/>
+          </svg>
+          <span style="font-size: 12px; font-weight: 700; color: #7AB0FF; letter-spacing: 0.04em; text-transform: uppercase;">Z7 Days</span>
+        </div>
+      </div>
+      <div class="app-card-body">
+        <div class="app-label">Inline Badge</div>
+        <div class="app-desc">Used in headers, labels, and contextual tags. Electric border with Z7 icon at 20px.</div>
+      </div>
+    </div>
+
+    <!-- Card Header -->
+    <div class="app-card">
+      <div class="app-card-header" style="background: var(--surface-3); flex-direction: column; gap: 12px; padding: 24px;">
+        <svg width="48" height="48" viewBox="0 0 64 64" fill="none" style="filter: drop-shadow(0 0 12px rgba(45,122,255,0.30));">
+          <use href="#z7-days" style="color: #2D7AFF"/>
+        </svg>
+        <span style="font-size: 14px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">Build in 7 Days</span>
+        <span style="font-size: 12px; color: var(--text-tertiary);">What takes others 7 months</span>
+      </div>
+      <div class="app-card-body">
+        <div class="app-label">Card Header</div>
+        <div class="app-desc">Z7 at 48px with glow as the focal point of a product card. Surface-3 for elevation.</div>
+      </div>
+    </div>
+
+    <!-- Certification -->
+    <div class="app-card">
+      <div class="app-card-header" style="background: var(--surface-1);">
+        <div style="width: 80px; height: 80px; border-radius: 50%; border: 1.5px solid #2D7AFF; display: flex; align-items: center; justify-content: center; position: relative;">
+          <div style="position: absolute; inset: 3px; border-radius: 50%; border: 1px solid rgba(45,122,255,0.30);"></div>
+          <svg width="36" height="36" viewBox="0 0 64 64" fill="none">
+            <use href="#z7-stroke" style="color: #2D7AFF"/>
+          </svg>
+        </div>
+      </div>
+      <div class="app-card-body">
+        <div class="app-label">Certification Badge</div>
+        <div class="app-desc">Double-border circle (80px). External border in Electric, inner spaced 3px at 30% opacity. Z7 centered.</div>
+      </div>
+    </div>
+
+    <!-- Certification with text -->
+    <div class="app-card">
+      <div class="app-card-header" style="background: var(--surface-1); flex-direction: column; gap: 8px;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; border: 1.5px solid #2D7AFF; display: flex; align-items: center; justify-content: center; position: relative;">
+          <div style="position: absolute; inset: 3px; border-radius: 50%; border: 1px solid rgba(45,122,255,0.30);"></div>
+          <svg width="28" height="28" viewBox="0 0 64 64" fill="none">
+            <use href="#z7-stroke" style="color: #2D7AFF"/>
+          </svg>
+        </div>
+        <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #7AB0FF;">FORJADO</span>
+      </div>
+      <div class="app-card-body">
+        <div class="app-label">Certification Seal</div>
+        <div class="app-desc">Compact certification with "FORJADO" label. For profiles, community displays, LinkedIn.</div>
+      </div>
+    </div>
+
+    <!-- Watermark -->
+    <div class="app-card">
+      <div class="app-card-header" style="background: var(--surface-0); position: relative; overflow: hidden;">
+        <svg width="200" height="120" viewBox="0 0 64 64" fill="none" style="position: absolute; opacity: 0.04; transform: rotate(12deg);">
+          <use href="#z7-outline" style="color: #FFFFFF"/>
+        </svg>
+        <span style="font-size: 14px; font-weight: 600; color: var(--text-secondary); z-index: 1;">Content overlaid</span>
+      </div>
+      <div class="app-card-body">
+        <div class="app-label">Watermark</div>
+        <div class="app-desc">Z7 at 3-5% opacity, 200-400px, rotated 5-15 degrees. Background decorative element.</div>
+      </div>
+    </div>
+
+    <!-- Scanner Badge -->
+    <div class="app-card">
+      <div class="app-card-header" style="background: var(--surface-2);">
+        <div style="position: relative; width: 80px; height: 80px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+          <div style="position: absolute; inset: -1px; border-radius: 13px; background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(45,122,255,0.80) 300deg, rgba(45,122,255,1.00) 330deg, rgba(45,122,255,0.80) 360deg); animation: badge-scan 3s linear infinite;"></div>
+          <div style="position: absolute; inset: 1px; border-radius: 11px; background: var(--surface-2);"></div>
+          <svg width="36" height="36" viewBox="0 0 64 64" fill="none" style="z-index: 1;">
+            <use href="#z7-stroke" style="color: #2D7AFF"/>
+          </svg>
+        </div>
+      </div>
+      <div class="app-card-body">
+        <div class="app-label">Time Scanner Badge</div>
+        <div class="app-desc">Z7 inside a rotating scanner border. For featured product cards. Maximum 1 per viewport.</div>
+      </div>
+    </div>
+
+    <!-- Proposal Seal -->
+    <div class="app-card">
+      <div class="app-card-header" style="background: var(--surface-1);">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border: 1px solid rgba(255,255,255,0.10); border-radius: 8px;">
+          <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+            <use href="#z7-stroke" style="color: rgba(255,255,255,0.70)"/>
+          </svg>
+          <div>
+            <div style="font-size: 13px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0;">Reis IA Builder</div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.02em;">Z7 Days</div>
+          </div>
+        </div>
+      </div>
+      <div class="app-card-body">
+        <div class="app-label">Proposal / Document Seal</div>
+        <div class="app-desc">Formal treatment. Z7 stroke at 24px with brand name. For proposal headers and PDFs.</div>
+      </div>
+    </div>
+
+    <!-- Nav inline -->
+    <div class="app-card">
+      <div class="app-card-header" style="background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); flex-direction: row; justify-content: flex-start; gap: 24px; padding: 16px 24px; min-height: auto;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+            <use href="#z7-opt-24" style="color: #4A90FF"/>
+          </svg>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text-primary);">Time Builders</span>
+        </div>
+        <span style="font-size: 13px; color: var(--text-tertiary);">Z7 Hours</span>
+        <span style="font-size: 13px; color: var(--text-primary);">Z7 Days</span>
+        <span style="font-size: 13px; color: var(--text-tertiary);">Z7 Months</span>
+      </div>
+      <div class="app-card-body">
+        <div class="app-label">Navigation Inline</div>
+        <div class="app-desc">Z7 at 20px in Blue Master (#4A90FF) for nav. Maintains ecosystem connection.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SECTION 8: CONTRAST TEST ===================== -->
+<section id="contrast" class="section">
+  <div class="section-label">Section 8</div>
+  <h1 class="section-title">Contrast Test</h1>
+  <p class="section-desc">
+    The Z7 mark verified on both dark and light backgrounds at multiple sizes.
+  </p>
+
+  <div class="contrast-row">
+    <div class="contrast-box dark">
+      <div class="label" style="color: var(--text-quaternary);">Dark — #000000</div>
+      <div style="display: flex; gap: 20px; align-items: flex-end;">
+        <svg width="16" height="16" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-16" style="color: #2D7AFF"/></svg>
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-24" style="color: #2D7AFF"/></svg>
+        <svg width="32" height="32" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-32" style="color: #2D7AFF"/></svg>
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-64" style="color: #2D7AFF"/></svg>
+      </div>
+      <div style="display: flex; gap: 20px; align-items: flex-end; margin-top: 16px;">
+        <svg width="16" height="16" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-16" style="color: #FFFFFF"/></svg>
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-24" style="color: #FFFFFF"/></svg>
+        <svg width="32" height="32" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-32" style="color: #FFFFFF"/></svg>
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-64" style="color: #FFFFFF"/></svg>
+      </div>
+    </div>
+
+    <div class="contrast-box" style="background: #0A0A0A;">
+      <div class="label" style="color: var(--text-quaternary);">Surface-1 — #0A0A0A</div>
+      <div style="display: flex; gap: 20px; align-items: flex-end;">
+        <svg width="16" height="16" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-16" style="color: #2D7AFF"/></svg>
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-24" style="color: #2D7AFF"/></svg>
+        <svg width="32" height="32" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-32" style="color: #2D7AFF"/></svg>
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-64" style="color: #2D7AFF"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="contrast-row">
+    <div class="contrast-box light">
+      <div class="label">Light — #F9FAFB</div>
+      <div style="display: flex; gap: 20px; align-items: flex-end;">
+        <svg width="16" height="16" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-16" style="color: #1050BB"/></svg>
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-24" style="color: #1050BB"/></svg>
+        <svg width="32" height="32" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-32" style="color: #1050BB"/></svg>
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-64" style="color: #1050BB"/></svg>
+      </div>
+      <div style="display: flex; gap: 20px; align-items: flex-end; margin-top: 16px;">
+        <svg width="16" height="16" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-16" style="color: #000000"/></svg>
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-24" style="color: #000000"/></svg>
+        <svg width="32" height="32" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-32" style="color: #000000"/></svg>
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-64" style="color: #000000"/></svg>
+      </div>
+    </div>
+
+    <div class="contrast-box" style="background: #FFFFFF;">
+      <div class="label" style="color: #6B7280;">White — #FFFFFF</div>
+      <div style="display: flex; gap: 20px; align-items: flex-end;">
+        <svg width="16" height="16" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-16" style="color: #2D7AFF"/></svg>
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-24" style="color: #2D7AFF"/></svg>
+        <svg width="32" height="32" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-32" style="color: #2D7AFF"/></svg>
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><use href="#z7-opt-64" style="color: #2D7AFF"/></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- .main -->
+
+<!-- ================================================================
+     JAVASCRIPT
+     ================================================================ -->
+<script>
+  // ===== Sidebar scroll tracking =====
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.sidebar a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const id = entry.target.id;
+        const activeLink = document.querySelector(`.sidebar a[href="#${id}"]`);
+        if (activeLink) activeLink.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(section => observer.observe(section));
+
+  // ===== Z7 Construction Animation =====
+  function replayAnimation(duration = 3500) {
+    const z = document.getElementById('anim-z');
+    const seven = document.getElementById('anim-7');
+    const glow = document.getElementById('anim-glow');
+    const container = document.getElementById('anim-main');
+    const speedFactor = duration / 3500;
+
+    // Reset
+    z.style.transition = 'none';
+    seven.style.transition = 'none';
+    glow.style.transition = 'none';
+    z.style.strokeDashoffset = '200';
+    z.style.opacity = '0';
+    seven.style.strokeDashoffset = '120';
+    seven.style.opacity = '0';
+    glow.style.opacity = '0';
+    container.style.boxShadow = 'none';
+
+    // Force reflow
+    void z.offsetWidth;
+
+    // Stage 1: Z draws (0 - 800ms scaled)
+    setTimeout(() => {
+      z.style.transition = `stroke-dashoffset ${800 * speedFactor}ms cubic-bezier(0.25, 0.1, 0.25, 1), opacity 100ms ease`;
+      z.style.strokeDashoffset = '0';
+      z.style.opacity = '1';
+    }, 50);
+
+    // Stage 3: 7 materializes (1000ms scaled)
+    setTimeout(() => {
+      seven.style.transition = `stroke-dashoffset ${600 * speedFactor}ms cubic-bezier(0.25, 0.1, 0.25, 1), opacity ${300 * speedFactor}ms ease-out`;
+      seven.style.strokeDashoffset = '0';
+      seven.style.opacity = '1';
+    }, 1000 * speedFactor);
+
+    // Stage 4-5: Glow pulse (2500ms scaled)
+    setTimeout(() => {
+      glow.style.transition = `opacity ${400 * speedFactor}ms ease-out`;
+      glow.style.opacity = '0.5';
+      glow.setAttribute('fill', 'rgba(45,122,255,0.30)');
+      container.style.transition = `box-shadow ${600 * speedFactor}ms ease-out`;
+      container.style.boxShadow = '0 0 60px rgba(45,122,255,0.15), inset 0 0 30px rgba(45,122,255,0.05)';
+    }, 2400 * speedFactor);
+
+    // Glow settle
+    setTimeout(() => {
+      glow.style.transition = `opacity ${600 * speedFactor}ms ease-in`;
+      glow.style.opacity = '0.15';
+      container.style.boxShadow = '0 0 30px rgba(45,122,255,0.08)';
+    }, 3000 * speedFactor);
+  }
+
+  function replayAnimationSlow() {
+    replayAnimation(6000);
+  }
+
+  // Auto-play on load
+  setTimeout(() => replayAnimation(), 500);
+
+  // ===== Pattern Generation =====
+  function generatePattern(containerId, options = {}) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const { opacity = 0.025, rotate = false, cluster = false, count = 60 } = options;
+    const w = container.offsetWidth;
+    const h = container.offsetHeight;
+
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('width', w);
+    svg.setAttribute('height', h);
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.pointerEvents = 'none';
+
+    const cols = Math.ceil(w / 100);
+    const rows = Math.ceil(h / 100);
+
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        const g = document.createElementNS(svgNS, 'g');
+        const x = i * 100 + 50 + (rotate ? (Math.random() - 0.5) * 20 : 0);
+        const y = j * 100 + 50 + (rotate ? (Math.random() - 0.5) * 20 : 0);
+        const angle = rotate ? (Math.random() - 0.5) * 30 : 0;
+
+        let op = opacity;
+        if (cluster) {
+          const cx = w * 0.7;
+          const cy = h * 0.6;
+          const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+          const maxDist = Math.sqrt(w * w + h * h) * 0.5;
+          op = opacity * Math.max(0.3, 1 - dist / maxDist);
+        }
+
+        g.setAttribute('transform', `translate(${x},${y}) rotate(${angle}) scale(0.5)`);
+        g.setAttribute('opacity', op);
+
+        const path = document.createElementNS(svgNS, 'path');
+        path.setAttribute('d', 'M-24,-22 L24,-22 L-4,22 M4,-22 L-20,22 L16,22');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', '#2D7AFF');
+        path.setAttribute('stroke-width', '1.5');
+        path.setAttribute('stroke-linecap', 'round');
+        path.setAttribute('stroke-linejoin', 'round');
+        g.appendChild(path);
+        svg.appendChild(g);
+      }
+    }
+
+    container.style.position = 'relative';
+    container.insertBefore(svg, container.firstChild);
+  }
+
+  // Generate patterns on load
+  window.addEventListener('load', () => {
+    generatePattern('pattern-regular', { opacity: 0.025, rotate: false });
+    generatePattern('pattern-rotated', { opacity: 0.035, rotate: true });
+    generatePattern('pattern-cluster', { opacity: 0.05, cluster: true });
+  });
+</script>
+
+</body>
+</html>

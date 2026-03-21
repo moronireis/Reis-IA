@@ -9,7 +9,7 @@ interface Props {
   items: FaqItem[];
 }
 
-function ChevronDown({ isOpen }: { isOpen: boolean }) {
+function ChevronIcon({ isOpen }: { isOpen: boolean }) {
   return (
     <svg
       width="20"
@@ -17,18 +17,18 @@ function ChevronDown({ isOpen }: { isOpen: boolean }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
       style={{
-        transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-        transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
         flexShrink: 0,
-        color: isOpen ? 'var(--color-accent, #C9A84C)' : 'rgba(255,255,255,0.35)',
+        transition: 'transform var(--duration-normal, 300ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), color var(--duration-fast, 200ms)',
+        transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+        color: isOpen ? 'var(--accent-blue, #4A90FF)' : 'var(--text-tertiary, rgba(255,255,255,0.50))',
       }}
     >
-      <path d="m6 9 6 6 6-6" />
+      <polyline points="6 9 12 15 18 9" />
     </svg>
   );
 }
@@ -37,26 +37,36 @@ export default function FaqAccordion({ items }: Props) {
   const [openIndex, setOpenIndex] = useState<number>(0);
 
   return (
-    <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+    <div style={{ borderTop: '1px solid var(--border-default, rgba(255,255,255,0.08))' }}>
       {items.map((item, index) => {
         const isOpen = openIndex === index;
         return (
-          <div key={index} style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <div key={index} style={{ borderBottom: '1px solid var(--border-default, rgba(255,255,255,0.08))' }}>
             <button
-              className="w-full text-left py-6 flex items-center justify-between gap-4 cursor-pointer focus:outline-none focus:ring-2 rounded-sm group"
-              style={{ focusRingColor: 'rgba(201,168,76,0.2)' } as React.CSSProperties}
+              className="w-full text-left flex items-center justify-between gap-4 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+              style={{
+                padding: '24px 0',
+                background: 'transparent',
+                border: 'none',
+                fontFamily: 'inherit',
+              }}
               onClick={() => setOpenIndex(isOpen ? -1 : index)}
               aria-expanded={isOpen}
               aria-controls={`faq-answer-${index}`}
               id={`faq-question-${index}`}
             >
               <span
-                className="text-base font-semibold pr-4 transition-colors duration-200"
-                style={{ color: isOpen ? '#ffffff' : 'rgba(255,255,255,0.85)' }}
+                style={{
+                  fontSize: 'var(--text-body-lg, 18px)',
+                  fontWeight: 600,
+                  color: 'var(--text-primary, #FFFFFF)',
+                  paddingRight: '16px',
+                  transition: 'color var(--duration-fast, 200ms)',
+                }}
               >
                 {item.question}
               </span>
-              <ChevronDown isOpen={isOpen} />
+              <ChevronIcon isOpen={isOpen} />
             </button>
             <div
               id={`faq-answer-${index}`}
@@ -65,12 +75,18 @@ export default function FaqAccordion({ items }: Props) {
               style={{
                 maxHeight: isOpen ? '1000px' : '0',
                 overflow: 'hidden',
-                transition: 'max-height 350ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease-out',
+                transition: 'max-height 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 250ms ease-out',
                 opacity: isOpen ? 1 : 0,
               }}
             >
-              <div className="pb-6">
-                <p className="text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              <div style={{ paddingBottom: '24px' }}>
+                <p style={{
+                  fontSize: 'var(--text-body, 16px)',
+                  lineHeight: 1.65,
+                  color: 'var(--text-secondary, rgba(255,255,255,0.70))',
+                  maxWidth: 'var(--container-text, 680px)',
+                  margin: 0,
+                }}>
                   {item.answer}
                 </p>
               </div>
