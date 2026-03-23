@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download PNGs — MDV</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Inter, system-ui, sans-serif; background: #0a0a0a; color: #fff; padding: 40px; }
+    h1 { font-size: 1.5rem; margin-bottom: 32px; }
+    .item { margin-bottom: 40px; background: #111; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 24px; }
+    .item h3 { font-size: 0.875rem; color: rgba(255,255,255,0.5); margin-bottom: 16px; }
+    .item canvas { display: block; max-width: 100%; border-radius: 8px; margin-bottom: 12px; background: #000; }
+    button { padding: 10px 20px; background: #4A90FF; color: #fff; border: none; border-radius: 999px; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: inherit; }
+    button:hover { background: #6AADFF; }
+    .status { font-size: 0.75rem; color: rgba(255,255,255,0.3); margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Download PNGs — Máquina de Vendas</h1>
+
+  <div class="item" id="item-logo">
+    <h3>Logo MDV (560x240 @2x)</h3>
+    <canvas id="c-logo" width="560" height="240"></canvas>
+    <button onclick="download('c-logo','logo-mdv.png')">Download PNG</button>
+    <div class="status" id="s-logo">Carregando...</div>
+  </div>
+
+  <div class="item" id="item-icon">
+    <h3>Logo Icon (240x240 @2x)</h3>
+    <canvas id="c-icon" width="240" height="240"></canvas>
+    <button onclick="download('c-icon','logo-mdv-icon.png')">Download PNG</button>
+    <div class="status" id="s-icon">Carregando...</div>
+  </div>
+
+  <div class="item" id="item-banner">
+    <h3>Banner Checkout 1200x628</h3>
+    <canvas id="c-banner" width="1200" height="628"></canvas>
+    <button onclick="download('c-banner','banner-checkout-1200x628.png')">Download PNG</button>
+    <div class="status" id="s-banner">Carregando...</div>
+  </div>
+
+  <div class="item" id="item-square">
+    <h3>Banner Square 600x600</h3>
+    <canvas id="c-square" width="600" height="600"></canvas>
+    <button onclick="download('c-square','banner-checkout-square.png')">Download PNG</button>
+    <div class="status" id="s-square">Carregando...</div>
+  </div>
+
+  <script>
+    const svgs = [
+      { id: 'logo', file: 'logo-maquina-de-vendas.svg', w: 560, h: 240 },
+      { id: 'icon', file: 'logo-maquina-de-vendas-icon.svg', w: 240, h: 240 },
+      { id: 'banner', file: 'banner-checkout-1200x628.svg', w: 1200, h: 628 },
+      { id: 'square', file: 'banner-checkout-square.svg', w: 600, h: 600 },
+    ];
+
+    svgs.forEach(({ id, file, w, h }) => {
+      const canvas = document.getElementById('c-' + id);
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, w, h);
+        document.getElementById('s-' + id).textContent = `${w}x${h}px — Pronto`;
+      };
+      img.onerror = () => {
+        document.getElementById('s-' + id).textContent = 'Erro ao carregar SVG';
+      };
+      img.src = file;
+    });
+
+    function download(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+  </script>
+</body>
+</html>
