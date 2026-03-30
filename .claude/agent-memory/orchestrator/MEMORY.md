@@ -1,112 +1,101 @@
 # Orchestrator Memory
 
-Last updated: March 2026
+Last updated: 2026-03-30
 
-## Agent Roster (9 Agents -- All Active)
+## Agent System (25 Agents)
 
-| Agent | Model | Role | Writes To |
-|-------|-------|------|-----------|
-| orchestrator | opus | Coordination only, never implements | brain/context/, MEMORY.md |
-| market-research-analyst | sonnet | Research, ICP discovery, competitive analysis | brain/research/ |
-| cmo-strategist | opus | Strategy, positioning, offers, funnels, messaging | brain/strategy/, brain/messaging/, brain/assets/campaigns/ |
-| direct-response-copywriter (Copy Agent) | sonnet | Copy execution, brand element integration | brain/assets/copy/, brain/assets/content/ |
-| execution | sonnet | File operations and structural changes | Any (scoped per task) |
-| dev-agent | sonnet | Web dev, Astro/React, builds pages, calculator | Project code files |
-| designer-agent | opus | UI/UX, brand identity, wireframes, visual design specs | Design spec documents |
-| analysis-agent | sonnet | Context summaries, tool evaluation, integration research | Task-scoped outputs |
-| executor-agent | sonnet | Platform config, email setup, CRM, booking tool | External tool configs |
+| Agent | Model | Role |
+|-------|-------|------|
+| orchestrator | opus | Coordination, planning, delegation only |
+| market-research-analyst | sonnet | Research, ICP discovery, competitive analysis |
+| cmo-strategist | opus | Strategy, positioning, funnels, Copy Squad director |
+| direct-response-copywriter | sonnet | Persuasive copy (Hormozi framework) |
+| humanizer | sonnet | AI pattern elimination, PT-BR voice injection |
+| reviewer | sonnet | Quality gate: brand voice + Hormozi + humanization |
+| execution | sonnet | File operations, structural changes |
+| dev-agent | sonnet | Web dev: Astro/React/Tailwind, all sub-projects |
+| designer-agent | opus | UI/UX, brand identity, wireframes, visual specs |
+| analysis-agent | sonnet | Context summaries, tool evaluation |
+| executor-agent | sonnet | Platform config, email, CRM, deployment |
+| education-director | opus | Curriculum mapping, briefings, quality review |
+| roteirista-aulas | sonnet | Lesson scriptwriting from briefings |
+| educational-designer | sonnet | Lesson visuals: slides, diagrams, mind maps |
+| design-system-extractor | opus | Reference site analysis, design token extraction |
+| logo-brand-mark-designer | opus | Logo/symbol SVG creation |
+| chief-strategy-advisor | -- | High-level strategic advisory |
+| social-media-team | -- | Social media content |
+| creative-director | -- | Creative direction |
+| brand-site-builder | -- | Brand site development |
+| company-brand-strategist | -- | Company brand strategy |
+| personal-brand-strategist | -- | Personal brand strategy |
+| product-brand-strategist | -- | Product brand strategy |
+| movement-brand-strategist | -- | Movement brand strategy |
+| vfx-motion-designer | -- | VFX and motion design |
 
-## Confirmed Tech Stack
+## Copy Squad Pipeline
 
-- **Framework**: Astro (static-first, React islands for interactive components)
+CMO brief (4 Hormozi angles) -> Copywriter (raw copy) -> Humanizer (PT-BR voice) -> Reviewer (quality gate) -> CMO sign-off
+
+Rule sets in `.claude/rules/`: brand-voice.md, hormozi-framework.md, humanization-rules.md
+
+## Tech Stack (Confirmed)
+
+- **Framework**: Astro (static-first, React islands)
 - **Styling**: Tailwind CSS
-- **Typography**: Inter (free, all weights)
-- **Hosting**: Localhost dev first. Vercel deployment after full review.
-- **Booking**: Cal.com (open source, free tier)
-- **Email platform**: TBD (Phase 2)
-- **CRM**: TBD (Phase 2)
+- **Typography**: Inter (all weights)
+- **Database**: Supabase (hub + marketing)
+- **Email**: Resend (transactional)
+- **Hosting**: Vercel (hub + marketing live), localhost (website + brand)
+- **Booking**: Cal.com (placeholder ready)
+- **Email automation**: TBD
+- **CRM**: Custom in reis-ia-hub
 
-## Confirmed Brand Identity
+## Brand Identity (LOCKED)
 
-- **Primary palette**: Black (#000000) and white (#FFFFFF)
-- **Accent color**: Muted gold / warm amber
-- **Font**: Inter (all weights)
-- **Dark mode**: Default
-- **Aesthetic**: Minimal geometric, architectural, Apple-level premium
-- **Hourglass** = Time. Minimal geometric icon. Systems pillar, efficiency content.
-- **Chess** = Strategy. Single piece (knight/king). Builder/Partners, methodology.
-- Both elements appear on every page at least once.
+- **Name**: REIS [IA] — "REIS" white, "[IA]" accent blue, font-weight 300
+- **Primary**: Black #000000, White #FFFFFF
+- **Accent**: #4A90FF (hover #6AADFF, muted #3570CC, bright #8DC4FF)
+- **Surfaces**: L0 #000000, L1 #0A0A0A, L2 #111113, L3 #1A1A1A, L4 #242427
+- **Mode**: Dark default
+- **Brand mark**: H1-B Hourglass ONLY
+- **PROHIBITED**: Gold, amber, chess pieces, crowns, Z7, gradient text, azure whisper, emojis, SaaS pricing
+
+## Active Sub-Projects
+
+| Project | Dir | Status |
+|---------|-----|--------|
+| Main Website | reis-ia-website/ | 5 pages, Phase 6 rebuild pending |
+| Brandbook | reis-ia-brand/ | 24 pages, complete |
+| Marketing | reis-ia-marketing/ | Live on Vercel |
+| HUB Platform | reis-ia-hub/ | Auth + portal + CRM built |
+| Funnels | reis-ia-funnels/ | Initialized |
 
 ## Copy Source Files (brain/assets/copy/)
 
-| File | Purpose |
-|------|---------|
-| website-main.md | Home page (8 sections) |
-| sales-page-builder.md | Builder mentorship sales page |
-| sales-page-systems.md | Systems implementation service page |
-| bio-moroni-reis.md | Founder bio (3 versions) |
-| instagram-highlights.md | IG highlights for 2 profiles |
-| email-welcome-sequence.md | 5-email welcome sequence |
-| linkedin-templates.md | 6 post types with templates |
-| lead-magnet-landing.md | Calculator landing + results page |
+website-main.md, sales-page-builder.md, sales-page-systems.md, bio-moroni-reis.md, instagram-highlights.md, email-welcome-sequence.md, linkedin-templates.md, lead-magnet-landing.md
 
-## File Management Rules (ALL agents must follow)
+## Design System Files
+
+- Design system: brain/assets/design-systems/reis-ia-design-system.md
+- Implementation guide: brain/assets/design-systems/reis-ia-implementation-guide.md
+- Application plan: brain/assets/design-systems/application-plan.md
+- Reference extractions: brain/assets/design-systems/reference-*.md
+- Previews: reis-ia-website/design-previews/
+
+## Current Phase: Phase 6 Ready
+
+All prerequisites complete: brand ecosystem, design systems, copy, brandbook, VFX.
+Next: Final website rebuild with full design system application.
+
+## File Management Rules
 
 1. NEVER overwrite originals in brain/assets/copy/
-2. Append only with `[ADDED -- YYYY-MM-DD]` and `[VARIATION -- YYYY-MM-DD]` tags
-3. Changelog at bottom of every modified file
-4. Portuguese content in separate -pt suffix files
-5. Update "Last updated" date when modifying files
+2. Append only with [ADDED -- YYYY-MM-DD] tags
+3. Changelog at bottom of modified files
+4. Portuguese in separate -pt suffix files
+5. Update dates when modifying
+6. Backup before modify
 
-## 4-Phase Execution Roadmap
-
-### PHASE 1 - FOUNDATION (Week 1-2)
-- Brand identity sheet (colors, typography, hourglass/chess icons, grid system)
-- Brand element integration into 4 copy files (append only, [ADDED] tags)
-- Page design: Home, Builder sales page, Systems service page
-- Page build: 3 pages from copy + design, all CTAs functional
-- Funnel review by CMO agent
-
-### PHASE 2 - LEAD CAPTURE (Week 2-3)
-- AI Agency Profit Calculator (landing + interactive tool)
-- Email welcome sequence setup (5-email automation)
-- CRM/email platform integration
-
-### PHASE 3 - DISTRIBUTION (Week 3-4)
-- LinkedIn content launch (templates from linkedin-templates.md)
-- Instagram highlights setup (both profiles)
-- Content creation (story frames, highlight covers)
-
-### PHASE 4 - OPTIMIZATION (Week 5+)
-- Replace placeholders with real case studies/metrics
-- A/B testing on landing pages
-- Copy adjustments from sales call feedback
-
-## Workflow Chain
+## Workflow
 
 research -> strategy -> messaging -> copy -> design -> dev -> deploy
-
-## Project Structure
-
-```
-/Users/moronireis/Projetos vscode/
-    CLAUDE.md                       # Root project config
-    .claude/agents/                 # 9 agent definitions
-    .claude/agent-memory/           # Per-agent private memory
-    brain/research/                 # Market analyses, competitors, audience
-    brain/strategy/                 # Positioning, offers, funnel, GTM, ICP
-    brain/messaging/                # Brand voice
-    brain/assets/copy/              # 8 copy deliverables
-    brain/assets/campaigns/         # Campaign briefs
-    brain/assets/content/           # Content pieces
-    brain/context/                  # Business profile, project status
-```
-
-## Current State (March 2026)
-
-- All strategy + messaging + copy: COMPLETE
-- All 9 agent definitions: COMPLETE
-- Tech stack + brand identity: CONFIRMED
-- NO code exists yet
-- NO design assets exist yet
-- Next step: Designer Agent creates brand identity sheet
