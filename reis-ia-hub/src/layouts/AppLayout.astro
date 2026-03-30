@@ -1,0 +1,489 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import NotificationBell from '../components/NotificationBell.tsx';
+import { createServerClient } from '../lib/supabase-server';
+
+export const prerender = false;
+
+interface Props {
+  title: string;
+  activeSection?: 'dashboard' | 'projects' | 'academy' | 'community' | 'vault' | 'settings' | 'tasks' | 'crm' | 'admin-projects' | 'admin-academy' | 'admin-vault' | 'mentoria' | 'admin-analytics' | 'admin-mentoria';
+}
+
+const { title, activeSection = 'dashboard' } = Astro.props;
+
+const profile = Astro.locals.profile;
+const isAdmin = profile?.role === 'admin';
+const userRole = (profile?.role || 'starter') as 'starter' | 'builder' | 'mentoria' | 'admin';
+
+// Lock icon determination per nav item based on role
+// Vault: locked for starter
+// Projects: locked for starter and builder
+function isNavLocked(itemId: string): boolean {
+  if (userRole === 'admin') return false;
+  if (itemId === 'vault' && userRole === 'starter') return true;
+  if (itemId === 'projects' && (userRole === 'starter' || userRole === 'builder')) return true;
+  return false;
+}
+
+// Role badge styles
+const ROLE_BADGE_STYLES: Record<string, { bg: string; color: string }> = {
+  starter: { bg: 'var(--surface-3)', color: 'var(--text-quaternary)' },
+  builder: { bg: 'var(--blue-10)', color: 'var(--accent-blue)' },
+  mentoria: { bg: 'rgba(139,92,246,0.1)', color: '#8B5CF6' },
+  admin: { bg: 'rgba(34,197,94,0.1)', color: '#22C55E' },
+};
+
+const roleBadgeStyle = ROLE_BADGE_STYLES[userRole] || ROLE_BADGE_STYLES.starter;
+
+// Compute initials from full_name
+function getInitials(name: string | undefined): string {
+  if (!name) return 'U';
+  const parts = name.trim().split(' ');
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
+const initials = getInitials(profile?.full_name);
+
+// Fetch notifications for current user
+const serverClient = createServerClient();
+const { data: notificationsData } = profile?.id
+  ? await serverClient
+      .from('notifications')
+      .select('*')
+      .eq('user_id', profile.id)
+      .order('created_at', { ascending: false })
+      .limit(20)
+  : { data: [] };
+const notifications = notificationsData || [];
+const unreadCount = notifications.filter((n: any) => !n.read).length;
+
+const navItems = [
+  { id: 'dashboard', label: 'Dashboard', href: '/dashboard', icon: 'grid' },
+  { id: 'projects', label: 'Projetos', href: '/projects', icon: 'layers' },
+  { id: 'academy', label: 'Academy', href: '/academy', icon: 'play' },
+  { id: 'community', label: 'Comunidade', href: '/community', icon: 'users' },
+  { id: 'vault', label: 'Vault', href: '/vault', icon: 'archive' },
+  { id: 'mentoria', label: 'Mentoria', href: '/mentoria', icon: 'compass' },
+];
+
+const adminNavItems = [
+  { id: 'tasks', label: 'Tasks', href: '/admin/tasks', icon: 'check-square' },
+  { id: 'crm', label: 'CRM', href: '/admin/crm', icon: 'briefcase' },
+  { id: 'admin-analytics', label: 'Analytics', href: '/admin/analytics', icon: 'bar-chart' },
+  { id: 'admin-mentoria', label: 'Mentorias', href: '/admin/mentoria', icon: 'compass' },
+  { id: 'admin-projects', label: 'Gerenciar Projetos', href: '/admin/projects', icon: 'settings' },
+  { id: 'admin-academy', label: 'Academy', href: '/admin/academy', icon: 'book' },
+  { id: 'admin-vault', label: 'Vault', href: '/admin/vault', icon: 'database' },
+];
+---
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} — REIS IA [HUB]</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <ClientRouter />
+</head>
+<body class="flex min-h-screen">
+  <!-- Top Progress Bar -->
+  <div id="progress-bar" style="position: fixed; top: 0; left: 0; height: 2px; background: var(--accent-blue); z-index: 99999; width: 0; opacity: 0; transition: width 300ms ease, opacity 200ms ease; box-shadow: 0 0 8px rgba(74,144,255,0.4);"></div>
+
+  <!-- Full Page Loader (for slow transitions) -->
+  <div id="page-loader" style="display: none; position: fixed; inset: 0; z-index: 99998; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); align-items: center; justify-content: center; flex-direction: column; gap: 20px;">
+    <div class="loader-logo">
+      <span style="color: #fff; font-weight: 300; font-size: 1.75rem; letter-spacing: -0.03em;">
+        REIS <span style="color: #4A90FF;">[IA]</span>
+      </span>
+    </div>
+    <div class="loader-dots">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- Mobile Sidebar Backdrop -->
+  <div id="sidebar-backdrop" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 49; backdrop-filter: blur(2px);"></div>
+
+  <!-- Sidebar -->
+  <aside id="app-sidebar" transition:persist class="fixed top-0 left-0 h-screen flex flex-col" style={`width: var(--sidebar-width); background: var(--surface-1); border-right: 1px solid var(--border-subtle); z-index: 50; transition: transform 300ms ease;`}>
+    <!-- Logo -->
+    <div class="flex items-center gap-3 px-6" style={`height: var(--topbar-height); border-bottom: 1px solid var(--border-subtle);`}>
+      <span style="color: var(--text-primary); font-weight: 300; font-size: 1.125rem; letter-spacing: -0.02em;">
+        REIS <span style="color: var(--accent-blue);">[IA]</span>
+        <span style="color: var(--text-tertiary); font-weight: 400; font-size: var(--text-caption); margin-left: 6px;">HUB</span>
+      </span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 px-3 py-4 flex flex-col gap-1 overflow-y-auto">
+      {navItems.map(item => {
+        const locked = isNavLocked(item.id);
+        return (
+          <a
+            href={item.href}
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 nav-item"
+            style={activeSection === item.id
+              ? `background: var(--blue-10); color: var(--accent-blue); font-weight: 500;`
+              : `color: var(--text-secondary); font-weight: 400;`}
+            data-active={activeSection === item.id ? 'true' : 'false'}
+          >
+            <span class="w-5 h-5 flex items-center justify-center" style="opacity: 0.8;">
+              {item.icon === 'grid' && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7" />
+                  <rect x="14" y="3" width="7" height="7" />
+                  <rect x="3" y="14" width="7" height="7" />
+                  <rect x="14" y="14" width="7" height="7" />
+                </svg>
+              )}
+              {item.icon === 'layers' && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2 2 7l10 5 10-5-10-5z" />
+                  <path d="m2 17 10 5 10-5" />
+                  <path d="m2 12 10 5 10-5" />
+                </svg>
+              )}
+              {item.icon === 'play' && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="5,3 19,12 5,21" />
+                </svg>
+              )}
+              {item.icon === 'users' && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              )}
+              {item.icon === 'archive' && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 8v13H3V8" />
+                  <path d="M1 3h22v5H1z" />
+                  <path d="M10 12h4" />
+                </svg>
+              )}
+              {item.icon === 'compass' && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" />
+                </svg>
+              )}
+            </span>
+            <span class="flex-1">{item.label}</span>
+            {locked && (
+              <span style="opacity: 0.35; flex-shrink: 0;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </span>
+            )}
+          </a>
+        );
+      })}
+
+      {/* Admin section — only shown for admin role */}
+      {isAdmin && (
+        <>
+          <div style="height: 1px; background: var(--border-subtle); margin: 12px 0 4px;"></div>
+          <div style="font-size: var(--text-label); color: var(--text-quaternary); text-transform: uppercase; letter-spacing: 0.1em; padding: 0 12px; margin-bottom: 4px;">Admin</div>
+          {adminNavItems.map(item => (
+            <a
+              href={item.href}
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 nav-item"
+              style={activeSection === item.id
+                ? `background: var(--blue-10); color: var(--accent-blue); font-weight: 500;`
+                : `color: var(--text-secondary); font-weight: 400;`}
+              data-active={activeSection === item.id ? 'true' : 'false'}
+            >
+              <span class="w-5 h-5 flex items-center justify-center" style="opacity: 0.8;">
+                {item.icon === 'check-square' && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 11 12 14 22 4" />
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                  </svg>
+                )}
+                {item.icon === 'briefcase' && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                    <line x1="12" y1="12" x2="12" y2="12" />
+                    <path d="M2 12h20" />
+                  </svg>
+                )}
+                {item.icon === 'settings' && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                  </svg>
+                )}
+                {item.icon === 'book' && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                  </svg>
+                )}
+                {item.icon === 'database' && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <ellipse cx="12" cy="5" rx="9" ry="3" />
+                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                  </svg>
+                )}
+                {item.icon === 'bar-chart' && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10" />
+                    <line x1="12" y1="20" x2="12" y2="4" />
+                    <line x1="6" y1="20" x2="6" y2="14" />
+                    <line x1="2" y1="20" x2="22" y2="20" />
+                  </svg>
+                )}
+                {item.icon === 'compass' && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" />
+                  </svg>
+                )}
+              </span>
+              <span>{item.label}</span>
+            </a>
+          ))}
+        </>
+      )}
+    </nav>
+
+    <!-- User Section -->
+    <div class="px-3 py-4" style="border-top: 1px solid var(--border-subtle);">
+      <a href="/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all nav-item" style="color: var(--text-tertiary);">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style="background: var(--blue-10); color: var(--accent-blue);">
+          {initials}
+        </div>
+        <div class="flex flex-col min-w-0 gap-1">
+          <span style="color: var(--text-secondary); font-size: var(--text-body-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{profile?.full_name || 'Usuário'}</span>
+          <span style={`display: inline-flex; align-items: center; width: fit-content; padding: 1px 7px; border-radius: 9999px; font-size: 10px; font-weight: 500; letter-spacing: 0.04em; background: ${roleBadgeStyle.bg}; color: ${roleBadgeStyle.color};`}>
+            {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
+          </span>
+        </div>
+      </a>
+      <form method="POST" action="/api/auth/logout">
+        <button
+          type="submit"
+          class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all nav-item mt-1"
+          style="color: var(--text-quaternary); background: transparent; border: none; cursor: pointer; text-align: left;"
+        >
+          <span class="w-5 h-5 flex items-center justify-center" style="opacity: 0.6;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </span>
+          <span>Sair</span>
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1" style={`margin-left: var(--sidebar-width);`}>
+    <!-- Topbar -->
+    <header class="sticky top-0 flex items-center justify-between px-8" style={`height: var(--topbar-height); background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); z-index: var(--z-nav);`}>
+      <div class="flex items-center gap-3">
+        <!-- Hamburger — mobile only -->
+        <button id="sidebar-toggle" aria-label="Abrir menu" style="display: none; background: none; border: none; cursor: pointer; padding: 6px; color: var(--text-secondary); flex-shrink: 0;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+        <h1 style="font-size: var(--text-body-lg); font-weight: 500; color: var(--text-primary);">{title}</h1>
+      </div>
+      <div class="flex items-center gap-4">
+        <NotificationBell client:load initialNotifications={notifications} initialUnreadCount={unreadCount} />
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="px-8 py-8 page-content" transition:animate="fade">
+      <slot />
+    </div>
+  </main>
+</body>
+</html>
+
+<style>
+  .nav-item:hover {
+    background: var(--surface-3) !important;
+    color: var(--text-primary) !important;
+  }
+  .nav-item[data-active="true"]:hover {
+    background: var(--blue-15) !important;
+    color: var(--accent-blue) !important;
+  }
+
+  /* ── Responsive sidebar ── */
+  @media (max-width: 768px) {
+    #app-sidebar {
+      transform: translateX(-100%);
+    }
+    #app-sidebar.open {
+      transform: translateX(0);
+    }
+    #sidebar-toggle {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+    main {
+      margin-left: 0 !important;
+    }
+    .page-content {
+      padding: 16px !important;
+    }
+    header {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+  }
+
+  /* Page content fade transition */
+  .page-content {
+    animation: fadeIn 250ms ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Active nav indicator transition */
+  .nav-item {
+    transition: background 150ms ease, color 150ms ease;
+  }
+
+  /* Logo loader animation */
+  .loader-logo {
+    animation: logoPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes logoPulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.97); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+  .loader-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .loader-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4A90FF;
+    animation: dotBounce 1.2s ease-in-out infinite;
+  }
+  .loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .loader-dots span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes dotBounce {
+    0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+</style>
+
+<script>
+  const bar = document.getElementById('progress-bar');
+  const loader = document.getElementById('page-loader');
+  let progressTimer: ReturnType<typeof setInterval>;
+  let loaderTimeout: ReturnType<typeof setTimeout>;
+
+  function startProgress() {
+    if (!bar) return;
+    bar.style.opacity = '1';
+    bar.style.width = '0%';
+    bar.style.transition = 'width 300ms ease, opacity 200ms ease';
+    requestAnimationFrame(() => { bar.style.width = '30%'; });
+
+    clearInterval(progressTimer);
+    progressTimer = setInterval(() => {
+      const w = parseFloat(bar.style.width) || 30;
+      if (w < 90) bar.style.width = `${w + Math.random() * 8}%`;
+    }, 400);
+
+    // Show full logo loader if navigation takes > 500ms
+    clearTimeout(loaderTimeout);
+    loaderTimeout = setTimeout(() => {
+      if (loader) loader.style.display = 'flex';
+    }, 500);
+  }
+
+  function finishProgress() {
+    clearTimeout(loaderTimeout);
+    if (loader) loader.style.display = 'none';
+    if (!bar) return;
+    clearInterval(progressTimer);
+    bar.style.transition = 'width 150ms ease, opacity 300ms ease 200ms';
+    bar.style.width = '100%';
+    setTimeout(() => {
+      bar.style.opacity = '0';
+      setTimeout(() => { bar.style.width = '0%'; }, 300);
+    }, 150);
+  }
+
+  document.addEventListener('astro:before-preparation', startProgress);
+  document.addEventListener('astro:after-swap', finishProgress);
+  document.addEventListener('astro:page-load', finishProgress);
+
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll('form[method="POST"]').forEach(form => {
+      form.addEventListener('submit', () => {
+        if (loader) loader.style.display = 'flex';
+        startProgress();
+      });
+    });
+  });
+
+  // ── Mobile sidebar toggle ─────────────────────────────────────────────────
+  function initSidebarToggle() {
+    const toggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (!toggle || !sidebar || !backdrop) return;
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      backdrop.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      backdrop.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    toggle.addEventListener('click', () => {
+      if (sidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+
+    backdrop.addEventListener('click', closeSidebar);
+
+    // Close on nav link click (mobile navigation)
+    sidebar.querySelectorAll('a[href]').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) closeSidebar();
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initSidebarToggle);
+  initSidebarToggle();
+</script>

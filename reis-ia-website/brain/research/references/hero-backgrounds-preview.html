@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Background Techniques Preview — Reis IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #000000;
+    --white: #FFFFFF;
+    --blue: #4A90FF;
+    --blue-deep: #2D7AFF;
+    --blue-cyan: #00B4FF;
+    --blue-soft: #6AADFF;
+    --gray-900: #0a0a0a;
+    --gray-800: #111111;
+    --gray-700: #1a1a1a;
+    --gray-400: #666666;
+    --gray-300: #888888;
+
+    --ease-snappy: cubic-bezier(0.3, 0.57, 0.07, 0.95);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bouncy: cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+  }
+
+  /* --- NAV --- */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav__logo { font-weight: 300; font-size: 18px; letter-spacing: 0.02em; }
+  .nav__label { font-size: 13px; color: var(--gray-400); font-weight: 400; }
+
+  /* --- SECTION HEADER --- */
+  .section-header {
+    padding: 80px 32px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-header h2 {
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--blue);
+    margin-bottom: 8px;
+  }
+  .section-header h3 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .section-header p {
+    font-size: 15px;
+    color: var(--gray-400);
+    max-width: 600px;
+  }
+
+  /* ============================================ */
+  /* TECHNIQUE 1: BLUR ORBS                       */
+  /* ============================================ */
+  .demo-hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--black);
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 32px 60px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .demo-hero__content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 0 24px;
+  }
+  .demo-hero__content h1 {
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .demo-hero__content p {
+    font-size: 17px;
+    color: var(--gray-300);
+    max-width: 500px;
+    margin: 0 auto;
+    font-weight: 400;
+  }
+
+  /* -- Orbs -- */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb--primary {
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, var(--blue) 0%, transparent 70%);
+    filter: blur(150px);
+    top: -25%;
+    right: -15%;
+    opacity: 0.3;
+    animation: orb-drift 20s ease-in-out infinite alternate;
+  }
+  .orb--secondary {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--blue-deep) 0%, transparent 70%);
+    filter: blur(120px);
+    bottom: -20%;
+    left: -10%;
+    opacity: 0.2;
+    animation: orb-drift 25s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes orb-drift {
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(30px, -20px); }
+  }
+
+  /* ============================================ */
+  /* TECHNIQUE 2: GRID MESH                       */
+  /* ============================================ */
+  .grid-mesh {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: rgba(74, 144, 255, 0.025);
+    -webkit-mask-image:
+      linear-gradient(to right, white 1px, transparent 1px),
+      linear-gradient(to bottom, white 1px, transparent 1px);
+    mask-image:
+      linear-gradient(to right, white 1px, transparent 1px),
+      linear-gradient(to bottom, white 1px, transparent 1px);
+    -webkit-mask-size: 80px 80px;
+    mask-size: 80px 80px;
+  }
+
+  /* ============================================ */
+  /* TECHNIQUE 3: DOT GRID                        */
+  /* ============================================ */
+  .dot-grid-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: radial-gradient(rgba(74, 144, 255, 0.15) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* ============================================ */
+  /* TECHNIQUE 4: ANIMATED DOTS (Linear-style)    */
+  /* ============================================ */
+  .dot-grid-animated {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .dot {
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: var(--blue);
+    place-self: center;
+    opacity: 0.15;
+    animation: dot-pulse 3.2s ease-in-out infinite;
+  }
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 0.1; }
+    50%      { opacity: 0.5; }
+  }
+
+  /* ============================================ */
+  /* TECHNIQUE 5: NOISE TEXTURE                   */
+  /* ============================================ */
+  .noise-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 256px 256px;
+  }
+
+  /* ============================================ */
+  /* TECHNIQUE 6: RADIAL FADE                     */
+  /* ============================================ */
+  .radial-fade {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 100% 80% at 50% 40%,
+      transparent 30%,
+      rgba(0, 0, 0, 0.5) 70%,
+      #000000 100%
+    );
+  }
+
+  /* ============================================ */
+  /* TECHNIQUE 7: CONIC GRADIENT BORDER           */
+  /* ============================================ */
+  .glow-card {
+    position: relative;
+    padding: 1px;
+    border-radius: 16px;
+    overflow: hidden;
+    display: inline-block;
+  }
+  .glow-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 16px;
+    background: conic-gradient(
+      from 180deg,
+      transparent 0deg,
+      var(--blue) 90deg,
+      var(--blue-deep) 180deg,
+      var(--blue) 270deg,
+      transparent 360deg
+    );
+    animation: border-spin 4s linear infinite;
+  }
+  .glow-card__inner {
+    position: relative;
+    background: var(--gray-900);
+    border-radius: 15px;
+    padding: 32px 48px;
+    z-index: 1;
+  }
+  @keyframes border-spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* ============================================ */
+  /* TECHNIQUE 8: GLOW SHADOWS                    */
+  /* ============================================ */
+  .shadow-card {
+    background: var(--gray-800);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 32px;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    box-shadow:
+      0 0 60px rgba(74, 144, 255, 0.06),
+      0 0 0 1px rgba(74, 144, 255, 0.04);
+  }
+  .shadow-card:hover {
+    box-shadow:
+      0 0 80px rgba(74, 144, 255, 0.12),
+      0 8px 32px rgba(74, 144, 255, 0.08),
+      0 0 0 1px rgba(74, 144, 255, 0.1);
+    border-color: rgba(74, 144, 255, 0.15);
+  }
+
+  /* ============================================ */
+  /* TECHNIQUE 9: GRADIENT TEXT                   */
+  /* ============================================ */
+  .gradient-text {
+    background: linear-gradient(0deg, var(--blue), var(--blue-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-text--subtle {
+    background: linear-gradient(180deg, #ffffff 0%, var(--blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ============================================ */
+  /* UTILITY                                      */
+  /* ============================================ */
+  .demos-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin: 0 32px 60px;
+  }
+  .small-demo {
+    position: relative;
+    overflow: hidden;
+    background: var(--black);
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .small-demo__label {
+    position: relative;
+    z-index: 10;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-300);
+  }
+
+  .cards-row {
+    display: flex;
+    gap: 24px;
+    margin: 0 32px 60px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dashed-line {
+    background: linear-gradient(90deg, rgba(74,144,255,0.3), rgba(74,144,255,0.3) 50%, transparent 0, transparent);
+    background-size: 8px 1px;
+    height: 1px;
+    margin: 0 32px 60px;
+  }
+
+  /* ============================================ */
+  /* FULL COMPOSITION                             */
+  /* ============================================ */
+  .full-hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--black);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .full-hero__content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    max-width: 800px;
+    padding: 0 24px;
+  }
+  .full-hero__content h1 {
+    font-size: 64px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    margin-bottom: 20px;
+  }
+  .full-hero__content p {
+    font-size: 18px;
+    color: var(--gray-300);
+    max-width: 560px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+  .full-hero__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: var(--blue);
+    color: var(--black);
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s var(--ease-snappy), transform 0.15s;
+  }
+  .full-hero__cta:hover {
+    background: var(--blue-soft);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 768px) {
+    .full-hero__content h1 { font-size: 36px; }
+    .full-hero__content p { font-size: 16px; }
+    .demo-hero__content h1 { font-size: 32px; }
+    .orb--primary { width: 400px; height: 400px; filter: blur(100px); }
+    .orb--secondary { width: 300px; height: 300px; filter: blur(80px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orb, .dot, .glow-card::before {
+      animation: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav__logo">Reis IA</div>
+  <div class="nav__label">Hero Background Techniques Preview</div>
+</nav>
+
+<!-- ================================ -->
+<!-- TECHNIQUE 1: BLUR ORBS           -->
+<!-- ================================ -->
+<div class="section-header" style="padding-top:120px;">
+  <h2>Technique 1 — Vercel</h2>
+  <h3>Blur Orbs</h3>
+  <p>Large radial gradients with heavy blur create ambient depth. The primary technique for premium dark-mode heroes.</p>
+</div>
+
+<div class="demo-hero">
+  <div class="orb orb--primary"></div>
+  <div class="orb orb--secondary"></div>
+  <div class="demo-hero__content">
+    <h1>Blur Orb Background</h1>
+    <p>Radial gradients with 120-150px blur, 0.2-0.35 opacity, slow drift animation.</p>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- TECHNIQUE 2: GRID MESH           -->
+<!-- ================================ -->
+<div class="section-header">
+  <h2>Technique 2 — Vercel</h2>
+  <h3>Grid Mesh Pattern</h3>
+  <p>CSS mask creates repeating grid lines. Architectural, minimal, pairs well with orbs.</p>
+</div>
+
+<div class="demos-row">
+  <div class="small-demo">
+    <div class="grid-mesh"></div>
+    <div class="small-demo__label">Grid Mesh (80px cells)</div>
+  </div>
+  <div class="small-demo">
+    <div class="dot-grid-bg"></div>
+    <div class="small-demo__label">Dot Grid (40px spacing)</div>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- TECHNIQUE 3: ANIMATED DOTS       -->
+<!-- ================================ -->
+<div class="section-header">
+  <h2>Technique 3 — Linear</h2>
+  <h3>Animated Dot Grid</h3>
+  <p>Staggered opacity dots create a "breathing" pattern. Each dot pulses independently.</p>
+</div>
+
+<div class="demo-hero" style="height:350px;">
+  <div class="dot-grid-animated" id="dotGrid"></div>
+  <div class="radial-fade"></div>
+  <div class="demo-hero__content">
+    <h1 style="font-size:36px;">Animated Dots</h1>
+    <p>3.2s pulse cycle, staggered delays per dot.</p>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- TECHNIQUE 4: NOISE + FADE        -->
+<!-- ================================ -->
+<div class="section-header">
+  <h2>Technique 4 — Common Pattern</h2>
+  <h3>Noise Texture + Radial Fade</h3>
+  <p>SVG noise at 3% opacity adds film-grain texture. Radial fade creates spotlight focus.</p>
+</div>
+
+<div class="demos-row">
+  <div class="small-demo">
+    <div class="noise-layer"></div>
+    <div style="position:absolute;inset:0;background:rgba(74,144,255,0.05);z-index:0;"></div>
+    <div class="small-demo__label">Noise Texture (3% opacity)</div>
+  </div>
+  <div class="small-demo">
+    <div class="orb" style="width:400px;height:400px;background:radial-gradient(circle,#4A90FF 0%,transparent 70%);filter:blur(100px);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.4;"></div>
+    <div class="radial-fade"></div>
+    <div class="small-demo__label">Radial Fade Vignette</div>
+  </div>
+</div>
+
+<div class="dashed-line"></div>
+
+<!-- ================================ -->
+<!-- TECHNIQUE 5: GLOW BORDERS        -->
+<!-- ================================ -->
+<div class="section-header">
+  <h2>Technique 5 — Vercel</h2>
+  <h3>Conic Gradient Border + Glow Shadows</h3>
+  <p>Rotating conic gradient as animated card border. Blue glow shadows on hover.</p>
+</div>
+
+<div class="cards-row">
+  <div class="glow-card">
+    <div class="glow-card__inner">
+      <div style="font-size:14px;font-weight:500;color:var(--gray-300);">Animated Border</div>
+      <div style="font-size:24px;font-weight:600;margin-top:8px;">Conic Gradient Spin</div>
+    </div>
+  </div>
+
+  <div class="shadow-card" style="max-width:280px;">
+    <div style="font-size:14px;font-weight:500;color:var(--gray-300);">Hover me</div>
+    <div style="font-size:24px;font-weight:600;margin-top:8px;">Blue Glow Shadow</div>
+    <div style="font-size:13px;color:var(--gray-400);margin-top:8px;">Stripe-style layered depth with blue tint on hover.</div>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- TECHNIQUE 6: GRADIENT TEXT       -->
+<!-- ================================ -->
+<div class="section-header">
+  <h2>Technique 6 — Vercel</h2>
+  <h3>Gradient Text</h3>
+  <p>Background-clip text with blue-to-cyan gradient. Use sparingly for emphasis.</p>
+</div>
+
+<div style="margin:0 32px 60px;text-align:center;">
+  <div class="gradient-text" style="font-size:48px;font-weight:700;letter-spacing:-0.04em;margin-bottom:16px;">Blue to Cyan</div>
+  <div class="gradient-text--subtle" style="font-size:48px;font-weight:700;letter-spacing:-0.04em;">White to Blue</div>
+</div>
+
+<div class="dashed-line"></div>
+
+<!-- ================================ -->
+<!-- TECHNIQUE 7: DASHED LINE         -->
+<!-- ================================ -->
+<div class="section-header">
+  <h2>Technique 7 — Stripe</h2>
+  <h3>Dashed Line Divider</h3>
+  <p>Gradient-based dashed line. Clean section separator.</p>
+</div>
+
+<div style="margin:0 32px 80px;">
+  <div style="background:linear-gradient(90deg,rgba(74,144,255,0.4),rgba(74,144,255,0.4) 50%,transparent 0,transparent);background-size:8px 1px;height:1px;"></div>
+  <div style="margin-top:24px;background:linear-gradient(90deg,transparent,rgba(74,144,255,0.3) 20%,rgba(74,144,255,0.3) 80%,transparent);height:1px;"></div>
+  <div style="margin-top:24px;background:linear-gradient(90deg,rgba(74,144,255,0.5),rgba(74,144,255,0.5) 4px,transparent 4px,transparent 12px);background-size:12px 1px;height:1px;"></div>
+</div>
+
+<!-- ================================ -->
+<!-- FULL COMPOSITION                 -->
+<!-- ================================ -->
+<div class="section-header">
+  <h2>Full Composition</h2>
+  <h3>All Layers Combined</h3>
+  <p>Orbs + Grid + Noise + Fade = complete hero background system.</p>
+</div>
+
+<div class="full-hero" style="margin:0 0 0;">
+  <!-- Layer 1: Orbs -->
+  <div class="orb orb--primary"></div>
+  <div class="orb orb--secondary"></div>
+  <!-- Optional third orb for depth -->
+  <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#00B4FF 0%,transparent 70%);filter:blur(100px);top:60%;left:40%;opacity:0.12;"></div>
+
+  <!-- Layer 2: Grid -->
+  <div class="grid-mesh"></div>
+
+  <!-- Layer 3: Noise -->
+  <div class="noise-layer"></div>
+
+  <!-- Layer 4: Fade -->
+  <div class="radial-fade"></div>
+
+  <!-- Content -->
+  <div class="full-hero__content">
+    <h1><span class="gradient-text--subtle">O Tempo e Rei.</span></h1>
+    <p>Premium dark-mode hero combining blur orbs, grid mesh, noise texture, and radial fade. All techniques extracted and adapted for the Reis IA palette.</p>
+    <button class="full-hero__cta">Agendar Conversa</button>
+  </div>
+</div>
+
+<!-- Generate animated dots via JS -->
+<script>
+  const dotGrid = document.getElementById('dotGrid');
+  if (dotGrid) {
+    for (let i = 0; i < 72; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      dot.style.animationDelay = (i * 0.12) + 's';
+      dotGrid.appendChild(dot);
+    }
+  }
+</script>
+
+</body>
+</html>

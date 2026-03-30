@@ -1,0 +1,20 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import AcademyAdmin from '../../components/AcademyAdmin.tsx';
+import { createServerClient } from '../../lib/supabase-server';
+
+export const prerender = false;
+
+const supabase = createServerClient();
+
+// Fetch all courses including drafts
+const { data: courses } = await supabase
+  .from('courses')
+  .select('*')
+  .order('sort_order', { ascending: true })
+  .order('created_at', { ascending: false });
+---
+
+<AppLayout title="Gerenciar Academy" activeSection="admin-academy">
+  <AcademyAdmin client:load initialCourses={courses || []} />
+</AppLayout>

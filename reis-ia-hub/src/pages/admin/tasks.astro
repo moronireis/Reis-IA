@@ -1,0 +1,17 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import TaskBoard from '../../components/TaskBoard.tsx';
+import { createServerClient } from '../../lib/supabase-server';
+
+export const prerender = false;
+
+const supabase = createServerClient();
+const { data: tasks } = await supabase
+  .from('tasks')
+  .select('*')
+  .order('created_at', { ascending: false });
+---
+
+<AppLayout title="Tasks" activeSection="tasks">
+  <TaskBoard client:load initialTasks={tasks || []} />
+</AppLayout>

@@ -1,0 +1,28 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import VaultAdmin from '../../components/VaultAdmin.tsx';
+import { createServerClient } from '../../lib/supabase-server';
+
+export const prerender = false;
+
+const supabase = createServerClient();
+
+// Fetch all resources and categories
+const { data: resources } = await supabase
+  .from('vault_resources')
+  .select('*')
+  .order('created_at', { ascending: false });
+
+const { data: categories } = await supabase
+  .from('vault_categories')
+  .select('*')
+  .order('sort_order', { ascending: true });
+---
+
+<AppLayout title="Gerenciar Vault" activeSection="admin-vault">
+  <VaultAdmin
+    client:load
+    initialResources={resources || []}
+    categories={categories || []}
+  />
+</AppLayout>

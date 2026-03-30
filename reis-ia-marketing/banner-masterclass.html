@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banner Master Class — Reis IA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: 'Inter', sans-serif;
+      padding: 40px 20px;
+      gap: 24px;
+    }
+
+    .page-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .banner {
+      width: 1080px;
+      height: 1920px;
+      position: relative;
+      overflow: hidden;
+      background: #000;
+      transform-origin: top center;
+    }
+
+    @media (max-height: 1100px) {
+      .banner { transform: scale(0.45); margin-bottom: -1056px; }
+    }
+    @media (max-width: 1200px) {
+      .banner { transform: scale(0.4); margin-bottom: -1152px; }
+    }
+    @media (max-width: 600px) {
+      .banner { transform: scale(0.3); margin-bottom: -1344px; }
+    }
+
+    .banner-photo-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: top center;
+      background-repeat: no-repeat;
+      z-index: 1;
+    }
+
+    .banner-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,0.98) 22%,
+        rgba(0,0,0,0.88) 36%,
+        rgba(0,0,0,0.55) 52%,
+        rgba(0,0,0,0.15) 64%,
+        rgba(0,0,0,0) 78%
+      );
+    }
+
+    .banner-overlay-top {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 12%);
+    }
+
+    .banner-glow {
+      position: absolute;
+      bottom: 15%;
+      left: 10%;
+      width: 500px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(74,144,255,0.10) 0%, transparent 70%);
+      z-index: 2;
+      filter: blur(60px);
+    }
+
+    .banner-content {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      padding: 64px 72px 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 40px;
+    }
+
+    .banner-top {
+      position: absolute;
+      top: 64px;
+      left: 72px;
+      right: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .banner-brand {
+      font-size: 28px;
+      font-weight: 300;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+    .banner-brand .ia { color: #4A90FF; }
+    .banner-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 24px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(74,144,255,0.12);
+      border: 1px solid rgba(74,144,255,0.25);
+      color: #4A90FF;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .banner-middle { max-width: 100%; }
+    .banner-label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #4A90FF;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 28px;
+    }
+    .banner-headline {
+      font-size: 86px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 28px;
+    }
+    .banner-headline .accent { color: #4A90FF; }
+    .banner-sub {
+      font-size: 26px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.45;
+      max-width: 800px;
+    }
+
+    .banner-bottom {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .banner-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      padding: 32px 64px;
+      background: #4A90FF;
+      color: #fff;
+      font-size: 26px;
+      font-weight: 700;
+      border-radius: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border: none;
+      box-shadow: 0 8px 40px rgba(74,144,255,0.4);
+    }
+    .banner-cta svg { width: 30px; height: 30px; }
+    .banner-live {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 17px;
+      color: rgba(255,255,255,0.4);
+      font-weight: 500;
+    }
+    .banner-live .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #4A90FF;
+      box-shadow: 0 0 10px rgba(74,144,255,0.6);
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 36px;
+      background: #4A90FF;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 4px 20px rgba(74,144,255,0.3);
+    }
+    .download-btn:hover { background: #3a7ae6; transform: translateY(-1px); }
+    .download-btn:active { transform: translateY(0); }
+    .download-btn svg { width: 18px; height: 18px; }
+
+    .download-status {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      min-height: 20px;
+    }
+
+    .separator {
+      width: 200px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+      margin: 20px 0;
+    }
+
+    .version-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.25);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-title">Banners Master Class</div>
+
+<!-- ==================== VERSAO 1 — FOTO ESTUDIO ==================== -->
+<div class="version-label">Versao 1 — Estudio</div>
+<div class="banner" id="banner1">
+  <div class="banner-photo-bg" style="background-image: url('assets/moronieu.PNG');"></div>
+  <div class="banner-overlay"></div>
+  <div class="banner-overlay-top"></div>
+  <div class="banner-glow"></div>
+  <div class="banner-content">
+    <div class="banner-top">
+      <div class="banner-brand">REIS <span class="ia">[IA]</span></div>
+      <div class="banner-badge">Master Class</div>
+    </div>
+    <div class="banner-middle">
+      <div class="banner-label">Master Class</div>
+      <h1 class="banner-headline">Aprenda a <span class="accent">vender</span> e criar <span class="accent">agentes de IA</span> em minutos</h1>
+      <p class="banner-sub">O framework que usamos para construir operações completas com times de agentes especializados.</p>
+    </div>
+    <div class="banner-bottom">
+      <div class="banner-cta">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        Entre no grupo
+      </div>
+      <div class="banner-live"><span class="dot"></span>Vagas limitadas</div>
+    </div>
+  </div>
+</div>
+<button class="download-btn" onclick="downloadBanner('banner1', 'masterclass-reis-ia-estudio.png')">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  Baixar Estudio (1080x1920)
+</button>
+<div class="download-status" id="status1"></div>
+
+<div class="separator"></div>
+
+<!-- ==================== VERSAO 2 — FOTO PALCO ==================== -->
+<div class="version-label">Versao 2 — Palco</div>
+<div class="banner" id="banner2">
+  <div class="banner-photo-bg" style="background-image: url('assets/moroni-palco.jpg');"></div>
+  <div class="banner-overlay"></div>
+  <div class="banner-overlay-top"></div>
+  <div class="banner-glow"></div>
+  <div class="banner-content">
+    <div class="banner-top">
+      <div class="banner-brand">REIS <span class="ia">[IA]</span></div>
+      <div class="banner-badge">Master Class</div>
+    </div>
+    <div class="banner-middle">
+      <div class="banner-label">Master Class</div>
+      <h1 class="banner-headline">Aprenda a <span class="accent">vender</span> e criar <span class="accent">agentes de IA</span> em minutos</h1>
+      <p class="banner-sub">O framework que usamos para construir operações completas com times de agentes especializados.</p>
+    </div>
+    <div class="banner-bottom">
+      <div class="banner-cta">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        Entre no grupo
+      </div>
+      <div class="banner-live"><span class="dot"></span>Vagas limitadas</div>
+    </div>
+  </div>
+</div>
+<button class="download-btn" onclick="downloadBanner('banner2', 'masterclass-reis-ia-palco.png')">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  Baixar Palco (1080x1920)
+</button>
+<div class="download-status" id="status2"></div>
+
+<script>
+async function downloadBanner(bannerId, filename) {
+  const banner = document.getElementById(bannerId);
+  const statusId = bannerId === 'banner1' ? 'status1' : 'status2';
+  const status = document.getElementById(statusId);
+
+  status.textContent = 'Gerando imagem...';
+
+  try {
+    const prevTransform = banner.style.transform;
+    const prevMargin = banner.style.marginBottom;
+    banner.style.transform = 'none';
+    banner.style.marginBottom = '0';
+
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    const canvas = await html2canvas(banner, {
+      width: 1080,
+      height: 1920,
+      windowWidth: 1080,
+      windowHeight: 1920,
+      scale: 1,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#000000',
+      onclone: function(doc) {
+        const cloned = doc.getElementById(bannerId);
+        cloned.style.transform = 'none';
+        cloned.style.marginBottom = '0';
+      }
+    });
+
+    banner.style.transform = prevTransform;
+    banner.style.marginBottom = prevMargin;
+
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    status.textContent = 'Download concluido!';
+    setTimeout(() => { status.textContent = ''; }, 3000);
+  } catch (err) {
+    status.textContent = 'Erro: ' + err.message;
+  }
+}
+</script>
+
+</body>
+</html>

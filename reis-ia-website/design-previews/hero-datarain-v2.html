@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REIS [IA] — Data Rain V2 — Mouse Interactions</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:#000;color:#fff;overflow-x:hidden}
+  .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 24px;height:48px;display:flex;align-items:center;gap:6px;overflow-x:auto}
+  .nav::-webkit-scrollbar{display:none}
+  .nav span{font-size:10px;font-weight:600;color:#444;text-transform:uppercase;letter-spacing:.08em;margin-right:8px;white-space:nowrap}
+  .nav a{display:inline-flex;align-items:center;height:28px;padding:0 12px;font-size:11px;font-weight:500;color:#888;text-decoration:none;border:1px solid rgba(255,255,255,.08);border-radius:6px;white-space:nowrap;transition:all .15s}
+  .nav a:hover{color:#fff;border-color:rgba(74,144,255,.3);background:rgba(74,144,255,.08)}
+  .hero{position:relative;overflow:hidden;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000}
+  .hero canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important;pointer-events:none}
+  .ct{position:relative;z-index:10;text-align:center;max-width:800px;padding:0 24px}
+  .ct h1{font-size:clamp(2.5rem,1.5rem+4vw,4.5rem);font-weight:600;line-height:1.10;letter-spacing:-.02em}
+  .ct h1 .a{color:#4A90FF}
+  .ct p{margin:20px auto 0;font-size:17px;line-height:1.55;color:#888;max-width:560px}
+  .ct .cta{display:inline-block;margin-top:32px;background:#4A90FF;color:#000;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none}
+  .tag{position:absolute;top:68px;left:20px;z-index:20;background:rgba(74,144,255,.12);border:1px solid rgba(74,144,255,.25);color:#4A90FF;font-size:11px;font-weight:500;letter-spacing:.03em;padding:6px 14px;border-radius:6px}
+  .sep{height:1px;background:linear-gradient(90deg,transparent,rgba(74,144,255,.15) 50%,transparent)}
+  .noise{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:.025;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px 256px}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span>Data Rain — Mouse Variations</span>
+  <a href="#a">A: Repel (empurra)</a>
+  <a href="#b">B: Vortex (puxa)</a>
+  <a href="#c">C: Freeze (congela)</a>
+  <a href="#d">D: Reveal (revela grid)</a>
+</nav>
+<div style="height:48px"></div>
+
+<!-- A: REPEL — mouse empurra a rain pro lado -->
+<div class="hero" id="a"><div class="tag">A: Repel — Mouse empurra a rain e cria espaco vazio ao redor do cursor</div><canvas id="ca"></canvas><div class="noise"></div><div class="ct"><h1>Tempo e o ativo mais <span class="a">importante.</span></h1><p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p><a href="#" class="cta">Conhecer agora →</a></div></div><div class="sep"></div>
+
+<!-- B: VORTEX — rain é atraida e gira ao redor do mouse -->
+<div class="hero" id="b"><div class="tag">B: Vortex — Rain é atraida pro cursor e gira ao redor dele</div><canvas id="cb"></canvas><div class="noise"></div><div class="ct"><h1>Tempo e o ativo mais <span class="a">importante.</span></h1><p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p><a href="#" class="cta">Conhecer agora →</a></div></div><div class="sep"></div>
+
+<!-- C: FREEZE — mouse congela a rain localmente -->
+<div class="hero" id="c"><div class="tag">C: Freeze — Mouse congela a rain na area do cursor, chars ficam estaveis e brilham</div><canvas id="cc"></canvas><div class="noise"></div><div class="ct"><h1>Tempo e o ativo mais <span class="a">importante.</span></h1><p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p><a href="#" class="cta">Conhecer agora →</a></div></div><div class="sep"></div>
+
+<!-- D: REVEAL — rain some e revela grid neon quando mouse passa -->
+<div class="hero" id="d"><div class="tag">D: Reveal — Mouse revela a grid por baixo da rain, como se limpasse uma janela</div><canvas id="cd"></canvas><div class="noise"></div><div class="ct"><h1>Tempo e o ativo mais <span class="a">importante.</span></h1><p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p><a href="#" class="cta">Conhecer agora →</a></div></div>
+
+<script>
+function init(id) {
+  const c = document.getElementById(id), p = c.parentElement;
+  const dpr = Math.min(devicePixelRatio, 2);
+  const w = p.offsetWidth, h = p.offsetHeight;
+  c.width = w*dpr; c.height = h*dpr;
+  c.style.width = w+'px'; c.style.height = h+'px';
+  const ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const mouse = {x:-9999,y:-9999};
+  p.addEventListener('mousemove', e => { const r=p.getBoundingClientRect(); mouse.x=e.clientX-r.left; mouse.y=e.clientY-r.top; });
+  p.addEventListener('mouseleave', () => { mouse.x=-9999; mouse.y=-9999; });
+  return {ctx,w,h,mouse};
+}
+
+function makeDrops(w, h) {
+  const COL_W = 20, count = Math.ceil(w/COL_W);
+  const drops = [];
+  for (let i=0; i<count; i++) {
+    const len = 8+Math.floor(Math.random()*15);
+    const chars = [];
+    for (let j=0; j<len; j++) chars.push(Math.random()>.5?'1':'0');
+    drops.push({ x: i*COL_W+10, y: -Math.random()*h*2, baseY: 0, speed: 1+Math.random()*3, chars, length: len, opacity: .03+Math.random()*.08, offsetX: 0 });
+  }
+  return drops;
+}
+
+function makeDots(w, h) {
+  const SP=48, BR=1.5, dots=[];
+  for (let y=SP/2; y<h; y+=SP) for (let x=SP/2; x<w; x+=SP) dots.push({x,y,co:.06,cr:BR});
+  return {dots, SP, BR};
+}
+
+function drawRainBase(ctx, drops, w, h) {
+  for (const drop of drops) {
+    for (let j=0; j<drop.chars.length; j++) {
+      const cy = drop.y - j*14;
+      if (cy<-20 || cy>h+20) continue;
+      const charOp = drop.opacity * (1 - j/drop.chars.length);
+      const isHead = j===0;
+      const alpha = isHead ? charOp*2.5 : charOp;
+      ctx.fillStyle = isHead ? `rgba(140,200,255,${alpha})` : `rgba(74,144,255,${alpha})`;
+      ctx.fillText(drop.chars[j], drop.x + (drop.offsetX||0), cy);
+    }
+  }
+}
+
+function drawDotsBase(ctx, dots, mouse, RR) {
+  const hm = mouse.x > -1000;
+  for (const d of dots) {
+    let to=.06, tr=d.cr||1.5;
+    if (hm) { const dist=Math.hypot(d.x-mouse.x,d.y-mouse.y); if(dist<RR){const p=1-dist/RR; const e=p*p*(3-2*p); to+=e*.5; tr=1.5+e*2.5;} }
+    d.co+=(to-d.co)*.08;
+    if(d.co>.1){const g=ctx.createRadialGradient(d.x,d.y,0,d.x,d.y,tr*4);g.addColorStop(0,`rgba(74,144,255,${d.co*.3})`);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.beginPath();ctx.arc(d.x,d.y,tr*4,0,6.28);ctx.fill();}
+    ctx.fillStyle=`rgba(74,144,255,${d.co})`;ctx.beginPath();ctx.arc(d.x,d.y,tr,0,6.28);ctx.fill();
+  }
+}
+
+// ============ A: REPEL ============
+(function() {
+  const {ctx,w,h,mouse} = init('ca');
+  const drops = makeDrops(w,h);
+  const {dots} = makeDots(w,h);
+  const REPEL_R = 150;
+  ctx.font = '10px monospace';
+
+  (function draw() {
+    ctx.clearRect(0,0,w,h);
+    const hm = mouse.x > -1000;
+
+    for (const drop of drops) {
+      drop.y += drop.speed;
+      if (drop.y - drop.length*14 > h) {
+        drop.y = -drop.length*14 - Math.random()*200;
+        drop.speed = 1+Math.random()*3;
+        for (let j=0;j<drop.chars.length;j++) drop.chars[j]=Math.random()>.5?'1':'0';
+      }
+
+      // Repel: push rain sideways away from mouse
+      let offX = 0;
+      if (hm) {
+        const dx = drop.x - mouse.x;
+        const dist = Math.abs(dx);
+        if (dist < REPEL_R) {
+          const force = (1 - dist/REPEL_R);
+          const eased = force * force;
+          offX = Math.sign(dx) * eased * 80;
+        }
+      }
+      drop.offsetX = (drop.offsetX||0) * 0.85 + offX * 0.15; // smooth
+
+      for (let j=0; j<drop.chars.length; j++) {
+        const cy = drop.y - j*14;
+        if (cy<-20||cy>h+20) continue;
+        const charOp = drop.opacity*(1-j/drop.chars.length);
+        const isHead = j===0;
+        const alpha = isHead ? charOp*2.5 : charOp;
+
+        // Fade chars near mouse
+        let fadeMultiplier = 1;
+        if (hm) {
+          const dist = Math.hypot(drop.x+drop.offsetX-mouse.x, cy-mouse.y);
+          if (dist < REPEL_R*0.7) fadeMultiplier = dist/(REPEL_R*0.7);
+        }
+
+        ctx.fillStyle = isHead ? `rgba(140,200,255,${alpha*fadeMultiplier})` : `rgba(74,144,255,${alpha*fadeMultiplier})`;
+        ctx.fillText(drop.chars[j], drop.x+drop.offsetX, cy);
+      }
+    }
+
+    drawDotsBase(ctx, dots, mouse, 200);
+
+    // Cursor glow
+    if (hm) { const g=ctx.createRadialGradient(mouse.x,mouse.y,0,mouse.x,mouse.y,REPEL_R); g.addColorStop(0,'rgba(74,144,255,.05)'); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(mouse.x,mouse.y,REPEL_R,0,6.28); ctx.fill(); }
+    requestAnimationFrame(draw);
+  })();
+})();
+
+// ============ B: VORTEX ============
+(function() {
+  const {ctx,w,h,mouse} = init('cb');
+  const drops = makeDrops(w,h);
+  const {dots} = makeDots(w,h);
+  const VORTEX_R = 180;
+  ctx.font = '10px monospace';
+
+  (function draw() {
+    ctx.clearRect(0,0,w,h);
+    const hm = mouse.x > -1000;
+
+    for (const drop of drops) {
+      drop.y += drop.speed;
+      if (drop.y - drop.length*14 > h) {
+        drop.y = -drop.length*14 - Math.random()*200;
+        for (let j=0;j<drop.chars.length;j++) drop.chars[j]=Math.random()>.5?'1':'0';
+      }
+
+      let offX = 0, speedMult = 1;
+      if (hm) {
+        const dx = drop.x - mouse.x;
+        const dy = drop.y - mouse.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < VORTEX_R && dist > 10) {
+          const force = (1 - dist/VORTEX_R);
+          const eased = force * force;
+          // Tangential offset (creates swirl)
+          const angle = Math.atan2(dy, dx);
+          offX = Math.cos(angle + Math.PI/2) * eased * 40;
+          // Speed up near center
+          speedMult = 1 + eased * 3;
+          // Pull slightly toward mouse
+          drop.y += (mouse.y - drop.y) * eased * 0.01;
+        }
+      }
+      drop.offsetX = (drop.offsetX||0)*0.88 + offX*0.12;
+      drop.y += (drop.speed * (speedMult-1)) * 0.5;
+
+      for (let j=0; j<drop.chars.length; j++) {
+        const cy = drop.y - j*14;
+        if (cy<-20||cy>h+20) continue;
+        const charOp = drop.opacity*(1-j/drop.chars.length);
+        const isHead = j===0;
+        let alpha = isHead ? charOp*2.5 : charOp;
+
+        // Brighten near vortex center
+        if (hm) {
+          const dist = Math.hypot(drop.x+drop.offsetX-mouse.x, cy-mouse.y);
+          if (dist < VORTEX_R) alpha *= 1 + (1-dist/VORTEX_R)*2;
+        }
+
+        ctx.fillStyle = isHead ? `rgba(140,200,255,${Math.min(alpha,.8)})` : `rgba(74,144,255,${Math.min(alpha,.5)})`;
+        ctx.fillText(drop.chars[j], drop.x+drop.offsetX, cy);
+      }
+    }
+
+    drawDotsBase(ctx, dots, mouse, 200);
+    if (hm) { const g=ctx.createRadialGradient(mouse.x,mouse.y,0,mouse.x,mouse.y,VORTEX_R); g.addColorStop(0,'rgba(74,144,255,.08)'); g.addColorStop(.5,'rgba(74,144,255,.03)'); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(mouse.x,mouse.y,VORTEX_R,0,6.28); ctx.fill(); }
+    requestAnimationFrame(draw);
+  })();
+})();
+
+// ============ C: FREEZE ============
+(function() {
+  const {ctx,w,h,mouse} = init('cc');
+  const drops = makeDrops(w,h);
+  const {dots} = makeDots(w,h);
+  const FREEZE_R = 160;
+  ctx.font = '10px monospace';
+
+  (function draw() {
+    ctx.clearRect(0,0,w,h);
+    const hm = mouse.x > -1000;
+
+    for (const drop of drops) {
+      // Calculate freeze factor for this column
+      let freeze = 0;
+      if (hm) {
+        const dx = Math.abs(drop.x - mouse.x);
+        if (dx < FREEZE_R) {
+          freeze = (1 - dx/FREEZE_R);
+          freeze = freeze * freeze;
+        }
+      }
+
+      // Speed slows to near-zero when frozen
+      const effectiveSpeed = drop.speed * (1 - freeze * 0.95);
+      drop.y += effectiveSpeed;
+
+      if (drop.y - drop.length*14 > h) {
+        drop.y = -drop.length*14 - Math.random()*200;
+        for (let j=0;j<drop.chars.length;j++) drop.chars[j]=Math.random()>.5?'1':'0';
+      }
+
+      for (let j=0; j<drop.chars.length; j++) {
+        const cy = drop.y - j*14;
+        if (cy<-20||cy>h+20) continue;
+        const charOp = drop.opacity*(1-j/drop.chars.length);
+        const isHead = j===0;
+        let alpha = isHead ? charOp*2.5 : charOp;
+
+        // Frozen chars glow brighter and turn white-blue
+        const localDist = hm ? Math.hypot(drop.x-mouse.x, cy-mouse.y) : 9999;
+        const localFreeze = localDist < FREEZE_R ? (1 - localDist/FREEZE_R) * (1 - localDist/FREEZE_R) : 0;
+
+        if (localFreeze > 0.1) {
+          // Frozen: brighter, more white
+          const brightAlpha = Math.min(alpha + localFreeze * 0.4, 0.9);
+          const r = Math.round(74 + localFreeze * 180);
+          const g = Math.round(144 + localFreeze * 110);
+          const b = 255;
+          ctx.fillStyle = `rgba(${r},${g},${b},${brightAlpha})`;
+        } else {
+          ctx.fillStyle = isHead ? `rgba(140,200,255,${alpha})` : `rgba(74,144,255,${alpha})`;
+        }
+        ctx.fillText(drop.chars[j], drop.x, cy);
+      }
+    }
+
+    drawDotsBase(ctx, dots, mouse, 200);
+
+    // Freeze zone indicator — faint circle
+    if (hm) {
+      ctx.strokeStyle = 'rgba(74,144,255,.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(mouse.x,mouse.y,FREEZE_R,0,6.28); ctx.stroke();
+      const g=ctx.createRadialGradient(mouse.x,mouse.y,0,mouse.x,mouse.y,FREEZE_R);
+      g.addColorStop(0,'rgba(74,144,255,.04)'); g.addColorStop(1,'transparent');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(mouse.x,mouse.y,FREEZE_R,0,6.28); ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  })();
+})();
+
+// ============ D: REVEAL ============
+(function() {
+  const {ctx,w,h,mouse} = init('cd');
+  const drops = makeDrops(w,h);
+  const SP = 48, BR = 1.5;
+  const dots = [];
+  for (let y=SP/2; y<h; y+=SP) for (let x=SP/2; x<w; x+=SP) dots.push({x,y,co:.0,cr:BR,reveal:0});
+  const REVEAL_R = 200;
+  // Track reveal map (persistent — stays where mouse has been)
+  const revealMap = new Float32Array(Math.ceil(w/10) * Math.ceil(h/10));
+  const rmW = Math.ceil(w/10);
+  ctx.font = '10px monospace';
+
+  (function draw() {
+    ctx.clearRect(0,0,w,h);
+    const hm = mouse.x > -1000;
+
+    // Paint reveal map where mouse is
+    if (hm) {
+      const mx = Math.floor(mouse.x/10), my = Math.floor(mouse.y/10);
+      for (let dy=-20; dy<=20; dy++) {
+        for (let dx=-20; dx<=20; dx++) {
+          const px = mx+dx, py = my+dy;
+          if (px<0||py<0||px>=rmW||py>=Math.ceil(h/10)) continue;
+          const dist = Math.hypot(dx*10, dy*10);
+          if (dist < REVEAL_R) {
+            const idx = py*rmW+px;
+            const strength = (1-dist/REVEAL_R);
+            revealMap[idx] = Math.max(revealMap[idx], strength*strength);
+          }
+        }
+      }
+    }
+
+    // Decay reveal map slowly
+    for (let i=0; i<revealMap.length; i++) revealMap[i] *= 0.997;
+
+    // Draw rain (faded where revealed)
+    for (const drop of drops) {
+      drop.y += drop.speed;
+      if (drop.y - drop.length*14 > h) {
+        drop.y = -drop.length*14 - Math.random()*200;
+        for (let j=0;j<drop.chars.length;j++) drop.chars[j]=Math.random()>.5?'1':'0';
+      }
+
+      for (let j=0; j<drop.chars.length; j++) {
+        const cy = drop.y - j*14;
+        if (cy<-20||cy>h+20) continue;
+
+        // Check reveal at this position
+        const rmx = Math.floor(drop.x/10), rmy = Math.floor(cy/10);
+        const reveal = (rmx>=0 && rmy>=0 && rmx<rmW && rmy<Math.ceil(h/10)) ? revealMap[rmy*rmW+rmx] : 0;
+
+        const charOp = drop.opacity*(1-j/drop.chars.length);
+        const isHead = j===0;
+        let alpha = (isHead ? charOp*2.5 : charOp) * (1 - reveal*0.9); // fade where revealed
+
+        if (alpha > 0.005) {
+          ctx.fillStyle = isHead ? `rgba(140,200,255,${alpha})` : `rgba(74,144,255,${alpha})`;
+          ctx.fillText(drop.chars[j], drop.x, cy);
+        }
+      }
+    }
+
+    // Draw grid dots (appear where revealed)
+    for (const d of dots) {
+      const rmx = Math.floor(d.x/10), rmy = Math.floor(d.y/10);
+      const reveal = (rmx>=0 && rmy>=0 && rmx<rmW && rmy<Math.ceil(h/10)) ? revealMap[rmy*rmW+rmx] : 0;
+
+      const to = reveal * 0.6;
+      const tr = BR + reveal * 3;
+      d.co += (to - d.co) * 0.06;
+      d.reveal += (reveal - d.reveal) * 0.06;
+
+      if (d.co > 0.02) {
+        // Glow
+        if (d.co > 0.08) {
+          const g = ctx.createRadialGradient(d.x,d.y,0,d.x,d.y,tr*5);
+          g.addColorStop(0,`rgba(74,144,255,${d.co*.4})`);
+          g.addColorStop(1,'transparent');
+          ctx.fillStyle = g; ctx.beginPath(); ctx.arc(d.x,d.y,tr*5,0,6.28); ctx.fill();
+        }
+
+        // Lines between revealed dots
+        if (d.reveal > 0.15) {
+          for (const other of dots) {
+            if (other===d || other.reveal<0.1) continue;
+            const dist = Math.hypot(d.x-other.x, d.y-other.y);
+            if (dist < SP*1.6) {
+              ctx.strokeStyle = `rgba(74,144,255,${Math.min(d.reveal,other.reveal)*0.2})`;
+              ctx.lineWidth = 0.5;
+              ctx.beginPath(); ctx.moveTo(d.x,d.y); ctx.lineTo(other.x,other.y); ctx.stroke();
+            }
+          }
+        }
+
+        ctx.fillStyle = `rgba(74,144,255,${d.co})`;
+        ctx.beginPath(); ctx.arc(d.x,d.y,BR+d.reveal*2.5,0,6.28); ctx.fill();
+      }
+    }
+
+    // Cursor indicator
+    if (hm) {
+      ctx.strokeStyle = 'rgba(74,144,255,.06)';
+      ctx.lineWidth = 0.5;
+      ctx.beginPath(); ctx.arc(mouse.x,mouse.y,REVEAL_R,0,6.28); ctx.stroke();
+    }
+    requestAnimationFrame(draw);
+  })();
+})();
+</script>
+</body>
+</html>

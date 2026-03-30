@@ -1,0 +1,476 @@
+---
+// preview-backgrounds.astro — v2 REWRITE
+// Standalone preview page — no layout wrapper.
+// 5 full-viewport sections, each showcasing one premium background system.
+
+import ShaderBackground   from '../components/backgrounds/ShaderBackground.tsx';
+import ParticleField      from '../components/backgrounds/ParticleField.tsx';
+import GradientFlow       from '../components/backgrounds/GradientFlow.tsx';
+import InteractiveGrid    from '../components/backgrounds/InteractiveGrid.tsx';
+import CombinedHero       from '../components/backgrounds/CombinedHero.tsx';
+---
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Background Preview v2 — Reis IA</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html, body {
+        background: #000;
+        color: #fff;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+      }
+
+      /* ── Fixed navigation ───────────────────────────────────────────────── */
+      .preview-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        background: rgba(0, 0, 0, 0.88);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 0 28px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .preview-nav::-webkit-scrollbar { display: none; }
+
+      .preview-nav-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.25);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-right: 12px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .preview-nav a {
+        display: inline-flex;
+        align-items: center;
+        height: 28px;
+        padding: 0 14px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 500;
+        color: rgba(255,255,255,0.45);
+        text-decoration: none;
+        white-space: nowrap;
+        flex-shrink: 0;
+        border: 1px solid rgba(255,255,255,0.07);
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+      }
+
+      .preview-nav a:hover {
+        color: #4A90FF;
+        border-color: rgba(74,144,255,0.35);
+        background: rgba(74,144,255,0.07);
+      }
+
+      /* ── Section base ──────────────────────────────────────────────────── */
+      .preview-section {
+        position: relative;
+        height: 100vh;
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: #000;
+      }
+
+      /* ── Corner label ──────────────────────────────────────────────────── */
+      .option-label {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(0,0,0,0.55);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(74,144,255,0.25);
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: rgba(74,144,255,0.9);
+        font-family: 'Inter', sans-serif;
+      }
+
+      .option-label .label-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #4A90FF;
+        box-shadow: 0 0 6px 2px rgba(74,144,255,0.6);
+      }
+
+      /* ── Hero copy ─────────────────────────────────────────────────────── */
+      .hero-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        max-width: 820px;
+        padding: 0 32px;
+      }
+
+      .hero-eyebrow {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(74,144,255,0.8);
+        margin-bottom: 20px;
+        font-family: 'Inter', sans-serif;
+      }
+
+      .hero-content h1 {
+        font-size: clamp(2.4rem, 1.2rem + 4.5vw, 5rem);
+        font-weight: 600;
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+      }
+
+      .hero-content h1 .accent {
+        color: #4A90FF;
+      }
+
+      .hero-content p {
+        margin: 22px auto 0;
+        font-size: 17px;
+        line-height: 1.6;
+        color: rgba(255,255,255,0.5);
+        max-width: 560px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 400;
+      }
+
+      .hero-cta-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        margin-top: 36px;
+        flex-wrap: wrap;
+      }
+
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #4A90FF;
+        color: #000;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 14px 28px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-family: 'Inter', sans-serif;
+        transition: opacity 0.15s, transform 0.15s;
+        letter-spacing: -0.01em;
+      }
+
+      .btn-primary:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+      }
+
+      .btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        background: transparent;
+        color: rgba(255,255,255,0.6);
+        font-weight: 500;
+        font-size: 14px;
+        padding: 14px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-family: 'Inter', sans-serif;
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: border-color 0.15s, color 0.15s, transform 0.15s;
+        letter-spacing: -0.01em;
+      }
+
+      .btn-ghost:hover {
+        border-color: rgba(255,255,255,0.25);
+        color: #fff;
+        transform: translateY(-1px);
+      }
+
+      /* ── Divider ────────────────────────────────────────────────────────── */
+      .section-divider {
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(74,144,255,0.15) 20%,
+          rgba(74,144,255,0.15) 80%,
+          transparent 100%
+        );
+      }
+
+      /* ── Section-specific tints ─────────────────────────────────────────── */
+      .section-shader   { background: #050510; }
+      .section-particle { background: #020508; }
+      .section-nebula   { background: #040412; }
+      .section-grid     { background: #030306; }
+      .section-combined { background: #040412; }
+
+      /* scroll indicator arrow */
+      .scroll-hint {
+        position: absolute;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        color: rgba(255,255,255,0.2);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-family: 'Inter', sans-serif;
+      }
+
+      .scroll-hint svg {
+        animation: scrollBounce 2s ease-in-out infinite;
+      }
+
+      @keyframes scrollBounce {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(5px); }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── Fixed navigation ──────────────────────────────────────────────── -->
+    <nav class="preview-nav" aria-label="Background preview navigation">
+      <span class="preview-nav-label">Backgrounds v2</span>
+      <a href="#section-shader">1 Shader Flow</a>
+      <a href="#section-particles">2 Particle Field</a>
+      <a href="#section-nebula">3 Nebula</a>
+      <a href="#section-grid">4 Interactive Grid</a>
+      <a href="#section-combined">5 Combined Hero</a>
+    </nav>
+
+    <!-- Spacer for fixed nav -->
+    <div style="height: 52px;"></div>
+
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SECTION 1: ShaderBackground — liquid light GLSL shader
+    ═════════════════════════════════════════════════════════════════════ -->
+    <section id="section-shader" class="preview-section section-shader">
+
+      <div class="option-label">
+        <span class="label-dot"></span>
+        1 — Shader Flow
+      </div>
+
+      <ShaderBackground client:load />
+
+      <div class="hero-content">
+        <span class="hero-eyebrow">O Tempo e Rei</span>
+        <h1>Tempo é o ativo mais<br /><span class="accent">valioso.</span></h1>
+        <p>
+          Implementação de IA que converte em receita.
+          Não projetos. Resultados.
+        </p>
+        <div class="hero-cta-row">
+          <a href="#" class="btn-primary">Agendar conversa →</a>
+          <a href="#" class="btn-ghost">Ver metodologia</a>
+        </div>
+      </div>
+
+      <div class="scroll-hint">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 3v10M4 9l4 4 4-4"/>
+        </svg>
+        scroll
+      </div>
+
+    </section>
+
+    <div class="section-divider"></div>
+
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SECTION 2: ParticleField — constellation with mouse interaction
+    ═════════════════════════════════════════════════════════════════════ -->
+    <section id="section-particles" class="preview-section section-particle">
+
+      <div class="option-label">
+        <span class="label-dot"></span>
+        2 — Particle Field
+      </div>
+
+      <ParticleField client:load />
+
+      <div class="hero-content">
+        <span class="hero-eyebrow">Reis IA — Systems</span>
+        <h1>Sistemas que<br /><span class="accent">escalam.</span></h1>
+        <p>
+          Automações, processos e inteligência artificial
+          integrados ao seu modelo de negócio.
+        </p>
+        <div class="hero-cta-row">
+          <a href="#" class="btn-primary">Conhecer Systems →</a>
+          <a href="#" class="btn-ghost">Cases de resultado</a>
+        </div>
+      </div>
+
+      <div class="scroll-hint">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 3v10M4 9l4 4 4-4"/>
+        </svg>
+        scroll
+      </div>
+
+    </section>
+
+    <div class="section-divider"></div>
+
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SECTION 3: GradientFlow — nebula clouds shader
+    ═════════════════════════════════════════════════════════════════════ -->
+    <section id="section-nebula" class="preview-section section-nebula">
+
+      <div class="option-label">
+        <span class="label-dot"></span>
+        3 — Nebula Gradient
+      </div>
+
+      <GradientFlow client:load />
+
+      <div class="hero-content">
+        <span class="hero-eyebrow">Time Builders</span>
+        <h1>Construa com<br /><span class="accent">método.</span></h1>
+        <p>
+          A formação para empreendedores que querem
+          implementar IA com resultado garantido.
+        </p>
+        <div class="hero-cta-row">
+          <a href="#" class="btn-primary">Entrar no programa →</a>
+          <a href="#" class="btn-ghost">Como funciona</a>
+        </div>
+      </div>
+
+      <div class="scroll-hint">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 3v10M4 9l4 4 4-4"/>
+        </svg>
+        scroll
+      </div>
+
+    </section>
+
+    <div class="section-divider"></div>
+
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SECTION 4: InteractiveGrid — cursor spotlight on dot grid
+    ═════════════════════════════════════════════════════════════════════ -->
+    <section id="section-grid" class="preview-section section-grid">
+
+      <div class="option-label">
+        <span class="label-dot"></span>
+        4 — Interactive Grid
+      </div>
+
+      <InteractiveGrid client:load />
+
+      <div class="hero-content">
+        <span class="hero-eyebrow">Moroni Reis</span>
+        <h1>Estratégia antes<br /><span class="accent">de tecnologia.</span></h1>
+        <p>
+          Consultor de IA para empresários que tomam decisões
+          baseadas em resultado, não em hype.
+        </p>
+        <div class="hero-cta-row">
+          <a href="#" class="btn-primary">Falar com Moroni →</a>
+          <a href="#" class="btn-ghost">Sobre a metodologia</a>
+        </div>
+      </div>
+
+      <div class="scroll-hint">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 3v10M4 9l4 4 4-4"/>
+        </svg>
+        scroll
+      </div>
+
+    </section>
+
+    <div class="section-divider"></div>
+
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SECTION 5: CombinedHero — nebula + grid + floaters
+    ═════════════════════════════════════════════════════════════════════ -->
+    <section id="section-combined" class="preview-section section-combined">
+
+      <div class="option-label">
+        <span class="label-dot"></span>
+        5 — Combined Hero
+      </div>
+
+      <CombinedHero client:load />
+
+      <div class="hero-content">
+        <span class="hero-eyebrow">Reis IA — Ecossistema</span>
+        <h1>IA que gera<br /><span class="accent">receita.</span></h1>
+        <p>
+          Builder, Systems, Partners, Network.
+          Quatro pilares para levar IA da estratégia ao resultado.
+        </p>
+        <div class="hero-cta-row">
+          <a href="#" class="btn-primary">Começar agora →</a>
+          <a href="#" class="btn-ghost">Explorar o ecossistema</a>
+        </div>
+      </div>
+
+    </section>
+
+
+  </body>
+</html>

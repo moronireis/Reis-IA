@@ -87,6 +87,17 @@ Style: line art or geometric solid, matching the brand's minimal aesthetic. Neve
 
 ---
 
+## Visual Capabilities
+
+For any background, visual effect, or animation task, consult the skill files first:
+- For backgrounds and visual effects: `.claude/skills/visual-backgrounds.md`
+- For micro-interactions and interactive UI: `.claude/skills/interactive-ui.md`
+- Reference components are in `src/components/backgrounds/` -- iterate from them, do not create from scratch
+
+**Installed visual stack:** `@react-three/fiber`, `@react-three/drei`, `three`, `framer-motion`, `@tsparticles/react`, `@tsparticles/slim`, `shadergradient`, `gsap`, `simplex-noise`, `@types/three`
+
+---
+
 ## Input Files
 
 **Design specifications** (from Designer Agent):

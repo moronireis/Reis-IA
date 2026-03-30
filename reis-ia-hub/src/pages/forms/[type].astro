@@ -1,0 +1,68 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import BrandingForm from '../../components/BrandingForm.tsx';
+import { createServerClient } from '../../lib/supabase-server';
+import { FORM_CONFIGS } from '../../lib/form-configs';
+
+export const prerender = false;
+
+const { type } = Astro.params;
+const profile = Astro.locals.profile;
+
+if (!profile) return Astro.redirect('/login');
+
+const validTypes = ['personal-branding', 'company-branding', 'product-branding', 'movement-branding'];
+if (!type || !validTypes.includes(type)) return Astro.redirect('/dashboard');
+
+const formConfig = FORM_CONFIGS[type];
+if (!formConfig) return Astro.redirect('/dashboard');
+
+const supabase = createServerClient();
+
+// Check for existing form (most recent for this user + type)
+const { data: existingForm } = await supabase
+  .from('branding_forms')
+  .select('*')
+  .eq('user_id', profile.id)
+  .eq('form_type', type)
+  .order('created_at', { ascending: false })
+  .limit(1)
+  .single();
+
+// Find associated mentorship
+const { data: mentorship } = await supabase
+  .from('mentorships')
+  .select('id')
+  .or(`mentor_id.eq.${profile.id},mentee_id.eq.${profile.id}`)
+  .eq('status', 'active')
+  .limit(1)
+  .single();
+---
+
+<AppLayout title={formConfig.title} activeSection="mentoria">
+  <div class="mb-8">
+    <a
+      href="/mentoria"
+      style="display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-body-sm); color: var(--text-tertiary); text-decoration: none; margin-bottom: 16px;"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+      Voltar para Mentoria
+    </a>
+    <p style="font-size: var(--text-body-sm); color: var(--text-tertiary); margin-top: 4px;">
+      Preencha as informacoes abaixo. Seu progresso e salvo automaticamente a cada 30 segundos.
+    </p>
+  </div>
+
+  <BrandingForm
+    client:load
+    formType={type}
+    formTitle={formConfig.title}
+    sections={formConfig.sections}
+    initialData={existingForm?.data || {}}
+    formId={existingForm?.id}
+    mentorshipId={mentorship?.id}
+    initialStatus={existingForm?.status}
+  />
+</AppLayout>

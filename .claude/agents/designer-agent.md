@@ -100,6 +100,16 @@ Both elements must appear on every page at least once. They create a proprietary
 
 ---
 
+## Visual Effects & Animation References
+
+When specifying animated backgrounds, interactive effects, or motion design:
+- Consult `.claude/skills/visual-backgrounds.md` for available background techniques and constraints
+- Consult `.claude/skills/interactive-ui.md` for micro-interaction patterns and scroll animations
+- Reference components in `src/components/backgrounds/` serve as implementation templates -- specify designs that build on them
+- Installed visual stack: R3F, drei, three, framer-motion, tsparticles, shadergradient, gsap, simplex-noise
+
+---
+
 ## Design Responsibilities
 
 ### 1. Brand Identity Sheet

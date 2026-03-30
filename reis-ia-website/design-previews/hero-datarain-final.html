@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REIS [IA] — Data Rain Final</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:#000;color:#fff}
+  .hero{position:relative;overflow:hidden;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000}
+  .hero canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important;pointer-events:none}
+  .ct{position:relative;z-index:10;text-align:center;max-width:800px;padding:0 24px}
+  .ct h1{font-size:clamp(2.5rem,1.5rem+4vw,4.5rem);font-weight:600;line-height:1.10;letter-spacing:-.02em}
+  .ct h1 .a{color:#4A90FF}
+  .ct p{margin:20px auto 0;font-size:17px;line-height:1.55;color:#888;max-width:560px}
+  .ct .cta{display:inline-block;margin-top:32px;background:#4A90FF;color:#000;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none}
+  .noise{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:.025;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px 256px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <canvas id="cv"></canvas>
+  <div class="noise"></div>
+  <div class="ct">
+    <h1>Tempo e o ativo mais <span class="a">importante.</span></h1>
+    <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+    <a href="#" class="cta">Conhecer agora →</a>
+  </div>
+</div>
+
+<script>
+const hero = document.querySelector('.hero');
+const c = document.getElementById('cv');
+const dpr = Math.min(devicePixelRatio, 2);
+let W = hero.offsetWidth, H = hero.offsetHeight;
+c.width = W*dpr; c.height = H*dpr;
+c.style.width = W+'px'; c.style.height = H+'px';
+const ctx = c.getContext('2d');
+ctx.scale(dpr, dpr);
+
+const mouse = {x:-9999, y:-9999};
+hero.addEventListener('mousemove', e => { const r=hero.getBoundingClientRect(); mouse.x=e.clientX-r.left; mouse.y=e.clientY-r.top; });
+hero.addEventListener('mouseleave', () => { mouse.x=-9999; mouse.y=-9999; });
+
+// ---- RAIN ----
+const COL_W = 20;
+const colCount = Math.ceil(W/COL_W);
+const REPEL_R = 150;
+const drops = [];
+
+for (let i=0; i<colCount; i++) {
+  const len = 8 + Math.floor(Math.random()*15);
+  const chars = [];
+  for (let j=0; j<len; j++) chars.push(Math.random()>.5?'1':'0');
+  drops.push({
+    x: i*COL_W + COL_W/2,
+    y: -Math.random()*H*2,
+    speed: 1+Math.random()*3,
+    chars, length: len,
+    opacity: .03+Math.random()*.08,
+    offX: 0
+  });
+}
+
+// ---- GRID ----
+const SP = 48, BR = 1.5;
+const dots = [];
+for (let y=SP/2; y<H; y+=SP) for (let x=SP/2; x<W; x+=SP) dots.push({x, y, offX:0, offY:0, co:.06, cr:BR});
+
+ctx.font = '10px monospace';
+ctx.textAlign = 'center';
+
+(function draw() {
+  ctx.clearRect(0, 0, W, H);
+  const hm = mouse.x > -1000;
+
+  // ---- RAIN ----
+  for (const drop of drops) {
+    drop.y += drop.speed;
+    if (drop.y - drop.length*14 > H) {
+      drop.y = -drop.length*14 - Math.random()*200;
+      drop.speed = 1+Math.random()*3;
+      for (let j=0; j<drop.chars.length; j++) drop.chars[j] = Math.random()>.5?'1':'0';
+    }
+
+    // Repel: push sideways
+    let targetOffX = 0;
+    if (hm) {
+      const dx = drop.x - mouse.x;
+      const dist = Math.abs(dx);
+      if (dist < REPEL_R) {
+        const force = 1 - dist/REPEL_R;
+        const eased = force * force;
+        targetOffX = Math.sign(dx) * eased * 80;
+      }
+    }
+    drop.offX += (targetOffX - drop.offX) * 0.08;
+
+    for (let j=0; j<drop.chars.length; j++) {
+      const cy = drop.y - j*14;
+      if (cy<-20 || cy>H+20) continue;
+
+      const charOp = drop.opacity * (1 - j/drop.chars.length);
+      const isHead = j===0;
+      const alpha = isHead ? charOp*2.5 : charOp;
+
+      // Fade near mouse center
+      let fade = 1;
+      if (hm) {
+        const d = Math.hypot(drop.x+drop.offX - mouse.x, cy - mouse.y);
+        if (d < REPEL_R*0.6) fade = d / (REPEL_R*0.6);
+      }
+
+      ctx.fillStyle = isHead
+        ? `rgba(140,200,255,${alpha*fade})`
+        : `rgba(74,144,255,${alpha*fade})`;
+      ctx.fillText(drop.chars[j], drop.x + drop.offX, cy);
+    }
+  }
+
+  // ---- GRID DOTS ----
+  for (const d of dots) {
+    // Repel dots too
+    let targetOX = 0, targetOY = 0;
+    if (hm) {
+      const dx = d.x - mouse.x;
+      const dy = d.y - mouse.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < REPEL_R && dist > 0) {
+        const force = 1 - dist/REPEL_R;
+        const eased = force * force;
+        targetOX = (dx/dist) * eased * 30;
+        targetOY = (dy/dist) * eased * 30;
+      }
+    }
+    d.offX += (targetOX - d.offX) * 0.06;
+    d.offY += (targetOY - d.offY) * 0.06;
+
+    const px = d.x + d.offX;
+    const py = d.y + d.offY;
+
+    // Opacity stays base — no extra glow, no extra elements
+    ctx.fillStyle = `rgba(74,144,255,${d.co})`;
+    ctx.beginPath();
+    ctx.arc(px, py, d.cr, 0, 6.28);
+    ctx.fill();
+  }
+
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import CourseDetail from '../../components/CourseDetail.tsx';
+import { createServerClient } from '../../lib/supabase-server';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+const supabase = createServerClient();
+const profile = Astro.locals.profile;
+
+// Fetch course with lessons
+const { data: course, error } = await supabase
+  .from('courses')
+  .select('*')
+  .eq('id', id)
+  .single();
+
+if (error || !course) {
+  return Astro.redirect('/academy');
+}
+
+// Non-admins can only see published courses
+if (profile?.role !== 'admin' && course.status !== 'published') {
+  return Astro.redirect('/academy');
+}
+
+// Fetch lessons
+let lessonsQuery = supabase
+  .from('lessons')
+  .select('*')
+  .eq('course_id', id)
+  .order('sort_order', { ascending: true });
+
+if (profile?.role !== 'admin') {
+  lessonsQuery = lessonsQuery.eq('status', 'published');
+}
+
+const { data: lessons } = await lessonsQuery;
+
+// Fetch user progress for this course
+let userProgress: any[] = [];
+if (profile?.id) {
+  const { data: progress } = await supabase
+    .from('user_progress')
+    .select('*')
+    .eq('user_id', profile.id)
+    .eq('course_id', id);
+  userProgress = progress || [];
+}
+---
+
+<AppLayout title={course.title} activeSection="academy">
+  <CourseDetail
+    client:load
+    course={course}
+    lessons={lessons || []}
+    progress={userProgress}
+    userId={profile?.id || ''}
+  />
+</AppLayout>

@@ -256,6 +256,8 @@
     <!-- TABS -->
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="novos">Leads Novos <span class="tab-count" id="tab-count-novos">0</span></button>
+      <button class="tab-btn" data-tab="imersao">Imersão 26/03 <span class="tab-count" id="tab-count-imersao">0</span></button>
+      <button class="tab-btn" data-tab="hunters">AI Hunters <span class="tab-count" id="tab-count-hunters">0</span></button>
       <button class="tab-btn" data-tab="mdv">Leads MDV <span class="tab-count" id="tab-count-mdv">0</span></button>
       <button class="tab-btn" data-tab="listas">Listas Antigas <span class="tab-count" id="tab-count-listas">0</span></button>
       <button class="tab-btn" data-tab="todos">Todos <span class="tab-count" id="tab-count-todos">0</span></button>
@@ -315,12 +317,22 @@
       return sub.form_type && sub.form_type.startsWith('mdv-');
     }
 
+    function isImersaoLead(sub) {
+      return sub.form_type === 'lista-imersao-2603';
+    }
+
+    function isHuntersLead(sub) {
+      return sub.form_type === 'lista-imersao-hunters';
+    }
+
     function isNewLead(sub) {
       return NEW_FORM_TYPES.includes(sub.form_type);
     }
 
     function getTabSubmissions() {
       if (currentTab === 'novos') return allSubmissions.filter(isNewLead);
+      if (currentTab === 'imersao') return allSubmissions.filter(isImersaoLead);
+      if (currentTab === 'hunters') return allSubmissions.filter(isHuntersLead);
       if (currentTab === 'mdv') return allSubmissions.filter(isMdvLead);
       if (currentTab === 'listas') return allSubmissions.filter(isListaLead);
       return allSubmissions;
@@ -372,7 +384,9 @@
         'movimento': 'Movimento',
         'empresa': 'Empresa',
         'produto': 'Produto',
-        'diagnostico': 'Diagnostico'
+        'diagnostico': 'Diagnostico',
+        'lista-imersao-2603': 'Imersão 26/03',
+        'lista-imersao-hunters': 'AI Hunters 26/03'
       };
       if (type.startsWith('mdv-')) {
         const slug = type.replace('mdv-', '');
@@ -879,6 +893,8 @@
 
     function renderTabCounts() {
       document.getElementById('tab-count-novos').textContent = allSubmissions.filter(isNewLead).length;
+      document.getElementById('tab-count-imersao').textContent = allSubmissions.filter(isImersaoLead).length;
+      document.getElementById('tab-count-hunters').textContent = allSubmissions.filter(isHuntersLead).length;
       document.getElementById('tab-count-mdv').textContent = allSubmissions.filter(isMdvLead).length;
       document.getElementById('tab-count-listas').textContent = allSubmissions.filter(isListaLead).length;
       document.getElementById('tab-count-todos').textContent = allSubmissions.length;

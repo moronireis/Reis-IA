@@ -1,0 +1,320 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import { createServerClient } from '../lib/supabase-server';
+import { hasAccess } from '../lib/access';
+import type { UserRole } from '../lib/access';
+
+export const prerender = false;
+
+const supabase = createServerClient();
+const profile = Astro.locals.profile;
+const isAdmin = profile?.role === 'admin';
+const userRole = (profile?.role || 'starter') as UserRole;
+
+const canAccessVault = hasAccess(userRole, 'builder');
+const canAccessProjects = hasAccess(userRole, 'mentoria');
+const canAccessMentoria = hasAccess(userRole, 'mentoria');
+
+// Academy: count published courses
+const { count: coursesCount } = await supabase
+  .from('courses')
+  .select('id', { count: 'exact', head: true })
+  .eq('status', 'published');
+
+// Community: count recent posts (last 7 days)
+const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+const { count: recentPostsCount } = await supabase
+  .from('posts')
+  .select('id', { count: 'exact', head: true })
+  .gte('created_at', sevenDaysAgo);
+
+// Vault: count accessible resources (only if user can access)
+let resourcesCount: number | null = null;
+if (canAccessVault) {
+  let vaultQuery = supabase
+    .from('vault_resources')
+    .select('id', { count: 'exact', head: true });
+  if (!isAdmin) {
+    vaultQuery = vaultQuery.neq('access_level', 'admin');
+  }
+  const { count } = await vaultQuery;
+  resourcesCount = count;
+}
+
+// Active projects (only if user can access)
+let activeProjects: any[] = [];
+if (canAccessProjects) {
+  const projectsQuery = supabase
+    .from('projects')
+    .select('id, name, type, status, progress, start_date, estimated_end_date')
+    .neq('status', 'concluido')
+    .neq('status', 'cancelado')
+    .order('created_at', { ascending: false })
+    .limit(4);
+
+  if (!isAdmin && profile?.id) {
+    projectsQuery.eq('client_id', profile.id);
+  }
+
+  const { data } = await projectsQuery;
+  activeProjects = data || [];
+}
+
+function statusLabel(status: string) {
+  const labels: Record<string, string> = {
+    em_andamento: 'Em andamento',
+    pendente: 'Pendente',
+    concluido: 'Concluído',
+    cancelado: 'Cancelado',
+  };
+  return labels[status] || status;
+}
+
+function statusStyle(status: string) {
+  const styles: Record<string, string> = {
+    em_andamento: 'background: var(--color-success-bg); color: var(--color-success);',
+    pendente: 'background: rgba(245,158,11,0.1); color: #F59E0B;',
+    concluido: 'background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.5);',
+    cancelado: 'background: rgba(239,68,68,0.1); color: #EF4444;',
+  };
+  return styles[status] || 'background: var(--blue-10); color: var(--accent-blue);';
+}
+---
+
+<AppLayout title="Dashboard" activeSection="dashboard">
+  <!-- Welcome -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-medium mb-2" style="color: var(--text-primary);">
+      Bem-vindo ao <span style="color: var(--accent-blue);">HUB</span>
+    </h2>
+    <p style="color: var(--text-secondary); font-size: var(--text-body);">
+      Olá, {profile?.full_name || 'usuário'}. Acesse seus projetos, formações e comunidade em um só lugar.
+    </p>
+  </div>
+
+  <!-- Module Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+    <!-- Projects Card -->
+    {canAccessProjects ? (
+      <a href="/projects" class="module-card rounded-xl p-6 transition-all duration-300" style="background: var(--surface-2); border: 1px solid var(--border-subtle);">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--blue-10);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2 2 7l10 5 10-5-10-5z" />
+              <path d="m2 17 10 5 10-5" />
+              <path d="m2 12 10 5 10-5" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-medium" style="color: var(--text-primary);">Meus Projetos</h3>
+            <p class="text-sm" style="color: var(--text-tertiary);">
+              {activeProjects && activeProjects.length > 0
+                ? `${activeProjects.length} projeto${activeProjects.length > 1 ? 's' : ''} ativo${activeProjects.length > 1 ? 's' : ''}`
+                : 'Acompanhe o andamento dos seus projetos'}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-sm" style="color: var(--accent-blue);">
+          <span>Ver projetos</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </a>
+    ) : (
+      <a href="/projects" class="module-card rounded-xl p-6 transition-all duration-300" style="background: var(--surface-2); border: 1px solid var(--border-subtle); opacity: 0.7;">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(255,255,255,0.04);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2 2 7l10 5 10-5-10-5z" />
+              <path d="m2 17 10 5 10-5" />
+              <path d="m2 12 10 5 10-5" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <h3 class="font-medium" style="color: var(--text-secondary);">Meus Projetos</h3>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <p class="text-sm" style="color: var(--text-quaternary);">Disponivel no plano Mentoria</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-sm" style="color: rgba(255,255,255,0.25);">
+          <span>Saiba mais</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </a>
+    )}
+
+    <!-- Academy Card -->
+    <a href="/academy" class="module-card rounded-xl p-6 transition-all duration-300" style="background: var(--surface-2); border: 1px solid var(--border-subtle);">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--blue-10);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5,3 19,12 5,21" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-medium" style="color: var(--text-primary);">Academy</h3>
+          <p class="text-sm" style="color: var(--text-tertiary);">
+            {coursesCount && coursesCount > 0
+              ? `${coursesCount} curso${coursesCount > 1 ? 's' : ''} disponivel${coursesCount > 1 ? 'is' : ''}`
+              : 'Formacoes, mentorias e masterclasses'}
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-sm" style="color: var(--accent-blue);">
+        <span>Acessar academy</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+
+    <!-- Community Card -->
+    <a href="/community" class="module-card rounded-xl p-6 transition-all duration-300" style="background: var(--surface-2); border: 1px solid var(--border-subtle);">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--blue-10);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-medium" style="color: var(--text-primary);">Comunidade</h3>
+          <p class="text-sm" style="color: var(--text-tertiary);">
+            {recentPostsCount && recentPostsCount > 0
+              ? `${recentPostsCount} publicac${recentPostsCount > 1 ? 'oes' : 'ao'} esta semana`
+              : 'Conecte-se com outros membros'}
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-sm" style="color: var(--accent-blue);">
+        <span>Entrar na comunidade</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+
+    <!-- Vault Card -->
+    {canAccessVault ? (
+      <a href="/vault" class="module-card rounded-xl p-6 transition-all duration-300" style="background: var(--surface-2); border: 1px solid var(--border-subtle);">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--blue-10);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 8v13H3V8" />
+              <path d="M1 3h22v5H1z" />
+              <path d="M10 12h4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-medium" style="color: var(--text-primary);">Vault</h3>
+            <p class="text-sm" style="color: var(--text-tertiary);">
+              {resourcesCount && resourcesCount > 0
+                ? `${resourcesCount} recurso${resourcesCount > 1 ? 's' : ''} disponivel${resourcesCount > 1 ? 'is' : ''}`
+                : 'Templates, frameworks e recursos'}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-sm" style="color: var(--accent-blue);">
+          <span>Explorar vault</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </a>
+    ) : (
+      <a href="/vault" class="module-card rounded-xl p-6 transition-all duration-300" style="background: var(--surface-2); border: 1px solid var(--border-subtle); opacity: 0.7;">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(255,255,255,0.04);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 8v13H3V8" />
+              <path d="M1 3h22v5H1z" />
+              <path d="M10 12h4" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <h3 class="font-medium" style="color: var(--text-secondary);">Vault</h3>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <p class="text-sm" style="color: var(--text-quaternary);">Disponivel no plano Builder</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-sm" style="color: rgba(255,255,255,0.25);">
+          <span>Saiba mais</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </a>
+    )}
+  </div>
+
+  <!-- Active Projects Quick View — only for users with access -->
+  {canAccessProjects && (
+    <div class="rounded-xl p-6" style="background: var(--surface-1); border: 1px solid var(--border-subtle);">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-medium" style="color: var(--text-primary);">Projetos Ativos</h3>
+        <a href="/projects" class="text-sm" style="color: var(--accent-blue);">Ver todos</a>
+      </div>
+
+      {activeProjects && activeProjects.length > 0 ? (
+        <div class="flex flex-col gap-4">
+          {activeProjects.map((project: any) => (
+            <a href={`/projects/${project.id}`} class="flex items-center justify-between p-4 rounded-lg transition-all dashboard-project-row" style="background: var(--surface-2); border: 1px solid var(--border-subtle);">
+              <div class="flex items-center gap-4">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="text-sm font-medium" style="color: var(--text-primary);">{project.name}</span>
+                    <span class="px-2 py-0.5 rounded text-xs" style="background: var(--blue-10); color: var(--accent-blue);">{project.type}</span>
+                  </div>
+                  <span class="text-xs px-2 py-0.5 rounded" style={statusStyle(project.status)}>{statusLabel(project.status)}</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <div class="text-right">
+                  <div class="text-xs mb-1" style="color: var(--text-quaternary);">{project.progress || 0}%</div>
+                  <div class="w-24 h-1.5 rounded-full" style="background: var(--surface-4);">
+                    <div class="h-full rounded-full" style={`width: ${project.progress || 0}%; background: var(--accent-blue);`}></div>
+                  </div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-quaternary);">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-8">
+          <p style="color: var(--text-tertiary); font-size: var(--text-body-sm);">
+            Nenhum projeto ativo no momento.
+          </p>
+        </div>
+      )}
+    </div>
+  )}
+</AppLayout>
+
+<style>
+  .module-card:hover {
+    border-color: var(--border-visible) !important;
+    background: var(--surface-3) !important;
+  }
+  .dashboard-project-row:hover {
+    border-color: var(--border-visible) !important;
+    background: var(--surface-3) !important;
+  }
+</style>

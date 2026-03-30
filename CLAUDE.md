@@ -2,7 +2,7 @@
 
 ## Project Identity
 
-**Reis IA** — an ecosystem focused on implementing and monetizing Artificial Intelligence for businesses, led by Moroni Reis. The agent system supports market research, strategy, messaging, copy production, design, and web development to help scale the Reis IA ecosystem (Builder, Systems, Partners, Network).
+**REIS [IA]** — an ecosystem that helps entrepreneurs and business owners profit from AI — increasing revenue, reducing costs, and structuring growth. Led by Moroni Reis. The agent system supports market research, strategy, messaging, copy production, design, and web development to help scale the REIS [IA] ecosystem (Systems, Builders, Marketing).
 
 Full business context: `brain/context/business-profile.md`
 
@@ -23,6 +23,9 @@ Full business context: `brain/context/business-profile.md`
 | designer-agent | UI/UX design specs, brand identity, page layouts, wireframes-as-text. | opus |
 | analysis-agent | Context summaries, tool evaluation, integration research, file audits. | sonnet |
 | executor-agent | Platform configuration: email setup, CRM, booking tools, deployment. | sonnet |
+| education-director | Curriculum mapping, lesson briefings, educational pipeline management, quality review. | opus |
+| roteirista-aulas | Video lesson scriptwriting from briefings, script enhancement/reformulation. | sonnet |
+| educational-designer | Visual elements for lessons: slides, mind maps, diagrams, transition screens. | sonnet |
 
 ### Workflow Chain
 
@@ -41,6 +44,12 @@ orchestrator
     +---> executor-agent           (configures external platforms and tools)
     +---> analysis-agent           (produces context summaries for any agent)
     +---> execution                (file operations when needed)
+    +---> education-director       (curriculum mapping, briefings, quality review)
+    |        +---> EDUCATIONAL PIPELINE:
+    |        |     education-director (briefing)
+    |        |       → roteirista-aulas (script from briefing)
+    |        |         → educational-designer (visuals from approved script)
+    |        |           → education-director (final review)
 ```
 
 ### Copy Squad
@@ -78,19 +87,20 @@ The Copy Squad is a 5-agent pipeline managed by the CMO Strategist for all copy 
 
 ## Brand Identity
 
-- **Central philosophy**: "O Tempo e Rei" — Time is the most valuable asset. The brand name (Reis) is embedded in the philosophy.
+- **Brand name**: REIS [IA] — "REIS" in white, "[IA]" in accent blue. Font-weight 300 (light).
+- **Philosophy**: "O Tempo é Rei" — decorative slogan, used sparingly in footer/watermarks. Never as headline.
 - **Primary colors**: Black (#000000), White (#FFFFFF)
-- **Accent color**: Primary Blue (#4A90FF). Layered by brand:
-  - **Time Builders**: Electric Blue (#2D7AFF) + Cyan (#00B4FF)
+- **Accent color**: Primary Blue (#4A90FF). Layered by pillar:
+  - **Builders**: Electric Blue (#2D7AFF) + Cyan (#00B4FF)
   - **Systems**: Black/White dominant + #4A90FF minimal
+  - **Marketing**: Same as master (#4A90FF)
   - **Moroni Reis**: Soft Blue (#6AADFF)
 - **Mode**: Dark mode default
 - **Aesthetic**: Minimal geometric, architectural, Apple-level premium
 - **Font**: Inter (all weights)
-- **H1-B Hourglass motif**: Central brand symbol. Represents TIME. Minimal geometric icon. Used across all layers.
-- **Z7 symbol**: Represents the Z7 philosophy (7 zones of transformation). Used in Time Builders, products (Z7 Hours, Z7 Days, Z7 Months), and the 7 Stages framework.
-- Both brand elements (Hourglass + Z7) appear on every page at least once.
-- **PROHIBITED**: Gold, amber, terracotta, chess pieces, crowns. These are deprecated and must never be used.
+- **Three Pillars**: Systems (AI implementation), Builders (community/mentorship), Marketing (marketing/demand)
+- **Hourglass**: Optional decorative element only. NOT a required brand symbol. May appear as low-opacity watermark.
+- **PROHIBITED**: Gold, amber, terracotta, chess pieces, crowns, Z7 symbol, gradient text, azure whisper effects, emojis in UI, SaaS pricing patterns.
 
 ## Folder Structure
 

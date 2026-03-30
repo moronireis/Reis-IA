@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reis IA — Instagram Highlight Covers</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0A0A0A;
+    color: #fff;
+    padding: 60px 40px;
+    min-height: 100vh;
+  }
+  h1 { font-size: 32px; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 6px; }
+  h1 span { color: #4A90FF; }
+  .sub { font-size: 14px; color: rgba(255,255,255,0.35); margin-bottom: 48px; }
+  .grid {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .preview-circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .preview-circle canvas {
+    width: 200px;
+    height: 200px;
+  }
+  .label {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.04em;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    background: rgba(74,144,255,0.08);
+    border: 1px solid rgba(74,144,255,0.2);
+    color: #4A90FF;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.2s;
+  }
+  .btn:hover { background: rgba(74,144,255,0.15); }
+  .download-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    background: rgba(74,144,255,0.12);
+    border: 1px solid rgba(74,144,255,0.3);
+    color: #4A90FF;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.2s;
+    margin-bottom: 48px;
+  }
+  .download-all:hover { background: rgba(74,144,255,0.2); }
+</style>
+</head>
+<body>
+
+<h1>Highlight <span>Covers</span></h1>
+<p class="sub">1080 x 1080px — fundo preto — PNG para download</p>
+
+<button class="download-all" onclick="downloadAll()">
+  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 5v14m0 0l-6-6m6 6l6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  Baixar todos (PNG)
+</button>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const SIZE = 1080;
+const HALF = SIZE / 2;
+
+function drawLetter(ctx, letter, size, weight, color) {
+  ctx.save();
+  ctx.font = `${weight} ${size}px Inter, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = color;
+  ctx.fillText(letter, HALF, HALF + size * 0.02);
+  ctx.restore();
+}
+
+function drawHourglass(ctx, cx, cy, scale, color, strokeW) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = strokeW;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  function tx(x) { return cx + (x - 32) * scale; }
+  function ty(y) { return cy + (y - 32) * scale; }
+
+  function line(x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.moveTo(tx(x1), ty(y1));
+    ctx.lineTo(tx(x2), ty(y2));
+    ctx.stroke();
+  }
+
+  // H1-B Open Intersection Hourglass
+  line(14, 10, 50, 10);   // top bar
+  line(50, 10, 14, 54);   // right-top to left-bottom
+  line(14, 10, 30, 29.1); // left-top to mid gap
+  line(34, 34.9, 50, 54); // mid gap to right-bottom
+  line(14, 54, 50, 54);   // bottom bar
+
+  ctx.restore();
+}
+
+const covers = [
+  {
+    id: 'r',
+    label: 'R',
+    draw: (ctx) => {
+      drawLetter(ctx, 'R', 420, '300', '#4A90FF');
+    }
+  },
+  {
+    id: 'e',
+    label: 'E',
+    draw: (ctx) => {
+      drawLetter(ctx, 'E', 420, '300', '#4A90FF');
+    }
+  },
+  {
+    id: 'i',
+    label: 'I',
+    draw: (ctx) => {
+      drawLetter(ctx, 'I', 420, '300', '#4A90FF');
+    }
+  },
+  {
+    id: 's',
+    label: 'S',
+    draw: (ctx) => {
+      drawLetter(ctx, 'S', 420, '300', '#4A90FF');
+    }
+  },
+  {
+    id: 'ia',
+    label: '[IA]',
+    draw: (ctx) => {
+      ctx.save();
+      // Bracket style — light weight
+      ctx.font = '300 320px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#4A90FF';
+      ctx.fillText('IA', HALF, HALF + 6);
+
+      // Brackets
+      ctx.font = '200 320px Inter, sans-serif';
+      ctx.fillStyle = 'rgba(74, 144, 255, 0.35)';
+
+      const metrics = ctx.measureText('IA');
+      const textW = metrics.width / 2;
+      const bracketGap = 40;
+
+      ctx.textAlign = 'right';
+      ctx.fillText('[', HALF - textW - bracketGap, HALF + 6);
+      ctx.textAlign = 'left';
+      ctx.fillText(']', HALF + textW + bracketGap, HALF + 6);
+
+      ctx.restore();
+    }
+  },
+  {
+    id: 'logo',
+    label: 'Ampulheta',
+    draw: (ctx) => {
+      // Hourglass H1-B — mais grossa (strokeWidth 8)
+      drawHourglass(ctx, HALF, HALF, 12, '#4A90FF', 8);
+    }
+  }
+];
+
+// Render
+const grid = document.getElementById('grid');
+
+covers.forEach(cover => {
+  const canvas = document.createElement('canvas');
+  canvas.width = SIZE;
+  canvas.height = SIZE;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, SIZE, SIZE);
+
+  cover.draw(ctx);
+
+  const item = document.createElement('div');
+  item.className = 'item';
+
+  const circle = document.createElement('div');
+  circle.className = 'preview-circle';
+  circle.appendChild(canvas);
+
+  const label = document.createElement('span');
+  label.className = 'label';
+  label.textContent = cover.label;
+
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.innerHTML = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14m0 0l-6-6m6 6l6-6" stroke-linecap="round" stroke-linejoin="round"/></svg> PNG`;
+  btn.onclick = () => downloadPNG(canvas, cover.id);
+
+  item.appendChild(circle);
+  item.appendChild(label);
+  item.appendChild(btn);
+  grid.appendChild(item);
+});
+
+function downloadPNG(canvas, name) {
+  const link = document.createElement('a');
+  link.download = `highlight-${name}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function downloadAll() {
+  const buttons = document.querySelectorAll('.btn');
+  let delay = 0;
+  buttons.forEach(btn => {
+    setTimeout(() => btn.click(), delay);
+    delay += 300;
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REIS [IA] — Data Rain Enhanced</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:#000;color:#fff;overflow-x:hidden}
+
+  .hero{position:relative;overflow:hidden;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;cursor:none}
+  .hero canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important}
+  .content{position:relative;z-index:10;text-align:center;max-width:800px;padding:0 24px;pointer-events:none}
+  .content h1{font-size:clamp(2.5rem,1.5rem+4vw,4.5rem);font-weight:600;line-height:1.10;letter-spacing:-.02em}
+  .content h1 .a{color:#4A90FF}
+  .content p{margin:20px auto 0;font-size:17px;line-height:1.55;color:#999;max-width:560px}
+  .content .cta{display:inline-block;margin-top:32px;background:#4A90FF;color:#000;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;transition:all .2s;pointer-events:auto;cursor:pointer;position:relative;z-index:20}
+  .content .cta:hover{background:#6AADFF;transform:translateY(-1px)}
+  .tag{position:absolute;top:20px;left:20px;z-index:20;background:rgba(74,144,255,.12);border:1px solid rgba(74,144,255,.25);color:#4A90FF;font-size:11px;font-weight:500;letter-spacing:.03em;padding:6px 14px;border-radius:6px}
+  .noise{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:.02;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px 256px}
+  .instructions{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:50;color:#555;font-size:11px;letter-spacing:.03em;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="hero" id="hero">
+  <div class="tag">Data Rain Enhanced — Move o mouse, clica pra criar ondas</div>
+
+  <!-- Layer 1: Ambient glow -->
+  <canvas id="c-glow" style="z-index:1"></canvas>
+  <!-- Layer 2: Data rain -->
+  <canvas id="c-rain" style="z-index:2"></canvas>
+  <!-- Layer 3: Grid dots -->
+  <canvas id="c-grid" style="z-index:3"></canvas>
+  <!-- Layer 4: Cursor + effects -->
+  <canvas id="c-fx" style="z-index:4"></canvas>
+
+  <div class="noise" style="z-index:5"></div>
+
+  <div class="content">
+    <h1>Tempo e o ativo mais <span class="a">importante.</span></h1>
+    <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+    <a href="#" class="cta">Conhecer agora →</a>
+  </div>
+</div>
+
+<div class="instructions">Mova o mouse para interagir — Clique para criar ondas de energia</div>
+
+<script>
+const hero = document.getElementById('hero');
+const dpr = Math.min(devicePixelRatio, 2);
+let W, H;
+const mouse = { x: -9999, y: -9999, prevX: -9999, prevY: -9999, speed: 0 };
+const clicks = []; // ripple effects
+
+function initCanvas(id) {
+  const c = document.getElementById(id);
+  c.width = hero.offsetWidth * dpr;
+  c.height = hero.offsetHeight * dpr;
+  c.style.width = hero.offsetWidth + 'px';
+  c.style.height = hero.offsetHeight + 'px';
+  const ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return ctx;
+}
+
+function resize() {
+  W = hero.offsetWidth;
+  H = hero.offsetHeight;
+  ctxGlow = initCanvas('c-glow');
+  ctxRain = initCanvas('c-rain');
+  ctxGrid = initCanvas('c-grid');
+  ctxFx = initCanvas('c-fx');
+  buildGrid();
+  buildRain();
+}
+
+// Mouse tracking with speed
+hero.addEventListener('mousemove', e => {
+  const r = hero.getBoundingClientRect();
+  mouse.prevX = mouse.x;
+  mouse.prevY = mouse.y;
+  mouse.x = e.clientX - r.left;
+  mouse.y = e.clientY - r.top;
+  if (mouse.prevX > -1000) {
+    mouse.speed = Math.hypot(mouse.x - mouse.prevX, mouse.y - mouse.prevY);
+  }
+});
+hero.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; mouse.speed = 0; });
+
+// Click ripples
+hero.addEventListener('click', e => {
+  const r = hero.getBoundingClientRect();
+  clicks.push({ x: e.clientX - r.left, y: e.clientY - r.top, radius: 0, maxRadius: 350, opacity: 1, speed: 6 });
+});
+
+let ctxGlow, ctxRain, ctxGrid, ctxFx;
+
+// ============ CHARACTERS ============
+const CHARS = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン'.split('');
+function randChar() { return CHARS[Math.floor(Math.random() * CHARS.length)]; }
+
+// ============ RAIN ============
+const COL_WIDTH = 18;
+let columns = [];
+
+function buildRain() {
+  const colCount = Math.ceil(W / COL_WIDTH);
+  columns = [];
+  for (let i = 0; i < colCount; i++) {
+    const len = 10 + Math.floor(Math.random() * 20);
+    const chars = [];
+    for (let j = 0; j < len; j++) chars.push({ c: randChar(), changeTimer: 50 + Math.random() * 200 });
+    columns.push({
+      x: i * COL_WIDTH + COL_WIDTH / 2,
+      y: -Math.random() * H * 1.5,
+      speed: 1.2 + Math.random() * 3,
+      baseSpeed: 1.2 + Math.random() * 3,
+      chars,
+      opacity: 0.03 + Math.random() * 0.07,
+      baseOpacity: 0.03 + Math.random() * 0.07,
+    });
+  }
+}
+
+// ============ GRID ============
+const SP = 52, DOT_R = 1.5, REACT_R = 220;
+let dots = [];
+
+function buildGrid() {
+  dots = [];
+  for (let y = SP / 2; y < H; y += SP) {
+    for (let x = SP / 2; x < W; x += SP) {
+      dots.push({ x, y, co: 0.05, cr: DOT_R, glow: 0 });
+    }
+  }
+}
+
+// ============ DRAW ============
+let time = 0;
+
+function draw() {
+  time++;
+  const hm = mouse.x > -1000;
+  const mSpeed = Math.min(mouse.speed, 40);
+
+  // === GLOW LAYER ===
+  ctxGlow.clearRect(0, 0, W, H);
+  // Ambient center glow
+  const amb = ctxGlow.createRadialGradient(W/2, H*0.4, 0, W/2, H*0.4, W*0.4);
+  amb.addColorStop(0, 'rgba(74,144,255,.03)');
+  amb.addColorStop(1, 'transparent');
+  ctxGlow.fillStyle = amb;
+  ctxGlow.fillRect(0, 0, W, H);
+
+  // Mouse ambient glow — larger when moving fast
+  if (hm) {
+    const glowSize = 150 + mSpeed * 3;
+    const glowAlpha = 0.04 + mSpeed * 0.002;
+    const mg = ctxGlow.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, glowSize);
+    mg.addColorStop(0, `rgba(74,144,255,${glowAlpha})`);
+    mg.addColorStop(0.5, `rgba(74,144,255,${glowAlpha * 0.3})`);
+    mg.addColorStop(1, 'transparent');
+    ctxGlow.fillStyle = mg;
+    ctxGlow.beginPath();
+    ctxGlow.arc(mouse.x, mouse.y, glowSize, 0, 6.28);
+    ctxGlow.fill();
+  }
+
+  // === RAIN LAYER ===
+  ctxRain.clearRect(0, 0, W, H);
+  ctxRain.font = '12px "JetBrains Mono", monospace';
+  ctxRain.textAlign = 'center';
+
+  for (const col of columns) {
+    // Mouse proximity affects speed and opacity
+    let speedMult = 1;
+    let opacityMult = 1;
+    if (hm) {
+      const dx = Math.abs(col.x - mouse.x);
+      if (dx < 120) {
+        const prox = 1 - dx / 120;
+        // Rain accelerates near mouse (data attracted to cursor)
+        speedMult = 1 + prox * 2.5;
+        opacityMult = 1 + prox * 3;
+      }
+    }
+
+    // Click ripple effect on rain
+    for (const click of clicks) {
+      const dx = Math.abs(col.x - click.x);
+      const inRipple = Math.abs(dx - click.radius) < 60;
+      if (inRipple && click.opacity > 0.1) {
+        speedMult += 2;
+        opacityMult += 3 * click.opacity;
+      }
+    }
+
+    col.y += col.baseSpeed * speedMult;
+
+    // Reset when off screen
+    if (col.y - col.chars.length * 16 > H) {
+      col.y = -col.chars.length * 16 - Math.random() * 300;
+      col.baseSpeed = 1.2 + Math.random() * 3;
+      col.baseOpacity = 0.03 + Math.random() * 0.07;
+      for (const ch of col.chars) ch.c = randChar();
+    }
+
+    const effectiveOpacity = col.baseOpacity * opacityMult;
+
+    for (let j = 0; j < col.chars.length; j++) {
+      const cy = col.y - j * 16;
+      if (cy < -20 || cy > H + 20) continue;
+
+      // Random character change
+      col.chars[j].changeTimer--;
+      if (col.chars[j].changeTimer <= 0) {
+        col.chars[j].c = randChar();
+        col.chars[j].changeTimer = 30 + Math.random() * 150;
+      }
+
+      const isHead = j === 0;
+      const isTail = j > col.chars.length * 0.7;
+      const fade = isTail ? (1 - (j - col.chars.length * 0.7) / (col.chars.length * 0.3)) : 1;
+      const alpha = (isHead ? effectiveOpacity * 3.5 : effectiveOpacity * fade);
+
+      if (isHead) {
+        // Bright head with glow
+        ctxRain.fillStyle = `rgba(180,220,255,${Math.min(alpha, 0.9)})`;
+        // Head glow
+        const hg = ctxRain.createRadialGradient(col.x, cy, 0, col.x, cy, 10);
+        hg.addColorStop(0, `rgba(74,144,255,${Math.min(alpha * 0.5, 0.3)})`);
+        hg.addColorStop(1, 'transparent');
+        ctxRain.save();
+        ctxRain.fillStyle = hg;
+        ctxRain.beginPath();
+        ctxRain.arc(col.x, cy, 10, 0, 6.28);
+        ctxRain.fill();
+        ctxRain.restore();
+        ctxRain.fillStyle = `rgba(180,220,255,${Math.min(alpha, 0.9)})`;
+      } else if (j < 3) {
+        // Near-head chars are brighter blue
+        ctxRain.fillStyle = `rgba(120,180,255,${Math.min(alpha * 1.5, 0.6)})`;
+      } else {
+        ctxRain.fillStyle = `rgba(74,144,255,${Math.min(alpha, 0.5)})`;
+      }
+      ctxRain.fillText(col.chars[j].c, col.x, cy);
+    }
+  }
+
+  // === GRID LAYER ===
+  ctxGrid.clearRect(0, 0, W, H);
+
+  for (const d of dots) {
+    let to = 0.05, tr = DOT_R, tg = 0;
+
+    // Mouse interaction
+    if (hm) {
+      const dist = Math.hypot(d.x - mouse.x, d.y - mouse.y);
+      if (dist < REACT_R) {
+        const p = 1 - dist / REACT_R;
+        const e = p * p * (3 - 2 * p);
+        to += e * 0.55;
+        tr += e * 3;
+        tg = e;
+      }
+    }
+
+    // Click ripple on grid
+    for (const click of clicks) {
+      const dist = Math.hypot(d.x - click.x, d.y - click.y);
+      const ringDist = Math.abs(dist - click.radius);
+      if (ringDist < 40 && click.opacity > 0.05) {
+        const rippleStrength = (1 - ringDist / 40) * click.opacity;
+        to += rippleStrength * 0.7;
+        tr += rippleStrength * 4;
+        tg = Math.max(tg, rippleStrength);
+      }
+    }
+
+    d.co += (to - d.co) * 0.08;
+    d.cr += (tr - d.cr) * 0.08;
+    d.glow += (tg - d.glow) * 0.06;
+
+    // Glow halo for bright dots
+    if (d.glow > 0.05) {
+      const glowR = d.cr * 6;
+      const g = ctxGrid.createRadialGradient(d.x, d.y, 0, d.x, d.y, glowR);
+      g.addColorStop(0, `rgba(74,144,255,${d.glow * 0.3})`);
+      g.addColorStop(1, 'transparent');
+      ctxGrid.fillStyle = g;
+      ctxGrid.beginPath();
+      ctxGrid.arc(d.x, d.y, glowR, 0, 6.28);
+      ctxGrid.fill();
+    }
+
+    // Dot core
+    ctxGrid.fillStyle = `rgba(74,144,255,${d.co})`;
+    ctxGrid.beginPath();
+    ctxGrid.arc(d.x, d.y, d.cr, 0, 6.28);
+    ctxGrid.fill();
+
+    // Connected lines to nearby bright dots
+    if (d.glow > 0.15) {
+      for (const other of dots) {
+        if (other === d) continue;
+        if (other.glow < 0.1) continue;
+        const dist = Math.hypot(d.x - other.x, d.y - other.y);
+        if (dist < SP * 1.8 && dist > 0) {
+          ctxGrid.strokeStyle = `rgba(74,144,255,${Math.min(d.glow, other.glow) * 0.25})`;
+          ctxGrid.lineWidth = 0.5;
+          ctxGrid.beginPath();
+          ctxGrid.moveTo(d.x, d.y);
+          ctxGrid.lineTo(other.x, other.y);
+          ctxGrid.stroke();
+        }
+      }
+    }
+  }
+
+  // === FX LAYER (cursor + ripples) ===
+  ctxFx.clearRect(0, 0, W, H);
+
+  // Custom cursor
+  if (hm) {
+    // Outer ring
+    ctxFx.strokeStyle = `rgba(74,144,255,${0.3 + mSpeed * 0.01})`;
+    ctxFx.lineWidth = 1;
+    const cursorSize = 16 + mSpeed * 0.5;
+    ctxFx.beginPath();
+    ctxFx.arc(mouse.x, mouse.y, cursorSize, 0, 6.28);
+    ctxFx.stroke();
+
+    // Inner dot
+    ctxFx.fillStyle = `rgba(74,144,255,0.8)`;
+    ctxFx.beginPath();
+    ctxFx.arc(mouse.x, mouse.y, 2, 0, 6.28);
+    ctxFx.fill();
+
+    // Speed trail
+    if (mSpeed > 5) {
+      ctxFx.strokeStyle = `rgba(74,144,255,${Math.min(mSpeed * 0.008, 0.2)})`;
+      ctxFx.lineWidth = 1;
+      ctxFx.beginPath();
+      ctxFx.moveTo(mouse.prevX, mouse.prevY);
+      ctxFx.lineTo(mouse.x, mouse.y);
+      ctxFx.stroke();
+    }
+  }
+
+  // Click ripples
+  for (let i = clicks.length - 1; i >= 0; i--) {
+    const c = clicks[i];
+    c.radius += c.speed;
+    c.opacity *= 0.985;
+
+    if (c.opacity < 0.01) { clicks.splice(i, 1); continue; }
+
+    // Ring
+    ctxFx.strokeStyle = `rgba(74,144,255,${c.opacity * 0.5})`;
+    ctxFx.lineWidth = 2;
+    ctxFx.beginPath();
+    ctxFx.arc(c.x, c.y, c.radius, 0, 6.28);
+    ctxFx.stroke();
+
+    // Inner glow ring
+    ctxFx.strokeStyle = `rgba(140,200,255,${c.opacity * 0.3})`;
+    ctxFx.lineWidth = 1;
+    ctxFx.beginPath();
+    ctxFx.arc(c.x, c.y, c.radius * 0.85, 0, 6.28);
+    ctxFx.stroke();
+
+    // Glow behind ring
+    const rg = ctxFx.createRadialGradient(c.x, c.y, c.radius * 0.8, c.x, c.y, c.radius * 1.2);
+    rg.addColorStop(0, 'transparent');
+    rg.addColorStop(0.5, `rgba(74,144,255,${c.opacity * 0.08})`);
+    rg.addColorStop(1, 'transparent');
+    ctxFx.fillStyle = rg;
+    ctxFx.beginPath();
+    ctxFx.arc(c.x, c.y, c.radius * 1.2, 0, 6.28);
+    ctxFx.fill();
+  }
+
+  // Decay mouse speed
+  mouse.speed *= 0.9;
+
+  requestAnimationFrame(draw);
+}
+
+resize();
+draw();
+window.addEventListener('resize', resize);
+</script>
+</body>
+</html>

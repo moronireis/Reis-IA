@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Máquina de Vendas — Imersão | Reis IA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #4A90FF;
+      --accent-hover: #6AADFF;
+      --accent-muted: #3570CC;
+      --accent-bright: #8DC4FF;
+      --accent-rgb: 74, 144, 255;
+      --surface-0: #000000;
+      --surface-1: #0A0A0A;
+      --surface-2: #111113;
+      --surface-3: #1A1A1A;
+      --surface-4: #242427;
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(255,255,255,0.70);
+      --text-tertiary: rgba(255,255,255,0.50);
+      --text-quaternary: rgba(255,255,255,0.35);
+      --border-subtle: rgba(255,255,255,0.06);
+      --border-default: rgba(255,255,255,0.10);
+      --border-accent: rgba(74,144,255,0.30);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      background: var(--surface-0);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+      height: 100%;
+    }
+    body { height: 100%; overflow: hidden; background: var(--surface-0); }
+    ::selection { background: rgba(74,144,255,0.30); color: white; }
+
+    body::after {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none; opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      z-index: 99999;
+    }
+
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: var(--accent); z-index: 10000;
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 12px rgba(74,144,255,0.4);
+    }
+    .slide-counter {
+      position: fixed; bottom: 32px; right: 40px;
+      font-size: 13px; font-weight: 500; color: var(--text-quaternary);
+      z-index: 10000; font-variant-numeric: tabular-nums;
+    }
+    .brand-watermark {
+      position: fixed; bottom: 32px; left: 40px;
+      font-size: 14px; font-weight: 300; color: var(--text-quaternary); z-index: 10000;
+    }
+    .brand-watermark .ia { color: rgba(74,144,255,0.5); }
+    .keyboard-hint {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+      font-size: 11px; color: var(--text-quaternary); z-index: 10000;
+      opacity: 1; transition: opacity 1s;
+    }
+    .keyboard-hint.hidden { opacity: 0; }
+
+    .slides-container { position: relative; width: 100%; height: 100vh; }
+
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 80px 60px;
+      opacity: 0; transform: translateX(60px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none; overflow: hidden;
+    }
+    .slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+    .slide.exit-left { opacity: 0; transform: translateX(-60px); }
+    .slide-inner { max-width: 1100px; width: 100%; position: relative; z-index: 2; }
+
+    .bg-aurora { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+    .bg-aurora::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 20% 40%, rgba(74,144,255,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 20%, rgba(141,196,255,0.04) 0%, transparent 60%);
+      animation: aurora 20s ease-in-out infinite alternate;
+    }
+    @keyframes aurora {
+      0% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(-3%,2%) scale(1.03); }
+      100% { transform: translate(2%,-1%) scale(0.98); }
+    }
+    .bg-grid {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .bg-dots {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .bg-gradient-subtle {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(74,144,255,0.04) 0%, transparent 70%);
+    }
+
+    .slide-label {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--accent); margin-bottom: 24px;
+    }
+    .slide-title {
+      font-size: clamp(2.5rem, 4vw, 4.5rem); font-weight: 700;
+      line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 24px;
+    }
+    .slide-title-sm {
+      font-size: clamp(2rem, 3vw, 3rem); font-weight: 700;
+      line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 20px;
+    }
+    .slide-title-lg {
+      font-size: clamp(3rem, 5.5vw, 6rem); font-weight: 700;
+      line-height: 1.0; letter-spacing: -0.035em; margin-bottom: 32px;
+    }
+    .slide-subtitle {
+      font-size: clamp(1.125rem, 1.5vw, 1.5rem);
+      color: var(--text-secondary); line-height: 1.6; max-width: 700px;
+    }
+    .accent { color: var(--accent); }
+    .muted { color: var(--text-tertiary); }
+    .dim { color: var(--text-quaternary); }
+    .text-center { text-align: center; }
+    .text-center .slide-subtitle { margin: 0 auto; }
+    .text-center .slide-inner { display: flex; flex-direction: column; align-items: center; }
+
+    .stat-number {
+      font-size: clamp(3rem, 5vw, 5rem); font-weight: 800;
+      color: var(--accent); letter-spacing: -0.03em; line-height: 1;
+    }
+    .stat-label { font-size: 15px; color: var(--text-tertiary); font-weight: 500; }
+    .stats-row { display: flex; gap: 64px; margin-top: 48px; }
+
+    .card {
+      background: var(--surface-2); border: 1px solid var(--border-default);
+      border-radius: 12px; padding: 28px;
+    }
+    .card-accent {
+      background: rgba(74,144,255,0.04); border: 1px solid var(--border-accent);
+      border-radius: 12px; padding: 28px;
+    }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
+    .card-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+    .feature-list li {
+      display: flex; align-items: flex-start; gap: 14px;
+      font-size: 16px; color: var(--text-secondary); line-height: 1.5;
+    }
+
+    .pipeline { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; }
+    .pipeline-node {
+      background: var(--surface-3); border: 1px solid var(--border-default);
+      border-radius: 10px; padding: 16px 20px; text-align: center; min-width: 130px;
+    }
+    .pipeline-node-accent {
+      background: rgba(74,144,255,0.08); border: 1px solid var(--border-accent);
+      border-radius: 10px; padding: 16px 20px; text-align: center; min-width: 130px;
+    }
+    .pipeline-node .node-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .pipeline-node-accent .node-title { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+    .pipeline-node .node-desc, .pipeline-node-accent .node-desc { font-size: 11px; color: var(--text-tertiary); }
+    .pipeline-arrow { color: var(--text-quaternary); font-size: 18px; padding: 0 8px; flex-shrink: 0; }
+
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .comparison-col { padding: 32px; border-radius: 12px; }
+    .comparison-before { background: var(--surface-2); border: 1px solid rgba(255,100,100,0.15); }
+    .comparison-after { background: rgba(74,144,255,0.04); border: 1px solid var(--border-accent); }
+    .comparison-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
+    .comparison-before .comparison-label { color: rgba(255,120,120,0.7); }
+    .comparison-after .comparison-label { color: var(--accent); }
+    .comparison-items { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .comparison-items li { font-size: 15px; color: var(--text-secondary); line-height: 1.4; padding-left: 20px; position: relative; }
+    .comparison-before .comparison-items li::before {
+      content: ''; position: absolute; left: 0; top: 7px;
+      width: 8px; height: 8px; border-radius: 50%; background: rgba(255,100,100,0.3);
+    }
+    .comparison-after .comparison-items li::before {
+      content: ''; position: absolute; left: 0; top: 7px;
+      width: 8px; height: 8px; border-radius: 50%; background: rgba(74,144,255,0.5);
+    }
+
+    .slide-transition {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center;
+    }
+    .slide-transition .block-number {
+      font-size: 80px; font-weight: 800; color: rgba(74,144,255,0.12);
+      line-height: 1; margin-bottom: 16px;
+    }
+
+    .diagram-box {
+      background: var(--surface-2); border: 1px solid var(--border-default);
+      border-radius: 12px; padding: 40px; position: relative;
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; padding: 6px 14px;
+      border-radius: 999px; font-size: 12px; font-weight: 600;
+      background: rgba(74,144,255,0.10); border: 1px solid rgba(74,144,255,0.20);
+      color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 20px;
+    }
+
+    .tool-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .tool-tag {
+      padding: 10px 20px; background: var(--surface-3); border: 1px solid var(--border-default);
+      border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--text-secondary);
+    }
+    .tool-tag-accent {
+      padding: 10px 20px; background: rgba(74,144,255,0.06); border: 1px solid var(--border-accent);
+      border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--accent-bright);
+    }
+
+    .divider { height: 1px; background: linear-gradient(to right, transparent, var(--border-default) 20%, var(--border-default) 80%, transparent); margin: 32px 0; }
+    .divider-accent { height: 1px; background: linear-gradient(to right, transparent, rgba(74,144,255,0.25) 20%, rgba(74,144,255,0.25) 80%, transparent); margin: 32px 0; }
+
+    .slide.active .animate-in { animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-in { opacity: 0; transform: translateY(20px); }
+    .delay-1 { animation-delay: 0.1s !important; }
+    .delay-2 { animation-delay: 0.2s !important; }
+    .delay-3 { animation-delay: 0.3s !important; }
+    .delay-4 { animation-delay: 0.4s !important; }
+    .delay-5 { animation-delay: 0.5s !important; }
+    @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
+
+    .icon-sm { width: 20px; height: 20px; }
+
+    /* Case card */
+    .case-card {
+      background: var(--surface-2); border: 1px solid var(--border-default);
+      border-radius: 12px; padding: 24px; position: relative; overflow: hidden;
+    }
+    .case-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, var(--accent), transparent);
+    }
+    .case-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--accent); margin-bottom: 8px;
+    }
+    .case-title { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+    .case-desc { font-size: 13px; color: var(--text-tertiary); line-height: 1.4; }
+    .case-url {
+      display: inline-block; margin-top: 10px; font-size: 12px;
+      color: var(--accent); font-family: monospace; opacity: 0.7;
+    }
+
+    @media (max-width: 900px) {
+      .slide { padding: 60px 32px; }
+      .grid-2, .grid-3, .comparison { grid-template-columns: 1fr; }
+      .stats-row { flex-direction: column; gap: 32px; }
+      .pipeline { flex-direction: column; gap: 8px; }
+      .pipeline-arrow { transform: rotate(90deg); }
+    }
+    @media (max-width: 600px) { .slide { padding: 40px 20px; } }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar" style="width: 0%"></div>
+<div class="brand-watermark">REIS <span class="ia">[IA]</span></div>
+<div class="slide-counter" id="slideCounter">1 / 22</div>
+<div class="keyboard-hint" id="keyHint">Use as setas do teclado para navegar</div>
+
+<div class="slides-container" id="slidesContainer">
+
+<!-- SLIDE 1 — TITLE -->
+<div class="slide active" data-slide="1">
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
+  <div class="slide-inner text-center">
+    <div class="animate-in delay-1" style="margin-bottom: 32px;">
+      <svg width="48" height="48" viewBox="0 0 64 64" fill="none" style="margin-bottom: 24px;">
+        <g stroke="#4A90FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="14" y1="8" x2="50" y2="8"/><line x1="50" y1="8" x2="14" y2="56"/>
+          <line x1="14" y1="8" x2="25" y2="25"/><line x1="39" y1="39" x2="50" y2="56"/>
+          <line x1="14" y1="56" x2="50" y2="56"/>
+        </g>
+      </svg>
+      <div style="font-size: 24px; font-weight: 300; letter-spacing: -0.01em;">REIS <span class="accent">[IA]</span></div>
+    </div>
+    <div class="slide-title-lg animate-in delay-2">Máquina de<br><span class="accent">Vendas</span></div>
+    <p class="slide-subtitle animate-in delay-3" style="max-width: 600px;">Um time de agentes de IA montando uma operação de vendas completa</p>
+    <div class="animate-in delay-4" style="margin-top: 40px;">
+      <span class="badge">Imersão ao vivo</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 — O PROBLEMA -->
+<div class="slide" data-slide="2">
+  <div class="bg-aurora"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">A realidade</div>
+    <div class="slide-title animate-in delay-2">A maioria usa IA<br>como <span class="muted">funcionário avulso</span></div>
+    <p class="slide-subtitle animate-in delay-3">Pergunta aqui, gera ali. Sem processo. Sem memória. Sem resultado previsível. Cada sessão começa do zero.</p>
+    <div class="animate-in delay-4" style="margin-top: 40px;">
+      <p style="font-size: 20px; color: var(--text-primary); font-weight: 500;">E se IA operasse como um <span class="accent">time completo</span>?</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3 — A MUDANÇA -->
+<div class="slide" data-slide="3">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-title animate-in delay-1">De <span class="muted">"usar IA"</span><br>para <span class="accent">operar com IA</span></div>
+    <div class="divider-accent animate-in delay-2"></div>
+    <div class="grid-3 animate-in delay-3" style="margin-top: 24px; text-align: left;">
+      <div class="card">
+        <div class="card-title">Ferramenta</div>
+        <div class="card-desc">Você pergunta, IA responde. Um prompt por vez. Sem contexto.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Assistente</div>
+        <div class="card-desc">Ajuda pontual. Mas depende 100% de você dirigir cada passo.</div>
+      </div>
+      <div class="card-accent">
+        <div class="card-title" style="color: var(--accent);">Operação</div>
+        <div class="card-desc">Time de agentes com funções, regras, memória. Opera junto. Escala.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4 — O CONCEITO -->
+<div class="slide" data-slide="4">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">O conceito</div>
+    <div class="slide-title-sm animate-in delay-2">20 agentes especializados.<br>Cada um com <span class="accent">função, regras, memória</span>.</div>
+    <div class="grid-2 animate-in delay-3" style="margin-top: 32px; gap: 24px;">
+      <div>
+        <p class="slide-subtitle" style="margin-bottom: 20px;">Não é uma ferramenta. É um time que:</p>
+        <ul class="feature-list">
+          <li><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Segue as regras do seu negócio</li>
+          <li><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Lembra do contexto entre sessões</li>
+          <li><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Passa trabalho entre si automaticamente</li>
+          <li><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Entrega resultado com qualidade profissional</li>
+        </ul>
+      </div>
+      <div class="diagram-box" style="display: flex; flex-direction: column; gap: 16px; align-items: center; justify-content: center;">
+        <div style="font-size: 14px; color: var(--accent); font-weight: 600;">Marketing + Copy + Design + Dev + Execução + Educação</div>
+        <div class="divider-accent" style="width: 100%;"></div>
+        <div style="font-size: 40px; font-weight: 800; color: var(--accent);">20</div>
+        <div style="font-size: 14px; color: var(--text-tertiary);">agentes especializados operando</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 — O FLUXO -->
+<div class="slide" data-slide="5">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">O fluxo</div>
+    <div class="slide-title-sm animate-in delay-2">Como os agentes <span class="accent">colaboram</span></div>
+    <div class="animate-in delay-3" style="margin-top: 36px;">
+      <div class="pipeline" style="margin-bottom: 24px;">
+        <div class="pipeline-node-accent"><div class="node-title">Orchestrator</div><div class="node-desc">Coordena tudo</div></div>
+      </div>
+      <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+        <svg width="2" height="24"><line x1="1" y1="0" x2="1" y2="24" stroke="rgba(74,144,255,0.3)" stroke-width="1.5" stroke-dasharray="4,4"/></svg>
+      </div>
+      <div class="pipeline" style="flex-wrap: wrap; gap: 8px;">
+        <div class="pipeline-node"><div class="node-title">Pesquisa</div><div class="node-desc">Mercado</div></div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node"><div class="node-title">Estratégia</div><div class="node-desc">Posição</div></div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node"><div class="node-title">Copy</div><div class="node-desc">Persuasão</div></div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node"><div class="node-title">Design</div><div class="node-desc">Visual</div></div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node"><div class="node-title">Dev</div><div class="node-desc">Código</div></div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node"><div class="node-title">Deploy</div><div class="node-desc">No ar</div></div>
+      </div>
+      <div style="margin-top: 24px; text-align: center;">
+        <p style="font-size: 15px; color: var(--text-tertiary);">Cada agente recebe exatamente o que precisa do anterior. Sem intervenção manual em cada passo.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6 — COPY SQUAD -->
+<div class="slide" data-slide="6">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Exemplo real</div>
+    <div class="slide-title-sm animate-in delay-2">Copy Squad: <span class="accent">5 agentes em sequência</span></div>
+    <div class="animate-in delay-3" style="margin-top: 32px;">
+      <div class="pipeline" style="margin-bottom: 24px;">
+        <div class="pipeline-node-accent"><div class="node-title">CMO</div><div class="node-desc">Brief + ângulos</div></div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node"><div class="node-title">Copywriter</div><div class="node-desc">Copy + Hormozi</div></div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node"><div class="node-title">Humanizer</div><div class="node-desc">Voz natural</div></div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node"><div class="node-title">Reviewer</div><div class="node-desc">Qualidade</div></div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node-accent"><div class="node-title">CMO</div><div class="node-desc">Sign-off</div></div>
+      </div>
+    </div>
+    <div class="animate-in delay-4" style="margin-top: 16px;">
+      <div class="card-accent" style="max-width: 700px; margin: 0 auto; padding: 24px;">
+        <div style="font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 8px;">Por que isso importa:</div>
+        <div class="card-desc">Cada agente tem regras: brand voice, framework de persuasão, regras de humanização. A copy que sai no final não parece IA. Parece uma equipe de marketing senior.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7 — CASOS REAIS INTRO -->
+<div class="slide" data-slide="7">
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
+  <div class="slide-inner slide-transition">
+    <div class="block-number animate-in delay-1">02</div>
+    <div class="slide-title animate-in delay-2">Casos <span class="accent">Reais</span></div>
+    <p class="slide-subtitle animate-in delay-3">Tudo que vou mostrar foi construído pelos agentes. Nenhum freelancer. Nenhuma agência.</p>
+  </div>
+</div>
+
+<!-- SLIDE 8 — CASO: ESTA APRESENTAÇÃO -->
+<div class="slide" data-slide="8">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Caso 1</div>
+    <div class="slide-title-sm animate-in delay-2">Esta apresentação que você está vendo <span class="accent">agora</span></div>
+    <div class="grid-2 animate-in delay-3" style="margin-top: 32px; gap: 24px;">
+      <div>
+        <p class="slide-subtitle" style="margin-bottom: 20px;">30 slides, design system aplicado, navegação por teclado, responsivo.</p>
+        <ul class="feature-list" style="gap: 12px;">
+          <li style="font-size: 14px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Orchestrator recebeu o briefing</li>
+          <li style="font-size: 14px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Education Director estruturou o conteúdo</li>
+          <li style="font-size: 14px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Designer definiu o visual</li>
+          <li style="font-size: 14px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Dev Agent gerou o código completo</li>
+        </ul>
+      </div>
+      <div class="card-accent" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
+        <div class="stat-number" style="font-size: 3rem;">1</div>
+        <div class="stat-label">comando para criar tudo</div>
+        <div class="divider-accent" style="width: 80%;"></div>
+        <div style="font-size: 14px; color: var(--text-tertiary); text-align: center;">Eu dei a direção.<br>Os agentes executaram.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9 — CASO: WEBSITE -->
+<div class="slide" data-slide="9">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Caso 2</div>
+    <div class="slide-title-sm animate-in delay-2">Website institucional <span class="accent">completo</span></div>
+    <div class="grid-2 animate-in delay-3" style="margin-top: 28px; gap: 20px;">
+      <div class="case-card">
+        <div class="case-label">O que foi feito</div>
+        <div class="case-title">7 páginas Astro + React</div>
+        <div class="case-desc">Home, Builder, Systems, Agendar, Aplicar, Marketing — com design system premium, animações, mockups interativos, componentes responsivos.</div>
+        <div class="case-url">moronireis.com.br</div>
+      </div>
+      <div class="case-card">
+        <div class="case-label">Quem fez</div>
+        <div class="case-title">6 agentes em cadeia</div>
+        <div class="case-desc">CMO definiu posicionamento. Copywriter escreveu cada seção. Designer criou specs. Dev Agent codificou. Executor fez deploy na Vercel.</div>
+      </div>
+    </div>
+    <div class="animate-in delay-4" style="margin-top: 20px; text-align: center;">
+      <p style="font-size: 15px; color: var(--text-tertiary);">Resultado: site nível Stripe/Linear. Sem designer humano. Sem dev humano.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10 — CASO: BRANDBOOK -->
+<div class="slide" data-slide="10">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Caso 3</div>
+    <div class="slide-title-sm animate-in delay-2">Brandbook <span class="accent">interativo</span> com 20+ páginas</div>
+    <div class="grid-2 animate-in delay-3" style="margin-top: 28px; gap: 20px;">
+      <div class="case-card">
+        <div class="case-label">Design System documentado</div>
+        <div class="case-title">Cores, tipografia, tokens, componentes, motion, VFX</div>
+        <div class="case-desc">Cada token visual extraído e catalogado. Demos interativos. Copiar código com 1 clique. Navegação completa.</div>
+        <div class="case-url">reisia-brand.vercel.app</div>
+      </div>
+      <div class="case-card">
+        <div class="case-label">Também inclui</div>
+        <div class="case-title">Estratégia de marca completa</div>
+        <div class="case-desc">Brand architecture, marca pessoal, produtos, movimento, guidelines — tudo gerado pelo sistema de agentes e documentado no brandbook.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11 — CASO: MARKETING PAGES -->
+<div class="slide" data-slide="11">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Caso 4</div>
+    <div class="slide-title-sm animate-in delay-2">Páginas de marketing e <span class="accent">captação</span></div>
+    <div class="grid-3 animate-in delay-3" style="margin-top: 28px; gap: 16px;">
+      <div class="case-card">
+        <div class="case-label">Diagnóstico interativo</div>
+        <div class="case-title">Quiz de maturidade IA</div>
+        <div class="case-desc">Heatmap, radar chart, score, captura de leads automática via Supabase.</div>
+        <div class="case-url">/diagnostico</div>
+      </div>
+      <div class="case-card">
+        <div class="case-label">Página de evento</div>
+        <div class="case-title">Máquina de Vendas</div>
+        <div class="case-desc">Landing page com countdown, agenda, prova social, checkout integrado.</div>
+        <div class="case-url">/evento</div>
+      </div>
+      <div class="case-card">
+        <div class="case-label">Email campaigns</div>
+        <div class="case-title">Disparos automatizados</div>
+        <div class="case-desc">Scripts Python + Resend API. Segmentação por lista. Retry automático. Templates HTML.</div>
+      </div>
+    </div>
+    <div class="animate-in delay-4" style="margin-top: 16px; text-align: center;">
+      <p style="font-size: 14px; color: var(--text-tertiary);">Tudo isso: agentes criaram a copy, o design, o código, o deploy, e os scripts de disparo.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12 — PODER REAL: O QUE MUDA -->
+<div class="slide" data-slide="12">
+  <div class="bg-aurora"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">Na prática</div>
+    <div class="slide-title animate-in delay-2">O que muda com <span class="accent">multiagentes</span></div>
+    <div class="comparison animate-in delay-3" style="margin-top: 32px;">
+      <div class="comparison-col comparison-before">
+        <div class="comparison-label">Sem o sistema</div>
+        <ul class="comparison-items">
+          <li>Contratar redator, designer, dev, estrategista</li>
+          <li>Semanas para ter uma landing page</li>
+          <li>Cada profissional precisa de briefing separado</li>
+          <li>Resultado inconsistente — cada um faz do seu jeito</li>
+          <li>Custo: R$10-50K por campanha</li>
+        </ul>
+      </div>
+      <div class="comparison-col comparison-after">
+        <div class="comparison-label">Com o sistema</div>
+        <ul class="comparison-items">
+          <li>Um comando, todos os agentes trabalham</li>
+          <li>Horas, não semanas</li>
+          <li>Brain compartilhado — todos sabem tudo</li>
+          <li>Resultado consistente — regras codificadas</li>
+          <li>Custo: fração do modelo tradicional</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13 — EXECUÇÃO AO VIVO -->
+<div class="slide" data-slide="13">
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
+  <div class="slide-inner slide-transition">
+    <div class="block-number animate-in delay-1">03</div>
+    <div class="slide-title animate-in delay-2">Execução<br><span class="accent">ao Vivo</span></div>
+    <p class="slide-subtitle animate-in delay-3">Agentes criando em tempo real</p>
+  </div>
+</div>
+
+<!-- SLIDE 14 — OBSERVE -->
+<div class="slide" data-slide="14">
+  <div class="bg-aurora"></div>
+  <div class="slide-inner text-center">
+    <div class="animate-in delay-1">
+      <div style="font-size: clamp(4rem, 8vw, 8rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1;">
+        Observe.
+      </div>
+    </div>
+    <div class="animate-in delay-3" style="margin-top: 40px;">
+      <p style="font-size: 18px; color: var(--text-tertiary);">[ Demo ao vivo ]</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15 — TAKEAWAYS DA DEMO -->
+<div class="slide" data-slide="15">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">O que aconteceu</div>
+    <div class="slide-title-sm animate-in delay-2">Três coisas para <span class="accent">guardar</span></div>
+    <div class="grid-3 animate-in delay-3" style="margin-top: 32px; gap: 20px;">
+      <div class="card" style="padding: 28px;">
+        <div style="font-size: 48px; font-weight: 800; color: rgba(74,144,255,0.15); margin-bottom: 12px;">01</div>
+        <div class="card-title">Orquestração real</div>
+        <div class="card-desc">Agentes se comunicaram e entregaram sem intervenção manual em cada passo.</div>
+      </div>
+      <div class="card" style="padding: 28px;">
+        <div style="font-size: 48px; font-weight: 800; color: rgba(74,144,255,0.15); margin-bottom: 12px;">02</div>
+        <div class="card-title">Regras mantidas</div>
+        <div class="card-desc">Brand voice, tom, identidade — respeitados automaticamente porque estão codificados.</div>
+      </div>
+      <div class="card" style="padding: 28px;">
+        <div style="font-size: 48px; font-weight: 800; color: rgba(74,144,255,0.15); margin-bottom: 12px;">03</div>
+        <div class="card-title">Replicável</div>
+        <div class="card-desc">Esse framework funciona para qualquer negócio. As regras mudam. A estrutura é a mesma.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16 — HUB INTRO -->
+<div class="slide" data-slide="16">
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
+  <div class="slide-inner slide-transition">
+    <div class="block-number animate-in delay-1">04</div>
+    <div class="slide-title animate-in delay-2">O Ecossistema<br><span class="accent">Builders</span></div>
+    <p class="slide-subtitle animate-in delay-3">O que estamos construindo para quem quer operar com IA de verdade</p>
+  </div>
+</div>
+
+<!-- SLIDE 17 — REIS IA HUB -->
+<div class="slide" data-slide="17">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner text-center">
+    <div class="badge animate-in delay-1">Construído pelos agentes</div>
+    <div class="slide-title animate-in delay-2">REIS <span class="accent">[IA]</span> HUB</div>
+    <p class="slide-subtitle animate-in delay-3" style="margin-bottom: 32px;">Plataforma própria. Não é Hotmart. Não é Kiwify. Foi construída pelo mesmo sistema de agentes que você acabou de ver.</p>
+    <div class="grid-3 animate-in delay-4" style="text-align: left; gap: 16px;">
+      <div class="card" style="border-top: 2px solid var(--accent); padding: 24px;">
+        <div class="card-title">Dashboard + Projetos</div>
+        <div class="card-desc">Painel com visão de projetos, tarefas kanban, progresso. Cada Builder gerencia sua operação.</div>
+      </div>
+      <div class="card" style="border-top: 2px solid var(--accent); padding: 24px;">
+        <div class="card-title">Academy + Vault</div>
+        <div class="card-desc">Cursos estruturados com player de aulas. Biblioteca de templates, prompts e frameworks prontos.</div>
+      </div>
+      <div class="card" style="border-top: 2px solid var(--accent); padding: 24px;">
+        <div class="card-title">Comunidade + CRM</div>
+        <div class="card-desc">Feed colaborativo entre Builders. Pipeline de leads e clientes integrado. Mentoria 1:1 com histórico.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18 — HUB: NÚMEROS -->
+<div class="slide" data-slide="18">
+  <div class="bg-grid"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">O HUB por dentro</div>
+    <div class="slide-title-sm animate-in delay-2">O que os agentes <span class="accent">construíram</span></div>
+    <div class="animate-in delay-3" style="margin-top: 32px;">
+      <div class="diagram-box" style="padding: 40px;">
+        <div style="display: flex; flex-direction: column; gap: 24px; align-items: center;">
+          <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+            <div class="tool-tag-accent">Astro + React</div>
+            <div class="tool-tag-accent">Supabase</div>
+            <div class="tool-tag">Auth nativo</div>
+            <div class="tool-tag">Vercel</div>
+            <div class="tool-tag">20 páginas</div>
+            <div class="tool-tag">Admin completo</div>
+          </div>
+          <div class="divider-accent" style="width: 100%;"></div>
+          <div style="display: flex; gap: 48px; flex-wrap: wrap; justify-content: center;">
+            <div style="text-align: center;">
+              <div class="stat-number" style="font-size: 2.5rem;">100%</div>
+              <div class="stat-label">Nosso</div>
+            </div>
+            <div style="text-align: center;">
+              <div class="stat-number" style="font-size: 2.5rem;">0</div>
+              <div class="stat-label">Plataforma terceira</div>
+            </div>
+            <div style="text-align: center;">
+              <div class="stat-number" style="font-size: 2.5rem;">R$0</div>
+              <div class="stat-label">Comissão</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19 — DEMO HUB -->
+<div class="slide" data-slide="19">
+  <div class="bg-aurora"></div>
+  <div class="slide-inner text-center">
+    <div class="badge animate-in delay-1">Demo</div>
+    <div class="slide-title animate-in delay-2">Vamos abrir o <span class="accent">HUB</span></div>
+    <p class="slide-subtitle animate-in delay-3" style="margin-bottom: 32px;">O que os Builders terão acesso.</p>
+    <div class="animate-in delay-4">
+      <div class="card-accent" style="max-width: 550px; margin: 0 auto; text-align: left; padding: 28px;">
+        <ul class="feature-list" style="gap: 12px;">
+          <li style="font-size: 15px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Login e Dashboard</li>
+          <li style="font-size: 15px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Academy com player de aulas</li>
+          <li style="font-size: 15px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Projetos, tarefas, comunidade</li>
+          <li style="font-size: 15px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Painel admin: CRM, analytics, gestão</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20 — PRÓXIMOS PASSOS -->
+<div class="slide" data-slide="20">
+  <div class="bg-dots"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">Próximos passos</div>
+    <div class="slide-title-sm animate-in delay-2">Como implementar <span class="accent">no seu negócio</span></div>
+    <div class="grid-3 animate-in delay-3" style="margin-top: 40px; text-align: left;">
+      <div class="card-accent" style="padding: 28px;">
+        <div style="font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px;">Sozinho</div>
+        <div class="card-title" style="color: var(--text-primary);">Replique o framework</div>
+        <div class="card-desc" style="margin-top: 8px;">Configure seus agentes, monte seu Brain, comece a operar.</div>
+      </div>
+      <div class="card-accent" style="padding: 28px;">
+        <div style="font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px;">Com orientação</div>
+        <div class="card-title" style="color: var(--text-primary);">Formação + HUB</div>
+        <div class="card-desc" style="margin-top: 8px;">Treinamento completo com suporte, comunidade e acompanhamento dentro do HUB.</div>
+      </div>
+      <div class="card-accent" style="padding: 28px;">
+        <div style="font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px;">Done-for-you</div>
+        <div class="card-title" style="color: var(--text-primary);">Implementação guiada</div>
+        <div class="card-desc" style="margin-top: 8px;">Montamos a operação com você. Agentes, regras, Brain — tudo configurado.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21 — NÚMEROS -->
+<div class="slide" data-slide="21">
+  <div class="bg-aurora"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-title animate-in delay-1">Números, não promessas.</div>
+    <div class="stats-row animate-in delay-2" style="justify-content: center;">
+      <div style="text-align: center;">
+        <div class="stat-number">R$700K+</div>
+        <div class="stat-label">em contratos gerados pela comunidade</div>
+      </div>
+      <div style="text-align: center;">
+        <div class="stat-number">20</div>
+        <div class="stat-label">agentes operando</div>
+      </div>
+      <div style="text-align: center;">
+        <div class="stat-number">100+</div>
+        <div class="stat-label">alunos e mentorados</div>
+      </div>
+    </div>
+    <div class="divider-accent animate-in delay-3"></div>
+    <p class="slide-subtitle animate-in delay-4" style="margin-top: 0;">Tudo construído com o mesmo framework.</p>
+  </div>
+</div>
+
+<!-- SLIDE 22 — Q&A -->
+<div class="slide" data-slide="22">
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
+  <div class="slide-inner text-center">
+    <div class="animate-in delay-1">
+      <svg width="48" height="48" viewBox="0 0 64 64" fill="none" style="margin-bottom: 32px;">
+        <g stroke="#4A90FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="14" y1="8" x2="50" y2="8"/><line x1="50" y1="8" x2="14" y2="56"/>
+          <line x1="14" y1="8" x2="25" y2="25"/><line x1="39" y1="39" x2="50" y2="56"/>
+          <line x1="14" y1="56" x2="50" y2="56"/>
+        </g>
+      </svg>
+    </div>
+    <div class="slide-title-lg animate-in delay-2">Perguntas?</div>
+    <p class="slide-subtitle animate-in delay-3" style="margin-bottom: 40px;">Agora é com vocês.</p>
+    <div class="divider-accent animate-in delay-4"></div>
+    <div class="animate-in delay-5" style="margin-top: 24px;">
+      <div style="font-size: 20px; font-weight: 300; letter-spacing: -0.01em;">REIS <span class="accent">[IA]</span></div>
+      <p style="font-size: 13px; color: var(--text-quaternary); margin-top: 8px;">moronireis.com.br</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  const progressBar = document.getElementById('progressBar');
+  const slideCounter = document.getElementById('slideCounter');
+  const keyHint = document.getElementById('keyHint');
+  let currentSlide = 0;
+  let isAnimating = false;
+
+  function updateProgress() {
+    const pct = ((currentSlide + 1) / totalSlides) * 100;
+    progressBar.style.width = pct + '%';
+    slideCounter.textContent = (currentSlide + 1) + ' / ' + totalSlides;
+  }
+
+  function goToSlide(index) {
+    if (isAnimating || index < 0 || index >= totalSlides || index === currentSlide) return;
+    isAnimating = true;
+    keyHint.classList.add('hidden');
+    const direction = index > currentSlide ? 1 : -1;
+    const current = slides[currentSlide];
+    const next = slides[index];
+
+    next.querySelectorAll('.animate-in').forEach(el => {
+      el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
+    });
+
+    if (direction > 0) {
+      current.classList.add('exit-left');
+      current.classList.remove('active');
+      next.style.transform = 'translateX(60px)';
+    } else {
+      current.classList.remove('active');
+      current.style.transform = 'translateX(60px)';
+      next.classList.add('exit-left');
+    }
+
+    requestAnimationFrame(() => {
+      next.classList.remove('exit-left');
+      next.classList.add('active');
+      next.style.transform = '';
+      currentSlide = index;
+      updateProgress();
+      setTimeout(() => {
+        current.classList.remove('exit-left');
+        current.style.transform = '';
+        isAnimating = false;
+      }, 500);
+    });
+  }
+
+  function nextSlide() { goToSlide(currentSlide + 1); }
+  function prevSlide() { goToSlide(currentSlide - 1); }
+
+  document.addEventListener('keydown', function(e) {
+    switch(e.key) {
+      case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown':
+        e.preventDefault(); nextSlide(); break;
+      case 'ArrowLeft': case 'ArrowUp': case 'PageUp':
+        e.preventDefault(); prevSlide(); break;
+      case 'Home': e.preventDefault(); goToSlide(0); break;
+      case 'End': e.preventDefault(); goToSlide(totalSlides - 1); break;
+    }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { dx < 0 ? nextSlide() : prevSlide(); }
+  }, { passive: true });
+
+  document.addEventListener('click', function(e) {
+    const x = e.clientX, w = window.innerWidth;
+    if (x > w * 0.7) nextSlide();
+    else if (x < w * 0.3) prevSlide();
+  });
+
+  updateProgress();
+})();
+</script>
+</body>
+</html>

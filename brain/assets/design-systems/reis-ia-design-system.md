@@ -46,7 +46,7 @@ The type system does 90% of the hierarchy work. Headlines are large, confident, 
 
 This is not "white on black." It is a layered surface system where depth is communicated through subtle background value shifts, semi-transparent borders, and restrained glow effects. Shadows are nearly invisible. Elevation comes from background lightness, not shadow darkness.
 
-*Inspired by: Vercel's pure black canvas with 3-tier elevation, Linear's opacity-based text hierarchy, Agencia Lendaria's ambient light pools. What makes Reis IA different: We add depth through blue-tinted ambient glows, grain texture for analog dimension, and the hourglass motif as a proprietary visual anchor.*
+*Inspired by: Vercel's pure black canvas with 3-tier elevation, Linear's opacity-based text hierarchy, Agencia Lendaria's ambient light pools. What makes Reis IA different: We add depth through blue-tinted ambient glows, grain texture for analog dimension, and a restrained single-accent-color system.*
 
 ### Principle 4: Conversion Through Clarity
 
@@ -610,7 +610,7 @@ Same as standard card plus:
 #### Card Internal Structure
 
 ```
-[Icon] -- 32-40px, accent blue (hourglass) -- mb-6
+[Icon] -- 32-40px, accent blue (minimal geometric SVG) -- mb-6
 [Title] -- H4 (28px desktop), weight 600, white -- mb-3
 [Description] -- Body (16px), text-secondary (70% white) -- mb-6
 [Bullet list] -- Body Small (14px), text-secondary, blue dot markers -- mb-6
@@ -1017,17 +1017,15 @@ These 4 visual treatments are original to Reis IA. They are not direct copies fr
 
 **Implementation**: See Section 8C.
 
-### Signature 3: Brand Motif Watermark System
+### Signature 3: Brand Motif Watermark System (Optional)
 
-**What it is**: Large (200-300px) hourglass silhouettes placed as background watermarks at 3-5% opacity behind key sections. Each page has a defined motif ratio based on its narrative territory.
+**What it is**: Large (200-300px) minimal geometric silhouettes placed as optional background watermarks at 3-5% opacity behind key sections. The hourglass may be used as a decorative element but is NOT a required brand symbol.
 
-**How it works**: The hourglass SVG rendered as absolutely-positioned background elements with `pointer-events: none` and 3-5% opacity. The hourglass is the sole brand mark and appears in time/efficiency/urgency sections and wherever a visual anchor is needed.
+**How it works**: SVG rendered as absolutely-positioned background elements with `pointer-events: none` and 3-5% opacity. Used sparingly for visual texture and depth.
 
-**What makes it original**: No reference site has a proprietary brand motif integrated as an architectural watermark. Morningside has zero brand iconography (competitive gap). Apple has no decorative elements. This system gives Reis IA a visual language that is impossible to replicate without copying the brand itself.
+**When to use**: Sections about time, efficiency, or operational metrics. Never forced into every section. Use with intention.
 
-**Brand connection**: Hourglass = TIME. It is the Reis IA brand mark -- a geometric icon representing the scarcity of time and the multiplying power of AI systems.
-
-**Implementation**: See existing brand-identity.md Sections 4-5 for icon specifications and usage rules.
+**Brand connection**: The hourglass is an optional decorative nod to the "O Tempo é Rei" philosophy. The primary brand identity comes from the REIS [IA] wordmark, not from icons.
 
 ### Signature 4: Surface Depth Harmony
 
@@ -1076,7 +1074,7 @@ Headlines scale dramatically (40-55% reduction). Body text stays consistent. Thi
 
 1. No hover effects on touch devices (`@media (hover: hover)` for all hover states)
 2. Touch targets: minimum 44x44px
-3. Hero decorative motifs (hourglass watermarks): hidden on mobile
+3. Decorative motifs (watermarks): hidden on mobile
 4. Card images: full-bleed within card on mobile
 5. Horizontal scrolling: allowed for logo marquee and card carousels (with scroll-snap)
 6. Sticky CTA bar: visible on sales pages at bottom of viewport on mobile
@@ -1147,7 +1145,7 @@ All text/background combinations meet WCAG AA (4.5:1 for normal text, 3:1 for la
 
 ### 11D. Screen Reader Considerations
 
-- Decorative motifs (hourglass watermarks) get `aria-hidden="true"`
+- Decorative motifs (watermarks) get `aria-hidden="true"`
 - Logo marquee gets `aria-label="Client logos"` and duplicated logos get `aria-hidden="true"`
 - Animation states managed by `aria-live` regions when content changes
 - Form validation errors announced via `aria-describedby`
@@ -1207,17 +1205,17 @@ All text/background combinations meet WCAG AA (4.5:1 for normal text, 3:1 for la
 
 ### Brand Motifs
 
-**DO**: Place the hourglass in sections about time, efficiency, urgency, and AI impact.
+**DO**: Use the hourglass as an optional decorative watermark (3-5% opacity) in sections about time or efficiency.
 
-**DONT**: Use any other icon as a brand watermark. The hourglass is the sole brand mark.
+**DONT**: Treat the hourglass as a required brand element. It is decorative, not mandatory.
 
-**DO**: Use the hourglass as a 3-5% opacity watermark (200-300px) behind key sections.
+**DO**: Use minimal geometric SVG icons for card and section icons.
 
-**DONT**: Animate the hourglass with rotation or flipping. It is a static, grounded symbol.
+**DONT**: Animate decorative elements with rotation or flipping. They are static, grounded.
 
-**DO**: Place the hourglass where it reinforces the narrative of the section it anchors.
+**DO**: Rely on the REIS [IA] wordmark as the primary brand identifier.
 
-**DONT**: Force the hourglass into every section mechanically. Use it with intention.
+**DONT**: Force decorative motifs into every section mechanically.
 
 ### Conversion
 
@@ -1971,225 +1969,65 @@ The existing tab specification (Section 22) continues to apply. This adds:
   - Added Hardware-Adaptive Rendering from Linear (Section 28)
   - Added Micro-Interaction Timing Map from Stripe, new --duration-micro token (Section 29)
   - Added Tab Sliding Indicator from Morningside (Section 30)
-- 2026-03-18: Z7 Integration — Filosofia "O Tempo é Rei" integrada ao design system (Sections 31-35):
-  - Adicionada Seção 31: Filosofia Z7 no Design
-  - Adicionada Seção 32: Z7 como Elemento Visual
-  - Adicionada Seção 33: "O Tempo é Rei" como Princípio de Design
-  - Adicionada Seção 34: Variações de Azul por Camada
-  - Adicionada Seção 35: Efeitos Z7 Pulse e Time Scanner
+- 2026-03-18: Z7 Integration (Sections 31-35) — REMOVED in v2.0 brand simplification
+- 2026-03-18: VFX Integration (Section 36) — REMOVED in v2.0 brand simplification
+- 2026-03-25: Brand simplification v2.0:
+  - Removed Z7 philosophy, Z7 visual elements, Z7 effects (former Sections 31-36)
+  - Kept blue variations by pillar as Section 31 (renumbered)
+  - Hourglass changed from required brand mark to optional decorative element
+  - Updated brand motif rules in Dos/Don'ts
+  - Updated pillar names: Systems, Builders, Marketing (removed Partners, Network, Time Builders)
 
 ---
 
 *Produced by: designer-agent*
-*Synthesized from: 9 reference extractions (Stripe, Linear, Vercel, Apple, Porsche, Academia Lendaria, Morningside AI, Agencia Lendaria, AIOX) + existing Reis IA brand identity + master techniques catalog + Z7 philosophy (tempo-e-rei-brand-philosophy.md)*
+*Synthesized from: 9 reference extractions (Stripe, Linear, Vercel, Apple, Porsche, Academia Lendaria, Morningside AI, Agencia Lendaria, AIOX) + existing REIS [IA] brand identity + master techniques catalog*
 *Next review: When dev-agent begins Tailwind configuration*
 
 ---
 
-## 31. FILOSOFIA Z7 NO DESIGN [ADDED — Z7 Integration — 2026-03-18]
+## 31. VARIAÇÕES DE AZUL POR PILAR [Renumbered from Section 34 — 2026-03-25]
 
-A filosofia Z7 é a espinha filosófica do ecossistema Reis IA. "Z7" — a letra Z mais o número 7 — codifica a verdade central da marca em dois caracteres: **tempo comprimido com perfeição**. Cada decisão visual neste design system, quando examinada através da lente Z7, revela intenção filosófica além da estética.
+O sistema de cores REIS [IA] utiliza azul como único accent. Cada pilar opera com uma variação específica do azul que preserva a identidade do ecossistema enquanto diferencia os pilares visualmente.
 
-### 31A. Como Z7 Influencia Decisões Visuais
+### 31A. Mapa de Azul por Pilar
 
-**Z = Fim, último estágio, encerramento**
+| Pilar | Azul Principal | Hex | Azul Secundário | Hex | Nota de Uso |
+|-------|---------------|-----|----------------|-----|-------------|
+| Master (REIS [IA]) | Accent Blue | `#4A90FF` | Accent Hover | `#6AADFF` | O azul base do sistema. Todas as regras de uso se aplicam. |
+| Builders | Elétrico | `#2D7AFF` | Cyan | `#00B4FF` | Mais saturado e elétrico. Comunica energia e comunidade. |
+| Systems | Accent Blue (mínimo) | `#4A90FF` | — | — | Mesmo azul, uso extremamente moderado. Preto/branco domina. |
+| Marketing | Accent Blue | `#4A90FF` | Accent Hover | `#6AADFF` | Segue o master. Diferenciação por layout, não por cor. |
+| Moroni Reis | Soft Blue | `#6AADFF` | — | — | Tom mais suave e acessível. Comunica confiança. |
 
-No design, Z se manifesta como:
-- **Finalidade visual**: Cada elemento deve ter propósito terminal. Nada decorativo sem função. O Z proíbe o desnecessário.
-- **Direção diagonal**: O traço diagonal do Z cria movimento direcional — de um ponto a outro, sem desvios. Aplicado: transições lineares, vetores de atenção que guiam o olho de headline a CTA sem desvio.
-- **Conclusão tipográfica**: Headlines que terminam de forma definitiva. Sem reticências. Sem incerteza. O Z é uma declaração.
+### 31B. Regras de Moderação por Pilar
 
-**7 = Perfeição, completude, o ciclo acabado**
-
-No design, 7 se manifesta como:
-- **Proporção e escala**: O sistema de 7 superfícies de fundo (Surface-0 a Surface-4 + Blue Ambient + Grain), 7 tokens de duração de animação, 7 tokens de espaçamento fluido — a escala de 7 não é coincidência. É o número da completude aplicado ao sistema.
-- **Ritmo de espaçamento**: Seções com 7 elementos visuais por viewport (headline, subtítulo, badge, CTA primário, CTA secundário, watermark, divisor ambiental). Nada falta. Nada sobra.
-- **Escala tipográfica**: 7 tokens primários de tipo (Display, H1-H5, Body Large) antes dos auxiliares. A escala principal é uma escala de 7.
-
-**Z7 juntos = perfeição comprimida**
-
-No design, Z7 se manifesta como:
-- **Tensão produtiva**: A oposição entre a severidade do preto (#000000) e a precisão do azul elétrico (#4A90FF) cria tensão visual que mantém atenção — a mesma tensão entre o fim (Z) e a perfeição (7).
-- **Compressão visual**: Hierarquia tipográfica agressiva (72px Display para 16px Body) comprime escala com precisão. Não há gradação suave — há saltos deliberados que comunicam a mesma aceleração temporal que Z7 representa.
-- **Economia de elementos**: O design usa menos para dizer mais. Um único elemento azul por seção. Uma única marca d'água de ampulheta. Compressão, não abundância.
-
-### 31B. Princípios de Design Derivados de Z7
-
-| Princípio Z7 | Expressão Visual | Aplicação Prática |
-|-------------|-----------------|-------------------|
-| Compressão | Saltos de escala tipográfica agressivos | Display 72px → Body 16px sem gradações intermediárias na hierarquia visual |
-| Perfeição | Sistema completo sem lacunas | Cada estado de componente definido (default, hover, focus, active, disabled) |
-| Finalidade | Nenhum elemento sem propósito | Todo elemento azul é um sinal de conversão. Azul decorativo é proibido. |
-| Aceleração | Motion com ease-out agressivo | cubic-bezier(0.16, 1, 0.3, 1) — início rápido, acomodação suave |
-| Presença temporal | Ampulheta como âncora filosófica | Watermark de ampulheta em 3-5% de opacidade em toda seção-chave |
-
----
-
-## 32. Z7 COMO ELEMENTO VISUAL [ADDED — Z7 Integration — 2026-03-18]
-
-### 32A. A Silhueta Z7
-
-Quando as letras Z e 7 são posicionadas lado a lado na tipografia certa, formam a silhueta de uma ampulheta. Este é o princípio central do elemento visual Z7.
-
-**Construção tipográfica do Z7:**
-
-```
-Fonte: Inter Variable
-Peso: 800 (Extra Bold)
-Tamanho: livre — o elemento escala conforme o contexto
-Cor: var(--accent-blue) #4A90FF quando featured; #FFFFFF quando inline
-Letter-spacing: -0.04em (mais apertado que o padrão Display para criar fusão visual entre Z e 7)
-```
-
-A lógica visual: o Z, com seus dois traços horizontais conectados por diagonal, e o 7, com seu traço superior horizontal e perna diagonal, quando apertados com letter-spacing negativo extremo, formam um conjunto que sugere duas câmaras opostas — o topo e o fundo de uma ampulheta, com a diagonal comum criando o pescoço central.
-
-**Verificação de silhueta**: Em tamanhos acima de 48px com Inter Extra Bold (800) e letter-spacing -0.04em, o espaço em branco negativo entre Z e 7 cria a forma do gargalo da ampulheta. Este é o tratamento de marca para Z7 como elemento gráfico.
-
-### 32B. Tratamento Tipográfico Z7
-
-**Como marca de produto (Z7 Hours, Z7 Days, Z7 Months):**
-
-| Propriedade | Valor |
-|-------------|-------|
-| Fonte | Inter Variable |
-| Peso | 800 (Extra Bold) |
-| Cor do "Z7" | `var(--accent-blue)` (#4A90FF) |
-| Cor do sufixo (Hours/Days/Months) | `var(--text-secondary)` (70% branco) |
-| Letter-spacing do Z7 | -0.04em |
-| Letter-spacing do sufixo | 0 (padrão) |
-| Espaçamento Z7→sufixo | 1 espaço tipográfico padrão |
-
-**Exemplo renderizado:**
-```
-[Z7 em azul, 800, -0.04em] [Hours em branco, 70%, 500]
-[Z7 em azul, 800, -0.04em] [Days em branco, 70%, 500]
-[Z7 em azul, 800, -0.04em] [Months em branco, 70%, 500]
-```
-
-**Como marca d'água de fundo:**
-
-| Propriedade | Valor |
-|-------------|-------|
-| Tamanho | 200-400px (dependendo da seção) |
-| Cor | `var(--accent-blue)` |
-| Opacidade | 0.03 a 0.05 (3-5%) |
-| Posição | Canto inferior direito ou centro da seção |
-| pointer-events | none |
-| aria-hidden | true |
-
-**Como elemento de badge/selo:**
-
-| Propriedade | Valor |
-|-------------|-------|
-| Background | `rgba(74, 144, 255, 0.08)` (--blue-08) |
-| Border | 1px solid `rgba(74, 144, 255, 0.20)` (--blue-20) |
-| Border radius | 4px |
-| Padding | 4px 8px |
-| Fonte | 11px, weight 800, letter-spacing -0.04em |
-| Cor do texto | `var(--accent-blue)` |
-
-### 32C. Hierarquia de Presença Z7 / Ampulheta
-
-A ampulheta e o Z7 coexistem mas têm papéis distintos:
-
-| Símbolo | Papel | Frequência | Contexto |
-|---------|-------|------------|----------|
-| Ampulheta | Símbolo filosófico — "O Tempo é Rei" | Toda página (1-3x) | Watermark, ícone de card, favicon |
-| Z7 | Código de produto e aceleração | Contextos de produto | Nomes de produto, badges de programa, selos |
-
-**Regra de coexistência**: Ampulheta e Z7 nunca aparecem no mesmo espaço visual imediato. Ampulheta domina o fundo. Z7 aparece no primeiro plano como identificador. São complementares, não concorrentes.
-
----
-
-## 33. "O TEMPO É REI" COMO PRINCÍPIO DE DESIGN [ADDED — Z7 Integration — 2026-03-18]
-
-### 33A. Compressão Visual do Tempo
-
-A filosofia "O Tempo é Rei" informa o design através do conceito de **compressão** — fazer mais com menos, comunicar mais rápido, eliminar o desnecessário.
-
-**Compressão aplicada ao design:**
-
-1. **Hierarquia de informação comprimida**: A página comunica a mensagem essencial nos primeiros 3 segundos de viewport (antes do scroll). Headline, subheadline, CTA primário — completos, sem dependência de scroll para a proposta de valor central.
-
-2. **Espaçamento como respiração, não enchimento**: O espaço em branco (preto) no design não é ausência — é a câmara superior da ampulheta. O conteúdo é o gargalo: comprimido, concentrado, denso. O espaço ao redor permite que o conteúdo respire sem se diluir.
-
-3. **Tipografia que comprime significado**: Headlines de 5-8 palavras que comunicam o que parágrafos inteiros tentariam dizer. A compressão Z7:7 (7 horas = 7 anos) como modelo tipográfico — frases curtas com impacto de argumentos longos.
-
-4. **CTAs temporais**: Botões e links usam linguagem de tempo: "Agende agora", "Recupere seu tempo", "Comece hoje". A instrução de ação inclui sempre um elemento temporal — presente imediato, urgência estratégica (nunca pânico).
-
-### 33B. Urgência Sem Ansiedade
-
-A filosofia proíbe urgência manipulativa (timers de contagem regressiva, escassez fabricada). O design traduz isso como:
-
-**Permitido — urgência arquitetural:**
-- Progresso visual de scroll (barra de progresso sutil no topo do documento)
-- Watermark de ampulheta estática — o tempo está passando, silenciosamente
-- Contradores de métricas animados ("47.000+ horas recuperadas") — urgência através de escala, não de prazo
-- Headlines no presente: "Devolvemos X horas por semana" — não "Perca essa chance"
-
-**Proibido — urgência de ansiedade:**
-- Timers de contagem regressiva em qualquer forma
-- Animações pulsantes que criam desconforto visual (sem pulsação no CTA principal)
-- Gradientes que degradam para vermelho/laranja quente (associação com alarme)
-- Ampulhetas animadas com areia caindo
-
-**O princípio de design resultante**: O design deve criar a sensação de que *o tempo está sendo bem usado agora mesmo*, não a sensação de que *ele está acabando*. Diferença: uma é empowerment, a outra é manipulação.
-
-### 33C. A Frase "O Tempo é Rei" em Contexto de Design
-
-| Contexto | Tratamento | Especificação |
-|----------|------------|---------------|
-| Hero headline | Display principal (72px desktop, 40px mobile) | Peso 700, branco, letra "Rei" em accent blue opcional |
-| Seção de filosofia | H2 (48px desktop, 30px mobile) | Peso 600, branco |
-| Tagline de section label | Label (12px, uppercase) | Peso 600, text-tertiary, 0.05em tracking |
-| Footer assinatura | Caption (13px) | Peso 500, text-tertiary, com ícone de ampulheta 14px à esquerda |
-| Marca d'água | Display × 8 (300-600px) | Opacidade 0.02-0.03, pointer-events none |
-
-**Tratamento especial — "Rei" em destaque:**
-
-Quando "O Tempo é Rei" aparece como headline hero, a palavra "Rei" pode receber cor de acento (#4A90FF) para ativar o duplo significado (tempo é rei / sobrenome Reis). Isso é um tratamento premium, reservado para hero pages da marca mestra (homepage e bio de Moroni Reis). Em outras páginas, a frase permanece toda em branco.
-
----
-
-## 34. VARIAÇÕES DE AZUL POR CAMADA [ADDED — Z7 Integration — 2026-03-18]
-
-O sistema de cores Reis IA utiliza azul como único accent. Cada camada de marca opera com uma variação específica do azul que preserva a identidade do ecossistema enquanto diferencia as camadas visualmente.
-
-### 34A. Mapa de Azul por Camada
-
-| Camada | Azul Principal | Hex | Azul Secundário | Hex | Nota de Uso |
-|--------|---------------|-----|----------------|-----|-------------|
-| Master (Reis IA Ecossistema) | Accent Blue | `#4A90FF` | Accent Hover | `#6AADFF` | O azul base do sistema. Todas as regras de uso do azul se aplicam integralmente. |
-| Time Builders | Elétrico | `#2D7AFF` | Cyan | `#00B4FF` | Mais saturado e elétrico. Comunica velocidade e energia da tribo. O cyan aparece em highlights e efeitos de scan. |
-| Systems | Accent Blue (uso mínimo) | `#4A90FF` | — | — | Mesmo azul do master, usado com extrema moderação. Systems é mais monocromático (preto/branco domina). O azul aparece somente em CTAs e elementos de precisão. |
-| Moroni Reis | Soft Blue | `#6AADFF` | — | — | Tom mais suave e acessível. O hover blue do master vira o primary blue da camada pessoal. Comunica confiança sem agressividade. |
-
-### 34B. Regras de Moderação por Camada
-
-**Master (#4A90FF)**
+**Master / REIS [IA] (#4A90FF)**
 - Máximo 2 elementos azuis por viewport (regra base do sistema)
-- CTAs, ícones de marca, highlights de texto selecionado
+- CTAs, ícones, highlights de texto selecionado
 
-**Time Builders (#2D7AFF + #00B4FF)**
-- O azul elétrico pode aparecer em até 3 elementos por viewport (a camada é mais energética por design)
-- Cyan (#00B4FF) exclusivo para: efeitos de scan, borders em cards Z7, highlights em estatísticas de compressão temporal
-- O cyan nunca substitui o azul elétrico — é sempre complementar, nunca dominante
+**Builders (#2D7AFF + #00B4FF)**
+- O azul elétrico pode aparecer em até 3 elementos por viewport (a camada é mais energética)
+- Cyan (#00B4FF) para highlights e efeitos visuais
+- O cyan nunca substitui o azul elétrico — é sempre complementar
 
 **Systems (#4A90FF, uso mínimo)**
 - Máximo 1 elemento azul por viewport (mais restrito que o master)
-- A paleta de Systems é intencionalmente dominada por preto/branco para comunicar precisão técnica e rigor
-- O azul aparece apenas no CTA final e no ícone de ampulheta em cards de destaque
-- Todo o resto: branco em diferentes opacidades sobre preto
+- Preto/branco domina para comunicar precisão técnica
+- O azul aparece apenas no CTA final e em ícones de destaque
+
+**Marketing (#4A90FF)**
+- Segue as regras do master (2 elementos por viewport)
 
 **Moroni Reis (#6AADFF)**
-- O soft blue pode ser usado com leveza equivalente ao master (2 elementos por viewport)
-- É o único azul que pode aparecer em underlines de texto sem ser um CTA (para criar warmth na leitura de bio)
+- Soft blue com leveza equivalente ao master (2 elementos por viewport)
+- Único azul que pode aparecer em underlines de texto sem ser CTA
 - Nunca aparece como fundo sólido — sempre como border, highlight de texto, ou glow sutil
 
-### 34C. CSS Variables por Camada
+### 31C. CSS Variables por Pilar
 
 ```css
-/* ─ MASTER (root do ecossistema) ─ */
+/* ─ MASTER / REIS [IA] (root) ─ */
 :root {
   --accent: #4A90FF;
   --accent-hover: #6AADFF;
@@ -2197,311 +2035,46 @@ O sistema de cores Reis IA utiliza azul como único accent. Cada camada de marca
   --accent-bright: #8DC4FF;
 }
 
-/* ─ TIME BUILDERS ─ */
-[data-layer="time-builders"] {
+/* ─ BUILDERS ─ */
+[data-layer="builders"] {
   --accent: #2D7AFF;
-  --accent-hover: #4A90FF;   /* sobe para o master no hover */
+  --accent-hover: #4A90FF;
   --accent-muted: #1A5FDD;
-  --accent-cyan: #00B4FF;     /* exclusivo desta camada */
+  --accent-cyan: #00B4FF;
   --accent-cyan-hover: #26C4FF;
 }
 
 /* ─ SYSTEMS ─ */
 [data-layer="systems"] {
-  --accent: #4A90FF;          /* idêntico ao master */
+  --accent: #4A90FF;
   --accent-hover: #6AADFF;
-  --accent-usage: minimal;   /* sinal semântico para desenvolvedores */
+  --accent-usage: minimal;
+}
+
+/* ─ GROWTH ─ */
+[data-layer="growth"] {
+  --accent: #4A90FF;
+  --accent-hover: #6AADFF;
 }
 
 /* ─ MORONI REIS ─ */
 [data-layer="moroni-reis"] {
-  --accent: #6AADFF;          /* soft blue como primary */
-  --accent-hover: #8DC4FF;   /* accent-bright do master vira hover */
-  --accent-muted: #4A90FF;   /* master vira muted nesta camada */
+  --accent: #6AADFF;
+  --accent-hover: #8DC4FF;
+  --accent-muted: #4A90FF;
 }
 ```
 
-### 34D. Opacidade de Azul por Camada
+### 31D. Opacidade de Azul por Pilar
 
-| Uso | Master | Time Builders | Systems | Moroni Reis |
-|-----|--------|---------------|---------|-------------|
-| Section ambient glow | blue-06 (6%) | blue-08 (8%) | blue-04 (4%) | blue-06 (6%) |
-| Card hover glow | blue-12 (12%) | blue-15 (15%) | blue-08 (8%) | blue-10 (10%) |
-| Badge background | blue-10 (10%) | blue-12 (12%) | blue-08 (8%) | blue-10 (10%) |
-| Border accent | blue-30 (30%) | blue-40 (40%) | blue-20 (20%) | blue-25 (25%) |
-| Rotating border peak | blue-80 (80%) | blue-80 (80%) | blue-50 (50%) | blue-60 (60%) |
+| Uso | Master | Builders | Systems | Marketing | Moroni Reis |
+|-----|--------|----------|---------|--------|-------------|
+| Section ambient glow | blue-06 (6%) | blue-08 (8%) | blue-04 (4%) | blue-06 (6%) | blue-06 (6%) |
+| Card hover glow | blue-12 (12%) | blue-15 (15%) | blue-08 (8%) | blue-12 (12%) | blue-10 (10%) |
+| Badge background | blue-10 (10%) | blue-12 (12%) | blue-08 (8%) | blue-10 (10%) | blue-10 (10%) |
+| Border accent | blue-30 (30%) | blue-40 (40%) | blue-20 (20%) | blue-30 (30%) | blue-25 (25%) |
+| Rotating border peak | blue-80 (80%) | blue-80 (80%) | blue-50 (50%) | blue-80 (80%) | blue-60 (60%) |
 
-*Nota: Time Builders usa opacidades ligeiramente mais altas que o master para comunicar maior energia. Systems usa opacidades menores para comunicar maior contenção técnica.*
+*Nota: Builders usa opacidades mais altas para comunicar energia. Systems usa opacidades menores para contenção técnica.*
 
----
-
-## 35. EFEITOS Z7 — PULSE E TIME SCANNER [ADDED — Z7 Integration — 2026-03-18]
-
-Dois novos efeitos de assinatura conectados diretamente à filosofia Z7. Ambos são efeitos de baixa frequência — visíveis apenas nos momentos de maior importância na página.
-
-### 35A. Z7 Pulse
-
-**O que é**: Um efeito de pulso concêntrico que emana do ícone Z7 ou da ampulheta em momentos de destaque — como se o símbolo estivesse respirando, transmitindo energia. Diferente de um pulso de alerta (que cria ansiedade), o Z7 Pulse é lento e meditativo — a frequência do domínio, não da urgência.
-
-**Especificação:**
-
-```css
-@keyframes z7-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(74, 144, 255, 0.20);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 0 0 16px rgba(74, 144, 255, 0);
-    transform: scale(1.02);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(74, 144, 255, 0);
-    transform: scale(1);
-  }
-}
-
-.z7-pulse {
-  animation: z7-pulse 4s var(--ease-base) infinite;
-  /* 4s de ciclo = deliberado, não urgente */
-}
-
-/* Variante para Time Builders — mais enérgica */
-[data-layer="time-builders"] .z7-pulse {
-  animation: z7-pulse 2.5s var(--ease-base) infinite;
-  /* 2.5s = mais energia, ainda não ansioso */
-}
-
-/* Variante para Systems — mais lenta */
-[data-layer="systems"] .z7-pulse {
-  animation: z7-pulse 6s var(--ease-base) infinite;
-  /* 6s = máxima calma, precisão técnica */
-}
-```
-
-**Quando usar:**
-- Ícone de ampulheta em hero sections (máximo 1 por página)
-- Badge Z7 em nomes de produto quando o produto é o foco central da seção
-- CTA primário hero em hover state (o pulso reforça a ação sem ansiedade)
-
-**Quando NÃO usar:**
-- Múltiplos elementos pulsando na mesma viewport
-- Elementos menores que 32px (o pulso não é visível em escala reduzida)
-- Qualquer contexto onde a urgência visual seria mal interpretada como alerta
-
-### 35B. Time Scanner
-
-**O que é**: Uma linha horizontal de varredura que percorre verticalmente uma seção ou card, como um scanner de análise — aludindo à velocidade de processamento e ao rigor técnico de IA. O efeito passa uma vez quando o elemento entra na viewport, e fica inativo depois. Não é loop.
-
-**Especificação:**
-
-```css
-@keyframes time-scanner {
-  0% {
-    top: 0%;
-    opacity: 0;
-  }
-  5% {
-    opacity: 1;
-  }
-  95% {
-    opacity: 1;
-  }
-  100% {
-    top: 100%;
-    opacity: 0;
-  }
-}
-
-.time-scanner-container {
-  position: relative;
-  overflow: hidden;
-}
-
-.time-scanner-container::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(74, 144, 255, 0.30) 20%,
-    rgba(74, 144, 255, 0.60) 50%,
-    rgba(74, 144, 255, 0.30) 80%,
-    transparent 100%
-  );
-  animation: time-scanner 1.2s var(--ease-dramatic) forwards;
-  animation-play-state: paused; /* Inicia parado — JS ativa quando entra em viewport */
-}
-
-.time-scanner-container.scanned::after {
-  animation-play-state: running;
-}
-
-/* Variante cyan para Time Builders */
-[data-layer="time-builders"] .time-scanner-container::after {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(0, 180, 255, 0.30) 20%,
-    rgba(0, 180, 255, 0.60) 50%,
-    rgba(0, 180, 255, 0.30) 80%,
-    transparent 100%
-  );
-}
-```
-
-**Ativação por JS:**
-
-```javascript
-// IntersectionObserver — ativa o scan quando o elemento entra em viewport
-const scanObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting && !entry.target.classList.contains('scanned')) {
-      entry.target.classList.add('scanned');
-      // Remove observer após primeira varredura (não repete)
-      scanObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.3 });
-
-document.querySelectorAll('.time-scanner-container').forEach(el => {
-  scanObserver.observe(el);
-});
-```
-
-**Quando usar:**
-- Cards de case study quando entram em viewport (demonstra análise/diagnóstico)
-- Seção de métricas/resultados — o scan precede os counters animados
-- Cards de produto Z7 (reforça a compressão analítica)
-- Hero de Systems (uma única varredura no primeiro card ou stat block)
-
-**Quando NÃO usar:**
-- Mais de 3 elementos com Time Scanner na mesma página
-- Elements menores que 200px de altura (o scan é muito rápido e invisível)
-- Contexto de Moroni Reis pessoal (muito técnico para a camada de autoridade pessoal)
-- Em loops — o scanner passa uma vez. A segunda passagem seria ruído.
-
-### 35C. Combinação Z7 Pulse + Time Scanner
-
-Os dois efeitos podem coexistir em uma seção, desde que em elementos diferentes:
-
-| Elemento | Efeito Apropriado |
-|----------|-------------------|
-| Ícone de ampulheta / badge Z7 | Z7 Pulse (contínuo e lento) |
-| Card de case study ou produto | Time Scanner (single-pass ao entrar em viewport) |
-| CTA hero hover | Z7 Pulse (lento, 4s) |
-| Seção de métricas (stats) | Time Scanner (antes dos counters) |
-
-**Regra de volume máximo por página**: 1 Z7 Pulse ativo + 3 Time Scanner passes. Acima disso, os efeitos perdem significado e se tornam ruído visual.
-
----
-
-## 36. BIBLIOTECA VFX — EFEITOS IMPLEMENTADOS [ADDED — VFX Integration — 2026-03-18]
-
-Catálogo completo dos efeitos VFX disponíveis para implementação. Todos os efeitos foram prototipados e validados nos arquivos de preview listados abaixo. Os previews são a referência canônica para timing, código e comportamento.
-
-**Arquivos de referência:**
-- Ampulheta H1-B (8 efeitos): `design-previews/hourglass-vfx-preview.html`
-- Z7 Loading + Animações (14 variações): `design-previews/z7-loading-animations-preview.html`
-- Systems VFX (5 efeitos): `design-previews/systems-vfx-preview.html`
-- Branding Global (6 efeitos): `design-previews/branding-elements-preview.html`
-
----
-
-### 36A. Efeitos da Ampulheta H1-B
-
-8 interações independentes para a Variation A da ampulheta H1-B. Paleta exclusiva: `#4A90FF` / `#2D7AFF` / `#00B4FF`. Cada efeito é auto-contido e pronto para integração.
-
-| ID | Nome | Descrição | Uso Recomendado |
-|----|------|-----------|-----------------|
-| H1-B-1 | **Hover Glow Pulsante** | Glow azul que pulsa suavemente ao redor da ampulheta no hover. Box-shadow concêntrico, ciclo 4s. | Ícones de ampulheta em cards e nav |
-| H1-B-2 | **Watermark Breathing** | Ampulheta em uso como marca d'água de fundo (3-5% opacidade) com animação de respiração (scale sutil, 6s). | Background de seções hero e CTA |
-| H1-B-3 | **Hero Particle Formation** | Canvas 2D com 60 partículas azuis que convergem para desenhar as 5 linhas da ampulheta em ~2s. | Hero section, loading state, intro animado |
-| H1-B-4 | **Line-by-Line Construction** | As 5 linhas SVG da ampulheta são desenhadas sequencialmente com `stroke-dashoffset`. Duração total: ~1.5s. | Abertura de página, onboarding, intro |
-| H1-B-5 | **Scroll Fill Progression** | A ampulheta se preenche progressivamente conforme o scroll da página avança (0% a 100%). | Indicador de progresso de leitura |
-| H1-B-6 | **Easter Egg 7 Cliques** | Ao clicar 7 vezes no ícone, partículas explodem e o ícone pisca em cyan. Gatilho oculto. | Easter egg de engajamento (footer, favicon) |
-| H1-B-7 | **Aurora Temporal** | 3 orbs azuis em órbita lenta ao redor da ampulheta (animações `aurora-orbit-1/2/3` em 18-25s). | Hero de páginas premium, splash screens |
-| H1-B-8 | **Scanner Line** | Linha de varredura horizontal que atravessa a ampulheta em loop de 6s (`scanner-sweep`). | Ícone em estado "ativo/analisando", cards de produto |
-
-**Referência completa:** `design-previews/hourglass-vfx-preview.html`
-
----
-
-### 36B. Z7 Loading — Ampulheta (7 Variações de Rotação)
-
-7 animações de loading usando a ampulheta H1-B (Variation A). Cada variação mostrada em 3 tamanhos: 24px, 48px, 96px. Geometria em viewBox 64×64.
-
-| ID | Nome | Timing | Uso |
-|----|------|--------|-----|
-| L1 | **Rotação Completa 360°** | 2s · linear · infinite | Loading genérico, inline spinners |
-| L2 | **Rotação 180° Flip** | 3s · ease-in-out · infinite | Transição de estado, toggle |
-| L3 | **Easing Variado** | timing customizado · infinite | Loading com sensação orgânica |
-| L4 | **Rotação 3D** | perspectiva CSS · infinite | Loading premium, carregamento de dashboard |
-| L5 | **Pêndulo** | oscilação lado a lado · infinite | Loading de aguarda, espera prolongada |
-| L6 | **Pulse** | escala + opacidade · infinite | Loading de presença, "pensando" |
-| L7 | **Trail** | rastro de motion blur · infinite | Loading de alta velocidade, processamento rápido |
-
-**Referência completa:** `design-previews/z7-loading-animations-preview.html` — Seção 1
-
----
-
-### 36C. Z7 Animações — Z→7→Ampulheta (7 Variações)
-
-7 variações da animação morphing: o caractere Z transforma em 7, que transforma na ampulheta H1-B. Sequência de 3 estados. Cada variação tem pacing e contexto de uso distintos.
-
-**Regra de opacidade Z:** quando Z e 7 aparecem combinados como símbolo estático "Z7", o Z é renderizado a `opacity: 0.7`. O 7 lidera; o Z complementa. Essa assimetria de opacidade evita competição visual entre os dois caracteres e reforça que o resultado (7 = perfeição) é mais importante que o ponto de partida (Z = encerramento do passado).
-
-| ID | Nome | Descrição | Uso |
-|----|------|-----------|-----|
-| Z1 | **Hero (Longa)** | Animação completa Z→7→Ampulheta, duração estendida, pauses dramáticos. | Splash screen, intro de sales page |
-| Z2 | **Transição (Curta)** | Versão comprimida da sequência, sem pauses. | Transições de seção, loading curto |
-| Z3 | **Loop** | A sequência repete continuamente: Z→7→Ampulheta→Z→... | Ícone de marca em movimento contínuo |
-| Z4 | **Hover** | Estática como Z7; ao hover, executa a transformação em ampulheta. | Ícones de navegação, botões interativos |
-| Z5 | **Aproximação** | Os caracteres Z e 7 se aproximam e fundem antes de morphar. | Momentos de união/conclusão |
-| Z6 | **Encaixe Lateral** | Z entra da esquerda, 7 da direita; encaixam e transformam. | Títulos animados, hero copy |
-| Z7-anim | **Construção Alternada** | Z e 7 são construídos linha por linha alternadamente, depois morpham. | Onboarding, explicação do símbolo |
-
-**Referência completa:** `design-previews/z7-loading-animations-preview.html` — Seção 2
-
----
-
-### 36D. Efeitos de Branding Global (Brief D)
-
-6 elementos de branding aplicáveis em qualquer página do ecossistema. Todos usam a paleta azul (`#4A90FF`, `#2D7AFF`, `#00B4FF`). Nunca gold/amber/terracotta. 60fps, `prefers-reduced-motion` respeitado.
-
-| ID | Nome | Descrição | Uso |
-|----|------|-----------|-----|
-| D1 | **Tipografia Cinética** | 3 tratamentos para a frase "O Tempo é Rei": T1 revelação por palavra (stagger 300ms), T2 compressão de letter-spacing (0.2em → -0.02em em 1.2s), T3 typewriter com ritmo irregular. | Hero headlines, seções de filosofia |
-| D2 | **FOMO — Barra de Oportunidade** | Barra fina (40px) com gradiente azul em movimento contínuo. Número que incrementa de 0 a um valor-alvo em 2s (ease-out cúbico). | Topo de páginas, antes de CTA |
-| D3 | **Compressão 7:7 Visual** | Dois blocos lado a lado: "7 anos" (barra completa) → "7 horas" (barra comprimida para 1/7). Animação de compressão em 2s ease-out, seguida de label "Tempo recuperado". | Seções de prova da proposta Z7 |
-| D4 | **Transição Temporal — Areia Digital** | Divisor entre seções com 20 micro-partículas (1px) descendo como areia digital. CSS `@keyframes sand-fall` + partículas geradas por JS. Altura 60px. | Separadores entre seções narrativas |
-| D5 | **Contraste Vilão/Herói** | Layout 2 colunas: "Antes" (desaturado, brightness 0.7, texto 30% branco) vs "Depois" (azul, texto 90% branco). Scroll-triggered: lado "Depois" revela em 1.5s ao entrar no viewport. | Comparação antes/depois em qualquer página |
-| D6 | **Micro-interações Tempo-Primeiro** | 3 classes CSS reutilizáveis: `.instant-feedback` (botão resposta <100ms), `.time-hover` (card hover revela métrica de tempo economizado), `.urgency-pulse` (badge com `box-shadow` pulsante em ciclo de 2s). | Botões CTA, cards de agente/serviço, badges de urgência |
-
-**Referência completa:** `design-previews/branding-elements-preview.html`
-
----
-
-### 36E. Regras de Uso dos Efeitos VFX
-
-1. **Prioridade de contenção**: Efeitos VFX são enriquecimentos, não substitutos do conteúdo. Um efeito que distrai da mensagem deve ser removido.
-2. **Máximo de efeitos simultâneos por viewport**: 2. Um efeito de ícone/símbolo (ampulheta, Z7) + um efeito de conteúdo (tipografia, transição).
-3. **`prefers-reduced-motion`**: Todos os efeitos devem respeitar esta media query. Ver Seção 11A para implementação.
-4. **Easter Egg (H1-B-6)**: Não documentar em copy de marketing. O descobrimento orgânico é o mecanismo de engajamento.
-5. **Regra Z opacity**: quando Z e 7 aparecem combinados estaticamente, Z sempre a `opacity: 0.7`. Nunca Z e 7 em 100% simultâneos — cria poluição visual.
-6. **Efeitos de branding global (D1-D6)** podem ser usados em qualquer camada (Master, Time Builders, Systems, Moroni Reis). Efeitos de ampulheta (H1-B-1 a H1-B-8) são preferencialmente do ecossistema Master e Time Builders. Efeitos Z→7→Ampulheta são exclusivos de Time Builders e contextos Z7.
-
----
-
-### Adição ao Changelog
-
-- 2026-03-18: VFX Integration — Biblioteca completa de efeitos implementados (Seção 36):
-  - 8 efeitos da ampulheta H1-B (36A)
-  - 7 loading rotations da ampulheta (36B)
-  - 7 animações Z→7→Ampulheta com regra de opacidade Z=0.7 (36C)
-  - 6 elementos de branding global (36D)
-  - Regras de uso VFX e restrições (36E)
+<!-- Sections 35-36 (Z7 Effects and VFX) removed in v2.0 brand simplification -->

@@ -1,0 +1,103 @@
+---
+import AuthLayout from '../layouts/AuthLayout.astro';
+import { createClient } from '@supabase/supabase-js';
+
+export const prerender = false;
+
+let errorMessage = '';
+let successMessage = '';
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const name = formData.get('name') as string;
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { full_name: name } }
+  });
+
+  if (error) {
+    errorMessage = error.message;
+  } else if (data.session) {
+    // Auto-login if email confirmation is disabled
+    Astro.cookies.set('sb-access-token', data.session.access_token, {
+      path: '/',
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60,
+    });
+    Astro.cookies.set('sb-refresh-token', data.session.refresh_token, {
+      path: '/',
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+    });
+    return Astro.redirect('/dashboard');
+  } else {
+    successMessage = 'Conta criada! Verifique seu email para confirmar.';
+  }
+}
+---
+
+<AuthLayout title="Criar Conta">
+  <div class="rounded-xl p-8" style="background: var(--surface-1); border: 1px solid var(--border-subtle);">
+    <h2 class="text-xl font-medium mb-6" style="color: var(--text-primary);">Criar sua conta</h2>
+
+    {errorMessage && (
+      <div class="mb-4 p-3 rounded-lg text-sm" style="background: var(--color-error-bg); color: var(--color-error); border: 1px solid rgba(239,68,68,0.25);">
+        {errorMessage}
+      </div>
+    )}
+
+    {successMessage && (
+      <div class="mb-4 p-3 rounded-lg text-sm" style="background: var(--color-success-bg); color: var(--color-success); border: 1px solid rgba(34,197,94,0.25);">
+        {successMessage}
+      </div>
+    )}
+
+    <form method="POST" class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="name" class="text-sm" style="color: var(--text-secondary);">Nome completo</label>
+        <input type="text" id="name" name="name" required class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field" style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary);" placeholder="Seu nome" />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="email" class="text-sm" style="color: var(--text-secondary);">Email</label>
+        <input type="email" id="email" name="email" required class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field" style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary);" placeholder="seu@email.com" />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="password" class="text-sm" style="color: var(--text-secondary);">Senha</label>
+        <input type="password" id="password" name="password" required minlength="8" class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field" style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary);" placeholder="Mínimo 8 caracteres" />
+      </div>
+
+      <button type="submit" class="w-full py-3 rounded-lg text-sm font-medium transition-all mt-2 submit-btn" style="background: var(--accent-blue); color: #fff;">
+        Criar conta
+      </button>
+    </form>
+
+    <p class="text-center mt-6 text-sm" style="color: var(--text-tertiary);">
+      Já tem conta? <a href="/login" style="color: var(--accent-blue);">Entrar</a>
+    </p>
+  </div>
+</AuthLayout>
+
+<style>
+  .input-field:focus {
+    border-color: var(--border-accent) !important;
+    box-shadow: 0 0 0 3px var(--blue-08);
+  }
+  .submit-btn:hover {
+    background: var(--accent-blue-hover) !important;
+  }
+</style>

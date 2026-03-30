@@ -130,6 +130,12 @@ Before ANY file modification in any phase or stage:
 
 **8. Design System Extractor** (Opus 4.6) — Specialist in deeply analyzing and extracting complete design systems, brandbooks, and UI component libraries from reference websites. Fetches and parses full website source code (HTML, CSS, JS), extracts design tokens (colors, typography, spacing, shadows, borders, motion, effects), documents component patterns, captures animation/motion systems, and organizes everything into structured markdown files with visual HTML preview pages. Use for: reference site analysis, design token extraction, component cataloging, competitive design research. Does NOT modify Reis IA files — only extracts and documents for the Orchestrator to decide what to incorporate.
 
+**9. Education Director** (Opus 4.6) — Pedagogical strategist and curriculum architect. Organizes existing material, creates the curriculum map, produces structured briefings for the Scriptwriter, reviews final scripts, manages the educational pipeline. Does NOT write scripts or create visuals — delegates to Scriptwriter and Educational Designer.
+
+**10. Lesson Scriptwriter (Roteirista de Aulas)** (Sonnet 4.6) — Expert lesson scriptwriter. Transforms educational briefings into camera-ready video scripts for Moroni to record. Follows standard script structure (Hook → Context → Content Blocks → Recap → CTA). Produces visual element requests for the Educational Designer after script approval.
+
+**11. Educational Designer** (Sonnet 4.6) — Visual designer for educational content. Creates mind maps, slides, diagrams, comparison tables, and transition screens for video lesson recordings. Follows REIS [IA] design system adapted for 1080p video. Activated by the Scriptwriter or directly by Moroni.
+
 ### Agent Selection Guide
 
 | Task Type | Primary Agent | Support Agent |
@@ -144,6 +150,10 @@ Before ANY file modification in any phase or stage:
 | Create logo / brand mark / symbol | Logo Brand Mark Designer | Designer Agent (brand context) |
 | Analyze competitor site visuals | Design System Extractor | CMO Agent (strategic review) |
 | New brand element integration | Copy Agent + Designer Agent | — |
+| Curriculum design / lesson planning | Education Director | — |
+| Write/enhance lesson script | Lesson Scriptwriter | Education Director (briefing) |
+| Create lesson visuals (slides, diagrams) | Educational Designer | Lesson Scriptwriter (visual request) |
+| Review lesson quality | Education Director | — |
 
 ---
 
@@ -310,23 +320,122 @@ Priority: LinkedIn first (direct B2B conversion), Instagram in parallel.
 
 ---
 
-## Suggested Integrations and Tools
+## Email & Lead Capture Infrastructure (Current State)
 
-Before starting execution, evaluate and suggest installation of any of these if they would improve performance:
+### Email Services
 
-**Critical for current phase:**
-- **Cal.com** — for booking page (placeholder ready, needs real account)
-- **Formspree** — for application form (placeholder ID needs replacement)
-- **WhatsApp Business** — real phone number needed in CTA links
+| Service | Usage | Auth |
+|---------|-------|------|
+| **Resend** (primary) | Transactional emails from all API endpoints | `RESEND_API_KEY` in each project's `.env` |
+| **Gmail SMTP** (secondary) | Bulk campaign scripts (Python) | `moronireis@gmail.com` + app password via `smtp.gmail.com:587` |
+| **Evolution API** | WhatsApp notifications to Moroni on new leads | `https://weirdpigeon-evolution.cloudfy.live/message/sendText/Reis` |
 
-**Critical for Phase 2:**
-- **Email platform API** (ActiveCampaign, ConvertKit, Resend) — for email sequence automation
-- **CRM integration** (HubSpot or Pipedrive) — for lead management from calculator
+### Lead Capture Flows
 
-**Important but not blocking:**
-- **GitHub repo** — for version control of all code and copy assets
-- **Analytics** (Plausible, PostHog, or GA4) — for conversion tracking from day one
-- **Vercel** — for deployment
+**Flow 1 — Website Typebot (Custom Component)**
+```
+LeadTypebot.tsx (8 questions + booking calendar)
+  → POST /api/leads (reis-ia-website)
+    ├→ Save to /tmp/reis-ia-leads.json
+    ├→ Webhook → /api/leads/webhook (reis-ia-hub)
+    │    ├→ Save to Supabase leads/deals tables
+    │    └→ Create CRM deal (stage: "funil type-bot")
+    ├→ Resend email (admin notification + lead confirmation)
+    └→ WhatsApp notification via Evolution API
+```
+- Component: `reis-ia-website/src/components/LeadTypebot.tsx`
+- API: `reis-ia-website/src/pages/api/leads.ts`
+- Fields: name, whatsapp, email, company, segment, role, revenue, employees + optional booking
+- Source tag: `typebot-agendar`
+- Generates CRM ref: `REIS-LEAD-XXXXXX`
+
+**Flow 2 — Marketing Diagnostic Quiz**
+```
+diagnostico.html (scoring quiz → profile classification)
+  → POST /api/lead-email (reis-ia-marketing)
+    ├→ Save to Supabase form_submissions
+    ├→ Webhook → /api/webhook/new-lead (reis-ia-hub)
+    │    ├→ Create/update Supabase contacts
+    │    └→ Create admin notification
+    └→ Resend email (diagnostic results with heatmap)
+```
+- Page: `reis-ia-marketing/diagnostico.html`
+- API: `reis-ia-marketing/api/lead-email.js`
+- Profiles: `systems` (green), `builders` (blue), `starter` (orange)
+
+**Flow 3 — Marketing Forms (Brand/Product)**
+```
+formulario-*.html (extensive field sets)
+  → POST /api/submit (reis-ia-marketing)
+    ├→ Save to localStorage (backup)
+    ├→ Save to Supabase form_submissions
+    ├→ Webhook → /api/webhook/new-lead (reis-ia-hub)
+    │    └→ Create/update Supabase contacts
+    └→ Resend email to admin (all fields in HTML table)
+```
+- Forms: `personal-branding`, `empresa`, `movimento`, `produto`
+- API: `reis-ia-marketing/api/submit.js`
+- Admin panel: `reis-ia-marketing/painel-admin.html`
+
+**Flow 4 — Bulk Email Campaigns (Python Scripts)**
+```
+email-*.py → JSON contact list → send via Resend or Gmail SMTP
+```
+- `email-hoje-resend.py` — Event notifications (Resend API)
+- `email-diagnostico.py` — Post-diagnostic invites (Gmail SMTP)
+- `email-convite.py` — Student invitations (Gmail SMTP)
+- `email-imersao-2603.py` — Immersion event emails
+- `email-hunters.py` — AI Hunters program emails
+- `email-mdv.py` — MDV program emails
+- All scripts support `test` (single) and `disparo` (batch with random delays 0.3-6s) modes
+
+### Data Storage
+
+| System | Location | Tables/Keys |
+|--------|----------|-------------|
+| **Supabase** (self-hosted) | `https://weirdpigeon-supabase.cloudfy.live` | `form_submissions`, `leads`, `deals`, `contacts`, `notifications` |
+| **LocalStorage** | Browser | `reis_marketing_submissions` (form backup) |
+| **Temp file** | `/tmp/reis-ia-leads.json` | Website leads (Vercel function lifecycle) |
+| **JSON files** | Root directory | `*-disparo-lista.json` (bulk campaign recipient lists) |
+
+### Hub CRM Webhooks
+
+| Endpoint | Source | Auth |
+|----------|--------|------|
+| `POST /api/leads/webhook` | Website Typebot leads | None (internal) |
+| `POST /api/webhook/new-lead` | Marketing forms | Header `x-webhook-key: reisia-hub-webhook-2026` |
+
+### Key API Endpoints Summary
+
+| Project | Endpoint | Purpose |
+|---------|----------|---------|
+| reis-ia-website | `POST /api/leads` | Typebot lead capture + email + WhatsApp |
+| reis-ia-website | `GET /api/leads` | List all stored leads |
+| reis-ia-marketing | `POST /api/submit` | Marketing form submissions |
+| reis-ia-marketing | `POST /api/lead-email` | Diagnostic result emails |
+| reis-ia-marketing | `GET /api/submissions` | Read form submissions (filter by type) |
+| reis-ia-marketing | `PATCH /api/update-lead` | Update submission data |
+| reis-ia-marketing | `POST /api/import-leads` | Bulk import normalized leads |
+| reis-ia-hub | `POST /api/leads/webhook` | Receive website leads into CRM |
+| reis-ia-hub | `POST /api/webhook/new-lead` | Receive marketing leads into CRM |
+
+---
+
+## Integrations & Tools Status
+
+### Active (In Production)
+- **Resend** — transactional email (all projects)
+- **Supabase** (self-hosted via Cloudfy) — database, CRM storage
+- **Evolution API** (via Cloudfy) — WhatsApp notifications
+- **Vercel** — deployment for website, marketing, and hub
+- **Gmail SMTP** — bulk Python email campaigns
+
+### Configured but Placeholder
+- **Cal.com** — booking page (placeholder ready in `/agendar`, needs real account)
+
+### Not Yet Configured
+- **Analytics** (Plausible, PostHog, or GA4) — conversion tracking
+- **Automated email sequences** — welcome series after lead capture (scripts exist but not automated)
 
 ---
 

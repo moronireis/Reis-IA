@@ -1,0 +1,153 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+
+export const prerender = false;
+
+const profile = Astro.locals.profile;
+---
+
+<AppLayout title="Configurações" activeSection="settings">
+  <div class="max-w-lg">
+    <div class="rounded-xl p-6" style="background: var(--surface-1); border: 1px solid var(--border-subtle);">
+      <h3 class="font-medium mb-6" style="color: var(--text-primary);">Perfil</h3>
+
+      <div id="form-success" class="hidden mb-4 p-3 rounded-lg text-sm" style="background: var(--color-success-bg); color: var(--color-success); border: 1px solid rgba(34,197,94,0.25);">Perfil atualizado com sucesso.</div>
+      <div id="form-error" class="hidden mb-4 p-3 rounded-lg text-sm" style="background: rgba(239,68,68,0.1); color: #EF4444; border: 1px solid rgba(239,68,68,0.25);"></div>
+
+      <form id="profile-form" class="flex flex-col gap-4">
+        <!-- Email (read-only) -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm" style="color: var(--text-secondary);">Email</label>
+          <input
+            type="email"
+            value={profile?.email || ''}
+            disabled
+            class="w-full px-4 py-3 rounded-lg text-sm"
+            style="background: var(--surface-3); border: 1px solid var(--border-subtle); color: var(--text-quaternary); cursor: not-allowed;"
+          />
+        </div>
+
+        <!-- Role (read-only) -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm" style="color: var(--text-secondary);">Função</label>
+          <input
+            type="text"
+            value={profile?.role || 'member'}
+            disabled
+            class="w-full px-4 py-3 rounded-lg text-sm"
+            style="background: var(--surface-3); border: 1px solid var(--border-subtle); color: var(--text-quaternary); cursor: not-allowed;"
+          />
+        </div>
+
+        <!-- Full Name -->
+        <div class="flex flex-col gap-2">
+          <label for="full_name" class="text-sm" style="color: var(--text-secondary);">Nome completo</label>
+          <input
+            type="text"
+            id="full_name"
+            name="full_name"
+            value={profile?.full_name || ''}
+            class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field"
+            style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary);"
+            placeholder="Seu nome completo"
+          />
+        </div>
+
+        <!-- Company -->
+        <div class="flex flex-col gap-2">
+          <label for="company" class="text-sm" style="color: var(--text-secondary);">Empresa</label>
+          <input
+            type="text"
+            id="company"
+            name="company"
+            value={profile?.company || ''}
+            class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field"
+            style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary);"
+            placeholder="Nome da empresa"
+          />
+        </div>
+
+        <!-- Phone -->
+        <div class="flex flex-col gap-2">
+          <label for="phone" class="text-sm" style="color: var(--text-secondary);">Telefone</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={profile?.phone || ''}
+            class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field"
+            style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary);"
+            placeholder="+55 11 99999-9999"
+          />
+        </div>
+
+        <button
+          type="submit"
+          id="save-btn"
+          class="w-full py-3 rounded-lg text-sm font-medium transition-all mt-2"
+          style="background: var(--accent-blue); color: #fff;"
+        >
+          Salvar alterações
+        </button>
+      </form>
+    </div>
+  </div>
+</AppLayout>
+
+<style>
+  .input-field:focus {
+    border-color: var(--border-accent) !important;
+    box-shadow: 0 0 0 3px var(--blue-08);
+  }
+  #save-btn:hover {
+    background: var(--accent-blue-hover) !important;
+  }
+  #save-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+</style>
+
+<script>
+  const form = document.getElementById('profile-form') as HTMLFormElement;
+  const saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
+  const successEl = document.getElementById('form-success') as HTMLDivElement;
+  const errorEl = document.getElementById('form-error') as HTMLDivElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    successEl.classList.add('hidden');
+    errorEl.classList.add('hidden');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Salvando...';
+
+    const fd = new FormData(form);
+    const body = {
+      full_name: fd.get('full_name') as string,
+      company: fd.get('company') as string,
+      phone: fd.get('phone') as string,
+    };
+
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        errorEl.textContent = err.error || 'Erro ao salvar perfil';
+        errorEl.classList.remove('hidden');
+      } else {
+        successEl.classList.remove('hidden');
+      }
+    } catch {
+      errorEl.textContent = 'Erro de conexão';
+      errorEl.classList.remove('hidden');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Salvar alterações';
+    }
+  });
+</script>

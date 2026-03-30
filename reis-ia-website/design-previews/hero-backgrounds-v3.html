@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REIS [IA] — Hero Backgrounds V3 — Premium Canvas</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #000; color: #fff; }
+
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0 24px; height: 48px; display: flex; align-items: center; gap: 6px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav span { font-size: 10px; font-weight: 600; color: #444; text-transform: uppercase; letter-spacing: 0.08em; margin-right: 8px; white-space: nowrap; }
+  .nav a {
+    display: inline-flex; align-items: center; height: 28px; padding: 0 12px;
+    font-size: 12px; font-weight: 500; color: #888; text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;
+    white-space: nowrap; transition: all 0.15s;
+  }
+  .nav a:hover { color: #fff; border-color: rgba(74,144,255,0.3); background: rgba(74,144,255,0.08); }
+
+  .hero {
+    position: relative; overflow: hidden;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: #000;
+  }
+  .hero canvas {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  .hero-content {
+    position: relative; z-index: 10;
+    text-align: center; max-width: 800px; padding: 0 24px;
+  }
+  .hero-content h1 {
+    font-size: clamp(2.5rem, 1.5rem + 4vw, 4.5rem);
+    font-weight: 600; line-height: 1.10; letter-spacing: -0.02em;
+  }
+  .hero-content h1 .accent { color: #4A90FF; }
+  .hero-content p {
+    margin: 20px auto 0; font-size: 17px; line-height: 1.55;
+    color: #888; max-width: 560px;
+  }
+  .hero-content .cta {
+    display: inline-block; margin-top: 32px;
+    background: #4A90FF; color: #000; font-weight: 600; font-size: 15px;
+    padding: 14px 32px; border-radius: 8px; text-decoration: none;
+  }
+  .label {
+    position: absolute; top: 68px; left: 20px; z-index: 20;
+    background: rgba(74,144,255,0.15); border: 1px solid rgba(74,144,255,0.3);
+    color: #4A90FF; font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.05em; padding: 6px 14px; border-radius: 6px;
+  }
+  .sep { height: 1px; background: linear-gradient(90deg, transparent, rgba(74,144,255,0.2) 50%, transparent); }
+
+  /* Overlay helpers */
+  .grid-overlay {
+    position: absolute; inset: 0; pointer-events: none; z-index: 2;
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+  }
+  .spotlight-overlay {
+    position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background: conic-gradient(from 270deg at 50% -5%, rgba(74,144,255,0.14) 0deg, transparent 50deg, transparent 310deg, rgba(74,144,255,0.14) 360deg);
+  }
+  .noise-overlay {
+    position: absolute; inset: 0; pointer-events: none; z-index: 3; opacity: 0.03; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 256px 256px;
+  }
+  .vignette {
+    position: absolute; inset: 0; pointer-events: none; z-index: 4;
+    background: radial-gradient(ellipse 75% 65% at 50% 45%, transparent 30%, rgba(0,0,0,0.7) 100%);
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span>V3 Previews</span>
+  <a href="#a">A: Constellation</a>
+  <a href="#b">B: Spotlight+Grid</a>
+  <a href="#c">C: Aurora Canvas</a>
+  <a href="#d">D: Particle Rise</a>
+  <a href="#e">E: Nebula Mesh</a>
+  <a href="#f">F: Combined</a>
+</nav>
+<div style="height: 48px;"></div>
+
+<!-- ============ A: CONSTELLATION (particles + lines) ============ -->
+<div class="hero" id="a">
+  <div class="label">A: Constellation — Particulas conectadas com interacao de mouse</div>
+  <canvas id="cv-a"></canvas>
+  <div class="noise-overlay"></div>
+  <div class="vignette"></div>
+  <div class="hero-content">
+    <h1>Tempo e o ativo mais <span class="accent">importante.</span></h1>
+    <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+    <a href="#" class="cta">Conhecer agora →</a>
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- ============ B: SPOTLIGHT + GRID ============ -->
+<div class="hero" id="b">
+  <div class="label">B: Spotlight + Grid — Cone de luz com grid sutil</div>
+  <div class="grid-overlay"></div>
+  <div class="spotlight-overlay"></div>
+  <canvas id="cv-b"></canvas>
+  <div class="noise-overlay"></div>
+  <div class="hero-content">
+    <h1>Tempo e o ativo mais <span class="accent">importante.</span></h1>
+    <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+    <a href="#" class="cta">Conhecer agora →</a>
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- ============ C: AURORA CANVAS ============ -->
+<div class="hero" id="c">
+  <div class="label">C: Aurora Canvas — Ondas de cor fluidas animadas</div>
+  <canvas id="cv-c"></canvas>
+  <div class="noise-overlay"></div>
+  <div class="vignette"></div>
+  <div class="hero-content">
+    <h1>Tempo e o ativo mais <span class="accent">importante.</span></h1>
+    <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+    <a href="#" class="cta">Conhecer agora →</a>
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- ============ D: PARTICLE RISE ============ -->
+<div class="hero" id="d">
+  <div class="label">D: Particle Rise — Particulas subindo com glow e trails</div>
+  <canvas id="cv-d"></canvas>
+  <div class="noise-overlay"></div>
+  <div class="hero-content">
+    <h1>Tempo e o ativo mais <span class="accent">importante.</span></h1>
+    <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+    <a href="#" class="cta">Conhecer agora →</a>
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- ============ E: NEBULA MESH ============ -->
+<div class="hero" id="e">
+  <div class="label">E: Nebula Mesh — Blobs organicos com morphing e blur</div>
+  <canvas id="cv-e"></canvas>
+  <div class="noise-overlay"></div>
+  <div class="vignette"></div>
+  <div class="hero-content">
+    <h1>Tempo e o ativo mais <span class="accent">importante.</span></h1>
+    <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+    <a href="#" class="cta">Conhecer agora →</a>
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- ============ F: COMBINED (Constellation + Aurora + Grid) ============ -->
+<div class="hero" id="f">
+  <div class="label">F: Combined — Aurora + Constellation + Grid + Spotlight</div>
+  <canvas id="cv-f-aurora"></canvas>
+  <div class="grid-overlay"></div>
+  <div class="spotlight-overlay"></div>
+  <canvas id="cv-f-particles" style="z-index: 5;"></canvas>
+  <div class="noise-overlay" style="z-index: 6;"></div>
+  <div class="vignette" style="z-index: 7;"></div>
+  <div class="hero-content" style="z-index: 10;">
+    <h1>Tempo e o ativo mais <span class="accent">importante.</span></h1>
+    <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+    <a href="#" class="cta">Conhecer agora →</a>
+  </div>
+</div>
+
+<script>
+// ==================== UTILITIES ====================
+function setupCanvas(id) {
+  const c = document.getElementById(id);
+  if (!c) return null;
+  const parent = c.parentElement;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = parent.offsetWidth * dpr;
+  c.height = parent.offsetHeight * dpr;
+  c.style.width = parent.offsetWidth + 'px';
+  c.style.height = parent.offsetHeight + 'px';
+  const ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: parent.offsetWidth, h: parent.offsetHeight, canvas: c, parent };
+}
+
+// ==================== A: CONSTELLATION ====================
+(function() {
+  const s = setupCanvas('cv-a');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  let mouse = { x: w/2, y: h/2 };
+  const particles = [];
+  const COUNT = 70;
+  const LINK_DIST = 160;
+
+  for (let i = 0; i < COUNT; i++) {
+    particles.push({
+      x: Math.random() * w, y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+      size: Math.random() * 2.5 + 0.5, opacity: Math.random() * 0.6 + 0.2
+    });
+  }
+
+  s.parent.addEventListener('mousemove', e => {
+    const r = s.parent.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+  });
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    // Links
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < LINK_DIST) {
+          ctx.strokeStyle = `rgba(74, 144, 255, ${(1 - d/LINK_DIST) * 0.18})`;
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+      // Mouse link
+      const mdx = particles[i].x - mouse.x;
+      const mdy = particles[i].y - mouse.y;
+      const md = Math.sqrt(mdx*mdx + mdy*mdy);
+      if (md < 200) {
+        ctx.strokeStyle = `rgba(74, 144, 255, ${(1 - md/200) * 0.35})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(mouse.x, mouse.y);
+        ctx.stroke();
+      }
+    }
+
+    // Particles
+    for (const p of particles) {
+      // Glow
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 6);
+      grad.addColorStop(0, `rgba(74, 144, 255, ${p.opacity * 0.3})`);
+      grad.addColorStop(1, 'rgba(74, 144, 255, 0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Core
+      ctx.fillStyle = `rgba(74, 144, 255, ${p.opacity})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ==================== B: SPOTLIGHT (glowing dots on grid) ====================
+(function() {
+  const s = setupCanvas('cv-b');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  const dots = [];
+  for (let x = 20; x < w; x += 40) {
+    for (let y = 20; y < h; y += 40) {
+      const cx = w/2, cy = h*0.3;
+      const dx = x - cx, dy = y - cy;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      const maxDist = Math.sqrt(cx*cx + cy*cy);
+      dots.push({ x, y, dist: d, maxDist, phase: Math.random() * Math.PI * 2 });
+    }
+  }
+
+  let time = 0;
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    time += 0.008;
+
+    for (const d of dots) {
+      const proximity = 1 - Math.min(d.dist / (d.maxDist * 0.6), 1);
+      const pulse = 0.5 + 0.5 * Math.sin(time * 2 + d.phase);
+      const alpha = proximity * proximity * pulse * 0.7;
+      if (alpha < 0.01) continue;
+
+      // Glow
+      const grad = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, 12);
+      grad.addColorStop(0, `rgba(74, 144, 255, ${alpha * 0.4})`);
+      grad.addColorStop(1, 'rgba(74, 144, 255, 0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Dot
+      ctx.fillStyle = `rgba(74, 144, 255, ${alpha})`;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ==================== C: AURORA CANVAS ====================
+(function() {
+  const s = setupCanvas('cv-c');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  let time = 0;
+
+  function draw() {
+    time += 0.003;
+    ctx.clearRect(0, 0, w, h);
+
+    // Multiple aurora bands
+    for (let band = 0; band < 4; band++) {
+      ctx.beginPath();
+      const yOff = h * 0.3 + band * h * 0.12;
+      const amp = 40 + band * 15;
+      const freq = 0.003 - band * 0.0004;
+      const phase = time * (1 + band * 0.3);
+
+      ctx.moveTo(0, yOff);
+      for (let x = 0; x <= w; x += 4) {
+        const y = yOff + Math.sin(x * freq + phase) * amp + Math.sin(x * freq * 2.3 + phase * 0.7) * amp * 0.4;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+
+      const grad = ctx.createLinearGradient(0, yOff - amp, 0, h);
+      const alpha = 0.08 - band * 0.015;
+      grad.addColorStop(0, `rgba(74, 144, 255, ${alpha})`);
+      grad.addColorStop(0.3, `rgba(45, 122, 255, ${alpha * 0.6})`);
+      grad.addColorStop(0.6, `rgba(0, 180, 255, ${alpha * 0.3})`);
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    // Top glow
+    const topGlow = ctx.createRadialGradient(w/2, 0, 0, w/2, 0, h * 0.6);
+    topGlow.addColorStop(0, 'rgba(74, 144, 255, 0.06)');
+    topGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = topGlow;
+    ctx.fillRect(0, 0, w, h);
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ==================== D: PARTICLE RISE ====================
+(function() {
+  const s = setupCanvas('cv-d');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  const particles = [];
+  const COUNT = 100;
+
+  for (let i = 0; i < COUNT; i++) {
+    particles.push({
+      x: Math.random() * w, y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.2,
+      vy: -(Math.random() * 0.5 + 0.15),
+      size: Math.random() * 2.5 + 0.5,
+      opacity: Math.random() * 0.5 + 0.1,
+      pulse: Math.random() * Math.PI * 2,
+      trail: []
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    // Ambient glow at center-top
+    const amb = ctx.createRadialGradient(w/2, h*0.25, 0, w/2, h*0.25, h*0.5);
+    amb.addColorStop(0, 'rgba(74, 144, 255, 0.04)');
+    amb.addColorStop(1, 'transparent');
+    ctx.fillStyle = amb;
+    ctx.fillRect(0, 0, w, h);
+
+    for (const p of particles) {
+      p.pulse += 0.015;
+      const o = p.opacity * (0.5 + 0.5 * Math.sin(p.pulse));
+
+      // Trail
+      p.trail.push({ x: p.x, y: p.y });
+      if (p.trail.length > 8) p.trail.shift();
+
+      for (let t = 0; t < p.trail.length; t++) {
+        const ta = (t / p.trail.length) * o * 0.3;
+        ctx.fillStyle = `rgba(74, 144, 255, ${ta})`;
+        ctx.beginPath();
+        ctx.arc(p.trail[t].x, p.trail[t].y, p.size * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Glow
+      if (p.size > 1.5) {
+        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 8);
+        g.addColorStop(0, `rgba(74, 144, 255, ${o * 0.2})`);
+        g.addColorStop(1, 'rgba(74, 144, 255, 0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Core
+      ctx.fillStyle = `rgba(74, 144, 255, ${o})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+
+      p.x += p.vx; p.y += p.vy;
+      if (p.y < -20) { p.y = h + 20; p.x = Math.random() * w; p.trail = []; }
+      if (p.x < -20) p.x = w + 20;
+      if (p.x > w + 20) p.x = -20;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ==================== E: NEBULA MESH ====================
+(function() {
+  const s = setupCanvas('cv-e');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  let time = 0;
+
+  const blobs = [
+    { cx: w*0.65, cy: h*0.35, rx: 200, ry: 160, color: [74,144,255], speed: 0.8, phase: 0 },
+    { cx: w*0.35, cy: h*0.6, rx: 160, ry: 130, color: [45,122,255], speed: 0.6, phase: 2 },
+    { cx: w*0.5, cy: h*0.45, rx: 120, ry: 100, color: [106,173,255], speed: 1.0, phase: 4 },
+  ];
+
+  function draw() {
+    time += 0.005;
+    ctx.clearRect(0, 0, w, h);
+
+    for (const b of blobs) {
+      const x = b.cx + Math.sin(time * b.speed + b.phase) * 30;
+      const y = b.cy + Math.cos(time * b.speed * 0.7 + b.phase) * 20;
+      const rx = b.rx + Math.sin(time * 0.5 + b.phase) * 20;
+      const ry = b.ry + Math.cos(time * 0.4 + b.phase) * 15;
+
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, Math.max(rx, ry));
+      grad.addColorStop(0, `rgba(${b.color[0]}, ${b.color[1]}, ${b.color[2]}, 0.15)`);
+      grad.addColorStop(0.5, `rgba(${b.color[0]}, ${b.color[1]}, ${b.color[2]}, 0.05)`);
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+
+      ctx.beginPath();
+      ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ==================== F: COMBINED (Aurora + Constellation) ====================
+(function() {
+  // Aurora layer
+  const sa = setupCanvas('cv-f-aurora');
+  if (!sa) return;
+  const ca = sa.ctx;
+  let timeA = 0;
+
+  function drawAurora() {
+    timeA += 0.003;
+    ca.clearRect(0, 0, sa.w, sa.h);
+    for (let band = 0; band < 3; band++) {
+      ca.beginPath();
+      const yOff = sa.h * 0.35 + band * sa.h * 0.1;
+      const amp = 30 + band * 10;
+      const freq = 0.003 - band * 0.0003;
+      const phase = timeA * (1 + band * 0.2);
+      ca.moveTo(0, yOff);
+      for (let x = 0; x <= sa.w; x += 4) {
+        const y = yOff + Math.sin(x * freq + phase) * amp + Math.sin(x * freq * 2 + phase * 0.6) * amp * 0.3;
+        ca.lineTo(x, y);
+      }
+      ca.lineTo(sa.w, sa.h); ca.lineTo(0, sa.h); ca.closePath();
+      const grad = ca.createLinearGradient(0, yOff, 0, sa.h);
+      const a = 0.06 - band * 0.012;
+      grad.addColorStop(0, `rgba(74, 144, 255, ${a})`);
+      grad.addColorStop(0.5, `rgba(45, 122, 255, ${a * 0.4})`);
+      grad.addColorStop(1, 'transparent');
+      ca.fillStyle = grad;
+      ca.fill();
+    }
+    requestAnimationFrame(drawAurora);
+  }
+  drawAurora();
+
+  // Particle layer
+  const sp = setupCanvas('cv-f-particles');
+  if (!sp) return;
+  const cp = sp.ctx;
+  const pts = [];
+  for (let i = 0; i < 50; i++) {
+    pts.push({
+      x: Math.random() * sp.w, y: Math.random() * sp.h,
+      vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
+      size: Math.random()*2+0.5, opacity: Math.random()*0.5+0.1
+    });
+  }
+  let mouseF = { x: sp.w/2, y: sp.h/2 };
+  sp.parent.addEventListener('mousemove', e => {
+    const r = sp.parent.getBoundingClientRect();
+    mouseF.x = e.clientX - r.left; mouseF.y = e.clientY - r.top;
+  });
+
+  function drawParticles() {
+    cp.clearRect(0, 0, sp.w, sp.h);
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i+1; j < pts.length; j++) {
+        const dx = pts[i].x-pts[j].x, dy = pts[i].y-pts[j].y;
+        const d = Math.sqrt(dx*dx+dy*dy);
+        if (d < 140) {
+          cp.strokeStyle = `rgba(74,144,255,${(1-d/140)*0.12})`;
+          cp.lineWidth = 0.6;
+          cp.beginPath(); cp.moveTo(pts[i].x, pts[i].y); cp.lineTo(pts[j].x, pts[j].y); cp.stroke();
+        }
+      }
+      const mdx = pts[i].x-mouseF.x, mdy = pts[i].y-mouseF.y, md = Math.sqrt(mdx*mdx+mdy*mdy);
+      if (md < 180) {
+        cp.strokeStyle = `rgba(74,144,255,${(1-md/180)*0.25})`;
+        cp.lineWidth = 0.8;
+        cp.beginPath(); cp.moveTo(pts[i].x, pts[i].y); cp.lineTo(mouseF.x, mouseF.y); cp.stroke();
+      }
+    }
+    for (const p of pts) {
+      cp.fillStyle = `rgba(74,144,255,${p.opacity})`;
+      cp.beginPath(); cp.arc(p.x, p.y, p.size, 0, Math.PI*2); cp.fill();
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > sp.w) p.vx *= -1;
+      if (p.y < 0 || p.y > sp.h) p.vy *= -1;
+    }
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+})();
+</script>
+
+</body>
+</html>

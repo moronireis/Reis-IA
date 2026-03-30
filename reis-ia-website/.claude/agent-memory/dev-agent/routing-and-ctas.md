@@ -6,28 +6,36 @@ type: project
 
 ## Page Routes (all confirmed built)
 
-- `/` — Home (index.astro)
-- `/builder` — Builder sales page
-- `/systems` — Systems service page
-- `/agendar` — Booking page (created Phase 3 P0)
-- `/aplicar` — Application form page (created Phase 3 P0)
+- `/` — Home (index.astro) — static
+- `/builder` — Builder sales page — static
+- `/systems` — Systems service page — static
+- `/marketing` — Marketing page — static
+- `/agendar` — Typebot qualification + booking (v4.0, Phase 6) — SSR (`prerender = false`)
+- `/aplicar` — Redirects to `/agendar?source=builders` (302) — SSR (`prerender = false`)
+- `/api/leads` — Lead capture API endpoint — SSR (`prerender = false`)
 
 ## CTA Destination Rules
 
 - "Book a call" / "Agende" / "Diagnóstico de Revenue" → `/agendar`
-- "Apply" / "Candidatar-se" / "Builder program" → `/aplicar`
+- "Apply" / "Candidatar-se" / "Builder program" → `/aplicar` (redirects to `/agendar?source=builders`)
 - "Learn about Builder" → `/builder`
 - "Learn about Systems" → `/systems`
 - Nav CTA "Agende uma Conversa" → `/agendar`
 
-## Forms Infrastructure
+## Lead Capture System (Phase 6)
 
-- Newsletter lead capture forms (Home, Builder, Systems): Formspree POST to `https://formspree.io/f/PLACEHOLDER_FORM_ID`
-  - Each has a hidden `_source` field identifying the page: `newsletter-home`, `newsletter-builder`, `newsletter-systems`
-- Application form (/aplicar): Formspree POST with `_next` redirect to `/aplicar?enviado=true`
-  - Success state shown via JS reading `?enviado=true` URL param
-- Cal.com booking embed on /agendar: commented out placeholder, WhatsApp fallback active
-  - WhatsApp URL uses placeholder number `XXXXXXXXXXX` — must be replaced before launch
+- `/api/leads` POST endpoint writes to `/data/leads.json` (interim lead DB)
+- Lead schema: id, createdAt, name, whatsapp, email, company, segment, role, revenue, employees, booking {date, time}|null, source, status, crmRef
+- `crmRef` format: `REIS-LEAD-{ID}` — reserved for future CRM integration. DB name: `reis-ia-leads`
+- `source` field values: `typebot-agendar` (default) | `typebot-aplicar` (when ?source=builders)
+- LeadTypebot component (`src/components/LeadTypebot.tsx`) — 8-step qualification + BookingCalendar inline
+- BookingCalendar component (`src/components/BookingCalendar.tsx`) — next 14 weekdays, 6 time slots
+
+## SSR / Adapter Setup
+
+- Astro v6 + `@astrojs/node` adapter. `output: 'static'` with per-page `prerender = false` for SSR routes.
+- NO `hybrid` mode (deprecated in Astro v5+). Use `export const prerender = false` per-file.
+- `/data/leads.json` lives at project root `data/` — created at install time, NOT inside `src/`.
 
 ## Dead Anchor Rules
 

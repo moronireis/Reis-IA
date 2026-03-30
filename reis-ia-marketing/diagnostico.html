@@ -539,11 +539,20 @@
               <line x1="14" y1="8" x2="50" y2="8"/><line x1="50" y1="8" x2="14" y2="56"/><line x1="14" y1="8" x2="25" y2="25"/><line x1="39" y1="39" x2="50" y2="56"/><line x1="14" y1="56" x2="50" y2="56"/>
             </svg>
           </div>
-          <h3 style="font-size: 1.125rem; margin-bottom: 8px;">Vamos entrar em contato com você em breve.</h3>
-          <p style="color: var(--text-secondary); font-size: 0.9375rem; max-width: 460px; margin: 0 auto 24px; line-height: 1.7;">
-            Nosso time vai analisar seu diagnóstico individualmente e te chamar para uma conversa personalizada — sem compromisso — para te ajudar a alcançar os resultados que você busca.
-          </p>
-          <button class="btn-next" onclick="confirmAndSendEmail()" id="btn-confirm">Ok, entendido <span class="arrow">&rarr;</span></button>
+          <div id="contact-default">
+            <h3 style="font-size: 1.125rem; margin-bottom: 8px;">Vamos entrar em contato com você em breve.</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9375rem; max-width: 460px; margin: 0 auto 24px; line-height: 1.7;">
+              Nosso time vai analisar seu diagnóstico individualmente e te chamar para uma conversa personalizada — sem compromisso — para te ajudar a alcançar os resultados que você busca.
+            </p>
+            <button class="btn-next" onclick="confirmAndSendEmail()" id="btn-confirm">Ok, entendido <span class="arrow">&rarr;</span></button>
+          </div>
+          <div id="contact-evento" style="display: none;">
+            <h3 style="font-size: 1.125rem; margin-bottom: 8px;">Temos algo especial pra você.</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9375rem; max-width: 460px; margin: 0 auto 16px; line-height: 1.7;">
+              Com base no seu perfil, preparamos uma imersão que vai acelerar seus resultados com IA.
+            </p>
+            <p id="redirect-msg" style="color: var(--accent-blue); font-size: 0.875rem; font-weight: 600;">Redirecionando<span id="redirect-dots">.</span></p>
+          </div>
         </div>
       </div>
 
@@ -696,6 +705,33 @@
       // Render radar chart
       renderRadar(pctSystems, pctBuilders, pctStarter);
 
+      // Show evento redirect for starter/builders, default for systems
+      if (winner === 'starter' || winner === 'builders') {
+        document.getElementById('contact-default').style.display = 'none';
+        document.getElementById('contact-evento').style.display = 'block';
+
+        // Auto-save lead + send evento email
+        confirmAndSendEmail();
+        sendEventoEmail();
+
+        // Animated dots
+        let dots = 1;
+        const dotsInterval = setInterval(() => {
+          dots = (dots % 3) + 1;
+          const el = document.getElementById('redirect-dots');
+          if (el) el.textContent = '.'.repeat(dots);
+        }, 500);
+
+        // Redirect after 4 seconds
+        setTimeout(() => {
+          clearInterval(dotsInterval);
+          window.location.href = 'https://reisia.moronireis.com.br/convite';
+        }, 4000);
+      } else {
+        document.getElementById('contact-default').style.display = 'block';
+        document.getElementById('contact-evento').style.display = 'none';
+      }
+
       // Render dimension cards
       const dimLabels = {
         perfil: { empresa: 'Empresário', agencia: 'Agência/Freelancer', profissional: 'Profissional', iniciante: 'Iniciante' },
@@ -785,10 +821,33 @@
       });
     }
 
+    async function sendEventoEmail() {
+      const nome = document.getElementById('lead-nome').value.trim();
+      const email = document.getElementById('lead-email').value.trim();
+      if (!email) return;
+
+      try {
+        await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            form_type: 'lista-imersao-2603',
+            name: nome,
+            data: {
+              name: nome,
+              email: email,
+              source: 'diagnostico-redirect',
+              perfil: 'starter-or-builder',
+              timestamp: new Date().toISOString()
+            }
+          })
+        });
+      } catch(e) { console.warn('Evento email error:', e); }
+    }
+
     async function confirmAndSendEmail() {
       const btn = document.getElementById('btn-confirm');
-      btn.disabled = true;
-      btn.textContent = 'Enviando...';
+      if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
 
       const nome = document.getElementById('lead-nome').value.trim();
       const email = document.getElementById('lead-email').value.trim();
@@ -807,8 +866,9 @@
         });
       } catch(e) { console.warn(e); }
 
-      // Replace box with confirmation
+      // Replace box with confirmation (only if not redirecting)
       const box = document.getElementById('contact-box');
+      if (document.getElementById('contact-evento')?.style.display === 'block') return;
       box.innerHTML = `
         <div style="margin-bottom: 16px;">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48" style="color: #22C55E;" aria-hidden="true">

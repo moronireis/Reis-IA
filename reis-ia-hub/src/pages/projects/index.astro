@@ -1,0 +1,116 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import UpgradeCTA from '../../components/UpgradeCTA.tsx';
+import { createServerClient } from '../../lib/supabase-server';
+import { hasAccess } from '../../lib/access';
+import type { UserRole } from '../../lib/access';
+
+export const prerender = false;
+
+const supabase = createServerClient();
+const profile = Astro.locals.profile;
+const isAdmin = profile?.role === 'admin';
+const userRole = (profile?.role || 'starter') as UserRole;
+const canAccessProjects = hasAccess(userRole, 'mentoria');
+
+// Only fetch projects if user can access them
+let projects: any[] = [];
+if (canAccessProjects) {
+  const query = supabase.from('projects').select('*').order('created_at', { ascending: false });
+  if (!isAdmin && profile?.id) {
+    query.eq('client_id', profile.id);
+  }
+  const { data } = await query;
+  projects = data || [];
+}
+
+function statusLabel(status: string) {
+  const labels: Record<string, string> = {
+    em_andamento: 'Em andamento',
+    pendente: 'Pendente',
+    concluido: 'Concluído',
+    cancelado: 'Cancelado',
+  };
+  return labels[status] || status;
+}
+
+function statusStyle(status: string) {
+  const styles: Record<string, string> = {
+    em_andamento: 'background: var(--color-success-bg); color: var(--color-success);',
+    pendente: 'background: rgba(245,158,11,0.1); color: #F59E0B;',
+    concluido: 'background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.5);',
+    cancelado: 'background: rgba(239,68,68,0.1); color: #EF4444;',
+  };
+  return styles[status] || 'background: var(--blue-10); color: var(--accent-blue);';
+}
+---
+
+<AppLayout title="Meus Projetos" activeSection="projects">
+  {!canAccessProjects ? (
+    <UpgradeCTA
+      client:load
+      title="Projetos"
+      description="Acompanhe em tempo real o andamento do seu projeto de AI. Timeline, entregaveis e comunicacao direta com o time."
+      features={[
+        'Timeline de fases em tempo real',
+        'Entregaveis por etapa com status claro',
+        'Chat direto com o time de implementacao',
+        'Acoes pendentes e proximos passos',
+      ]}
+      ctaText="Contratar um projeto"
+      ctaHref="/agendar"
+      currentRole={userRole}
+      requiredRole="mentoria"
+    />
+  ) : (
+    <div class="flex flex-col gap-6">
+      {projects && projects.length > 0 ? (
+        projects.map((project: any) => (
+          <a href={`/projects/${project.id}`} class="project-card rounded-xl p-6 transition-all duration-300" style="background: var(--surface-2); border: 1px solid var(--border-subtle); display: block; text-decoration: none;">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="px-2.5 py-1 rounded-md text-xs font-medium" style="background: var(--blue-10); color: var(--accent-blue);">{project.type}</span>
+                  <span class="px-2.5 py-1 rounded-md text-xs font-medium" style={statusStyle(project.status)}>{statusLabel(project.status)}</span>
+                </div>
+                <h3 class="text-lg font-medium" style="color: var(--text-primary);">{project.name}</h3>
+                {project.description && (
+                  <p class="text-sm mt-1" style="color: var(--text-tertiary);">{project.description}</p>
+                )}
+              </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="mb-3">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs" style="color: var(--text-quaternary);">Progresso geral</span>
+                <span class="text-xs font-medium" style="color: var(--accent-blue);">{project.progress || 0}%</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full" style="background: var(--surface-4);">
+                <div class="h-full rounded-full transition-all" style={`width: ${project.progress || 0}%; background: var(--accent-blue);`}></div>
+              </div>
+            </div>
+
+            <!-- Phase summary -->
+            <div class="flex items-center gap-4 text-xs" style="color: var(--text-quaternary);">
+              {project.start_date && <span>Inicio: {new Date(project.start_date).toLocaleDateString('pt-BR')}</span>}
+              {project.start_date && project.estimated_end_date && <span>·</span>}
+              {project.estimated_end_date && <span>Previsao: {new Date(project.estimated_end_date).toLocaleDateString('pt-BR')}</span>}
+            </div>
+          </a>
+        ))
+      ) : (
+        <div class="rounded-xl p-12 text-center" style="background: var(--surface-1); border: 1px solid var(--border-subtle);">
+          <p style="color: var(--text-tertiary); font-size: var(--text-body-sm);">Nenhum projeto ativo no momento.</p>
+        </div>
+      )}
+    </div>
+  )}
+</AppLayout>
+
+<style>
+  .project-card:hover {
+    border-color: var(--border-visible) !important;
+    background: var(--surface-3) !important;
+  }
+</style>

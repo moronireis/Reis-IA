@@ -35,8 +35,8 @@ export const headerDropdowns: NavDropdown[] = [
         links: [
           { label: 'Marca Empresa', href: '/brandbook/company-brand' },
           { label: 'Marca Pessoal', href: '/brandbook/personal-brand' },
-          { label: 'Movimento Time Builders', href: '/brandbook/movement' },
-          { label: 'Produtos Z7 + Systems', href: '/brandbook/products' },
+          { label: 'Movimento Builders', href: '/brandbook/movement' },
+          { label: 'Produtos + Systems', href: '/brandbook/products' },
         ],
       },
     ],
@@ -131,7 +131,7 @@ export const footerColumns: NavGroup[] = [
     links: [
       { label: 'Marca Empresa', href: '/brandbook/company-brand' },
       { label: 'Marca Pessoal', href: '/brandbook/personal-brand' },
-      { label: 'Time Builders', href: '/brandbook/movement' },
+      { label: 'Builders', href: '/brandbook/movement' },
       { label: 'Produtos', href: '/brandbook/products' },
     ],
   },
@@ -161,7 +161,7 @@ export const homeSections: SectionCard[] = [
   {
     number: '01',
     title: 'Diretrizes de Marca',
-    description: 'Filosofia Z7, arquétipos, voz por camada e regras de marca.',
+    description: 'Filosofia da marca, arquétipos, voz por camada e regras de marca.',
     href: '/brandbook/guidelines',
     span: 'md:col-span-6 lg:col-span-4',
     category: 'Brand',
@@ -334,8 +334,8 @@ export const homeSections: SectionCard[] = [
   },
   {
     number: '22',
-    title: 'Time Builders',
-    description: 'Movimento, filosofia Z7, tribo, vilões, manifesto e rituais.',
+    title: 'Builders',
+    description: 'Movimento Builders, tribo, vilões, manifesto e rituais.',
     href: '/brandbook/movement',
     span: 'md:col-span-6 lg:col-span-6',
     category: 'Ecosystem',
@@ -343,8 +343,8 @@ export const homeSections: SectionCard[] = [
   },
   {
     number: '23',
-    title: 'Produtos Z7 + Systems',
-    description: 'Z7 Hours, Days, Months, 7 Stages e produtos Systems.',
+    title: 'Produtos + Systems',
+    description: 'Produtos Systems, pilares do ecossistema e arquitetura de oferta.',
     href: '/brandbook/products',
     span: 'md:col-span-6 lg:col-span-6',
     category: 'Ecosystem',
@@ -467,7 +467,7 @@ export const relatedLinksMap: Record<string, RelatedLink[]> = {
   '/brandbook/strategy': [
     { label: 'Guidelines', href: '/brandbook/guidelines' },
     { label: 'Company Brand', href: '/brandbook/company-brand' },
-    { label: 'Time Builders', href: '/brandbook/movement' },
+    { label: 'Builders', href: '/brandbook/movement' },
     { label: 'Products', href: '/brandbook/products' },
   ],
   '/brandbook/templates': [
@@ -481,13 +481,13 @@ export const relatedLinksMap: Record<string, RelatedLink[]> = {
   ],
   '/brandbook/company-brand': [
     { label: 'Personal Brand', href: '/brandbook/personal-brand' },
-    { label: 'Time Builders', href: '/brandbook/movement' },
+    { label: 'Builders', href: '/brandbook/movement' },
     { label: 'Products', href: '/brandbook/products' },
     { label: 'Guidelines', href: '/brandbook/guidelines' },
   ],
   '/brandbook/personal-brand': [
     { label: 'Company Brand', href: '/brandbook/company-brand' },
-    { label: 'Time Builders', href: '/brandbook/movement' },
+    { label: 'Builders', href: '/brandbook/movement' },
     { label: 'Guidelines', href: '/brandbook/guidelines' },
   ],
   '/brandbook/movement': [
@@ -496,7 +496,7 @@ export const relatedLinksMap: Record<string, RelatedLink[]> = {
     { label: 'Personal Brand', href: '/brandbook/personal-brand' },
   ],
   '/brandbook/products': [
-    { label: 'Time Builders', href: '/brandbook/movement' },
+    { label: 'Builders', href: '/brandbook/movement' },
     { label: 'Company Brand', href: '/brandbook/company-brand' },
     { label: 'Strategy', href: '/brandbook/strategy' },
   ],

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REIS [IA] — Hero Visual Compositions</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050508;--card:#0c0c14;--border:rgba(255,255,255,.06);--blue:#4A90FF;--blue2:#6AADFF;--blue-bg:rgba(74,144,255,.06);--blue-b:rgba(74,144,255,.12);--text:#fff;--text2:rgba(255,255,255,.6);--text3:rgba(255,255,255,.35)}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,8,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;justify-content:center}
+.nav span{font-size:10px;font-weight:600;color:rgba(255,255,255,.25);letter-spacing:.08em;text-transform:uppercase}
+.nav a{display:inline-flex;align-items:center;height:26px;padding:0 12px;font-size:11px;font-weight:500;color:rgba(255,255,255,.5);text-decoration:none;border:1px solid var(--border);border-radius:5px;margin-left:6px;transition:all .15s}
+.nav a:hover{color:var(--text);border-color:var(--blue-b)}
+
+.hero{position:relative;overflow:hidden;min-height:100vh;display:flex;align-items:center;background:var(--bg);padding:80px 24px 60px}
+.hero canvas{position:absolute;inset:0;pointer-events:none}
+.hero-inner{max-width:1280px;margin:0 auto;width:100%;position:relative;z-index:10}
+.tag{position:absolute;top:76px;left:20px;z-index:20;background:rgba(74,144,255,.1);border:1px solid var(--blue-b);color:var(--blue);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:5px 12px;border-radius:5px}
+.sep{height:1px;background:linear-gradient(90deg,transparent,rgba(74,144,255,.12) 50%,transparent)}
+
+/* Text side */
+.hero-text{max-width:520px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--blue);background:var(--blue-bg);border:1px solid var(--blue-b);padding:5px 12px;border-radius:16px;margin-bottom:24px}
+.hero-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--blue);animation:p 2s ease-in-out infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-text h1{font-size:clamp(2.2rem,1.2rem+4vw,3.8rem);font-weight:600;line-height:1.08;letter-spacing:-.03em}
+.hero-text h1 span{color:var(--blue)}
+.hero-text p{margin-top:18px;font-size:16px;line-height:1.6;color:var(--text2);max-width:440px}
+.hero-text .cta{display:inline-flex;align-items:center;gap:8px;margin-top:28px;background:var(--blue);color:#000;font-weight:600;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;transition:all .2s}
+.hero-text .cta:hover{background:var(--blue2);transform:translateY(-1px)}
+
+/* Shared card styles for mockups */
+.mock-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .3s,transform .3s}
+.mock-card:hover{border-color:var(--blue-b);transform:translateY(-4px)}
+.mock-header{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text3)}
+.mock-header .dot{width:6px;height:6px;border-radius:50%}
+.mock-body{padding:16px}
+
+/* Glow effect behind visuals */
+.visual-glow{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(74,144,255,.08) 0%,transparent 65%);filter:blur(60px);pointer-events:none}
+
+@media(max-width:900px){
+  .hero-inner{flex-direction:column!important;text-align:center}
+  .hero-text{max-width:100%}
+  .hero-visual{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span>Hero Compositions&nbsp;&nbsp;</span>
+  <a href="#h1">1: Dashboard</a>
+  <a href="#h2">2: Floating Cards</a>
+  <a href="#h3">3: Agent Chat</a>
+  <a href="#h4">4: Split Screen</a>
+  <a href="#h5">5: Isometric Stack</a>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     H1: DASHBOARD HERO (Vectura/Xtract style)
+     Left text + right: product dashboard mockup
+     ═══════════════════════════════════════ -->
+<div class="hero" id="h1">
+  <div class="tag">1: Dashboard — Mockup de produto como visual principal</div>
+  <canvas id="rain1"></canvas>
+  <div class="hero-inner" style="display:flex;align-items:center;gap:64px">
+    <div class="hero-text">
+      <div class="hero-badge">Ecossistema de IA</div>
+      <h1>Tempo e o ativo mais <span>importante.</span></h1>
+      <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+      <a href="#" class="cta">Conhecer agora →</a>
+    </div>
+    <div class="hero-visual" style="flex:1;position:relative;min-width:0">
+      <div class="visual-glow" style="top:-50px;right:-100px"></div>
+      <!-- Dashboard mockup -->
+      <div class="mock-card" style="position:relative;z-index:2">
+        <div class="mock-header"><div class="dot" style="background:#FF5F57"></div><div class="dot" style="background:#FEBC2E"></div><div class="dot" style="background:#28C840"></div><span style="margin-left:8px">REIS [IA] — Dashboard</span></div>
+        <div class="mock-body" style="padding:20px">
+          <!-- Stats row -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px">
+              <div style="font-size:10px;color:var(--text3)">Horas recuperadas</div>
+              <div style="font-size:24px;font-weight:700;color:var(--blue);margin-top:4px">+127h</div>
+              <div style="font-size:9px;color:#22C55E;margin-top:2px">↑ 23% vs mes anterior</div>
+            </div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px">
+              <div style="font-size:10px;color:var(--text3)">Agentes ativos</div>
+              <div style="font-size:24px;font-weight:700;color:var(--text);margin-top:4px">8</div>
+              <div style="font-size:9px;color:var(--text3);margin-top:2px">4 vendas · 2 suporte · 2 ops</div>
+            </div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px">
+              <div style="font-size:10px;color:var(--text3)">ROI estimado</div>
+              <div style="font-size:24px;font-weight:700;color:#22C55E;margin-top:4px">4.2x</div>
+              <div style="font-size:9px;color:var(--text3);margin-top:2px">Retorno sobre investimento</div>
+            </div>
+          </div>
+          <!-- Mini chart area -->
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <span style="font-size:11px;font-weight:600">Horas recuperadas / semana</span>
+              <span style="font-size:10px;color:var(--blue)">Ultimas 8 semanas</span>
+            </div>
+            <svg width="100%" height="60" viewBox="0 0 400 60" preserveAspectRatio="none">
+              <defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4A90FF" stop-opacity=".2"/><stop offset="100%" stop-color="#4A90FF" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0 50 L57 42 L114 38 L171 30 L228 25 L285 18 L342 12 L400 8 L400 60 L0 60Z" fill="url(#cg1)"/>
+              <polyline points="0,50 57,42 114,38 171,30 228,25 285,18 342,12 400,8" fill="none" stroke="#4A90FF" stroke-width="2"/>
+              <circle cx="400" cy="8" r="3" fill="#4A90FF"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- Floating small card -->
+      <div class="mock-card" style="position:absolute;bottom:-20px;left:-30px;z-index:3;width:200px;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+        <div class="mock-body" style="padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="width:28px;height:28px;border-radius:6px;background:var(--blue-bg);border:1px solid var(--blue-b);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+            <div><div style="font-size:11px;font-weight:600">Lead qualificado</div><div style="font-size:9px;color:var(--text3)">Agora mesmo</div></div>
+          </div>
+          <div style="font-size:10px;color:var(--text2)">Agente de vendas qualificou João Silva — alta probabilidade de fechamento.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- ═══════════════════════════════════════
+     H2: FLOATING CARDS (Fusion AI style)
+     Center text + floating UI cards around it
+     ═══════════════════════════════════════ -->
+<div class="hero" id="h2">
+  <div class="tag">2: Floating Cards — Cards de servico flutuando ao redor do headline</div>
+  <canvas id="rain2"></canvas>
+  <div class="hero-inner" style="text-align:center;position:relative">
+    <div style="position:relative;z-index:5;max-width:700px;margin:0 auto">
+      <div class="hero-badge" style="justify-content:center">Ecossistema de IA</div>
+      <h1 style="font-size:clamp(2.5rem,1.3rem+5vw,4.5rem);font-weight:600;line-height:1.08;letter-spacing:-.03em">Tempo e o ativo mais <span style="color:var(--blue)">importante.</span></h1>
+      <p style="margin:20px auto 0;font-size:16px;line-height:1.6;color:var(--text2);max-width:500px">Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+      <a href="#" class="cta" style="display:inline-flex;margin-top:32px">Conhecer agora →</a>
+    </div>
+
+    <!-- Floating cards around text -->
+    <div style="position:absolute;top:5%;left:2%;z-index:4;animation:float1 8s ease-in-out infinite">
+      <div class="mock-card" style="width:180px;box-shadow:0 16px 50px rgba(0,0,0,.4)">
+        <div class="mock-body" style="padding:14px">
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Agente de Suporte</div>
+          <div style="font-size:20px;font-weight:700;color:var(--blue)">47h/mes</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">tempo recuperado</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:absolute;top:10%;right:3%;z-index:4;animation:float2 9s ease-in-out infinite">
+      <div class="mock-card" style="width:190px;box-shadow:0 16px 50px rgba(0,0,0,.4)">
+        <div class="mock-body" style="padding:14px">
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Agente de Vendas</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+            <div style="flex:1;height:4px;border-radius:2px;background:var(--border)"><div style="width:73%;height:100%;border-radius:2px;background:var(--blue)"></div></div>
+            <span style="font-size:10px;color:var(--blue);font-weight:600">73%</span>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:4px">taxa de qualificacao</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:absolute;bottom:8%;left:8%;z-index:4;animation:float3 7s ease-in-out infinite">
+      <div class="mock-card" style="width:170px;box-shadow:0 16px 50px rgba(0,0,0,.4)">
+        <div class="mock-body" style="padding:14px">
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Automacao Ops</div>
+          <div style="font-size:18px;font-weight:700;color:#22C55E">↓ 68%</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">reducao de custo</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:absolute;bottom:12%;right:5%;z-index:4;animation:float1 10s ease-in-out 1s infinite">
+      <div class="mock-card" style="width:175px;box-shadow:0 16px 50px rgba(0,0,0,.4)">
+        <div class="mock-body" style="padding:14px">
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">ROI Total</div>
+          <div style="font-size:20px;font-weight:700;color:var(--text)">4.2x</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">retorno medio</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sep"></div>
+
+<style>
+@keyframes float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+@keyframes float3{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+</style>
+
+<!-- ═══════════════════════════════════════
+     H3: AGENT CHAT (Phantom/Intercom style)
+     Left text + right: live agent conversation mockup
+     ═══════════════════════════════════════ -->
+<div class="hero" id="h3">
+  <div class="tag">3: Agent Chat — Conversa de agente de IA ao vivo como visual principal</div>
+  <canvas id="rain3"></canvas>
+  <div class="hero-inner" style="display:flex;align-items:center;gap:64px">
+    <div class="hero-text">
+      <div class="hero-badge">Ecossistema de IA</div>
+      <h1>Tempo e o ativo mais <span>importante.</span></h1>
+      <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+      <a href="#" class="cta">Conhecer agora →</a>
+    </div>
+    <div class="hero-visual" style="flex:1;position:relative;min-width:0">
+      <div class="visual-glow" style="top:-30px;right:-80px"></div>
+      <div class="mock-card" style="max-width:380px;margin-left:auto;z-index:2;position:relative">
+        <div class="mock-header">
+          <div style="width:8px;height:8px;border-radius:50%;background:#22C55E"></div>
+          <span>Agente REIS [IA] — Online</span>
+        </div>
+        <div class="mock-body" style="padding:16px;display:flex;flex-direction:column;gap:12px;min-height:300px">
+          <!-- Bot message -->
+          <div style="display:flex;gap:8px;align-items:flex-start">
+            <div style="width:24px;height:24px;border-radius:6px;background:var(--blue-bg);border:1px solid var(--blue-b);flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="3"/></svg></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;border-top-left-radius:2px;padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.5;max-width:280px">
+              Ola! Sou o agente de vendas da REIS [IA]. Vi que voce se interessou pela implementacao de IA. Posso ajudar a entender onde IA gera mais resultado no seu negocio?
+            </div>
+          </div>
+          <!-- User message -->
+          <div style="display:flex;gap:8px;align-items:flex-start;justify-content:flex-end">
+            <div style="background:var(--blue);border-radius:10px;border-top-right-radius:2px;padding:10px 14px;font-size:12px;color:#000;line-height:1.5;max-width:240px;font-weight:500">
+              Minha equipe perde muito tempo com atendimento manual. Isso resolve?
+            </div>
+          </div>
+          <!-- Bot message with data -->
+          <div style="display:flex;gap:8px;align-items:flex-start">
+            <div style="width:24px;height:24px;border-radius:6px;background:var(--blue-bg);border:1px solid var(--blue-b);flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="3"/></svg></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;border-top-left-radius:2px;padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.5;max-width:280px">
+              Sim! Nosso agente de suporte resolve <strong style="color:var(--blue)">70%+ dos tickets</strong> sem contato humano. Em media, recupera <strong style="color:var(--blue)">47 horas/mes</strong> do time de atendimento. Quer agendar um diagnostico gratuito?
+            </div>
+          </div>
+          <!-- Typing indicator -->
+          <div style="display:flex;gap:8px;align-items:center">
+            <div style="width:24px;height:24px;border-radius:6px;background:var(--blue-bg);border:1px solid var(--blue-b);flex-shrink:0"></div>
+            <div style="display:flex;gap:4px;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px">
+              <div style="width:4px;height:4px;border-radius:50%;background:var(--text3);animation:typing .8s ease-in-out infinite"></div>
+              <div style="width:4px;height:4px;border-radius:50%;background:var(--text3);animation:typing .8s ease-in-out .2s infinite"></div>
+              <div style="width:4px;height:4px;border-radius:50%;background:var(--text3);animation:typing .8s ease-in-out .4s infinite"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Notification card floating -->
+      <div class="mock-card" style="position:absolute;top:-10px;left:-20px;z-index:3;width:220px;box-shadow:0 16px 50px rgba(0,0,0,.5);animation:float2 8s ease-in-out infinite">
+        <div class="mock-body" style="padding:12px;display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div><div style="font-size:11px;font-weight:600">Lead qualificado</div><div style="font-size:9px;color:var(--text3)">Score: 92/100</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sep"></div>
+
+<style>@keyframes typing{0%,100%{opacity:.3}50%{opacity:1}}</style>
+
+<!-- ═══════════════════════════════════════
+     H4: SPLIT SCREEN (Stratex/Altero style)
+     Left text + right: metrics + process visualization
+     ═══════════════════════════════════════ -->
+<div class="hero" id="h4">
+  <div class="tag">4: Split Screen — Metricas e processo visual como composicao principal</div>
+  <canvas id="rain4"></canvas>
+  <div class="hero-inner" style="display:flex;align-items:center;gap:64px">
+    <div class="hero-text">
+      <div class="hero-badge">Ecossistema de IA</div>
+      <h1>Tempo e o ativo mais <span>importante.</span></h1>
+      <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+      <a href="#" class="cta">Conhecer agora →</a>
+    </div>
+    <div class="hero-visual" style="flex:1;position:relative;min-width:0">
+      <div class="visual-glow" style="top:-30px;right:-60px"></div>
+      <div style="display:flex;flex-direction:column;gap:12px;position:relative;z-index:2">
+        <!-- Big metric -->
+        <div class="mock-card" style="text-align:center;padding:24px">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Tempo recuperado este mes</div>
+          <div style="font-size:48px;font-weight:700;color:var(--blue);letter-spacing:-.02em;margin-top:4px">+127h</div>
+          <div style="display:flex;justify-content:center;gap:16px;margin-top:12px">
+            <div><div style="font-size:16px;font-weight:700;color:var(--text)">8</div><div style="font-size:9px;color:var(--text3)">Agentes</div></div>
+            <div style="width:1px;background:var(--border)"></div>
+            <div><div style="font-size:16px;font-weight:700;color:#22C55E">4.2x</div><div style="font-size:9px;color:var(--text3)">ROI</div></div>
+            <div style="width:1px;background:var(--border)"></div>
+            <div><div style="font-size:16px;font-weight:700;color:var(--text)">↓68%</div><div style="font-size:9px;color:var(--text3)">Custo</div></div>
+          </div>
+        </div>
+        <!-- Process steps -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="mock-card" style="padding:16px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <div style="width:20px;height:20px;border-radius:5px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue)">1</div>
+              <span style="font-size:11px;font-weight:600">Diagnostico</span>
+            </div>
+            <div style="font-size:10px;color:var(--text3);line-height:1.4">Mapeamos onde IA gera mais resultado</div>
+          </div>
+          <div class="mock-card" style="padding:16px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <div style="width:20px;height:20px;border-radius:5px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue)">2</div>
+              <span style="font-size:11px;font-weight:600">Construcao</span>
+            </div>
+            <div style="font-size:10px;color:var(--text3);line-height:1.4">Agentes treinados pro seu negocio</div>
+          </div>
+          <div class="mock-card" style="padding:16px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <div style="width:20px;height:20px;border-radius:5px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue)">3</div>
+              <span style="font-size:11px;font-weight:600">Lancamento</span>
+            </div>
+            <div style="font-size:10px;color:var(--text3);line-height:1.4">Go-live com monitoramento</div>
+          </div>
+          <div class="mock-card" style="padding:16px;border-color:var(--blue-b)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <div style="width:20px;height:20px;border-radius:5px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000">✓</div>
+              <span style="font-size:11px;font-weight:600;color:var(--blue)">Resultado</span>
+            </div>
+            <div style="font-size:10px;color:var(--text3);line-height:1.4">Horas recuperadas, receita gerada</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sep"></div>
+
+<!-- ═══════════════════════════════════════
+     H5: ISOMETRIC STACK (Multi-layer floating)
+     Center text + stacked cards in perspective
+     ═══════════════════════════════════════ -->
+<div class="hero" id="h5">
+  <div class="tag">5: Isometric Stack — Cards empilhados em perspectiva com profundidade</div>
+  <canvas id="rain5"></canvas>
+  <div class="hero-inner" style="display:flex;align-items:center;gap:48px">
+    <div class="hero-text" style="flex:1">
+      <div class="hero-badge">Ecossistema de IA</div>
+      <h1>Tempo e o ativo mais <span>importante.</span></h1>
+      <p>Implementacao de IA, mentorias, formacoes e comunidade para empresarios que querem resultados em receita e eficiencia.</p>
+      <a href="#" class="cta">Conhecer agora →</a>
+    </div>
+    <div class="hero-visual" style="flex:1;position:relative;min-width:0;perspective:1000px;min-height:420px">
+      <div class="visual-glow" style="top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+      <!-- Card stack with 3D rotation -->
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotateX(8deg) rotateY(-12deg);transform-style:preserve-3d;z-index:2">
+        <!-- Back card -->
+        <div class="mock-card" style="position:absolute;top:-30px;left:20px;width:300px;transform:translateZ(-40px);opacity:.5;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+          <div class="mock-body" style="padding:16px">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Formacoes</div>
+            <div style="font-size:14px;font-weight:600;margin-top:6px">IA aplicada aos negocios</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:4px">Do basico ao especialista</div>
+          </div>
+        </div>
+        <!-- Middle card -->
+        <div class="mock-card" style="position:absolute;top:-10px;left:10px;width:300px;transform:translateZ(-20px);opacity:.7;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+          <div class="mock-body" style="padding:16px">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Builders</div>
+            <div style="font-size:14px;font-weight:600;margin-top:6px">Aprenda a vender IA</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:4px">Mentoria com Moroni Reis</div>
+          </div>
+        </div>
+        <!-- Front card (featured) -->
+        <div class="mock-card" style="width:300px;transform:translateZ(0px);border-color:var(--blue-b);box-shadow:0 24px 70px rgba(0,0,0,.5),0 0 0 1px var(--blue-b)">
+          <div class="mock-body" style="padding:20px">
+            <div style="font-size:10px;color:var(--blue);text-transform:uppercase;letter-spacing:.05em;font-weight:600">Systems</div>
+            <div style="font-size:16px;font-weight:600;margin-top:8px">Implementacao de IA</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:6px;line-height:1.5">Agentes, automacoes e integracoes que geram resultado mensuravel.</div>
+            <div style="display:flex;gap:16px;margin-top:12px">
+              <div><div style="font-size:18px;font-weight:700;color:var(--blue)">+15h</div><div style="font-size:9px;color:var(--text3)">por semana</div></div>
+              <div><div style="font-size:18px;font-weight:700;color:var(--text)">70x</div><div style="font-size:9px;color:var(--text3)">mais rapido</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Data rain with repel for all canvases
+function initRain(canvasId) {
+  const c = document.getElementById(canvasId);
+  if (!c) return;
+  const hero = c.parentElement;
+  const dpr = Math.min(devicePixelRatio, 2);
+  let W = hero.offsetWidth, H = hero.offsetHeight;
+  c.width = W*dpr; c.height = H*dpr;
+  c.style.width = W+'px'; c.style.height = H+'px';
+  const ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const mouse = {x:-9999,y:-9999};
+  hero.addEventListener('mousemove', e => { const r=hero.getBoundingClientRect(); mouse.x=e.clientX-r.left; mouse.y=e.clientY-r.top; });
+  hero.addEventListener('mouseleave', () => { mouse.x=-9999; mouse.y=-9999; });
+
+  const COL=20, REPEL=150, drops=[];
+  for (let i=0; i<Math.ceil(W/COL); i++) {
+    const len=8+Math.floor(Math.random()*15), chars=[];
+    for (let j=0; j<len; j++) chars.push(Math.random()>.5?'1':'0');
+    drops.push({x:i*COL+COL/2, y:-Math.random()*H*2, speed:1+Math.random()*3, chars, length:len, opacity:.03+Math.random()*.08, offX:0});
+  }
+  const SP=48, BR=1.5, dots=[];
+  for (let y=SP/2; y<H; y+=SP) for (let x=SP/2; x<W; x+=SP) dots.push({x,y,offX:0,offY:0});
+
+  ctx.font='10px monospace'; ctx.textAlign='center';
+  (function draw() {
+    ctx.clearRect(0,0,W,H);
+    const hm=mouse.x>-1000;
+    for (const d of drops) {
+      d.y+=d.speed;
+      if(d.y-d.length*14>H){d.y=-d.length*14-Math.random()*200;d.speed=1+Math.random()*3;for(let j=0;j<d.chars.length;j++)d.chars[j]=Math.random()>.5?'1':'0';}
+      let tox=0;
+      if(hm){const dx=d.x-mouse.x;const dist=Math.abs(dx);if(dist<REPEL){const f=1-dist/REPEL;tox=Math.sign(dx)*f*f*80;}}
+      d.offX+=(tox-d.offX)*.08;
+      for(let j=0;j<d.chars.length;j++){
+        const cy=d.y-j*14;if(cy<-20||cy>H+20)continue;
+        const op=d.opacity*(1-j/d.chars.length);const isH=j===0;let a=isH?op*2.5:op,fade=1;
+        if(hm){const dd=Math.hypot(d.x+d.offX-mouse.x,cy-mouse.y);if(dd<REPEL*.6)fade=dd/(REPEL*.6);}
+        ctx.fillStyle=isH?`rgba(140,200,255,${a*fade})`:`rgba(74,144,255,${a*fade})`;
+        ctx.fillText(d.chars[j],d.x+d.offX,cy);
+      }
+    }
+    for(const d of dots){
+      let tox=0,toy=0;
+      if(hm){const dx=d.x-mouse.x,dy=d.y-mouse.y,dist=Math.hypot(dx,dy);if(dist<REPEL&&dist>0){const f=1-dist/REPEL;const e=f*f;tox=(dx/dist)*e*30;toy=(dy/dist)*e*30;}}
+      d.offX+=(tox-d.offX)*.06;d.offY+=(toy-d.offY)*.06;
+      ctx.fillStyle='rgba(74,144,255,.06)';ctx.beginPath();ctx.arc(d.x+d.offX,d.y+d.offY,BR,0,6.28);ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  })();
+}
+
+['rain1','rain2','rain3','rain4','rain5'].forEach(initRain);
+</script>
+</body>
+</html>

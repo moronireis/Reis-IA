@@ -13,14 +13,18 @@ const TYPE_LABELS = {
   'personal-branding': 'Personal Branding',
   'movimento': 'Movimento e Comunidade',
   'empresa': 'Branding Empresarial',
-  'produto': 'Product Branding'
+  'produto': 'Product Branding',
+  'lista-imersao-2603': 'Confirmação Imersão 26/03',
+  'lista-imersao-hunters': 'Confirmação AI Hunters 26/03'
 };
 
 const TYPE_COLORS = {
   'personal-branding': '#C084FC',
   'movimento': '#FB923C',
   'empresa': '#4ADE80',
-  'produto': '#93C5FD'
+  'produto': '#93C5FD',
+  'lista-imersao-2603': '#4A90FF',
+  'lista-imersao-hunters': '#FF4444'
 };
 
 const FIELD_LABELS = {
@@ -71,7 +75,12 @@ const FIELD_LABELS = {
   bonus: 'Bônus', processo_venda: 'Processo de venda',
   posicionamento_visual: 'Posicionamento visual', referencias: 'Referências',
   onboarding: 'Onboarding', certificacao: 'Certificação',
-  email: 'Email'
+  email: 'Email',
+  whatsapp: 'WhatsApp',
+  claude_code: 'Usa Claude Code',
+  revenue_ia: 'Lucra com IA',
+  commitment: 'Comprometimento',
+  source: 'Origem'
 };
 
 function getLabel(key) {
@@ -180,6 +189,31 @@ export default async function handler(req, res) {
 
     if (!supabaseResponse.ok) {
       console.error('Supabase error:', await supabaseResponse.text());
+    }
+
+    // 1b. Notify HUB CRM (webhook)
+    try {
+      await fetch('https://hub-reisia.vercel.app/api/webhook/new-lead', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-webhook-key': 'reisia-hub-webhook-2026'
+        },
+        body: JSON.stringify({
+          name: name || data.nome || '',
+          email: data.email || '',
+          phone: data.telefone || data.whatsapp || data.phone || '',
+          instagram: data.instagram || '',
+          source: form_type || 'Website',
+          form_type: form_type || '',
+          cargo: data.cargo || '',
+          faturamento: data.faturamento || '',
+          objetivo: data.objetivo || '',
+          notes: data.perfil ? `Perfil: ${data.perfil} | Nível IA: ${data.nivel_ia || ''} | Objetivo: ${data.objetivo || ''} | Urgência: ${data.urgencia || ''}` : ''
+        })
+      });
+    } catch (hubError) {
+      console.error('HUB webhook error:', hubError);
     }
 
     // 2. Send email via Resend

@@ -1,0 +1,289 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import { createServerClient } from '../../lib/supabase-server';
+
+export const prerender = false;
+
+const supabase = createServerClient();
+
+// Fetch all mentorships with mentor + mentee
+const { data: mentorships } = await supabase
+  .from('mentorships')
+  .select(`
+    *,
+    mentor:profiles!mentorships_mentor_id_fkey(id, full_name, avatar_url, role),
+    mentee:profiles!mentorships_mentee_id_fkey(id, full_name, avatar_url, role, company)
+  `)
+  .order('created_at', { ascending: false });
+
+// Milestone and task counts per mentorship
+const mentorshipIds = (mentorships || []).map(m => m.id);
+
+let milestoneCounts: Record<string, { total: number; done: number }> = {};
+let taskCounts: Record<string, { total: number; done: number }> = {};
+let sessionCounts: Record<string, { total: number; upcoming: number }> = {};
+
+if (mentorshipIds.length > 0) {
+  const [milestonesRes, tasksRes, sessionsRes] = await Promise.all([
+    supabase.from('mentorship_milestones').select('mentorship_id, status').in('mentorship_id', mentorshipIds),
+    supabase.from('mentorship_tasks').select('mentorship_id, status').in('mentorship_id', mentorshipIds),
+    supabase.from('mentorship_sessions').select('mentorship_id, status').in('mentorship_id', mentorshipIds),
+  ]);
+
+  for (const mid of mentorshipIds) {
+    const ms = (milestonesRes.data || []).filter(m => m.mentorship_id === mid);
+    milestoneCounts[mid] = { total: ms.length, done: ms.filter(m => m.status === 'done').length };
+    const ts = (tasksRes.data || []).filter(t => t.mentorship_id === mid);
+    taskCounts[mid] = { total: ts.length, done: ts.filter(t => t.status === 'done').length };
+    const ss = (sessionsRes.data || []).filter(s => s.mentorship_id === mid);
+    sessionCounts[mid] = { total: ss.length, upcoming: ss.filter(s => s.status === 'scheduled').length };
+  }
+}
+
+// All non-admin profiles for "create mentorship" form
+const { data: allProfiles } = await supabase
+  .from('profiles')
+  .select('id, full_name, role, company')
+  .order('full_name', { ascending: true });
+
+const menteeOptions = (allProfiles || []).filter(p => p.role !== 'admin');
+const mentorOptions = allProfiles || [];
+
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function getInitials(name: string | undefined): string {
+  if (!name) return 'U';
+  const parts = name.trim().split(' ');
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+---
+
+<AppLayout title="Mentorias" activeSection="admin-mentoria">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h2 style="font-size: var(--text-h4); font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">
+        Mentorias
+      </h2>
+      <p style="color: var(--text-tertiary); font-size: var(--text-body-sm);">
+        {(mentorships || []).length} mentoria{(mentorships || []).length !== 1 ? 's' : ''} no total
+      </p>
+    </div>
+    <button
+      id="toggle-form-btn"
+      class="flex items-center gap-2 px-4 py-2 rounded-lg"
+      style="background: var(--blue-10); color: var(--accent-blue); border: 1px solid var(--border-accent); font-size: var(--text-body-sm); font-weight: 500; cursor: pointer;"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </svg>
+      Nova Mentoria
+    </button>
+  </div>
+
+  <!-- Create Mentorship Form (hidden by default) -->
+  <div id="create-form" class="rounded-xl p-6 mb-8" style="background: var(--surface-2); border: 1px solid var(--border-subtle); display: none;">
+    <h3 style="font-size: var(--text-body-sm); font-weight: 600; color: var(--text-primary); margin-bottom: 20px;">Nova Mentoria</h3>
+    <form id="mentoria-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label style="display: block; font-size: var(--text-caption); color: var(--text-tertiary); margin-bottom: 6px;">Mentee</label>
+        <select name="mentee_id" required style="width: 100%; background: var(--surface-3); border: 1px solid var(--border-visible); border-radius: 8px; padding: 8px 12px; font-size: var(--text-body-sm); color: var(--text-primary); outline: none;">
+          <option value="">Selecionar membro...</option>
+          {menteeOptions.map(p => (
+            <option value={p.id}>{p.full_name} {p.company ? `(${p.company})` : ''}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label style="display: block; font-size: var(--text-caption); color: var(--text-tertiary); margin-bottom: 6px;">Mentor</label>
+        <select name="mentor_id" required style="width: 100%; background: var(--surface-3); border: 1px solid var(--border-visible); border-radius: 8px; padding: 8px 12px; font-size: var(--text-body-sm); color: var(--text-primary); outline: none;">
+          <option value="">Selecionar mentor...</option>
+          {mentorOptions.map(p => (
+            <option value={p.id}>{p.full_name}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label style="display: block; font-size: var(--text-caption); color: var(--text-tertiary); margin-bottom: 6px;">Programa</label>
+        <select name="program" style="width: 100%; background: var(--surface-3); border: 1px solid var(--border-visible); border-radius: 8px; padding: 8px 12px; font-size: var(--text-body-sm); color: var(--text-primary); outline: none;">
+          <option value="Builders">Builders</option>
+          <option value="Systems">Systems</option>
+          <option value="VIP">VIP</option>
+        </select>
+      </div>
+      <div>
+        <label style="display: block; font-size: var(--text-caption); color: var(--text-tertiary); margin-bottom: 6px;">Data de Inicio</label>
+        <input type="date" name="start_date" style="width: 100%; background: var(--surface-3); border: 1px solid var(--border-visible); border-radius: 8px; padding: 8px 12px; font-size: var(--text-body-sm); color: var(--text-primary); outline: none;" />
+      </div>
+      <div class="md:col-span-2">
+        <label style="display: block; font-size: var(--text-caption); color: var(--text-tertiary); margin-bottom: 6px;">Objetivo</label>
+        <textarea name="goals" rows="2" placeholder="Ex: Fechar 3 contratos de AI em 90 dias..." style="width: 100%; background: var(--surface-3); border: 1px solid var(--border-visible); border-radius: 8px; padding: 8px 12px; font-size: var(--text-body-sm); color: var(--text-primary); outline: none; resize: vertical;"></textarea>
+      </div>
+      <div class="md:col-span-2 flex items-center gap-3">
+        <button type="submit" id="submit-btn" style="padding: '8px 20px'; background: var(--accent-blue); color: #000; border: none; border-radius: 8px; font-size: var(--text-body-sm); font-weight: 600; cursor: pointer;">
+          Criar Mentoria
+        </button>
+        <button type="button" id="cancel-form-btn" style="padding: '8px 16px'; background: transparent; color: var(--text-tertiary); border: 1px solid var(--border-subtle); border-radius: 8px; font-size: var(--text-body-sm); cursor: pointer;">
+          Cancelar
+        </button>
+        <span id="form-error" style="font-size: var(--text-caption); color: var(--color-error); display: none;"></span>
+      </div>
+    </form>
+  </div>
+
+  <!-- Mentorships List -->
+  {!mentorships || mentorships.length === 0 ? (
+    <div class="rounded-xl p-10 text-center" style="background: var(--surface-1); border: 1px solid var(--border-subtle);">
+      <p style="color: var(--text-tertiary); font-size: var(--text-body-sm);">Nenhuma mentoria criada ainda.</p>
+    </div>
+  ) : (
+    <div class="flex flex-col gap-4">
+      {mentorships.map(m => {
+        const mc = milestoneCounts[m.id] || { total: 0, done: 0 };
+        const tc = taskCounts[m.id] || { total: 0, done: 0 };
+        const sc = sessionCounts[m.id] || { total: 0, upcoming: 0 };
+        const progress = mc.total > 0 ? Math.round((mc.done / mc.total) * 100) : 0;
+        const menteeInitials = getInitials(m.mentee?.full_name);
+        const mentorInitials = getInitials(m.mentor?.full_name);
+
+        return (
+          <a
+            href={`/mentoria?id=${m.id}`}
+            class="rounded-xl p-5 block mentoria-card"
+            style="background: var(--surface-2); border: 1px solid var(--border-subtle); text-decoration: none;"
+          >
+            <div class="flex items-start gap-4">
+              <!-- Mentee Avatar -->
+              <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--surface-4); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; flex-shrink: 0;">
+                {menteeInitials}
+              </div>
+              <!-- Main info -->
+              <div style="flex: 1; min-width: 0;">
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                  <span style="font-size: var(--text-body-sm); font-weight: 600; color: var(--text-primary);">
+                    {m.mentee?.full_name || '—'}
+                  </span>
+                  {m.mentee?.company && (
+                    <span style="font-size: 11px; color: var(--text-quaternary);">{m.mentee.company}</span>
+                  )}
+                  <span style={`font-size: 11px; padding: 1px 6px; border-radius: 4px; background: ${m.status === 'active' ? 'rgba(34,197,94,0.10)' : 'var(--surface-4)'}; color: ${m.status === 'active' ? '#22C55E' : 'var(--text-quaternary)'};`}>
+                    {m.status === 'active' ? 'Ativa' : m.status}
+                  </span>
+                  <span style="font-size: 11px; padding: 1px 6px; border-radius: 4px; background: var(--blue-10); color: var(--accent-blue);">
+                    {m.program}
+                  </span>
+                </div>
+                <div style="font-size: var(--text-caption); color: var(--text-tertiary); margin-bottom: 10px;">
+                  Mentor: {m.mentor?.full_name || '—'} · Inicio: {m.start_date ? formatDate(m.start_date) : '—'}
+                </div>
+                <!-- Progress bar -->
+                {mc.total > 0 && (
+                  <div class="mb-3">
+                    <div class="flex items-center justify-between mb-1">
+                      <span style="font-size: 11px; color: var(--text-quaternary);">Marcos: {mc.done}/{mc.total}</span>
+                      <span style="font-size: 11px; font-weight: 600; color: var(--text-tertiary);">{progress}%</span>
+                    </div>
+                    <div class="w-full rounded-full" style="height: 3px; background: var(--surface-4);">
+                      <div class="rounded-full" style={`width: ${progress}%; height: 100%; background: var(--accent-blue);`}></div>
+                    </div>
+                  </div>
+                )}
+                <!-- Stats row -->
+                <div class="flex items-center gap-4">
+                  <span style="font-size: 11px; color: var(--text-quaternary);">
+                    {tc.done}/{tc.total} tasks
+                  </span>
+                  <span style="font-size: 11px; color: var(--text-quaternary);">
+                    {sc.total} sessoes
+                    {sc.upcoming > 0 && (
+                      <span style="color: var(--accent-blue); margin-left: 4px;">({sc.upcoming} agendada{sc.upcoming > 1 ? 's' : ''})</span>
+                    )}
+                  </span>
+                </div>
+              </div>
+              <!-- Arrow -->
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-quaternary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 4px;">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  )}
+</AppLayout>
+
+<style>
+  .mentoria-card:hover {
+    border-color: var(--border-visible) !important;
+    background: var(--surface-3) !important;
+  }
+  select option {
+    background: #111111;
+    color: #ffffff;
+  }
+</style>
+
+<script>
+  const toggleBtn = document.getElementById('toggle-form-btn');
+  const createForm = document.getElementById('create-form');
+  const cancelBtn = document.getElementById('cancel-form-btn');
+  const form = document.getElementById('mentoria-form') as HTMLFormElement | null;
+  const formError = document.getElementById('form-error');
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+
+  toggleBtn?.addEventListener('click', () => {
+    if (createForm) {
+      createForm.style.display = createForm.style.display === 'none' ? 'block' : 'none';
+    }
+  });
+
+  cancelBtn?.addEventListener('click', () => {
+    if (createForm) createForm.style.display = 'none';
+    form?.reset();
+  });
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form || !submitBtn) return;
+
+    const formData = new FormData(form);
+    const payload = {
+      mentee_id: formData.get('mentee_id') as string,
+      mentor_id: formData.get('mentor_id') as string,
+      program: formData.get('program') as string,
+      start_date: formData.get('start_date') as string || undefined,
+      goals: formData.get('goals') as string || undefined,
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Criando...';
+    if (formError) formError.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/mentoria/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Erro ao criar mentoria');
+      }
+
+      window.location.reload();
+    } catch (err: any) {
+      if (formError) {
+        formError.textContent = err.message;
+        formError.style.display = 'inline';
+      }
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Criar Mentoria';
+    }
+  });
+</script>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Confirme sua presença — Imersão exclusiva AI Founders." />
+  <title>Confirmar Presença — AI Founders | Reis IA</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='3' fill='%234A90FF'/%3E%3Cg fill='none' stroke='%23000000' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='14' y1='8' x2='50' y2='8'/%3E%3Cline x1='50' y1='8' x2='14' y2='56'/%3E%3Cline x1='14' y1='8' x2='25' y2='25'/%3E%3Cline x1='39' y1='39' x2='50' y2='56'/%3E%3Cline x1='14' y1='56' x2='50' y2='56'/%3E%3C/g%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent-blue: #4A90FF; --accent-blue-hover: #6AADFF;
+      --surface-0: #000000; --surface-1: #0A0A0A; --surface-2: #111111; --surface-3: #161616;
+      --text-primary: #FFFFFF; --text-secondary: rgba(255,255,255,0.70); --text-tertiary: rgba(255,255,255,0.50); --text-quaternary: rgba(255,255,255,0.35);
+      --border-default: rgba(255,255,255,0.08); --border-visible: rgba(255,255,255,0.12); --border-accent: rgba(74,144,255,0.30);
+      --radius: 8px; --radius-lg: 10px; --radius-xl: 12px; --radius-full: 9999px;
+      --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px;
+      --text-body: 1rem; --text-body-sm: 0.875rem; --text-label: 0.75rem; --text-h2: clamp(1.875rem, 1.25rem + 2.25vw, 3rem); --text-h4: clamp(1.375rem, 1.125rem + 0.75vw, 1.75rem);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: 'Inter', system-ui, sans-serif; background: var(--surface-0); color: var(--text-primary); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; }
+    body::after { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"); z-index: 9999; }
+    .aurora { position: fixed; inset: 0; background: radial-gradient(ellipse 60% 50% at 30% 40%, rgba(74,144,255,0.06) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 70% 60%, rgba(74,144,255,0.04) 0%, transparent 60%); pointer-events: none; }
+    p { font-size: var(--text-body); line-height: 1.65; color: var(--text-secondary); }
+
+    .form-container {
+      max-width: 520px; width: 100%; position: relative; z-index: 1;
+    }
+
+    /* Steps */
+    .step { display: none; animation: fadeIn 0.4s var(--ease-out); }
+    .step.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Progress bar */
+    .progress-bar { height: 3px; background: var(--surface-3); border-radius: 2px; margin-bottom: var(--space-2xl); overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--accent-blue); border-radius: 2px; transition: width 0.5s var(--ease-out); }
+
+    /* Header */
+    .form-header { text-align: center; margin-bottom: var(--space-2xl); }
+    .form-header h1 { font-size: var(--text-h2); font-weight: 700; letter-spacing: -0.02em; margin-bottom: var(--space-sm); }
+    .form-header p { font-size: var(--text-body-sm); color: var(--text-tertiary); }
+
+    /* Step header */
+    .step-number { font-size: var(--text-label); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-blue); margin-bottom: var(--space-sm); }
+    .step-title { font-size: var(--text-h4); font-weight: 600; margin-bottom: var(--space-xs); }
+    .step-subtitle { font-size: var(--text-body-sm); color: var(--text-tertiary); margin-bottom: var(--space-xl); }
+
+    /* Inputs */
+    .form-group { margin-bottom: var(--space-lg); }
+    .form-group label { display: block; font-size: var(--text-body-sm); color: var(--text-secondary); font-weight: 500; margin-bottom: 6px; }
+    .form-group input {
+      width: 100%; padding: 14px 16px; background: var(--surface-2); border: 1px solid var(--border-visible); border-radius: var(--radius);
+      color: var(--text-primary); font-family: inherit; font-size: var(--text-body); transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(74,144,255,0.15); }
+    .form-group input::placeholder { color: var(--text-quaternary); }
+
+    /* Option buttons (radio-style) */
+    .option-group { display: flex; flex-direction: column; gap: var(--space-sm); margin-bottom: var(--space-xl); }
+    .option-btn {
+      padding: 14px 18px; background: var(--surface-2); border: 1px solid var(--border-visible); border-radius: var(--radius-lg);
+      color: var(--text-secondary); font-size: var(--text-body-sm); font-family: inherit; cursor: pointer; text-align: left;
+      transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.1s;
+    }
+    .option-btn:hover { border-color: var(--border-accent); background: var(--surface-3); }
+    .option-btn.selected { border-color: var(--accent-blue); background: rgba(74,144,255,0.08); color: var(--text-primary); }
+    .option-btn:active { transform: scale(0.99); }
+
+    /* Buttons */
+    .btn-next {
+      width: 100%; padding: 16px; background: var(--accent-blue); color: #fff; font-weight: 700; font-size: var(--text-body);
+      border: none; border-radius: var(--radius-full); cursor: pointer; font-family: inherit;
+      transition: background 0.2s, transform 50ms, box-shadow 0.3s; box-shadow: 0 0 20px rgba(74,144,255,0.2);
+    }
+    .btn-next:hover { background: var(--accent-blue-hover); box-shadow: 0 0 40px rgba(74,144,255,0.3); }
+    .btn-next:active { transform: scale(0.98); }
+    .btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Commitment slider */
+    .slider-container { margin-bottom: var(--space-xl); }
+    .slider-label { display: flex; justify-content: space-between; font-size: var(--text-label); color: var(--text-quaternary); margin-bottom: var(--space-sm); }
+    .slider-value { text-align: center; font-size: var(--text-h4); font-weight: 700; color: var(--accent-blue); margin-bottom: var(--space-md); }
+    input[type="range"] {
+      width: 100%; -webkit-appearance: none; height: 6px; background: var(--surface-3); border-radius: 3px; outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
+      background: var(--accent-blue); cursor: pointer; box-shadow: 0 0 10px rgba(74,144,255,0.4);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 24px; height: 24px; border-radius: 50%; border: none;
+      background: var(--accent-blue); cursor: pointer;
+    }
+
+    /* Success */
+    .success-icon { margin: 0 auto var(--space-xl); width: 80px; height: 80px; }
+    .success-text { text-align: center; }
+    .success-text h2 { font-size: var(--text-h2); margin-bottom: var(--space-md); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      body { padding: 16px; align-items: flex-start; padding-top: 40px; }
+      .form-header h1 { font-size: 1.5rem; }
+      .step-title { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="aurora"></div>
+
+  <div class="form-container">
+    <!-- Header -->
+    <div class="form-header">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#4A90FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" width="32" height="32" style="margin-bottom: 16px;">
+        <line x1="14" y1="8" x2="50" y2="8"/><line x1="50" y1="8" x2="14" y2="56"/><line x1="14" y1="8" x2="25" y2="25"/><line x1="39" y1="39" x2="50" y2="56"/><line x1="14" y1="56" x2="50" y2="56"/>
+      </svg>
+      <h1>Confirme sua <span style="color: var(--accent-blue);">presença</span></h1>
+      <p>Preencha pra garantir seu lugar. Leva 30 segundos.</p>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-bar"><div class="progress-fill" id="progress" style="width: 0%;"></div></div>
+
+    <!-- Step 1: Dados -->
+    <div class="step active" id="step-1">
+      <div class="step-number">Passo 1 de 4</div>
+      <div class="step-title">Seus dados</div>
+      <div class="step-subtitle">Pra saber quem vai estar presente.</div>
+
+      <div class="form-group">
+        <label for="name">Nome completo</label>
+        <input type="text" id="name" placeholder="Como você quer ser chamado" required autocomplete="name" />
+      </div>
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" placeholder="seu@email.com" required autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="whatsapp">WhatsApp</label>
+        <input type="tel" id="whatsapp" placeholder="(00) 00000-0000" required autocomplete="tel" />
+      </div>
+
+      <button class="btn-next" id="btn-1" onclick="nextStep(2)" disabled>Continuar</button>
+    </div>
+
+    <!-- Step 2: Claude Code -->
+    <div class="step" id="step-2">
+      <div class="step-number">Passo 2 de 4</div>
+      <div class="step-title">Você já usa Claude Code?</div>
+      <div class="step-subtitle">Isso nos ajuda a calibrar o conteúdo da imersão.</div>
+
+      <div class="option-group" id="claude-options">
+        <button class="option-btn" onclick="selectOption(this, 'claude', 'Não vivo sem')">Não vivo sem</button>
+        <button class="option-btn" onclick="selectOption(this, 'claude', 'Estou começando')">Estou começando</button>
+        <button class="option-btn" onclick="selectOption(this, 'claude', 'Ainda não uso')">Ainda não uso</button>
+      </div>
+
+      <button class="btn-next" id="btn-2" onclick="nextStep(3)" disabled>Continuar</button>
+    </div>
+
+    <!-- Step 3: Lucro com IA -->
+    <div class="step" id="step-3">
+      <div class="step-number">Passo 3 de 4</div>
+      <div class="step-title">Já lucrou ou lucra com IA?</div>
+      <div class="step-subtitle">Sem julgamento. Só pra entender onde você está.</div>
+
+      <div class="option-group" id="revenue-options">
+        <button class="option-btn" onclick="selectOption(this, 'revenue', 'Sim, já fecho contratos')">Sim, já fecho contratos</button>
+        <button class="option-btn" onclick="selectOption(this, 'revenue', 'Já fiz algumas vendas')">Já fiz algumas vendas</button>
+        <button class="option-btn" onclick="selectOption(this, 'revenue', 'Ainda não, mas quero começar')">Ainda não, mas quero começar</button>
+      </div>
+
+      <button class="btn-next" id="btn-3" onclick="nextStep(4)" disabled>Continuar</button>
+    </div>
+
+    <!-- Step 4: Comprometimento -->
+    <div class="step" id="step-4">
+      <div class="step-number">Passo 4 de 4</div>
+      <div class="step-title">Seu nível de comprometimento</div>
+      <div class="step-subtitle">Essa imersão não será gravada. Quem confirma, comparece.</div>
+
+      <div class="slider-container">
+        <div class="slider-value" id="commitment-value">5</div>
+        <input type="range" min="1" max="10" value="5" id="commitment" oninput="updateCommitment(this.value)" />
+        <div class="slider-label">
+          <span>Vou tentar</span>
+          <span>Nada me impede</span>
+        </div>
+      </div>
+
+      <p id="commitment-msg" style="text-align: center; font-size: var(--text-body-sm); color: var(--text-tertiary); margin-bottom: var(--space-xl); min-height: 40px;">
+        Arraste pra mostrar o quanto você está comprometido.
+      </p>
+
+      <button class="btn-next" id="btn-submit" onclick="submitForm()">Confirmar minha presença</button>
+    </div>
+
+    <!-- Success -->
+    <div class="step" id="step-success">
+      <div class="success-icon">
+        <svg viewBox="0 0 80 80" fill="none" style="width: 100%; height: 100%;">
+          <circle cx="40" cy="40" r="36" fill="rgba(74,144,255,0.1)" stroke="#4A90FF" stroke-width="2"/>
+          <path d="M24 40l10 10 22-22" stroke="#4A90FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <animate attributeName="stroke-dasharray" from="0 60" to="60 0" dur="0.5s" fill="freeze"/>
+          </path>
+          <circle cx="40" cy="40" r="36" fill="none" stroke="#4A90FF" stroke-width="1" opacity="0">
+            <animate attributeName="r" values="36;56" dur="1.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.4;0" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+      <div class="success-text">
+        <h2>Presença <span style="color: var(--accent-blue);">confirmada.</span></h2>
+        <p style="margin-bottom: var(--space-md);">Seu lugar está garantido. 26 de Março, 19h.</p>
+        <p style="font-size: var(--text-body-sm); color: var(--accent-blue); font-weight: 600; margin-bottom: var(--space-md);">Entrando no grupo<span id="group-dots">.</span></p>
+        <p style="font-size: var(--text-body-sm); color: var(--text-quaternary);">Você será redirecionado para o grupo do WhatsApp.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const formData = { name: '', email: '', whatsapp: '', claude: '', revenue: '', commitment: 5 };
+
+    // Input validation for step 1
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const whatsappInput = document.getElementById('whatsapp');
+    const btn1 = document.getElementById('btn-1');
+
+    function validateStep1() {
+      btn1.disabled = !(nameInput.value.trim() && emailInput.value.includes('@') && whatsappInput.value.replace(/\D/g, '').length >= 10);
+    }
+    [nameInput, emailInput, whatsappInput].forEach(el => el.addEventListener('input', validateStep1));
+
+    // WhatsApp mask
+    whatsappInput.addEventListener('input', function() {
+      let v = this.value.replace(/\D/g, '');
+      if (v.length > 11) v = v.slice(0, 11);
+      if (v.length > 7) v = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
+      else if (v.length > 2) v = '(' + v.slice(0,2) + ') ' + v.slice(2);
+      else if (v.length > 0) v = '(' + v;
+      this.value = v;
+    });
+
+    // Option selection
+    function selectOption(el, field, value) {
+      el.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      el.classList.add('selected');
+      formData[field] = value;
+      document.getElementById('btn-' + (field === 'claude' ? '2' : '3')).disabled = false;
+    }
+
+    // Commitment slider
+    const commitmentMsgs = {
+      1: 'Olha, talvez não seja pra você dessa vez.',
+      2: 'Hmm, pode ser que algo te impeça...',
+      3: 'Você quer, mas ainda não decidiu.',
+      4: 'Quase lá. Falta um empurrão.',
+      5: 'No meio do caminho. Decide logo.',
+      6: 'Bom. Você quer estar presente.',
+      7: 'Firme. Já bloqueou a agenda?',
+      8: 'Comprometido. Esse é o espírito.',
+      9: 'Quase absoluto. Nada te para.',
+      10: 'Nada me impede. Estarei lá.'
+    };
+    function updateCommitment(val) {
+      formData.commitment = parseInt(val);
+      document.getElementById('commitment-value').textContent = val;
+      document.getElementById('commitment-msg').textContent = commitmentMsgs[val];
+      document.getElementById('commitment-value').style.color = val >= 7 ? '#4A90FF' : val >= 4 ? 'rgba(255,255,255,0.5)' : 'rgba(255,80,80,0.7)';
+    }
+
+    // Navigation
+    function nextStep(step) {
+      if (step === 2) {
+        formData.name = nameInput.value.trim();
+        formData.email = emailInput.value.trim();
+        formData.whatsapp = whatsappInput.value.trim();
+      }
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step-' + step).classList.add('active');
+      document.getElementById('progress').style.width = ((step - 1) / 4 * 100) + '%';
+    }
+
+    // Submit
+    function submitForm() {
+      const btn = document.getElementById('btn-submit');
+      btn.textContent = 'Confirmando...';
+      btn.disabled = true;
+
+      const data = {
+        name: formData.name,
+        email: formData.email,
+        whatsapp: formData.whatsapp,
+        claude_code: formData.claude,
+        revenue_ia: formData.revenue,
+        commitment: formData.commitment,
+        source: 'convite-ai-founders',
+        timestamp: new Date().toISOString()
+      };
+
+      // Save to Supabase + send email
+      fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          form_type: 'lista-imersao-2603',
+          name: data.name,
+          data: data
+        })
+      }).catch(err => console.error('Submit error:', err));
+
+      setTimeout(() => {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step-success').classList.add('active');
+        document.getElementById('progress').style.width = '100%';
+
+        // Animated dots + redirect to WhatsApp group
+        let dots = 1;
+        const dotsInt = setInterval(() => {
+          dots = (dots % 3) + 1;
+          const el = document.getElementById('group-dots');
+          if (el) el.textContent = '.'.repeat(dots);
+        }, 500);
+        setTimeout(() => {
+          clearInterval(dotsInt);
+          window.location.href = 'https://chat.whatsapp.com/HiqWoC9fHN1GaT5yBIqUJz?mode=gi_t';
+        }, 3000);
+      }, 800);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Máquina de Vendas — Imersão | Reis IA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+  <style>
+    /* ================================================================
+       REIS IA — PRESENTATION SYSTEM
+       ================================================================ */
+    :root {
+      --accent: #4A90FF;
+      --accent-hover: #6AADFF;
+      --accent-muted: #3570CC;
+      --accent-bright: #8DC4FF;
+      --accent-rgb: 74, 144, 255;
+
+      --surface-0: #000000;
+      --surface-1: #0A0A0A;
+      --surface-2: #111113;
+      --surface-3: #1A1A1A;
+      --surface-4: #242427;
+
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(255,255,255,0.70);
+      --text-tertiary: rgba(255,255,255,0.50);
+      --text-quaternary: rgba(255,255,255,0.35);
+
+      --border-subtle: rgba(255,255,255,0.06);
+      --border-default: rgba(255,255,255,0.10);
+      --border-accent: rgba(74,144,255,0.30);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      background: var(--surface-0);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--surface-0);
+    }
+
+    ::selection {
+      background: rgba(74,144,255,0.30);
+      color: white;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      z-index: 99999;
+    }
+
+    /* ---- PROGRESS BAR ---- */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent);
+      z-index: 10000;
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 12px rgba(74,144,255,0.4);
+    }
+
+    /* ---- SLIDE COUNTER ---- */
+    .slide-counter {
+      position: fixed;
+      bottom: 32px;
+      right: 40px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-quaternary);
+      z-index: 10000;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+    }
+
+    /* ---- BRAND WATERMARK ---- */
+    .brand-watermark {
+      position: fixed;
+      bottom: 32px;
+      left: 40px;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-quaternary);
+      z-index: 10000;
+      letter-spacing: -0.01em;
+    }
+    .brand-watermark .ia { color: rgba(74,144,255,0.5); }
+
+    /* ---- KEYBOARD HINT ---- */
+    .keyboard-hint {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: var(--text-quaternary);
+      z-index: 10000;
+      opacity: 1;
+      transition: opacity 1s;
+    }
+    .keyboard-hint.hidden { opacity: 0; }
+
+    /* ---- SLIDES CONTAINER ---- */
+    .slides-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+    }
+
+    /* ---- SLIDE ---- */
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 60px;
+      opacity: 0;
+      transform: translateX(60px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .slide.exit-left {
+      opacity: 0;
+      transform: translateX(-60px);
+    }
+
+    .slide-inner {
+      max-width: 1100px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ---- BACKGROUNDS ---- */
+    .bg-aurora {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-aurora::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 40%, rgba(74,144,255,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 20%, rgba(141,196,255,0.04) 0%, transparent 60%);
+      animation: aurora 20s ease-in-out infinite alternate;
+    }
+    @keyframes aurora {
+      0% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(-3%,2%) scale(1.03); }
+      100% { transform: translate(2%,-1%) scale(0.98); }
+    }
+
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .bg-dots {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .bg-gradient-subtle {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(74,144,255,0.04) 0%, transparent 70%);
+    }
+
+    .bg-corner-accent {
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(74,144,255,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Geometric line decorations */
+    .geo-line {
+      position: absolute;
+      background: var(--border-subtle);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .geo-line-h { height: 1px; width: 200px; }
+    .geo-line-v { width: 1px; height: 200px; }
+
+    /* ---- TYPOGRAPHY ---- */
+    .slide-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+
+    .slide-title {
+      font-size: clamp(2.5rem, 4vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+
+    .slide-title-sm {
+      font-size: clamp(2rem, 3vw, 3rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      margin-bottom: 20px;
+    }
+
+    .slide-title-lg {
+      font-size: clamp(3rem, 5.5vw, 6rem);
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: -0.035em;
+      margin-bottom: 32px;
+    }
+
+    .slide-subtitle {
+      font-size: clamp(1.125rem, 1.5vw, 1.5rem);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 700px;
+    }
+
+    .accent { color: var(--accent); }
+    .muted { color: var(--text-tertiary); }
+    .dim { color: var(--text-quaternary); }
+
+    .text-center { text-align: center; }
+    .text-center .slide-subtitle { margin: 0 auto; }
+    .text-center .slide-inner { display: flex; flex-direction: column; align-items: center; }
+
+    /* ---- STAT / METRIC ---- */
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-number {
+      font-size: clamp(3rem, 5vw, 5rem);
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 15px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 64px;
+      margin-top: 48px;
+    }
+
+    /* ---- CARDS / BOXES ---- */
+    .card {
+      background: var(--surface-2);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .card-accent {
+      background: rgba(74,144,255,0.04);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ---- GRID LAYOUTS ---- */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+
+    .grid-2-3 {
+      display: grid;
+      grid-template-columns: 2fr 3fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .grid-3-2 {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    /* ---- LISTS ---- */
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .feature-list .icon {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+    }
+
+    /* ---- PIPELINE / FLOW ---- */
+    .pipeline {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .pipeline-node {
+      background: var(--surface-3);
+      border: 1px solid var(--border-default);
+      border-radius: 10px;
+      padding: 16px 20px;
+      text-align: center;
+      min-width: 130px;
+    }
+
+    .pipeline-node-accent {
+      background: rgba(74,144,255,0.08);
+      border: 1px solid var(--border-accent);
+      border-radius: 10px;
+      padding: 16px 20px;
+      text-align: center;
+      min-width: 130px;
+    }
+
+    .pipeline-node .node-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .pipeline-node-accent .node-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .pipeline-node .node-desc,
+    .pipeline-node-accent .node-desc {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    .pipeline-arrow {
+      color: var(--text-quaternary);
+      font-size: 18px;
+      padding: 0 8px;
+      flex-shrink: 0;
+    }
+
+    /* ---- AGENT GRID ---- */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .agent-cell {
+      background: var(--surface-2);
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      padding: 14px 12px;
+      text-align: center;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .agent-cell:hover {
+      border-color: var(--border-accent);
+      background: rgba(74,144,255,0.04);
+    }
+
+    .agent-cell .agent-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 8px;
+    }
+
+    .agent-cell .agent-role {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      margin-top: 3px;
+    }
+
+    .agent-cell .agent-icon {
+      width: 28px;
+      height: 28px;
+      margin: 0 auto;
+    }
+
+    .agent-group-label {
+      grid-column: 1 / -1;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      padding: 8px 0 0;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    /* ---- COMPARISON ---- */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .comparison-col {
+      padding: 32px;
+      border-radius: 12px;
+    }
+
+    .comparison-before {
+      background: var(--surface-2);
+      border: 1px solid rgba(255,100,100,0.15);
+    }
+
+    .comparison-after {
+      background: rgba(74,144,255,0.04);
+      border: 1px solid var(--border-accent);
+    }
+
+    .comparison-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+
+    .comparison-before .comparison-label { color: rgba(255,120,120,0.7); }
+    .comparison-after .comparison-label { color: var(--accent); }
+
+    .comparison-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .comparison-items li {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .comparison-before .comparison-items li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 7px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,100,100,0.3);
+    }
+
+    .comparison-after .comparison-items li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 7px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(74,144,255,0.5);
+    }
+
+    /* ---- TRANSITION SLIDES ---- */
+    .slide-transition {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .slide-transition .block-number {
+      font-size: 80px;
+      font-weight: 800;
+      color: rgba(74,144,255,0.12);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    /* ---- DIAGRAM BOX ---- */
+    .diagram-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      padding: 40px;
+      position: relative;
+    }
+
+    /* ---- QUOTE ---- */
+    .quote {
+      font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+      font-weight: 500;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      font-style: italic;
+      max-width: 800px;
+    }
+    .quote::before {
+      content: '\201C';
+      color: var(--accent);
+      font-size: 1.5em;
+      margin-right: 4px;
+    }
+
+    /* ---- BADGE ---- */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(74,144,255,0.10);
+      border: 1px solid rgba(74,144,255,0.20);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 20px;
+    }
+
+    /* ---- TOOL TAGS ---- */
+    .tool-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .tool-tag {
+      padding: 10px 20px;
+      background: var(--surface-3);
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .tool-tag-accent {
+      padding: 10px 20px;
+      background: rgba(74,144,255,0.06);
+      border: 1px solid var(--border-accent);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--accent-bright);
+    }
+
+    /* ---- ROADMAP ---- */
+    .roadmap {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+    .roadmap::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--accent), var(--border-subtle));
+    }
+    .roadmap-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 20px 0;
+      position: relative;
+    }
+    .roadmap-dot {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--surface-0);
+      margin-top: 5px;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 12px rgba(74,144,255,0.3);
+    }
+    .roadmap-dot-dim {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--surface-4);
+      border: 2px solid var(--border-default);
+      margin-top: 5px;
+      position: relative;
+      z-index: 1;
+    }
+    .roadmap-content h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .roadmap-content p {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      line-height: 1.4;
+    }
+
+    /* ---- DIVIDER ---- */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border-default) 20%, var(--border-default) 80%, transparent);
+      margin: 32px 0;
+    }
+
+    .divider-accent {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(74,144,255,0.25) 20%, rgba(74,144,255,0.25) 80%, transparent);
+      margin: 32px 0;
+    }
+
+    /* ---- ANIMATION CLASSES ---- */
+    .slide.active .animate-in {
+      animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .animate-in { opacity: 0; transform: translateY(20px); }
+    .delay-1 { animation-delay: 0.1s !important; }
+    .delay-2 { animation-delay: 0.2s !important; }
+    .delay-3 { animation-delay: 0.3s !important; }
+    .delay-4 { animation-delay: 0.4s !important; }
+    .delay-5 { animation-delay: 0.5s !important; }
+    .delay-6 { animation-delay: 0.6s !important; }
+    .delay-7 { animation-delay: 0.7s !important; }
+
+    @keyframes slideIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(74,144,255,0.2); }
+      50% { box-shadow: 0 0 40px rgba(74,144,255,0.4); }
+    }
+
+    /* ---- SVG ICONS ---- */
+    .icon-sm { width: 20px; height: 20px; }
+    .icon-md { width: 28px; height: 28px; }
+    .icon-lg { width: 40px; height: 40px; }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 900px) {
+      .slide { padding: 60px 32px; }
+      .grid-2, .grid-3, .grid-2-3, .grid-3-2, .comparison { grid-template-columns: 1fr; }
+      .agent-grid { grid-template-columns: repeat(3, 1fr); }
+      .stats-row { flex-direction: column; gap: 32px; }
+      .pipeline { flex-direction: column; gap: 8px; }
+      .pipeline-arrow { transform: rotate(90deg); }
+    }
+
+    @media (max-width: 600px) {
+      .slide { padding: 40px 20px; }
+      .agent-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+<!-- Brand Watermark -->
+<div class="brand-watermark">REIS <span class="ia">[IA]</span></div>
+
+<!-- Slide Counter -->
+<div class="slide-counter" id="slideCounter">1 / 35</div>
+
+<!-- Keyboard Hint -->
+<div class="keyboard-hint" id="keyHint">Use as setas do teclado para navegar</div>
+
+<!-- ================================================================
+     SLIDES
+     ================================================================ -->
+<div class="slides-container" id="slidesContainer">
+
+<!-- ============================================================
+     SLIDE 1 — TITLE
+     ============================================================ -->
+<div class="slide active" data-slide="1">
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
+  <div class="slide-inner text-center">
+    <div class="animate-in delay-1" style="margin-bottom: 32px;">
+      <svg width="48" height="48" viewBox="0 0 64 64" fill="none" style="margin-bottom: 24px;">
+        <g stroke="#4A90FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="14" y1="8" x2="50" y2="8"/>
+          <line x1="50" y1="8" x2="14" y2="56"/>
+          <line x1="14" y1="8" x2="25" y2="25"/>
+          <line x1="39" y1="39" x2="50" y2="56"/>
+          <line x1="14" y1="56" x2="50" y2="56"/>
+        </g>
+      </svg>
+      <div style="font-size: 24px; font-weight: 300; letter-spacing: -0.01em; color: var(--text-primary);">REIS <span class="accent">[IA]</span></div>
+    </div>
+    <div class="slide-title-lg animate-in delay-2">Máquina de<br><span class="accent">Vendas</span></div>
+    <p class="slide-subtitle animate-in delay-3" style="max-width: 600px;">Um time de agentes de IA para montar uma operação de vendas completa</p>
+    <div class="animate-in delay-4" style="margin-top: 40px; display: flex; gap: 16px; align-items: center; justify-content: center;">
+      <span class="badge">Imersão ao vivo</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 2 — WELCOME / CONTEXT
+     ============================================================ -->
+<div class="slide" data-slide="2">
+  <div class="bg-aurora"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">A pergunta certa</div>
+    <div class="slide-title animate-in delay-2">O que muda quando IA<br>deixa de ser <span class="accent">ferramenta</span><br>e vira <span class="accent">operação</span>?</div>
+    <p class="slide-subtitle animate-in delay-3">A maioria das empresas usa IA como um funcionário avulso. Pergunta aqui, gera ali. Nenhum processo. Nenhuma estrutura. Nenhum resultado previsível.</p>
+    <div class="animate-in delay-4" style="margin-top: 40px;">
+      <p style="font-size: 18px; color: var(--text-primary); font-weight: 500;">Hoje você vai ver como funciona quando IA opera como um time completo.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 3 — THE PROBLEM
+     ============================================================ -->
+<div class="slide" data-slide="3">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">O problema</div>
+    <div class="slide-title-sm animate-in delay-2">O Cemitério de Protótipos</div>
+    <div class="comparison animate-in delay-3" style="margin-top: 32px;">
+      <div class="comparison-col comparison-before">
+        <div class="comparison-label">O que acontece hoje</div>
+        <ul class="comparison-items">
+          <li>Empresa investe em IA</li>
+          <li>Cria um chatbot, um assistente, um "projeto piloto"</li>
+          <li>Funciona bonito na demo</li>
+          <li>Nunca gera receita real</li>
+          <li>Vira mais um custo fixo sem retorno</li>
+        </ul>
+      </div>
+      <div class="comparison-col comparison-after">
+        <div class="comparison-label">O que deveria acontecer</div>
+        <ul class="comparison-items">
+          <li>IA como motor de receita</li>
+          <li>Operação que funciona sem o dono</li>
+          <li>Cada agente com papel definido</li>
+          <li>Resultado medido em R$</li>
+          <li>Sistema que escala</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 4 — THE SHIFT
+     ============================================================ -->
+<div class="slide" data-slide="4">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">A mudança</div>
+    <div class="slide-title animate-in delay-2">De <span class="muted">"usar IA"</span><br>para <span class="accent">operar com IA</span></div>
+    <div class="divider-accent animate-in delay-3"></div>
+    <div class="grid-3 animate-in delay-4" style="margin-top: 24px; text-align: left;">
+      <div class="card">
+        <div class="card-title">Ferramenta</div>
+        <div class="card-desc">Você pergunta, IA responde. Um prompt por vez. Sem memória, sem contexto, sem processo.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Assistente</div>
+        <div class="card-desc">Melhor que nada. Ajuda em tarefas pontuais. Mas depende 100% de você dirigir cada passo.</div>
+      </div>
+      <div class="card-accent">
+        <div class="card-title" style="color: var(--accent);">Operação</div>
+        <div class="card-desc">Time de agentes com funções, regras, memória. Opera junto. Entrega resultado. Escala.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 5 — AGENDA
+     ============================================================ -->
+<div class="slide" data-slide="5">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Roteiro da imersão</div>
+    <div class="slide-title-sm animate-in delay-2">O que vamos cobrir hoje</div>
+    <div class="roadmap animate-in delay-3" style="margin-top: 32px;">
+      <div class="roadmap-item">
+        <div class="roadmap-dot"></div>
+        <div class="roadmap-content">
+          <h4>01 — Compreensão do Modelo</h4>
+          <p>Como montar uma operação lucrativa com agentes de IA</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-dot"></div>
+        <div class="roadmap-content">
+          <h4>02 — Demonstração dos Agentes</h4>
+          <p>Abrindo o sistema: 20 agentes especializados por dentro</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-dot"></div>
+        <div class="roadmap-content">
+          <h4>03 — Execução ao Vivo</h4>
+          <p>Agentes criando site, copy e estratégia em tempo real</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-dot"></div>
+        <div class="roadmap-content">
+          <h4>04 — Tira-dúvidas Exclusivo</h4>
+          <p>Perguntas e respostas aberto</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 6 — BLOCK 1 TRANSITION
+     ============================================================ -->
+<div class="slide" data-slide="6">
+  <div class="bg-aurora"></div>
+  <div class="slide-inner slide-transition">
+    <div class="block-number animate-in delay-1">01</div>
+    <div class="slide-title animate-in delay-2">Compreensão<br>do <span class="accent">Modelo</span></div>
+    <p class="slide-subtitle animate-in delay-3">Como montar uma operação lucrativa com agentes de IA</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 7 — BUSINESS MODEL WITH AI
+     ============================================================ -->
+<div class="slide" data-slide="7">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">O modelo</div>
+    <div class="slide-title-sm animate-in delay-2">Negócio com IA = <span class="accent">Direção + Execução</span></div>
+    <p class="slide-subtitle animate-in delay-3">Você dirige. Os agentes executam. Marketing, vendas, entrega.</p>
+    <div class="grid-2 animate-in delay-4" style="margin-top: 40px;">
+      <div class="card" style="padding: 32px;">
+        <div style="font-size: 40px; font-weight: 800; color: var(--text-quaternary); margin-bottom: 16px;">Antes</div>
+        <div class="card-desc" style="font-size: 16px;">Você faz tudo. Ou contrata gente para fazer. Cada pessoa = custo fixo. Cada projeto = mais gargalo no seu tempo.</div>
+      </div>
+      <div class="card-accent" style="padding: 32px;">
+        <div style="font-size: 40px; font-weight: 800; color: var(--accent); margin-bottom: 16px; opacity: 0.3;">Agora</div>
+        <div class="card-desc" style="font-size: 16px;">Você define a estratégia. Agentes criam o copy, montam o site, fazem o design, disparam emails. Tudo com suas regras e identidade.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 8 — REVENUE-FIRST FRAMEWORK
+     ============================================================ -->
+<div class="slide" data-slide="8">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner text-center">
+    <div class="badge animate-in delay-1">Framework</div>
+    <div class="slide-title animate-in delay-2">Revenue-First<br><span class="accent">IA Framework</span></div>
+    <p class="slide-subtitle animate-in delay-3" style="margin-bottom: 40px;">Comece pela receita, não pela tecnologia. A pergunta não é "qual IA usar?" — é "quanto isso vai gerar?"</p>
+    <div class="grid-3 animate-in delay-4" style="text-align: left;">
+      <div class="card" style="border-top: 2px solid var(--accent);">
+        <div class="card-title">1. Oportunidade</div>
+        <div class="card-desc">Identifique onde IA gera receita direta ou reduz custo significativo no seu negócio</div>
+      </div>
+      <div class="card" style="border-top: 2px solid var(--accent);">
+        <div class="card-title">2. Operação</div>
+        <div class="card-desc">Monte o time de agentes com funções, regras, memória e contexto do seu negócio</div>
+      </div>
+      <div class="card" style="border-top: 2px solid var(--accent);">
+        <div class="card-title">3. Escala</div>
+        <div class="card-desc">Sistema que funciona sem você. Multiplique canais, ofertas, entregas.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 9 — WHY MOST FAIL
+     ============================================================ -->
+<div class="slide" data-slide="9">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">A verdade</div>
+    <div class="slide-title-sm animate-in delay-2">Por que a maioria<br>das implementações de IA <span class="accent">falha</span></div>
+    <div class="animate-in delay-3" style="margin-top: 40px;">
+      <ul class="feature-list">
+        <li>
+          <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/><line x1="7" y1="7" x2="13" y2="13" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/><line x1="13" y1="7" x2="7" y2="13" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/></svg>
+          Começam pela tecnologia em vez do problema de negócio
+        </li>
+        <li>
+          <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/><line x1="7" y1="7" x2="13" y2="13" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/><line x1="13" y1="7" x2="7" y2="13" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/></svg>
+          Usam IA como ferramenta isolada — sem processo, sem regras, sem contexto
+        </li>
+        <li>
+          <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/><line x1="7" y1="7" x2="13" y2="13" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/><line x1="13" y1="7" x2="7" y2="13" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/></svg>
+          Nenhum agente tem memória — cada sessão começa do zero
+        </li>
+        <li>
+          <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/><line x1="7" y1="7" x2="13" y2="13" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/><line x1="13" y1="7" x2="7" y2="13" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/></svg>
+          Sem fluxo de trabalho — resultado depende do humor do prompt
+        </li>
+        <li>
+          <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/><line x1="7" y1="7" x2="13" y2="13" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/><line x1="13" y1="7" x2="7" y2="13" stroke="rgba(255,100,100,0.5)" stroke-width="1.5"/></svg>
+          Tentam automatizar antes de ter o processo funcionando manualmente
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 10 — MULTI-AGENT CONCEPT
+     ============================================================ -->
+<div class="slide" data-slide="10">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">O conceito</div>
+    <div class="slide-title-sm animate-in delay-2">Não é uma ferramenta.<br>É um <span class="accent">time</span>.</div>
+    <div class="grid-2 animate-in delay-3" style="margin-top: 36px; gap: 32px;">
+      <div>
+        <p class="slide-subtitle" style="margin-bottom: 24px;">Imagine que você pudesse contratar 20 profissionais especializados que:</p>
+        <ul class="feature-list">
+          <li>
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Trabalham 24/7 sem reclamar
+          </li>
+          <li>
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Seguem suas regras e padrões
+          </li>
+          <li>
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Lembram do contexto do negócio
+          </li>
+          <li>
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Passam trabalho entre si automaticamente
+          </li>
+          <li>
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Custam uma fração de um time real
+          </li>
+        </ul>
+      </div>
+      <div class="diagram-box" style="display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center;">
+        <div style="font-size: 12px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Analogia</div>
+        <div style="font-size: 18px; font-weight: 600; color: var(--text-primary); text-align: center; margin-bottom: 12px;">Contratar 1 ChatGPT<br><span class="dim">vs.</span><br>Contratar um time de 20 especialistas</div>
+        <div class="divider-accent" style="width: 100%;"></div>
+        <div style="font-size: 14px; color: var(--text-tertiary); text-align: center;">Cada um sabe seu papel.<br>Cada um entrega sua parte.<br>Todos falam a mesma língua.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 11 — DEPARTMENTS
+     ============================================================ -->
+<div class="slide" data-slide="11">
+  <div class="bg-dots"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">A estrutura</div>
+    <div class="slide-title-sm animate-in delay-2">6 departamentos. <span class="accent">20 agentes.</span></div>
+    <div class="grid-3 animate-in delay-3" style="margin-top: 32px; text-align: left; gap: 16px;">
+      <div class="card" style="border-left: 3px solid var(--accent);">
+        <div class="card-title">Marketing & Estratégia</div>
+        <div class="card-desc">Pesquisa de mercado, análise de concorrentes, estratégia de posicionamento, planejamento de funil</div>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--accent);">
+        <div class="card-title">Copy & Persuasão</div>
+        <div class="card-desc">Copy de vendas, emails, anúncios, humanização, revisão de qualidade</div>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--accent);">
+        <div class="card-title">Design</div>
+        <div class="card-desc">Identidade visual, UI/UX, wireframes, sistemas de design, assets visuais</div>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--accent);">
+        <div class="card-title">Desenvolvimento</div>
+        <div class="card-desc">Sites, landing pages, componentes interativos, integrações, deploy</div>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--accent);">
+        <div class="card-title">Execução & Operação</div>
+        <div class="card-desc">Configuração de plataformas, CRM, email marketing, automações, disparo</div>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--accent);">
+        <div class="card-title">Educação & Conteúdo</div>
+        <div class="card-desc">Currículo de cursos, roteiros de aulas, design educacional, material de apoio</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 12 — WORKFLOW
+     ============================================================ -->
+<div class="slide" data-slide="12">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">O fluxo</div>
+    <div class="slide-title-sm animate-in delay-2">Como os agentes <span class="accent">colaboram</span></div>
+    <div class="animate-in delay-3" style="margin-top: 36px;">
+      <div class="pipeline" style="margin-bottom: 32px;">
+        <div class="pipeline-node-accent">
+          <div class="node-title">Orchestrator</div>
+          <div class="node-desc">Coordena tudo</div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+        <svg width="2" height="32"><line x1="1" y1="0" x2="1" y2="32" stroke="rgba(74,144,255,0.3)" stroke-width="1.5" stroke-dasharray="4,4"/></svg>
+      </div>
+      <div class="pipeline" style="flex-wrap: wrap; gap: 8px;">
+        <div class="pipeline-node">
+          <div class="node-title">Pesquisa</div>
+          <div class="node-desc">Dados de mercado</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node">
+          <div class="node-title">Estratégia</div>
+          <div class="node-desc">Posicionamento</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node">
+          <div class="node-title">Copy</div>
+          <div class="node-desc">Persuasão</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node">
+          <div class="node-title">Design</div>
+          <div class="node-desc">Experiência visual</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node">
+          <div class="node-title">Dev</div>
+          <div class="node-desc">Construção</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node">
+          <div class="node-title">Deploy</div>
+          <div class="node-desc">No ar</div>
+        </div>
+      </div>
+      <div style="margin-top: 32px; text-align: center;">
+        <p style="font-size: 15px; color: var(--text-tertiary);">Pesquisa alimenta estratégia. Estratégia alimenta copy. Copy alimenta design. Design alimenta dev.<br>Cada agente recebe exatamente o que precisa. Nada mais.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 13 — PROOF
+     ============================================================ -->
+<div class="slide" data-slide="13">
+  <div class="bg-aurora"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">Resultado real</div>
+    <div class="slide-title animate-in delay-2">Números, não promessas.</div>
+    <div class="stats-row animate-in delay-3" style="justify-content: center;">
+      <div class="stat" style="align-items: center;">
+        <div class="stat-number">R$700K+</div>
+        <div class="stat-label">em contratos gerados pela comunidade</div>
+      </div>
+      <div class="stat" style="align-items: center;">
+        <div class="stat-number">20</div>
+        <div class="stat-label">agentes especializados operando</div>
+      </div>
+      <div class="stat" style="align-items: center;">
+        <div class="stat-number">100+</div>
+        <div class="stat-label">alunos e mentorados</div>
+      </div>
+    </div>
+    <div class="divider-accent animate-in delay-4"></div>
+    <p class="slide-subtitle animate-in delay-5" style="margin-top: 0;">Tudo construído com o mesmo framework que você vai ver hoje.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 14 — BLOCK 2 TRANSITION
+     ============================================================ -->
+<div class="slide" data-slide="14">
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
+  <div class="slide-inner slide-transition">
+    <div class="block-number animate-in delay-1">02</div>
+    <div class="slide-title animate-in delay-2">Demonstração<br>dos <span class="accent">Agentes</span></div>
+    <p class="slide-subtitle animate-in delay-3">Abrindo o sistema: a estrutura completa por dentro</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 15 — OPENING THE SYSTEM
+     ============================================================ -->
+<div class="slide" data-slide="15">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">Por dentro</div>
+    <div class="slide-title animate-in delay-2">Abrindo o <span class="accent">sistema</span></div>
+    <p class="slide-subtitle animate-in delay-3">O que você vai ver agora não é teoria. É o sistema real que opera a Reis IA todos os dias.</p>
+    <div class="animate-in delay-4" style="margin-top: 40px;">
+      <div class="card-accent" style="max-width: 500px; margin: 0 auto; text-align: left;">
+        <div style="font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 12px;">O que vamos abrir:</div>
+        <ul class="feature-list" style="gap: 10px;">
+          <li style="font-size: 14px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Arquivos de definição de cada agente</li>
+          <li style="font-size: 14px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Regras de negócio e brand voice</li>
+          <li style="font-size: 14px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Sistema de memória persistente</li>
+          <li style="font-size: 14px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Brain — base de conhecimento compartilhada</li>
+          <li style="font-size: 14px;"><svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>Fluxo de trabalho real entre agentes</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 16 — 20 AGENTS GRID
+     ============================================================ -->
+<div class="slide" data-slide="16">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Os 20 agentes</div>
+    <div class="slide-title-sm animate-in delay-2">Mapa completo do <span class="accent">time</span></div>
+    <div class="agent-grid animate-in delay-3" style="margin-top: 24px;">
+      <!-- Strategy & Marketing -->
+      <div class="agent-group-label">Estratégia & Marketing</div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#4A90FF" stroke-width="1.2"/><circle cx="14" cy="14" r="4" fill="#4A90FF"/></svg>
+        <div class="agent-name">Orchestrator</div>
+        <div class="agent-role">Coordenação</div>
+      </div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><rect x="4" y="8" width="20" height="12" rx="2" stroke="#4A90FF" stroke-width="1.2"/><line x1="4" y1="14" x2="24" y2="14" stroke="#4A90FF" stroke-width="1.2"/></svg>
+        <div class="agent-name">Pesquisador</div>
+        <div class="agent-role">Mercado & ICP</div>
+      </div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><polygon points="14,4 24,24 4,24" stroke="#4A90FF" stroke-width="1.2" fill="none"/></svg>
+        <div class="agent-name">CMO</div>
+        <div class="agent-role">Estratégia</div>
+      </div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="10" stroke="#4A90FF" stroke-width="1.2"/><path d="M9 14h10M14 9v10" stroke="#4A90FF" stroke-width="1.2"/></svg>
+        <div class="agent-name">Análise</div>
+        <div class="agent-role">Context</div>
+      </div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><rect x="6" y="6" width="16" height="16" rx="3" stroke="#4A90FF" stroke-width="1.2"/><line x1="6" y1="12" x2="22" y2="12" stroke="#4A90FF" stroke-width="1.2"/></svg>
+        <div class="agent-name">Advisor</div>
+        <div class="agent-role">Consultoria</div>
+      </div>
+
+      <!-- Copy & Persuasion -->
+      <div class="agent-group-label">Copy & Persuasão</div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><path d="M8 6h12l-2 16H10L8 6z" stroke="#4A90FF" stroke-width="1.2"/></svg>
+        <div class="agent-name">Copywriter</div>
+        <div class="agent-role">Persuasão</div>
+      </div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="10" stroke="#4A90FF" stroke-width="1.2"/><path d="M10 14c2-4 6-4 8 0" stroke="#4A90FF" stroke-width="1.2" fill="none"/></svg>
+        <div class="agent-name">Humanizer</div>
+        <div class="agent-role">Voz natural</div>
+      </div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><path d="M7 14l4 4 10-10" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+        <div class="agent-name">Reviewer</div>
+        <div class="agent-role">Qualidade</div>
+      </div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><rect x="6" y="4" width="16" height="20" rx="2" stroke="#4A90FF" stroke-width="1.2"/><line x1="10" y1="10" x2="18" y2="10" stroke="#4A90FF" stroke-width="1.2"/><line x1="10" y1="14" x2="18" y2="14" stroke="#4A90FF" stroke-width="1.2"/><line x1="10" y1="18" x2="15" y2="18" stroke="#4A90FF" stroke-width="1.2"/></svg>
+        <div class="agent-name">Roteirista</div>
+        <div class="agent-role">Scripts</div>
+      </div>
+      <div class="agent-cell" style="opacity: 0.4;">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="10" stroke="#4A90FF" stroke-width="1.2" stroke-dasharray="3,3"/></svg>
+        <div class="agent-name">+ Outros</div>
+        <div class="agent-role">Expansível</div>
+      </div>
+
+      <!-- Design & Dev -->
+      <div class="agent-group-label">Design, Dev & Execução</div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><rect x="4" y="4" width="20" height="20" rx="3" stroke="#4A90FF" stroke-width="1.2"/><rect x="4" y="4" width="10" height="10" rx="1" fill="rgba(74,144,255,0.2)"/></svg>
+        <div class="agent-name">Designer</div>
+        <div class="agent-role">UI/UX</div>
+      </div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><polyline points="8,10 12,14 8,18" stroke="#4A90FF" stroke-width="1.2" fill="none"/><line x1="14" y1="18" x2="20" y2="18" stroke="#4A90FF" stroke-width="1.2"/></svg>
+        <div class="agent-name">Dev</div>
+        <div class="agent-role">Código</div>
+      </div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="10" stroke="#4A90FF" stroke-width="1.2"/><path d="M14 8v6l4 2" stroke="#4A90FF" stroke-width="1.2" fill="none"/></svg>
+        <div class="agent-name">Executor</div>
+        <div class="agent-role">Plataformas</div>
+      </div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><path d="M6 22V10l8-6 8 6v12" stroke="#4A90FF" stroke-width="1.2" fill="none"/><rect x="11" y="15" width="6" height="7" stroke="#4A90FF" stroke-width="1.2"/></svg>
+        <div class="agent-name">Educação</div>
+        <div class="agent-role">Currículo</div>
+      </div>
+      <div class="agent-cell">
+        <svg class="agent-icon" viewBox="0 0 28 28" fill="none"><rect x="5" y="8" width="18" height="12" rx="2" stroke="#4A90FF" stroke-width="1.2"/><polygon points="12,12 12,16 17,14" fill="#4A90FF"/></svg>
+        <div class="agent-name">Edu Design</div>
+        <div class="agent-role">Visuais</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 17 — AGENT ANATOMY
+     ============================================================ -->
+<div class="slide" data-slide="17">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Anatomia</div>
+    <div class="slide-title-sm animate-in delay-2">O que define um <span class="accent">agente</span></div>
+    <div class="grid-2 animate-in delay-3" style="margin-top: 32px; gap: 24px;">
+      <div class="card" style="padding: 32px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#4A90FF" stroke-width="1.2"/><path d="M12 6v6l4 2" stroke="#4A90FF" stroke-width="1.2"/></svg>
+          <div class="card-title" style="margin: 0;">Função</div>
+        </div>
+        <div class="card-desc">O que esse agente faz. Seu papel específico no time. Ex: "Escreve copy de vendas seguindo o framework Hormozi."</div>
+      </div>
+      <div class="card" style="padding: 32px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#4A90FF" stroke-width="1.2"/><line x1="8" y1="9" x2="16" y2="9" stroke="#4A90FF" stroke-width="1.2"/><line x1="8" y1="12" x2="16" y2="12" stroke="#4A90FF" stroke-width="1.2"/><line x1="8" y1="15" x2="13" y2="15" stroke="#4A90FF" stroke-width="1.2"/></svg>
+          <div class="card-title" style="margin: 0;">Regras</div>
+        </div>
+        <div class="card-desc">As restrições e padrões que segue. Brand voice, tom, palavras proibidas, frameworks obrigatórios.</div>
+      </div>
+      <div class="card" style="padding: 32px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#4A90FF" stroke-width="1.2"/><circle cx="12" cy="12" r="4" stroke="#4A90FF" stroke-width="1.2"/><circle cx="12" cy="12" r="1" fill="#4A90FF"/></svg>
+          <div class="card-title" style="margin: 0;">Memória</div>
+        </div>
+        <div class="card-desc">O que aprendeu ao longo do tempo. Padrões que funcionam, erros passados, preferências do negócio.</div>
+      </div>
+      <div class="card" style="padding: 32px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4z" stroke="#4A90FF" stroke-width="1.2" fill="none"/><path d="M4 4l16 16M20 4L4 20" stroke="rgba(74,144,255,0.3)" stroke-width="1.2"/></svg>
+          <div class="card-title" style="margin: 0;">Contexto</div>
+        </div>
+        <div class="card-desc">O que sabe sobre o negócio. ICP, posicionamento, produtos, concorrentes, histórico de decisões.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 18 — THE ORCHESTRATOR
+     ============================================================ -->
+<div class="slide" data-slide="18">
+  <div class="bg-aurora"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">O cérebro</div>
+    <div class="slide-title animate-in delay-2">O <span class="accent">Orchestrator</span></div>
+    <p class="slide-subtitle animate-in delay-3">O agente que coordena todos os outros. Nunca implementa — apenas planeja, delega e valida.</p>
+    <div class="grid-3 animate-in delay-4" style="margin-top: 40px; text-align: left;">
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 8px;">1</div>
+        <div class="card-title">Analisa</div>
+        <div class="card-desc">Entende o que precisa ser feito, identifica dependências, estima custo</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 8px;">2</div>
+        <div class="card-title">Delega</div>
+        <div class="card-desc">Cria contratos de tarefa com inputs, outputs, escopo e restrições</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 8px;">3</div>
+        <div class="card-title">Valida</div>
+        <div class="card-desc">Revisa resultados, identifica erros, ajusta e re-delega se necessário</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 19 — COPY SQUAD PIPELINE
+     ============================================================ -->
+<div class="slide" data-slide="19">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Copy Squad</div>
+    <div class="slide-title-sm animate-in delay-2">Pipeline de <span class="accent">produção de copy</span></div>
+    <p class="slide-subtitle animate-in delay-3" style="margin-bottom: 32px;">5 agentes em sequência. Cada um com um papel. A copy que sai no final não parece IA.</p>
+    <div class="animate-in delay-4">
+      <div class="pipeline" style="margin-bottom: 24px;">
+        <div class="pipeline-node-accent">
+          <div class="node-title">CMO</div>
+          <div class="node-desc">Brief + ângulos</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node">
+          <div class="node-title">Copywriter</div>
+          <div class="node-desc">Copy bruta + Hormozi</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node">
+          <div class="node-title">Humanizer</div>
+          <div class="node-desc">Voz natural PT-BR</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node">
+          <div class="node-title">Reviewer</div>
+          <div class="node-desc">Aprovação / revisão</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node-accent">
+          <div class="node-title">CMO</div>
+          <div class="node-desc">Sign-off final</div>
+        </div>
+      </div>
+      <div class="divider" style="margin: 24px 0;"></div>
+      <div style="display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;">
+        <div style="text-align: center;">
+          <div style="font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 4px;">REGRAS</div>
+          <div style="font-size: 13px; color: var(--text-tertiary);">Brand Voice + Hormozi + Humanização</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 4px;">RESULTADO</div>
+          <div style="font-size: 13px; color: var(--text-tertiary);">Copy que soa humana, vende, e respeita a marca</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 20 — DESIGN + DEV PIPELINE
+     ============================================================ -->
+<div class="slide" data-slide="20">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Design + Dev</div>
+    <div class="slide-title-sm animate-in delay-2">Da estratégia ao <span class="accent">site no ar</span></div>
+    <div class="animate-in delay-3" style="margin-top: 32px;">
+      <div class="pipeline">
+        <div class="pipeline-node">
+          <div class="node-title">Estratégia</div>
+          <div class="node-desc">Posicionamento</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node">
+          <div class="node-title">Copy</div>
+          <div class="node-desc">Texto aprovado</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node-accent">
+          <div class="node-title">Designer</div>
+          <div class="node-desc">Wireframe + specs</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node-accent">
+          <div class="node-title">Dev Agent</div>
+          <div class="node-desc">Código + build</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-node">
+          <div class="node-title">Executor</div>
+          <div class="node-desc">Deploy + config</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2 animate-in delay-4" style="margin-top: 40px;">
+      <div class="card" style="padding: 24px;">
+        <div class="card-title">Stack</div>
+        <div class="card-desc" style="font-size: 13px;">Astro + React + Tailwind CSS. Sites estáticos de alta performance com componentes interativos onde necessário.</div>
+      </div>
+      <div class="card" style="padding: 24px;">
+        <div class="card-title">Design System</div>
+        <div class="card-desc" style="font-size: 13px;">Tokens de design extraídos de Stripe, Apple, Porsche. Surface system, tipografia, espaçamento — tudo documentado.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 21 — ECOSYSTEM DIAGRAM
+     ============================================================ -->
+<div class="slide" data-slide="21">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">Visão geral</div>
+    <div class="slide-title-sm animate-in delay-2">O ecossistema <span class="accent">completo</span></div>
+    <div class="diagram-box animate-in delay-3" style="margin-top: 32px; padding: 48px;">
+      <div style="display: flex; flex-direction: column; gap: 24px; align-items: center;">
+        <!-- Top: Brain -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+          <div style="font-size: 10px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;">Base de conhecimento</div>
+          <div style="display: flex; gap: 12px;">
+            <div style="padding: 8px 16px; background: var(--surface-3); border-radius: 6px; font-size: 12px; color: var(--text-secondary);">Pesquisa</div>
+            <div style="padding: 8px 16px; background: var(--surface-3); border-radius: 6px; font-size: 12px; color: var(--text-secondary);">Estratégia</div>
+            <div style="padding: 8px 16px; background: var(--surface-3); border-radius: 6px; font-size: 12px; color: var(--text-secondary);">Messaging</div>
+            <div style="padding: 8px 16px; background: var(--surface-3); border-radius: 6px; font-size: 12px; color: var(--text-secondary);">Assets</div>
+          </div>
+        </div>
+        <svg width="2" height="24"><line x1="1" y1="0" x2="1" y2="24" stroke="rgba(74,144,255,0.3)" stroke-width="1.5" stroke-dasharray="4,4"/></svg>
+        <!-- Middle: Orchestrator -->
+        <div style="padding: 16px 48px; background: rgba(74,144,255,0.08); border: 1px solid var(--border-accent); border-radius: 10px;">
+          <div style="font-size: 14px; font-weight: 700; color: var(--accent);">ORCHESTRATOR</div>
+          <div style="font-size: 11px; color: var(--text-tertiary);">Coordena, planeja, delega, valida</div>
+        </div>
+        <svg width="2" height="24"><line x1="1" y1="0" x2="1" y2="24" stroke="rgba(74,144,255,0.3)" stroke-width="1.5" stroke-dasharray="4,4"/></svg>
+        <!-- Bottom: Agents -->
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+          <div style="padding: 10px 16px; background: var(--surface-3); border: 1px solid var(--border-default); border-radius: 8px; font-size: 11px; color: var(--text-secondary);">Pesquisa</div>
+          <div style="padding: 10px 16px; background: var(--surface-3); border: 1px solid var(--border-default); border-radius: 8px; font-size: 11px; color: var(--text-secondary);">CMO</div>
+          <div style="padding: 10px 16px; background: var(--surface-3); border: 1px solid var(--border-default); border-radius: 8px; font-size: 11px; color: var(--text-secondary);">Copy</div>
+          <div style="padding: 10px 16px; background: var(--surface-3); border: 1px solid var(--border-default); border-radius: 8px; font-size: 11px; color: var(--text-secondary);">Humanizer</div>
+          <div style="padding: 10px 16px; background: var(--surface-3); border: 1px solid var(--border-default); border-radius: 8px; font-size: 11px; color: var(--text-secondary);">Reviewer</div>
+          <div style="padding: 10px 16px; background: var(--surface-3); border: 1px solid var(--border-default); border-radius: 8px; font-size: 11px; color: var(--text-secondary);">Designer</div>
+          <div style="padding: 10px 16px; background: var(--surface-3); border: 1px solid var(--border-default); border-radius: 8px; font-size: 11px; color: var(--text-secondary);">Dev</div>
+          <div style="padding: 10px 16px; background: var(--surface-3); border: 1px solid var(--border-default); border-radius: 8px; font-size: 11px; color: var(--text-secondary);">Executor</div>
+          <div style="padding: 10px 16px; background: var(--surface-3); border: 1px solid var(--border-default); border-radius: 8px; font-size: 11px; color: var(--text-secondary);">Educação</div>
+        </div>
+        <svg width="2" height="24"><line x1="1" y1="0" x2="1" y2="24" stroke="rgba(74,144,255,0.3)" stroke-width="1.5" stroke-dasharray="4,4"/></svg>
+        <!-- Output -->
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+          <div style="font-size: 10px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; width: 100%; text-align: center; margin-bottom: 4px;">Entregas</div>
+          <div style="padding: 8px 16px; background: rgba(74,144,255,0.06); border: 1px solid rgba(74,144,255,0.15); border-radius: 6px; font-size: 12px; color: var(--accent-bright);">Sites</div>
+          <div style="padding: 8px 16px; background: rgba(74,144,255,0.06); border: 1px solid rgba(74,144,255,0.15); border-radius: 6px; font-size: 12px; color: var(--accent-bright);">Emails</div>
+          <div style="padding: 8px 16px; background: rgba(74,144,255,0.06); border: 1px solid rgba(74,144,255,0.15); border-radius: 6px; font-size: 12px; color: var(--accent-bright);">Landing Pages</div>
+          <div style="padding: 8px 16px; background: rgba(74,144,255,0.06); border: 1px solid rgba(74,144,255,0.15); border-radius: 6px; font-size: 12px; color: var(--accent-bright);">Cursos</div>
+          <div style="padding: 8px 16px; background: rgba(74,144,255,0.06); border: 1px solid rgba(74,144,255,0.15); border-radius: 6px; font-size: 12px; color: var(--accent-bright);">Estratégia</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 22 — BLOCK 3 TRANSITION
+     ============================================================ -->
+<div class="slide" data-slide="22">
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
+  <div class="slide-inner slide-transition">
+    <div class="block-number animate-in delay-1">03</div>
+    <div class="slide-title animate-in delay-2">Execução<br><span class="accent">ao Vivo</span></div>
+    <p class="slide-subtitle animate-in delay-3">Agentes criando site, copy e estratégia em tempo real</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 23 — WHAT WE'LL BUILD LIVE
+     ============================================================ -->
+<div class="slide" data-slide="23">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Demo ao vivo</div>
+    <div class="slide-title-sm animate-in delay-2">O que vamos <span class="accent">construir agora</span></div>
+    <p class="slide-subtitle animate-in delay-3" style="margin-bottom: 32px;">Vocês vão ver os agentes trabalhando em tempo real. Do briefing ao resultado final.</p>
+    <div class="grid-2 animate-in delay-4" style="gap: 20px;">
+      <div class="card-accent" style="padding: 28px;">
+        <div style="font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">O que os agentes vão fazer</div>
+        <ul class="feature-list" style="gap: 12px;">
+          <li style="font-size: 14px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Analisar um negócio/cenário
+          </li>
+          <li style="font-size: 14px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Criar estratégia de posicionamento
+          </li>
+          <li style="font-size: 14px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Escrever copy de vendas
+          </li>
+          <li style="font-size: 14px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Construir página funcional
+          </li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 28px;">
+        <div style="font-size: 11px; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">O que você vai observar</div>
+        <ul class="feature-list" style="gap: 12px;">
+          <li style="font-size: 14px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><circle cx="10" cy="10" r="3" fill="rgba(255,255,255,0.3)"/></svg>
+            Agentes se comunicando entre si
+          </li>
+          <li style="font-size: 14px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><circle cx="10" cy="10" r="3" fill="rgba(255,255,255,0.3)"/></svg>
+            Regras de negócio sendo aplicadas
+          </li>
+          <li style="font-size: 14px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><circle cx="10" cy="10" r="3" fill="rgba(255,255,255,0.3)"/></svg>
+            Memória sendo consultada
+          </li>
+          <li style="font-size: 14px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><circle cx="10" cy="10" r="3" fill="rgba(255,255,255,0.3)"/></svg>
+            Resultado final com qualidade profissional
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 24 — TOOLS
+     ============================================================ -->
+<div class="slide" data-slide="24">
+  <div class="bg-grid"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">Ferramentas</div>
+    <div class="slide-title-sm animate-in delay-2">O arsenal <span class="accent">técnico</span></div>
+    <div class="tool-tags animate-in delay-3" style="justify-content: center; margin-top: 32px;">
+      <div class="tool-tag-accent">Claude Code</div>
+      <div class="tool-tag-accent">VS Code</div>
+      <div class="tool-tag">OpenClaw</div>
+      <div class="tool-tag">Claude Skills</div>
+      <div class="tool-tag">n8n</div>
+      <div class="tool-tag">Supabase</div>
+      <div class="tool-tag">Astro</div>
+      <div class="tool-tag">React</div>
+      <div class="tool-tag">Tailwind CSS</div>
+      <div class="tool-tag">Vercel</div>
+      <div class="tool-tag">Cal.com</div>
+      <div class="tool-tag">Resend</div>
+    </div>
+    <div class="divider animate-in delay-4"></div>
+    <p class="slide-subtitle animate-in delay-5" style="font-size: 15px;">As ferramentas são importantes — mas o que importa é o sistema que orquestra tudo. As ferramentas mudam. O framework fica.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 25 — WATCH THIS
+     ============================================================ -->
+<div class="slide" data-slide="25">
+  <div class="bg-aurora"></div>
+  <div class="slide-inner text-center">
+    <div class="animate-in delay-1">
+      <div style="font-size: clamp(4rem, 8vw, 8rem); font-weight: 800; letter-spacing: -0.04em; color: var(--text-primary); line-height: 1;">
+        Observe.
+      </div>
+    </div>
+    <div class="animate-in delay-3" style="margin-top: 40px;">
+      <p style="font-size: 18px; color: var(--text-tertiary);">[ Demo ao vivo ]</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 26 — DEMO TAKEAWAYS
+     ============================================================ -->
+<div class="slide" data-slide="26">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Aprendizados</div>
+    <div class="slide-title-sm animate-in delay-2">O que acabou de <span class="accent">acontecer</span></div>
+    <div class="grid-2 animate-in delay-3" style="margin-top: 32px; gap: 20px;">
+      <div class="card" style="padding: 28px;">
+        <div style="font-size: 48px; font-weight: 800; color: rgba(74,144,255,0.15); margin-bottom: 12px;">01</div>
+        <div class="card-title">Orquestração real</div>
+        <div class="card-desc">Agentes se comunicaram, passaram contexto, e entregaram resultado sem intervenção manual em cada passo.</div>
+      </div>
+      <div class="card" style="padding: 28px;">
+        <div style="font-size: 48px; font-weight: 800; color: rgba(74,144,255,0.15); margin-bottom: 12px;">02</div>
+        <div class="card-title">Regras mantidas</div>
+        <div class="card-desc">Brand voice, tom, identidade visual — tudo respeitado automaticamente porque está codificado no sistema.</div>
+      </div>
+      <div class="card" style="padding: 28px;">
+        <div style="font-size: 48px; font-weight: 800; color: rgba(74,144,255,0.15); margin-bottom: 12px;">03</div>
+        <div class="card-title">Qualidade profissional</div>
+        <div class="card-desc">O output não parece "feito por IA". Parece feito por uma equipe que conhece o negócio.</div>
+      </div>
+      <div class="card" style="padding: 28px;">
+        <div style="font-size: 48px; font-weight: 800; color: rgba(74,144,255,0.15); margin-bottom: 12px;">04</div>
+        <div class="card-title">Replicável</div>
+        <div class="card-desc">Esse mesmo framework pode ser implementado em qualquer negócio. As regras mudam. A estrutura é a mesma.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 27 — WHAT YOU TAKE HOME
+     ============================================================ -->
+<div class="slide" data-slide="27">
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
+  <div class="slide-inner slide-transition">
+    <div class="block-number animate-in delay-1">04</div>
+    <div class="slide-title animate-in delay-2">O que você<br><span class="accent">leva hoje</span></div>
+    <p class="slide-subtitle animate-in delay-3">O framework completo para montar sua operação</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 28 — SUMMARY
+     ============================================================ -->
+<div class="slide" data-slide="28">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Resumo</div>
+    <div class="slide-title-sm animate-in delay-2">O framework que você pode <span class="accent">replicar</span></div>
+    <div class="animate-in delay-3" style="margin-top: 32px;">
+      <div class="roadmap">
+        <div class="roadmap-item">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-content">
+            <h4>Defina seus agentes</h4>
+            <p>Identifique quais "departamentos" seu negócio precisa. Crie um agente para cada função.</p>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-content">
+            <h4>Escreva as regras</h4>
+            <p>Brand voice, tom, palavras proibidas, frameworks. Cada agente opera dentro das suas restrições.</p>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-content">
+            <h4>Monte o Brain</h4>
+            <p>Base de conhecimento compartilhada: pesquisa, estratégia, assets. Todos os agentes consultam.</p>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-content">
+            <h4>Crie os fluxos</h4>
+            <p>Quem entrega para quem. Pesquisa > Estratégia > Copy > Design > Dev > Deploy.</p>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-content">
+            <h4>Orquestre</h4>
+            <p>O Orchestrator coordena. Você dirige. Os agentes executam. O negócio escala.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 29 — HUB ECOSYSTEM INTRO
+     ============================================================ -->
+<div class="slide" data-slide="29">
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
+  <div class="slide-inner slide-transition">
+    <div class="block-number animate-in delay-1">05</div>
+    <div class="slide-title animate-in delay-2">O Ecossistema<br><span class="accent">Builders</span></div>
+    <p class="slide-subtitle animate-in delay-3">O que estamos construindo para quem quer operar com IA de verdade</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 30 — REIS IA HUB OVERVIEW
+     ============================================================ -->
+<div class="slide" data-slide="30">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner text-center">
+    <div class="badge animate-in delay-1">Plataforma própria</div>
+    <div class="slide-title animate-in delay-2">REIS <span class="accent">[IA]</span> HUB</div>
+    <p class="slide-subtitle animate-in delay-3" style="margin-bottom: 40px;">Uma plataforma completa construída do zero para os Builders. Não é Hotmart. Não é Kiwify. É nossa.</p>
+    <div class="grid-3 animate-in delay-4" style="text-align: left; gap: 16px;">
+      <div class="card" style="border-top: 2px solid var(--accent); padding: 28px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="#4A90FF" stroke-width="1.2"/><rect x="7" y="7" width="4" height="4" rx="1" fill="rgba(74,144,255,0.4)"/><rect x="13" y="7" width="4" height="4" rx="1" fill="rgba(74,144,255,0.2)"/><rect x="7" y="13" width="4" height="4" rx="1" fill="rgba(74,144,255,0.2)"/><rect x="13" y="13" width="4" height="4" rx="1" fill="rgba(74,144,255,0.4)"/></svg>
+          <div class="card-title" style="margin: 0;">Dashboard</div>
+        </div>
+        <div class="card-desc">Painel centralizado com visão dos seus projetos, tarefas, progresso e métricas do negócio.</div>
+      </div>
+      <div class="card" style="border-top: 2px solid var(--accent); padding: 28px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><polygon points="12,3 21,8 21,16 12,21 3,16 3,8" stroke="#4A90FF" stroke-width="1.2" fill="none"/><line x1="12" y1="3" x2="12" y2="21" stroke="rgba(74,144,255,0.3)" stroke-width="1.2"/></svg>
+          <div class="card-title" style="margin: 0;">Academy</div>
+        </div>
+        <div class="card-desc">Cursos e aulas estruturadas com progresso, certificados e material complementar.</div>
+      </div>
+      <div class="card" style="border-top: 2px solid var(--accent); padding: 28px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="10" r="4" stroke="#4A90FF" stroke-width="1.2"/><circle cx="15" cy="10" r="4" stroke="#4A90FF" stroke-width="1.2"/><path d="M5 20c0-3 3-5 7-5s7 2 7 5" stroke="rgba(74,144,255,0.4)" stroke-width="1.2" fill="none"/></svg>
+          <div class="card-title" style="margin: 0;">Community</div>
+        </div>
+        <div class="card-desc">Feed colaborativo, discussões, compartilhamento de projetos e networking entre Builders.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 31 — HUB FEATURES DEEP DIVE
+     ============================================================ -->
+<div class="slide" data-slide="31">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="slide-label animate-in delay-1">Dentro do HUB</div>
+    <div class="slide-title-sm animate-in delay-2">Tudo que um Builder <span class="accent">precisa</span></div>
+    <div class="grid-2 animate-in delay-3" style="margin-top: 32px; gap: 20px;">
+      <div class="card" style="padding: 28px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="2" stroke="#4A90FF" stroke-width="1.2"/><rect x="6" y="6" width="4" height="3" rx="1" fill="rgba(74,144,255,0.3)"/><rect x="12" y="6" width="4" height="3" rx="1" fill="rgba(74,144,255,0.5)"/><rect x="6" y="11" width="10" height="2" rx="1" fill="rgba(74,144,255,0.2)"/><rect x="6" y="15" width="7" height="2" rx="1" fill="rgba(74,144,255,0.15)"/></svg>
+          <div class="card-title" style="margin: 0;">Projetos & Tarefas</div>
+        </div>
+        <div class="card-desc">Gestão visual de projetos com kanban, tarefas atribuídas e acompanhamento de progresso. Cada Builder gerencia sua operação.</div>
+      </div>
+      <div class="card" style="padding: 28px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="4" stroke="#4A90FF" stroke-width="1.2"/><path d="M4 19c0-3.5 3-6 7-6s7 2.5 7 6" stroke="#4A90FF" stroke-width="1.2" fill="none"/></svg>
+          <div class="card-title" style="margin: 0;">Mentoria 1:1</div>
+        </div>
+        <div class="card-desc">Sessões individuais com acompanhamento, notas e histórico. Cada mentorado com seu espaço dedicado dentro do HUB.</div>
+      </div>
+      <div class="card" style="padding: 28px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="5" width="16" height="12" rx="2" stroke="#4A90FF" stroke-width="1.2"/><polygon points="9,9 9,13 14,11" fill="#4A90FF"/></svg>
+          <div class="card-title" style="margin: 0;">Vault</div>
+        </div>
+        <div class="card-desc">Biblioteca exclusiva de templates, prompts, frameworks, e assets prontos para uso. O arsenal do Builder.</div>
+      </div>
+      <div class="card" style="padding: 28px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 6h16M3 11h16M3 16h10" stroke="#4A90FF" stroke-width="1.2" stroke-linecap="round"/><circle cx="17" cy="16" r="3" stroke="#4A90FF" stroke-width="1.2"/></svg>
+          <div class="card-title" style="margin: 0;">CRM Integrado</div>
+        </div>
+        <div class="card-desc">Pipeline de leads e clientes direto no HUB. Visualização kanban, status de negociação, histórico de interações.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 32 — HUB TECH STACK
+     ============================================================ -->
+<div class="slide" data-slide="32">
+  <div class="bg-grid"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">A tecnologia por trás</div>
+    <div class="slide-title-sm animate-in delay-2">Construído com o <span class="accent">mesmo framework</span></div>
+    <p class="slide-subtitle animate-in delay-3" style="margin-bottom: 32px;">O HUB foi construído pelos nossos próprios agentes de IA. A mesma máquina que opera o negócio, construiu a plataforma.</p>
+    <div class="animate-in delay-4">
+      <div class="diagram-box" style="padding: 40px;">
+        <div style="display: flex; flex-direction: column; gap: 24px; align-items: center;">
+          <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+            <div class="tool-tag-accent">Astro</div>
+            <div class="tool-tag-accent">React</div>
+            <div class="tool-tag-accent">Supabase</div>
+            <div class="tool-tag">Tailwind CSS</div>
+            <div class="tool-tag">Auth nativo</div>
+            <div class="tool-tag">Vercel</div>
+          </div>
+          <div class="divider-accent" style="width: 100%;"></div>
+          <div style="display: flex; gap: 32px; flex-wrap: wrap; justify-content: center;">
+            <div style="text-align: center;">
+              <div class="stat-number" style="font-size: 2.5rem;">100%</div>
+              <div class="stat-label">Nosso</div>
+            </div>
+            <div style="text-align: center;">
+              <div class="stat-number" style="font-size: 2.5rem;">0</div>
+              <div class="stat-label">Dependência de plataforma</div>
+            </div>
+            <div style="text-align: center;">
+              <div class="stat-number" style="font-size: 2.5rem;">R$0</div>
+              <div class="stat-label">Comissão pra terceiros</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 33 — HUB DEMO PREVIEW
+     ============================================================ -->
+<div class="slide" data-slide="33">
+  <div class="bg-aurora"></div>
+  <div class="slide-inner text-center">
+    <div class="badge animate-in delay-1">Demo</div>
+    <div class="slide-title animate-in delay-2">Vamos abrir o <span class="accent">HUB</span></div>
+    <p class="slide-subtitle animate-in delay-3" style="margin-bottom: 40px;">Uma demonstração rápida do que os Builders terão acesso.</p>
+    <div class="animate-in delay-4">
+      <div class="card-accent" style="max-width: 600px; margin: 0 auto; text-align: left; padding: 32px;">
+        <div style="font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 16px;">O que vamos mostrar:</div>
+        <ul class="feature-list" style="gap: 12px;">
+          <li style="font-size: 15px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Login e Dashboard do aluno
+          </li>
+          <li style="font-size: 15px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Academy com catálogo de cursos e player de aulas
+          </li>
+          <li style="font-size: 15px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Gestão de projetos e tarefas
+          </li>
+          <li style="font-size: 15px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Comunidade e Vault de recursos
+          </li>
+          <li style="font-size: 15px;">
+            <svg class="icon-sm" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#4A90FF" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="#4A90FF" stroke-width="1.5" fill="none"/></svg>
+            Painel admin — CRM, analytics, gestão
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 34 — NEXT STEPS
+     ============================================================ -->
+<div class="slide" data-slide="34">
+  <div class="bg-gradient-subtle"></div>
+  <div class="slide-inner text-center">
+    <div class="slide-label animate-in delay-1">Próximos passos</div>
+    <div class="slide-title-sm animate-in delay-2">Como implementar <span class="accent">no seu negócio</span></div>
+    <div class="grid-3 animate-in delay-3" style="margin-top: 40px; text-align: left;">
+      <div class="card-accent" style="padding: 28px;">
+        <div style="font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px;">Sozinho</div>
+        <div class="card-title" style="color: var(--text-primary);">Replique o framework</div>
+        <div class="card-desc" style="margin-top: 8px;">Use o que aprendeu hoje, configure seus agentes, monte seu Brain, comece a operar.</div>
+      </div>
+      <div class="card-accent" style="padding: 28px;">
+        <div style="font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px;">Com orientação</div>
+        <div class="card-title" style="color: var(--text-primary);">Formação completa</div>
+        <div class="card-desc" style="margin-top: 8px;">Máquina de Automações: treinamento completo com suporte, comunidade, e acompanhamento dentro do HUB.</div>
+      </div>
+      <div class="card-accent" style="padding: 28px;">
+        <div style="font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px;">Done-for-you</div>
+        <div class="card-title" style="color: var(--text-primary);">Implementação guiada</div>
+        <div class="card-desc" style="margin-top: 8px;">Nós montamos a operação com você. Agentes, regras, Brain, automações — tudo configurado.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 35 — FINAL CTA + Q&A
+     ============================================================ -->
+<div class="slide" data-slide="35">
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
+  <div class="slide-inner text-center">
+    <div class="animate-in delay-1">
+      <svg width="48" height="48" viewBox="0 0 64 64" fill="none" style="margin-bottom: 32px;">
+        <g stroke="#4A90FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="14" y1="8" x2="50" y2="8"/>
+          <line x1="50" y1="8" x2="14" y2="56"/>
+          <line x1="14" y1="8" x2="25" y2="25"/>
+          <line x1="39" y1="39" x2="50" y2="56"/>
+          <line x1="14" y1="56" x2="50" y2="56"/>
+        </g>
+      </svg>
+    </div>
+    <div class="slide-title-lg animate-in delay-2">Perguntas?</div>
+    <p class="slide-subtitle animate-in delay-3" style="margin-bottom: 40px;">Agora é com vocês. Tira-dúvidas exclusivo.</p>
+    <div class="divider-accent animate-in delay-4"></div>
+    <div class="animate-in delay-5" style="margin-top: 24px;">
+      <div style="font-size: 20px; font-weight: 300; letter-spacing: -0.01em; color: var(--text-primary);">REIS <span class="accent">[IA]</span></div>
+      <p style="font-size: 13px; color: var(--text-quaternary); margin-top: 8px;">moronireis.com.br</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /slides-container -->
+
+<!-- ================================================================
+     JAVASCRIPT — Navigation
+     ================================================================ -->
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  const progressBar = document.getElementById('progressBar');
+  const slideCounter = document.getElementById('slideCounter');
+  const keyHint = document.getElementById('keyHint');
+  let currentSlide = 0;
+  let isAnimating = false;
+
+  function updateProgress() {
+    const pct = ((currentSlide + 1) / totalSlides) * 100;
+    progressBar.style.width = pct + '%';
+    slideCounter.textContent = (currentSlide + 1) + ' / ' + totalSlides;
+  }
+
+  function goToSlide(index) {
+    if (isAnimating || index < 0 || index >= totalSlides || index === currentSlide) return;
+    isAnimating = true;
+
+    // Hide keyboard hint after first navigation
+    keyHint.classList.add('hidden');
+
+    const direction = index > currentSlide ? 1 : -1;
+    const current = slides[currentSlide];
+    const next = slides[index];
+
+    // Reset animation classes on next slide children
+    next.querySelectorAll('.animate-in').forEach(el => {
+      el.style.animation = 'none';
+      el.offsetHeight; // force reflow
+      el.style.animation = '';
+    });
+
+    // Set exit direction
+    if (direction > 0) {
+      current.classList.add('exit-left');
+      current.classList.remove('active');
+      next.style.transform = 'translateX(60px)';
+    } else {
+      current.classList.remove('active');
+      current.style.transform = 'translateX(60px)';
+      next.classList.add('exit-left');
+    }
+
+    // Small delay then activate next
+    requestAnimationFrame(() => {
+      next.classList.remove('exit-left');
+      next.classList.add('active');
+      next.style.transform = '';
+      currentSlide = index;
+      updateProgress();
+
+      setTimeout(() => {
+        current.classList.remove('exit-left');
+        current.style.transform = '';
+        isAnimating = false;
+      }, 500);
+    });
+  }
+
+  function nextSlide() { goToSlide(currentSlide + 1); }
+  function prevSlide() { goToSlide(currentSlide - 1); }
+
+  // Keyboard
+  document.addEventListener('keydown', function(e) {
+    switch(e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+      case ' ':
+      case 'PageDown':
+        e.preventDefault();
+        nextSlide();
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+      case 'PageUp':
+        e.preventDefault();
+        prevSlide();
+        break;
+      case 'Home':
+        e.preventDefault();
+        goToSlide(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        goToSlide(totalSlides - 1);
+        break;
+    }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) nextSlide();
+      else prevSlide();
+    }
+  }, { passive: true });
+
+  // Click on left/right halves
+  document.addEventListener('click', function(e) {
+    const x = e.clientX;
+    const w = window.innerWidth;
+    if (x > w * 0.7) nextSlide();
+    else if (x < w * 0.3) prevSlide();
+  });
+
+  // Initialize
+  updateProgress();
+})();
+</script>
+
+</body>
+</html>

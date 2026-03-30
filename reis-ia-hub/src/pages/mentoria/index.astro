@@ -1,0 +1,124 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import MentoriaView from '../../components/MentoriaView.tsx';
+import UpgradeCTA from '../../components/UpgradeCTA.tsx';
+import { createServerClient } from '../../lib/supabase-server';
+import { hasAccess } from '../../lib/access';
+import type { UserRole } from '../../lib/access';
+
+export const prerender = false;
+
+const supabase = createServerClient();
+const profile = Astro.locals.profile;
+const isAdmin = profile?.role === 'admin';
+const userRole = (profile?.role || 'starter') as UserRole;
+const canAccessMentoria = hasAccess(userRole, 'mentoria');
+
+// Fetch mentorship(s)
+let mentorshipQuery = supabase
+  .from('mentorships')
+  .select(`
+    *,
+    mentor:profiles!mentorships_mentor_id_fkey(id, full_name, avatar_url, role),
+    mentee:profiles!mentorships_mentee_id_fkey(id, full_name, avatar_url, role, company)
+  `)
+  .order('created_at', { ascending: false });
+
+if (!isAdmin) {
+  mentorshipQuery = mentorshipQuery.or(`mentor_id.eq.${profile?.id},mentee_id.eq.${profile?.id}`);
+}
+
+const { data: mentorships } = await mentorshipQuery;
+const activeMentorship = mentorships?.[0] || null;
+
+let milestones: any[] = [];
+let tasks: any[] = [];
+let sessions: any[] = [];
+
+if (activeMentorship) {
+  const [milestonesRes, tasksRes, sessionsRes] = await Promise.all([
+    supabase
+      .from('mentorship_milestones')
+      .select('*')
+      .eq('mentorship_id', activeMentorship.id)
+      .order('sort_order', { ascending: true }),
+    supabase
+      .from('mentorship_tasks')
+      .select('*')
+      .eq('mentorship_id', activeMentorship.id)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('mentorship_sessions')
+      .select('*')
+      .eq('mentorship_id', activeMentorship.id)
+      .order('date', { ascending: false }),
+  ]);
+
+  milestones = milestonesRes.data || [];
+  tasks = tasksRes.data || [];
+  sessions = sessionsRes.data || [];
+}
+---
+
+<AppLayout title="Mentoria" activeSection="mentoria">
+  {!canAccessMentoria ? (
+    <UpgradeCTA
+      client:load
+      title="Mentoria Individual"
+      description="Acompanhamento personalizado com Moroni Reis. Defina metas, receba tasks semanais e acelere seus resultados."
+      features={[
+        'Sessoes semanais 1:1 com Moroni Reis',
+        'Tasks personalizadas ao seu negocio',
+        'Acesso a todos os cursos da Academy',
+        'Suporte prioritario via canal dedicado',
+      ]}
+      ctaText="Agendar conversa"
+      ctaHref="/agendar"
+      currentRole={userRole}
+      requiredRole="mentoria"
+    />
+  ) : (
+    <>
+      <div class="mb-8">
+        <h2 style="font-size: var(--text-h4); font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">
+          {isAdmin ? 'Mentorias' : 'Minha Mentoria'}
+        </h2>
+        <p style="color: var(--text-tertiary); font-size: var(--text-body-sm);">
+          {isAdmin ? 'Gerencie as mentorias ativas.' : 'Acompanhe seu progresso, tasks e proximas sessoes.'}
+        </p>
+      </div>
+
+      {!activeMentorship ? (
+        <div class="rounded-xl p-10 text-center" style="background: var(--surface-1); border: 1px solid var(--border-subtle);">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--blue-10); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" />
+            </svg>
+          </div>
+          <h3 style="font-size: var(--text-body-lg); font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">
+            Nenhuma mentoria ativa
+          </h3>
+          <p style="font-size: var(--text-body-sm); color: var(--text-tertiary); max-width: 360px; margin: 0 auto 20px;">
+            {isAdmin ? 'Crie uma nova mentoria para um membro.' : 'Voce ainda nao tem uma mentoria ativa. Entre em contato com o time.'}
+          </p>
+          {isAdmin && (
+            <a href="/admin/mentoria" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--blue-10); color: var(--accent-blue); border-radius: 8px; font-size: var(--text-body-sm); font-weight: 500; text-decoration: none;">
+              Gerenciar Mentorias
+            </a>
+          )}
+        </div>
+      ) : (
+        <MentoriaView
+          client:load
+          mentorship={activeMentorship}
+          milestones={milestones}
+          tasks={tasks}
+          sessions={sessions}
+          isAdmin={isAdmin}
+          currentUserId={profile?.id || ''}
+        />
+      )}
+    </>
+  )}
+</AppLayout>

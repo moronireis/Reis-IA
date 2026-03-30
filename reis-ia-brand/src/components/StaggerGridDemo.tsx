@@ -22,8 +22,8 @@ export default function StaggerGridDemo() {
   }, []);
 
   const items = Array.from({ length: itemCount }, (_, i) => ({
-    label: ['Builder', 'Systems', 'Partners', 'Network', 'Academy', 'Labs', 'Media', 'Invest'][i] || `Item ${i + 1}`,
-    desc: ['Direct services', 'AI implementation', 'Agency partners', 'Community', 'Education', 'R&D', 'Content', 'Portfolio'][i] || 'Description',
+    label: ['Systems', 'Builders', 'Marketing', 'Academy', 'Labs', 'Media', 'Tools', 'Invest'][i] || `Item ${i + 1}`,
+    desc: ['AI implementation', 'Community & mentorship', 'Growth & demand', 'Education', 'R&D', 'Content', 'Platforms', 'Portfolio'][i] || 'Description',
   }));
 
   return (

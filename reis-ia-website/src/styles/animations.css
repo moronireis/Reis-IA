@@ -288,8 +288,144 @@
 }
 
 
-/* ---- AURORA BACKGROUND ---- */
+/* ---- HERO BACKGROUND SYSTEM ---- */
+/* Inspired by Vercel (blur orbs), Linear (grid dots), Stripe (layered gradients) */
 
+/* Base: blur orb glow — primary technique */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Orb: large blurred gradient circle */
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(150px);
+  pointer-events: none;
+}
+
+/* Orb variants */
+.hero-orb--primary {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, #4A90FF 0%, transparent 70%);
+  top: -15%; right: -8%;
+  opacity: 0.20;
+  animation: orbDrift 25s ease-in-out infinite alternate;
+}
+
+.hero-orb--secondary {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, #2D7AFF 0%, transparent 70%);
+  bottom: -10%; left: -8%;
+  opacity: 0.15;
+  animation: orbDrift 30s ease-in-out 5s infinite alternate-reverse;
+}
+
+.hero-orb--center {
+  width: 800px; height: 600px;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(74,144,255,0.08) 0%, transparent 65%);
+  top: 35%; left: 50%;
+  transform: translate(-50%, -50%);
+  filter: blur(80px);
+  opacity: 1;
+}
+
+/* Builder variant: electric blue orbs */
+.hero-orb--builder-primary {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, #2D7AFF 0%, transparent 65%);
+  top: -15%; right: -10%;
+  opacity: 0.25;
+  animation: orbDrift 22s ease-in-out infinite alternate;
+}
+
+.hero-orb--builder-secondary {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, #00B4FF 0%, transparent 70%);
+  bottom: -10%; left: -5%;
+  opacity: 0.12;
+  animation: orbDrift 28s ease-in-out 3s infinite alternate-reverse;
+}
+
+@keyframes orbDrift {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-3%, 2%); }
+  50%  { transform: translate(2%, -3%); }
+  75%  { transform: translate(-1%, 4%); }
+  100% { transform: translate(3%, -1%); }
+}
+
+/* Grid: repeating line pattern with radial fade */
+.hero-grid-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(74, 144, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 144, 255, 0.06) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 15%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 15%, transparent 70%);
+}
+
+/* Grid variant: white lines (for home) */
+.hero-grid-lines--white {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+
+/* Grid variant: builder electric */
+.hero-grid-lines--builder {
+  background-image:
+    linear-gradient(rgba(45, 122, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 122, 255, 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Noise: SVG grain texture overlay */
+.hero-noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+/* Scan line: horizontal light sweep */
+.hero-scanline {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(74,144,255,0.30) 30%, rgba(74,144,255,0.30) 70%, transparent);
+  pointer-events: none;
+  animation: scanDown 12s linear infinite;
+}
+
+@keyframes scanDown {
+  0%   { top: -1px; opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* Radial fade: darkens edges, keeps center clear */
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 75% 65% at 50% 45%,
+    transparent 30%,
+    rgba(0,0,0,0.6) 100%
+  );
+}
+
+/* Legacy: keep aurora-bg for backward compat */
 .aurora-bg {
   position: absolute;
   inset: 0;
@@ -477,7 +613,7 @@
 }
 
 
-/* ---- Z7 ANIMATIONS ---- */
+/* ---- ROTATIONAL VFX ANIMATIONS ---- */
 
 @keyframes spin-360-vfx {
   from { transform: rotate(0deg); }
@@ -514,11 +650,11 @@
   to   { transform: rotate(360deg); }
 }
 
-.z7-spin       { animation: spin-360-vfx 4s linear infinite; }
-.z7-flip       { animation: flip-180-vfx 3s ease-in-out infinite; }
-.z7-pendulum   { animation: pendulum-vfx 2s ease-in-out infinite alternate; }
-.z7-pulse      { animation: spin-pulse-vfx 3s ease-in-out infinite; }
-.z7-3d         { animation: spin-3d-vfx 6s linear infinite; perspective: 800px; }
+.vfx-spin       { animation: spin-360-vfx 4s linear infinite; }
+.vfx-flip       { animation: flip-180-vfx 3s ease-in-out infinite; }
+.vfx-pendulum   { animation: pendulum-vfx 2s ease-in-out infinite alternate; }
+.vfx-pulse      { animation: spin-pulse-vfx 3s ease-in-out infinite; }
+.vfx-3d         { animation: spin-3d-vfx 6s linear infinite; perspective: 800px; }
 
 
 /* ---- KINETIC TYPOGRAPHY ("O Tempo e Rei" letter stagger) ---- */
