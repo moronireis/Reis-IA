@@ -17,76 +17,99 @@ const profile = Astro.locals.profile;
       <form id="profile-form" class="flex flex-col gap-4">
         <!-- Email (read-only) -->
         <div class="flex flex-col gap-2">
-          <label class="text-sm" style="color: var(--text-secondary);">Email</label>
-          <input
-            type="email"
-            value={profile?.email || ''}
-            disabled
+          <label class="text-sm" style="color: var(--text-secondary);">Email da conta</label>
+          <input type="email" value={profile?.email || ''} disabled
             class="w-full px-4 py-3 rounded-lg text-sm"
-            style="background: var(--surface-3); border: 1px solid var(--border-subtle); color: var(--text-quaternary); cursor: not-allowed;"
-          />
+            style="background: var(--surface-3); border: 1px solid var(--border-subtle); color: var(--text-quaternary); cursor: not-allowed;" />
         </div>
 
         <!-- Role (read-only) -->
         <div class="flex flex-col gap-2">
-          <label class="text-sm" style="color: var(--text-secondary);">Função</label>
-          <input
-            type="text"
-            value={profile?.role || 'member'}
-            disabled
+          <label class="text-sm" style="color: var(--text-secondary);">Plano</label>
+          <input type="text" value={profile?.role || 'member'} disabled
             class="w-full px-4 py-3 rounded-lg text-sm"
-            style="background: var(--surface-3); border: 1px solid var(--border-subtle); color: var(--text-quaternary); cursor: not-allowed;"
-          />
+            style="background: var(--surface-3); border: 1px solid var(--border-subtle); color: var(--text-quaternary); cursor: not-allowed;" />
         </div>
 
-        <!-- Full Name -->
+        <div style="height: 1px; background: var(--border-subtle); margin: 4px 0;"></div>
+
+        <!-- Full Name * -->
         <div class="flex flex-col gap-2">
-          <label for="full_name" class="text-sm" style="color: var(--text-secondary);">Nome completo</label>
-          <input
-            type="text"
-            id="full_name"
-            name="full_name"
-            value={profile?.full_name || ''}
+          <label for="full_name" class="text-sm" style="color: var(--text-secondary);">
+            Nome completo <span style="color: #EF4444;">*</span>
+          </label>
+          <input type="text" id="full_name" name="full_name" value={profile?.full_name || ''} required
             class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field"
             style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary);"
-            placeholder="Seu nome completo"
-          />
+            placeholder="Seu nome completo" />
         </div>
 
-        <!-- Company -->
+        <!-- Company * -->
         <div class="flex flex-col gap-2">
-          <label for="company" class="text-sm" style="color: var(--text-secondary);">Empresa</label>
-          <input
-            type="text"
-            id="company"
-            name="company"
-            value={profile?.company || ''}
+          <label for="company" class="text-sm" style="color: var(--text-secondary);">
+            Empresa / Área de atuação <span style="color: #EF4444;">*</span>
+          </label>
+          <input type="text" id="company" name="company" value={profile?.company || ''} required
             class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field"
             style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary);"
-            placeholder="Nome da empresa"
-          />
+            placeholder="Ex: Nutricionista, Agência de IA, Estrategista Digital" />
         </div>
 
-        <!-- Phone -->
+        <!-- Phone * -->
         <div class="flex flex-col gap-2">
-          <label for="phone" class="text-sm" style="color: var(--text-secondary);">Telefone</label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={profile?.phone || ''}
+          <label for="phone" class="text-sm" style="color: var(--text-secondary);">
+            Telefone (WhatsApp) <span style="color: #EF4444;">*</span>
+          </label>
+          <input type="tel" id="phone" name="phone" value={profile?.phone || ''} required
             class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field"
             style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary);"
-            placeholder="+55 11 99999-9999"
-          />
+            placeholder="+55 11 99999-9999" />
         </div>
 
-        <button
-          type="submit"
-          id="save-btn"
+        <!-- Personal email -->
+        <div class="flex flex-col gap-2">
+          <label for="personal_email" class="text-sm" style="color: var(--text-secondary);">
+            Email pessoal (se diferente do de login)
+          </label>
+          <input type="email" id="personal_email" name="personal_email" value={profile?.personal_email || ''}
+            class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field"
+            style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary);"
+            placeholder="seu@email.pessoal.com" />
+        </div>
+
+        <!-- Monthly revenue -->
+        <div class="flex flex-col gap-2">
+          <label for="monthly_revenue" class="text-sm" style="color: var(--text-secondary);">
+            Faturamento mensal atual
+          </label>
+          <select id="monthly_revenue" name="monthly_revenue"
+            class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field"
+            style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary);">
+            <option value="" disabled selected={!profile?.monthly_revenue}>Selecione</option>
+            <option value="0" selected={profile?.monthly_revenue === '0'}>Ainda não faturo</option>
+            <option value="1-3k" selected={profile?.monthly_revenue === '1-3k'}>R$ 1.000 — R$ 3.000</option>
+            <option value="3-6k" selected={profile?.monthly_revenue === '3-6k'}>R$ 3.000 — R$ 6.000</option>
+            <option value="6-10k" selected={profile?.monthly_revenue === '6-10k'}>R$ 6.000 — R$ 10.000</option>
+            <option value="10-20k" selected={profile?.monthly_revenue === '10-20k'}>R$ 10.000 — R$ 20.000</option>
+            <option value="20-50k" selected={profile?.monthly_revenue === '20-50k'}>R$ 20.000 — R$ 50.000</option>
+            <option value="50k+" selected={profile?.monthly_revenue === '50k+'}>R$ 50.000+</option>
+          </select>
+        </div>
+
+        <!-- Goal -->
+        <div class="flex flex-col gap-2">
+          <label for="goal" class="text-sm" style="color: var(--text-secondary);">
+            Seu principal objetivo aqui
+          </label>
+          <textarea id="goal" name="goal" rows={2}
+            class="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all input-field"
+            style="background: var(--surface-2); border: 1px solid var(--border-default); color: var(--text-primary); resize: vertical;"
+            placeholder="Ex: Aprender IA para criar meu negócio, escalar minha agência, migrar de carreira...">{profile?.goal || ''}</textarea>
+        </div>
+
+        <button type="submit" id="save-btn"
           class="w-full py-3 rounded-lg text-sm font-medium transition-all mt-2"
-          style="background: var(--accent-blue); color: #fff;"
-        >
+          style="background: var(--accent-blue); color: #fff;">
           Salvar alterações
         </button>
       </form>
@@ -95,17 +118,9 @@ const profile = Astro.locals.profile;
 </AppLayout>
 
 <style>
-  .input-field:focus {
-    border-color: var(--border-accent) !important;
-    box-shadow: 0 0 0 3px var(--blue-08);
-  }
-  #save-btn:hover {
-    background: var(--accent-blue-hover) !important;
-  }
-  #save-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  .input-field:focus { border-color: var(--border-accent) !important; box-shadow: 0 0 0 3px var(--blue-08); }
+  #save-btn:hover { background: var(--accent-blue-hover) !important; }
+  #save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 </style>
 
 <script>
@@ -126,6 +141,9 @@ const profile = Astro.locals.profile;
       full_name: fd.get('full_name') as string,
       company: fd.get('company') as string,
       phone: fd.get('phone') as string,
+      personal_email: fd.get('personal_email') as string,
+      monthly_revenue: fd.get('monthly_revenue') as string,
+      goal: fd.get('goal') as string,
     };
 
     try {
@@ -134,7 +152,6 @@ const profile = Astro.locals.profile;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-
       if (!res.ok) {
         const err = await res.json();
         errorEl.textContent = err.error || 'Erro ao salvar perfil';

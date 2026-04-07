@@ -17,25 +17,30 @@ const profile = Astro.locals.profile;
 const isRealAdmin = Astro.locals.realAdminId || profile?.role === 'admin';
 const isAdmin = profile?.role === 'admin';
 const isImpersonating = !!Astro.locals.impersonating;
-const userRole = (profile?.role || 'starter') as 'starter' | 'builder' | 'mentoria' | 'admin';
+const userRole = (profile?.role || 'starter') as 'starter' | 'journey' | 'builder' | 'mentoria' | 'admin';
 
-// Lock icons per role
-// Builders: only Journey + Community unlocked
+// Nav lock rules per role
 function isNavLocked(itemId: string): boolean {
   if (userRole === 'admin') return false;
-  // These are always unlocked for everyone
-  if (itemId === 'journey' || itemId === 'community') return false;
-  // Everything else locked for starter and builder
-  if (userRole === 'starter' || userRole === 'builder') {
-    if (['vault', 'projects', 'mentoria', 'academy'].includes(itemId)) return true;
+  // Journey + Community + Settings always unlocked
+  if (itemId === 'journey' || itemId === 'community' || itemId === 'settings') return false;
+  // Journey role: only journey + community
+  if (userRole === 'journey') return true;
+  // Starter: everything except journey/community locked
+  if (userRole === 'starter') return true;
+  // Builder: vault unlocked, rest locked
+  if (userRole === 'builder') {
+    if (['projects', 'mentoria', 'academy'].includes(itemId)) return true;
   }
-  if (itemId === 'vault' && userRole === 'starter') return true;
+  // Mentoria: only vault might be restricted
+  if (itemId === 'vault' && userRole !== 'mentoria' && userRole !== 'admin') return true;
   return false;
 }
 
 // Role badge styles
 const ROLE_BADGE_STYLES: Record<string, { bg: string; color: string }> = {
   starter: { bg: 'var(--surface-3)', color: 'var(--text-quaternary)' },
+  journey: { bg: 'rgba(139,92,246,0.1)', color: '#8B5CF6' },
   builder: { bg: 'var(--blue-10)', color: 'var(--accent-blue)' },
   mentoria: { bg: 'rgba(139,92,246,0.1)', color: '#8B5CF6' },
   admin: { bg: 'rgba(34,197,94,0.1)', color: '#22C55E' },

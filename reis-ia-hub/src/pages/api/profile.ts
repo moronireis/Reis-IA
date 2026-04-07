@@ -11,7 +11,7 @@ export const PATCH: APIRoute = async ({ request, locals }) => {
   const body = await request.json();
 
   // Only allow updating safe fields
-  const allowedFields = ['full_name', 'company', 'phone'];
+  const allowedFields = ['full_name', 'company', 'phone', 'personal_email', 'monthly_revenue', 'goal'];
   const updateData: Record<string, string> = { updated_at: new Date().toISOString() };
   for (const field of allowedFields) {
     if (body[field] !== undefined) {

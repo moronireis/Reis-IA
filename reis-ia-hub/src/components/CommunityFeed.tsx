@@ -773,7 +773,22 @@ export default function CommunityFeed({
   };
 
   const isStarterMode = userRole === 'starter';
-  const canPost = !isStarterMode && (!activeSpace?.admin_only || isAdmin);
+  const isJourneyMode = userRole === 'journey';
+
+  // Space access rules by role
+  function canAccessSpace(slug: string): boolean {
+    if (isAdmin) return true;
+    if (isJourneyMode) return ['geral', 'journeys'].includes(slug);
+    if (userRole === 'builder') return ['geral', 'journeys', 'builders'].includes(slug);
+    if (userRole === 'mentoria') return ['geral', 'journeys', 'builders', 'mentorados'].includes(slug);
+    return slug === 'geral';
+  }
+
+  // Anúncios: read-only for everyone except admin
+  const isAnuncios = activeSpace?.slug === 'anuncios';
+  const canPost = !isStarterMode && !isJourneyMode
+    ? (!activeSpace?.admin_only || isAdmin) && !isAnuncios
+    : isJourneyMode && canAccessSpace(activeSpace?.slug || '') && !isAnuncios;
 
   // Pinned posts first
   const sortedPosts = [...posts].sort((a, b) => {
@@ -789,9 +804,12 @@ export default function CommunityFeed({
 
   function SpaceButton({ space }: { space: Space }) {
     const isActive = space.id === activeSpaceId;
+    const accessible = canAccessSpace(space.slug);
+    const locked = !accessible && !isAdmin;
+
     return (
       <button
-        onClick={() => handleSpaceChange(space.id)}
+        onClick={() => !locked && handleSpaceChange(space.id)}
         style={{
           width: '100%',
           display: 'flex',
@@ -801,24 +819,25 @@ export default function CommunityFeed({
           background: isActive ? 'rgba(74,144,255,0.07)' : 'transparent',
           border: 'none',
           borderRadius: '6px',
-          color: isActive ? '#4A90FF' : 'rgba(255,255,255,0.5)',
-          cursor: 'pointer',
+          color: locked ? 'rgba(255,255,255,0.20)' : isActive ? '#4A90FF' : 'rgba(255,255,255,0.5)',
+          cursor: locked ? 'default' : 'pointer',
           fontSize: '13px',
           textAlign: 'left',
           transition: 'background 150ms, color 150ms',
           fontWeight: isActive ? 500 : 400,
+          opacity: locked ? 0.5 : 1,
         }}
-        onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.03)'; }}
-        onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+        onMouseEnter={e => { if (!isActive && !locked) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.03)'; }}
+        onMouseLeave={e => { if (!isActive && !locked) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
       >
-        <span style={{ color: isActive ? '#4A90FF' : 'rgba(255,255,255,0.3)', flexShrink: 0 }}>
+        <span style={{ color: locked ? 'rgba(255,255,255,0.15)' : isActive ? '#4A90FF' : 'rgba(255,255,255,0.3)', flexShrink: 0 }}>
           <HashIcon />
         </span>
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {space.name || space.slug}
         </span>
-        {space.admin_only && (
-          <span style={{ marginLeft: 'auto', color: 'rgba(255,255,255,0.2)', flexShrink: 0 }}>
+        {locked && (
+          <span style={{ marginLeft: 'auto', color: 'rgba(255,255,255,0.15)', flexShrink: 0 }}>
             <LockIcon />
           </span>
         )}
