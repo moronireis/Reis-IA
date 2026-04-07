@@ -1,0 +1,46 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro';
+import JourneyAdminBuilder from '../../../components/JourneyAdminBuilder.tsx';
+import { createServerClient } from '../../../lib/supabase-server';
+
+export const prerender = false;
+
+const supabase = createServerClient();
+
+// Fetch all templates with phases and nodes
+const { data: templates } = await supabase
+  .from('journey_templates')
+  .select(`
+    *,
+    phases:journey_template_phases(
+      *,
+      nodes:journey_template_nodes(*)
+    )
+  `)
+  .order('created_at', { ascending: false });
+
+// Sort phases and nodes by sort_order
+if (templates) {
+  templates.forEach((t: any) => {
+    if (t.phases) {
+      t.phases.sort((a: any, b: any) => a.sort_order - b.sort_order);
+      t.phases.forEach((p: any) => {
+        if (p.nodes) {
+          p.nodes.sort((a: any, b: any) => a.sort_order - b.sort_order);
+        }
+      });
+    }
+  });
+}
+
+// Fetch students (non-admin profiles) for assignment
+const { data: students } = await supabase
+  .from('profiles')
+  .select('id, full_name, email')
+  .neq('role', 'admin')
+  .order('full_name', { ascending: true });
+---
+
+<AppLayout title="Gerenciar Jornadas" activeSection="admin-journeys">
+  <JourneyAdminBuilder client:load initialTemplates={templates || []} students={students || []} />
+</AppLayout>

@@ -1,0 +1,118 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+
+export const prerender = false;
+
+interface Props {
+  title: string;
+  journeyTitle: string;
+}
+
+const { title, journeyTitle } = Astro.props;
+---
+
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} — REIS [IA] HUB</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <ClientRouter />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .journey-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      height: 56px;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+    .journey-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .journey-logo {
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+    }
+    .journey-logo span {
+      color: #4A90FF;
+    }
+    .journey-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .journey-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 200ms ease;
+    }
+    .journey-back:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .journey-content {
+      padding-top: 56px;
+      min-height: 100vh;
+    }
+    @media (max-width: 768px) {
+      .journey-topbar { padding: 0 16px; }
+      .journey-title { max-width: 160px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="journey-topbar">
+    <div class="journey-topbar-left">
+      <a href="/journey" class="journey-logo">REIS <span>[IA]</span></a>
+      <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.08);"></div>
+      <span class="journey-title">{journeyTitle}</span>
+    </div>
+    <a href="/journey" class="journey-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15,18 9,12 15,6" />
+      </svg>
+      Voltar ao Hub
+    </a>
+  </header>
+
+  <main class="journey-content">
+    <slot />
+  </main>
+</body>
+</html>
