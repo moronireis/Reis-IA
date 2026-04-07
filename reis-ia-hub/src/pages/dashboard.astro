@@ -36,23 +36,40 @@ if (isAdmin) {
 
 // ── Student data ──
 let studentJourney: any = null;
-let studentMentorship: any = null;
+let journeyPhases: any[] = [];
+let totalNodes = 0;
+let doneNodes = 0;
+let currentPhaseName = '';
 let recentNotifications: any[] = [];
-let coursesInProgress = 0;
 
 if (!isAdmin && profile?.id) {
-  const [journeyRes, mentorshipRes, notifsRes, progressRes] = await Promise.all([
+  const [journeyRes, notifsRes] = await Promise.all([
     supabase.from('student_journeys').select('id, title, total_xp, status').eq('student_id', profile.id).eq('status', 'active').limit(1).single(),
-    supabase.from('mentorships').select('id, program, status, mentor:profiles!mentorships_mentor_id_fkey(full_name)').eq('mentee_id', profile.id).eq('status', 'active').limit(1).single(),
     supabase.from('notifications').select('id, title, body, link, created_at, read').eq('user_id', profile.id).order('created_at', { ascending: false }).limit(5),
-    supabase.from('user_progress').select('course_id').eq('user_id', profile.id),
   ]);
   studentJourney = journeyRes.data;
-  studentMentorship = mentorshipRes.data;
   recentNotifications = notifsRes.data || [];
-  const uniqueCourses = new Set((progressRes.data || []).map((p: any) => p.course_id));
-  coursesInProgress = uniqueCourses.size;
+
+  if (studentJourney) {
+    const { data: phases } = await supabase
+      .from('student_journey_phases')
+      .select('id, title, status, sort_order, nodes:student_journey_nodes(id, status, is_required)')
+      .eq('journey_id', studentJourney.id)
+      .order('sort_order', { ascending: true });
+
+    journeyPhases = phases || [];
+    for (const p of journeyPhases) {
+      for (const n of (p.nodes || [])) {
+        totalNodes++;
+        if (n.status === 'completed' || n.status === 'skipped') doneNodes++;
+      }
+    }
+    const activePhase = journeyPhases.find((p: any) => p.status === 'in_progress' || p.status === 'available');
+    currentPhaseName = activePhase?.title || journeyPhases[0]?.title || '';
+  }
 }
+
+const progressPct = totalNodes > 0 ? Math.round((doneNodes / totalNodes) * 100) : 0;
 
 // Check if profile is incomplete
 const profileIncomplete = !profile?.company || !profile?.phone;
@@ -136,110 +153,56 @@ const profileIncomplete = !profile?.company || !profile?.phone;
   {/* ── STUDENT DASHBOARD ── */}
   {!isAdmin && (
     <>
-      {/* Onboarding prompt for incomplete profiles */}
+      {/* Onboarding prompt */}
       {profileIncomplete && (
         <a href="/settings" class="block rounded-xl p-5 mb-6" style="background: rgba(74,144,255,0.04); border: 1px solid rgba(74,144,255,0.12);">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background: var(--blue-10);">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
             </div>
             <div>
               <p class="text-sm font-medium" style="color: var(--accent-blue);">Complete seu perfil</p>
-              <p class="text-xs" style="color: var(--text-quaternary);">Adicione empresa e telefone para uma experiencia personalizada</p>
+              <p class="text-xs" style="color: var(--text-quaternary);">Adicione empresa, telefone e faturamento para personalizar sua experiência</p>
             </div>
           </div>
         </a>
       )}
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-        {/* Journey Card */}
-        {studentJourney ? (
-          <a href={`/journey/${studentJourney.id}`} class="module-card rounded-xl p-6" style="background: var(--surface-1); border: 1px solid var(--border-subtle); text-decoration: none;">
-            <div class="flex items-center gap-3 mb-3">
-              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(139,92,246,0.1);">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="1,6 1,22 8,18 16,22 23,18 23,2 16,6 8,2" />
-                  <line x1="8" y1="2" x2="8" y2="18" />
-                  <line x1="16" y1="6" x2="16" y2="22" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-medium text-sm" style="color: var(--text-primary);">Minha Jornada</h3>
-                <p class="text-xs" style="color: var(--text-tertiary);">{studentJourney.title}</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-3">
-              <span class="text-xs font-semibold" style="color: #8B5CF6;">{studentJourney.total_xp} XP</span>
-              <span class="text-xs" style="color: var(--accent-blue);">Continuar →</span>
-            </div>
-          </a>
-        ) : (
-          <div class="rounded-xl p-6" style="background: var(--surface-1); border: 1px solid var(--border-subtle);">
-            <div class="flex items-center gap-3 mb-3">
-              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(255,255,255,0.04);">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="1,6 1,22 8,18 16,22 23,18 23,2 16,6 8,2" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-medium text-sm" style="color: var(--text-secondary);">Jornada</h3>
-                <p class="text-xs" style="color: var(--text-quaternary);">Sua jornada sera atribuida em breve</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Mentorship Card */}
-        {studentMentorship ? (
-          <a href="/mentoria" class="module-card rounded-xl p-6" style="background: var(--surface-1); border: 1px solid var(--border-subtle); text-decoration: none;">
-            <div class="flex items-center gap-3 mb-3">
-              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(34,197,94,0.1);">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-medium text-sm" style="color: var(--text-primary);">Mentoria</h3>
-                <p class="text-xs" style="color: var(--text-tertiary);">{studentMentorship.program} — {studentMentorship.mentor?.full_name}</p>
-              </div>
-            </div>
-            <span class="text-xs" style="color: #22C55E;">Ativa</span>
-          </a>
-        ) : (
-          <div class="rounded-xl p-6" style="background: var(--surface-1); border: 1px solid var(--border-subtle);">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(255,255,255,0.04);">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-medium text-sm" style="color: var(--text-secondary);">Mentoria</h3>
-                <p class="text-xs" style="color: var(--text-quaternary);">Disponivel no plano Mentoria</p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Module Links */}
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <a href="/academy" class="module-card rounded-xl p-5" style="background: var(--surface-1); border: 1px solid var(--border-subtle); text-decoration: none;">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--blue-10);">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5"><polygon points="5,3 19,12 5,21" /></svg>
-            </div>
+      {/* Journey Progress Card */}
+      {studentJourney ? (
+        <a href={`/journey/${studentJourney.id}`} class="block rounded-xl p-6 mb-6 module-card" style="background: var(--surface-1); border: 1px solid var(--border-subtle); text-decoration: none;">
+          <div class="flex items-center justify-between mb-4">
             <div>
-              <h3 class="font-medium text-sm" style="color: var(--text-primary);">Academy</h3>
-              <p class="text-xs" style="color: var(--text-quaternary);">{coursesInProgress > 0 ? `${coursesInProgress} curso${coursesInProgress > 1 ? 's' : ''} em andamento` : 'Cursos e formações'}</p>
+              <h3 class="font-medium" style="color: var(--text-primary);">{studentJourney.title}</h3>
+              <p class="text-xs mt-1" style="color: var(--text-tertiary);">
+                {currentPhaseName ? `Fase atual: ${currentPhaseName}` : 'Comece sua jornada'}
+              </p>
             </div>
+            <div style="text-align: right;">
+              <div style="font-size: 24px; font-weight: 700; color: var(--accent-blue);">{progressPct}%</div>
+              <div class="text-xs" style="color: var(--text-quaternary);">{doneNodes}/{totalNodes} nodes</div>
+            </div>
+          </div>
+          {/* Progress bar */}
+          <div style="height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin-bottom: 12px;">
+            <div style={`height: 100%; width: ${progressPct}%; background: var(--accent-blue); border-radius: 2px;`}></div>
+          </div>
+          {/* Phase dots */}
+          <div class="flex items-center gap-2">
+            {journeyPhases.map((p: any) => (
+              <div style={`width: 8px; height: 8px; border-radius: 50%; ${p.status === 'completed' ? 'background: #22C55E;' : p.status === 'in_progress' || p.status === 'available' ? 'background: var(--accent-blue);' : 'background: rgba(255,255,255,0.1);'}`} title={p.title}></div>
+            ))}
+            <span class="text-xs ml-2" style="color: var(--accent-blue);">Continuar →</span>
           </div>
         </a>
+      ) : (
+        <div class="rounded-xl p-6 mb-6" style="background: var(--surface-1); border: 1px solid var(--border-subtle);">
+          <p class="text-sm" style="color: var(--text-tertiary);">Sua jornada será atribuída em breve.</p>
+        </div>
+      )}
+
+      {/* Quick links */}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <a href="/community" class="module-card rounded-xl p-5" style="background: var(--surface-1); border: 1px solid var(--border-subtle); text-decoration: none;">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--blue-10);">
@@ -247,35 +210,58 @@ const profileIncomplete = !profile?.company || !profile?.phone;
             </div>
             <div>
               <h3 class="font-medium text-sm" style="color: var(--text-primary);">Comunidade</h3>
-              <p class="text-xs" style="color: var(--text-quaternary);">Conecte-se com outros membros</p>
+              <p class="text-xs" style="color: var(--text-quaternary);">Compartilhe progresso e dúvidas</p>
             </div>
           </div>
         </a>
-        {canAccessVault ? (
-          <a href="/vault" class="module-card rounded-xl p-5" style="background: var(--surface-1); border: 1px solid var(--border-subtle); text-decoration: none;">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--blue-10);">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5"><path d="M21 8v13H3V8" /><path d="M1 3h22v5H1z" /></svg>
-              </div>
-              <div>
-                <h3 class="font-medium text-sm" style="color: var(--text-primary);">Vault</h3>
-                <p class="text-xs" style="color: var(--text-quaternary);">Templates e recursos</p>
-              </div>
+        <a href="/settings" class="module-card rounded-xl p-5" style="background: var(--surface-1); border: 1px solid var(--border-subtle); text-decoration: none;">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--blue-10);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9" /></svg>
             </div>
-          </a>
-        ) : (
-          <div class="rounded-xl p-5" style="background: var(--surface-1); border: 1px solid var(--border-subtle); opacity: 0.6;">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(255,255,255,0.04);">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"><path d="M21 8v13H3V8" /><path d="M1 3h22v5H1z" /></svg>
-              </div>
-              <div>
-                <h3 class="font-medium text-sm" style="color: var(--text-secondary);">Vault</h3>
-                <p class="text-xs" style="color: var(--text-quaternary);">Disponivel no plano Builder</p>
-              </div>
+            <div>
+              <h3 class="font-medium text-sm" style="color: var(--text-primary);">Configurações</h3>
+              <p class="text-xs" style="color: var(--text-quaternary);">Editar perfil e dados</p>
             </div>
           </div>
-        )}
+        </a>
+      </div>
+
+      {/* CTA Cards — WhatsApp */}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <a href="https://wa.me/5511970578082?text=Quero%20contratar%20um%20projeto%20de%20implementação%20de%20IA" target="_blank" rel="noopener" class="module-card rounded-xl p-5" style="background: var(--surface-1); border: 1px solid var(--border-subtle); text-decoration: none;">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(34,197,94,0.1);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="1.5"><path d="M12 2 2 7l10 5 10-5-10-5z" /><path d="m2 17 10 5 10-5" /><path d="m2 12 10 5 10-5" /></svg>
+            </div>
+            <div>
+              <h3 class="font-medium text-sm" style="color: var(--text-primary);">Projetos</h3>
+              <p class="text-xs" style="color: #22C55E;">Contratar implementação →</p>
+            </div>
+          </div>
+        </a>
+        <a href="https://wa.me/5511970578082?text=Quero%20entrar%20na%20mentoria" target="_blank" rel="noopener" class="module-card rounded-xl p-5" style="background: var(--surface-1); border: 1px solid var(--border-subtle); text-decoration: none;">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(139,92,246,0.1);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5"><circle cx="12" cy="12" r="10" /><polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" /></svg>
+            </div>
+            <div>
+              <h3 class="font-medium text-sm" style="color: var(--text-primary);">Mentoria</h3>
+              <p class="text-xs" style="color: #8B5CF6;">Quero mentoria →</p>
+            </div>
+          </div>
+        </a>
+        <a href="https://wa.me/5511970578082?text=Quero%20saber%20mais%20sobre%20o%20Vault%20e%20recursos%20premium" target="_blank" rel="noopener" class="module-card rounded-xl p-5" style="background: var(--surface-1); border: 1px solid var(--border-subtle); text-decoration: none;">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(245,158,11,0.1);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5"><path d="M21 8v13H3V8" /><path d="M1 3h22v5H1z" /></svg>
+            </div>
+            <div>
+              <h3 class="font-medium text-sm" style="color: var(--text-primary);">Vault</h3>
+              <p class="text-xs" style="color: #F59E0B;">Acessar recursos →</p>
+            </div>
+          </div>
+        </a>
       </div>
 
       {/* Recent Activity */}
@@ -284,13 +270,13 @@ const profileIncomplete = !profile?.company || !profile?.phone;
           <h3 class="font-medium text-sm mb-4" style="color: var(--text-primary);">Atividade recente</h3>
           <div class="flex flex-col gap-2">
             {recentNotifications.map(n => (
-              <a href={n.link || '#'} class="flex items-start gap-3 p-3 rounded-lg activity-row" style="text-decoration: none;">
+              <div class="flex items-start gap-3 p-3 rounded-lg" style="background: var(--surface-2);">
                 <div class="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5" style={`background: ${n.read ? 'rgba(255,255,255,0.1)' : 'var(--accent-blue)'};`}></div>
                 <div class="flex-1 min-w-0">
                   <p class="text-xs font-medium" style={`color: ${n.read ? 'var(--text-tertiary)' : 'var(--text-primary)'};`}>{n.title}</p>
                   <p class="text-xs" style="color: var(--text-quaternary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{n.body}</p>
                 </div>
-              </a>
+              </div>
             ))}
           </div>
         </div>

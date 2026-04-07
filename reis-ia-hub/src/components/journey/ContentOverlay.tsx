@@ -344,29 +344,22 @@ export default function ContentOverlay({
       );
     }
 
-    // All other types: require written reflection before completing
+    // All other types: unified feedback + delivery block
     return (
       <div style={{ background: '#111111', borderRadius: '10px', padding: '16px', marginTop: '20px' }}>
-        {content_type === 'task' && (
-          <div style={{ marginBottom: '12px' }}>
-            <label style={labelStyle}>Link de entrega (opcional)</label>
-            <input type="url" placeholder="https://..." value={submissionUrl}
-              onChange={(e) => setSubmissionUrl(e.target.value)} style={inputStyle} />
-          </div>
-        )}
-
         <div style={{ marginBottom: '16px' }}>
           <label style={labelStyle}>
-            O que você aprendeu nesta etapa? *
+            Comentário e entrega *
           </label>
-          <textarea rows={3} placeholder={notePrompt[content_type] || 'Descreva o que aprendeu...'}
+          <textarea rows={4}
+            placeholder="Descreva o que aprendeu, cole links de entrega, prints, referências... Tudo aqui."
             value={submissionNote} onChange={(e) => setSubmissionNote(e.target.value)}
             style={{ ...inputStyle, resize: 'vertical' }} />
-          {!canSubmit && submissionNote.length > 0 && (
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', marginTop: '4px' }}>
-              Mínimo 10 caracteres
-            </p>
-          )}
+          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.20)', marginTop: '6px' }}>
+            {!canSubmit && submissionNote.length > 0
+              ? 'Mínimo 10 caracteres'
+              : 'Cole texto, links, descreva o que fez. Tudo fica salvo para revisão.'}
+          </p>
         </div>
 
         <button onClick={handleComplete}
@@ -377,7 +370,7 @@ export default function ContentOverlay({
             cursor: canSubmit && !loading ? 'pointer' : 'not-allowed',
           }}
           disabled={!canSubmit || loading}>
-          {loading ? 'Salvando...' : 'Marcar como Concluído'}
+          {loading ? 'Salvando...' : 'Concluir etapa'}
         </button>
       </div>
     );
