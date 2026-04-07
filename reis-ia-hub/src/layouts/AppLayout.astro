@@ -19,14 +19,17 @@ const isAdmin = profile?.role === 'admin';
 const isImpersonating = !!Astro.locals.impersonating;
 const userRole = (profile?.role || 'starter') as 'starter' | 'builder' | 'mentoria' | 'admin';
 
-// Lock icon determination per nav item based on role
-// Vault: locked for starter
-// Lock icons: Vault for starter, Projects & Mentoria for starter/builder
+// Lock icons per role
+// Builders: only Journey + Community unlocked
 function isNavLocked(itemId: string): boolean {
   if (userRole === 'admin') return false;
+  // These are always unlocked for everyone
+  if (itemId === 'journey' || itemId === 'community') return false;
+  // Everything else locked for starter and builder
+  if (userRole === 'starter' || userRole === 'builder') {
+    if (['vault', 'projects', 'mentoria', 'academy'].includes(itemId)) return true;
+  }
   if (itemId === 'vault' && userRole === 'starter') return true;
-  if (itemId === 'projects' && (userRole === 'starter' || userRole === 'builder')) return true;
-  if (itemId === 'mentoria' && (userRole === 'starter' || userRole === 'builder')) return true;
   return false;
 }
 
