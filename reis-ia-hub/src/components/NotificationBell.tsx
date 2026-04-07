@@ -99,6 +99,7 @@ export default function NotificationBell({ initialNotifications, initialUnreadCo
   const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
   const [open, setOpen] = useState(false);
   const [markingAll, setMarkingAll] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Close on click outside
@@ -149,6 +150,7 @@ export default function NotificationBell({ initialNotifications, initialUnreadCo
   }
 
   async function handleClickItem(notification: Notification) {
+    // Mark as read
     if (!notification.read) {
       try {
         await fetch(`/api/notifications/${notification.id}`, { method: 'PATCH' });
@@ -156,13 +158,10 @@ export default function NotificationBell({ initialNotifications, initialUnreadCo
           prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
         );
         setUnreadCount(prev => Math.max(0, prev - 1));
-      } catch (_) {
-        // silent fail
-      }
+      } catch {}
     }
-    if (notification.link) {
-      window.location.href = notification.link;
-    }
+    // Toggle expand — show full content inline instead of navigating away
+    setExpandedId(prev => prev === notification.id ? null : notification.id);
   }
 
   return (
@@ -326,9 +325,9 @@ export default function NotificationBell({ initialNotifications, initialUnreadCo
                         fontSize: '13px',
                         fontWeight: n.read ? 400 : 500,
                         color: n.read ? 'var(--text-secondary)' : 'var(--text-primary)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        overflow: expandedId === n.id ? 'visible' : 'hidden',
+                        textOverflow: expandedId === n.id ? 'unset' : 'ellipsis',
+                        whiteSpace: expandedId === n.id ? 'normal' : 'nowrap',
                       }}>
                         {n.title}
                       </span>
@@ -336,7 +335,9 @@ export default function NotificationBell({ initialNotifications, initialUnreadCo
                         {relativeTime(n.created_at)}
                       </span>
                     </div>
-                    {n.body && (
+
+                    {/* Collapsed: single line preview */}
+                    {expandedId !== n.id && n.body && (
                       <span style={{
                         fontSize: '12px',
                         color: 'var(--text-tertiary)',
@@ -347,6 +348,47 @@ export default function NotificationBell({ initialNotifications, initialUnreadCo
                       }}>
                         {n.body}
                       </span>
+                    )}
+
+                    {/* Expanded: full content */}
+                    {expandedId === n.id && (
+                      <div style={{ marginTop: '8px' }}>
+                        {n.body && (
+                          <div style={{
+                            fontSize: '13px',
+                            color: 'var(--text-secondary)',
+                            lineHeight: 1.6,
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word',
+                            padding: '10px 12px',
+                            background: 'var(--surface-3)',
+                            borderRadius: '8px',
+                            border: '1px solid var(--border-subtle)',
+                            maxHeight: '200px',
+                            overflowY: 'auto',
+                          }}>
+                            {n.body}
+                          </div>
+                        )}
+                        {n.link && (
+                          <a
+                            href={n.link}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              marginTop: '8px',
+                              fontSize: '12px',
+                              color: 'var(--accent-blue)',
+                              textDecoration: 'none',
+                              fontWeight: 500,
+                            }}
+                          >
+                            Abrir contexto →
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
 
