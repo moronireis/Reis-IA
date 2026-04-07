@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import MarkdownRenderer from './MarkdownRenderer';
 import SlideRenderer from './SlideRenderer';
+import QuizRenderer from './QuizRenderer';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -699,11 +700,13 @@ export default function ContentOverlay({
             </div>
           )}
 
-          {/* Content body — slides for presentations, markdown for others */}
+          {/* Content body — slides for presentations, quiz for quizzes, markdown for others */}
           {node.content_body && (
-            node.content_type === 'presentation' || node.content_body.trimStart().startsWith('<!-- slides -->')
-              ? <SlideRenderer content={node.content_body.replace('<!-- slides -->', '')} accentColor={typeColor} />
-              : <MarkdownRenderer content={node.content_body} accentColor={typeColor} />
+            node.content_type === 'quiz'
+              ? <QuizRenderer content={node.content_body} accentColor={typeColor} />
+              : node.content_type === 'presentation' || node.content_body.trimStart().startsWith('<!-- slides -->')
+                ? <SlideRenderer content={node.content_body.replace('<!-- slides -->', '')} accentColor={typeColor} />
+                : <MarkdownRenderer content={node.content_body} accentColor={typeColor} />
           )}
 
           {/* Mentor feedback (read) */}
