@@ -72,7 +72,7 @@ export default function BrandingForm({
         });
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
-          throw new Error(err.error || 'Erro ao criar formulario');
+          throw new Error(err.error || 'Erro ao criar formulário');
         }
         const created = await res.json();
         savedFormId = created.id;
@@ -95,7 +95,7 @@ export default function BrandingForm({
 
       if (submitStatus) {
         setStatus(submitStatus);
-        showToast('Formulario enviado para revisao!');
+        showToast('Formulário enviado para revisão!');
       } else {
         showToast('Rascunho salvo');
       }
@@ -346,7 +346,7 @@ export default function BrandingForm({
       {/* Progress bar */}
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Progresso do formulario</span>
+          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Progresso do formulário</span>
           <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{filled}/{total} campos ({progress}%)</span>
         </div>
         <div style={{
@@ -490,7 +490,7 @@ export default function BrandingForm({
               transition: 'all 0.15s',
             }}
           >
-            Enviar para revisao
+            Enviar para revisão
           </button>
         </div>
       )}

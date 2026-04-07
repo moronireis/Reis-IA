@@ -336,7 +336,7 @@ function EmptyState() {
           Nenhuma jornada ativa
         </p>
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.40)', margin: 0, maxWidth: '280px' }}>
-          Sua jornada sera criada apos sua primeira sessao com o mentor.
+          Sua jornada será criada após sua primeira sessão com o mentor.
         </p>
       </div>
     </div>

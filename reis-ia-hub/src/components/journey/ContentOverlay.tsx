@@ -266,7 +266,7 @@ export default function ContentOverlay({
           }}
         >
           <CheckIcon />
-          <span>Concluido</span>
+          <span>Concluído</span>
         </div>
       );
     }
@@ -288,8 +288,8 @@ export default function ContentOverlay({
 
     const notePrompt: Record<string, string> = {
       material:     'Escreva o que aprendeu de mais importante neste material...',
-      presentation: 'Escreva o principal aprendizado desta apresentacao...',
-      task:         'Descreva o que voce fez e o resultado...',
+      presentation: 'Escreva o principal aprendizado desta apresentação...',
+      task:         'Descreva o que você fez e o resultado...',
       quiz:         'Escreva o que aprendeu com este quiz...',
       checkpoint:   'Notas sobre este checkpoint...',
     };
@@ -338,14 +338,14 @@ export default function ContentOverlay({
 
         <div style={{ marginBottom: '16px' }}>
           <label style={labelStyle}>
-            O que voce aprendeu nesta etapa? *
+            O que você aprendeu nesta etapa? *
           </label>
           <textarea rows={3} placeholder={notePrompt[content_type] || 'Descreva o que aprendeu...'}
             value={submissionNote} onChange={(e) => setSubmissionNote(e.target.value)}
             style={{ ...inputStyle, resize: 'vertical' }} />
           {!canSubmit && submissionNote.length > 0 && (
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', marginTop: '4px' }}>
-              Minimo 10 caracteres
+              Mínimo 10 caracteres
             </p>
           )}
         </div>
@@ -358,7 +358,7 @@ export default function ContentOverlay({
             cursor: canSubmit && !loading ? 'pointer' : 'not-allowed',
           }}
           disabled={!canSubmit || loading}>
-          {loading ? 'Salvando...' : 'Marcar como Concluido'}
+          {loading ? 'Salvando...' : 'Marcar como Concluído'}
         </button>
       </div>
     );
@@ -605,7 +605,7 @@ export default function ContentOverlay({
                   padding:      '3px 8px',
                 }}
               >
-                Obrigatorio
+                Obrigatório
               </span>
             )}
 
@@ -626,7 +626,7 @@ export default function ContentOverlay({
                 }}
               >
                 <CheckIcon />
-                Concluido
+                Concluído
               </span>
             )}
           </div>

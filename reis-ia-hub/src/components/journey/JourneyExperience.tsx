@@ -67,13 +67,13 @@ const LOCAL_ANIMATIONS = `
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function getProgressNarrative(pct: number): string {
-  if (pct === 0)   return 'Inicio da jornada';
+  if (pct === 0)   return 'Início da jornada';
   if (pct <= 10)   return 'Primeiros passos';
   if (pct <= 25)   return 'Ganhando momentum';
   if (pct <= 50)   return 'Metade do caminho';
   if (pct <= 75)   return 'Reta final';
-  if (pct < 100)   return 'Quase la';
-  return 'Jornada concluida';
+  if (pct < 100)   return 'Quase lá';
+  return 'Jornada concluída';
 }
 
 function calcJourneyProgress(phases: JourneyPhase[]): number {
@@ -104,7 +104,7 @@ function getContentTypeLabel(type: string): string {
   const map: Record<string, string> = {
     task:         'Tarefa',
     material:     'Material',
-    presentation: 'Apresentacao',
+    presentation: 'Apresentação',
     checkpoint:   'Checkpoint',
     quiz:         'Quiz',
   };
@@ -788,7 +788,7 @@ export default function JourneyExperience({
 
           {/* Stats row */}
           <div style={{ display: 'flex', gap: '16px', fontSize: '11px', color: 'rgba(255,255,255,0.28)' }}>
-            <span>{doneCount}/{selectedPhase.nodes.length} concluidos</span>
+            <span>{doneCount}/{selectedPhase.nodes.length} concluídos</span>
             <span>·</span>
             <span>{doneXp}/{totalXpPhase} XP</span>
             {totalMinutes > 0 && (
@@ -832,7 +832,7 @@ export default function JourneyExperience({
             let detailText = '';
             if (isCompleted)              detailText = 'Concluido';
             else if (isLocked)            detailText = 'Bloqueado';
-            else if (node.mentor_feedback) detailText = 'Feedback disponivel';
+            else if (node.mentor_feedback) detailText = 'Feedback disponível';
             else if (node.estimated_minutes) detailText = `~${node.estimated_minutes} min`;
             else                          detailText = '';
 
@@ -1021,11 +1021,11 @@ export default function JourneyExperience({
     const estEndStr    = estEnd.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 
     const activityLog = [
-      { time: '12:04', text: 'Material concluido', xp: '+15 XP' },
+      { time: '12:04', text: 'Material concluído', xp: '+15 XP' },
       { time: '11:47', text: 'Tarefa enviada',     xp: '+25 XP' },
-      { time: '10:30', text: 'Fase 1 concluida',   xp: '+50 XP' },
+      { time: '10:30', text: 'Fase 1 concluída',   xp: '+50 XP' },
       { time: 'Ontem', text: 'Quiz completado',    xp: '+20 XP' },
-      { time: 'Ontem', text: 'Material concluido', xp: '+15 XP' },
+      { time: 'Ontem', text: 'Material concluído', xp: '+15 XP' },
     ];
 
     return (
@@ -1122,7 +1122,7 @@ export default function JourneyExperience({
             Inicio: <span style={{ color: 'rgba(255,255,255,0.45)' }}>{startDate}</span>
           </div>
           <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.28)' }}>
-            Previsao: <span style={{ color: 'rgba(255,255,255,0.45)' }}>~{estEndStr}</span>
+            Previsão: <span style={{ color: 'rgba(255,255,255,0.45)' }}>~{estEndStr}</span>
           </div>
         </div>
       </div>
@@ -1296,7 +1296,7 @@ export default function JourneyExperience({
           {[
             `Fase ${journey.phases.findIndex((p) => p.status === 'in_progress') + 1 || journey.phases.filter((p) => p.status !== 'locked').length}/${journey.phases.length}`,
             journey.status === 'active' ? 'Ativo' : journey.status,
-            `${doneNodes} concluidos`,
+            `${doneNodes} concluídos`,
             `${totalXp} XP`,
           ].map((item, i) => (
             <React.Fragment key={i}>

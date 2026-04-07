@@ -404,7 +404,7 @@ function CreateTaskForm({ mentorshipId, onCreated, onCancel }: CreateTaskFormPro
 
       <div style={{ marginBottom: '10px' }}>
         <label style={labelStyle}>Titulo *</label>
-        <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Ex: Preencher formulario de branding" style={inputStyle} required />
+        <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Ex: Preencher formulário de branding" style={inputStyle} required />
       </div>
 
       <div style={{ marginBottom: '10px' }}>

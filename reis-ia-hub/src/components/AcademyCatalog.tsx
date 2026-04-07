@@ -386,7 +386,7 @@ export default function AcademyCatalog({ courses, userProgress, userRole = 'star
           </svg>
         </div>
         <h3 style={{ fontSize: '16px', fontWeight: 500, color: '#fff', marginBottom: '8px' }}>
-          Nenhum curso disponivel
+          Nenhum curso disponível
         </h3>
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>
           Os cursos serao publicados em breve.
@@ -488,7 +488,7 @@ export default function AcademyCatalog({ courses, userProgress, userRole = 'star
       ) : (
         <div style={{ textAlign: 'center', padding: '48px 20px' }}>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.3)' }}>
-            Nenhum conteudo nessa categoria ainda.
+            Nenhum conteúdo nessa categoria ainda.
           </p>
         </div>
       )}

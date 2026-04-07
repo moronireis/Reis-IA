@@ -469,13 +469,13 @@ function PostCard({
           {/* Comment loading state */}
           {loadingComments ? (
             <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.25)', textAlign: 'center', padding: '12px 0' }}>
-              Carregando comentarios...
+              Carregando comentários...
             </div>
           ) : (
             <div style={{ marginBottom: '14px' }}>
               {topLevelComments.length === 0 ? (
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.2)', textAlign: 'center', padding: '8px 0' }}>
-                  Nenhum comentario ainda.
+                  Nenhum comentário ainda.
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -637,7 +637,7 @@ function PostCard({
           {/* New comment input */}
           <div style={{ display: 'flex', gap: '8px' }}>
             <input
-              placeholder="Escreva um comentario..."
+              placeholder="Escreva um comentário..."
               value={newComment}
               onChange={e => setNewComment(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSubmitComment()}
@@ -753,14 +753,14 @@ export default function CommunityFeed({
   };
 
   const handleDeletePost = async (postId: string) => {
-    if (!confirm('Excluir esta publicacao?')) return;
+    if (!confirm('Excluir esta publicação?')) return;
     try {
       const res = await fetch(`/api/posts/${postId}`, { method: 'DELETE' });
       if (res.ok) {
         setPosts(prev => prev.filter(p => p.id !== postId));
       }
     } catch {
-      setError('Erro ao excluir publicacao');
+      setError('Erro ao excluir publicação');
     }
   };
 
@@ -1060,7 +1060,7 @@ export default function CommunityFeed({
         ) : sortedPosts.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.28)', marginBottom: '8px' }}>
-              Nenhuma publicacao em #{activeSpace?.slug || 'geral'} ainda.
+              Nenhuma publicação em #{activeSpace?.slug || 'geral'} ainda.
             </p>
             {canPost && (
               <button
@@ -1114,7 +1114,7 @@ export default function CommunityFeed({
                   Faca parte da comunidade
                 </h3>
                 <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', maxWidth: '380px', margin: '0 auto 20px', lineHeight: 1.6 }}>
-                  Acesse todas as discussoes, poste suas duvidas e conecte com outros membros.
+                  Acesse todas as discussões, poste suas dúvidas e conecte com outros membros.
                 </p>
                 <a
                   href="/agendar"

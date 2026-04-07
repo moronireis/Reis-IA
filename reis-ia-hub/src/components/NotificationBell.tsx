@@ -277,7 +277,7 @@ export default function NotificationBell({ initialNotifications, initialUnreadCo
                 color: 'var(--text-quaternary)',
                 fontSize: 'var(--text-body-sm)',
               }}>
-                Nenhuma notificacao
+                Nenhuma notificação
               </div>
             ) : (
               notifications.map(n => (

@@ -814,7 +814,7 @@ export default function LessonView({
             </div>
             <div style={{ flex: 1 }}>
               <textarea
-                placeholder="Escreva sua duvida ou comentario..."
+                placeholder="Escreva sua dúvida ou comentário..."
                 value={newComment}
                 onChange={e => setNewComment(e.target.value)}
                 style={{
@@ -867,12 +867,12 @@ export default function LessonView({
           {/* Comments list */}
           {loadingComments ? (
             <div style={{ textAlign: 'center', padding: '24px 0', fontSize: '13px', color: 'rgba(255,255,255,0.25)' }}>
-              Carregando comentarios...
+              Carregando comentários...
             </div>
           ) : topLevelComments.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '24px 0' }}>
               <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.25)' }}>
-                Nenhum comentario ainda. Seja o primeiro a perguntar.
+                Nenhum comentário ainda. Seja o primeiro a perguntar.
               </p>
             </div>
           ) : (
