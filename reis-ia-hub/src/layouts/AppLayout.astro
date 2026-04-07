@@ -22,10 +22,8 @@ const userRole = (profile?.role || 'starter') as 'starter' | 'journey' | 'builde
 // Nav lock rules per role
 function isNavLocked(itemId: string): boolean {
   if (userRole === 'admin') return false;
-  // Academy locked for EVERYONE (em breve)
-  if (itemId === 'academy') return true;
-  // Dashboard + Journey + Community + Settings always unlocked
-  if (['dashboard', 'journey', 'community', 'settings'].includes(itemId)) return false;
+  // Dashboard + Journey + Community + Settings + Academy always unlocked in nav
+  if (['dashboard', 'journey', 'community', 'settings', 'academy'].includes(itemId)) return false;
   // Everything else locked for non-admin
   if (userRole === 'journey' || userRole === 'starter') return true;
   if (userRole === 'builder') {
@@ -35,9 +33,9 @@ function isNavLocked(itemId: string): boolean {
   return false;
 }
 
-// Items that show "em breve" instead of lock
-function isComingSoon(itemId: string): boolean {
-  return itemId === 'academy' && userRole !== 'admin';
+// No coming soon tags in nav anymore
+function isComingSoon(_itemId: string): boolean {
+  return false;
 }
 
 // Role badge styles
@@ -77,7 +75,7 @@ const unreadCount = notifications.filter((n: any) => !n.read).length;
 const navItems = [
   { id: 'dashboard', label: 'Área Inicial', href: '/dashboard', icon: 'grid' },
   { id: 'projects', label: 'Projetos', href: '/projects', icon: 'layers' },
-  { id: 'academy', label: 'Academy', href: '#', icon: 'play' },
+  { id: 'academy', label: 'Academy', href: '/academy', icon: 'play' },
   { id: 'journey', label: 'Journey', href: '/journey', icon: 'map' },
   { id: 'community', label: 'Comunidade', href: '/community', icon: 'users' },
   { id: 'vault', label: 'Vault', href: '/vault', icon: 'archive' },
