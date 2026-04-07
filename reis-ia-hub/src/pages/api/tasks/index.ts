@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../lib/supabase-server';
 import { requireAdmin } from '../../../lib/api-auth';
+import { notify } from '../../../lib/notifications';
 
 export const GET: APIRoute = async ({ url, locals }) => {
   const auth = requireAdmin(locals);
@@ -52,5 +53,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const { data, error } = await supabase.from('tasks').insert(insert).select().single();
 
   if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+
+  // Notify assignee if task is assigned to someone
+  if (data.assignee_id) {
+    notify({
+      userId: data.assignee_id,
+      type: 'task',
+      title: 'Nova task atribuida',
+      body: data.title,
+      link: '/admin/tasks',
+    });
+  }
+
   return new Response(JSON.stringify(data), { status: 201 });
 };

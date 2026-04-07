@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../../lib/supabase-server';
+import { notifyAdmins, notify } from '../../../../lib/notifications';
 
 export const prerender = false;
 
@@ -125,8 +126,15 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
 
     if (nodeError) return new Response(JSON.stringify({ error: nodeError.message }), { status: 500 });
 
-    // If completing a node, update XP and check phase unlocks
+    // If completing a node, update XP, check phase unlocks, and notify
     if (status === 'completed' && nodeData) {
+      // Notify admins about progress
+      notifyAdmins({
+        type: 'system',
+        title: 'Node concluido',
+        body: `${profile.full_name || 'Aluno'} concluiu "${nodeData.title}" na jornada`,
+        link: `/journey/${id}`,
+      });
       // Add XP
       const { data: journeyData } = await supabase
         .from('student_journeys')
@@ -162,6 +170,19 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
       .single();
 
     if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+
+    // Notify student about feedback
+    const { data: journey } = await supabase.from('student_journeys').select('student_id').eq('id', id).single();
+    if (journey?.student_id) {
+      notify({
+        userId: journey.student_id,
+        type: 'mentoria',
+        title: 'Feedback do mentor',
+        body: `Voce recebeu feedback em "${data.title}"`,
+        link: `/journey/${id}`,
+      });
+    }
+
     return new Response(JSON.stringify(data), { status: 200 });
   }
 

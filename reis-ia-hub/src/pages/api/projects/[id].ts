@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../lib/supabase-server';
 import { requireAuth, requireAdmin } from '../../../lib/api-auth';
+import { notify } from '../../../lib/notifications';
 
 export const GET: APIRoute = async ({ params, locals }) => {
   const profile = requireAuth(locals);
@@ -51,6 +52,18 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     .single();
 
   if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+
+  // Notify client about project update
+  if (data.client_id && (body.status || body.progress)) {
+    notify({
+      userId: data.client_id,
+      type: 'project_update',
+      title: 'Projeto atualizado',
+      body: `${data.name}${body.status ? ` — Status: ${body.status}` : ''}${body.progress ? ` — ${body.progress}% concluido` : ''}`,
+      link: `/projects/${data.id}`,
+    });
+  }
+
   return new Response(JSON.stringify(data), { status: 200 });
 };
 

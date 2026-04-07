@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../lib/supabase-server';
 import { requireAdmin } from '../../../lib/api-auth';
+import { notifyAdmins } from '../../../lib/notifications';
 
 export const GET: APIRoute = async ({ locals }) => {
   const profile = requireAdmin(locals);
@@ -29,5 +30,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
     .single();
 
   if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+
+  notifyAdmins({
+    type: 'system',
+    title: 'Novo deal',
+    body: `${data.title} — R$${data.value?.toLocaleString('pt-BR') || '0'}`,
+    link: '/admin/crm',
+  });
+
   return new Response(JSON.stringify(data), { status: 201 });
 };

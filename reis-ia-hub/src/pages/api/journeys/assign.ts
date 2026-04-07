@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../lib/supabase-server';
+import { notify } from '../../../lib/notifications';
 
 export const prerender = false;
 
@@ -26,6 +27,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
+
+  // Notify student about new journey
+  const { data: template } = await supabase.from('journey_templates').select('title').eq('id', template_id).single();
+  notify({
+    userId: student_id,
+    type: 'system',
+    title: 'Nova jornada atribuida',
+    body: template?.title ? `Sua jornada "${template.title}" esta disponivel` : 'Uma nova jornada foi atribuida a voce',
+    link: `/journey/${data}`,
+  });
 
   return new Response(JSON.stringify({ journey_id: data }), { status: 201 });
 };

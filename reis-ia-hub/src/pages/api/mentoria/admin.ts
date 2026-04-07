@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../lib/supabase-server';
+import { notifyMany } from '../../../lib/notifications';
 
 export const prerender = false;
 
@@ -56,6 +57,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
+
+  // Notify mentee and mentor
+  notifyMany([mentee_id, mentor_id], {
+    type: 'mentoria',
+    title: 'Nova mentoria criada',
+    body: `Programa ${data.program} — sua mentoria esta ativa`,
+    link: '/mentoria',
+  });
 
   return new Response(JSON.stringify(data), { status: 201 });
 };

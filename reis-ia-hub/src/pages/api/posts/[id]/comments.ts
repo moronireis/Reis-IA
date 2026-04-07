@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../../lib/supabase-server';
+import { notify } from '../../../../lib/notifications';
 
 export const GET: APIRoute = async ({ params }) => {
   const supabase = createServerClient();
@@ -48,10 +49,10 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
   if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
 
-  // Increment comments_count on post
+  // Increment comments_count and get post author
   const { data: post } = await supabase
     .from('posts')
-    .select('comments_count')
+    .select('comments_count, author_id')
     .eq('id', params.id)
     .single();
 
@@ -60,6 +61,17 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       .from('posts')
       .update({ comments_count: (post.comments_count ?? 0) + 1 })
       .eq('id', params.id);
+
+    // Notify post author (if not self-commenting)
+    if (post.author_id && post.author_id !== profile.id) {
+      notify({
+        userId: post.author_id,
+        type: 'comment',
+        title: 'Novo comentario',
+        body: `${profile.full_name || 'Alguem'} comentou no seu post`,
+        link: '/community',
+      });
+    }
   }
 
   return new Response(JSON.stringify(data), { status: 201 });
