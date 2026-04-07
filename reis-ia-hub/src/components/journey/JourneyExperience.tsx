@@ -829,11 +829,6 @@ export default function JourneyExperience({
               cardShadow = '0 0 0 1px rgba(74,144,255,0.06)';
             }
 
-            if (isHovered && !isLocked) {
-              cardBg     = 'rgba(20,20,30,0.90)';
-              cardShadow = '0 0 0 1px rgba(255,255,255,0.09)';
-            }
-
             let detailText = '';
             if (isCompleted)              detailText = 'Concluido';
             else if (isLocked)            detailText = 'Bloqueado';
