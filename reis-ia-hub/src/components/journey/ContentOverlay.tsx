@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import MarkdownRenderer from './MarkdownRenderer';
+import SlideRenderer from './SlideRenderer';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -698,9 +699,11 @@ export default function ContentOverlay({
             </div>
           )}
 
-          {/* Markdown content */}
+          {/* Content body — slides for presentations, markdown for others */}
           {node.content_body && (
-            <MarkdownRenderer content={node.content_body} accentColor={typeColor} />
+            node.content_type === 'presentation' || node.content_body.trimStart().startsWith('<!-- slides -->')
+              ? <SlideRenderer content={node.content_body.replace('<!-- slides -->', '')} accentColor={typeColor} />
+              : <MarkdownRenderer content={node.content_body} accentColor={typeColor} />
           )}
 
           {/* Mentor feedback (read) */}
