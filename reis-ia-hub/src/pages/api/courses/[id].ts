@@ -12,7 +12,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
     .eq('id', params.id)
     .single();
 
-  if (courseError) return new Response(JSON.stringify({ error: courseError.message }), { status: 404 });
+  if (courseError || !course) return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
 
   // Non-admins can only see published courses
   if (!isAdmin && course.status !== 'published') {

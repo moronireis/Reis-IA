@@ -1,7 +1,11 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../lib/supabase-server';
+import { requireAuth, requireAdmin } from '../../../lib/api-auth';
 
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, locals }) => {
+  const profile = requireAuth(locals);
+  if (profile instanceof Response) return profile;
+
   const supabase = createServerClient();
 
   const { data: project, error: projectError } = await supabase
@@ -11,7 +15,7 @@ export const GET: APIRoute = async ({ params }) => {
     .single();
 
   if (projectError || !project) {
-    return new Response(JSON.stringify({ error: 'Projeto não encontrado' }), { status: 404 });
+    return new Response(JSON.stringify({ error: 'Projeto nao encontrado' }), { status: 404 });
   }
 
   const { data: phases } = await supabase
@@ -33,7 +37,10 @@ export const GET: APIRoute = async ({ params }) => {
   }), { status: 200 });
 };
 
-export const PATCH: APIRoute = async ({ params, request }) => {
+export const PATCH: APIRoute = async ({ params, request, locals }) => {
+  const auth = requireAdmin(locals);
+  if (auth instanceof Response) return auth;
+
   const supabase = createServerClient();
   const body = await request.json();
   const { data, error } = await supabase
@@ -47,12 +54,12 @@ export const PATCH: APIRoute = async ({ params, request }) => {
   return new Response(JSON.stringify(data), { status: 200 });
 };
 
-export const DELETE: APIRoute = async ({ params }) => {
+export const DELETE: APIRoute = async ({ params, locals }) => {
+  const auth = requireAdmin(locals);
+  if (auth instanceof Response) return auth;
+
   const supabase = createServerClient();
-  const { error } = await supabase
-    .from('projects')
-    .delete()
-    .eq('id', params.id);
+  const { error } = await supabase.from('projects').delete().eq('id', params.id);
 
   if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   return new Response(null, { status: 204 });

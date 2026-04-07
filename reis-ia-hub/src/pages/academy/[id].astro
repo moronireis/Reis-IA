@@ -25,6 +25,14 @@ if (profile?.role !== 'admin' && course.status !== 'published') {
   return Astro.redirect('/academy');
 }
 
+// Role-based access check
+const ROLE_LEVEL: Record<string, number> = { starter: 1, builder: 2, mentoria: 3, admin: 4 };
+const userLevel = ROLE_LEVEL[profile?.role || 'starter'] || 1;
+const requiredLevel = ROLE_LEVEL[course.access_level || 'starter'] || 1;
+if (userLevel < requiredLevel) {
+  return Astro.redirect('/academy');
+}
+
 // Fetch lessons
 let lessonsQuery = supabase
   .from('lessons')
