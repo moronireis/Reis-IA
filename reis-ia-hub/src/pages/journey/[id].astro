@@ -19,7 +19,7 @@ const supabase = createServerClient();
 const isAdmin = profile.role === 'admin';
 
 // Fetch journey
-const { data: journey } = await supabase
+const { data: journey, error: journeyError } = await supabase
   .from('student_journeys')
   .select(`
     *,
@@ -27,6 +27,10 @@ const { data: journey } = await supabase
   `)
   .eq('id', id)
   .single();
+
+if (journeyError) {
+  console.error('[journey/id] Query error:', journeyError.message, journeyError.details);
+}
 
 if (!journey) {
   return Astro.redirect('/journey');
