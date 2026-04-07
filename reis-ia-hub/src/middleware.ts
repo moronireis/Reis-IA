@@ -50,20 +50,20 @@ export const onRequest = defineMiddleware(async (context, next) => {
         return context.redirect('/login');
       }
 
-      // Set new tokens
+      // Set new tokens with extended duration
       context.cookies.set('sb-access-token', refreshData.session.access_token, {
         path: '/',
         httpOnly: true,
         secure: import.meta.env.PROD,
         sameSite: 'lax',
-        maxAge: 60 * 60,
+        maxAge: 60 * 60 * 24,
       });
       context.cookies.set('sb-refresh-token', refreshData.session.refresh_token, {
         path: '/',
         httpOnly: true,
         secure: import.meta.env.PROD,
         sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 60 * 60 * 24 * 30,
       });
 
       context.locals.user = refreshData.session.user;
@@ -73,6 +73,25 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
   } else {
     context.locals.user = user;
+
+    // Proactively extend cookie TTL on every successful request
+    // This keeps the session alive as long as the user is active
+    context.cookies.set('sb-access-token', accessToken, {
+      path: '/',
+      httpOnly: true,
+      secure: import.meta.env.PROD,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24,
+    });
+    if (refreshToken) {
+      context.cookies.set('sb-refresh-token', refreshToken, {
+        path: '/',
+        httpOnly: true,
+        secure: import.meta.env.PROD,
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 30,
+      });
+    }
   }
 
   // Fetch profile with role using service role key

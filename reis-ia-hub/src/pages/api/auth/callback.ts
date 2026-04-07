@@ -11,17 +11,17 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     cookies.set('sb-access-token', access_token, {
       path: '/',
       httpOnly: true,
-      secure: false,
+      secure: import.meta.env.PROD,
       sameSite: 'lax',
-      maxAge: 60 * 60, // 1 hora
+      maxAge: 60 * 60 * 24, // 24 horas
     });
 
     cookies.set('sb-refresh-token', refresh_token, {
       path: '/',
       httpOnly: true,
-      secure: false,
+      secure: import.meta.env.PROD,
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 dias
+      maxAge: 60 * 60 * 24 * 30, // 30 dias
     });
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
