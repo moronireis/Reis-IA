@@ -19,6 +19,17 @@ const { title } = Astro.props;
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body class="min-h-screen flex items-center justify-center" style="background: var(--surface-0);">
+  <!-- Auth loader -->
+  <div id="auth-loader" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.80); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <svg class="hourglass-spin" width="28" height="28" viewBox="0 0 64 64" fill="none" stroke="#4A90FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="14" y1="8" x2="50" y2="8" />
+      <line x1="50" y1="8" x2="14" y2="56" />
+      <line x1="14" y1="8" x2="25" y2="25" />
+      <line x1="39" y1="39" x2="50" y2="56" />
+      <line x1="14" y1="56" x2="50" y2="56" />
+    </svg>
+  </div>
+
   <div class="w-full max-w-md px-6">
     <!-- Logo -->
     <div class="text-center mb-10">
@@ -30,4 +41,22 @@ const { title } = Astro.props;
     <slot />
   </div>
 </body>
+<style>
+  .hourglass-spin {
+    animation: hourglassSpin 1.6s ease-in-out infinite;
+  }
+  @keyframes hourglassSpin {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+<script>
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', () => {
+      const loader = document.getElementById('auth-loader');
+      if (loader) loader.style.display = 'flex';
+    });
+  });
+</script>
 </html>
