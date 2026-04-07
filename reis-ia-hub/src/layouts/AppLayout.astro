@@ -299,7 +299,7 @@ const adminNavItems = [
     <header class="sticky top-0 flex items-center justify-between px-8" style={`height: var(--topbar-height); background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); z-index: var(--z-nav);`}>
       <div class="flex items-center gap-3">
         <!-- Hamburger — mobile only -->
-        <button id="sidebar-toggle" aria-label="Abrir menu" style="display: none; background: none; border: none; cursor: pointer; padding: 6px; color: var(--text-secondary); flex-shrink: 0;">
+        <button id="sidebar-toggle" class="sidebar-toggle-btn" aria-label="Abrir menu">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
             <line x1="3" y1="6" x2="21" y2="6" />
             <line x1="3" y1="12" x2="21" y2="12" />
@@ -331,6 +331,18 @@ const adminNavItems = [
     color: var(--accent-blue) !important;
   }
 
+  /* Hamburger button — hidden on desktop */
+  .sidebar-toggle-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   /* ── Responsive sidebar ── */
   @media (max-width: 768px) {
     #app-sidebar {
@@ -340,7 +352,7 @@ const adminNavItems = [
     #app-sidebar.open {
       transform: translateX(0);
     }
-    #sidebar-toggle {
+    .sidebar-toggle-btn {
       display: flex !important;
       align-items: center;
       justify-content: center;
@@ -375,43 +387,51 @@ const adminNavItems = [
 </style>
 
 <script>
-  // ── Mobile sidebar toggle ─────────────────────────────────────────────────
-  function initSidebarToggle() {
-    const toggle = document.getElementById('sidebar-toggle');
+  // ── Mobile sidebar — uses event delegation for View Transition compatibility ──
+  function closeSidebar() {
     const sidebar = document.getElementById('app-sidebar');
     const backdrop = document.getElementById('sidebar-backdrop');
-    if (!toggle || !sidebar || !backdrop) return;
+    if (sidebar) sidebar.classList.remove('open');
+    if (backdrop) backdrop.style.display = 'none';
+    document.body.style.overflow = '';
+  }
 
-    function openSidebar() {
-      sidebar.classList.add('open');
-      backdrop.style.display = 'block';
-      document.body.style.overflow = 'hidden';
-    }
+  function openSidebar() {
+    const sidebar = document.getElementById('app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar) sidebar.classList.add('open');
+    if (backdrop) backdrop.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
 
-    function closeSidebar() {
-      sidebar.classList.remove('open');
-      backdrop.style.display = 'none';
-      document.body.style.overflow = '';
-    }
+  // Single global click handler — works across View Transitions
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
 
-    toggle.addEventListener('click', () => {
-      if (sidebar.classList.contains('open')) {
+    // Toggle button clicked
+    if (target.closest('#sidebar-toggle')) {
+      e.preventDefault();
+      const sidebar = document.getElementById('app-sidebar');
+      if (sidebar?.classList.contains('open')) {
         closeSidebar();
       } else {
         openSidebar();
       }
-    });
+      return;
+    }
 
-    backdrop.addEventListener('click', closeSidebar);
+    // Backdrop clicked
+    if (target.closest('#sidebar-backdrop')) {
+      closeSidebar();
+      return;
+    }
 
-    // Close on nav link click (mobile navigation)
-    sidebar.querySelectorAll('a[href]').forEach(link => {
-      link.addEventListener('click', () => {
-        if (window.innerWidth <= 768) closeSidebar();
-      });
-    });
-  }
+    // Nav link clicked on mobile
+    if (window.innerWidth <= 768 && target.closest('#app-sidebar a[href]')) {
+      closeSidebar();
+    }
+  });
 
-  document.addEventListener('astro:page-load', initSidebarToggle);
-  initSidebarToggle();
+  // Close sidebar on page navigation
+  document.addEventListener('astro:before-preparation', closeSidebar);
 </script>
