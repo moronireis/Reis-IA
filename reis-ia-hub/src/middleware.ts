@@ -54,14 +54,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
       context.cookies.set('sb-access-token', refreshData.session.access_token, {
         path: '/',
         httpOnly: true,
-        secure: false,
+        secure: import.meta.env.PROD,
         sameSite: 'lax',
         maxAge: 60 * 60,
       });
       context.cookies.set('sb-refresh-token', refreshData.session.refresh_token, {
         path: '/',
         httpOnly: true,
-        secure: false,
+        secure: import.meta.env.PROD,
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7,
       });

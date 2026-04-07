@@ -9,12 +9,10 @@ export const prerender = false;
 // Body: { name, email, phone?, instagram?, source, form_type?, cargo?, faturamento?, objetivo?, notes? }
 // Header: x-webhook-key for basic auth
 
-const WEBHOOK_KEY = 'reisia-hub-webhook-2026';
-
 export const POST: APIRoute = async ({ request }) => {
   // Basic auth via header
   const authKey = request.headers.get('x-webhook-key');
-  if (authKey !== WEBHOOK_KEY) {
+  if (!authKey || authKey !== import.meta.env.WEBHOOK_KEY) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
   }
 

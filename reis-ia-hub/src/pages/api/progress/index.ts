@@ -1,7 +1,11 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../lib/supabase-server';
+import { requireAuth } from '../../../lib/api-auth';
 
 export const GET: APIRoute = async ({ url, locals }) => {
+  const profile = requireAuth(locals);
+  if (profile instanceof Response) return profile;
+
   const supabase = createServerClient();
   const userId = url.searchParams.get('user_id');
   const courseId = url.searchParams.get('course_id');

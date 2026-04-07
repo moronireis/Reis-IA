@@ -1,7 +1,11 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../lib/supabase-server';
+import { requireAdmin } from '../../../lib/api-auth';
 
-export const PATCH: APIRoute = async ({ params, request }) => {
+export const PATCH: APIRoute = async ({ params, request, locals }) => {
+  const auth = requireAdmin(locals);
+  if (auth instanceof Response) return auth;
+
   const supabase = createServerClient();
   const body = await request.json();
 
@@ -31,7 +35,10 @@ export const PATCH: APIRoute = async ({ params, request }) => {
   return new Response(JSON.stringify(data), { status: 200 });
 };
 
-export const DELETE: APIRoute = async ({ params }) => {
+export const DELETE: APIRoute = async ({ params, locals }) => {
+  const auth = requireAdmin(locals);
+  if (auth instanceof Response) return auth;
+
   const supabase = createServerClient();
   const { error } = await supabase.from('tasks').delete().eq('id', params.id);
 
