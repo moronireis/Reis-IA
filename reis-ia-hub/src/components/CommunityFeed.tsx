@@ -92,20 +92,14 @@ function PinIcon() {
   );
 }
 
-const SPACE_LABELS: Record<string, string> = {
-  geral: '#',
-  journeys: '#',
-  builders: '#',
-  mentorados: '#',
-  start: '#',
-  anuncios: '#',
-};
-
-function SpaceIcon({ slug }: { slug: string }): React.ReactElement {
+function HashIcon() {
   return (
-    <span style={{ fontSize: '13px', fontWeight: 700, opacity: 0.5 }}>
-      {SPACE_LABELS[slug] || '#'}
-    </span>
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="4" y1="9" x2="20" y2="9" />
+      <line x1="4" y1="15" x2="20" y2="15" />
+      <line x1="10" y1="3" x2="8" y2="21" />
+      <line x1="16" y1="3" x2="14" y2="21" />
+    </svg>
   );
 }
 
@@ -781,7 +775,6 @@ export default function CommunityFeed({
   const isStarterMode = userRole === 'starter';
   const isJourneyMode = userRole === 'journey';
 
-  // Space access rules by role
   function canAccessSpace(slug: string): boolean {
     if (isAdmin) return true;
     if (isJourneyMode) return ['geral', 'journeys'].includes(slug);
@@ -790,14 +783,9 @@ export default function CommunityFeed({
     return slug === 'geral';
   }
 
-  // Can the user post in the current space?
   const isAnuncios = activeSpace?.slug === 'anuncios';
   const hasSpaceAccess = canAccessSpace(activeSpace?.slug || '');
-  const canPost = isAdmin
-    ? true
-    : isStarterMode
-      ? false
-      : hasSpaceAccess && !isAnuncios && !activeSpace?.admin_only;
+  const canPost = isAdmin ? true : isStarterMode ? false : hasSpaceAccess && !isAnuncios && !activeSpace?.admin_only;
 
   // Pinned posts first
   const sortedPosts = [...posts].sort((a, b) => {
@@ -813,9 +801,7 @@ export default function CommunityFeed({
 
   function SpaceButton({ space }: { space: Space }) {
     const isActive = space.id === activeSpaceId;
-    const accessible = canAccessSpace(space.slug);
-    const locked = !accessible && !isAdmin;
-
+    const locked = !canAccessSpace(space.slug) && !isAdmin;
     return (
       <button
         onClick={() => !locked && handleSpaceChange(space.id)}
@@ -840,12 +826,12 @@ export default function CommunityFeed({
         onMouseLeave={e => { if (!isActive && !locked) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
       >
         <span style={{ color: locked ? 'rgba(255,255,255,0.15)' : isActive ? '#4A90FF' : 'rgba(255,255,255,0.3)', flexShrink: 0 }}>
-          <SpaceIcon slug={space.slug} />
+          <HashIcon />
         </span>
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {space.name || space.slug}
         </span>
-        {locked && (
+        {(locked || space.admin_only) && (
           <span style={{ marginLeft: 'auto', color: 'rgba(255,255,255,0.15)', flexShrink: 0 }}>
             <LockIcon />
           </span>
