@@ -140,17 +140,18 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
         link: `/journey/${id}`,
       });
 
-      // Save checkpoint feedback to hub_knowledge
-      if (isCheckpoint && feedbackText) {
+      // Save all completions to hub_knowledge (progress tracking per user)
+      const noteText = submission_note || '';
+      if (noteText || isCheckpoint) {
         await supabase.from('hub_knowledge').insert({
           user_id: profile.id,
           user_name: profile.full_name || null,
-          category: 'checkpoint_feedback',
-          title: `Checkpoint: ${nodeData.title} — ${profile.full_name || 'Aluno'}`,
-          summary: feedbackText.substring(0, 200),
-          content: feedbackText,
+          category: isCheckpoint ? 'checkpoint_feedback' : 'survey_response',
+          title: `${isCheckpoint ? 'Checkpoint' : 'Entrega'}: ${nodeData.title} — ${profile.full_name || 'Aluno'}`,
+          summary: noteText ? noteText.substring(0, 200) : `Concluiu: ${nodeData.title}`,
+          content: noteText || `Node "${nodeData.title}" concluído por ${profile.full_name || 'Aluno'}`,
           source: `journey:${id}`,
-          tags: ['checkpoint', 'feedback', 'journey'],
+          tags: [isCheckpoint ? 'checkpoint' : 'entrega', nodeData.content_type, 'journey'],
           journey_id: id,
         }).then(() => {}).catch(() => {});
       }
