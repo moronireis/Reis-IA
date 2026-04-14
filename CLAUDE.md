@@ -34,13 +34,26 @@ Full business context: `brain/context/business-profile.md`
 | data-engineer | Supabase schemas, migrations, RLS policies, indexes, triggers. Single source of truth for data model. | sonnet |
 | offer-architect | Grand Slam Offer design (Hormozi): dream outcome, value stack, guarantee, scarcity, pricing, naming. | opus |
 | funnel-architect | End-to-end funnels (Brunson + DigitalMarketer + Hormozi): value ladder, sequences, upsells, bridges, automations. | opus |
-| social-media-director | Content director (formerly social-media-team). Orchestrates the 4 content specialists (Phase B pending). File still lives at `social-media-team.md`. | opus |
+| social-media-director | Content director (formerly social-media-team). Orchestrates the 4 content specialists below. File still lives at `social-media-team.md`. | opus |
+| hook-specialist | Generates 10+ hook variations per request (Reels, Shorts, LinkedIn, carousels). Covers all 4 Hormozi angles. Platform-specific retention windows. | sonnet |
+| reels-scriptwriter | Recording-ready Reels/Shorts/TikTok scripts (15-60s) with shot list, framing, b-roll cues, text overlays, caption brief. | sonnet |
+| linkedin-strategist | LinkedIn B2B executive content: posts, carousels, newsletters, strategic comments. 2026 algorithm-aware. | sonnet |
+| carousel-designer-writer | 10-slide carousel copy + structured visual brief for designer-agent / educational-designer handoff. | sonnet |
+| video-editor-director | Stack 3 lead. Plans full post-production per video: cut scoring, caption style, B-roll, aspect ratios, thumbnails. Delegates execution — never runs ffmpeg. | opus |
+| clip-cutter | Stack 3 operator. Reads Whisper transcripts and returns ranked JSON coordinates for viral clips (OSS replacement for Opus Clip). | sonnet |
+| caption-broll-operator | Stack 3 operator. Produces ASS subtitle files in REIS [IA] brand style + semantic B-roll queries and insertion timelines (OSS replacement for Submagic + Runway B-roll). | sonnet |
 
 ### Phase A — Agency Technical Foundation (2026-04-14)
 
 Phase A of the agency expansion added 6 new agents, refactored `social-media-team` into `social-media-director`, and formally activated `chief-strategy-advisor` as Board Advisor (Option A — pressure-tester at macro decision points, NOT in day-to-day pipeline). The new agents cover the technical execution layer (integration-engineer, qa-agent, devops-agent, data-engineer) and the offer/funnel strategic layer (offer-architect, funnel-architect).
 
 Phase A is foundation-only: no integrations were actually built, no MCP servers were installed. The first real task for `integration-engineer` will come in Phase B, gated on Meta App approval.
+
+### Phase B partial — Content Specialists (2026-04-14)
+
+Phase B partial added 4 content specialists that the `social-media-director` orchestrates: `hook-specialist`, `reels-scriptwriter`, `linkedin-strategist`, `carousel-designer-writer`. Stack 2 (content production) is now fully connected to the Copy Squad: every specialist output passes through `humanizer` → `reviewer` → `social-media-director` consolidation → `cmo-strategist` sign-off before publishing. The upcoming Stack 3 (video editing: `clip-cutter`, `caption-broll-operator`) will consume the structured shot list and overlay tables produced by `reels-scriptwriter`.
+
+Delegation flow inside Stack 2: the director receives a brief from `cmo-strategist`, starts with `hook-specialist` to generate a hook menu, picks the winner, then forwards to the format-specific specialist (Reels → `reels-scriptwriter`, LinkedIn → `linkedin-strategist`, carousel → `carousel-designer-writer`). For carousel visual implementation, the carousel agent produces a designer brief consumed by `designer-agent` or `educational-designer`.
 
 Transversal support agents (used by most pipelines):
 - `integration-engineer`, `qa-agent`, `devops-agent`, `data-engineer` support all code-producing pipelines
@@ -86,6 +99,17 @@ orchestrator
     +---> executor-agent           (configures external platforms and tools)
     +---> analysis-agent           (produces context summaries for any agent)
     +---> execution                (file operations when needed)
+    +---> social-media-director    (Stack 2 content production — orchestrates 4 specialists)
+    |        +---> SOCIAL MEDIA PIPELINE:
+    |        |     cmo-strategist (brief + Hormozi 4 angles)
+    |        |       → social-media-director (routes by format)
+    |        |         → hook-specialist (generates 10+ hook menu)
+    |        |           → {reels-scriptwriter | linkedin-strategist | carousel-designer-writer}
+    |        |             → humanizer (PT-BR voice + AI pattern removal)
+    |        |               → reviewer (quality gate: APPROVE / REVISE)
+    |        |                 → social-media-director (consolidation)
+    |        |                   → cmo-strategist (strategic sign-off)
+    |        |                     → publishing (carousels route through designer-agent first)
     +---> education-director       (curriculum mapping, briefings, quality review)
     |        +---> EDUCATIONAL PIPELINE:
     |        |     education-director (briefing)
