@@ -26,6 +26,39 @@ Full business context: `brain/context/business-profile.md`
 | education-director | Curriculum mapping, lesson briefings, educational pipeline management, quality review. | opus |
 | roteirista-aulas | Video lesson scriptwriting from briefings, script enhancement/reformulation. | sonnet |
 | educational-designer | Visual elements for lessons: slides, mind maps, diagrams, transition screens. | sonnet |
+| task-router | Smart cost optimizer: classifies tasks and routes to optimal model (ollama/haiku/sonnet/opus). | haiku |
+| chief-strategy-advisor | Board Advisor / Conselheiro Estratégico. Pressure-tests macro decisions (new pillars, launches, pricing, positioning). NOT in day-to-day pipeline. | opus |
+| integration-engineer | Third-party APIs, webhooks, MCP servers (FastMCP 3.0), OAuth, Supabase edge functions, automation pipelines (Whisper, ffmpeg, Playwright, wappalyzer, SearXNG). | sonnet |
+| qa-agent | End-to-end functional testing (Playwright + API + DB). Deploy gate — can BLOCK devops-agent on regressions. | sonnet |
+| devops-agent | Deploys, env vars (Vercel), CI/CD, monitoring. Respects qa-agent as deploy gate. Strict git safety. | sonnet |
+| data-engineer | Supabase schemas, migrations, RLS policies, indexes, triggers. Single source of truth for data model. | sonnet |
+| offer-architect | Grand Slam Offer design (Hormozi): dream outcome, value stack, guarantee, scarcity, pricing, naming. | opus |
+| funnel-architect | End-to-end funnels (Brunson + DigitalMarketer + Hormozi): value ladder, sequences, upsells, bridges, automations. | opus |
+| social-media-director | Content director (formerly social-media-team). Orchestrates the 4 content specialists (Phase B pending). File still lives at `social-media-team.md`. | opus |
+
+### Phase A — Agency Technical Foundation (2026-04-14)
+
+Phase A of the agency expansion added 6 new agents, refactored `social-media-team` into `social-media-director`, and formally activated `chief-strategy-advisor` as Board Advisor (Option A — pressure-tester at macro decision points, NOT in day-to-day pipeline). The new agents cover the technical execution layer (integration-engineer, qa-agent, devops-agent, data-engineer) and the offer/funnel strategic layer (offer-architect, funnel-architect).
+
+Phase A is foundation-only: no integrations were actually built, no MCP servers were installed. The first real task for `integration-engineer` will come in Phase B, gated on Meta App approval.
+
+Transversal support agents (used by most pipelines):
+- `integration-engineer`, `qa-agent`, `devops-agent`, `data-engineer` support all code-producing pipelines
+- `offer-architect` and `funnel-architect` feed the Copy Squad upstream of `direct-response-copywriter`
+- `chief-strategy-advisor` reviews `cmo-strategist` output at macro decision points only (new pillar launches, new major offers, positioning shifts, budget calls above threshold)
+
+### Token Optimization
+
+The `task-router` agent runs on haiku (cheapest) and classifies tasks into 4 tiers:
+
+| Tier | Model | Cost | When |
+|------|-------|------|------|
+| 0 | Ollama local (llama3, qwen2.5-coder, reis-ops, reis-strategy) | FREE | Exploration, reading, formatting, explanations |
+| 1 | Haiku | $0.25/M in | Simple edits, single-file, clear instructions |
+| 2 | Sonnet | $3/M in | Multi-file implementation, bug fixes, copy writing |
+| 3 | Opus | $15/M in | Architecture, strategy, orchestration, ambiguous problems |
+
+Ollama queries use: `.claude/scripts/ollama-query.sh <model> <prompt> [context_file]`
 
 ### Workflow Chain
 
@@ -33,12 +66,21 @@ Full business context: `brain/context/business-profile.md`
 orchestrator
     +---> market-research-analyst  (produces research)
     +---> cmo-strategist           (consumes research, produces strategy, directs Copy Squad)
+    |        +---> [OPTIONAL] chief-strategy-advisor (pressure-test at macro decision points only)
+    |        +---> offer-architect  (Grand Slam Offers from strategic angle)
+    |        +---> funnel-architect (value ladder + sequences from objective)
     |        +---> COPY SQUAD PIPELINE:
     |        |     cmo-strategist (brief + angles)
+    |        |       ← offer-architect + funnel-architect (structured inputs)
     |        |       → direct-response-copywriter (raw copy + Hormozi)
     |        |         → humanizer (PT-BR voice + AI pattern removal)
     |        |           → reviewer (quality gate: APPROVE / REVISE)
     |        |             → cmo-strategist (final sign-off)
+    +---> TRANSVERSAL TECHNICAL SUPPORT (used by any code-producing pipeline):
+    |        integration-engineer  (APIs, webhooks, MCP servers, automation pipelines)
+    |        data-engineer         (Supabase schemas, migrations, RLS)
+    |        qa-agent              (end-to-end tests, deploy gate)
+    |        devops-agent          (deploys, env vars, monitoring — respects qa-agent BLOCK)
     +---> designer-agent           (consumes copy + strategy, produces design specs)
     +---> dev-agent                (consumes design specs + copy, produces code)
     +---> executor-agent           (configures external platforms and tools)
@@ -50,7 +92,37 @@ orchestrator
     |        |       → roteirista-aulas (script from briefing)
     |        |         → educational-designer (visuals from approved script)
     |        |           → education-director (final review)
+    +---> BRANDING PIPELINE (Protocolo Branding):
+    |        brand strategists (concept + voice profile)
+    |          → designer-agent (design system tokens)
+    |            → creative-director (motion/visual briefs)
+    |              → vfx-motion-designer (implementation)
+    |                → brand-site-builder (brandbook documentation)
+    |                  → designer-agent + reviewer (brand audit)
 ```
+
+### Branding Pipeline (Protocolo Branding)
+
+A 10-phase pipeline activated by "Protocolo Branding". Coordinates 10 agents from strategy through visual implementation:
+
+**Strategy Phases (1-5):**
+1. `company-brand-strategist` → brand architecture, positioning, values
+2. `personal-brand-strategist` → persona, archetypes, narrative
+3. `movement-brand-strategist` → cause, tribe, rituals, vocabulary
+4. `product-brand-strategist` → naming, positioning, delivery experience
+5. Voice DNA generation → each strategist produces `.claude/voice-profiles/` as mandatory deliverable
+
+**Design Phases (6-8):**
+6. `designer-agent` → design system tokens, typography, color, spacing, components
+7. `creative-director` → motion concepts, interaction patterns, visual direction
+8. `vfx-motion-designer` + `logo-brand-mark-designer` → production code + SVG assets
+
+**Documentation & Audit (9-10):**
+9. `brand-site-builder` → interactive brandbook at reis-ia-brand/
+10. `designer-agent` + `reviewer` → brand audit against `.claude/rules/brand-audit-checklist.md`
+
+**Brandbook structure**: `.claude/templates/brandbook-structure.md` (30-section, 7-part template)
+**Audit checklist**: `.claude/rules/brand-audit-checklist.md` (6-section PASS/BLOCK scoring)
 
 ### Copy Squad
 
@@ -66,6 +138,31 @@ The Copy Squad is a 5-agent pipeline managed by the CMO Strategist for all copy 
 - `.claude/rules/brand-voice.md` — Brand voice and tone
 - `.claude/rules/hormozi-framework.md` — Persuasion framework (value equation, 4 angles, Grand Slam Offer)
 - `.claude/rules/humanization-rules.md` — AI pattern elimination and human voice injection
+
+### Quality Gate Rules
+
+The reviewer agent operates as a formal quality gate with three verdict levels:
+- **PASS** — Copy proceeds to CMO for final sign-off
+- **BLOCK** — Copy returns to the identified rollback agent for specific fixes, then re-enters review. Max 2 revision loops.
+- **EXIT** — Critical failure; pipeline restarts from CMO strategic brief
+
+7 veto conditions (V1-V7) trigger automatic BLOCK regardless of score. See `reviewer.md` for the full veto table and rollback assignments.
+
+### Voice Profile System
+
+Voice profiles are operational extracts of brand concepts that Copy Squad agents load before writing. They live in `.claude/voice-profiles/` and are **produced by brand strategist agents** as part of the branding process.
+
+**Branding Pipeline → Voice Profile:**
+```
+personal-brand-strategist  → brain/assets/branding/personal-moroni-reis-concept.md  → .claude/voice-profiles/moroni-personal.md
+company-brand-strategist   → brain/assets/branding/company-reis-ia-concept.md       → .claude/voice-profiles/reis-ia-company.md
+movement-brand-strategist  → brain/assets/branding/movement-builder-concept.md      → .claude/voice-profiles/builders-community.md
+product-brand-strategist   → brain/assets/branding/product-concepts.md              → .claude/voice-profiles/{product-name}.md (when distinct)
+```
+
+**Rule**: When a brand concept is created or updated, the voice profile MUST be updated in the same session. The concept is the source of truth; the profile is the operational derivative.
+
+**Loading**: Copy Squad agents determine which profile to load based on task context (IF/THEN rules in each agent's Expertise DNA). Default: `reis-ia-company.md`.
 
 ### ICP Ownership Split
 
