@@ -26,6 +26,7 @@ Full business context: `brain/context/business-profile.md`
 | education-director | Curriculum mapping, lesson briefings, educational pipeline management, quality review. | opus |
 | roteirista-aulas | Video lesson scriptwriting from briefings, script enhancement/reformulation. | sonnet |
 | educational-designer | Visual elements for lessons: slides, mind maps, diagrams, transition screens. | sonnet |
+| cinematic-art-director | Cinematic vision for hero visuals, 3D product demos, hero image prompts. Sits above designer/vfx in the pipeline. | opus |
 | task-router | Smart cost optimizer: classifies tasks and routes to optimal model (ollama/haiku/sonnet/opus). | haiku |
 | chief-strategy-advisor | Board Advisor / Conselheiro Estratégico. Pressure-tests macro decisions (new pillars, launches, pricing, positioning). NOT in day-to-day pipeline. | opus |
 | integration-engineer | Third-party APIs, webhooks, MCP servers (FastMCP 3.0), OAuth, Supabase edge functions, automation pipelines (Whisper, ffmpeg, Playwright, wappalyzer, SearXNG). | sonnet |
@@ -54,6 +55,24 @@ Phase A is foundation-only: no integrations were actually built, no MCP servers 
 Phase B partial added 4 content specialists that the `social-media-director` orchestrates: `hook-specialist`, `reels-scriptwriter`, `linkedin-strategist`, `carousel-designer-writer`. Stack 2 (content production) is now fully connected to the Copy Squad: every specialist output passes through `humanizer` → `reviewer` → `social-media-director` consolidation → `cmo-strategist` sign-off before publishing. The upcoming Stack 3 (video editing: `clip-cutter`, `caption-broll-operator`) will consume the structured shot list and overlay tables produced by `reels-scriptwriter`.
 
 Delegation flow inside Stack 2: the director receives a brief from `cmo-strategist`, starts with `hook-specialist` to generate a hook menu, picks the winner, then forwards to the format-specific specialist (Reels → `reels-scriptwriter`, LinkedIn → `linkedin-strategist`, carousel → `carousel-designer-writer`). For carousel visual implementation, the carousel agent produces a designer brief consumed by `designer-agent` or `educational-designer`.
+
+### Stack 3 — Video Editing Pipeline (OSS, 2026-04-14)
+
+Stack 3 adds 3 agents that own the full post-production pipeline for recorded video assets (Reels/Shorts/TikTok and long-form): `video-editor-director` (opus), `clip-cutter` (sonnet), `caption-broll-operator` (sonnet). The stack is 100% OSS and $0/month — Whisper (transcription) + ffmpeg/libass (cutting, burn-in, compositing) + Pexels/Pixabay APIs (free B-roll). It replaces Opus Clip, Submagic, and Runway B-roll. No subscriptions.
+
+The full recipe — install instructions, pipeline steps, ffmpeg command book, REIS [IA] ASS caption template, and B-roll query patterns — lives at `brain/context/video-pipeline-oss-recipe.md`.
+
+**Important**: the agents and the recipe are documented, but **no scripts or installs have been performed yet**. When Moroni says "implemente o Stack 3", the `integration-engineer` reads the recipe and produces the actual `scripts/video-pipeline/` executables (transcribe, cut, caption, B-roll fetch, compose, encode), coordinated with `qa-agent` for a smoke test and `devops-agent` for env var provisioning (PEXELS_API_KEY, PIXABAY_API_KEY).
+
+Delegation flow:
+
+```
+social-media-director (Reels script) → recording (Moroni) → video-editor-director (edit plan)
+  ├→ clip-cutter (transcript → JSON cut coordinates)
+  └→ caption-broll-operator (ASS subtitle file + B-roll query/timeline)
+       → integration-engineer (ffmpeg/Whisper execution per recipe)
+         → qa-agent (smoke test) → social-media-director (publish)
+```
 
 Transversal support agents (used by most pipelines):
 - `integration-engineer`, `qa-agent`, `devops-agent`, `data-engineer` support all code-producing pipelines
@@ -139,7 +158,8 @@ A 10-phase pipeline activated by "Protocolo Branding". Coordinates 10 agents fro
 **Design Phases (6-8):**
 6. `designer-agent` → design system tokens, typography, color, spacing, components
 7. `creative-director` → motion concepts, interaction patterns, visual direction
-8. `vfx-motion-designer` + `logo-brand-mark-designer` → production code + SVG assets
+7b. `cinematic-art-director` → cinematic shot grammar, hero image prompts, 3D demo direction (sits between creative-director and implementation)
+8. `vfx-motion-designer` + `logo-brand-mark-designer` → production code + SVG assets (both MUST consult `brain/design-library/` first)
 
 **Documentation & Audit (9-10):**
 9. `brand-site-builder` → interactive brandbook at reis-ia-brand/
@@ -192,6 +212,23 @@ product-brand-strategist   → brain/assets/branding/product-concepts.md        
 
 - **market-research-analyst** discovers and maps raw ICP data (demographics, firmographics, pain points, desires, objections, voice-of-customer).
 - **cmo-strategist** refines, prioritizes, and makes strategic ICP decisions (targeting priorities, segment selection, positioning per segment).
+
+## Design Library
+
+`brain/design-library/` is the team's persistent, versioned asset for premium design knowledge. It is the antidote to reinventing premium motion and visuals from zero each time. Four sub-assets:
+
+1. **`references/`** — Raw source code harvested from premium sites (HTML, CSS, JS, assets, screenshots, motion configs). Written exclusively by `design-system-extractor` via its expanded Track B mission.
+2. **`patterns/`** — Distilled reusable techniques: GSAP ScrollTrigger recipes, Three.js product spins, Lenis smooth scroll, editorial type reveals, noise grain, cinematic gradient mesh, backdrop-blur cards, magnetic cursor, clip-path reveals. Starter catalog in `patterns/SEED.md` (11 curated patterns).
+3. **`hero-prompts/`** — Cinematic image prompts for Gemini / Flux / Midjourney following the REIS [IA] skeleton (dark, architectural, electric blue accent, film grain, studio lighting). Written by `cinematic-art-director`.
+4. **`iterations/`** — Tadewald-style exploration workspace for numbered HTML variants (`design_system.html`, `design_system2.html`, ...) before promoting a direction to production.
+
+**MANDATORY for `vfx-motion-designer`**: before implementing any motion, consult `patterns/` and `references/` first. Reuse before reinvent. Enforced in the agent definition as the first workflow step.
+
+**Golden rule**: every time `design-system-extractor` harvests a reference, it must also SUGGEST patterns to distill into `patterns/`. An extraction without a distillation plan is incomplete.
+
+**Approved premium stack** (OSS-first): GSAP 3 + ScrollTrigger + SplitText, Three.js + React Three Fiber + Drei, Lenis, Framer Motion, Spline (embed), Canvas 2D / custom WebGL shaders. Use with critério — each added dependency is weight.
+
+See `brain/design-library/README.md` for full rules, ownership, and consumption patterns.
 
 ## Tech Stack
 
