@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>AGENTES [IA] — Cover 1080</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --bg:#000;
+    --blue:#4A90FF;
+    --blue-bright:#6AADFF;
+    --blue-glow:rgba(74,144,255,0.18);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+  html,body{width:1080px;height:1080px;background:var(--bg);font-family:'Inter',system-ui,sans-serif;color:#fff;overflow:hidden}
+
+  .stage{
+    position:relative;
+    width:1080px;
+    height:1080px;
+    background:#000;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+  }
+
+  /* grid background */
+  .grid{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(74,144,255,0.06) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(74,144,255,0.06) 1px,transparent 1px);
+    background-size:54px 54px;
+    mask-image:radial-gradient(circle at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 65%, rgba(0,0,0,0) 90%);
+    -webkit-mask-image:radial-gradient(circle at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 65%, rgba(0,0,0,0) 90%);
+  }
+
+  /* big radial glows */
+  .glow{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none}
+  .glow-1{width:680px;height:680px;background:radial-gradient(circle,rgba(74,144,255,0.30) 0%,transparent 70%);top:-120px;left:-160px}
+  .glow-2{width:560px;height:560px;background:radial-gradient(circle,rgba(74,144,255,0.22) 0%,transparent 70%);bottom:-140px;right:-140px}
+  .glow-3{width:340px;height:340px;background:radial-gradient(circle,rgba(74,144,255,0.18) 0%,transparent 70%);top:42%;left:50%;transform:translate(-50%,-50%)}
+
+  /* floating @tags */
+  .tags{position:absolute;inset:0;pointer-events:none}
+  .t{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--blue);opacity:0.10;letter-spacing:-0.02em;user-select:none}
+  .t1{top:6%;left:5%;font-size:54px}
+  .t2{top:14%;right:6%;font-size:46px}
+  .t3{top:30%;left:3%;font-size:40px}
+  .t4{top:34%;right:4%;font-size:36px}
+  .t5{bottom:30%;left:6%;font-size:50px}
+  .t6{bottom:18%;right:8%;font-size:60px}
+  .t7{bottom:8%;left:36%;font-size:34px;opacity:0.07}
+  .t8{top:8%;left:42%;font-size:30px;opacity:0.07}
+
+  .frame{
+    position:relative;
+    z-index:5;
+    text-align:center;
+    padding:72px 96px;
+  }
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:12px;
+    background:rgba(74,144,255,0.10);
+    border:1px solid rgba(74,144,255,0.35);
+    border-radius:6px;
+    padding:12px 24px;
+    margin-bottom:54px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:16px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--blue);
+  }
+  .badge .dot{width:8px;height:8px;background:var(--blue);border-radius:50%;box-shadow:0 0 14px var(--blue)}
+
+  .word{
+    font-family:'Inter',sans-serif;
+    font-weight:300;
+    font-size:158px;
+    line-height:0.95;
+    letter-spacing:-0.045em;
+    margin-bottom:28px;
+    text-shadow:0 0 60px rgba(74,144,255,0.20);
+  }
+  .word .ia{
+    color:var(--blue);
+    font-weight:300;
+  }
+
+  .tagline{
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    font-size:34px;
+    line-height:1.32;
+    letter-spacing:-0.015em;
+    color:rgba(255,255,255,0.78);
+    max-width:780px;
+    margin:0 auto 48px;
+  }
+  .tagline .hi{color:var(--blue);font-weight:600}
+
+  .stats{
+    display:inline-flex;
+    align-items:stretch;
+    border:1px solid rgba(74,144,255,0.35);
+    border-radius:10px;
+    overflow:hidden;
+    background:rgba(74,144,255,0.04);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+  }
+  .stat{
+    padding:22px 38px;
+    border-right:1px solid rgba(74,144,255,0.20);
+    text-align:center;
+  }
+  .stat:last-child{border-right:0}
+  .stat .num{
+    display:block;
+    font-family:'Inter',sans-serif;
+    font-weight:800;
+    font-size:42px;
+    color:#fff;
+    line-height:1;
+    letter-spacing:-0.03em;
+  }
+  .stat .lab{
+    display:block;
+    margin-top:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.52);
+  }
+  .stat .num.blue{color:var(--blue)}
+
+  .price-strip{
+    position:absolute;
+    bottom:0;left:0;right:0;
+    z-index:6;
+    padding:34px 56px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.85) 60%, #000 100%);
+  }
+  .brand{
+    font-family:'Inter',sans-serif;
+    font-weight:300;
+    font-size:22px;
+    letter-spacing:0.04em;
+    color:rgba(255,255,255,0.55);
+  }
+  .brand b{font-weight:300;color:var(--blue)}
+  .price-pill{
+    display:inline-flex;
+    align-items:baseline;
+    gap:10px;
+    background:var(--blue);
+    color:#000;
+    padding:14px 26px;
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-weight:800;
+    font-size:30px;
+    letter-spacing:-0.02em;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.10), 0 14px 50px rgba(74,144,255,0.45);
+  }
+  .price-pill .small{font-size:14px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;opacity:0.80}
+
+  /* corner orbits */
+  .orbit{
+    position:absolute;
+    border:1px solid rgba(74,144,255,0.18);
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .orbit-1{width:1300px;height:1300px;top:-240px;left:-110px;opacity:0.5}
+  .orbit-2{width:900px;height:900px;top:90px;left:90px;opacity:0.35}
+  .orbit-3{width:520px;height:520px;top:280px;left:280px;opacity:0.25}
+
+  .corner{
+    position:absolute;
+    width:36px;height:36px;
+    border:1px solid var(--blue);
+    opacity:0.6;
+  }
+  .c-tl{top:38px;left:38px;border-right:0;border-bottom:0}
+  .c-tr{top:38px;right:38px;border-left:0;border-bottom:0}
+  .c-bl{bottom:130px;left:38px;border-right:0;border-top:0}
+  .c-br{bottom:130px;right:38px;border-left:0;border-top:0}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="grid"></div>
+  <div class="orbit orbit-1"></div>
+  <div class="orbit orbit-2"></div>
+  <div class="orbit orbit-3"></div>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
+
+  <div class="tags">
+    <div class="t t1">@copy</div>
+    <div class="t t2">@strategy</div>
+    <div class="t t3">@design</div>
+    <div class="t t4">@brand</div>
+    <div class="t t5">@traffic</div>
+    <div class="t t6">@dev</div>
+    <div class="t t7">@hooks</div>
+    <div class="t t8">@review</div>
+  </div>
+
+  <div class="corner c-tl"></div>
+  <div class="corner c-tr"></div>
+  <div class="corner c-bl"></div>
+  <div class="corner c-br"></div>
+
+  <div class="frame">
+    <div class="badge"><span class="dot"></span>7 SQUADS · 40+ AGENTES</div>
+    <h1 class="word">AGENTES <span class="ia">[IA]</span></h1>
+    <p class="tagline">Seu time completo de marketing com IA. <br/><span class="hi">Copy, design, estratégia, branding e tráfego</span> — prontos no Claude Code.</p>
+
+    <div class="stats">
+      <div class="stat"><span class="num blue">40+</span><span class="lab">Agentes</span></div>
+      <div class="stat"><span class="num">7</span><span class="lab">Squads</span></div>
+      <div class="stat"><span class="num">4</span><span class="lab">Videoaulas</span></div>
+      <div class="stat"><span class="num">30<span style="font-size:24px">min</span></span><span class="lab">Pra instalar</span></div>
+    </div>
+  </div>
+
+  <div class="price-strip">
+    <div class="brand">by <b>REIS [IA]</b></div>
+    <div class="price-pill"><span class="small">R$</span>47</div>
+  </div>
+</div>
+</body>
+</html>
