@@ -113,6 +113,16 @@ function verifyHmac(rawBody: string, signature: string | null, secret: string | 
   }
 }
 
+function timingSafeStringEqual(a: string | undefined | null, b: string | undefined | null): boolean {
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+  } catch {
+    return false;
+  }
+}
+
 const jsonHeaders = { 'Content-Type': 'application/json' } as const;
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: jsonHeaders });
@@ -122,26 +132,43 @@ function json(body: unknown, status = 200) {
 export const POST: APIRoute = async ({ request }) => {
   const rawBody = await request.text();
 
-  // 1) AUTH — accept token OR HMAC signature
+  // Pre-parse so we can also check the token field that Ticto v2.0 places
+  // INSIDE the JSON body (not in a header).
+  let parsedEarly: TictoPayload | null = null;
+  try {
+    parsedEarly = JSON.parse(rawBody) as TictoPayload;
+  } catch {
+    /* parse error handled later */
+  }
+
+  // 1) AUTH — accept any of:
+  //    (a) X-Webhook-Token / X-Ticto-Token header
+  //    (b) `token` / `hash` field in the JSON body (Ticto v2.0 default)
+  //    (c) HMAC SHA-256 signature in X-Ticto-Signature
   const tokenHeader = request.headers.get('x-webhook-token') || request.headers.get('x-ticto-token');
   const signatureHeader = request.headers.get('x-ticto-signature') || request.headers.get('x-hub-signature-256');
   const tokenEnv = import.meta.env.TICTO_WEBHOOK_TOKEN as string | undefined;
   const secretEnv = import.meta.env.TICTO_WEBHOOK_SECRET as string | undefined;
 
-  const tokenOk = !!tokenEnv && tokenHeader === tokenEnv;
+  const tokenInBody =
+    (parsedEarly?.['token'] as string | undefined) ??
+    (parsedEarly?.['hash'] as string | undefined) ??
+    (parsedEarly?.['security_token'] as string | undefined);
+
+  const tokenOk =
+    timingSafeStringEqual(tokenHeader, tokenEnv) ||
+    timingSafeStringEqual(tokenInBody, tokenEnv);
   const sigOk = verifyHmac(rawBody, signatureHeader, secretEnv);
 
   if (!tokenOk && !sigOk) {
     return json({ error: 'Unauthorized webhook' }, 401);
   }
 
-  // 2) PARSE
-  let payload: TictoPayload;
-  try {
-    payload = JSON.parse(rawBody) as TictoPayload;
-  } catch {
+  // 2) PARSE — reuse parsedEarly if available, otherwise this is a 400
+  if (!parsedEarly) {
     return json({ error: 'Invalid JSON' }, 400);
   }
+  const payload: TictoPayload = parsedEarly;
 
   const event = pickEvent(payload);
   const orderId = pickOrderId(payload);
