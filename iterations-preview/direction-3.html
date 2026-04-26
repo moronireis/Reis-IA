@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>REIS [IA] — Direction 03 — Cinematic Gravity</title>
+<meta name="description" content="REIS [IA] home page — Direction 03 Cinematic Gravity. Arc / Apple / Bloomberg lineage.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* =========================================
+     DIRECTION 03 — CINEMATIC GRAVITY
+     Lineage: Arc Browser + Apple + Bloomberg Graphics
+     Motion budget: maximum (restrained). Custom WebGL mesh + GSAP-free pinning.
+     Signature: WebGL hero mesh, scripted chapter cuts, pinned method reveal, Bloomberg proof.
+     ========================================= */
+  :root{
+    --bg-0:#000;
+    --bg-1:#0A0A0A;
+    --bg-2:#141414;
+    --bg-3:#1A1A1A;
+    --accent:#4A90FF;
+    --accent-deep:#2D7AFF;
+    --accent-cyan:#00B4FF;
+    --accent-soft:rgba(74,144,255,.14);
+    --text-1:#fff;
+    --text-2:rgba(255,255,255,.74);
+    --text-3:rgba(255,255,255,.54);
+    --text-4:rgba(255,255,255,.34);
+    --hairline:rgba(255,255,255,.09);
+    --hairline-strong:rgba(255,255,255,.16);
+    --hairline-accent:rgba(74,144,255,.4);
+    --sans:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --house:cubic-bezier(0.16,1,0.3,1);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{background:#000}
+  body{
+    background:var(--bg-1);color:var(--text-1);font-family:var(--sans);
+    font-size:17px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    font-feature-settings:"tnum" 1,"ss01" 1,"cv11" 1;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  h1,h2,h3,h4,p{margin:0}
+  figure{margin:0}
+
+  .container{max-width:1280px;margin:0 auto;padding:0 24px;position:relative}
+  @media (max-width:720px){.container{padding:0 20px}}
+
+  .chapter{padding:180px 0;position:relative;transition:background-color 600ms var(--house)}
+  .chapter.bg-0{background:var(--bg-0)}
+  .chapter.bg-1{background:var(--bg-1)}
+  .chapter.bg-2{background:var(--bg-2)}
+  .chapter.bg-3{background:var(--bg-3)}
+  @media (max-width:720px){.chapter{padding:120px 0}}
+
+  .reel-mark{
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--text-3);margin-bottom:40px
+  }
+  .reel-mark .sl{color:var(--text-4);margin:0 10px}
+
+  .lede{
+    font-size:clamp(19px,1.7vw,24px);line-height:1.5;color:var(--text-2);
+    max-width:680px;margin-top:32px;font-weight:400
+  }
+
+  /* atmospheric wash (chapter cut flash) */
+  .wash{
+    position:fixed;inset:0;pointer-events:none;z-index:50;
+    background:radial-gradient(ellipse at center, var(--accent-soft), transparent 70%);
+    opacity:0;transition:opacity 300ms var(--house);
+  }
+  .wash.on{opacity:1}
+
+  /* ==== HERO with WebGL mesh ==== */
+  .hero{
+    min-height:100vh;
+    background:var(--bg-1);
+    position:relative;display:flex;flex-direction:column;justify-content:center;
+    padding:120px 0;overflow:hidden;
+  }
+  #mesh-canvas{
+    position:absolute;inset:0;width:100%;height:100%;
+    opacity:0;transition:opacity 1000ms var(--house);
+    pointer-events:none;
+  }
+  #mesh-canvas.on{opacity:1}
+  .hero::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.55) 100%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .04 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    mix-blend-mode:normal;
+  }
+
+  .reel-corner{position:absolute;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-4);z-index:3}
+  .rc-tl{top:48px;left:40px}
+  .rc-tr{top:48px;right:40px}
+  .rc-bl{bottom:48px;left:40px}
+  .rc-br{bottom:48px;right:40px}
+  @media (max-width:720px){
+    .rc-tl,.rc-bl{left:20px}.rc-tr,.rc-br{right:20px}
+    .rc-tl,.rc-tr{top:28px}.rc-bl,.rc-br{bottom:28px}
+  }
+
+  .hero-inner{position:relative;z-index:2;text-align:center}
+  h1.cine-h1{
+    font-size:clamp(52px,7.5vw,112px);
+    font-weight:500;letter-spacing:-.03em;line-height:1.0;
+    max-width:18ch;margin:0 auto;
+    opacity:0;transform:translateY(28px);
+    transition:opacity 900ms var(--house) 400ms,transform 900ms var(--house) 400ms;
+  }
+  h1.cine-h1.is-in{opacity:1;transform:none}
+  .hero-lede{margin:36px auto 0;max-width:640px;text-align:center;opacity:0;transform:translateY(20px);transition:opacity 900ms var(--house) 650ms,transform 900ms var(--house) 650ms}
+  .hero-lede.is-in{opacity:1;transform:none}
+  .hero-cta{margin-top:44px;display:flex;justify-content:center;opacity:0;transform:translateY(20px);transition:opacity 900ms var(--house) 800ms,transform 900ms var(--house) 800ms}
+  .hero-cta.is-in{opacity:1;transform:none}
+
+  .btn-primary{
+    display:inline-block;background:var(--accent);color:#000;padding:18px 34px;
+    font-weight:500;font-size:15px;letter-spacing:.01em;
+    transition:background 200ms var(--house);border:0;cursor:pointer
+  }
+  .btn-primary:hover{background:var(--accent-deep)}
+
+  /* ==== CHAPTER 02 — PILLARS (reel sequence) ==== */
+  .pillars h2{
+    font-size:clamp(38px,5.2vw,76px);
+    font-weight:500;letter-spacing:-.025em;line-height:1.05;max-width:16ch;
+  }
+  .reel-seq{margin-top:96px;display:flex;flex-direction:column;gap:80px}
+  .reel{
+    display:grid;grid-template-columns:180px 1fr;gap:48px;align-items:start;
+    padding-bottom:80px;border-bottom:1px solid var(--hairline);
+  }
+  .reel:last-child{border-bottom:0;padding-bottom:0}
+  .reel .num{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  .reel h3{font-size:clamp(28px,3vw,44px);font-weight:500;letter-spacing:-.02em;line-height:1.1;margin-bottom:16px}
+  .reel p{font-size:17px;line-height:1.65;color:var(--text-2);max-width:640px}
+  .reel .quote{margin-top:32px;padding-left:24px;border-left:1px solid var(--hairline-strong);font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--text-3);max-width:520px;line-height:1.6}
+  @media (max-width:860px){.reel{grid-template-columns:1fr;gap:24px}}
+
+  /* ==== CHAPTER 03 — METHOD (pinned typographic reveal) ==== */
+  .method h2{font-size:clamp(36px,4.8vw,72px);font-weight:500;letter-spacing:-.025em;line-height:1.05;max-width:14ch}
+  .method-pin{
+    margin-top:80px;display:grid;grid-template-columns:1fr 1fr;gap:80px;
+    min-height:520px;position:relative;
+  }
+  @media (max-width:860px){.method-pin{grid-template-columns:1fr;gap:48px;min-height:auto}}
+  .method-left{position:sticky;top:120px;align-self:start}
+  @media (max-width:860px){.method-left{position:static}}
+  .phase-counter{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-top:32px}
+  .method-right{position:relative;min-height:540px}
+  @media (max-width:860px){.method-right{min-height:auto}}
+  .phase{
+    position:absolute;inset:0;
+    opacity:0;
+    clip-path:inset(0 100% 0 0);
+    transition:opacity 600ms var(--house),clip-path 700ms var(--house);
+  }
+  @media (max-width:860px){
+    .phase{position:relative;inset:auto;opacity:1;clip-path:none;margin-bottom:48px;padding-bottom:40px;border-bottom:1px solid var(--hairline)}
+    .phase:last-child{border-bottom:0}
+  }
+  .phase.on{opacity:1;clip-path:inset(0 0% 0 0)}
+  .phase .ptag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:14px}
+  .phase h3{font-size:clamp(28px,3vw,40px);font-weight:500;letter-spacing:-.02em;line-height:1.1;margin-bottom:18px}
+  .phase p{font-size:17px;line-height:1.65;color:var(--text-2);max-width:520px}
+  .phase .kv{margin-top:28px;padding-top:24px;border-top:1px solid var(--hairline);display:grid;grid-template-columns:auto 1fr;gap:10px 20px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+  .phase .kv b{color:var(--text-1);font-weight:500}
+
+  /* Phase stepper (scroll progress) */
+  .phase-steps{margin-top:40px;display:flex;gap:8px}
+  .phase-steps i{flex:1;height:2px;background:var(--hairline);transition:background 300ms var(--house)}
+  .phase-steps i.on{background:var(--accent)}
+
+  /* ==== CHAPTER 04 — PROOF (Bloomberg style, luminous frames) ==== */
+  .proof h2{font-size:clamp(34px,4.4vw,64px);font-weight:500;letter-spacing:-.025em;line-height:1.05}
+  .proof-grid{
+    margin-top:96px;display:grid;grid-template-columns:repeat(12,1fr);gap:24px;
+  }
+  .lit-frame{
+    position:relative;background:var(--bg-2);padding:48px 40px 36px;
+    border:1px solid var(--hairline-strong);
+  }
+  .lit-frame::before{
+    content:"";position:absolute;inset:1px;pointer-events:none;
+    border:1px solid var(--hairline-accent);
+    box-shadow:inset 0 0 40px rgba(74,144,255,.08);
+  }
+  .lit-frame > *{position:relative}
+  .lit-frame .fnum{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3)}
+  .lit-frame .num{
+    font-weight:500;letter-spacing:-.03em;line-height:1;margin-top:40px;
+    font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;
+  }
+  .lit-frame .cap{font-size:15px;color:var(--text-2);margin-top:24px;line-height:1.55;max-width:44ch}
+  .lit-frame .src{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-4);margin-top:28px;padding-top:20px;border-top:1px solid var(--hairline)}
+
+  .pf-lead{grid-column:1 / span 8;min-height:440px}
+  .pf-lead .num{font-size:clamp(72px,9vw,132px)}
+  .pf-side{grid-column:9 / span 4;display:flex;flex-direction:column;gap:24px}
+  .pf-side .lit-frame{flex:1}
+  .pf-side .num{font-size:clamp(38px,4vw,58px)}
+  @media (max-width:960px){
+    .pf-lead{grid-column:1 / -1}
+    .pf-side{grid-column:1 / -1}
+  }
+
+  /* ==== CHAPTER 05 — CLOSE with residual mesh ==== */
+  .close{background:var(--bg-1);text-align:center;position:relative;overflow:hidden}
+  .close #mesh-canvas-close{position:absolute;inset:0;width:100%;height:100%;opacity:.4;pointer-events:none}
+  .close .container{position:relative;z-index:1}
+  .close h2{font-size:clamp(36px,4.8vw,72px);font-weight:500;letter-spacing:-.025em;line-height:1.05;max-width:18ch;margin:0 auto}
+  .close .lede{margin:28px auto 44px}
+
+  /* ==== FOOTER ==== */
+  footer{background:var(--bg-0);padding:80px 0 40px;border-top:1px solid var(--hairline)}
+  .footer-grid{display:grid;grid-template-columns:1fr 2fr 1fr;gap:48px;align-items:start}
+  .wordmark{font-weight:300;font-size:22px;letter-spacing:-.01em}
+  .wordmark .ia{color:var(--accent)}
+  .f-links{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3)}
+  .f-links a{display:block;padding:5px 0;transition:color 150ms var(--house)}
+  .f-links a:hover{color:var(--text-1)}
+  .f-links h4{color:var(--text-4);margin-bottom:12px;font-weight:500}
+  .watermark{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-4);text-align:right}
+  .f-base{margin-top:56px;padding-top:20px;border-top:1px solid var(--hairline);display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-4)}
+  .end-reel{text-align:center;margin-top:40px;font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--text-4)}
+  @media (max-width:820px){.footer-grid{grid-template-columns:1fr;gap:32px}.watermark{text-align:left}.f-links{grid-template-columns:1fr 1fr}}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(32px);transition:opacity 900ms var(--house),transform 900ms var(--house)}
+  .reveal.is-in{opacity:1;transform:none}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+    .reveal,.cine-h1,.hero-lede,.hero-cta{opacity:1 !important;transform:none !important}
+    #mesh-canvas,#mesh-canvas-close{display:none}
+    .hero{background:radial-gradient(ellipse at center, #0f1a2e, #0A0A0A 70%) !important}
+    .phase{position:relative;opacity:1 !important;clip-path:none !important;inset:auto;margin-bottom:48px}
+    .method-right{min-height:auto}
+    .method-left{position:static}
+  }
+</style>
+</head>
+<body>
+
+  <div class="wash" id="wash"></div>
+
+  <!-- REEL 01 — HERO -->
+  <section class="hero" aria-label="Reel 01 — Opening">
+    <canvas id="mesh-canvas"></canvas>
+    <div class="reel-corner rc-tl">REEL 01 / OPENING</div>
+    <div class="reel-corner rc-tr">00:00 — 00:12</div>
+    <div class="reel-corner rc-bl"><a href="/">← Direções</a></div>
+    <div class="reel-corner rc-br">SCROLL ↓</div>
+
+    <div class="container hero-inner">
+      <h1 class="cine-h1">O tempo é receita.<br/>A AI é como você o gasta.</h1>
+      <p class="lede hero-lede">REIS [IA] constrói a infraestrutura de receita assistida por AI para empresas que decidiram parar de alimentar o Prototype Graveyard.</p>
+      <div class="hero-cta"><a class="btn-primary" href="#agendar">Agendar diagnóstico →</a></div>
+    </div>
+  </section>
+
+  <!-- REEL 02 — PILLARS -->
+  <section class="chapter bg-2 pillars" data-cut data-bg="var(--bg-2)" aria-label="Reel 02 — Pillars">
+    <div class="reel-corner rc-tl" style="position:absolute">REEL 02 / PILLARS</div>
+    <div class="container reveal">
+      <div class="reel-mark">Reel 02 <span class="sl">/</span> Three operators</div>
+      <h2>Três reels. Uma única gravidade de receita.</h2>
+      <p class="lede">Cada pilar é um reel inteiro dentro do filme. Nenhum dos três opera sozinho.</p>
+
+      <div class="reel-seq">
+        <article class="reel">
+          <div class="num">REEL 02.01 / SYSTEMS</div>
+          <div>
+            <h3>A infraestrutura.</h3>
+            <p>Arquitetura de receita orientada por AI construída sob disciplina de engenharia. Agentes, integrações e automações medidos pelo retorno — não pela elegância.</p>
+            <div class="quote">"A tecnologia é o meio. O P&L é o palco."</div>
+          </div>
+        </article>
+        <article class="reel">
+          <div class="num">REEL 02.02 / BUILDERS</div>
+          <div>
+            <h3>Os operadores.</h3>
+            <p>A comunidade dos executivos que estão construindo as próximas empresas orientadas por AI no Brasil. Sala, método e decisão compartilhada.</p>
+            <div class="quote">"Receita é prática. Prática exige sala."</div>
+          </div>
+        </article>
+        <article class="reel">
+          <div class="num">REEL 02.03 / MARKETING</div>
+          <div>
+            <h3>A demanda.</h3>
+            <p>Geração de demanda de alto ticket. Conteúdo, funil e mesa de diagnóstico desenhados para empresas que já passaram da dúvida inicial sobre AI.</p>
+            <div class="quote">"Cliente certo na porta. Sem ruído de SaaS."</div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- REEL 03 — METHOD (pinned) -->
+  <section class="chapter bg-2 method" id="metodo" aria-label="Reel 03 — Method">
+    <div class="reel-corner rc-tl" style="position:absolute">REEL 03 / METHOD</div>
+    <div class="container reveal">
+      <div class="reel-mark">Reel 03 <span class="sl">/</span> Revenue-First</div>
+      <div class="method-pin" id="pin-wrap">
+        <div class="method-left">
+          <h2>O método Revenue-First.</h2>
+          <p class="lede">Cada fase existe porque a próxima depende dela. Nenhuma fase se justifica sozinha.</p>
+          <div class="phase-counter" id="phase-counter">Phase 01 / 04 — Diagnose</div>
+          <div class="phase-steps">
+            <i class="on"></i><i></i><i></i><i></i>
+          </div>
+        </div>
+        <div class="method-right" id="method-right">
+          <article class="phase on" data-p="0">
+            <div class="ptag">Phase 01 / Diagnose</div>
+            <h3>O P&L antes da tecnologia.</h3>
+            <p>Duas semanas de leitura do negócio. Mapeamos onde a receita está presa e onde AI pode liberar valor antes do próximo trimestre — não depois de dois.</p>
+            <div class="kv"><span>Duração</span><b>14 dias</b><span>Output</span><b>Mapa de receita travada</b></div>
+          </article>
+          <article class="phase" data-p="1">
+            <div class="ptag">Phase 02 / Map</div>
+            <h3>Vetores priorizados.</h3>
+            <p>Três a cinco vetores de alavanca selecionados por impacto no caixa. Cada vetor ganha hipótese de receita, KPI e responsável.</p>
+            <div class="kv"><span>Duração</span><b>7 dias</b><span>Output</span><b>Roadmap 90 dias</b></div>
+          </article>
+          <article class="phase" data-p="2">
+            <div class="ptag">Phase 03 / Build</div>
+            <h3>Sistemas em produção.</h3>
+            <p>Implementação dos agentes, integrações e automações. Cada release é medida não por funcionalidade, mas por receita gerada na semana seguinte.</p>
+            <div class="kv"><span>Duração</span><b>60 dias</b><span>Output</span><b>Sistema em produção</b></div>
+          </article>
+          <article class="phase" data-p="3">
+            <div class="ptag">Phase 04 / Attribute</div>
+            <h3>Cada real rastreável.</h3>
+            <p>Atribuição completa. Cada real de receita ligado ao sistema que o produziu. O board finalmente pode olhar para AI como linha de receita, não como centro de custo.</p>
+            <div class="kv"><span>Duração</span><b>Contínuo</b><span>Output</span><b>Dashboard de receita</b></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REEL 04 — PROOF -->
+  <section class="chapter bg-3 proof" data-cut data-bg="var(--bg-3)" aria-label="Reel 04 — Proof">
+    <div class="reel-corner rc-tl" style="position:absolute">REEL 04 / PROOF</div>
+    <div class="container reveal">
+      <div class="reel-mark">Reel 04 <span class="sl">/</span> Numbers</div>
+      <h2>Prova iluminada.</h2>
+      <p class="lede">Doze engajamentos. Seis meses. Três indicadores acesos.</p>
+
+      <div class="proof-grid">
+        <figure class="lit-frame pf-lead">
+          <div class="fnum">Fig 4.1 — Revenue attributed to AI</div>
+          <div class="num" data-ticker data-end="2.4" data-prefix="R$ " data-suffix="M" data-decimals="1">R$ 0.0M</div>
+          <div class="cap">Receita atribuída a sistemas de AI construídos pela REIS [IA] em doze engajamentos ativos ao longo de seis meses.</div>
+          <div class="src">Source — REIS [IA] cohort 2025/2026 / N=12</div>
+        </figure>
+        <div class="pf-side">
+          <figure class="lit-frame">
+            <div class="fnum">Fig 4.2 — Payback</div>
+            <div class="num" data-ticker data-end="94" data-suffix=" dias">0 dias</div>
+            <div class="cap">Mediana de dias até o primeiro real atribuído.</div>
+            <div class="src">Median / N=12</div>
+          </figure>
+          <figure class="lit-frame">
+            <div class="fnum">Fig 4.3 — Graveyard</div>
+            <div class="num" data-ticker data-end="87" data-suffix="%">0%</div>
+            <div class="cap">Dos projetos de AI no mercado morrem sem receita.</div>
+            <div class="src">Benchmark 2025</div>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REEL 05 — CLOSE with residual mesh -->
+  <section class="chapter close" data-cut data-bg="var(--bg-1)" aria-label="Reel 05 — Close">
+    <canvas id="mesh-canvas-close"></canvas>
+    <div class="reel-corner rc-tl" style="position:absolute">REEL 05 / CLOSE — FINAL</div>
+    <div class="container reveal">
+      <div class="reel-mark">Reel 05 <span class="sl">/</span> End frame</div>
+      <h2>Pronto para a próxima reel?</h2>
+      <p class="lede">Uma conversa de diagnóstico. Quarenta e cinco minutos. O recorte onde AI deveria estar trabalhando no seu P&L — e ainda não está.</p>
+      <a class="btn-primary" href="#agendar">Agendar diagnóstico →</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer aria-label="Footer">
+    <div class="container footer-grid">
+      <div class="wordmark">REIS <span class="ia">[IA]</span></div>
+      <div class="f-links">
+        <div><h4>Pilares</h4><a href="#">Systems</a><a href="#">Builders</a><a href="#">Marketing</a></div>
+        <div><h4>Empresa</h4><a href="#">Método</a><a href="#">Cases</a><a href="#">Contato</a></div>
+        <div><h4>Acesso</h4><a href="#">Agendar</a><a href="#">Aplicar</a><a href="#">Hub</a></div>
+      </div>
+      <div class="watermark">O Tempo é Rei</div>
+    </div>
+    <div class="container f-base">
+      <div>© REIS [IA] / 2026</div>
+      <div>Direction 03 — Cinematic Gravity</div>
+    </div>
+    <div class="end-reel">— End of reel —</div>
+  </footer>
+
+<script>
+(() => {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ===== WebGL GRADIENT MESH (custom shader, no Three.js) =====
+  function initMesh(canvas, speed){
+    if (!canvas) return;
+    const gl = canvas.getContext('webgl', { antialias:false, premultipliedAlpha:false });
+    if (!gl) { canvas.style.display='none'; return; }
+
+    const vs = `attribute vec2 p;varying vec2 v;void main(){v=p;gl_Position=vec4(p,0.,1.);}`;
+    const fs = `
+      precision highp float;
+      varying vec2 v;
+      uniform float t;
+      uniform vec2 r;
+      // simple 2D value noise
+      float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+      float noise(vec2 p){
+        vec2 i=floor(p), f=fract(p);
+        vec2 u=f*f*(3.-2.*f);
+        return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),
+                   mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);
+      }
+      float fbm(vec2 p){
+        float s=0., a=.5;
+        for(int i=0;i<5;i++){ s+=a*noise(p); p*=2.02; a*=.5; }
+        return s;
+      }
+      void main(){
+        vec2 uv=v*vec2(r.x/r.y,1.);
+        float n1=fbm(uv*1.4 + vec2(t*.05, t*.04));
+        float n2=fbm(uv*2.2 - vec2(t*.03, t*.06) + n1);
+        float m = smoothstep(.25,.9,n2);
+        vec3 c0=vec3(0.); // black
+        vec3 c1=vec3(0.176,0.478,1.0); // #2D7AFF deep
+        vec3 c2=vec3(0.290,0.565,1.0); // #4A90FF
+        vec3 c3=vec3(0.0,0.706,1.0);   // #00B4FF cyan
+        vec3 col = mix(c0, c1, smoothstep(.0,.55,n1));
+        col = mix(col, c2, smoothstep(.35,.8,n2));
+        col = mix(col, c3, smoothstep(.75,.98,n2)*.6);
+        // vignette
+        float d = length(v);
+        col *= smoothstep(1.35,.2,d);
+        // grain
+        float g = hash(v*r + t)*.04;
+        col += g - .02;
+        gl_FragColor = vec4(col,1.);
+      }`;
+
+    const compile = (type, src) => {
+      const s = gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)){ console.warn(gl.getShaderInfoLog(s)); }
+      return s;
+    };
+    const prog = gl.createProgram();
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, vs));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(prog); gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    const locP = gl.getAttribLocation(prog,'p');
+    gl.enableVertexAttribArray(locP);
+    gl.vertexAttribPointer(locP, 2, gl.FLOAT, false, 0, 0);
+
+    const uT = gl.getUniformLocation(prog,'t');
+    const uR = gl.getUniformLocation(prog,'r');
+
+    const resize = () => {
+      const dpr = Math.min(2, devicePixelRatio || 1);
+      const w = canvas.clientWidth * dpr;
+      const h = canvas.clientHeight * dpr;
+      if (canvas.width !== w || canvas.height !== h){
+        canvas.width = w; canvas.height = h;
+        gl.viewport(0,0,w,h);
+      }
+      gl.uniform2f(uR, w, h);
+    };
+    addEventListener('resize', resize);
+    resize();
+
+    const start = performance.now();
+    let running = true;
+    const draw = () => {
+      if (!running) return;
+      resize();
+      gl.uniform1f(uT, (performance.now()-start) * 0.001 * speed);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      requestAnimationFrame(draw);
+    };
+    draw();
+    return { stop: () => { running = false; } };
+  }
+
+  const canvasHero = document.getElementById('mesh-canvas');
+  const canvasClose = document.getElementById('mesh-canvas-close');
+
+  if (!reduced){
+    const m1 = initMesh(canvasHero, 1.0);
+    if (m1) requestAnimationFrame(() => canvasHero.classList.add('on'));
+    initMesh(canvasClose, 0.4);
+  }
+
+  // ===== Hero entrance =====
+  const h1 = document.querySelector('.cine-h1');
+  const lede = document.querySelector('.hero-lede');
+  const cta = document.querySelector('.hero-cta');
+  requestAnimationFrame(() => {
+    h1.classList.add('is-in');
+    lede.classList.add('is-in');
+    cta.classList.add('is-in');
+  });
+
+  // ===== Chapter reveals =====
+  if ('IntersectionObserver' in window && !reduced){
+    const io = new IntersectionObserver((es) => {
+      es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin:'0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('is-in'));
+  }
+
+  // ===== Film-cut chapter transitions =====
+  const wash = document.getElementById('wash');
+  if (!reduced && wash){
+    const cutTargets = document.querySelectorAll('[data-cut]');
+    const cio = new IntersectionObserver((es) => {
+      es.forEach(e => {
+        if (e.isIntersecting){
+          wash.classList.add('on');
+          setTimeout(() => wash.classList.remove('on'), 350);
+          cio.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    cutTargets.forEach(el => cio.observe(el));
+  }
+
+  // ===== Method pinned phase reveal (scroll-linked) =====
+  const pin = document.getElementById('pin-wrap');
+  const phases = [...document.querySelectorAll('#method-right .phase')];
+  const counter = document.getElementById('phase-counter');
+  const stepEls = document.querySelectorAll('.phase-steps i');
+  const PHASE_NAMES = ['Diagnose','Map','Build','Attribute'];
+
+  if (pin && phases.length && !reduced && innerWidth > 860){
+    let current = 0;
+    const setPhase = (i) => {
+      if (i === current) return;
+      current = i;
+      phases.forEach((p,j) => p.classList.toggle('on', j===i));
+      stepEls.forEach((s,j) => s.classList.toggle('on', j<=i));
+      counter.textContent = `Phase 0${i+1} / 04 — ${PHASE_NAMES[i]}`;
+    };
+
+    const onScroll = () => {
+      const r = pin.getBoundingClientRect();
+      const vh = innerHeight;
+      // progress 0..1 while pin spans the viewport
+      const total = r.height - vh * 0.5;
+      const progress = Math.min(1, Math.max(0, (-r.top + vh*0.3) / total));
+      const i = Math.min(phases.length-1, Math.floor(progress * phases.length));
+      setPhase(i);
+    };
+    addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // ===== Number tickers =====
+  const easeOutExpo = t => 1 - Math.pow(2, -10 * t);
+  const fmt = (v,d) => d > 0 ? v.toFixed(d) : Math.round(v).toString();
+  const ticks = document.querySelectorAll('[data-ticker]');
+  if (reduced){
+    ticks.forEach(el => {
+      const end = parseFloat(el.dataset.end);
+      const d = parseInt(el.dataset.decimals||'0',10);
+      el.textContent = (el.dataset.prefix||'') + fmt(end,d) + (el.dataset.suffix||'');
+    });
+  } else if (ticks.length){
+    const tio = new IntersectionObserver((es) => {
+      es.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target; tio.unobserve(el);
+        const end = parseFloat(el.dataset.end);
+        const d = parseInt(el.dataset.decimals||'0',10);
+        const pfx = el.dataset.prefix||''; const sfx = el.dataset.suffix||'';
+        const dur = 1400; const t0 = performance.now();
+        const step = (now) => {
+          const p = Math.min(1, (now - t0)/dur);
+          el.textContent = pfx + fmt(end*easeOutExpo(p), d) + sfx;
+          if (p<1) requestAnimationFrame(step);
+          else el.textContent = pfx + fmt(end,d) + sfx;
+        };
+        requestAnimationFrame(step);
+      });
+    }, { threshold: 0.4 });
+    ticks.forEach(el => tio.observe(el));
+  }
+})();
+</script>
+</body>
+</html>

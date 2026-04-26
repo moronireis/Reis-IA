@@ -1,0 +1,80 @@
+---
+const features = [
+  {
+    icon: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>`,
+    label: "Localização GPS de cada câmera",
+  },
+  {
+    icon: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>`,
+    label: "Feed ao vivo direto do mapa",
+  },
+  {
+    icon: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304-.002a3.75 3.75 0 010 5.304m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>`,
+    label: "Status online/offline em tempo real",
+  },
+];
+---
+
+<section id="mapa" class="py-24 relative overflow-hidden">
+  <div class="section-divider absolute top-0 left-0 right-0"></div>
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(51,136,255,0.06),transparent_70%)]"></div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
+    <!-- Header -->
+    <div class="text-center mb-14">
+      <p class="text-blur-in text-fort-blue text-sm font-semibold tracking-wider uppercase mb-3">Monitoramento Geolocalizado</p>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-fort-white mb-4">
+        <span class="text-slide-up block overflow-hidden">
+          <span class="inner">Mapa em tempo real</span>
+        </span>
+      </h2>
+      <p class="text-blur-in text-fort-text max-w-xl mx-auto" style="transition-delay: 200ms">
+        Visualize a localização exata de cada câmera instalada. Clique em qualquer ponto para acessar o feed ao vivo.
+      </p>
+    </div>
+
+    <!-- Map image in browser window mockup -->
+    <div class="reveal max-w-4xl mx-auto mb-10">
+      <div class="mockup-window shadow-2xl shadow-black/50 glow-blue">
+        <div class="mockup-toolbar">
+          <div class="mockup-dot bg-fort-red/80"></div>
+          <div class="mockup-dot bg-fort-amber/80"></div>
+          <div class="mockup-dot bg-fort-green/80"></div>
+          <!-- URL bar -->
+          <div class="flex-1 mx-2 sm:mx-4 hidden sm:block">
+            <div class="bg-fort-dark/80 border border-fort-border/50 rounded-md px-3 py-1 flex items-center gap-2 max-w-xs mx-auto">
+              <svg class="w-3 h-3 text-fort-green shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              <span class="text-[10px] text-fort-text/60 font-mono truncate">painel.bataliondefense.com.br/mapa</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 ml-auto">
+            <span class="w-1.5 h-1.5 rounded-full bg-fort-green animate-pulse-slow"></span>
+            <span class="text-[10px] text-fort-green font-mono">ao vivo</span>
+          </div>
+        </div>
+        <div class="relative overflow-hidden bg-white">
+          <img
+            src="/images/mapa-tempo-real.jpeg"
+            alt="Mapa em tempo real com pins de câmeras instaladas e feed ao vivo"
+            loading="lazy"
+            class="w-full h-auto object-contain"
+          />
+          <!-- Subtle scan overlay -->
+          <div class="absolute inset-0 bg-gradient-to-b from-fort-blue/5 to-transparent pointer-events-none"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature points -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 reveal" style="transition-delay: 200ms">
+      {features.map((feat) => (
+        <div class="flex items-center gap-2.5 text-fort-text">
+          <div class="w-8 h-8 rounded-lg bg-fort-blue/10 border border-fort-blue/20 flex items-center justify-center text-fort-blue shrink-0" set:html={feat.icon} />
+          <span class="text-sm font-medium text-fort-light">{feat.label}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

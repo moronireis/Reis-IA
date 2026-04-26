@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REIS [IA] — Claude Code + Time de Agentes</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #000000;
+    --white: #FFFFFF;
+    --blue: #4A90FF;
+    --blue-dim: rgba(74, 144, 255, 0.15);
+    --blue-glow: rgba(74, 144, 255, 0.08);
+    --gray-100: #F5F5F7;
+    --gray-400: #86868B;
+    --gray-600: #6E6E73;
+    --gray-800: #1D1D1F;
+    --gray-900: #0A0A0A;
+    --surface: #111111;
+    --surface-2: #1A1A1A;
+    --border: rgba(255,255,255,0.06);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--black);
+    color: var(--white);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Slide Container */
+  .deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 100px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Typography */
+  h1 {
+    font-size: 64px;
+    font-weight: 200;
+    letter-spacing: -2px;
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+
+  h1 .accent { color: var(--blue); font-weight: 300; }
+
+  h2 {
+    font-size: 44px;
+    font-weight: 300;
+    letter-spacing: -1.5px;
+    line-height: 1.2;
+    margin-bottom: 40px;
+  }
+
+  h2 .accent { color: var(--blue); }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 22px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--gray-400);
+    max-width: 700px;
+  }
+
+  p.large {
+    font-size: 28px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .subtitle {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--gray-600);
+    margin-bottom: 48px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* Brand Mark */
+  .brand {
+    font-weight: 300;
+    font-size: 18px;
+    position: fixed;
+    top: 32px;
+    left: 40px;
+    z-index: 100;
+    opacity: 0.4;
+  }
+  .brand span { color: var(--blue); }
+
+  /* Slide Counter */
+  .counter {
+    position: fixed;
+    bottom: 32px;
+    right: 40px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--gray-600);
+    z-index: 100;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Progress Bar */
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--blue);
+    z-index: 200;
+    transition: width 0.4s ease;
+  }
+
+  /* Grid layouts */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 16px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    margin-top: 16px;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    margin-top: 16px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    transition: border-color 0.3s ease;
+  }
+
+  .card:hover {
+    border-color: rgba(74, 144, 255, 0.2);
+  }
+
+  .card .card-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--blue);
+    margin-bottom: 12px;
+  }
+
+  .card .card-title {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+
+  .card .card-desc {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--gray-400);
+    line-height: 1.5;
+  }
+
+  .card-sm {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .card-sm .card-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--blue);
+    margin-bottom: 8px;
+  }
+
+  .card-sm .card-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .card-sm .card-desc {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--gray-400);
+    line-height: 1.4;
+  }
+
+  /* Stat */
+  .stat-number {
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--blue);
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--gray-400);
+  }
+
+  /* Flow */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .flow-step.highlight {
+    border-color: var(--blue);
+    background: var(--blue-dim);
+    color: var(--blue);
+    font-weight: 500;
+  }
+
+  .flow-arrow {
+    color: var(--gray-600);
+    font-size: 18px;
+  }
+
+  /* Org chart */
+  .org {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .org-root {
+    display: inline-block;
+    background: var(--blue);
+    color: var(--black);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 14px 32px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+
+  .org-line {
+    width: 2px;
+    height: 32px;
+    background: rgba(74,144,255,0.3);
+    margin: 0 auto;
+  }
+
+  .org-branches {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .org-branch {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    min-width: 140px;
+    text-align: center;
+  }
+
+  .org-branch .ob-title {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .org-branch .ob-sub {
+    font-size: 11px;
+    color: var(--gray-600);
+  }
+
+  .org-branch.blue {
+    border-color: rgba(74,144,255,0.3);
+  }
+
+  /* List */
+  .feature-list {
+    list-style: none;
+    margin-top: 8px;
+  }
+
+  .feature-list li {
+    font-size: 20px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.7);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .feature-list li:last-child { border-bottom: none; }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--blue);
+    flex-shrink: 0;
+  }
+
+  /* Tag */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: var(--blue-dim);
+    color: var(--blue);
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+
+  /* Quote */
+  .quote {
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1.4;
+    color: rgba(255,255,255,0.85);
+    max-width: 800px;
+    letter-spacing: -0.5px;
+  }
+
+  .quote-line {
+    width: 48px;
+    height: 3px;
+    background: var(--blue);
+    margin-bottom: 32px;
+  }
+
+  /* Table */
+  .slide-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+  }
+
+  .slide-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gray-600);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .slide-table td {
+    font-size: 15px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.8);
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .slide-table td:first-child {
+    font-weight: 500;
+    color: var(--white);
+  }
+
+  .slide-table .status {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #34C759;
+    margin-right: 8px;
+  }
+
+  /* Keyboard hint */
+  .key-hint {
+    position: fixed;
+    bottom: 32px;
+    left: 40px;
+    font-size: 13px;
+    color: var(--gray-600);
+    z-index: 100;
+  }
+
+  .key-hint kbd {
+    display: inline-block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    margin: 0 2px;
+  }
+
+  /* Slide-specific */
+  .slide-cover {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .slide-cover h1 {
+    font-size: 80px;
+    margin-bottom: 16px;
+  }
+
+  .slide-end {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Decorative line */
+  .deco-line {
+    width: 64px;
+    height: 2px;
+    background: var(--blue);
+    margin-bottom: 32px;
+  }
+
+  /* Two column */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+
+  /* Scrollable card area */
+  .scroll-area {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-800) transparent;
+  }
+
+  @media (max-width: 1024px) {
+    .slide { padding: 40px 48px; }
+    h1 { font-size: 48px; }
+    h2 { font-size: 32px; }
+    .slide-cover h1 { font-size: 56px; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .two-col { grid-template-columns: 1fr; gap: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="brand">REIS <span>[IA]</span></div>
+<div class="progress" id="progress"></div>
+<div class="counter" id="counter"></div>
+<div class="key-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> para navegar</div>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: Cover -->
+  <div class="slide slide-cover active">
+    <div class="subtitle">REIS [IA] — Apresentacao Interna</div>
+    <h1>Claude Code +<br><span class="accent">Time de Agentes</span></h1>
+    <p class="large" style="margin: 0 auto;">O que e possivel hoje. O que ja construimos.<br>E o que vem a seguir.</p>
+  </div>
+
+  <!-- SLIDE 2: O que e Claude Code -->
+  <div class="slide">
+    <h3>Fundacao</h3>
+    <h2>O que e o <span class="accent">Claude Code</span>?</h2>
+    <div class="two-col">
+      <div>
+        <p style="margin-bottom: 32px;">Uma CLI da Anthropic que transforma o Claude em um engenheiro de software autonomo. Ele nao sugere. Ele executa.</p>
+        <ul class="feature-list">
+          <li><span class="dot"></span>Le e edita arquivos do projeto</li>
+          <li><span class="dot"></span>Roda comandos no terminal</li>
+          <li><span class="dot"></span>Faz deploy em producao</li>
+          <li><span class="dot"></span>Coordena multiplos agentes</li>
+          <li><span class="dot"></span>Memoria persistente entre conversas</li>
+        </ul>
+      </div>
+      <div>
+        <div class="card" style="background: var(--gray-900);">
+          <div class="card-label">Na pratica</div>
+          <div style="font-family: monospace; font-size: 14px; color: var(--gray-400); line-height: 2;">
+            <span style="color: var(--blue);">$</span> claude<br>
+            <span style="color: var(--gray-600);">&gt;</span> Crie uma landing page para o Builders<br>
+            <span style="color: var(--gray-600);">&gt;</span> com copy persuasiva e deploy na Vercel<br><br>
+            <span style="color: #34C759;">&#10003;</span> Pesquisa de mercado concluida<br>
+            <span style="color: #34C759;">&#10003;</span> Copy produzida (5 etapas)<br>
+            <span style="color: #34C759;">&#10003;</span> Pagina implementada<br>
+            <span style="color: #34C759;">&#10003;</span> Deploy realizado<br>
+            <span style="color: var(--blue);">&#8594;</span> https://builders.reisia.com.br
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Numeros do time -->
+  <div class="slide">
+    <h3>Visao Geral</h3>
+    <h2>O time em <span class="accent">numeros</span></h2>
+    <div class="grid-4" style="margin-top: 40px;">
+      <div class="card" style="text-align: center;">
+        <div class="stat-number">26</div>
+        <div class="stat-label">Agentes especializados</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div class="stat-number">6</div>
+        <div class="stat-label">Areas de atuacao</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div class="stat-number">2</div>
+        <div class="stat-label">Pipelines automaticos</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div class="stat-number">5</div>
+        <div class="stat-label">Projetos em producao</div>
+      </div>
+    </div>
+    <div style="margin-top: 48px;">
+      <div class="tag">Pesquisa</div>
+      <div class="tag">Estrategia</div>
+      <div class="tag">Copy</div>
+      <div class="tag">Design</div>
+      <div class="tag">Desenvolvimento</div>
+      <div class="tag">Educacao</div>
+      <div class="tag">Marca</div>
+      <div class="tag">Operacoes</div>
+      <div class="tag">Vendas</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Organograma -->
+  <div class="slide">
+    <h3>Estrutura</h3>
+    <h2>Organograma do <span class="accent">time</span></h2>
+    <div class="org">
+      <div class="org-root">ORCHESTRATOR</div>
+      <div class="org-line"></div>
+      <div class="org-branches">
+        <div class="org-branch blue">
+          <div class="ob-title">Pesquisa</div>
+          <div class="ob-sub">Market Research Analyst</div>
+        </div>
+        <div class="org-branch blue">
+          <div class="ob-title">Estrategia</div>
+          <div class="ob-sub">CMO Strategist<br>Chief Strategy Advisor</div>
+        </div>
+        <div class="org-branch blue">
+          <div class="ob-title">Copy Squad</div>
+          <div class="ob-sub">5 agentes em pipeline</div>
+        </div>
+        <div class="org-branch blue">
+          <div class="ob-title">Design</div>
+          <div class="ob-sub">Designer + Creative Dir.<br>+ VFX + Logo</div>
+        </div>
+        <div class="org-branch blue">
+          <div class="ob-title">Dev</div>
+          <div class="ob-sub">Dev Agent<br>Brand Site Builder</div>
+        </div>
+        <div class="org-branch blue">
+          <div class="ob-title">Educacao</div>
+          <div class="ob-sub">Director + Roteirista<br>+ Edu Designer</div>
+        </div>
+        <div class="org-branch blue">
+          <div class="ob-title">Marca</div>
+          <div class="ob-sub">Company + Personal<br>Product + Movement</div>
+        </div>
+        <div class="org-branch blue">
+          <div class="ob-title">Operacoes</div>
+          <div class="ob-sub">Executor + Analysis<br>Social + SDR</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Copy Squad Pipeline -->
+  <div class="slide">
+    <h3>Pipeline Principal</h3>
+    <h2>Copy Squad: <span class="accent">5 etapas</span> de refinamento</h2>
+    <p style="margin-bottom: 40px;">Toda copy passa por 5 agentes antes de ser publicada. Cada etapa aplica regras especificas de qualidade.</p>
+    <div class="flow">
+      <div class="flow-step highlight">CMO Strategist</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">DR Copywriter</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">Humanizer</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">Reviewer</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step highlight">CMO Sign-off</div>
+    </div>
+    <div class="grid-3" style="margin-top: 32px;">
+      <div class="card-sm">
+        <div class="card-label">Etapa 1</div>
+        <div class="card-title">Brief Estrategico</div>
+        <div class="card-desc">4 angulos Hormozi + material persuasivo para o copywriter</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-label">Etapa 2</div>
+        <div class="card-title">Copy Crua</div>
+        <div class="card-desc">Sales pages, VSL scripts, emails, ads com framework Hormozi aplicado</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-label">Etapa 3</div>
+        <div class="card-title">Humanizacao</div>
+        <div class="card-desc">Elimina padroes de AI, injeta voz natural PT-BR executivo</div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top: 16px; max-width: 66%;">
+      <div class="card-sm">
+        <div class="card-label">Etapa 4</div>
+        <div class="card-title">Quality Gate</div>
+        <div class="card-desc">Score contra brand voice + Hormozi + humanizacao. APPROVE ou REVISE.</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-label">Etapa 5</div>
+        <div class="card-title">Sign-off Final</div>
+        <div class="card-desc">CMO valida alinhamento estrategico. Copy aprovada para publicacao.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Cada agente e resultado -->
+  <div class="slide">
+    <h3>Resultados</h3>
+    <h2>O que cada area <span class="accent">entrega</span></h2>
+    <div class="scroll-area">
+      <div class="grid-3">
+        <div class="card-sm">
+          <div class="card-label">Pesquisa</div>
+          <div class="card-title">Analise de Mercado</div>
+          <div class="card-desc">Concorrentes mapeados, ICP descoberto, gaps de posicionamento identificados</div>
+        </div>
+        <div class="card-sm">
+          <div class="card-label">Estrategia</div>
+          <div class="card-title">Go-to-Market</div>
+          <div class="card-desc">Posicionamento, ofertas, funis, campanhas com briefings completos</div>
+        </div>
+        <div class="card-sm">
+          <div class="card-label">Copy Squad</div>
+          <div class="card-title">Copy Pronta</div>
+          <div class="card-desc">Sales pages, VSL scripts, emails, ads. 5 camadas de refinamento.</div>
+        </div>
+        <div class="card-sm">
+          <div class="card-label">Design</div>
+          <div class="card-title">Specs Visuais</div>
+          <div class="card-desc">UI/UX, wireframes, design system, identidade visual, motion specs</div>
+        </div>
+        <div class="card-sm">
+          <div class="card-label">Dev</div>
+          <div class="card-title">Codigo em Producao</div>
+          <div class="card-desc">Sites, plataformas, componentes. Astro + React + Tailwind. Deploy automatico.</div>
+        </div>
+        <div class="card-sm">
+          <div class="card-label">Educacao</div>
+          <div class="card-title">Material Completo</div>
+          <div class="card-desc">Curriculo, roteiros de videoaula, slides, mind maps, diagramas</div>
+        </div>
+        <div class="card-sm">
+          <div class="card-label">Marca</div>
+          <div class="card-title">Identidade Total</div>
+          <div class="card-desc">Marca corporativa, pessoal, produto, movimento. 4 estrategistas dedicados.</div>
+        </div>
+        <div class="card-sm">
+          <div class="card-label">Operacoes</div>
+          <div class="card-title">Ferramentas Configuradas</div>
+          <div class="card-desc">CRM, email, booking, deploy. Tudo conectado e funcionando.</div>
+        </div>
+        <div class="card-sm">
+          <div class="card-label">Vendas</div>
+          <div class="card-title">Prospeccao Automatica</div>
+          <div class="card-desc">SDR Agent: outreach, qualificacao, follow-up. Rodando autonomo.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Exemplo pratico -->
+  <div class="slide">
+    <h3>Exemplo Real</h3>
+    <h2>De objetivo a <span class="accent">producao</span></h2>
+    <div class="two-col">
+      <div>
+        <p style="margin-bottom: 32px; font-size: 18px; color: var(--gray-400);">"Crie uma campanha completa para o Builders"</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="flow-step" style="display: flex; align-items: center; gap: 12px;">
+            <span style="color: var(--blue); font-weight: 600; width: 20px;">1</span>
+            Orchestrator decompoe o objetivo
+          </div>
+          <div class="flow-step" style="display: flex; align-items: center; gap: 12px;">
+            <span style="color: var(--blue); font-weight: 600; width: 20px;">2</span>
+            Market Research analisa publico
+          </div>
+          <div class="flow-step" style="display: flex; align-items: center; gap: 12px;">
+            <span style="color: var(--blue); font-weight: 600; width: 20px;">3</span>
+            CMO Strategist cria estrategia
+          </div>
+          <div class="flow-step" style="display: flex; align-items: center; gap: 12px;">
+            <span style="color: var(--blue); font-weight: 600; width: 20px;">4</span>
+            Copy Squad produz toda a copy
+          </div>
+          <div class="flow-step" style="display: flex; align-items: center; gap: 12px;">
+            <span style="color: var(--blue); font-weight: 600; width: 20px;">5</span>
+            Designer cria specs visuais
+          </div>
+          <div class="flow-step" style="display: flex; align-items: center; gap: 12px;">
+            <span style="color: var(--blue); font-weight: 600; width: 20px;">6</span>
+            Dev Agent implementa tudo
+          </div>
+          <div class="flow-step" style="display: flex; align-items: center; gap: 12px;">
+            <span style="color: var(--blue); font-weight: 600; width: 20px;">7</span>
+            Deploy automatico na Vercel
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-label">Antes (time humano)</div>
+          <div class="stat-number" style="font-size: 40px;">2-4 sem</div>
+          <div class="card-desc">Pesquisa + copy + design + dev + revisoes + deploy</div>
+        </div>
+        <div class="card" style="border-color: rgba(74,144,255,0.3);">
+          <div class="card-label">Agora (time de agentes)</div>
+          <div class="stat-number" style="font-size: 40px;">Horas</div>
+          <div class="card-desc">Mesmo pipeline, mesma qualidade, velocidade incomparavel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: O que ja construimos -->
+  <div class="slide">
+    <h3>Portfolio</h3>
+    <h2>O que ja <span class="accent">construimos</span></h2>
+    <table class="slide-table">
+      <thead>
+        <tr>
+          <th>Projeto</th>
+          <th>O que e</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>reis-ia-website</td>
+          <td>Site institucional com mockups Stripe/Linear</td>
+          <td><span class="status"></span>Producao</td>
+        </tr>
+        <tr>
+          <td>reis-ia-brand</td>
+          <td>Brandbook interativo completo</td>
+          <td><span class="status"></span>Producao</td>
+        </tr>
+        <tr>
+          <td>reis-ia-marketing</td>
+          <td>Site de marketing + diagnostico interativo</td>
+          <td><span class="status"></span>Producao</td>
+        </tr>
+        <tr>
+          <td>reis-ia-hub</td>
+          <td>Plataforma de gestao: projetos, tarefas, CRM</td>
+          <td><span class="status"></span>Producao</td>
+        </tr>
+        <tr>
+          <td>reis-ia-funnels</td>
+          <td>Funis de venda e paginas de eventos</td>
+          <td><span class="status"></span>Producao</td>
+        </tr>
+        <tr>
+          <td>Brain (Knowledge Base)</td>
+          <td>Pesquisa, estrategia, messaging, assets documentados</td>
+          <td><span class="status"></span>Ativo</td>
+        </tr>
+        <tr>
+          <td>Sistema de 26 Agentes</td>
+          <td>Time virtual completo com pipelines automaticos</td>
+          <td><span class="status"></span>Ativo</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SLIDE 9: Possibilidades -->
+  <div class="slide">
+    <h3>Futuro</h3>
+    <h2>O que e possivel <span class="accent">a partir daqui</span></h2>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-label">Vendas</div>
+        <div class="card-title">SDR Autonomo</div>
+        <div class="card-desc">Prospeccao, qualificacao e follow-up rodando 24/7 sem intervencao manual</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Conteudo</div>
+        <div class="card-title">Producao Continua</div>
+        <div class="card-desc">Posts, emails, artigos produzidos pelo pipeline. Calendario editorial automatico.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Educacao</div>
+        <div class="card-title">Cursos Completos</div>
+        <div class="card-desc">Do briefing ao material visual. Pipeline educacional end-to-end.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Escala</div>
+        <div class="card-title">Sites e Funis em Horas</div>
+        <div class="card-desc">Qualquer pagina nova sai com design system aplicado e deploy automatico.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Consultoria</div>
+        <div class="card-title">Diagnosticos Automaticos</div>
+        <div class="card-desc">Relatorios e analises gerados para clientes sem trabalho manual.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Integracoes</div>
+        <div class="card-title">Tudo Conectado</div>
+        <div class="card-desc">CRM, email, calendario, WhatsApp. Agentes operando entre plataformas.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Closing -->
+  <div class="slide slide-end">
+    <div class="quote-line" style="margin: 0 auto 32px;"></div>
+    <div class="quote" style="margin-bottom: 48px;">
+      A maioria das empresas usa AI para automatizar tarefas.<br>
+      Nos construimos um <span style="color: var(--blue);">time completo</span> que opera como uma empresa.
+    </div>
+    <p style="text-align: center; max-width: 100%;">Nao e uma ferramenta. E uma estrutura organizacional.</p>
+    <div style="margin-top: 64px;">
+      <span style="font-weight: 300; font-size: 24px;">REIS <span style="color: var(--blue);">[IA]</span></span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  let current = 0;
+
+  function show(index) {
+    if (index < 0 || index >= slides.length) return;
+    slides[current].classList.remove('active');
+    current = index;
+    slides[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${slides.length}`;
+    progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(current + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(current - 1); }
+    if (e.key === 'Home') { e.preventDefault(); show(0); }
+    if (e.key === 'End') { e.preventDefault(); show(slides.length - 1); }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? show(current + 1) : show(current - 1); }
+  });
+
+  // Click to advance
+  document.addEventListener('click', (e) => {
+    const x = e.clientX / window.innerWidth;
+    x > 0.5 ? show(current + 1) : show(current - 1);
+  });
+
+  show(0);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+---
+import '../styles/global.css';
+import GlowLine from '../components/vfx/GlowLine';
+---
+
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hub HT — Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="min-h-screen flex items-center justify-center bg-surface-0">
+    <div class="w-full max-w-sm mx-auto px-6">
+      <!-- Logo -->
+      <div class="text-center mb-10 animate-fade-up">
+        <h1 class="text-2xl font-bold tracking-wider">
+          HUB <span class="text-accent">HT</span>
+        </h1>
+        <p class="text-sm text-text-muted mt-2">Acesse sua conta</p>
+      </div>
+
+      <GlowLine client:load />
+
+      <!-- Login Form -->
+      <form id="login-form" class="mt-8 space-y-4 animate-fade-up" style="animation-delay: 100ms">
+        <div class="flex flex-col gap-1.5">
+          <label for="email" class="text-sm font-medium text-text-secondary">Usuário</label>
+          <input
+            id="email"
+            name="email"
+            type="text"
+            required
+            placeholder="admin"
+            autocomplete="username"
+            class="w-full px-3 py-2.5 text-sm rounded-md bg-surface-1 border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="password" class="text-sm font-medium text-text-secondary">Senha</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            placeholder="admin"
+            autocomplete="current-password"
+            class="w-full px-3 py-2.5 text-sm rounded-md bg-surface-1 border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
+          />
+        </div>
+
+        <div id="error-msg" class="text-xs text-danger hidden"></div>
+
+        <button
+          type="submit"
+          class="w-full px-4 py-2.5 text-sm font-semibold rounded-md bg-accent text-surface-0 hover:bg-accent-light hover:shadow-[0_0_24px_rgba(0,230,96,0.3)] active:bg-accent-dark active:scale-[0.97] transition-all duration-200 cursor-pointer"
+        >
+          Entrar
+        </button>
+      </form>
+
+      <!-- Demo accounts hint -->
+      <div class="mt-8 p-4 bg-surface-1 border border-border rounded-lg animate-fade-up" style="animation-delay: 200ms">
+        <p class="text-[10px] text-text-muted uppercase tracking-wider mb-2">Contas demo</p>
+        <div class="space-y-1.5">
+          <button
+            type="button"
+            class="demo-fill w-full flex items-center justify-between px-3 py-2 rounded-md bg-surface-2 hover:bg-surface-3 transition-colors cursor-pointer text-left"
+            data-user="admin"
+            data-pass="admin"
+          >
+            <div>
+              <p class="text-xs font-medium text-text-primary">Expert</p>
+              <p class="text-[10px] text-text-muted">admin / admin</p>
+            </div>
+            <span class="text-[10px] text-accent">Expert View</span>
+          </button>
+          <button
+            type="button"
+            class="demo-fill w-full flex items-center justify-between px-3 py-2 rounded-md bg-surface-2 hover:bg-surface-3 transition-colors cursor-pointer text-left"
+            data-user="aluno"
+            data-pass="aluno"
+          >
+            <div>
+              <p class="text-xs font-medium text-text-primary">Aluno</p>
+              <p class="text-[10px] text-text-muted">aluno / aluno</p>
+            </div>
+            <span class="text-[10px] text-accent">Student View</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById('login-form') as HTMLFormElement;
+      const errorMsg = document.getElementById('error-msg') as HTMLDivElement;
+      const emailInput = document.getElementById('email') as HTMLInputElement;
+      const passInput = document.getElementById('password') as HTMLInputElement;
+
+      // Demo fill buttons
+      document.querySelectorAll('.demo-fill').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const el = btn as HTMLElement;
+          emailInput.value = el.dataset.user || '';
+          passInput.value = el.dataset.pass || '';
+          form.requestSubmit();
+        });
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorMsg.classList.add('hidden');
+
+        const formData = new FormData(form);
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
+
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorMsg.textContent = data.error || 'Erro ao fazer login';
+          errorMsg.classList.remove('hidden');
+          return;
+        }
+
+        window.location.href = data.redirect || '/admin';
+      });
+    </script>
+  </body>
+</html>

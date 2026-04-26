@@ -1,0 +1,226 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+---
+
+<AppLayout title="Diagnóstico IA" activePage="diagnostico">
+
+  <!-- Hero -->
+  <div style="margin-bottom:32px;">
+    <h1 style="font-size:24px; font-weight:700; color:var(--text-primary); letter-spacing:-0.03em; margin-bottom:6px;">
+      Pergunte. A IA investiga em segundos.
+    </h1>
+    <p style="font-size:14px; color:var(--text-muted);">
+      Diagnóstico em tempo real dos seus produtos, concorrentes e posicionamento nos marketplaces.
+    </p>
+  </div>
+
+  <!-- Input area -->
+  <div class="card" style="padding:24px; margin-bottom:20px;">
+    <div style="display:flex; gap:12px; align-items:flex-start;">
+      <div style="flex:1;">
+        <textarea
+          id="query-input"
+          class="input-field"
+          style="height:56px; resize:none; line-height:1.5; padding:16px 18px; font-size:14px;"
+          placeholder="Por que o Shoyu Daimaru caiu essa semana?"
+        ></textarea>
+      </div>
+      <button id="submit-btn" class="btn btn-red" style="padding:14px 20px; height:56px; flex-shrink:0;" onclick="runDiagnostic()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 8h12M10 4l4 4-4 4" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Analisar
+      </button>
+    </div>
+
+    <!-- Chip suggestions -->
+    <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+      {[
+        'Por que o Shoyu Daimaru caiu essa semana?',
+        'Quem é meu concorrente novo no Mercado Livre?',
+        'Devo baixar o preço do Tarê Sakura?',
+      ].map(chip => (
+        <button
+          class="btn btn-ghost chip-btn"
+          style="font-size:12px; padding:5px 12px; border-radius:100px;"
+          data-query={chip}
+          onclick="selectChip(this)"
+        >
+          {chip}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Typing indicator (hidden by default) -->
+  <div id="typing-indicator" style="display:none; margin-bottom:20px;">
+    <div class="card" style="padding:20px; display:flex; align-items:center; gap:12px;">
+      <div style="display:flex; gap:5px; align-items:center;">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;animation:typing-dot 1.2s ease infinite;"></span>
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;animation:typing-dot 1.2s ease 0.2s infinite;"></span>
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;animation:typing-dot 1.2s ease 0.4s infinite;"></span>
+      </div>
+      <span style="font-size:13px; color:var(--text-muted);">IA analisando dados de mercado...</span>
+    </div>
+  </div>
+
+  <!-- Answer card (hidden by default) -->
+  <div id="answer-card" style="display:none; margin-bottom:28px; animation:fade-in 0.4s ease;">
+    <div class="card" style="padding:0; overflow:hidden;">
+
+      <!-- Card header -->
+      <div style="padding:18px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="
+            width:32px; height:32px; border-radius:8px;
+            background:var(--red-dim); border:1px solid rgba(200,16,46,0.2);
+            display:flex; align-items:center; justify-content:center;
+          ">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <path d="M7.5 2C5.5 2 4 3.5 4 5.5c0 .8.3 1.6.8 2.2L4 13h7l-.8-5.3c.5-.6.8-1.4.8-2.2C11 3.5 9.5 2 7.5 2z" stroke="var(--red)" stroke-width="1.3" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Diagnóstico — Shoyu Daimaru Macro Especial 900ml</div>
+            <div style="font-size:11px; color:var(--text-muted);">Análise gerada em 1,4s · dados até agora</div>
+          </div>
+        </div>
+        <span class="badge badge-red">Ação necessária</span>
+      </div>
+
+      <!-- Answer body -->
+      <div style="padding:24px;">
+        <div style="
+          background:rgba(200,16,46,0.06); border:1px solid rgba(200,16,46,0.15);
+          border-radius:10px; padding:14px 16px; margin-bottom:20px;
+        ">
+          <div style="font-size:13px; color:var(--text-primary); line-height:1.6;">
+            Queda de <strong style="color:var(--red);">18%</strong> identificada nos últimos 7 dias.
+            3 causas detectadas:
+          </div>
+        </div>
+
+        <!-- Cause 1 -->
+        <div style="margin-bottom:18px; padding-left:16px; border-left:2px solid var(--red);">
+          <div style="font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">
+            1. Novo concorrente entrou em 04/04
+          </div>
+          <div style="font-size:13px; color:var(--text-secondary); line-height:1.6;">
+            "Importadora Asia SP" começou a vender o mesmo SKU por
+            <strong style="color:var(--red);">R$ 22,90</strong>
+            (você: R$ 25,90). Já capturou
+            <strong style="color:var(--text-primary);">23% das vendas da categoria</strong>.
+          </div>
+        </div>
+
+        <!-- Cause 2 -->
+        <div style="margin-bottom:18px; padding-left:16px; border-left:2px solid var(--yellow);">
+          <div style="font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">
+            2. Você perdeu posição #1 na busca
+          </div>
+          <div style="font-size:13px; color:var(--text-secondary); line-height:1.6;">
+            Termo <strong style="color:var(--text-primary);">"shoyu importado"</strong> no Mercado Livre —
+            você caiu de <strong>#1 para #4</strong>. Tráfego orgânico despencou
+            <strong style="color:var(--red);">-41%</strong> na semana.
+          </div>
+        </div>
+
+        <!-- Cause 3 -->
+        <div style="margin-bottom:24px; padding-left:16px; border-left:2px solid var(--gold);">
+          <div style="font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">
+            3. Conversão da página caiu de 4,2% para 2,8%
+          </div>
+          <div style="font-size:13px; color:var(--text-secondary); line-height:1.6;">
+            Suspeita: título genérico e fotos em baixa resolução vs concorrentes.
+            Sugestão: regravar 3 fotos em estúdio + reescrever título com keyword
+            <strong style="color:var(--gold);">"premium importado Japão"</strong>.
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-red" onclick="showApplyToast()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7l3.5 3.5L12 3" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Aplicar correções sugeridas
+          </button>
+          <button class="btn btn-ghost" onclick="window.location.href='/relatorios'">
+            Ver análise completa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div>
+    <div style="font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:14px;">Histórico de diagnósticos</div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      {[
+        { q: 'Por que o Tarê Sakura perdeu Buy Box?', time: 'Hoje, 09:14', status: 'Resolvido', statusColor: 'green' },
+        { q: 'Análise de novos concorrentes em Algas', time: 'Ontem, 16:32', status: '3 achados', statusColor: 'yellow' },
+        { q: 'Oportunidade de aumento de preço no Bifum', time: '10/abr, 11:07', status: 'Oportunidade', statusColor: 'gold' },
+      ].map(h => (
+        <div class="card" style="padding:14px 18px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onmouseover="this.style.borderColor='var(--border-accent)'" onmouseout="this.style.borderColor=''">
+          <div>
+            <div style="font-size:13px; color:var(--text-primary);">{h.q}</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">{h.time}</div>
+          </div>
+          <span class={`badge badge-${h.statusColor}`}>{h.status}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</AppLayout>
+
+<!-- Apply toast -->
+<div id="apply-toast" class="toast" style="display:none; border-color:rgba(34,197,94,0.3);">
+  <div style="display:flex; align-items:center; gap:8px;">
+    <div class="dot-green"></div>
+    <span style="color:var(--text-primary);">Correções aplicadas — monitorando resultado</span>
+  </div>
+</div>
+
+<script>
+  function selectChip(btn: HTMLElement) {
+    const q = btn.getAttribute('data-query') || '';
+    const input = document.getElementById('query-input') as HTMLTextAreaElement;
+    if (input) input.value = q;
+    runDiagnostic();
+  }
+
+  function runDiagnostic() {
+    const typing = document.getElementById('typing-indicator')!;
+    const answer = document.getElementById('answer-card')!;
+    answer.style.display = 'none';
+    typing.style.display = 'block';
+
+    setTimeout(() => {
+      typing.style.display = 'none';
+      answer.style.display = 'block';
+      answer.style.animation = 'none';
+      void (answer as HTMLElement).offsetWidth;
+      answer.style.animation = 'fade-in 0.4s ease';
+    }, 1500);
+  }
+
+  function showApplyToast() {
+    const t = document.getElementById('apply-toast')!;
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 3000);
+  }
+
+  (window as any).selectChip = selectChip;
+  (window as any).runDiagnostic = runDiagnostic;
+  (window as any).showApplyToast = showApplyToast;
+
+  // Enter key
+  document.getElementById('query-input')?.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      runDiagnostic();
+    }
+  });
+</script>

@@ -1,0 +1,181 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import estoque from '../data/estoque.json';
+---
+
+<AppLayout title="Previsão de Estoque" activePage="estoque">
+
+  <!-- Header -->
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <h1 style="font-size:22px; font-weight:700; color:var(--text-primary); letter-spacing:-0.03em; margin-bottom:4px;">Previsão de Estoque & Reposição</h1>
+      <div style="font-size:13px; color:var(--text-muted);">Projeção baseada em velocidade de venda atual · atualizado agora</div>
+    </div>
+  </div>
+
+  <!-- Summary card -->
+  <div style="
+    background: linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(200,16,46,0.04) 100%);
+    border:1px solid rgba(212,175,55,0.2);
+    border-radius:16px; padding:24px 28px; margin-bottom:24px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
+  ">
+    <div>
+      <div style="font-size:11px; font-weight:600; color:var(--gold); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">Sugestão de reposição semanal</div>
+      <div style="font-size:32px; font-weight:700; color:var(--text-primary); letter-spacing:-0.03em;">R$ 78.400</div>
+      <div style="font-size:13px; color:var(--text-muted); margin-top:4px;">em compras recomendadas · ruptura evitada em 2 SKUs</div>
+    </div>
+    <div style="display:flex; gap:16px; flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div style="font-size:24px; font-weight:700; color:var(--red);">1</div>
+        <div style="font-size:11px; color:var(--text-muted);">Compra urgente</div>
+      </div>
+      <div style="width:1px; background:var(--border);"></div>
+      <div style="text-align:center;">
+        <div style="font-size:24px; font-weight:700; color:var(--yellow);">1</div>
+        <div style="font-size:11px; color:var(--text-muted);">Pedido em breve</div>
+      </div>
+      <div style="width:1px; background:var(--border);"></div>
+      <div style="text-align:center;">
+        <div style="font-size:24px; font-weight:700; color:var(--green);">5</div>
+        <div style="font-size:11px; color:var(--text-muted);">Em nível seguro</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card" style="overflow:hidden; margin-bottom:24px;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Estoque atual</th>
+          <th>Vendas/dia</th>
+          <th>Dias restantes</th>
+          <th>Ruptura prevista</th>
+          <th>Ação recomendada</th>
+        </tr>
+      </thead>
+      <tbody>
+        {estoque.map(item => (
+          <tr class={item.status === 'critical' ? 'row-red' : ''}>
+            <td>
+              <div style="font-weight:500; color:var(--text-primary);">{item.name}</div>
+            </td>
+            <td>
+              <span style={`font-size:18px; font-weight:700; color:${item.status === 'critical' ? 'var(--red)' : item.status === 'warning' ? 'var(--yellow)' : 'var(--green)'};`}>
+                {item.stock}
+              </span>
+              <span style="font-size:12px; color:var(--text-muted); margin-left:4px;">un.</span>
+            </td>
+            <td style="color:var(--text-secondary);">{item.sales_per_day.toFixed(1)} un/dia</td>
+            <td>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style={`font-size:15px; font-weight:700; color:${item.status === 'critical' ? 'var(--red)' : item.status === 'warning' ? 'var(--yellow)' : 'var(--green)'};`}>
+                  {item.days_remaining}d
+                </span>
+                <!-- mini progress bar -->
+                <div style="width:60px; height:4px; background:var(--bg-secondary); border-radius:2px; overflow:hidden;">
+                  <div style={`height:100%; border-radius:2px; width:${Math.min(100, (item.days_remaining / 60) * 100)}%; background:${item.status === 'critical' ? 'var(--red)' : item.status === 'warning' ? 'var(--yellow)' : 'var(--green)'};`}></div>
+                </div>
+              </div>
+            </td>
+            <td style="font-size:12px; color:var(--text-muted);">{item.rupture_date}</td>
+            <td>
+              {item.status === 'critical' && (
+                <span class="badge badge-red">COMPRAR AGORA — lead time {item.lead_time_days}d</span>
+              )}
+              {item.status === 'warning' && (
+                <span class="badge badge-yellow">Pedido em {item.reorder_in_days} dias</span>
+              )}
+              {item.status === 'ok' && (
+                <span class="badge badge-green">Nível seguro</span>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Projection chart -->
+  <div class="card" style="padding:24px;">
+    <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">Projeção de Estoque — próximos 60 dias</div>
+    <div style="font-size:12px; color:var(--text-muted); margin-bottom:20px;">Declínio estimado por velocidade de venda atual</div>
+
+    <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:16px; font-size:11px;">
+      {estoque.map(item => (
+        <div style="display:flex; align-items:center; gap:5px;">
+          <div style={`width:10px; height:2px; border-radius:1px; background:${item.status === 'critical' ? 'var(--red)' : item.status === 'warning' ? 'var(--yellow)' : 'var(--green)'};`}></div>
+          <span style="color:var(--text-muted);">{item.name.split(' ').slice(0, 2).join(' ')}</span>
+        </div>
+      ))}
+    </div>
+
+    <div id="stock-chart" style="width:100%; height:200px;"></div>
+  </div>
+
+</AppLayout>
+
+<script define:vars={{ stockData: estoque }}>
+
+function drawStockChart() {
+  const container = document.getElementById('stock-chart');
+  if (!container) return;
+
+  const W = container.clientWidth || 700;
+  const H = 200;
+  const padL = 44, padR = 16, padT = 12, padB = 28;
+  const cW = W - padL - padR;
+  const cH = H - padT - padB;
+  const days = 60;
+
+  const maxStock = Math.max(...stockData.map(d => d.stock));
+
+  const colors = stockData.map(d =>
+    d.status === 'critical' ? 'var(--red)' : d.status === 'warning' ? 'var(--yellow)' : 'var(--green)'
+  );
+
+  const xScale = d => padL + (d / days) * cW;
+  const yScale = v => padT + cH - (v / (maxStock * 1.05)) * cH;
+
+  const gridLines = [0, 0.25, 0.5, 0.75, 1].map(t => {
+    const y = padT + t * cH;
+    const v = Math.round((1 - t) * maxStock * 1.05);
+    return `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--border)" stroke-width="1"/>
+            <text x="${padL - 4}" y="${y + 4}" text-anchor="end" font-size="9" fill="var(--text-muted)" font-family="Inter">${v}</text>`;
+  }).join('');
+
+  const xLabels = [0, 15, 30, 45, 60].map(d =>
+    `<text x="${xScale(d)}" y="${H - 6}" text-anchor="middle" font-size="9" fill="var(--text-muted)" font-family="Inter">dia ${d}</text>`
+  ).join('');
+
+  const lines = stockData.map((item, idx) => {
+    const pts = Array.from({ length: days + 1 }, (_, d) => {
+      const rem = Math.max(0, item.stock - item.sales_per_day * d);
+      return `${d === 0 ? 'M' : 'L'}${xScale(d)},${yScale(rem)}`;
+    }).join(' ');
+    return `<path d="${pts}" stroke="${colors[idx]}" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>`;
+  }).join('');
+
+  // Rupture markers (vertical lines where stock hits 0)
+  const ruptures = stockData
+    .filter(item => item.days_remaining <= 60)
+    .map(item => {
+      const x = xScale(item.days_remaining);
+      const color = item.status === 'critical' ? 'var(--red)' : 'var(--yellow)';
+      return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${padT + cH}" stroke="${color}" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>`;
+    }).join('');
+
+  container.innerHTML = `
+    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none">
+      ${gridLines}
+      ${ruptures}
+      ${lines}
+      ${xLabels}
+    </svg>`;
+}
+
+drawStockChart();
+window.addEventListener('resize', drawStockChart);
+</script>

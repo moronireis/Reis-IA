@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U4Digital - Twilio WhatsApp Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #0a0a0a; color: #e5e5e5; padding: 24px; }
+  h1 { font-size: 24px; font-weight: 300; margin-bottom: 8px; }
+  h1 span { color: #4A90FF; }
+  .subtitle { color: #888; font-size: 14px; margin-bottom: 32px; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .kpi { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 20px; }
+  .kpi-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 8px; }
+  .kpi-value { font-size: 32px; font-weight: 600; }
+  .kpi-sub { font-size: 13px; color: #888; margin-top: 4px; }
+  .kpi-value.green { color: #22c55e; }
+  .kpi-value.red { color: #ef4444; }
+  .kpi-value.blue { color: #4A90FF; }
+  .kpi-value.amber { color: #f59e0b; }
+
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+  .chart-card { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 24px; }
+  .chart-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 16px; color: #ccc; }
+  .chart-card.full { grid-column: 1 / -1; }
+
+  .error-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  .error-table th, .error-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #222; font-size: 13px; }
+  .error-table th { color: #666; text-transform: uppercase; letter-spacing: 0.5px; font-size: 11px; }
+  .error-table td.code { color: #ef4444; font-family: monospace; }
+  .error-table td.count { color: #fff; font-weight: 600; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .badge.critical { background: #ef444420; color: #ef4444; }
+  .badge.warning { background: #f59e0b20; color: #f59e0b; }
+  .badge.info { background: #4A90FF20; color: #4A90FF; }
+
+  .insight-box { background: #1a1a2e; border: 1px solid #4A90FF30; border-radius: 12px; padding: 20px; margin-bottom: 32px; }
+  .insight-box h3 { color: #4A90FF; font-size: 14px; margin-bottom: 12px; }
+  .insight-box ul { list-style: none; padding: 0; }
+  .insight-box li { padding: 6px 0; font-size: 13px; color: #ccc; border-bottom: 1px solid #ffffff08; }
+  .insight-box li:last-child { border: none; }
+  .insight-box li strong { color: #fff; }
+
+  .template-card { background: #1a1a1a; border-radius: 8px; padding: 16px; margin-top: 8px; }
+  .template-card .label { font-size: 11px; color: #666; text-transform: uppercase; margin-bottom: 4px; }
+  .template-card .body { font-size: 13px; color: #ccc; white-space: pre-wrap; max-height: 120px; overflow: auto; }
+  .template-card .count { color: #4A90FF; font-weight: 600; font-size: 14px; margin-top: 8px; }
+
+  @media (max-width: 768px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<h1>U4Digital <span>Twilio WhatsApp</span> Dashboard</h1>
+<p class="subtitle">Periodo: 21 Mar 2026 - 09 Abr 2026 | Conta: AC32b47...87e5 | From: +55 55 9136-5478</p>
+
+<!-- KPIs -->
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-label">Total Disparos</div>
+    <div class="kpi-value blue">6.129</div>
+    <div class="kpi-sub">outbound-api</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Entregues + Lidos</div>
+    <div class="kpi-value green">2.216</div>
+    <div class="kpi-sub">36.2% do total</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Nao Entregues</div>
+    <div class="kpi-value red">3.864</div>
+    <div class="kpi-sub">63.0% do total</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Lidos (Read)</div>
+    <div class="kpi-value green">1.031</div>
+    <div class="kpi-sub">16.8% do total | 46.5% dos entregues</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Respostas Recebidas</div>
+    <div class="kpi-value amber">343</div>
+    <div class="kpi-sub">15.5% dos entregues</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Custo Total</div>
+    <div class="kpi-value">$138.40</div>
+    <div class="kpi-sub">USD | ~R$780</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Custo por Entrega</div>
+    <div class="kpi-value">$0.062</div>
+    <div class="kpi-sub">USD por msg entregue</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Destinatarios Unicos</div>
+    <div class="kpi-value blue">5.880</div>
+    <div class="kpi-sub">numeros distintos</div>
+  </div>
+</div>
+
+<!-- Insights -->
+<div class="insight-box">
+  <h3>ALERTAS E INSIGHTS</h3>
+  <ul>
+    <li><span class="badge critical">CRITICO</span> <strong>63% dos disparos falharam</strong> - Erro 63018 (rate limit / template nao aprovado) afetou 3.061 mensagens (50%)</li>
+    <li><span class="badge critical">CRITICO</span> <strong>Blast concentrado</strong> - 5.587 msgs em 07/Abr, 4.255 entre 00:00-01:00. Rate limit esperado nesse volume/velocidade</li>
+    <li><span class="badge warning">ATENCAO</span> <strong>529 numeros invalidos</strong> (erro 63049) - Lista precisa de limpeza/validacao</li>
+    <li><span class="badge warning">ATENCAO</span> <strong>59 opt-outs</strong> (erro 63032) - Usuarios que bloquearam. Remover da lista</li>
+    <li><span class="badge info">INFO</span> <strong>Taxa de leitura dos entregues: 46.5%</strong> - Boa performance para quem recebeu</li>
+    <li><span class="badge info">INFO</span> <strong>Nao precisa de dados da Meta</strong> - Twilio ja rastreia delivery/read status via WhatsApp Business API</li>
+    <li><span class="badge info">RECOMENDACAO</span> Verificar no Meta Business Manager se o template "Jornada Creator" esta aprovado e se o rate limit da conta foi excedido</li>
+  </ul>
+</div>
+
+<!-- Charts -->
+<div class="charts-grid">
+
+  <!-- Status Donut -->
+  <div class="chart-card">
+    <h3>Status dos Disparos</h3>
+    <canvas id="statusChart"></canvas>
+  </div>
+
+  <!-- Error Breakdown -->
+  <div class="chart-card">
+    <h3>Erros por Codigo</h3>
+    <canvas id="errorChart"></canvas>
+  </div>
+
+  <!-- Daily Volume -->
+  <div class="chart-card full">
+    <h3>Volume Diario (Outbound + Inbound)</h3>
+    <canvas id="dailyChart"></canvas>
+  </div>
+
+  <!-- April 7 Hourly -->
+  <div class="chart-card">
+    <h3>07/Abr - Distribuicao por Hora</h3>
+    <canvas id="hourlyChart"></canvas>
+  </div>
+
+  <!-- Funnel -->
+  <div class="chart-card">
+    <h3>Funil de Entrega</h3>
+    <canvas id="funnelChart"></canvas>
+  </div>
+
+</div>
+
+<!-- Error Table -->
+<div class="chart-card" style="margin-bottom: 32px;">
+  <h3>Detalhamento de Erros</h3>
+  <table class="error-table">
+    <thead>
+      <tr><th>Codigo</th><th>Descricao</th><th>Qtd</th><th>%</th><th>Severidade</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="code">63018</td><td>Rate limit / Template nao aprovado</td><td class="count">3.061</td><td>49.9%</td><td><span class="badge critical">CRITICO</span></td></tr>
+      <tr><td class="code">63049</td><td>Numero do destinatario invalido</td><td class="count">529</td><td>8.6%</td><td><span class="badge warning">ALTO</span></td></tr>
+      <tr><td class="code">12300</td><td>Content-Type invalido</td><td class="count">337</td><td>5.5%</td><td><span class="badge warning">MEDIO</span></td></tr>
+      <tr><td class="code">63024</td><td>Falha no download de midia</td><td class="count">201</td><td>3.3%</td><td><span class="badge warning">MEDIO</span></td></tr>
+      <tr><td class="code">63032</td><td>Usuario fez opt-out</td><td class="count">59</td><td>1.0%</td><td><span class="badge info">BAIXO</span></td></tr>
+      <tr><td class="code">21211</td><td>Numero 'To' invalido</td><td class="count">22</td><td>0.4%</td><td><span class="badge info">BAIXO</span></td></tr>
+      <tr><td class="code">63016</td><td>Fora da janela de 24h</td><td class="count">14</td><td>0.2%</td><td><span class="badge info">BAIXO</span></td></tr>
+      <tr><td class="code">Outros</td><td>21656, 21910, 63031, 21212</td><td class="count">10</td><td>0.2%</td><td><span class="badge info">BAIXO</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Templates -->
+<div class="chart-card" style="margin-bottom: 32px;">
+  <h3>Templates Utilizados</h3>
+  <div class="template-card">
+    <div class="label">Template Principal (93.7%)</div>
+    <div class="count">5.745 disparos</div>
+    <div class="body">COMECOU A JORNADA CREATOR! A Primeira Aula que pode MUDAR SUA VIDA esta ao vivo...</div>
+  </div>
+  <div class="template-card" style="margin-top: 12px;">
+    <div class="label">Recuperacao de Carrinho</div>
+    <div class="count">280 disparos</div>
+    <div class="body">Vi que voce comecou a compra do Metodo Creator mas nao finalizou... O que rolou?</div>
+  </div>
+  <div class="template-card" style="margin-top: 12px;">
+    <div class="label">Boas-vindas Comprador</div>
+    <div class="count">63 disparos</div>
+    <div class="body">SEJA MUITO BEM-VINDO AO METODO CREATOR! Agora voce nao e mais "so mais um"...</div>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color = '#888';
+Chart.defaults.borderColor = '#222';
+
+// Status Donut
+new Chart(document.getElementById('statusChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Nao Entregue', 'Entregue', 'Lido', 'Falhou', 'Enviado'],
+    datasets: [{
+      data: [3864, 1185, 1031, 32, 17],
+      backgroundColor: ['#ef4444', '#22c55e', '#4A90FF', '#991b1b', '#f59e0b'],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } }
+    },
+    cutout: '60%'
+  }
+});
+
+// Error Breakdown
+new Chart(document.getElementById('errorChart'), {
+  type: 'bar',
+  data: {
+    labels: ['63018\nRate Limit', '63049\nNum Invalido', '12300\nContent-Type', '63024\nMedia Fail', '63032\nOpt-out', 'Outros'],
+    datasets: [{
+      data: [3061, 529, 337, 201, 59, 47],
+      backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#4A90FF', '#666'],
+      borderWidth: 0,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: { x: { grid: { color: '#1a1a1a' } }, y: { grid: { display: false } } }
+  }
+});
+
+// Daily Volume
+new Chart(document.getElementById('dailyChart'), {
+  type: 'bar',
+  data: {
+    labels: ['21/Mar','22','23','24','25','27','28','29','30','31','01/Abr','02','03','04','05','06','07','08','09'],
+    datasets: [
+      {
+        label: 'Outbound',
+        data: [25,1,2,6,1,10,44,15,55,8,70,30,32,59,12,212,5587,14,21],
+        backgroundColor: '#4A90FF',
+        borderRadius: 4
+      },
+      {
+        label: 'Inbound (Respostas)',
+        data: [0,0,0,6,0,4,12,2,12,2,1,3,4,5,0,24,268,0,0],
+        backgroundColor: '#22c55e',
+        borderRadius: 4
+      }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top', labels: { usePointStyle: true } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: '#1a1a1a' } }
+    }
+  }
+});
+
+// April 7 Hourly
+new Chart(document.getElementById('hourlyChart'), {
+  type: 'bar',
+  data: {
+    labels: ['00:00','01:00','02:00','03:00','04:00','05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00'],
+    datasets: [{
+      data: [4255,1327,0,0,0,0,0,3,0,0,0,0,1,0,1],
+      backgroundColor: '#4A90FF',
+      borderRadius: 4
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: '#1a1a1a' } }
+    }
+  }
+});
+
+// Funnel
+new Chart(document.getElementById('funnelChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Disparados', 'Entregues', 'Lidos', 'Responderam'],
+    datasets: [{
+      data: [6129, 2216, 1031, 343],
+      backgroundColor: ['#4A90FF', '#22c55e', '#06b6d4', '#f59e0b'],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: '#1a1a1a' } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>

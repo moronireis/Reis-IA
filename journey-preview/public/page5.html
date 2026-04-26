@@ -1,0 +1,3429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journey Visualization — Final Round</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000000;
+      --dark: #020208;
+      --dark2: #020206;
+      --surface: #0A0A0C;
+      --surface-2: #0C0C10;
+      --blue: #4A90FF;
+      --blue-dim: rgba(74,144,255,0.18);
+      --blue-glow: rgba(74,144,255,0.35);
+      --green: #22C55E;
+      --green-dim: rgba(34,197,94,0.15);
+      --amber: #F59E0B;
+      --muted: #111114;
+      --text: #FFFFFF;
+      --text-dim: rgba(255,255,255,0.28);
+      --text-mid: rgba(255,255,255,0.55);
+      --border: rgba(255,255,255,0.06);
+      --border-bright: rgba(255,255,255,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── TOP NAV ─── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 52px;
+    }
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-inner::-webkit-scrollbar { display: none; }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 14px;
+      height: 100%;
+      color: var(--text-dim);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      white-space: nowrap;
+      border-right: 1px solid var(--border);
+      margin-right: 2px;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--text-mid); }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 0 16px;
+      height: 100%;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-dim);
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      white-space: nowrap;
+      position: relative;
+    }
+    .nav-tab::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--blue);
+      transition: width 0.25s ease;
+    }
+    .nav-tab.active { color: var(--text); }
+    .nav-tab.active::after { width: 100%; }
+    .nav-tab:hover { color: var(--text-mid); }
+    .nav-tab .tab-num {
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    /* ─── PANELS ─── */
+    .concept-panel { display: none; }
+    .concept-panel.active { display: block; }
+
+    /* ─── SHARED FOOTER ─── */
+    .concept-footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 32px;
+      margin-top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: rgba(0,0,0,0.5);
+    }
+    .concept-footer .cf-name {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+    .concept-footer .cf-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      max-width: 480px;
+    }
+    .concept-footer .cf-family {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.1);
+      text-transform: uppercase;
+      text-align: right;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 20 — MISSION CONTROL PRO
+    ══════════════════════════════════════════════════════════════ */
+
+    #c20 {
+      background: #030305;
+      min-height: calc(100vh - 52px);
+      display: none;
+      flex-direction: column;
+    }
+    #c20.active { display: flex; }
+
+    /* Fixed top bar */
+    .mc-topbar {
+      position: sticky;
+      top: 52px;
+      z-index: 150;
+      height: 48px;
+      background: #040408;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      flex-shrink: 0;
+    }
+    .mc-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mc-live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #EF4444;
+      animation: blink-red 1s infinite;
+      flex-shrink: 0;
+    }
+    @keyframes blink-red {
+      0%, 45% { opacity: 1; }
+      50%, 95% { opacity: 0.1; }
+      100% { opacity: 1; }
+    }
+    .mc-live-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: #EF4444;
+    }
+    .mc-sys-label {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      border-left: 1px solid rgba(255,255,255,0.08);
+      padding-left: 10px;
+    }
+    .mc-topbar-center {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.02em;
+    }
+    .mc-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .mc-clock {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.5);
+      font-variant-numeric: tabular-nums;
+    }
+    .mc-xp-badge {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--blue);
+      text-shadow: 0 0 12px rgba(74,144,255,0.5);
+    }
+
+    /* Three-panel layout */
+    .mc-panels {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 240px 1fr 220px;
+      min-height: 0;
+    }
+
+    /* LEFT panel */
+    .mc-left {
+      background: #030305;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+    .mc-panel-title {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      padding: 0 20px 14px;
+    }
+    .mc-phase-list { display: flex; flex-direction: column; }
+    .mc-phase-entry {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-left: 2px solid transparent;
+    }
+    .mc-phase-entry:hover { background: rgba(255,255,255,0.03); }
+    .mc-phase-entry.active {
+      background: rgba(74,144,255,0.04);
+      border-left-color: var(--blue);
+    }
+    .mc-phase-entry.completed { border-left-color: transparent; }
+    .mc-status-led {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .led-green { background: var(--green); box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+    .led-blue { background: var(--blue); animation: pulse-led 2s infinite; }
+    @keyframes pulse-led {
+      0%, 100% { box-shadow: 0 0 4px rgba(74,144,255,0.5); }
+      50% { box-shadow: 0 0 10px rgba(74,144,255,0.9), 0 0 16px rgba(74,144,255,0.4); }
+    }
+    .led-gray { background: rgba(255,255,255,0.15); }
+    .mc-phase-entry-info { flex: 1; min-width: 0; }
+    .mc-phase-num {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.35);
+    }
+    .mc-phase-entry.completed .mc-phase-num { color: var(--green); }
+    .mc-phase-entry.active .mc-phase-num { color: var(--blue); }
+    .mc-phase-short {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.4);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+    .mc-phase-entry.active .mc-phase-short { color: rgba(255,255,255,0.9); }
+    .mc-phase-entry.completed .mc-phase-short { color: rgba(34,197,94,0.8); }
+    .mc-phase-arrow {
+      font-size: 9px;
+      color: var(--blue);
+      opacity: 0.8;
+    }
+    /* connector lines between entries */
+    .mc-connector {
+      width: 1px;
+      height: 8px;
+      margin-left: 23px;
+      background: rgba(255,255,255,0.06);
+    }
+    .mc-connector.done { background: rgba(34,197,94,0.25); }
+
+    /* CENTER panel */
+    .mc-center {
+      background: #040408;
+      padding: 24px 28px;
+      overflow-y: auto;
+    }
+    .mc-phase-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .mc-phase-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue);
+      flex-shrink: 0;
+      box-shadow: 0 0 16px rgba(74,144,255,0.2);
+    }
+    .mc-phase-circle.done { border-color: var(--green); color: var(--green); box-shadow: 0 0 16px rgba(34,197,94,0.2); }
+    .mc-phase-circle.locked { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.25); box-shadow: none; }
+    .mc-phase-meta { flex: 1; }
+    .mc-phase-title-main {
+      font-size: 19px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .mc-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .pill-blue { background: rgba(74,144,255,0.12); color: var(--blue); border: 1px solid rgba(74,144,255,0.25); }
+    .pill-green { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+    .pill-gray { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.08); }
+    .mc-progress-bar-wrap {
+      margin-top: 10px;
+    }
+    .mc-progress-track {
+      height: 3px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .mc-progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.8s ease;
+    }
+    .fill-blue { background: linear-gradient(90deg, var(--blue), rgba(74,144,255,0.6)); }
+    .fill-green { background: linear-gradient(90deg, var(--green), rgba(34,197,94,0.6)); }
+    .mc-progress-label {
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-top: 5px;
+      letter-spacing: 0.06em;
+    }
+    .mc-node-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .mc-node-card {
+      background: #0A0A0E;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s, box-shadow 0.18s;
+      opacity: 0;
+      transform: translateY(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    .mc-node-card.animated {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .mc-node-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.12);
+    }
+    .mc-node-card.node-done {
+      border-left: 3px solid var(--green);
+      background: rgba(34,197,94,0.02);
+    }
+    .mc-node-card.node-done:hover { box-shadow: 0 4px 20px rgba(34,197,94,0.06); }
+    .mc-node-card.node-active {
+      border-left: 3px solid var(--blue);
+      box-shadow: 0 0 0 1px rgba(74,144,255,0.08);
+    }
+    .mc-node-card.node-active:hover { box-shadow: 0 4px 20px rgba(74,144,255,0.1); }
+    .mc-node-card.node-locked {
+      opacity: 0.3 !important;
+      transform: none !important;
+      cursor: not-allowed;
+    }
+    .mc-node-card.node-locked:hover { transform: none; }
+    .node-led {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .node-led.active { animation: pulse-led 2s infinite; }
+    .node-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .icon-material { background: rgba(74,144,255,0.1); }
+    .icon-task { background: rgba(245,158,11,0.1); }
+    .icon-check { background: rgba(34,197,94,0.1); }
+    .icon-present { background: rgba(168,85,247,0.1); }
+    .node-content { flex: 1; min-width: 0; }
+    .node-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 3px;
+    }
+    .node-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .node-type-label {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+    .node-time {
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+    .node-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .node-xp {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--amber);
+    }
+    .node-lock-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.4;
+    }
+
+    /* RIGHT panel */
+    .mc-right {
+      background: #030305;
+      border-left: 1px solid rgba(255,255,255,0.05);
+      padding: 20px 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .mc-right-inner {
+      padding: 0 18px;
+    }
+    .mc-stat-block {
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .mc-stat-ring-wrap {
+      flex-shrink: 0;
+    }
+    .mc-stat-ring {
+      width: 36px;
+      height: 36px;
+    }
+    .mc-stat-text { flex: 1; }
+    .mc-stat-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      margin-bottom: 3px;
+    }
+    .mc-stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .val-blue { color: var(--blue); text-shadow: 0 0 12px rgba(74,144,255,0.4); }
+    .val-amber { color: var(--amber); }
+    .val-green { color: var(--green); }
+    .val-white { color: rgba(255,255,255,0.85); }
+    .val-dim { color: rgba(255,255,255,0.3); }
+
+    .mc-simple-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .mc-simple-stat {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* Activity log */
+    .mc-activity-log {
+      margin-top: 16px;
+      padding: 0 18px;
+    }
+    .mc-activity-title {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+      margin-bottom: 10px;
+    }
+    .mc-log-entry {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+    }
+    .mc-log-entry span {
+      color: rgba(74,144,255,0.6);
+      margin-right: 4px;
+    }
+
+    /* Scanning line in right panel */
+    .mc-scan-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(74,144,255,0.3), transparent);
+      pointer-events: none;
+      animation: scan-descend 10s linear infinite;
+    }
+    @keyframes scan-descend {
+      0% { top: 0; opacity: 0; }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* Bottom telemetry bar */
+    .mc-bottom-bar {
+      height: 32px;
+      background: #020204;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: stretch;
+      flex-shrink: 0;
+    }
+    .mc-bottom-cell {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-right: 1px solid rgba(255,255,255,0.04);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+    }
+    .mc-bottom-cell:last-child { border-right: none; }
+    .mc-cell-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 4px rgba(34,197,94,0.6);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 21 — HOLO MISSION
+    ══════════════════════════════════════════════════════════════ */
+
+    #c21 {
+      background: #020208;
+      min-height: calc(100vh - 52px);
+      display: none;
+      flex-direction: column;
+      position: relative;
+    }
+    #c21.active { display: flex; }
+
+    /* Global scanlines */
+    .holo-scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 190;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(255,255,255,0.007) 2px,
+        rgba(255,255,255,0.007) 3px
+      );
+    }
+
+    /* Projector base */
+    .holo-projector-base {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 24px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(74,144,255,0.2) 0%, rgba(74,144,255,0.05) 50%, transparent 70%);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Holo top bar */
+    .holo-topbar {
+      position: sticky;
+      top: 52px;
+      z-index: 150;
+      height: 48px;
+      background: rgba(2,2,16,0.95);
+      border-bottom: 1px solid rgba(74,144,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      flex-shrink: 0;
+    }
+    .holo-topbar-text {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(74,144,255,0.5);
+      position: relative;
+    }
+    .holo-topbar-center {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.02em;
+    }
+    .holo-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .holo-clock {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: rgba(74,144,255,0.5);
+      font-variant-numeric: tabular-nums;
+    }
+    .holo-xp {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--blue);
+      text-shadow: 0 0 14px rgba(74,144,255,0.7);
+      animation: holo-glow-pulse 3s infinite;
+    }
+    @keyframes holo-glow-pulse {
+      0%, 100% { text-shadow: 0 0 8px rgba(74,144,255,0.5); }
+      50% { text-shadow: 0 0 16px rgba(74,144,255,0.9), 0 0 30px rgba(74,144,255,0.3); }
+    }
+
+    /* Holo panels */
+    .holo-panels {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 230px 1fr 200px;
+      min-height: 0;
+    }
+
+    /* Holo left */
+    .holo-left {
+      background: rgba(2,2,12,0.9);
+      border-right: 1px solid rgba(74,144,255,0.1);
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+    .holo-panel-title {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(74,144,255,0.35);
+      padding: 0 18px 14px;
+    }
+    .holo-phase-entry {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 18px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .holo-phase-entry:hover { background: rgba(74,144,255,0.03); }
+    .holo-phase-entry.active { background: rgba(74,144,255,0.05); }
+
+    /* Hexagonal indicators */
+    .holo-hex {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .holo-hex svg {
+      width: 20px;
+      height: 20px;
+      position: absolute;
+    }
+    .holo-hex-inner {
+      font-size: 7px;
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
+    }
+    .holo-connector-hex {
+      width: 1px;
+      height: 8px;
+      margin-left: 9px;
+      background: rgba(74,144,255,0.12);
+    }
+    .holo-phase-info { flex: 1; min-width: 0; }
+    .holo-phase-num {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: rgba(74,144,255,0.4);
+    }
+    .holo-phase-name {
+      font-size: 11px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.35);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+    .holo-phase-entry.active .holo-phase-name { color: rgba(255,255,255,0.85); }
+    .holo-phase-entry.completed .holo-phase-name { color: rgba(34,197,94,0.7); }
+
+    /* Holo center */
+    .holo-center {
+      background: rgba(4,4,14,0.95);
+      padding: 28px 30px;
+      overflow-y: auto;
+    }
+    .holo-phase-hdr {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .holo-phase-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 1px solid rgba(74,144,255,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 700;
+      color: rgba(74,144,255,0.9);
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(74,144,255,0.15), inset 0 0 10px rgba(74,144,255,0.05);
+      animation: holo-circle-flicker 4s infinite;
+    }
+    @keyframes holo-circle-flicker {
+      0%, 97%, 100% { opacity: 1; }
+      98% { opacity: 0.85; }
+      99% { opacity: 1; }
+    }
+    .holo-phase-meta { flex: 1; }
+    .holo-phase-title-main {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 8px;
+      text-shadow: 0 0 20px rgba(74,144,255,0.15);
+    }
+    .holo-progress-bar-wrap { margin-top: 10px; }
+    .holo-progress-track {
+      height: 2px;
+      background: rgba(74,144,255,0.1);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .holo-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, rgba(74,144,255,0.8), rgba(74,144,255,0.4));
+      border-radius: 1px;
+      box-shadow: 0 0 8px rgba(74,144,255,0.4);
+    }
+
+    /* Holo node cards with scanlines */
+    .holo-node-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .holo-node-card {
+      background: rgba(8,8,18,0.85);
+      border: 1px solid rgba(74,144,255,0.08);
+      border-radius: 10px;
+      padding: 15px 17px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      opacity: 0;
+      transform: translateY(8px);
+      position: relative;
+      overflow: hidden;
+    }
+    .holo-node-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(74,144,255,0.012) 3px,
+        rgba(74,144,255,0.012) 4px
+      );
+      pointer-events: none;
+    }
+    .holo-node-card.animated { opacity: 1; transform: translateY(0); }
+    .holo-node-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(74,144,255,0.2);
+      box-shadow: 0 4px 20px rgba(74,144,255,0.08);
+    }
+    .holo-node-card.node-done {
+      border-left: 2px solid rgba(34,197,94,0.4);
+    }
+    .holo-node-card.node-active {
+      border-color: rgba(74,144,255,0.25);
+      box-shadow: 0 0 20px rgba(74,144,255,0.08);
+      animation: holo-card-flicker 5s infinite;
+    }
+    @keyframes holo-card-flicker {
+      0%, 95%, 100% { border-color: rgba(74,144,255,0.25); }
+      96% { border-color: rgba(74,144,255,0.1); }
+      97% { border-color: rgba(74,144,255,0.25); }
+    }
+    .holo-node-card.node-locked {
+      opacity: 0.25 !important;
+      cursor: not-allowed;
+    }
+    .holo-node-content { flex: 1; min-width: 0; }
+    .holo-node-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 3px;
+      text-shadow: 0 0 8px rgba(74,144,255,0.2);
+    }
+    .holo-node-meta {
+      font-size: 10px;
+      color: rgba(74,144,255,0.4);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .holo-node-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+    .holo-node-xp {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(245,158,11,0.7);
+      text-shadow: 0 0 8px rgba(245,158,11,0.3);
+    }
+
+    /* Holo right */
+    .holo-right {
+      background: rgba(2,2,12,0.9);
+      border-left: 1px solid rgba(74,144,255,0.1);
+      padding: 20px 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .holo-right-inner { padding: 0 16px; }
+    .holo-stat-block {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(74,144,255,0.06);
+    }
+    .holo-stat-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(74,144,255,0.3);
+      margin-bottom: 3px;
+    }
+    .holo-stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--blue);
+      text-shadow: 0 0 12px rgba(74,144,255,0.5);
+      transform: translate3d(0,0,1px);
+    }
+    .holo-stat-value.h-amber { color: var(--amber); text-shadow: 0 0 12px rgba(245,158,11,0.4); }
+    .holo-stat-value.h-green { color: var(--green); text-shadow: 0 0 12px rgba(34,197,94,0.4); }
+    .holo-stat-value.h-white { color: rgba(255,255,255,0.7); text-shadow: 0 0 8px rgba(255,255,255,0.1); }
+    .holo-activity-log { margin-top: 16px; padding: 0 16px; }
+    .holo-activity-title {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(74,144,255,0.28);
+      margin-bottom: 10px;
+    }
+    .holo-log-line {
+      font-size: 10px;
+      color: rgba(74,144,255,0.4);
+      line-height: 1.8;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .holo-log-line .holo-time { color: rgba(74,144,255,0.25); margin-right: 4px; }
+
+    .holo-scan-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(74,144,255,0.4), transparent);
+      pointer-events: none;
+      animation: scan-descend 8s linear infinite;
+    }
+
+    /* Holo bottom bar */
+    .holo-bottom-bar {
+      height: 32px;
+      background: rgba(2,2,10,0.95);
+      border-top: 1px solid rgba(74,144,255,0.1);
+      display: flex;
+      align-items: stretch;
+      flex-shrink: 0;
+    }
+    .holo-bottom-cell {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid rgba(74,144,255,0.06);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(74,144,255,0.35);
+    }
+    .holo-bottom-cell:last-child { border-right: none; }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 22 — COMMAND GRID
+    ══════════════════════════════════════════════════════════════ */
+
+    #c22 {
+      background: #030305;
+      min-height: calc(100vh - 52px);
+      display: none;
+      flex-direction: column;
+      padding: 32px 24px 24px;
+      position: relative;
+    }
+    #c22.active { display: flex; }
+    #c22.active .cg-grid-bg { display: block; }
+
+    .cg-grid-bg {
+      display: none;
+      position: fixed;
+      inset: 52px 0 0 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .cg-outer-frame {
+      position: relative;
+      z-index: 1;
+      max-width: 920px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Corner brackets */
+    .cg-corner {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+    }
+    .cg-corner svg { width: 14px; height: 14px; }
+    .cg-corner.tl { top: -8px; left: -8px; }
+    .cg-corner.tr { top: -8px; right: -8px; }
+    .cg-corner.bl { bottom: -8px; left: -8px; }
+    .cg-corner.br { bottom: -8px; right: -8px; }
+
+    .cg-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding: 0 4px;
+    }
+    .cg-mission-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+    .cg-mission-status {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+    .cg-mission-status span { color: var(--green); }
+
+    .cg-phase-panels { display: flex; flex-direction: column; gap: 12px; }
+
+    .cg-phase-panel {
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 4px;
+      background: rgba(4,4,8,0.6);
+      overflow: hidden;
+    }
+    .cg-phase-panel.phase-completed { border-color: rgba(34,197,94,0.15); }
+    .cg-phase-panel.phase-active { border-color: rgba(74,144,255,0.2); }
+    .cg-phase-panel.phase-locked { border-color: rgba(255,255,255,0.04); opacity: 0.5; }
+
+    /* Colored corner brackets on each panel */
+    .cg-panel-bracket {
+      position: absolute;
+      pointer-events: none;
+    }
+    .cg-panel-bracket svg { display: block; }
+    .cg-panel-bracket.ptl { top: -1px; left: -1px; }
+    .cg-panel-bracket.ptr { top: -1px; right: -1px; }
+    .cg-panel-bracket.pbl { bottom: -1px; left: -1px; }
+    .cg-panel-bracket.pbr { bottom: -1px; right: -1px; }
+
+    .cg-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .cg-panel-code {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+    .cg-phase-panel.phase-completed .cg-panel-code { color: var(--green); }
+    .cg-phase-panel.phase-active .cg-panel-code { color: var(--blue); }
+    .cg-panel-status-right {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+    .cg-panel-status-right .s-val { color: rgba(255,255,255,0.4); }
+    /* Dimension line */
+    .cg-dim-line {
+      height: 1px;
+      margin: 0 16px;
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0px, rgba(255,255,255,0.07) 4px, transparent 4px, transparent 8px);
+    }
+
+    /* Blueprint node cells 2-col grid */
+    .cg-cell-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      padding: 1px 16px 12px;
+      background: transparent;
+    }
+    .cg-cell {
+      position: relative;
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: 3px;
+      padding: 10px 12px;
+      margin: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      overflow: hidden;
+    }
+    .cg-cell:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.02); }
+    .cg-cell.cell-done {
+      border: 1px solid rgba(34,197,94,0.25);
+      background: rgba(34,197,94,0.02);
+    }
+    .cg-cell.cell-active {
+      border: 1px solid rgba(74,144,255,0.3);
+      background: rgba(74,144,255,0.02);
+    }
+    .cg-cell.cell-locked {
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent 0px,
+        transparent 5px,
+        rgba(255,255,255,0.015) 5px,
+        rgba(255,255,255,0.015) 6px
+      );
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    /* scanning border animation on active cell */
+    .cg-cell.cell-active::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      background: linear-gradient(rgba(4,4,8,0), rgba(4,4,8,0)) padding-box,
+                  linear-gradient(var(--scan-angle, 0deg), rgba(74,144,255,0.6), transparent 50%) border-box;
+      animation: rotate-scan 3s linear infinite;
+    }
+    @keyframes rotate-scan {
+      from { --scan-angle: 0deg; }
+      to { --scan-angle: 360deg; }
+    }
+    .cg-cell-num {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+    .cg-cell.cell-done .cg-cell-num { color: rgba(34,197,94,0.5); }
+    .cg-cell.cell-active .cg-cell-num { color: rgba(74,144,255,0.6); }
+    .cg-cell-icon { width: 24px; height: 24px; flex-shrink: 0; }
+    .cg-cell-info { flex: 1; min-width: 0; }
+    .cg-cell-title {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cg-cell.cell-done .cg-cell-title { color: rgba(34,197,94,0.8); }
+    .cg-cell.cell-active .cg-cell-title { color: rgba(255,255,255,0.95); }
+    .cg-cell-type {
+      font-size: 9px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Angular connector between panels */
+    .cg-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      height: 14px;
+    }
+    .cg-connector-line {
+      flex: 1;
+      height: 2px;
+      background: rgba(34,197,94,0.25);
+      position: relative;
+    }
+    .cg-connector-line::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left: 5px solid rgba(34,197,94,0.4);
+      border-top: 3px solid transparent;
+      border-bottom: 3px solid transparent;
+    }
+    .cg-connector-line.active { background: rgba(74,144,255,0.3); }
+    .cg-connector-line.active::after { border-left-color: rgba(74,144,255,0.5); }
+    .cg-connector-line.locked {
+      height: 1px;
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 4px, transparent 4px, transparent 8px);
+    }
+    .cg-connector-line.locked::after { display: none; }
+
+    /* Bottom readout */
+    .cg-bottom-readout {
+      margin-top: 18px;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 3px;
+      padding: 10px 16px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      text-align: center;
+    }
+    .cg-bottom-readout span { color: rgba(74,144,255,0.6); margin: 0 8px; }
+    .cg-bottom-readout strong { color: rgba(255,255,255,0.45); }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 23 — DEEP TACTICAL
+    ══════════════════════════════════════════════════════════════ */
+
+    #c23 {
+      background: #000;
+      min-height: calc(100vh - 52px);
+      display: none;
+      flex-direction: column;
+      position: relative;
+      padding: 0;
+    }
+    #c23.active { display: flex; }
+
+    /* Outer HUD frame */
+    .dt-hud-frame {
+      position: fixed;
+      inset: 52px 0 0 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .dt-corner {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+    }
+    .dt-corner svg { width: 16px; height: 16px; }
+    .dt-corner.tl { top: 12px; left: 12px; }
+    .dt-corner.tr { top: 12px; right: 12px; }
+    .dt-corner.bl { bottom: 12px; left: 12px; }
+    .dt-corner.br { bottom: 12px; right: 12px; }
+
+    .dt-main {
+      flex: 1;
+      display: flex;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* Route area — left (expanded) */
+    .dt-route-area {
+      flex: 1;
+      padding: 40px 0 40px 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      position: relative;
+    }
+    .dt-route-title {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(34,197,94,0.4);
+      margin-bottom: 32px;
+    }
+
+    /* Tactical path */
+    .dt-route {
+      position: relative;
+      width: 520px;
+      height: 340px;
+    }
+    .dt-route svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Ship indicator */
+    .dt-ship {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      z-index: 10;
+      animation: ship-bob 3s ease-in-out infinite;
+    }
+    @keyframes ship-bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* Waypoints */
+    .dt-waypoint {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -50%);
+    }
+    .dt-waypoint-box {
+      width: 28px;
+      height: 28px;
+      border: 1.5px solid rgba(34,197,94,0.3);
+      background: #000;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dt-waypoint.wp-done .dt-waypoint-box {
+      background: rgba(34,197,94,0.08);
+      border-color: var(--green);
+      box-shadow: 0 0 12px rgba(34,197,94,0.25);
+    }
+    .dt-waypoint.wp-active .dt-waypoint-box {
+      border-color: var(--green);
+      box-shadow: 0 0 16px rgba(34,197,94,0.4);
+    }
+    /* Crosshair overlay */
+    .dt-waypoint-box::before,
+    .dt-waypoint-box::after {
+      content: '';
+      position: absolute;
+      background: rgba(34,197,94,0.3);
+    }
+    .dt-waypoint-box::before { width: 1px; height: 8px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+    .dt-waypoint-box::after { width: 8px; height: 1px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+    .dt-waypoint.wp-done .dt-waypoint-box::before,
+    .dt-waypoint.wp-done .dt-waypoint-box::after { background: rgba(34,197,94,0.6); }
+    .dt-waypoint-num {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: rgba(34,197,94,0.6);
+      position: relative;
+      z-index: 1;
+    }
+    .dt-waypoint.wp-done .dt-waypoint-num { color: var(--green); }
+    .dt-waypoint.wp-active .dt-waypoint-num { color: var(--green); }
+    .dt-waypoint-label {
+      position: absolute;
+      top: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(34,197,94,0.4);
+      white-space: nowrap;
+    }
+    .dt-waypoint.wp-done .dt-waypoint-label,
+    .dt-waypoint.wp-active .dt-waypoint-label { color: rgba(34,197,94,0.7); }
+    /* Blinking cursor on active */
+    .dt-waypoint.wp-active .dt-waypoint-box {
+      animation: wp-blink 1.2s ease-in-out infinite;
+    }
+    @keyframes wp-blink {
+      0%, 100% { box-shadow: 0 0 10px rgba(34,197,94,0.4); border-color: rgba(34,197,94,0.8); }
+      50% { box-shadow: 0 0 20px rgba(34,197,94,0.6), 0 0 40px rgba(34,197,94,0.2); border-color: var(--green); }
+    }
+
+    /* Detail side panel */
+    .dt-detail-panel {
+      width: 360px;
+      border-left: 1px solid rgba(34,197,94,0.1);
+      padding: 36px 28px;
+      display: flex;
+      flex-direction: column;
+      background: rgba(0,5,0,0.5);
+    }
+    .dt-detail-hdr {
+      margin-bottom: 16px;
+    }
+    .dt-detail-wp {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(34,197,94,0.4);
+      margin-bottom: 4px;
+    }
+    .dt-detail-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(34,197,94,0.9);
+      letter-spacing: 0.02em;
+    }
+    .dt-detail-flavor {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(34,197,94,0.3);
+      margin-top: 6px;
+    }
+    .dt-detail-divider {
+      height: 1px;
+      background: rgba(34,197,94,0.08);
+      margin: 14px 0;
+    }
+    .dt-obj-list { display: flex; flex-direction: column; gap: 6px; }
+    .dt-obj {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+    }
+    .dt-obj-indicator {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+      width: 18px;
+    }
+    .dt-obj-indicator.done { color: var(--green); }
+    .dt-obj-indicator.current { color: rgba(34,197,94,0.6); }
+    .dt-obj-indicator.pending { color: rgba(34,197,94,0.2); }
+    .dt-obj-text { color: rgba(34,197,94,0.7); flex: 1; }
+    .dt-obj.done .dt-obj-text { color: rgba(34,197,94,0.5); }
+    .dt-obj.pending .dt-obj-text { color: rgba(34,197,94,0.25); }
+
+    /* Bottom telemetry */
+    .dt-telemetry {
+      height: 36px;
+      background: rgba(0,4,0,0.8);
+      border-top: 1px solid rgba(34,197,94,0.08);
+      display: flex;
+      align-items: stretch;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 5;
+    }
+    .dt-tel-cell {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-right: 1px solid rgba(34,197,94,0.06);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(34,197,94,0.45);
+    }
+    .dt-tel-cell:last-child { border-right: none; }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 24 — LIVE BLUEPRINT
+    ══════════════════════════════════════════════════════════════ */
+
+    #c24 {
+      background: #030306;
+      min-height: calc(100vh - 52px);
+      display: none;
+      flex-direction: column;
+    }
+    #c24.active { display: flex; }
+
+    .lb-topbar {
+      position: sticky;
+      top: 52px;
+      z-index: 150;
+      height: 44px;
+      background: #030306;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      flex-shrink: 0;
+    }
+    .lb-topbar-left { display: flex; align-items: center; gap: 10px; }
+    .lb-live-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #EF4444;
+      animation: blink-red 1s infinite; flex-shrink: 0;
+    }
+    .lb-topbar-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+    .lb-topbar-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+    }
+    .lb-topbar-right { display: flex; align-items: center; gap: 12px; }
+    .lb-topbar-clock {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.3);
+      font-variant-numeric: tabular-nums;
+    }
+    .lb-topbar-xp {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--blue);
+    }
+
+    .lb-panels {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      min-height: 0;
+    }
+
+    /* Left: Blueprint map */
+    .lb-map {
+      background: #030306;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      padding: 20px 16px;
+      overflow-y: auto;
+      position: relative;
+    }
+    /* Grid background */
+    .lb-map::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(74,144,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74,144,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+    .lb-map-title {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(74,144,255,0.3);
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .lb-zone-list { display: flex; flex-direction: column; gap: 6px; position: relative; }
+    .lb-zone {
+      position: relative;
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: 3px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .lb-zone:hover { border-color: rgba(255,255,255,0.16); background: rgba(255,255,255,0.02); }
+    .lb-zone.z-done { border: 1px solid rgba(34,197,94,0.2); }
+    .lb-zone.z-active {
+      border: 1px dashed rgba(74,144,255,0.35);
+      background: rgba(74,144,255,0.02);
+      animation: lb-zone-pulse 2.5s infinite;
+    }
+    @keyframes lb-zone-pulse {
+      0%, 100% { border-color: rgba(74,144,255,0.35); }
+      50% { border-color: rgba(74,144,255,0.15); }
+    }
+    .lb-zone.z-locked { opacity: 0.35; cursor: not-allowed; }
+    .lb-zone-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .lb-room-num {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.2);
+    }
+    .lb-zone.z-done .lb-room-num { color: rgba(34,197,94,0.4); }
+    .lb-zone.z-active .lb-room-num { color: rgba(74,144,255,0.5); }
+    .lb-zone-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+    .lb-zone-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.45);
+    }
+    .lb-zone.z-done .lb-zone-title { color: rgba(34,197,94,0.7); }
+    .lb-zone.z-active .lb-zone-title { color: rgba(255,255,255,0.9); }
+    .lb-zone-progress {
+      margin-top: 6px;
+      height: 2px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .lb-zone-progress-fill { height: 100%; border-radius: 1px; }
+    /* "You are here" marker */
+    .lb-here-marker {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #EF4444;
+      box-shadow: 0 0 8px rgba(239,68,68,0.6);
+      animation: blink-red 1s infinite;
+    }
+
+    /* Right: Live detail */
+    .lb-detail {
+      background: #040408;
+      padding: 24px 28px;
+      overflow: hidden;
+      position: relative;
+    }
+    .lb-detail-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .lb-detail-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+    }
+    .lb-detail-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .lb-status-led {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+    .lb-detail-rooms {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      overflow-y: auto;
+      max-height: calc(100vh - 280px);
+    }
+    .lb-room-card {
+      position: relative;
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: 4px;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: border-color 0.2s, background 0.2s;
+      overflow: hidden;
+    }
+    .lb-room-card.r-done { border: 1px solid rgba(34,197,94,0.2); background: rgba(34,197,94,0.02); }
+    .lb-room-card.r-active {
+      border: 1px solid rgba(74,144,255,0.25);
+      background: rgba(74,144,255,0.02);
+    }
+    .lb-room-card.r-locked {
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 5px,
+        rgba(255,255,255,0.012) 5px,
+        rgba(255,255,255,0.012) 6px
+      );
+      opacity: 0.35;
+    }
+    /* scanning border on active room */
+    .lb-room-card.r-active::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; right: -100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(74,144,255,0.6) 50%, transparent 100%);
+      animation: lb-scan-h 3s linear infinite;
+    }
+    @keyframes lb-scan-h {
+      from { transform: translateX(-30%); }
+      to { transform: translateX(130%); }
+    }
+    .lb-room-num {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.2);
+      flex-shrink: 0;
+      min-width: 28px;
+    }
+    .lb-room-card.r-done .lb-room-num { color: rgba(34,197,94,0.4); }
+    .lb-room-card.r-active .lb-room-num { color: rgba(74,144,255,0.5); }
+    .lb-room-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .lb-room-content { flex: 1; min-width: 0; }
+    .lb-room-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.75);
+    }
+    .lb-room-card.r-done .lb-room-title { color: rgba(34,197,94,0.75); }
+    .lb-room-card.r-active .lb-room-title { color: rgba(255,255,255,0.95); }
+    .lb-room-meta { font-size: 10px; color: rgba(255,255,255,0.22); margin-top: 2px; letter-spacing: 0.04em; }
+    .lb-room-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+    .lb-room-ts { font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+    .lb-room-xp { font-size: 10px; font-weight: 600; color: rgba(245,158,11,0.7); }
+    .lb-room-lock { font-size: 12px; color: rgba(255,255,255,0.2); }
+
+    /* Scanning line in right panel */
+    .lb-scan-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(74,144,255,0.25), transparent);
+      pointer-events: none;
+      animation: scan-descend 8s linear infinite;
+      z-index: 20;
+    }
+
+    /* Mini telemetry row */
+    .lb-mini-tele {
+      position: sticky;
+      bottom: 0;
+      background: rgba(4,4,8,0.95);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 8px 28px;
+      display: flex;
+      gap: 24px;
+    }
+    .lb-tele-item { display: flex; align-items: center; gap: 6px; }
+    .lb-tele-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.2); }
+    .lb-tele-val { font-size: 12px; font-weight: 600; color: var(--blue); }
+    .lb-tele-val.g { color: var(--green); }
+    .lb-tele-val.a { color: var(--amber); }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 25 — DARK OPS
+    ══════════════════════════════════════════════════════════════ */
+
+    #c25 {
+      background: var(--dark2);
+      min-height: calc(100vh - 52px);
+      display: none;
+      flex-direction: column;
+      position: relative;
+    }
+    #c25.active { display: flex; }
+
+    /* Star dust */
+    .do-stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .do-star {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+    }
+
+    /* Global scanline */
+    .do-scanline-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(255,255,255,0.005) 2px,
+        rgba(255,255,255,0.005) 3px
+      );
+    }
+
+    /* HUD corner frame */
+    .do-hud-frame {
+      position: fixed;
+      inset: 52px 0 0 0;
+      pointer-events: none;
+      z-index: 15;
+    }
+    .do-corner {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+    }
+    .do-corner svg { width: 18px; height: 18px; }
+    .do-corner.tl { top: 10px; left: 10px; }
+    .do-corner.tr { top: 10px; right: 10px; }
+    .do-corner.bl { bottom: 10px; left: 10px; }
+    .do-corner.br { bottom: 10px; right: 10px; }
+
+    /* Top bar */
+    .do-topbar {
+      position: sticky;
+      top: 52px;
+      z-index: 150;
+      height: 48px;
+      background: rgba(2,2,8,0.98);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      flex-shrink: 0;
+    }
+    .do-topbar-left { display: flex; align-items: center; gap: 10px; }
+    .do-live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #EF4444; animation: blink-red 1s infinite; flex-shrink: 0;
+    }
+    .do-ops-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+    .do-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+    }
+    .do-topbar-right { display: flex; align-items: center; gap: 16px; }
+    .do-clock {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.35);
+      font-variant-numeric: tabular-nums;
+    }
+    .do-xp {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--blue);
+      text-shadow: 0 0 14px rgba(74,144,255,0.6);
+      animation: holo-glow-pulse 3s infinite;
+    }
+
+    /* Three panels */
+    .do-panels {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 200px 1fr 230px;
+      min-height: 0;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* Left: compact route with hexagons */
+    .do-left {
+      background: rgba(2,2,6,0.95);
+      border-right: 1px solid rgba(255,255,255,0.04);
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+    .do-route-title {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.16);
+      padding: 0 16px 12px;
+    }
+    .do-phase-list { display: flex; flex-direction: column; }
+    .do-phase-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-left: 2px solid transparent;
+    }
+    .do-phase-row:hover { background: rgba(255,255,255,0.02); }
+    .do-phase-row.active { background: rgba(74,144,255,0.04); border-left-color: var(--blue); }
+    .do-hex-icon {
+      width: 18px; height: 18px; flex-shrink: 0;
+    }
+    .do-phase-row-info { flex: 1; min-width: 0; }
+    .do-phase-row-num {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.2);
+    }
+    .do-phase-row.active .do-phase-row-num { color: var(--blue); }
+    .do-phase-row.completed .do-phase-row-num { color: var(--green); }
+    .do-phase-row-name {
+      font-size: 10px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+    .do-phase-row.active .do-phase-row-name { color: rgba(255,255,255,0.85); }
+    .do-phase-row.completed .do-phase-row-name { color: rgba(34,197,94,0.7); }
+    /* Angular connectors */
+    .do-angular-conn {
+      height: 8px;
+      margin-left: 8px;
+      width: 2px;
+      background: rgba(255,255,255,0.05);
+    }
+    .do-angular-conn.done { background: rgba(34,197,94,0.2); }
+    /* Ship triangle */
+    .do-ship-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 16px;
+    }
+    .do-ship-tri {
+      width: 0;
+      height: 0;
+      border-left: 0;
+      border-right: 6px solid transparent;
+      border-bottom: 5px solid var(--green);
+      border-top: 5px solid transparent;
+      animation: ship-bob 3s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    .do-ship-label {
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(34,197,94,0.4);
+    }
+
+    /* Center: rich node cards */
+    .do-center {
+      background: rgba(3,3,8,0.95);
+      padding: 24px 26px;
+      overflow-y: auto;
+    }
+    .do-phase-hdr {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .do-phase-circle-do {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--blue);
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(74,144,255,0.2);
+    }
+    .do-phase-circle-do.done { border-color: var(--green); color: var(--green); box-shadow: 0 0 20px rgba(34,197,94,0.2); }
+    .do-phase-circle-do.locked { border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.2); box-shadow: none; }
+    .do-phase-meta-do { flex: 1; }
+    .do-phase-title-do {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.92);
+      margin-bottom: 6px;
+    }
+    .do-progress-wrap { margin-top: 8px; }
+    .do-progress-track {
+      height: 3px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .do-progress-fill {
+      height: 100%;
+      border-radius: 2px;
+    }
+    .do-progress-label { font-size: 9px; color: rgba(255,255,255,0.22); margin-top: 5px; letter-spacing: 0.06em; }
+    .do-node-list { display: flex; flex-direction: column; gap: 7px; margin-top: 22px; }
+    .do-node-card {
+      background: rgba(8,8,14,0.9);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 11px;
+      padding: 14px 17px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+      opacity: 0;
+      transform: translateY(10px);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+    }
+    /* glass shimmer */
+    .do-node-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+    }
+    .do-node-card.animated { opacity: 1; transform: translateY(0); }
+    .do-node-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.1); }
+    .do-node-card.n-done { border-left: 3px solid var(--green); background: rgba(34,197,94,0.02); }
+    .do-node-card.n-active { border-left: 3px solid var(--blue); box-shadow: 0 0 0 1px rgba(74,144,255,0.07); }
+    .do-node-card.n-locked { opacity: 0.25 !important; cursor: not-allowed; }
+    .do-node-card.n-active:hover { box-shadow: 0 4px 20px rgba(74,144,255,0.1); }
+    .do-room-badge {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.18);
+      position: absolute;
+      top: 6px;
+      right: 10px;
+    }
+    .do-node-card.n-done .do-room-badge { color: rgba(34,197,94,0.3); }
+    .do-node-card.n-active .do-room-badge { color: rgba(74,144,255,0.4); }
+    /* Scanning border on active */
+    .do-node-card.n-active .do-scan-border {
+      position: absolute;
+      inset: 0;
+      border-radius: 11px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .do-node-card.n-active .do-scan-border::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; right: -100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(74,144,255,0.7) 50%, transparent 100%);
+      animation: lb-scan-h 2.5s linear infinite;
+    }
+    .do-node-icon-do {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .do-node-content-do { flex: 1; min-width: 0; }
+    .do-node-title-do {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.88);
+      margin-bottom: 3px;
+    }
+    .do-node-meta-do { display: flex; align-items: center; gap: 8px; }
+    .do-node-type { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.25); }
+    .do-node-time { font-size: 9px; color: rgba(255,255,255,0.18); }
+    .do-node-right-do { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .do-node-xp-do { font-size: 10px; font-weight: 600; color: rgba(245,158,11,0.8); text-shadow: 0 0 8px rgba(245,158,11,0.3); }
+
+    /* Right: telemetry */
+    .do-right {
+      background: rgba(2,2,6,0.95);
+      border-left: 1px solid rgba(255,255,255,0.04);
+      padding: 20px 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .do-right-inner { padding: 0 18px; }
+    .do-tele-title {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.16);
+      margin-bottom: 12px;
+    }
+    .do-stat-block-do {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .do-ring-wrap { flex-shrink: 0; }
+    .do-stat-text-do { flex: 1; }
+    .do-stat-label-do {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+      margin-bottom: 2px;
+    }
+    .do-stat-value-do {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .do-simple-stat {
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .do-activity { margin-top: 14px; padding: 0 18px; }
+    .do-activity-title {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.15);
+      margin-bottom: 10px;
+    }
+    .do-log-line {
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+      line-height: 1.8;
+    }
+    .do-log-line .do-log-time { color: rgba(74,144,255,0.4); margin-right: 4px; }
+    .do-scan-line-do {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(74,144,255,0.3), transparent);
+      pointer-events: none;
+      animation: scan-descend 10s linear infinite;
+    }
+
+    /* Bottom bar 5 cells */
+    .do-bottom-bar {
+      height: 32px;
+      background: rgba(2,2,6,0.98);
+      border-top: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: stretch;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+    .do-bottom-cell {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border-right: 1px solid rgba(255,255,255,0.03);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+    .do-bottom-cell:last-child { border-right: none; }
+    .do-bottom-cell.val-green { color: rgba(34,197,94,0.5); }
+    .do-bottom-cell.val-blue { color: rgba(74,144,255,0.5); }
+    .do-cell-dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 4px rgba(34,197,94,0.6);
+    }
+
+    /* ──────────── SVG HELPERS ──────────── */
+    .svg-icon { display: block; }
+
+    /* ──────────── RESPONSIVE ──────────── */
+    @media (max-width: 900px) {
+      .mc-panels, .holo-panels, .lb-panels, .do-panels {
+        grid-template-columns: 1fr;
+      }
+      .mc-left, .mc-right, .holo-left, .holo-right, .lb-map, .do-left, .do-right {
+        display: none;
+      }
+      .dt-main { flex-direction: column; }
+      .dt-detail-panel { width: 100%; border-left: none; border-top: 1px solid rgba(34,197,94,0.1); }
+      .dt-route-area { padding: 24px; }
+      .dt-route { width: 100%; max-width: 400px; }
+      .cg-cell-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── TOP NAV ─── -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-link">← 1–5</a>
+    <a href="page2.html" class="nav-link">← 6–10</a>
+    <a href="page3.html" class="nav-link">← Hybrids</a>
+    <a href="page4.html" class="nav-link">← Deep Space</a>
+
+    <button class="nav-tab active" onclick="showConcept('c20',this)">
+      <span class="tab-num">20</span>
+      Mission Control Pro
+    </button>
+    <button class="nav-tab" onclick="showConcept('c21',this)">
+      <span class="tab-num">21</span>
+      Holo Mission
+    </button>
+    <button class="nav-tab" onclick="showConcept('c22',this)">
+      <span class="tab-num">22</span>
+      Command Grid
+    </button>
+    <button class="nav-tab" onclick="showConcept('c23',this)">
+      <span class="tab-num">23</span>
+      Deep Tactical
+    </button>
+    <button class="nav-tab" onclick="showConcept('c24',this)">
+      <span class="tab-num">24</span>
+      Live Blueprint
+    </button>
+    <button class="nav-tab" onclick="showConcept('c25',this)">
+      <span class="tab-num">25</span>
+      Dark Ops
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 20 — MISSION CONTROL PRO
+══════════════════════════════════════════════════════════════ -->
+<div id="c20" class="concept-panel active">
+  <!-- Top bar -->
+  <div class="mc-topbar">
+    <div class="mc-topbar-left">
+      <div class="mc-live-dot"></div>
+      <span class="mc-live-label">LIVE</span>
+      <span class="mc-sys-label">REIS [IA] MISSION CONTROL</span>
+    </div>
+    <div class="mc-topbar-center">Jornada IA do Zero ao Claude Code</div>
+    <div class="mc-topbar-right">
+      <span class="mc-clock" id="mc-clock">--:--:--</span>
+      <span class="mc-xp-badge">320 XP</span>
+    </div>
+  </div>
+
+  <!-- Three panels -->
+  <div class="mc-panels">
+
+    <!-- LEFT: Route overview -->
+    <div class="mc-left">
+      <div class="mc-panel-title">ROTA</div>
+      <div class="mc-phase-list" id="mc-phase-list">
+        <!-- phases injected by JS -->
+      </div>
+    </div>
+
+    <!-- CENTER: Active phase detail -->
+    <div class="mc-center" id="mc-center-panel">
+      <!-- injected by JS -->
+    </div>
+
+    <!-- RIGHT: Telemetry -->
+    <div class="mc-right">
+      <div class="mc-scan-line"></div>
+      <div class="mc-right-inner">
+        <div class="mc-panel-title">TELEMETRIA</div>
+
+        <div class="mc-stat-block">
+          <div class="mc-stat-ring-wrap">
+            <svg class="mc-stat-ring" viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(74,144,255,0.1)" stroke-width="2.5"/>
+              <circle cx="18" cy="18" r="14" fill="none" stroke="#4A90FF" stroke-width="2.5"
+                stroke-dasharray="87.96" stroke-dashoffset="57.2" stroke-linecap="round"
+                transform="rotate(-90 18 18)"/>
+            </svg>
+          </div>
+          <div class="mc-stat-text">
+            <div class="mc-stat-label">Progresso</div>
+            <div class="mc-stat-value val-blue" data-target="35" data-suffix="%">0%</div>
+          </div>
+        </div>
+
+        <div class="mc-simple-stats">
+          <div class="mc-simple-stat">
+            <div class="mc-stat-label">XP Total</div>
+            <div class="mc-stat-value val-amber" data-target="320" data-suffix="">0</div>
+          </div>
+          <div class="mc-simple-stat">
+            <div class="mc-stat-label">Nodes</div>
+            <div class="mc-stat-value val-white">7/25</div>
+          </div>
+          <div class="mc-simple-stat">
+            <div class="mc-stat-label">Streak</div>
+            <div class="mc-stat-value val-green">3 dias</div>
+          </div>
+          <div class="mc-simple-stat">
+            <div class="mc-stat-label">Velocidade</div>
+            <div class="mc-stat-value val-white" style="font-size:16px">2.1/dia</div>
+          </div>
+          <div class="mc-simple-stat">
+            <div class="mc-stat-label">ETA</div>
+            <div class="mc-stat-value val-dim" style="font-size:16px">~4 sem</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mc-activity-log">
+        <div class="mc-activity-title">Log recente</div>
+        <div class="mc-log-entry"><span>12:04</span> Material concluido (+15 XP)</div>
+        <div class="mc-log-entry"><span>11:45</span> Task concluida (+20 XP)</div>
+        <div class="mc-log-entry"><span>11:20</span> Material concluido (+15 XP)</div>
+        <div class="mc-log-entry"><span>10:55</span> Checkpoint iniciado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom telemetry bar -->
+  <div class="mc-bottom-bar">
+    <div class="mc-bottom-cell">FASE: 02/05</div>
+    <div class="mc-bottom-cell">STATUS: ATIVO</div>
+    <div class="mc-bottom-cell">UPTIME: 12d 4h</div>
+    <div class="mc-bottom-cell"><span class="mc-cell-dot"></span> CONEXAO: ESTAVEL</div>
+  </div>
+
+  <div class="concept-footer">
+    <div>
+      <div class="cf-name">Conceito 20 — Mission Control Pro</div>
+      <div class="cf-desc">O favorito absoluto elevado. Dashboard triple-panel com telemetria ao vivo, timestamp em tempo real e cards de objetivo ricos. A experience definitiva de aprendizado.</div>
+    </div>
+    <div class="cf-family">DNA: Mission Control (FAVORITE) + elevated</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 21 — HOLO MISSION
+══════════════════════════════════════════════════════════════ -->
+<div id="c21" class="concept-panel">
+  <div class="holo-scanlines"></div>
+  <div class="holo-projector-base"></div>
+
+  <div class="holo-topbar">
+    <div class="holo-topbar-text">HOLO INTERFACE v4.2</div>
+    <div class="holo-topbar-center">Jornada IA do Zero ao Claude Code</div>
+    <div class="holo-topbar-right">
+      <span class="holo-clock" id="holo-clock">--:--:--</span>
+      <span class="holo-xp">320 XP</span>
+    </div>
+  </div>
+
+  <div class="holo-panels">
+    <!-- LEFT -->
+    <div class="holo-left">
+      <div class="holo-panel-title">SEQUENCIA</div>
+      <div id="holo-phase-list"><!-- injected --></div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="holo-center" id="holo-center-panel"><!-- injected --></div>
+
+    <!-- RIGHT -->
+    <div class="holo-right">
+      <div class="holo-scan-line"></div>
+      <div class="holo-right-inner">
+        <div class="holo-panel-title">STATUS</div>
+        <div class="holo-stat-block">
+          <div class="holo-stat-label">Progresso</div>
+          <div class="holo-stat-value" data-target="35" data-suffix="%">0%</div>
+        </div>
+        <div class="holo-stat-block">
+          <div class="holo-stat-label">XP Total</div>
+          <div class="holo-stat-value h-amber" data-target="320" data-suffix="">0</div>
+        </div>
+        <div class="holo-stat-block">
+          <div class="holo-stat-label">Nodes</div>
+          <div class="holo-stat-value h-white">7/25</div>
+        </div>
+        <div class="holo-stat-block">
+          <div class="holo-stat-label">Streak</div>
+          <div class="holo-stat-value h-green">3 dias</div>
+        </div>
+        <div class="holo-stat-block">
+          <div class="holo-stat-label">ETA</div>
+          <div class="holo-stat-value" style="font-size:14px; color: rgba(74,144,255,0.5)">~4 sem</div>
+        </div>
+      </div>
+      <div class="holo-activity-log">
+        <div class="holo-activity-title">Transmissao</div>
+        <div class="holo-log-line" id="holo-log-1"></div>
+        <div class="holo-log-line" id="holo-log-2"></div>
+        <div class="holo-log-line" id="holo-log-3"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="holo-bottom-bar">
+    <div class="holo-bottom-cell">FASE: 02/05</div>
+    <div class="holo-bottom-cell">STATUS: ATIVO</div>
+    <div class="holo-bottom-cell">UPTIME: 12d 4h</div>
+    <div class="holo-bottom-cell"><span style="color: rgba(34,197,94,0.6); margin-right:4px">●</span> CONEXAO</div>
+  </div>
+
+  <div class="concept-footer">
+    <div>
+      <div class="cf-name">Conceito 21 — Holo Mission</div>
+      <div class="cf-desc">Mission Control com tratamento visual holografico. Scanlines globais, hex indicators, flickering borders, projector base e typewriter no activity log.</div>
+    </div>
+    <div class="cf-family">DNA: Holographic + Mission Control</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 22 — COMMAND GRID
+══════════════════════════════════════════════════════════════ -->
+<div id="c22" class="concept-panel">
+  <div class="cg-grid-bg"></div>
+
+  <div class="cg-outer-frame">
+    <!-- outer corner brackets -->
+    <div class="cg-corner tl">
+      <svg viewBox="0 0 14 14"><path d="M0 14 L0 0 L14 0" fill="none" stroke="#4A90FF" stroke-width="1.5"/></svg>
+    </div>
+    <div class="cg-corner tr">
+      <svg viewBox="0 0 14 14"><path d="M14 14 L14 0 L0 0" fill="none" stroke="#4A90FF" stroke-width="1.5"/></svg>
+    </div>
+    <div class="cg-corner bl">
+      <svg viewBox="0 0 14 14"><path d="M0 0 L0 14 L14 14" fill="none" stroke="#4A90FF" stroke-width="1.5"/></svg>
+    </div>
+    <div class="cg-corner br">
+      <svg viewBox="0 0 14 14"><path d="M14 0 L14 14 L0 14" fill="none" stroke="#4A90FF" stroke-width="1.5"/></svg>
+    </div>
+
+    <div class="cg-top-bar">
+      <div class="cg-mission-title">MISSION: JORNADA IA // ZERO AO CLAUDE CODE</div>
+      <div class="cg-mission-status">GRID STATUS: <span>1/5 SETORES COMPLETOS</span> | OBJETIVOS: 7/25 | XP: 320</div>
+    </div>
+
+    <div class="cg-phase-panels" id="cg-phase-panels"><!-- injected --></div>
+
+    <div class="cg-bottom-readout">
+      GRID STATUS: <strong>1/5 SETORES COMPLETOS</strong>
+      <span>|</span> OBJETIVOS: <strong>7/25</strong>
+      <span>|</span> XP ACUMULADO: <strong>320</strong>
+      <span>|</span> PROGRESSO: <strong>35%</strong>
+    </div>
+  </div>
+
+  <div class="concept-footer">
+    <div>
+      <div class="cf-name">Conceito 22 — Command Grid</div>
+      <div class="cf-desc">Blueprint architectural com autoridade de Command Deck. Fases como paineis com corner brackets coloridos, células estilo planta baixa, scanning border nos nodes ativos.</div>
+    </div>
+    <div class="cf-family">DNA: Command Deck + Blueprint Grid</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 23 — DEEP TACTICAL
+══════════════════════════════════════════════════════════════ -->
+<div id="c23" class="concept-panel">
+  <div class="dt-hud-frame">
+    <div class="dt-corner tl"><svg viewBox="0 0 16 16"><path d="M0 16 L0 0 L16 0" fill="none" stroke="#22C55E" stroke-width="1.5"/></svg></div>
+    <div class="dt-corner tr"><svg viewBox="0 0 16 16"><path d="M16 16 L16 0 L0 0" fill="none" stroke="#22C55E" stroke-width="1.5"/></svg></div>
+    <div class="dt-corner bl"><svg viewBox="0 0 16 16"><path d="M0 0 L0 16 L16 16" fill="none" stroke="#22C55E" stroke-width="1.5"/></svg></div>
+    <div class="dt-corner br"><svg viewBox="0 0 16 16"><path d="M16 0 L16 16 L0 16" fill="none" stroke="#22C55E" stroke-width="1.5"/></svg></div>
+  </div>
+
+  <div class="dt-main">
+    <!-- Route area -->
+    <div class="dt-route-area">
+      <div class="dt-route-title">ROTA TATICA // MAPA DE OBJETIVOS</div>
+      <div class="dt-route" id="dt-route">
+        <svg viewBox="0 0 520 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Double-line completed path W1→W2 -->
+          <line x1="70" y1="280" x2="70" y2="190" stroke="rgba(34,197,94,0.5)" stroke-width="2"/>
+          <line x1="74" y1="280" x2="74" y2="190" stroke="rgba(34,197,94,0.2)" stroke-width="1"/>
+          <!-- Corner W1→W2 right angle -->
+          <line x1="70" y1="190" x2="170" y2="190" stroke="rgba(34,197,94,0.5)" stroke-width="2"/>
+          <line x1="70" y1="194" x2="170" y2="194" stroke="rgba(34,197,94,0.2)" stroke-width="1"/>
+          <!-- Active dashed segment W2→W3 -->
+          <line x1="170" y1="190" x2="170" y2="100" stroke="rgba(34,197,94,0.4)" stroke-width="1.5" stroke-dasharray="6 4"
+            style="animation: dash-flow 1.5s linear infinite; stroke-dashoffset: 0"/>
+          <line x1="170" y1="100" x2="300" y2="100" stroke="rgba(34,197,94,0.4)" stroke-width="1.5" stroke-dasharray="6 4"
+            style="animation: dash-flow 1.5s linear infinite"/>
+          <!-- Locked dotted W3→W4 -->
+          <line x1="300" y1="100" x2="300" y2="180" stroke="rgba(34,197,94,0.15)" stroke-width="1" stroke-dasharray="2 5"/>
+          <line x1="300" y1="180" x2="410" y2="180" stroke="rgba(34,197,94,0.15)" stroke-width="1" stroke-dasharray="2 5"/>
+          <!-- Locked dotted W4→W5 -->
+          <line x1="410" y1="180" x2="410" y2="80" stroke="rgba(34,197,94,0.15)" stroke-width="1" stroke-dasharray="2 5"/>
+          <line x1="410" y1="80" x2="490" y2="80" stroke="rgba(34,197,94,0.15)" stroke-width="1" stroke-dasharray="2 5"/>
+        </svg>
+        <!-- Waypoints -->
+        <div class="dt-waypoint wp-done" style="left:70px;top:280px">
+          <div class="dt-waypoint-box"><span class="dt-waypoint-num">W1</span></div>
+          <span class="dt-waypoint-label">Fundamentos</span>
+        </div>
+        <div class="dt-waypoint wp-active" style="left:170px;top:190px">
+          <div class="dt-waypoint-box"><span class="dt-waypoint-num">W2</span></div>
+          <span class="dt-waypoint-label">Prompts</span>
+        </div>
+        <div class="dt-waypoint" style="left:300px;top:100px;opacity:0.4">
+          <div class="dt-waypoint-box"><span class="dt-waypoint-num">W3</span></div>
+          <span class="dt-waypoint-label">Claude Code I</span>
+        </div>
+        <div class="dt-waypoint" style="left:410px;top:180px;opacity:0.25">
+          <div class="dt-waypoint-box"><span class="dt-waypoint-num">W4</span></div>
+          <span class="dt-waypoint-label">Claude Code II</span>
+        </div>
+        <div class="dt-waypoint" style="left:490px;top:80px;opacity:0.18">
+          <div class="dt-waypoint-box"><span class="dt-waypoint-num">W5</span></div>
+          <span class="dt-waypoint-label">Autonomia</span>
+        </div>
+        <!-- Ship -->
+        <div class="dt-ship" style="left:106px;top:198px">
+          <svg viewBox="0 0 12 12" width="12" height="12">
+            <polygon points="6,0 12,10 6,7 0,10" fill="#22C55E" opacity="0.9"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail panel -->
+    <div class="dt-detail-panel">
+      <div class="dt-detail-hdr">
+        <div class="dt-detail-wp">WAYPOINT 02 // ATIVO</div>
+        <div class="dt-detail-title">Prompts e Comunicacao</div>
+        <div class="dt-detail-flavor">THREAT LEVEL: LOW | SECTOR: CLEAR</div>
+      </div>
+      <div class="dt-detail-divider"></div>
+      <div class="dt-obj-list">
+        <div class="dt-obj done">
+          <span class="dt-obj-indicator done">[x]</span>
+          <span class="dt-obj-text">Material: Anatomia de Prompts</span>
+        </div>
+        <div class="dt-obj done">
+          <span class="dt-obj-indicator done">[x]</span>
+          <span class="dt-obj-text">Task: Prompt de analise</span>
+        </div>
+        <div class="dt-obj current">
+          <span class="dt-obj-indicator current">[~]</span>
+          <span class="dt-obj-text">Material: Cadeia de raciocinio</span>
+        </div>
+        <div class="dt-obj pending">
+          <span class="dt-obj-indicator pending">[ ]</span>
+          <span class="dt-obj-text">Task: Prompt complexo</span>
+        </div>
+        <div class="dt-obj pending">
+          <span class="dt-obj-indicator pending">[ ]</span>
+          <span class="dt-obj-text">Checkpoint: Avaliacao final</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom telemetry -->
+  <div class="dt-telemetry">
+    <div class="dt-tel-cell">WAYPOINTS: 1/5</div>
+    <div class="dt-tel-cell">CLEAR RATE: 35%</div>
+    <div class="dt-tel-cell">XP: 320</div>
+    <div class="dt-tel-cell">VECTOR: NOMINAL</div>
+  </div>
+
+  <div class="concept-footer">
+    <div>
+      <div class="cf-name">Conceito 23 — Deep Tactical</div>
+      <div class="cf-desc">Navegacao espacial com precisao militar. Rota tatica angular (double-line), waypoints com crosshair, painel lateral de objetivos em formato [x]/[~]/[ ], acento verde militar.</div>
+    </div>
+    <div class="cf-family">DNA: Deep Space Navigator + Tactical Space</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 24 — LIVE BLUEPRINT
+══════════════════════════════════════════════════════════════ -->
+<div id="c24" class="concept-panel">
+  <div class="lb-topbar">
+    <div class="lb-topbar-left">
+      <div class="lb-live-dot"></div>
+      <span class="lb-topbar-label">LIVE BLUEPRINT v2.0</span>
+    </div>
+    <div class="lb-topbar-title">Jornada IA do Zero ao Claude Code</div>
+    <div class="lb-topbar-right">
+      <span class="lb-topbar-clock" id="lb-clock">--:--:--</span>
+      <span class="lb-topbar-xp">320 XP</span>
+    </div>
+  </div>
+
+  <div class="lb-panels">
+    <!-- LEFT: Blueprint map -->
+    <div class="lb-map">
+      <div class="lb-map-title">PLANTA — TODAS AS FASES</div>
+      <div class="lb-zone-list" id="lb-zone-list"><!-- injected --></div>
+    </div>
+
+    <!-- RIGHT: Live detail -->
+    <div class="lb-detail" id="lb-detail-panel">
+      <div class="lb-scan-line"></div>
+      <!-- injected by JS -->
+    </div>
+  </div>
+
+  <div class="concept-footer">
+    <div>
+      <div class="cf-name">Conceito 24 — Live Blueprint</div>
+      <div class="cf-desc">Dashboard em tempo real encontra precisao arquitetural. Mapa de planta baixa de todas as fases na esquerda, detalhe live na direita com scanning border e timestamps de conclusao.</div>
+    </div>
+    <div class="cf-family">DNA: Mission Control Live + Blueprint Grid</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 25 — DARK OPS
+══════════════════════════════════════════════════════════════ -->
+<div id="c25" class="concept-panel">
+  <div class="do-stars" id="do-stars"></div>
+  <div class="do-scanline-overlay"></div>
+  <div class="do-hud-frame">
+    <div class="do-corner tl"><svg viewBox="0 0 18 18"><path d="M0 18 L0 0 L18 0" fill="none" stroke="rgba(74,144,255,0.5)" stroke-width="1.5"/></svg></div>
+    <div class="do-corner tr"><svg viewBox="0 0 18 18"><path d="M18 18 L18 0 L0 0" fill="none" stroke="rgba(74,144,255,0.5)" stroke-width="1.5"/></svg></div>
+    <div class="do-corner bl"><svg viewBox="0 0 18 18"><path d="M0 0 L0 18 L18 18" fill="none" stroke="rgba(74,144,255,0.5)" stroke-width="1.5"/></svg></div>
+    <div class="do-corner br"><svg viewBox="0 0 18 18"><path d="M18 0 L18 18 L0 18" fill="none" stroke="rgba(74,144,255,0.5)" stroke-width="1.5"/></svg></div>
+  </div>
+
+  <div class="do-topbar">
+    <div class="do-topbar-left">
+      <div class="do-live-dot"></div>
+      <span class="do-ops-label">DARK OPS</span>
+    </div>
+    <div class="do-title">Jornada IA do Zero ao Claude Code</div>
+    <div class="do-topbar-right">
+      <span class="do-clock" id="do-clock">--:--:--</span>
+      <span class="do-xp">320 XP</span>
+    </div>
+  </div>
+
+  <div class="do-panels">
+    <!-- LEFT: compact hex route -->
+    <div class="do-left">
+      <div class="do-route-title">ROTA DE MISSAO</div>
+      <div id="do-phase-list"><!-- injected --></div>
+    </div>
+
+    <!-- CENTER: rich node cards -->
+    <div class="do-center" id="do-center-panel"><!-- injected --></div>
+
+    <!-- RIGHT: telemetry -->
+    <div class="do-right">
+      <div class="do-scan-line-do"></div>
+      <div class="do-right-inner">
+        <div class="do-tele-title">TELEMETRIA</div>
+        <div class="do-stat-block-do">
+          <div class="do-ring-wrap">
+            <svg width="36" height="36" viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(74,144,255,0.08)" stroke-width="2.5"/>
+              <circle cx="18" cy="18" r="14" fill="none" stroke="#4A90FF" stroke-width="2.5"
+                stroke-dasharray="87.96" stroke-dashoffset="57.2" stroke-linecap="round"
+                transform="rotate(-90 18 18)" opacity="0.8"/>
+            </svg>
+          </div>
+          <div class="do-stat-text-do">
+            <div class="do-stat-label-do">Progresso</div>
+            <div class="do-stat-value-do val-blue" data-target="35" data-suffix="%">0%</div>
+          </div>
+        </div>
+        <div class="do-simple-stat">
+          <div class="do-stat-label-do">XP Total</div>
+          <div class="do-stat-value-do val-amber" data-target="320" data-suffix="">0</div>
+        </div>
+        <div class="do-simple-stat">
+          <div class="do-stat-label-do">Nodes</div>
+          <div class="do-stat-value-do val-white">7/25</div>
+        </div>
+        <div class="do-simple-stat">
+          <div class="do-stat-label-do">Streak</div>
+          <div class="do-stat-value-do val-green">3 dias</div>
+        </div>
+        <div class="do-simple-stat">
+          <div class="do-stat-label-do">Velocidade</div>
+          <div class="do-stat-value-do val-white" style="font-size:15px">2.1/dia</div>
+        </div>
+        <div class="do-simple-stat">
+          <div class="do-stat-label-do">ETA</div>
+          <div class="do-stat-value-do val-dim" style="font-size:15px">~4 sem</div>
+        </div>
+      </div>
+      <div class="do-activity">
+        <div class="do-activity-title">LOG</div>
+        <div class="do-log-line"><span class="do-log-time">12:04</span> Material concluido (+15 XP)</div>
+        <div class="do-log-line"><span class="do-log-time">11:45</span> Task concluida (+20 XP)</div>
+        <div class="do-log-line"><span class="do-log-time">11:20</span> Material concluido (+15 XP)</div>
+        <div class="do-log-line"><span class="do-log-time">10:55</span> Checkpoint iniciado</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="do-bottom-bar">
+    <div class="do-bottom-cell">FASE: 02/05</div>
+    <div class="do-bottom-cell val-blue">STATUS: ATIVO</div>
+    <div class="do-bottom-cell">UPTIME: 12d 4h</div>
+    <div class="do-bottom-cell val-amber">XP: 320</div>
+    <div class="do-bottom-cell"><span class="do-cell-dot"></span> CONEXAO: ESTAVEL</div>
+  </div>
+
+  <div class="concept-footer">
+    <div>
+      <div class="cf-name">Conceito 25 — Dark Ops</div>
+      <div class="cf-desc">O conceito definitivo. Combina o melhor de todos os favoritos: route hex (Holo), cards glass com scanning border (Command Deck), telemetria rich (Mission Control Pro), angular connectors (Tactical), stardust (Deep Space). A experiencia de aprendizado mais premium.</div>
+    </div>
+    <div class="cf-family">DNA: ALL FAVORITES COMBINED</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════ -->
+<style>
+@keyframes dash-flow {
+  from { stroke-dashoffset: 20; }
+  to { stroke-dashoffset: 0; }
+}
+</style>
+
+<script>
+// ── DATA ──
+const PHASES = [
+  {
+    id: 1,
+    num: '01',
+    title: 'Fundamentos de IA',
+    short: 'Fundamentos',
+    status: 'completed',
+    progress: 100,
+    nodes: [
+      { id:'1.1', type:'material', title:'Introducao a IA Generativa', time:'15 min', xp:15, status:'done' },
+      { id:'1.2', type:'material', title:'Como LLMs funcionam', time:'20 min', xp:15, status:'done' },
+      { id:'1.3', type:'presentation', title:'Apresentacao: Fundamentos', time:'30 min', xp:20, status:'done' },
+      { id:'1.4', type:'task', title:'Task: Primeira conversa com IA', time:'25 min', xp:25, status:'done' },
+      { id:'1.5', type:'checkpoint', title:'Checkpoint: Avaliacao 1', time:'15 min', xp:30, status:'done' }
+    ]
+  },
+  {
+    id: 2,
+    num: '02',
+    title: 'Prompts e Comunicacao',
+    short: 'Prompts',
+    status: 'active',
+    progress: 40,
+    nodes: [
+      { id:'2.1', type:'material', title:'Anatomia de um Prompt', time:'20 min', xp:15, status:'done' },
+      { id:'2.2', type:'task', title:'Task: Prompt de analise', time:'30 min', xp:25, status:'done' },
+      { id:'2.3', type:'material', title:'Cadeia de raciocinio', time:'25 min', xp:15, status:'available' },
+      { id:'2.4', type:'task', title:'Task: Prompt complexo', time:'35 min', xp:30, status:'available' },
+      { id:'2.5', type:'checkpoint', title:'Checkpoint: Avaliacao 2', time:'20 min', xp:35, status:'locked' }
+    ]
+  },
+  {
+    id: 3,
+    num: '03',
+    title: 'Claude Code - Primeiros Passos',
+    short: 'Claude Code I',
+    status: 'locked',
+    progress: 0,
+    nodes: [
+      { id:'3.1', type:'material', title:'Instalando o Claude Code', time:'20 min', xp:15, status:'locked' },
+      { id:'3.2', type:'material', title:'Primeiros comandos', time:'30 min', xp:20, status:'locked' },
+      { id:'3.3', type:'task', title:'Task: Hello World AI', time:'40 min', xp:30, status:'locked' },
+      { id:'3.4', type:'material', title:'Fluxos de trabalho', time:'25 min', xp:20, status:'locked' },
+      { id:'3.5', type:'checkpoint', title:'Checkpoint: Avaliacao 3', time:'20 min', xp:40, status:'locked' }
+    ]
+  },
+  {
+    id: 4,
+    num: '04',
+    title: 'Claude Code no Trabalho',
+    short: 'Claude Code II',
+    status: 'locked',
+    progress: 0,
+    nodes: [
+      { id:'4.1', type:'material', title:'Automacoes com Claude', time:'30 min', xp:20, status:'locked' },
+      { id:'4.2', type:'task', title:'Task: Automacao real', time:'60 min', xp:40, status:'locked' },
+      { id:'4.3', type:'material', title:'Integracao com ferramentas', time:'25 min', xp:20, status:'locked' },
+      { id:'4.4', type:'task', title:'Task: Projeto pratico', time:'90 min', xp:50, status:'locked' },
+      { id:'4.5', type:'checkpoint', title:'Checkpoint: Avaliacao 4', time:'30 min', xp:45, status:'locked' }
+    ]
+  },
+  {
+    id: 5,
+    num: '05',
+    title: 'Autonomia',
+    short: 'Autonomia',
+    status: 'locked',
+    progress: 0,
+    nodes: [
+      { id:'5.1', type:'material', title:'Construindo agentes', time:'35 min', xp:25, status:'locked' },
+      { id:'5.2', type:'material', title:'Sistemas autonomos', time:'30 min', xp:25, status:'locked' },
+      { id:'5.3', type:'task', title:'Task: Agente personalizado', time:'120 min', xp:60, status:'locked' },
+      { id:'5.4', type:'presentation', title:'Projeto Final', time:'60 min', xp:50, status:'locked' },
+      { id:'5.5', type:'checkpoint', title:'Checkpoint: Graduacao', time:'30 min', xp:100, status:'locked' }
+    ]
+  }
+];
+
+let activePhaseId = 2;
+
+// ── HELPERS ──
+function typeIcon(type, size = 16) {
+  const colors = { material: '#4A90FF', task: '#F59E0B', checkpoint: '#22C55E', presentation: '#A855F7' };
+  const paths = {
+    material: 'M4 2h8l3 3v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z M8 2v4h4',
+    task: 'M3 3h18v2H3zM3 9h18v2H3zM3 15h12v2H3z',
+    checkpoint: 'M20 6L9 17l-5-5',
+    presentation: 'M2 3h20v14H2z M8 21h8 M12 17v4'
+  };
+  const color = colors[type] || '#666';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${paths[type] || paths.material}"/></svg>`;
+}
+
+function statusBg(type) {
+  const map = { material: 'icon-material', task: 'icon-task', checkpoint: 'icon-check', presentation: 'icon-present' };
+  return map[type] || 'icon-material';
+}
+
+function nodeLedColor(status) {
+  if (status === 'done') return 'led-green';
+  if (status === 'available') return 'led-blue active';
+  return 'led-gray';
+}
+
+function nodeCardClass(status) {
+  if (status === 'done') return 'node-done';
+  if (status === 'available') return 'node-active';
+  return 'node-locked';
+}
+
+// ── MISSION CONTROL PRO ──
+function buildMC() {
+  // Phase list
+  const list = document.getElementById('mc-phase-list');
+  if (!list) return;
+  list.innerHTML = '';
+  PHASES.forEach((p, i) => {
+    const statusClass = p.status === 'completed' ? 'completed' : p.status === 'active' ? 'active' : '';
+    const ledClass = p.status === 'completed' ? 'led-green' : p.status === 'active' ? 'led-blue' : 'led-gray';
+    const arrow = p.status === 'active' ? '<span class="mc-phase-arrow">▶</span>' : '';
+
+    if (i > 0) {
+      const conn = document.createElement('div');
+      conn.className = `mc-connector${PHASES[i-1].status === 'completed' ? ' done' : ''}`;
+      list.appendChild(conn);
+    }
+
+    const entry = document.createElement('div');
+    entry.className = `mc-phase-entry ${statusClass}`;
+    entry.dataset.phaseId = p.id;
+    entry.innerHTML = `
+      <div class="mc-status-led ${ledClass}"></div>
+      <div class="mc-phase-entry-info">
+        <div class="mc-phase-num">FASE ${p.num}</div>
+        <div class="mc-phase-short">${p.short}</div>
+      </div>
+      ${arrow}
+    `;
+    entry.addEventListener('click', () => { activePhaseId = p.id; buildMCCenter(); updateMCPhaseList(); });
+    list.appendChild(entry);
+  });
+}
+
+function updateMCPhaseList() {
+  document.querySelectorAll('.mc-phase-entry').forEach(el => {
+    el.classList.remove('active');
+    if (parseInt(el.dataset.phaseId) === activePhaseId) el.classList.add('active');
+  });
+}
+
+function buildMCCenter() {
+  const panel = document.getElementById('mc-center-panel');
+  if (!panel) return;
+  const phase = PHASES.find(p => p.id === activePhaseId);
+  const statusPill = phase.status === 'completed' ? '<span class="mc-status-pill pill-green">CONCLUIDA</span>' :
+                     phase.status === 'active' ? '<span class="mc-status-pill pill-blue">EM PROGRESSO</span>' :
+                     '<span class="mc-status-pill pill-gray">BLOQUEADA</span>';
+  const circleClass = phase.status === 'completed' ? 'done' : phase.status === 'locked' ? 'locked' : '';
+  const fillClass = phase.status === 'completed' ? 'fill-green' : 'fill-blue';
+  const doneCount = phase.nodes.filter(n => n.status === 'done').length;
+
+  panel.innerHTML = `
+    <div class="mc-phase-header">
+      <div class="mc-phase-circle ${circleClass}">${phase.num}</div>
+      <div class="mc-phase-meta">
+        <div class="mc-phase-title-main">${phase.title}</div>
+        ${statusPill}
+        <div class="mc-progress-bar-wrap">
+          <div class="mc-progress-track">
+            <div class="mc-progress-fill ${fillClass}" style="width:${phase.progress}%"></div>
+          </div>
+          <div class="mc-progress-label">${doneCount} de ${phase.nodes.length} objetivos concluidos</div>
+        </div>
+      </div>
+    </div>
+    <div class="mc-node-list" id="mc-nodes-${phase.id}">
+      ${phase.nodes.map((n, i) => `
+        <div class="mc-node-card ${nodeCardClass(n.status)}" style="transition-delay: ${i * 60}ms">
+          <div class="node-led ${nodeLedColor(n.status)}"></div>
+          <div class="node-icon ${statusBg(n.type)}">${typeIcon(n.type, 15)}</div>
+          <div class="node-content">
+            <div class="node-title">${n.title}</div>
+            <div class="node-meta">
+              <span class="node-type-label">${n.type}</span>
+              <span class="node-time">${n.time}</span>
+            </div>
+          </div>
+          <div class="node-right">
+            <span class="node-xp">+${n.xp} XP</span>
+            ${n.status === 'locked' ? '<svg class="node-lock-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  requestAnimationFrame(() => {
+    panel.querySelectorAll('.mc-node-card').forEach((card, i) => {
+      setTimeout(() => card.classList.add('animated'), i * 60);
+    });
+  });
+}
+
+// ── HOLO MISSION ──
+function buildHolo() {
+  const list = document.getElementById('holo-phase-list');
+  if (!list) return;
+  list.innerHTML = '';
+  PHASES.forEach((p, i) => {
+    const statusClass = p.status === 'completed' ? 'completed' : p.status === 'active' ? 'active' : '';
+    const hexColor = p.status === 'completed' ? '#22C55E' : p.status === 'active' ? '#4A90FF' : 'rgba(255,255,255,0.15)';
+    const textColor = p.status === 'completed' ? '#22C55E' : p.status === 'active' ? '#4A90FF' : 'rgba(255,255,255,0.3)';
+
+    if (i > 0) {
+      const conn = document.createElement('div');
+      conn.className = 'holo-connector-hex';
+      list.appendChild(conn);
+    }
+    const entry = document.createElement('div');
+    entry.className = `holo-phase-entry ${statusClass}`;
+    entry.dataset.phaseId = p.id;
+    entry.innerHTML = `
+      <div class="holo-hex">
+        <svg viewBox="0 0 20 20"><polygon points="10,1 18,5.5 18,14.5 10,19 2,14.5 2,5.5" fill="none" stroke="${hexColor}" stroke-width="1.2"/></svg>
+        <span class="holo-hex-inner" style="color:${textColor}">${p.num}</span>
+      </div>
+      <div class="holo-phase-info">
+        <div class="holo-phase-num">FASE ${p.num}</div>
+        <div class="holo-phase-name">${p.short}</div>
+      </div>
+    `;
+    entry.addEventListener('click', () => { activePhaseId = p.id; buildHoloCenter(); updateHoloList(); });
+    list.appendChild(entry);
+  });
+}
+
+function updateHoloList() {
+  document.querySelectorAll('.holo-phase-entry').forEach(el => {
+    el.classList.remove('active');
+    if (parseInt(el.dataset.phaseId) === activePhaseId) el.classList.add('active');
+  });
+}
+
+function buildHoloCenter() {
+  const panel = document.getElementById('holo-center-panel');
+  if (!panel) return;
+  const phase = PHASES.find(p => p.id === activePhaseId);
+  const doneCount = phase.nodes.filter(n => n.status === 'done').length;
+
+  panel.innerHTML = `
+    <div class="holo-phase-hdr">
+      <div class="holo-phase-circle">${phase.num}</div>
+      <div class="holo-phase-meta">
+        <div class="holo-phase-title-main">${phase.title}</div>
+        <div class="mc-status-pill ${phase.status === 'completed' ? 'pill-green' : phase.status === 'active' ? 'pill-blue' : 'pill-gray'}">
+          ${phase.status === 'completed' ? 'CONCLUIDA' : phase.status === 'active' ? 'EM PROGRESSO' : 'BLOQUEADA'}
+        </div>
+        <div class="holo-progress-bar-wrap">
+          <div class="holo-progress-track">
+            <div class="holo-progress-fill" style="width:${phase.progress}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="holo-node-list">
+      ${phase.nodes.map((n, i) => {
+        const cardClass = n.status === 'done' ? 'node-done' : n.status === 'available' ? 'node-active' : 'node-locked';
+        return `
+          <div class="holo-node-card ${cardClass}" style="transition: opacity 0.4s ${i*70}ms, transform 0.4s ${i*70}ms">
+            <div class="node-led ${nodeLedColor(n.status)}"></div>
+            <div class="node-icon ${statusBg(n.type)}">${typeIcon(n.type, 14)}</div>
+            <div class="holo-node-content">
+              <div class="holo-node-title">${n.title}</div>
+              <div class="holo-node-meta">${n.type} &nbsp;·&nbsp; ${n.time}</div>
+            </div>
+            <div class="holo-node-right">
+              <span class="holo-node-xp">+${n.xp} XP</span>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  requestAnimationFrame(() => {
+    panel.querySelectorAll('.holo-node-card').forEach((card, i) => {
+      setTimeout(() => card.classList.add('animated'), i * 70);
+    });
+  });
+}
+
+// Typewriter log lines
+const holoLogs = [
+  { time: '12:04', text: 'Material concluido (+15 XP)' },
+  { time: '11:45', text: 'Task concluida (+20 XP)' },
+  { time: '11:20', text: 'Material concluido (+15 XP)' }
+];
+function typewriterLog(elId, text, delay) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const log = holoLogs[parseInt(elId.split('-')[2]) - 1];
+  if (!log) return;
+  let idx = 0;
+  const full = log.time + ' — ' + log.text;
+  el.textContent = '';
+  function tick() {
+    if (idx < full.length) {
+      el.textContent += full[idx++];
+      setTimeout(tick, delay + Math.random() * 20);
+    }
+  }
+  setTimeout(tick, parseInt(elId.split('-')[2]) * 600);
+}
+
+// ── COMMAND GRID ──
+function buildCG() {
+  const container = document.getElementById('cg-phase-panels');
+  if (!container) return;
+  container.innerHTML = '';
+  PHASES.forEach((p, i) => {
+    const phaseClass = p.status === 'completed' ? 'phase-completed' : p.status === 'active' ? 'phase-active' : 'phase-locked';
+    const bracketColor = p.status === 'completed' ? '#22C55E' : p.status === 'active' ? '#4A90FF' : 'rgba(255,255,255,0.15)';
+    const doneCount = p.nodes.filter(n => n.status === 'done').length;
+
+    const cells = p.nodes.map((n, j) => {
+      const cellClass = n.status === 'done' ? 'cell-done' : n.status === 'available' ? 'cell-active' : 'cell-locked';
+      const lockIcon = n.status === 'locked' ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>` : '';
+      return `
+        <div class="cg-cell ${cellClass}">
+          <span class="cg-cell-num">${n.id}</span>
+          <div class="cg-cell-icon">${typeIcon(n.type, 16)}</div>
+          <div class="cg-cell-info">
+            <div class="cg-cell-title">${n.title}</div>
+            <div class="cg-cell-type">${n.type}</div>
+          </div>
+          ${lockIcon}
+        </div>
+      `;
+    }).join('');
+
+    const panelHtml = `
+      <div class="cg-phase-panel ${phaseClass}">
+        <div class="cg-panel-bracket ptl">
+          <svg width="10" height="10" viewBox="0 0 10 10"><path d="M0 10 L0 0 L10 0" fill="none" stroke="${bracketColor}" stroke-width="1.5"/></svg>
+        </div>
+        <div class="cg-panel-bracket ptr">
+          <svg width="10" height="10" viewBox="0 0 10 10"><path d="M10 10 L10 0 L0 0" fill="none" stroke="${bracketColor}" stroke-width="1.5"/></svg>
+        </div>
+        <div class="cg-panel-bracket pbl">
+          <svg width="10" height="10" viewBox="0 0 10 10"><path d="M0 0 L0 10 L10 10" fill="none" stroke="${bracketColor}" stroke-width="1.5"/></svg>
+        </div>
+        <div class="cg-panel-bracket pbr">
+          <svg width="10" height="10" viewBox="0 0 10 10"><path d="M10 0 L10 10 L0 10" fill="none" stroke="${bracketColor}" stroke-width="1.5"/></svg>
+        </div>
+        <div class="cg-panel-header">
+          <div class="cg-panel-code">[${p.num}] FASE ${p.num} — ${p.title.toUpperCase()}</div>
+          <div class="cg-panel-status-right">STATUS: <span class="s-val">${p.status.toUpperCase()}</span> | <span class="s-val">${doneCount}/${p.nodes.length}</span> OBJETIVOS</div>
+        </div>
+        <div class="cg-dim-line"></div>
+        <div class="cg-cell-grid">${cells}</div>
+      </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', panelHtml);
+
+    if (i < PHASES.length - 1) {
+      const connClass = p.status === 'completed' ? '' : p.status === 'active' ? 'active' : 'locked';
+      container.insertAdjacentHTML('beforeend', `
+        <div class="cg-connector">
+          <div class="cg-connector-line ${connClass}"></div>
+        </div>
+      `);
+    }
+  });
+}
+
+// ── LIVE BLUEPRINT ──
+function buildLB() {
+  const zoneList = document.getElementById('lb-zone-list');
+  if (!zoneList) return;
+  zoneList.innerHTML = '';
+  PHASES.forEach(p => {
+    const zClass = p.status === 'completed' ? 'z-done' : p.status === 'active' ? 'z-active' : 'z-locked';
+    const dotColor = p.status === 'completed' ? '#22C55E' : p.status === 'active' ? '#4A90FF' : 'rgba(255,255,255,0.15)';
+    const fillColor = p.status === 'completed' ? '#22C55E' : '#4A90FF';
+    const isActive = p.status === 'active';
+
+    const zone = document.createElement('div');
+    zone.className = `lb-zone ${zClass}`;
+    zone.dataset.phaseId = p.id;
+    zone.innerHTML = `
+      ${isActive ? '<div class="lb-here-marker"></div>' : ''}
+      <div class="lb-zone-header">
+        <span class="lb-room-num">ZONA ${p.num}</span>
+        <span class="lb-zone-status-dot" style="background:${dotColor};border-radius:50%;width:6px;height:6px;"></span>
+      </div>
+      <div class="lb-zone-title">${p.title}</div>
+      <div class="lb-zone-progress">
+        <div class="lb-zone-progress-fill" style="width:${p.progress}%;background:${fillColor};border-radius:1px;box-shadow:0 0 6px ${fillColor}44;"></div>
+      </div>
+    `;
+    zone.addEventListener('click', () => { activePhaseId = p.id; buildLBDetail(); updateLBZones(); });
+    zoneList.appendChild(zone);
+  });
+  buildLBDetail();
+}
+
+function updateLBZones() {
+  document.querySelectorAll('.lb-zone').forEach(el => {
+    el.classList.remove('z-active');
+    if (parseInt(el.dataset.phaseId) === activePhaseId) el.classList.add('z-active');
+  });
+}
+
+function buildLBDetail() {
+  const panel = document.getElementById('lb-detail-panel');
+  if (!panel) return;
+  const phase = PHASES.find(p => p.id === activePhaseId);
+  const statusColor = phase.status === 'completed' ? '#22C55E' : phase.status === 'active' ? '#4A90FF' : 'rgba(255,255,255,0.2)';
+  const timestamps = { done: ['09:14', '09:42', '10:05', '10:31', '11:18'], available: ['—', '—', '—', '—', '—'] };
+  const completedAt = ['09:14', '09:42'];
+
+  const rooms = phase.nodes.map((n, i) => {
+    const rClass = n.status === 'done' ? 'r-done' : n.status === 'available' ? 'r-active' : 'r-locked';
+    const ts = n.status === 'done' ? completedAt[i] || '—' : '—';
+    return `
+      <div class="lb-room-card ${rClass}">
+        ${rClass === 'r-active' ? '<div class="do-scan-border"></div>' : ''}
+        <span class="lb-room-num">${n.id}</span>
+        <div class="lb-room-icon ${statusBg(n.type)}">${typeIcon(n.type, 14)}</div>
+        <div class="lb-room-content">
+          <div class="lb-room-title">${n.title}</div>
+          <div class="lb-room-meta">${n.type} · ${n.time}</div>
+        </div>
+        <div class="lb-room-right">
+          ${n.status === 'done' ? `<span class="lb-room-ts">${ts}</span>` : ''}
+          <span class="lb-room-xp ${n.status === 'locked' ? '' : ''}">+${n.xp} XP</span>
+          ${n.status === 'locked' ? '<span class="lb-room-lock">🔒</span>' : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="lb-scan-line"></div>
+    <div class="lb-detail-hdr">
+      <div class="lb-detail-title">ATIVO: FASE ${phase.num} — ${phase.title.toUpperCase()}</div>
+      <div class="lb-detail-status">
+        <div class="lb-status-led" style="background:${statusColor};border-radius:50%;width:7px;height:7px;box-shadow: 0 0 6px ${statusColor}"></div>
+        <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3)">${phase.status.toUpperCase()}</span>
+      </div>
+    </div>
+    <div class="lb-detail-rooms">${rooms}</div>
+    <div class="lb-mini-tele">
+      <div class="lb-tele-item"><span class="lb-tele-label">Progresso</span><span class="lb-tele-val">${phase.progress}%</span></div>
+      <div class="lb-tele-item"><span class="lb-tele-label">Nodes</span><span class="lb-tele-val a">${phase.nodes.filter(n=>n.status==='done').length}/${phase.nodes.length}</span></div>
+      <div class="lb-tele-item"><span class="lb-tele-label">XP Fase</span><span class="lb-tele-val g">${phase.nodes.filter(n=>n.status==='done').reduce((s,n)=>s+n.xp,0)}</span></div>
+    </div>
+  `;
+}
+
+// ── DARK OPS ──
+function buildDO() {
+  // Stars
+  const stars = document.getElementById('do-stars');
+  if (stars) {
+    stars.innerHTML = '';
+    for (let i = 0; i < 30; i++) {
+      const s = document.createElement('div');
+      s.className = 'do-star';
+      const size = Math.random() * 1.5 + 0.5;
+      s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;opacity:${Math.random()*0.4+0.1}`;
+      stars.appendChild(s);
+    }
+  }
+  buildDOLeft();
+  buildDOCenter();
+}
+
+function buildDOLeft() {
+  const list = document.getElementById('do-phase-list');
+  if (!list) return;
+  list.innerHTML = '';
+  PHASES.forEach((p, i) => {
+    const statusClass = p.status === 'completed' ? 'completed' : p.status === 'active' ? 'active' : '';
+    const hexColor = p.status === 'completed' ? '#22C55E' : p.status === 'active' ? '#4A90FF' : 'rgba(255,255,255,0.12)';
+
+    if (i > 0) {
+      const conn = document.createElement('div');
+      conn.className = `do-angular-conn${p.status !== 'locked' && PHASES[i-1].status === 'completed' ? ' done' : ''}`;
+      list.appendChild(conn);
+    }
+
+    const row = document.createElement('div');
+    row.className = `do-phase-row ${statusClass}`;
+    row.dataset.phaseId = p.id;
+    row.innerHTML = `
+      <svg class="do-hex-icon" viewBox="0 0 18 18" fill="none">
+        <polygon points="9,1 16.5,5 16.5,13 9,17 1.5,13 1.5,5" stroke="${hexColor}" stroke-width="1.2" fill="${p.status==='completed'?'rgba(34,197,94,0.06)':p.status==='active'?'rgba(74,144,255,0.06)':'transparent'}"/>
+        <text x="9" y="12" text-anchor="middle" font-size="5" font-weight="700" fill="${hexColor}">${p.num}</text>
+      </svg>
+      <div class="do-phase-row-info">
+        <div class="do-phase-row-num">FASE ${p.num}</div>
+        <div class="do-phase-row-name">${p.short}</div>
+      </div>
+    `;
+    row.addEventListener('click', () => { activePhaseId = p.id; buildDOCenter(); updateDOLeft(); });
+    list.appendChild(row);
+
+    // Ship indicator between phase 1 and 2
+    if (i === 1) {
+      const shipEl = document.createElement('div');
+      shipEl.className = 'do-ship-indicator';
+      shipEl.innerHTML = `<div class="do-ship-tri"></div><span class="do-ship-label">EM CURSO</span>`;
+      list.appendChild(shipEl);
+    }
+  });
+}
+
+function updateDOLeft() {
+  document.querySelectorAll('.do-phase-row').forEach(el => {
+    el.classList.remove('active');
+    if (parseInt(el.dataset.phaseId) === activePhaseId) el.classList.add('active');
+  });
+}
+
+function buildDOCenter() {
+  const panel = document.getElementById('do-center-panel');
+  if (!panel) return;
+  const phase = PHASES.find(p => p.id === activePhaseId);
+  const circleClass = phase.status === 'completed' ? 'done' : phase.status === 'locked' ? 'locked' : '';
+  const fillColor = phase.status === 'completed' ? '#22C55E' : '#4A90FF';
+  const doneCount = phase.nodes.filter(n => n.status === 'done').length;
+
+  panel.innerHTML = `
+    <div class="do-phase-hdr">
+      <div class="do-phase-circle-do ${circleClass}">${phase.num}</div>
+      <div class="do-phase-meta-do">
+        <div class="do-phase-title-do">${phase.title}</div>
+        <span class="mc-status-pill ${phase.status==='completed'?'pill-green':phase.status==='active'?'pill-blue':'pill-gray'}">
+          ${phase.status==='completed'?'CONCLUIDA':phase.status==='active'?'EM PROGRESSO':'BLOQUEADA'}
+        </span>
+        <div class="do-progress-wrap">
+          <div class="do-progress-track">
+            <div class="do-progress-fill" style="width:${phase.progress}%;background:linear-gradient(90deg,${fillColor},${fillColor}99)"></div>
+          </div>
+          <div class="do-progress-label">${doneCount}/${phase.nodes.length} objetivos · ${phase.progress}%</div>
+        </div>
+      </div>
+    </div>
+    <div class="do-node-list">
+      ${phase.nodes.map((n, i) => {
+        const nClass = n.status === 'done' ? 'n-done' : n.status === 'available' ? 'n-active' : 'n-locked';
+        const ledClass = nodeLedColor(n.status);
+        return `
+          <div class="do-node-card ${nClass}" style="transition: opacity 0.4s ${i*55}ms, transform 0.4s ${i*55}ms">
+            <div class="do-scan-border"></div>
+            <span class="do-room-badge">${n.id}</span>
+            <div class="node-led ${ledClass}"></div>
+            <div class="do-node-icon-do ${statusBg(n.type)}">${typeIcon(n.type, 15)}</div>
+            <div class="do-node-content-do">
+              <div class="do-node-title-do">${n.title}</div>
+              <div class="do-node-meta-do">
+                <span class="do-node-type">${n.type}</span>
+                <span class="do-node-time">${n.time}</span>
+              </div>
+            </div>
+            <div class="do-node-right-do">
+              <span class="do-node-xp-do">+${n.xp} XP</span>
+              ${n.status === 'locked' ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' : ''}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  requestAnimationFrame(() => {
+    panel.querySelectorAll('.do-node-card').forEach((card, i) => {
+      setTimeout(() => card.classList.add('animated'), i * 55);
+    });
+  });
+}
+
+// ── LIVE CLOCK ──
+function updateClocks() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  const t = `${hh}:${mm}:${ss}`;
+  ['mc-clock', 'holo-clock', 'lb-clock', 'do-clock'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t;
+  });
+}
+setInterval(updateClocks, 1000);
+updateClocks();
+
+// ── COUNTER ANIMATION ──
+function animateCounters(scope) {
+  const els = scope ? scope.querySelectorAll('[data-target]') : document.querySelectorAll('[data-target]');
+  els.forEach(el => {
+    const target = parseInt(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const duration = 800;
+    const start = performance.now();
+    function step(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(ease * target) + suffix;
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+// ── PAGE FLICKER (subtle, every ~10s) ──
+function scheduledFlicker() {
+  document.body.style.opacity = '0.97';
+  setTimeout(() => { document.body.style.opacity = '1'; }, 60);
+  setTimeout(scheduledFlicker, 8000 + Math.random() * 4000);
+}
+setTimeout(scheduledFlicker, 10000);
+
+// ── TAB SWITCHING ──
+function showConcept(id, btn) {
+  document.querySelectorAll('.concept-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+
+  // Init/re-init on switch
+  if (id === 'c20') { buildMC(); buildMCCenter(); animateCounters(document.getElementById('c20')); }
+  if (id === 'c21') { buildHolo(); buildHoloCenter(); animateCounters(document.getElementById('c21')); typewriterLog('holo-log-1', '', 50); typewriterLog('holo-log-2', '', 50); typewriterLog('holo-log-3', '', 50); }
+  if (id === 'c22') { buildCG(); }
+  if (id === 'c24') { buildLB(); }
+  if (id === 'c25') { buildDO(); animateCounters(document.getElementById('c25')); }
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  buildMC();
+  buildMCCenter();
+  animateCounters(document.getElementById('c20'));
+});
+</script>
+</body>
+</html>

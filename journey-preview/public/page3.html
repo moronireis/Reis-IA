@@ -1,0 +1,2417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journey Visualization — Hybrid Concepts 11-14</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000000;
+      --surface: #0A0A0A;
+      --blue: #4A90FF;
+      --green: #22C55E;
+      --purple: #8B5CF6;
+      --amber: #F59E0B;
+      --pink: #EC4899;
+      --muted: #333333;
+      --text: #FFFFFF;
+      --text-dim: #666666;
+      --text-mid: #999999;
+      --border: #1A1A1A;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── TOP NAV ─── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-inner::-webkit-scrollbar { display: none; }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 16px 16px 14px;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      white-space: nowrap;
+      border-right: 1px solid var(--border);
+      margin-right: 4px;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--text-mid); }
+
+    .nav-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      white-space: nowrap;
+      padding: 0 12px 0 4px;
+      border-right: 1px solid var(--border);
+      margin-right: 4px;
+    }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 16px 20px 14px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-dim);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .nav-tab::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--blue);
+      transition: width 0.25s ease;
+    }
+
+    .nav-tab.active { color: var(--text); }
+    .nav-tab.active::after { width: 100%; }
+    .nav-tab:hover { color: var(--text-mid); }
+
+    .nav-tab .tab-num {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    /* ─── CONCEPT PANELS ─── */
+    .concept-panel {
+      display: none;
+      min-height: calc(100vh - 57px);
+    }
+    .concept-panel.active { display: block; }
+
+    /* ─── SHARED UTILITIES ─── */
+    .page-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .concept-footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 0 0;
+      margin-top: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .concept-footer .concept-name {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+
+    .concept-footer .concept-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .concept-footer .concept-hybrid {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      text-align: right;
+    }
+
+    /* ─── TOOLTIP SHARED ─── */
+    .node-tooltip {
+      position: fixed;
+      background: rgba(10,10,10,0.95);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 9999;
+      min-width: 140px;
+      backdrop-filter: blur(12px);
+      transition: opacity 0.15s;
+      opacity: 0;
+    }
+    .node-tooltip.visible { opacity: 1; }
+    .node-tooltip .tt-title { color: var(--text); font-weight: 500; margin-bottom: 4px; }
+    .node-tooltip .tt-type { color: var(--text-dim); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .node-tooltip .tt-xp { color: var(--amber); font-size: 11px; margin-top: 4px; font-weight: 600; }
+
+    /* ══════════════════════════════════════════════
+       CONCEPT 11: COSMIC SYNAPSE
+    ══════════════════════════════════════════════ */
+
+    #cosmic-synapse {
+      background: #000;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .synapse-canvas-wrap {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    #synapse-bg-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+
+    #synapse-svg {
+      position: relative;
+      z-index: 2;
+      display: block;
+      margin: 0 auto;
+      overflow: visible;
+    }
+
+    /* Nebula layers */
+    .nebula-layer {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════════
+       CONCEPT 12: DEEP SPACE NAVIGATOR
+    ══════════════════════════════════════════════ */
+
+    #deep-space {
+      background: #000;
+      position: relative;
+    }
+
+    .space-hud-frame {
+      position: relative;
+      margin: 0 auto;
+      max-width: 900px;
+    }
+
+    .hud-corner {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-color: #1A1A1A;
+      border-style: solid;
+    }
+    .hud-corner.tl { top: 0; left: 0; border-width: 1px 0 0 1px; }
+    .hud-corner.tr { top: 0; right: 0; border-width: 1px 1px 0 0; }
+    .hud-corner.bl { bottom: 0; left: 0; border-width: 0 0 1px 1px; }
+    .hud-corner.br { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+
+    .space-coords {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      color: #333;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      font-family: 'Inter', monospace;
+    }
+
+    .space-map-area {
+      position: relative;
+      padding: 20px;
+    }
+
+    #space-svg {
+      display: block;
+      width: 100%;
+      overflow: visible;
+    }
+
+    .station-group { cursor: pointer; }
+
+    .station-ring {
+      fill: none;
+      stroke-width: 1;
+      animation: none;
+    }
+
+    .station-ring.radar-ping {
+      animation: radarPing 3s ease-out infinite;
+    }
+
+    @keyframes radarPing {
+      0% { r: 32; opacity: 0.5; }
+      100% { r: 70; opacity: 0; }
+    }
+
+    .ship-indicator {
+      animation: shipBob 3s ease-in-out infinite;
+    }
+
+    @keyframes shipBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .station-panel {
+      display: none;
+      position: absolute;
+      background: rgba(10,10,10,0.92);
+      border: 1px solid #1A1A1A;
+      border-radius: 8px;
+      padding: 16px;
+      min-width: 220px;
+      backdrop-filter: blur(16px);
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .station-panel.visible { display: block; }
+
+    .station-panel .sp-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #1A1A1A;
+    }
+
+    .station-panel .sp-node {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 0;
+      font-size: 11px;
+      color: var(--text-mid);
+    }
+
+    .sp-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sp-badge {
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.04);
+      color: var(--text-dim);
+      margin-left: auto;
+    }
+
+    .space-bottom-panel {
+      background: rgba(8,8,8,0.8);
+      border-top: 1px solid #0F0F0F;
+      border-radius: 0 0 8px 8px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .space-stat {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .space-stat span {
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .space-route-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .route-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .route-connector {
+      width: 24px;
+      height: 1px;
+    }
+
+    /* ══════════════════════════════════════════════
+       CONCEPT 13: TACTICAL BLUEPRINT
+    ══════════════════════════════════════════════ */
+
+    #tactical-blueprint {
+      background: #000;
+      position: relative;
+    }
+
+    .blueprint-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .blueprint-hud-frame {
+      position: relative;
+      border: 1px solid #0F0F0F;
+    }
+
+    .bp-hud-corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      z-index: 5;
+    }
+    .bp-hud-corner.tl { top: -1px; left: -1px; border-top: 2px solid #1A1A1A; border-left: 2px solid #1A1A1A; }
+    .bp-hud-corner.tr { top: -1px; right: -1px; border-top: 2px solid #1A1A1A; border-right: 2px solid #1A1A1A; }
+    .bp-hud-corner.bl { bottom: -1px; left: -1px; border-bottom: 2px solid #1A1A1A; border-left: 2px solid #1A1A1A; }
+    .bp-hud-corner.br { bottom: -1px; right: -1px; border-bottom: 2px solid #1A1A1A; border-right: 2px solid #1A1A1A; }
+
+    .bp-status-bar {
+      background: rgba(8,8,8,0.9);
+      border-bottom: 1px solid #0F0F0F;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #333;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .bp-status-bar .bp-active { color: var(--blue); }
+
+    .bp-phases-wrap {
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .bp-route-svg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bp-phase-row {
+      display: flex;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 16px;
+    }
+
+    .bp-phase-row:nth-child(even) { justify-content: flex-end; }
+
+    .bp-phase-panel {
+      width: 62%;
+      background: rgba(8,8,8,0.95);
+      border: 1px solid transparent;
+      position: relative;
+    }
+
+    .bp-phase-panel.status-complete { border-color: rgba(34,197,94,0.2); }
+    .bp-phase-panel.status-active { border-color: rgba(74,144,255,0.25); }
+    .bp-phase-panel.status-locked { border-color: rgba(255,255,255,0.04); }
+
+    /* Corner brackets */
+    .bp-bracket {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+    }
+    .bp-bracket.tl { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; }
+    .bp-bracket.tr { top: -1px; right: -1px; border-top: 2px solid; border-right: 2px solid; }
+    .bp-bracket.bl { bottom: -1px; left: -1px; border-bottom: 2px solid; border-left: 2px solid; }
+    .bp-bracket.br { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; }
+
+    .bp-panel-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .bp-phase-num {
+      width: 24px;
+      height: 24px;
+      border: 1px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .bp-header-text { flex: 1; }
+    .bp-phase-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .bp-dim-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .bp-dim-line::before {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+    .bp-dim-text {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #333;
+    }
+
+    .bp-status-tag {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border: 1px solid;
+      flex-shrink: 0;
+    }
+
+    .bp-nodes-grid {
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .bp-node-room {
+      border: 1px dashed rgba(255,255,255,0.06);
+      padding: 8px 10px;
+      position: relative;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .bp-node-room:hover { background: rgba(255,255,255,0.02); }
+
+    .bp-node-room.status-complete {
+      border-color: rgba(34,197,94,0.2);
+      background: rgba(34,197,94,0.02);
+    }
+
+    .bp-node-room.status-active {
+      border-color: rgba(74,144,255,0.3);
+      animation: bpScan 2.5s linear infinite;
+    }
+
+    .bp-node-room.status-locked {
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 4px,
+        rgba(255,255,255,0.015) 4px,
+        rgba(255,255,255,0.015) 5px
+      );
+    }
+
+    @keyframes bpScan {
+      0%   { box-shadow: 2px 0 0 0 rgba(74,144,255,0.7) inset; }
+      25%  { box-shadow: 0 2px 0 0 rgba(74,144,255,0.7) inset; }
+      50%  { box-shadow: -2px 0 0 0 rgba(74,144,255,0.7) inset; }
+      75%  { box-shadow: 0 -2px 0 0 rgba(74,144,255,0.7) inset; }
+      100% { box-shadow: 2px 0 0 0 rgba(74,144,255,0.7) inset; }
+    }
+
+    .bp-room-num {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: 8px;
+      color: #222;
+      letter-spacing: 0.06em;
+    }
+
+    .bp-node-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bp-node-title {
+      font-size: 11px;
+      color: var(--text-mid);
+      line-height: 1.3;
+    }
+
+    .bp-node-xp {
+      font-size: 9px;
+      color: var(--amber);
+      margin-top: 3px;
+    }
+
+    .bp-bottom-readout {
+      background: rgba(6,6,6,0.95);
+      border-top: 1px solid #0F0F0F;
+      padding: 10px 20px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: #333;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .bp-bottom-readout span { color: var(--blue); }
+
+    /* ══════════════════════════════════════════════
+       CONCEPT 14: MISSION ARCHITECT
+    ══════════════════════════════════════════════ */
+
+    #mission-architect {
+      background: #050505;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ma-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .ma-hud-bar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      border-bottom: 1px solid #0A0A0A;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #333;
+    }
+
+    .ma-hud-title { color: var(--blue); font-weight: 600; }
+    .ma-hud-xp { color: var(--amber); }
+
+    .ma-desk {
+      position: relative;
+      z-index: 2;
+      padding: 40px 24px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Route overlay SVG */
+    .ma-route-svg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .ma-route-path {
+      fill: none;
+      stroke: var(--blue);
+      stroke-width: 1.5;
+      stroke-dasharray: 6 4;
+    }
+
+    .ma-route-path.completed {
+      stroke-dasharray: none;
+      animation: none;
+    }
+
+    .ma-route-path.active {
+      stroke-dasharray: 6 4;
+      animation: dashFlow 1.5s linear infinite;
+    }
+
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -20; }
+    }
+
+    .ma-waypoint {
+      fill: #0A0A0A;
+      stroke: var(--blue);
+      stroke-width: 1;
+    }
+
+    .ma-documents-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px 60px;
+      position: relative;
+    }
+
+    .ma-doc {
+      background: #0A0A0A;
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+      position: relative;
+      z-index: 2;
+    }
+
+    .ma-doc:nth-child(1) { transform: rotate(-1deg); }
+    .ma-doc:nth-child(2) { transform: rotate(1.5deg); }
+    .ma-doc:nth-child(3) { transform: rotate(-0.5deg); grid-column: 1; }
+    .ma-doc:nth-child(4) { transform: rotate(2deg); }
+    .ma-doc:nth-child(5) { transform: rotate(-1.5deg); }
+
+    .ma-doc:hover {
+      transform: rotate(0deg) translateY(-4px) !important;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+      z-index: 10;
+    }
+
+    .ma-doc.expanded {
+      transform: rotate(0deg) !important;
+      z-index: 20;
+    }
+
+    .ma-doc-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ma-doc-code {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .ma-doc-phase-num {
+      font-size: 18px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.08);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .ma-stamp {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-12deg);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border: 2px solid;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .ma-stamp.approved {
+      color: rgba(34,197,94,0.25);
+      border-color: rgba(34,197,94,0.15);
+    }
+
+    .ma-stamp.classified {
+      color: rgba(239,68,68,0.2);
+      border-color: rgba(239,68,68,0.12);
+      animation: classifiedPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes classifiedPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .ma-doc-body { padding: 16px; }
+
+    .ma-doc-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .ma-doc-meta {
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+    }
+
+    /* Flowchart nodes */
+    .ma-flowchart {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .ma-flow-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .ma-flow-node {
+      flex: 1;
+      height: 52px;
+      border-left: 3px solid;
+      background: rgba(255,255,255,0.02);
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s;
+    }
+
+    .ma-flow-node:hover { background: rgba(255,255,255,0.04); }
+
+    .ma-flow-node.status-complete { border-color: var(--green); }
+    .ma-flow-node.status-active { border-color: var(--blue); }
+    .ma-flow-node.status-available { border-color: rgba(255,255,255,0.15); }
+    .ma-flow-node.status-locked { border-color: rgba(255,255,255,0.04); opacity: 0.4; }
+
+    .ma-flow-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 10px;
+    }
+
+    .ma-flow-info { flex: 1; min-width: 0; }
+
+    .ma-flow-title {
+      font-size: 11px;
+      color: var(--text-mid);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ma-flow-type {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .ma-flow-status-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .ma-mission-bar {
+      position: relative;
+      z-index: 10;
+      background: rgba(5,5,5,0.95);
+      border-top: 1px solid #0A0A0A;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #333;
+      flex-wrap: wrap;
+    }
+
+    .ma-mission-bar span { color: var(--blue); }
+
+    /* ─── FULLSCREEN doc overlay ─── */
+    .ma-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 200;
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+    .ma-overlay.open { display: flex; }
+
+    .ma-overlay-doc {
+      background: #0A0A0A;
+      border: 1px solid rgba(255,255,255,0.08);
+      width: 100%;
+      max-width: 700px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.8);
+    }
+
+    .ma-overlay-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: sticky;
+      top: 0;
+      background: #0A0A0A;
+      z-index: 5;
+    }
+
+    .ma-overlay-close {
+      background: none;
+      border: 1px solid #1A1A1A;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 6px 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: 'Inter', sans-serif;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .ma-overlay-close:hover { color: var(--text); border-color: #333; }
+
+    .ma-overlay-body { padding: 24px 20px; }
+
+    scrollbar-width: thin;
+    scrollbar-color: #1A1A1A transparent;
+
+    .ma-overlay-doc::-webkit-scrollbar { width: 4px; }
+    .ma-overlay-doc::-webkit-scrollbar-track { background: transparent; }
+    .ma-overlay-doc::-webkit-scrollbar-thumb { background: #1A1A1A; border-radius: 2px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .bp-nodes-grid { grid-template-columns: 1fr; }
+      .ma-documents-grid { grid-template-columns: 1fr; }
+      .ma-doc:nth-child(n) { transform: rotate(0deg); }
+      .bp-phase-panel { width: 100%; }
+      .space-coords { font-size: 7px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-link">← 1-5</a>
+    <a href="page2.html" class="nav-link">← 6-10</a>
+    <span class="nav-label">Híbridos</span>
+    <button class="nav-tab active" onclick="switchTab('cosmic-synapse', this)">
+      <span class="tab-num">11</span>
+      Cosmic Synapse
+    </button>
+    <button class="nav-tab" onclick="switchTab('deep-space', this)">
+      <span class="tab-num">12</span>
+      Deep Space Nav
+    </button>
+    <button class="nav-tab" onclick="switchTab('tactical-blueprint', this)">
+      <span class="tab-num">13</span>
+      Tactical Blueprint
+    </button>
+    <button class="nav-tab" onclick="switchTab('mission-architect', this)">
+      <span class="tab-num">14</span>
+      Mission Architect
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     CONCEPT 11: COSMIC SYNAPSE
+══════════════════════════════════════════════ -->
+<div id="cosmic-synapse" class="concept-panel active">
+  <div style="position:relative; background:#000; overflow:hidden; min-height:100vh;">
+
+    <!-- Nebula clouds -->
+    <div style="position:absolute; top:10%; left:20%; width:500px; height:400px; background:radial-gradient(circle, rgba(74,144,255,0.025) 0%, transparent 70%); filter:blur(80px); pointer-events:none;"></div>
+    <div style="position:absolute; top:40%; right:10%; width:400px; height:350px; background:radial-gradient(circle, rgba(139,92,246,0.025) 0%, transparent 70%); filter:blur(100px); pointer-events:none;"></div>
+    <div style="position:absolute; top:70%; left:30%; width:450px; height:300px; background:radial-gradient(circle, rgba(0,180,255,0.02) 0%, transparent 70%); filter:blur(90px); pointer-events:none;"></div>
+
+    <!-- Star dust canvas -->
+    <canvas id="star-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;"></canvas>
+
+    <div style="position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; padding:40px 24px 80px;">
+
+      <!-- Core label -->
+      <div id="synapse-core" style="
+        width:24px; height:24px; border-radius:50%;
+        background:#fff;
+        box-shadow: 0 0 12px rgba(74,144,255,0.8), 0 0 32px rgba(74,144,255,0.4), 0 0 60px rgba(74,144,255,0.15);
+        margin-bottom:6px;
+      "></div>
+      <div style="font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:#4A90FF; margin-bottom:60px;">Sua Meta</div>
+
+      <!-- Main SVG: spiral path + clusters -->
+      <svg id="synapse-svg" viewBox="0 0 700 1200" width="700" style="max-width:100%; overflow:visible;">
+        <defs>
+          <filter id="glow-blue">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-green">
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Spiral backbone path (visible) -->
+        <!-- Completed section: Ph1 to Ph2 -->
+        <path id="spiral-seg-1" d="M 350,40 Q 550,200 520,380" fill="none" stroke="rgba(34,197,94,0.35)" stroke-width="1.5"/>
+        <!-- Active section: Ph2 to Ph3 -->
+        <path id="spiral-seg-2" d="M 520,380 Q 350,500 280,620" fill="none" stroke="rgba(74,144,255,0.3)" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <!-- Locked sections -->
+        <path d="M 280,620 Q 440,740 480,860" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+        <path d="M 480,860 Q 350,980 320,1100" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+        <!-- Phase 1 cluster: COMPLETED (center 350, 120) -->
+        <!-- Aura -->
+        <circle cx="350" cy="120" r="60" fill="radial-gradient" opacity="0"/>
+        <radialGradient id="aura1" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#22C55E" stop-opacity="0.06"/>
+          <stop offset="100%" stop-color="#22C55E" stop-opacity="0"/>
+        </radialGradient>
+        <circle cx="350" cy="120" r="58" fill="url(#aura1)"/>
+
+        <!-- Synaptic lines within phase 1 -->
+        <line x1="330" y1="100" x2="370" y2="100" stroke="rgba(34,197,94,0.15)" stroke-width="0.5"/>
+        <line x1="370" y1="100" x2="395" y2="130" stroke="rgba(34,197,94,0.15)" stroke-width="0.5"/>
+        <line x1="330" y1="100" x2="305" y2="130" stroke="rgba(34,197,94,0.15)" stroke-width="0.5"/>
+        <line x1="305" y1="130" x2="325" y2="150" stroke="rgba(34,197,94,0.15)" stroke-width="0.5"/>
+        <line x1="395" y1="130" x2="375" y2="150" stroke="rgba(34,197,94,0.15)" stroke-width="0.5"/>
+
+        <!-- Phase 1 nodes (completed) -->
+        <!-- Material 1 -->
+        <g class="syn-node" data-title="Introdução à IA" data-type="Material" data-xp="50 XP" data-status="complete">
+          <circle cx="330" cy="100" r="5" fill="#22C55E" opacity="0.9" filter="url(#glow-green)"/>
+          <circle cx="330" cy="100" r="9" fill="rgba(34,197,94,0.12)"/>
+        </g>
+        <!-- Material 2 -->
+        <g class="syn-node" data-title="Fundamentos Práticos" data-type="Material" data-xp="50 XP" data-status="complete">
+          <circle cx="370" cy="100" r="5" fill="#22C55E" opacity="0.9" filter="url(#glow-green)"/>
+          <circle cx="370" cy="100" r="9" fill="rgba(34,197,94,0.12)"/>
+        </g>
+        <!-- Presentation -->
+        <g class="syn-node" data-title="Apresentação de Conceitos" data-type="Apresentação" data-xp="75 XP" data-status="complete">
+          <circle cx="395" cy="130" r="6" fill="#22C55E" opacity="0.9" filter="url(#glow-green)"/>
+          <circle cx="395" cy="130" r="11" fill="rgba(34,197,94,0.1)"/>
+        </g>
+        <!-- Task -->
+        <g class="syn-node" data-title="Exercício de Fundamentos" data-type="Tarefa" data-xp="100 XP" data-status="complete">
+          <circle cx="305" cy="130" r="5" fill="#22C55E" opacity="0.9" filter="url(#glow-green)"/>
+          <circle cx="305" cy="130" r="9" fill="rgba(34,197,94,0.12)"/>
+        </g>
+        <!-- Checkpoint -->
+        <g class="syn-node" data-title="Checkpoint: Fundamentos" data-type="Checkpoint" data-xp="200 XP" data-status="complete">
+          <circle cx="350" cy="155" r="8" fill="#22C55E" opacity="0.9" filter="url(#glow-green)"/>
+          <circle cx="350" cy="155" r="14" fill="rgba(34,197,94,0.1)"/>
+        </g>
+
+        <!-- Phase 1 label -->
+        <text x="350" y="78" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" letter-spacing="0.08em" fill="#22C55E" opacity="0.7" text-transform="uppercase">FASE 1</text>
+        <text x="350" y="90" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="rgba(255,255,255,0.4)">Fundamentos de IA</text>
+
+        <!-- Phase 2 cluster: IN PROGRESS (center 520, 380) -->
+        <radialGradient id="aura2" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#4A90FF" stop-opacity="0.07"/>
+          <stop offset="100%" stop-color="#4A90FF" stop-opacity="0"/>
+        </radialGradient>
+        <circle cx="520" cy="380" r="60" fill="url(#aura2)">
+          <animate attributeName="r" values="55;65;55" dur="4s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="1;0.6;1" dur="4s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Synaptic lines phase 2 -->
+        <line x1="500" y1="355" x2="540" y2="355" stroke="rgba(34,197,94,0.15)" stroke-width="0.5"/>
+        <line x1="540" y1="355" x2="560" y2="380" stroke="rgba(74,144,255,0.2)" stroke-width="0.5"/>
+        <line x1="500" y1="355" x2="480" y2="380" stroke="rgba(74,144,255,0.2)" stroke-width="0.5"/>
+        <line x1="480" y1="380" x2="495" y2="408" stroke="rgba(74,144,255,0.1)" stroke-width="0.5"/>
+        <line x1="560" y1="380" x2="545" y2="408" stroke="rgba(74,144,255,0.1)" stroke-width="0.5"/>
+
+        <!-- Phase 2 nodes -->
+        <g class="syn-node" data-title="Técnicas de Prompt" data-type="Material" data-xp="50 XP" data-status="complete">
+          <circle cx="500" cy="355" r="5" fill="#22C55E" opacity="0.9" filter="url(#glow-green)"/>
+          <circle cx="500" cy="355" r="9" fill="rgba(34,197,94,0.12)"/>
+        </g>
+        <g class="syn-node" data-title="Exercício Prompt Chain" data-type="Tarefa" data-xp="100 XP" data-status="complete">
+          <circle cx="540" cy="355" r="5" fill="#22C55E" opacity="0.9" filter="url(#glow-green)"/>
+          <circle cx="540" cy="355" r="9" fill="rgba(34,197,94,0.12)"/>
+        </g>
+        <!-- Available nodes (pulsing blue) -->
+        <g class="syn-node" data-title="Comunicação Avançada" data-type="Material" data-xp="50 XP" data-status="available">
+          <circle cx="560" cy="380" r="5" fill="rgba(255,255,255,0.5)">
+            <animate attributeName="r" values="4;6;4" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="560" cy="380" r="10" fill="rgba(74,144,255,0.1)">
+            <animate attributeName="r" values="9;14;9" dur="2.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+        </g>
+        <g class="syn-node" data-title="Prática de Diálogo" data-type="Tarefa" data-xp="100 XP" data-status="available">
+          <circle cx="480" cy="380" r="5" fill="rgba(255,255,255,0.5)">
+            <animate attributeName="r" values="4;6;4" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="480" cy="380" r="10" fill="rgba(74,144,255,0.1)">
+            <animate attributeName="r" values="9;14;9" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
+          </circle>
+        </g>
+        <!-- Checkpoint locked -->
+        <g class="syn-node" data-title="Checkpoint: Prompts" data-type="Checkpoint" data-xp="200 XP" data-status="locked">
+          <circle cx="520" cy="408" r="8" fill="rgba(255,255,255,0.04)"/>
+          <circle cx="520" cy="408" r="13" fill="rgba(255,255,255,0.02)"/>
+        </g>
+
+        <text x="520" y="330" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" letter-spacing="0.08em" fill="#4A90FF" opacity="0.7">FASE 2</text>
+        <text x="520" y="342" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="rgba(255,255,255,0.4)">Prompts e Comunicação</text>
+
+        <!-- Phase 3 cluster: LOCKED (center 280, 620) -->
+        <radialGradient id="aura3" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.03"/>
+          <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+        </radialGradient>
+        <circle cx="280" cy="620" r="52" fill="url(#aura3)"/>
+
+        <line x1="260" y1="598" x2="300" y2="598" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+        <line x1="300" y1="598" x2="320" y2="622" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+        <line x1="260" y1="598" x2="240" y2="622" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+        <line x1="240" y1="622" x2="258" y2="645" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+        <line x1="320" y1="622" x2="302" y2="645" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+
+        <circle cx="260" cy="598" r="4" fill="rgba(255,255,255,0.06)"/>
+        <circle cx="300" cy="598" r="4" fill="rgba(255,255,255,0.06)"/>
+        <circle cx="320" cy="622" r="5" fill="rgba(255,255,255,0.05)"/>
+        <circle cx="240" cy="622" r="4" fill="rgba(255,255,255,0.06)"/>
+        <circle cx="280" cy="648" r="7" fill="rgba(255,255,255,0.04)"/>
+
+        <text x="280" y="576" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" letter-spacing="0.08em" fill="rgba(255,255,255,0.15)">FASE 3</text>
+        <text x="280" y="588" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="rgba(255,255,255,0.15)">Claude Code - Primeiros Passos</text>
+
+        <!-- Phase 4 cluster: LOCKED (center 480, 860) -->
+        <radialGradient id="aura4" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.025"/>
+          <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+        </radialGradient>
+        <circle cx="480" cy="860" r="52" fill="url(#aura4)"/>
+
+        <line x1="460" y1="838" x2="500" y2="838" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+        <line x1="500" y1="838" x2="520" y2="862" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+        <line x1="460" y1="838" x2="440" y2="862" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+        <line x1="440" y1="862" x2="458" y2="885" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+        <line x1="520" y1="862" x2="502" y2="885" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+
+        <circle cx="460" cy="838" r="4" fill="rgba(255,255,255,0.05)"/>
+        <circle cx="500" cy="838" r="4" fill="rgba(255,255,255,0.05)"/>
+        <circle cx="520" cy="862" r="5" fill="rgba(255,255,255,0.04)"/>
+        <circle cx="440" cy="862" r="4" fill="rgba(255,255,255,0.05)"/>
+        <circle cx="480" cy="888" r="7" fill="rgba(255,255,255,0.035)"/>
+
+        <text x="480" y="816" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" letter-spacing="0.08em" fill="rgba(255,255,255,0.12)">FASE 4</text>
+        <text x="480" y="828" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="rgba(255,255,255,0.12)">Claude Code no Trabalho</text>
+
+        <!-- Phase 5 cluster: LOCKED (center 320, 1100) -->
+        <radialGradient id="aura5" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#EC4899" stop-opacity="0.02"/>
+          <stop offset="100%" stop-color="#EC4899" stop-opacity="0"/>
+        </radialGradient>
+        <circle cx="320" cy="1100" r="52" fill="url(#aura5)"/>
+
+        <line x1="300" y1="1078" x2="340" y2="1078" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+        <line x1="340" y1="1078" x2="360" y2="1102" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+        <line x1="300" y1="1078" x2="280" y2="1102" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+        <line x1="280" y1="1102" x2="298" y2="1125" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+        <line x1="360" y1="1102" x2="342" y2="1125" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+
+        <circle cx="300" cy="1078" r="4" fill="rgba(255,255,255,0.04)"/>
+        <circle cx="340" cy="1078" r="4" fill="rgba(255,255,255,0.04)"/>
+        <circle cx="360" cy="1102" r="5" fill="rgba(255,255,255,0.035)"/>
+        <circle cx="280" cy="1102" r="4" fill="rgba(255,255,255,0.04)"/>
+        <circle cx="320" cy="1128" r="7" fill="rgba(255,255,255,0.03)"/>
+
+        <text x="320" y="1056" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" letter-spacing="0.08em" fill="rgba(255,255,255,0.1)">FASE 5</text>
+        <text x="320" y="1068" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="rgba(255,255,255,0.1)">Autonomia</text>
+
+        <!-- Neural pulse traveler (JS-controlled) -->
+        <circle id="neural-pulse" r="4" fill="#4A90FF" opacity="0" filter="url(#glow-blue)">
+          <animate attributeName="opacity" values="0;1;1;0" dur="4s" begin="1s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+
+      <!-- Progress bar -->
+      <div style="margin-top:40px; width:100%; max-width:700px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:10px; letter-spacing:0.1em; text-transform:uppercase;">
+          <span style="color:#4A90FF;">Sinal Neural Ativo</span>
+          <span style="color:#666;">320 XP · 35% Explorado</span>
+        </div>
+        <div style="height:1px; background:#0F0F0F; width:100%; position:relative;">
+          <div style="height:1px; background:linear-gradient(90deg, #22C55E 35%, #4A90FF 35%, #4A90FF 45%, transparent 45%); width:100%;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
+    <div class="concept-footer">
+      <div>
+        <div class="concept-name">Cosmic Synapse</div>
+        <div class="concept-desc">Espiral galáctica com clusters de neurônios orgânicos e pulso neural viajando pela rede</div>
+      </div>
+      <div class="concept-hybrid">HYBRID: Nebula + Orbital + Neural</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CONCEPT 12: DEEP SPACE NAVIGATOR
+══════════════════════════════════════════════ -->
+<div id="deep-space" class="concept-panel">
+  <div style="background:#000; min-height:100vh; position:relative; overflow:hidden;">
+
+    <!-- Star canvas -->
+    <canvas id="star-canvas-2" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;"></canvas>
+
+    <!-- Nebula -->
+    <div style="position:absolute; top:30%; left:35%; width:500px; height:400px; background:radial-gradient(circle, rgba(74,144,255,0.018) 0%, transparent 70%); filter:blur(100px); pointer-events:none; transform:translate(-50%,-50%);"></div>
+
+    <div class="page-wrapper" style="position:relative; z-index:2;">
+
+      <!-- HUD Frame -->
+      <div class="space-hud-frame">
+        <div class="hud-corner tl"></div>
+        <div class="hud-corner tr"></div>
+        <div class="hud-corner bl"></div>
+        <div class="hud-corner br"></div>
+
+        <div class="space-coords">
+          <span>SECTOR 2.5 | LAT 42.7</span>
+          <span style="color:#4A90FF;">JORNADA IA: ZERO AO CLAUDE CODE</span>
+          <span>LONG 18.3 | ALT 0.0</span>
+        </div>
+
+        <div class="space-map-area" id="space-map">
+          <svg id="space-svg" viewBox="0 0 860 680" style="width:100%; overflow:visible;">
+            <defs>
+              <filter id="glow-station">
+                <feGaussianBlur stdDeviation="4" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <marker id="arrowBlue" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="rgba(74,144,255,0.6)"/>
+              </marker>
+              <marker id="arrowGray" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="rgba(255,255,255,0.1)"/>
+              </marker>
+            </defs>
+
+            <!-- Route path segments -->
+            <!-- Phase1 → Phase2: solid (completed) -->
+            <path d="M 130,120 Q 250,80 360,180" fill="none" stroke="rgba(34,197,94,0.4)" stroke-width="2" marker-end="url(#arrowBlue)"/>
+            <!-- Phase2 → Phase3: dashed (active) -->
+            <path d="M 360,180 Q 450,280 490,400" fill="none" stroke="rgba(74,144,255,0.5)" stroke-width="2" stroke-dasharray="8,5" marker-end="url(#arrowBlue)">
+              <animate attributeName="stroke-dashoffset" values="0;-26" dur="1.5s" repeatCount="indefinite"/>
+            </path>
+            <!-- Phase3 → Phase4 & 4→5: dotted gray -->
+            <path d="M 490,400 Q 520,500 430,560" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1.5" stroke-dasharray="3,6"/>
+            <path d="M 430,560 Q 320,600 250,560" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1.5" stroke-dasharray="3,6"/>
+
+            <!-- Ship position indicator -->
+            <g style="transform-origin:265px 290px;" class="ship-indicator">
+              <polygon id="ship-tri" points="265,282 270,298 260,298" fill="#4A90FF" opacity="0.9" filter="url(#glow-station)"/>
+              <circle cx="265" cy="290" r="8" fill="none" stroke="rgba(74,144,255,0.3)" stroke-width="1"/>
+            </g>
+
+            <!-- STATION 1: Phase 1 COMPLETED — top left -->
+            <g class="station-group" id="st1" data-phase="1" onmouseenter="showStationPanel(event,1)" onmouseleave="hideStationPanel(1)">
+              <!-- Radar ping (completed — show once subtle) -->
+              <circle cx="130" cy="120" r="32" fill="none" stroke="rgba(34,197,94,0.08)" stroke-width="1"/>
+              <!-- Station outer ring -->
+              <circle cx="130" cy="120" r="32" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.25)" stroke-width="1.5"/>
+              <!-- Station core -->
+              <circle cx="130" cy="120" r="20" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.4)" stroke-width="1"/>
+              <text x="130" y="116" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#22C55E">01</text>
+              <text x="130" y="128" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="rgba(34,197,94,0.7)" letter-spacing="0.08em">CONCLUÍDA</text>
+              <!-- Node dots around station -->
+              <circle cx="98" cy="100" r="3.5" fill="#22C55E" opacity="0.7"/>
+              <circle cx="108" cy="88" r="3" fill="#22C55E" opacity="0.6"/>
+              <circle cx="152" cy="96" r="3" fill="#22C55E" opacity="0.6"/>
+              <circle cx="160" cy="108" r="3.5" fill="#22C55E" opacity="0.7"/>
+              <circle cx="130" cy="82" r="4" fill="#22C55E" opacity="0.8"/>
+              <!-- Thin synaptic lines -->
+              <line x1="98" y1="100" x2="108" y2="88" stroke="rgba(34,197,94,0.2)" stroke-width="0.5"/>
+              <line x1="108" y1="88" x2="130" y2="82" stroke="rgba(34,197,94,0.2)" stroke-width="0.5"/>
+              <line x1="130" y1="82" x2="152" y2="96" stroke="rgba(34,197,94,0.2)" stroke-width="0.5"/>
+              <line x1="152" y1="96" x2="160" y2="108" stroke="rgba(34,197,94,0.2)" stroke-width="0.5"/>
+              <!-- Label -->
+              <text x="130" y="165" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="rgba(255,255,255,0.5)">Fundamentos</text>
+            </g>
+
+            <!-- STATION 2: Phase 2 IN PROGRESS -->
+            <g class="station-group" id="st2" data-phase="2" onmouseenter="showStationPanel(event,2)" onmouseleave="hideStationPanel(2)">
+              <!-- Active radar ping -->
+              <circle cx="360" cy="180" r="32" fill="none" stroke="rgba(74,144,255,0.0)" stroke-width="1.5">
+                <animate attributeName="r" values="32;70;32" dur="3s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.5;0;0.5" dur="3s" repeatCount="indefinite"/>
+                <animate attributeName="stroke" values="rgba(74,144,255,0.5);rgba(74,144,255,0)" dur="3s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="360" cy="180" r="32" fill="rgba(74,144,255,0.05)" stroke="rgba(74,144,255,0.35)" stroke-width="1.5">
+                <animate attributeName="stroke-opacity" values="0.35;0.6;0.35" dur="2s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="360" cy="180" r="20" fill="rgba(74,144,255,0.08)" stroke="rgba(74,144,255,0.5)" stroke-width="1"/>
+              <text x="360" y="176" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#4A90FF">02</text>
+              <text x="360" y="188" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="rgba(74,144,255,0.8)" letter-spacing="0.08em">ATIVA</text>
+              <!-- Nodes: 2 complete, 2 available -->
+              <circle cx="330" cy="158" r="3.5" fill="#22C55E" opacity="0.7"/>
+              <circle cx="344" cy="148" r="3" fill="#22C55E" opacity="0.6"/>
+              <circle cx="378" cy="155" r="3.5" fill="rgba(255,255,255,0.4)">
+                <animate attributeName="r" values="3;4.5;3" dur="2.5s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="388" cy="168" r="3" fill="rgba(255,255,255,0.35)">
+                <animate attributeName="r" values="2.5;4;2.5" dur="3s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="360" cy="145" r="4" fill="rgba(255,255,255,0.2)"/>
+              <!-- Lines -->
+              <line x1="330" y1="158" x2="344" y2="148" stroke="rgba(34,197,94,0.2)" stroke-width="0.5"/>
+              <line x1="344" y1="148" x2="360" y2="145" stroke="rgba(74,144,255,0.15)" stroke-width="0.5"/>
+              <line x1="360" y1="145" x2="378" y2="155" stroke="rgba(74,144,255,0.1)" stroke-width="0.5"/>
+              <line x1="378" y1="155" x2="388" y2="168" stroke="rgba(74,144,255,0.08)" stroke-width="0.5"/>
+              <text x="360" y="224" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="rgba(255,255,255,0.5)">Prompts</text>
+            </g>
+
+            <!-- STATION 3: Phase 3 LOCKED -->
+            <g class="station-group" id="st3" data-phase="3" onmouseenter="showStationPanel(event,3)" onmouseleave="hideStationPanel(3)">
+              <circle cx="490" cy="400" r="32" fill="rgba(255,255,255,0.01)" stroke="rgba(255,255,255,0.07)" stroke-width="1" stroke-dasharray="4,3"/>
+              <circle cx="490" cy="400" r="20" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <text x="490" y="396" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="rgba(255,255,255,0.15)">03</text>
+              <text x="490" y="408" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="rgba(255,255,255,0.1)" letter-spacing="0.08em">BLOQUEADA</text>
+              <circle cx="462" cy="380" r="3" fill="rgba(255,255,255,0.05)"/>
+              <circle cx="476" cy="370" r="2.5" fill="rgba(255,255,255,0.04)"/>
+              <circle cx="506" cy="375" r="3" fill="rgba(255,255,255,0.04)"/>
+              <circle cx="515" cy="390" r="2.5" fill="rgba(255,255,255,0.05)"/>
+              <circle cx="490" cy="366" r="3.5" fill="rgba(255,255,255,0.04)"/>
+              <text x="490" y="444" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="rgba(255,255,255,0.18)">Primeiros Passos</text>
+            </g>
+
+            <!-- STATION 4: Phase 4 LOCKED -->
+            <g class="station-group" id="st4" data-phase="4" onmouseenter="showStationPanel(event,4)" onmouseleave="hideStationPanel(4)">
+              <circle cx="430" cy="560" r="28" fill="rgba(255,255,255,0.01)" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="3,4"/>
+              <circle cx="430" cy="560" r="18" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <text x="430" y="556" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="rgba(255,255,255,0.1)">04</text>
+              <text x="430" y="566" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" fill="rgba(255,255,255,0.07)" letter-spacing="0.08em">BLOQUEADA</text>
+              <circle cx="405" cy="542" r="2.5" fill="rgba(255,255,255,0.04)"/>
+              <circle cx="417" cy="534" r="2" fill="rgba(255,255,255,0.03)"/>
+              <circle cx="448" cy="540" r="2.5" fill="rgba(255,255,255,0.03)"/>
+              <circle cx="455" cy="552" r="2" fill="rgba(255,255,255,0.04)"/>
+              <circle cx="430" cy="532" r="3" fill="rgba(255,255,255,0.03)"/>
+              <text x="430" y="598" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="rgba(255,255,255,0.14)">Claude no Trabalho</text>
+            </g>
+
+            <!-- STATION 5: Phase 5 LOCKED -->
+            <g class="station-group" id="st5" data-phase="5" onmouseenter="showStationPanel(event,5)" onmouseleave="hideStationPanel(5)">
+              <circle cx="250" cy="560" r="26" fill="rgba(255,255,255,0.008)" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="3,4"/>
+              <circle cx="250" cy="560" r="16" fill="rgba(255,255,255,0.01)" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <text x="250" y="556" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="rgba(255,255,255,0.08)">05</text>
+              <text x="250" y="566" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" fill="rgba(255,255,255,0.06)" letter-spacing="0.08em">BLOQUEADA</text>
+              <circle cx="227" cy="544" r="2.5" fill="rgba(255,255,255,0.03)"/>
+              <circle cx="238" cy="536" r="2" fill="rgba(255,255,255,0.025)"/>
+              <circle cx="266" cy="540" r="2.5" fill="rgba(255,255,255,0.025)"/>
+              <circle cx="272" cy="552" r="2" fill="rgba(255,255,255,0.03)"/>
+              <circle cx="250" cy="534" r="3" fill="rgba(255,255,255,0.025)"/>
+              <text x="250" y="596" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="rgba(255,255,255,0.12)">Autonomia</text>
+            </g>
+
+          </svg>
+
+          <!-- Station panel popups -->
+          <div id="sp-1" class="station-panel" style="top:20px; left:190px;">
+            <div class="sp-title">Fase 1 · Fundamentos de IA</div>
+            <div class="sp-node"><span class="sp-dot" style="background:#22C55E;"></span>Introdução à IA<span class="sp-badge">Material</span></div>
+            <div class="sp-node"><span class="sp-dot" style="background:#22C55E;"></span>Fundamentos Práticos<span class="sp-badge">Material</span></div>
+            <div class="sp-node"><span class="sp-dot" style="background:#22C55E;"></span>Apresentação de Conceitos<span class="sp-badge">Apres.</span></div>
+            <div class="sp-node"><span class="sp-dot" style="background:#22C55E;"></span>Exercício de Fundamentos<span class="sp-badge">Tarefa</span></div>
+            <div class="sp-node"><span class="sp-dot" style="background:#22C55E;"></span>Checkpoint<span class="sp-badge">Check.</span></div>
+          </div>
+
+          <div id="sp-2" class="station-panel" style="top:80px; left:410px;">
+            <div class="sp-title">Fase 2 · Prompts e Comunicação</div>
+            <div class="sp-node"><span class="sp-dot" style="background:#22C55E;"></span>Técnicas de Prompt<span class="sp-badge">Material</span></div>
+            <div class="sp-node"><span class="sp-dot" style="background:#22C55E;"></span>Exercício Prompt Chain<span class="sp-badge">Tarefa</span></div>
+            <div class="sp-node"><span class="sp-dot" style="background:rgba(255,255,255,0.4);"></span>Comunicação Avançada<span class="sp-badge">Material</span></div>
+            <div class="sp-node"><span class="sp-dot" style="background:rgba(255,255,255,0.4);"></span>Prática de Diálogo<span class="sp-badge">Tarefa</span></div>
+            <div class="sp-node"><span class="sp-dot" style="background:#333;"></span>Checkpoint<span class="sp-badge">Check.</span></div>
+          </div>
+
+          <div id="sp-3" class="station-panel" style="top:300px; right:20px;">
+            <div class="sp-title" style="color:rgba(255,255,255,0.3);">Fase 3 · Bloqueada</div>
+            <div class="sp-node" style="opacity:0.3;"><span class="sp-dot" style="background:#333;"></span>Claude Code Intro<span class="sp-badge">Material</span></div>
+            <div class="sp-node" style="opacity:0.3;"><span class="sp-dot" style="background:#333;"></span>Setup Ambiente<span class="sp-badge">Tarefa</span></div>
+            <div class="sp-node" style="opacity:0.3;"><span class="sp-dot" style="background:#333;"></span>Primeira Task<span class="sp-badge">Tarefa</span></div>
+            <div class="sp-node" style="opacity:0.3;"><span class="sp-dot" style="background:#333;"></span>Review de Código<span class="sp-badge">Apres.</span></div>
+            <div class="sp-node" style="opacity:0.3;"><span class="sp-dot" style="background:#333;"></span>Checkpoint<span class="sp-badge">Check.</span></div>
+          </div>
+
+          <div id="sp-4" class="station-panel" style="top:460px; right:40px; display:none;">
+            <div class="sp-title" style="color:rgba(255,255,255,0.2);">Fase 4 · Bloqueada</div>
+            <div class="sp-node" style="opacity:0.2;"><span class="sp-dot" style="background:#333;"></span>Workflow Profissional<span class="sp-badge">Material</span></div>
+            <div class="sp-node" style="opacity:0.2;"><span class="sp-dot" style="background:#333;"></span>Projeto Real<span class="sp-badge">Tarefa</span></div>
+            <div class="sp-node" style="opacity:0.2;"><span class="sp-dot" style="background:#333;"></span>Code Review<span class="sp-badge">Tarefa</span></div>
+            <div class="sp-node" style="opacity:0.2;"><span class="sp-dot" style="background:#333;"></span>Deploy Automatizado<span class="sp-badge">Apres.</span></div>
+            <div class="sp-node" style="opacity:0.2;"><span class="sp-dot" style="background:#333;"></span>Checkpoint<span class="sp-badge">Check.</span></div>
+          </div>
+
+          <div id="sp-5" class="station-panel" style="top:460px; left:10px; display:none;">
+            <div class="sp-title" style="color:rgba(255,255,255,0.15);">Fase 5 · Bloqueada</div>
+            <div class="sp-node" style="opacity:0.15;"><span class="sp-dot" style="background:#333;"></span>Estratégia Autônoma<span class="sp-badge">Material</span></div>
+            <div class="sp-node" style="opacity:0.15;"><span class="sp-dot" style="background:#333;"></span>Multi-Agent Flow<span class="sp-badge">Tarefa</span></div>
+            <div class="sp-node" style="opacity:0.15;"><span class="sp-dot" style="background:#333;"></span>Projeto Final<span class="sp-badge">Tarefa</span></div>
+            <div class="sp-node" style="opacity:0.15;"><span class="sp-dot" style="background:#333;"></span>Apresentação Final<span class="sp-badge">Apres.</span></div>
+            <div class="sp-node" style="opacity:0.15;"><span class="sp-dot" style="background:#333;"></span>Checkpoint Final<span class="sp-badge">Check.</span></div>
+          </div>
+        </div>
+
+        <!-- Bottom stats bar -->
+        <div class="space-bottom-panel">
+          <div class="space-stat">Rota Ativa</div>
+          <div class="space-route-bar">
+            <div class="route-dot" style="background:#22C55E; box-shadow:0 0 6px rgba(34,197,94,0.5);"></div>
+            <div class="route-connector" style="background:#22C55E; opacity:0.4;"></div>
+            <div class="route-dot" style="background:#4A90FF; box-shadow:0 0 6px rgba(74,144,255,0.5);"></div>
+            <div class="route-connector" style="background:#333; border-top:1px dashed #333;"></div>
+            <div class="route-dot" style="background:#222; border:1px solid #333;"></div>
+            <div class="route-connector" style="background:#1A1A1A;"></div>
+            <div class="route-dot" style="background:#1A1A1A; border:1px solid #222;"></div>
+            <div class="route-connector" style="background:#141414;"></div>
+            <div class="route-dot" style="background:#111; border:1px solid #1A1A1A;"></div>
+          </div>
+          <div class="space-stat">Estação <span>2/5</span></div>
+          <div class="space-stat"><span>35%</span> Explorado</div>
+          <div class="space-stat"><span>320 XP</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
+    <div class="concept-footer">
+      <div>
+        <div class="concept-name">Deep Space Navigator</div>
+        <div class="concept-desc">Mapa de navegação espacial com rota de voo, estações orbitais e dados de scan em overlay</div>
+      </div>
+      <div class="concept-hybrid">HYBRID: Nebula + Orbital + Neural</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CONCEPT 13: TACTICAL BLUEPRINT
+══════════════════════════════════════════════ -->
+<div id="tactical-blueprint" class="concept-panel">
+  <div style="position:relative; min-height:100vh; background:#000;">
+    <div class="blueprint-bg"></div>
+
+    <div style="position:relative; z-index:2; max-width:900px; margin:0 auto; padding:40px 24px 80px;">
+
+      <div class="blueprint-hud-frame">
+        <div class="bp-hud-corner tl"></div>
+        <div class="bp-hud-corner tr"></div>
+        <div class="bp-hud-corner bl"></div>
+        <div class="bp-hud-corner br"></div>
+
+        <div class="bp-status-bar">
+          <span>PROJETO ATIVO</span>
+          <span class="bp-active">FASE 02 · EM PROGRESSO</span>
+          <span>BLUEPRINT v1.0</span>
+          <span>35% CONCLUÍDO</span>
+        </div>
+
+        <div class="bp-phases-wrap" id="bp-phases">
+
+          <!-- SVG routing lines -->
+          <svg class="bp-route-svg" id="bp-route-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;" preserveAspectRatio="none">
+            <!-- Will be drawn by JS -->
+          </svg>
+
+          <!-- PHASE 1: COMPLETE — left -->
+          <div class="bp-phase-row">
+            <div class="bp-phase-panel status-complete" id="bp-panel-1">
+              <div class="bp-bracket tl" style="border-color:#22C55E;"></div>
+              <div class="bp-bracket tr" style="border-color:#22C55E;"></div>
+              <div class="bp-bracket bl" style="border-color:#22C55E;"></div>
+              <div class="bp-bracket br" style="border-color:#22C55E;"></div>
+
+              <div class="bp-panel-header">
+                <div class="bp-phase-num" style="border-color:rgba(34,197,94,0.4); color:#22C55E;">1</div>
+                <div class="bp-header-text">
+                  <div class="bp-phase-title">Fundamentos de IA</div>
+                  <div class="bp-dim-line">
+                    <span class="bp-dim-text">5 NODES · EST. 75 MIN · FASE 01</span>
+                  </div>
+                </div>
+                <div class="bp-status-tag" style="border-color:rgba(34,197,94,0.3); color:#22C55E;">COMPLETE</div>
+              </div>
+
+              <div class="bp-nodes-grid">
+                <div class="bp-node-room status-complete">
+                  <span class="bp-room-num">1.1</span>
+                  <div class="bp-node-icon" style="background:rgba(74,144,255,0.1);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8" rx="1" fill="none" stroke="#4A90FF" stroke-width="1"/><line x1="3" y1="4" x2="7" y2="4" stroke="#4A90FF" stroke-width="0.8"/><line x1="3" y1="6" x2="6" y2="6" stroke="#4A90FF" stroke-width="0.8"/></svg>
+                  </div>
+                  <div class="bp-node-title">Introdução à IA</div>
+                  <div class="bp-node-xp">+50 XP</div>
+                </div>
+                <div class="bp-node-room status-complete">
+                  <span class="bp-room-num">1.2</span>
+                  <div class="bp-node-icon" style="background:rgba(74,144,255,0.1);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8" rx="1" fill="none" stroke="#4A90FF" stroke-width="1"/><line x1="3" y1="4" x2="7" y2="4" stroke="#4A90FF" stroke-width="0.8"/><line x1="3" y1="6" x2="6" y2="6" stroke="#4A90FF" stroke-width="0.8"/></svg>
+                  </div>
+                  <div class="bp-node-title">Fundamentos Práticos</div>
+                  <div class="bp-node-xp">+50 XP</div>
+                </div>
+                <div class="bp-node-room status-complete">
+                  <span class="bp-room-num">1.3</span>
+                  <div class="bp-node-icon" style="background:rgba(139,92,246,0.1);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="5,1 9,8 1,8" fill="none" stroke="#8B5CF6" stroke-width="1"/></svg>
+                  </div>
+                  <div class="bp-node-title">Apresentação de Conceitos</div>
+                  <div class="bp-node-xp">+75 XP</div>
+                </div>
+                <div class="bp-node-room status-complete">
+                  <span class="bp-room-num">1.4</span>
+                  <div class="bp-node-icon" style="background:rgba(245,158,11,0.1);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2,8 L5,2 L8,8" fill="none" stroke="#F59E0B" stroke-width="1"/><line x1="3" y1="6" x2="7" y2="6" stroke="#F59E0B" stroke-width="0.8"/></svg>
+                  </div>
+                  <div class="bp-node-title">Exercício de Fundamentos</div>
+                  <div class="bp-node-xp">+100 XP</div>
+                </div>
+                <div class="bp-node-room status-complete" style="grid-column:span 2;">
+                  <span class="bp-room-num">1.5</span>
+                  <div class="bp-node-icon" style="background:rgba(34,197,94,0.1);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="none" stroke="#22C55E" stroke-width="1"/><path d="M3,5 L4.5,6.5 L7,3.5" stroke="#22C55E" stroke-width="1" fill="none"/></svg>
+                  </div>
+                  <div class="bp-node-title">Checkpoint: Fundamentos de IA</div>
+                  <div class="bp-node-xp">+200 XP</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PHASE 2: ACTIVE — right -->
+          <div class="bp-phase-row">
+            <div class="bp-phase-panel status-active" id="bp-panel-2">
+              <div class="bp-bracket tl" style="border-color:#4A90FF;"></div>
+              <div class="bp-bracket tr" style="border-color:#4A90FF;"></div>
+              <div class="bp-bracket bl" style="border-color:#4A90FF;"></div>
+              <div class="bp-bracket br" style="border-color:#4A90FF;"></div>
+
+              <div class="bp-panel-header">
+                <div class="bp-phase-num" style="border-color:rgba(74,144,255,0.4); color:#4A90FF;">2</div>
+                <div class="bp-header-text">
+                  <div class="bp-phase-title">Prompts e Comunicação</div>
+                  <div class="bp-dim-line">
+                    <span class="bp-dim-text">5 NODES · EST. 90 MIN · FASE 02</span>
+                  </div>
+                </div>
+                <div class="bp-status-tag" style="border-color:rgba(74,144,255,0.3); color:#4A90FF;">ACTIVE</div>
+              </div>
+
+              <div class="bp-nodes-grid">
+                <div class="bp-node-room status-complete">
+                  <span class="bp-room-num">2.1</span>
+                  <div class="bp-node-icon" style="background:rgba(74,144,255,0.1);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8" rx="1" fill="none" stroke="#4A90FF" stroke-width="1"/><line x1="3" y1="4" x2="7" y2="4" stroke="#4A90FF" stroke-width="0.8"/><line x1="3" y1="6" x2="6" y2="6" stroke="#4A90FF" stroke-width="0.8"/></svg>
+                  </div>
+                  <div class="bp-node-title">Técnicas de Prompt</div>
+                  <div class="bp-node-xp">+50 XP</div>
+                </div>
+                <div class="bp-node-room status-complete">
+                  <span class="bp-room-num">2.2</span>
+                  <div class="bp-node-icon" style="background:rgba(245,158,11,0.1);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2,8 L5,2 L8,8" fill="none" stroke="#F59E0B" stroke-width="1"/><line x1="3" y1="6" x2="7" y2="6" stroke="#F59E0B" stroke-width="0.8"/></svg>
+                  </div>
+                  <div class="bp-node-title">Exercício Prompt Chain</div>
+                  <div class="bp-node-xp">+100 XP</div>
+                </div>
+                <div class="bp-node-room status-active">
+                  <span class="bp-room-num">2.3</span>
+                  <div class="bp-node-icon" style="background:rgba(74,144,255,0.1);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8" rx="1" fill="none" stroke="#4A90FF" stroke-width="1"/><line x1="3" y1="4" x2="7" y2="4" stroke="#4A90FF" stroke-width="0.8"/><line x1="3" y1="6" x2="6" y2="6" stroke="#4A90FF" stroke-width="0.8"/></svg>
+                  </div>
+                  <div class="bp-node-title">Comunicação Avançada</div>
+                  <div class="bp-node-xp">+50 XP</div>
+                </div>
+                <div class="bp-node-room status-active">
+                  <span class="bp-room-num">2.4</span>
+                  <div class="bp-node-icon" style="background:rgba(245,158,11,0.1);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2,8 L5,2 L8,8" fill="none" stroke="#F59E0B" stroke-width="1"/><line x1="3" y1="6" x2="7" y2="6" stroke="#F59E0B" stroke-width="0.8"/></svg>
+                  </div>
+                  <div class="bp-node-title">Prática de Diálogo</div>
+                  <div class="bp-node-xp">+100 XP</div>
+                </div>
+                <div class="bp-node-room status-locked" style="grid-column:span 2;">
+                  <span class="bp-room-num">2.5</span>
+                  <div class="bp-node-icon" style="background:rgba(255,255,255,0.03);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/></svg>
+                  </div>
+                  <div class="bp-node-title" style="color:#333;">Checkpoint: Prompts</div>
+                  <div class="bp-node-xp" style="color:#333;">+200 XP</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PHASES 3-5: LOCKED -->
+          <div class="bp-phase-row">
+            <div class="bp-phase-panel status-locked" id="bp-panel-3">
+              <div class="bp-bracket tl" style="border-color:#1A1A1A;"></div>
+              <div class="bp-bracket tr" style="border-color:#1A1A1A;"></div>
+              <div class="bp-bracket bl" style="border-color:#1A1A1A;"></div>
+              <div class="bp-bracket br" style="border-color:#1A1A1A;"></div>
+              <div class="bp-panel-header">
+                <div class="bp-phase-num" style="border-color:#1A1A1A; color:#333;">3</div>
+                <div class="bp-header-text">
+                  <div class="bp-phase-title" style="color:#333;">Claude Code — Primeiros Passos</div>
+                  <div class="bp-dim-line"><span class="bp-dim-text" style="color:#1A1A1A;">5 NODES · EST. 120 MIN · FASE 03</span></div>
+                </div>
+                <div class="bp-status-tag" style="border-color:#1A1A1A; color:#222;">SEALED</div>
+              </div>
+              <div class="bp-nodes-grid">
+                <div class="bp-node-room status-locked"><span class="bp-room-num" style="color:#111;">3.1</span><div class="bp-node-title" style="color:#1A1A1A;">Claude Code Intro</div></div>
+                <div class="bp-node-room status-locked"><span class="bp-room-num" style="color:#111;">3.2</span><div class="bp-node-title" style="color:#1A1A1A;">Setup do Ambiente</div></div>
+                <div class="bp-node-room status-locked"><span class="bp-room-num" style="color:#111;">3.3</span><div class="bp-node-title" style="color:#1A1A1A;">Primeira Task</div></div>
+                <div class="bp-node-room status-locked"><span class="bp-room-num" style="color:#111;">3.4</span><div class="bp-node-title" style="color:#1A1A1A;">Review de Código</div></div>
+                <div class="bp-node-room status-locked" style="grid-column:span 2;"><span class="bp-room-num" style="color:#111;">3.5</span><div class="bp-node-title" style="color:#1A1A1A;">Checkpoint</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bp-phase-row">
+            <div class="bp-phase-panel status-locked" id="bp-panel-4" style="opacity:0.5;">
+              <div class="bp-bracket tl" style="border-color:#111;"></div>
+              <div class="bp-bracket tr" style="border-color:#111;"></div>
+              <div class="bp-bracket bl" style="border-color:#111;"></div>
+              <div class="bp-bracket br" style="border-color:#111;"></div>
+              <div class="bp-panel-header">
+                <div class="bp-phase-num" style="border-color:#111; color:#222;">4</div>
+                <div class="bp-header-text">
+                  <div class="bp-phase-title" style="color:#1A1A1A;">Claude Code no Trabalho</div>
+                  <div class="bp-dim-line"><span class="bp-dim-text" style="color:#111;">5 NODES · EST. 150 MIN · FASE 04</span></div>
+                </div>
+                <div class="bp-status-tag" style="border-color:#111; color:#1A1A1A;">SEALED</div>
+              </div>
+              <div class="bp-nodes-grid">
+                <div class="bp-node-room status-locked"><span class="bp-room-num" style="color:#0A0A0A;">4.1</span><div class="bp-node-title" style="color:#111;">Workflow Profissional</div></div>
+                <div class="bp-node-room status-locked"><span class="bp-room-num" style="color:#0A0A0A;">4.2</span><div class="bp-node-title" style="color:#111;">Projeto Real</div></div>
+                <div class="bp-node-room status-locked"><span class="bp-room-num" style="color:#0A0A0A;">4.3</span><div class="bp-node-title" style="color:#111;">Code Review</div></div>
+                <div class="bp-node-room status-locked"><span class="bp-room-num" style="color:#0A0A0A;">4.4</span><div class="bp-node-title" style="color:#111;">Deploy Automatizado</div></div>
+                <div class="bp-node-room status-locked" style="grid-column:span 2;"><span class="bp-room-num" style="color:#0A0A0A;">4.5</span><div class="bp-node-title" style="color:#111;">Checkpoint</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bp-phase-row">
+            <div class="bp-phase-panel status-locked" id="bp-panel-5" style="opacity:0.3;">
+              <div class="bp-bracket tl" style="border-color:#0A0A0A;"></div>
+              <div class="bp-bracket tr" style="border-color:#0A0A0A;"></div>
+              <div class="bp-bracket bl" style="border-color:#0A0A0A;"></div>
+              <div class="bp-bracket br" style="border-color:#0A0A0A;"></div>
+              <div class="bp-panel-header">
+                <div class="bp-phase-num" style="border-color:#0A0A0A; color:#111;">5</div>
+                <div class="bp-header-text">
+                  <div class="bp-phase-title" style="color:#111;">Autonomia</div>
+                  <div class="bp-dim-line"><span class="bp-dim-text" style="color:#0A0A0A;">5 NODES · EST. 180 MIN · FASE 05</span></div>
+                </div>
+                <div class="bp-status-tag" style="border-color:#0A0A0A; color:#0D0D0D;">SEALED</div>
+              </div>
+              <div class="bp-nodes-grid">
+                <div class="bp-node-room status-locked"><div class="bp-node-title" style="color:#0D0D0D;">Estratégia Autônoma</div></div>
+                <div class="bp-node-room status-locked"><div class="bp-node-title" style="color:#0D0D0D;">Multi-Agent Flow</div></div>
+                <div class="bp-node-room status-locked"><div class="bp-node-title" style="color:#0D0D0D;">Projeto Final</div></div>
+                <div class="bp-node-room status-locked"><div class="bp-node-title" style="color:#0D0D0D;">Apresentação Final</div></div>
+                <div class="bp-node-room status-locked" style="grid-column:span 2;"><div class="bp-node-title" style="color:#0D0D0D;">Checkpoint Final</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="bp-bottom-readout">
+          BLUEPRINT PROGRESS: <span>1/5 WINGS</span> · MISSION STATUS: <span>ACTIVE</span> · XP ACUMULADO: <span>320</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
+    <div class="concept-footer">
+      <div>
+        <div class="concept-name">Tactical Blueprint</div>
+        <div class="concept-desc">Painéis de blueprint arquitetônico com HUD de missão e nós como salas de projeto</div>
+      </div>
+      <div class="concept-hybrid">HYBRID: Command Deck + Blueprint Grid</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CONCEPT 14: MISSION ARCHITECT
+══════════════════════════════════════════════ -->
+<div id="mission-architect" class="concept-panel">
+  <div style="position:relative; background:#050505; min-height:100vh;">
+    <div class="ma-grid-bg"></div>
+
+    <!-- HUD top bar -->
+    <div class="ma-hud-bar">
+      <span class="ma-hud-title">MISSION CONTROL v2.1</span>
+      <span>05 ABR 2026 · 14:32:07</span>
+      <span class="ma-hud-xp">320 XP ACUMULADOS</span>
+    </div>
+
+    <div class="ma-desk" style="position:relative;">
+
+      <!-- Route SVG overlay -->
+      <svg class="ma-route-svg" id="ma-route-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:3; overflow:visible;">
+        <!-- Drawn by JS -->
+      </svg>
+
+      <!-- Documents grid -->
+      <div class="ma-documents-grid" id="ma-docs-grid">
+
+        <!-- DOC 1: Phase 1 — COMPLETE — rotate(-1deg) -->
+        <div class="ma-doc" id="ma-doc-1" onclick="openDoc(1)" style="transform:rotate(-1deg);">
+          <div class="ma-stamp approved">APROVADO</div>
+
+          <div class="ma-doc-header">
+            <span class="ma-doc-code">PROJETO FASE 01</span>
+            <span class="ma-doc-phase-num">01</span>
+          </div>
+
+          <div class="ma-doc-body">
+            <div class="ma-doc-title">Fundamentos de IA</div>
+            <div class="ma-doc-meta">5 NODOS · 75 MIN · COMPLETO</div>
+
+            <div class="ma-flowchart">
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-complete">
+                  <div class="ma-flow-icon" style="background:rgba(74,144,255,0.08);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="2" width="8" height="6" rx="1" fill="none" stroke="#4A90FF" stroke-width="1"/></svg>
+                  </div>
+                  <div class="ma-flow-info">
+                    <div class="ma-flow-title">Introdução à IA</div>
+                    <div class="ma-flow-type">Material</div>
+                  </div>
+                  <svg class="ma-flow-status-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="rgba(34,197,94,0.1)" stroke="#22C55E" stroke-width="1"/><path d="M5,8 L7,10 L11,6" stroke="#22C55E" stroke-width="1.5" fill="none"/></svg>
+                </div>
+                <div class="ma-flow-node status-complete">
+                  <div class="ma-flow-icon" style="background:rgba(74,144,255,0.08);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="2" width="8" height="6" rx="1" fill="none" stroke="#4A90FF" stroke-width="1"/></svg>
+                  </div>
+                  <div class="ma-flow-info">
+                    <div class="ma-flow-title">Fundamentos Práticos</div>
+                    <div class="ma-flow-type">Material</div>
+                  </div>
+                  <svg class="ma-flow-status-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="rgba(34,197,94,0.1)" stroke="#22C55E" stroke-width="1"/><path d="M5,8 L7,10 L11,6" stroke="#22C55E" stroke-width="1.5" fill="none"/></svg>
+                </div>
+              </div>
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-complete">
+                  <div class="ma-flow-icon" style="background:rgba(139,92,246,0.08);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="5,1 9,8 1,8" fill="none" stroke="#8B5CF6" stroke-width="1"/></svg>
+                  </div>
+                  <div class="ma-flow-info">
+                    <div class="ma-flow-title">Apresentação</div>
+                    <div class="ma-flow-type">Apresentação</div>
+                  </div>
+                  <svg class="ma-flow-status-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="rgba(34,197,94,0.1)" stroke="#22C55E" stroke-width="1"/><path d="M5,8 L7,10 L11,6" stroke="#22C55E" stroke-width="1.5" fill="none"/></svg>
+                </div>
+                <div class="ma-flow-node status-complete">
+                  <div class="ma-flow-icon" style="background:rgba(245,158,11,0.08);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2,8 L5,2 L8,8" fill="none" stroke="#F59E0B" stroke-width="1"/><line x1="3" y1="6" x2="7" y2="6" stroke="#F59E0B" stroke-width="0.8"/></svg>
+                  </div>
+                  <div class="ma-flow-info">
+                    <div class="ma-flow-title">Exercício</div>
+                    <div class="ma-flow-type">Tarefa</div>
+                  </div>
+                  <svg class="ma-flow-status-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="rgba(34,197,94,0.1)" stroke="#22C55E" stroke-width="1"/><path d="M5,8 L7,10 L11,6" stroke="#22C55E" stroke-width="1.5" fill="none"/></svg>
+                </div>
+              </div>
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-complete" style="flex:1;">
+                  <div class="ma-flow-icon" style="background:rgba(34,197,94,0.08);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="none" stroke="#22C55E" stroke-width="1"/><path d="M3,5 L4.5,6.5 L7,3.5" stroke="#22C55E" stroke-width="1" fill="none"/></svg>
+                  </div>
+                  <div class="ma-flow-info">
+                    <div class="ma-flow-title">Checkpoint: Fundamentos</div>
+                    <div class="ma-flow-type">Checkpoint · 200 XP</div>
+                  </div>
+                  <svg class="ma-flow-status-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="rgba(34,197,94,0.1)" stroke="#22C55E" stroke-width="1"/><path d="M5,8 L7,10 L11,6" stroke="#22C55E" stroke-width="1.5" fill="none"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOC 2: Phase 2 — IN PROGRESS — rotate(1.5deg) -->
+        <div class="ma-doc" id="ma-doc-2" onclick="openDoc(2)" style="transform:rotate(1.5deg); border-color:rgba(74,144,255,0.12);">
+          <div class="ma-doc-header">
+            <span class="ma-doc-code" style="color:#4A90FF;">PROJETO FASE 02 · ATIVO</span>
+            <span class="ma-doc-phase-num">02</span>
+          </div>
+
+          <div class="ma-doc-body">
+            <div class="ma-doc-title">Prompts e Comunicação</div>
+            <div class="ma-doc-meta">5 NODOS · 90 MIN · EM PROGRESSO</div>
+
+            <div class="ma-flowchart">
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-complete">
+                  <div class="ma-flow-icon" style="background:rgba(74,144,255,0.08);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="2" width="8" height="6" rx="1" fill="none" stroke="#4A90FF" stroke-width="1"/></svg>
+                  </div>
+                  <div class="ma-flow-info">
+                    <div class="ma-flow-title">Técnicas de Prompt</div>
+                    <div class="ma-flow-type">Material</div>
+                  </div>
+                  <svg class="ma-flow-status-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="rgba(34,197,94,0.1)" stroke="#22C55E" stroke-width="1"/><path d="M5,8 L7,10 L11,6" stroke="#22C55E" stroke-width="1.5" fill="none"/></svg>
+                </div>
+                <div class="ma-flow-node status-complete">
+                  <div class="ma-flow-icon" style="background:rgba(245,158,11,0.08);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2,8 L5,2 L8,8" fill="none" stroke="#F59E0B" stroke-width="1"/><line x1="3" y1="6" x2="7" y2="6" stroke="#F59E0B" stroke-width="0.8"/></svg>
+                  </div>
+                  <div class="ma-flow-info">
+                    <div class="ma-flow-title">Prompt Chain</div>
+                    <div class="ma-flow-type">Tarefa</div>
+                  </div>
+                  <svg class="ma-flow-status-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="rgba(34,197,94,0.1)" stroke="#22C55E" stroke-width="1"/><path d="M5,8 L7,10 L11,6" stroke="#22C55E" stroke-width="1.5" fill="none"/></svg>
+                </div>
+              </div>
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-active">
+                  <div class="ma-flow-icon" style="background:rgba(74,144,255,0.1);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="2" width="8" height="6" rx="1" fill="none" stroke="#4A90FF" stroke-width="1"/></svg>
+                  </div>
+                  <div class="ma-flow-info">
+                    <div class="ma-flow-title">Comunicação Avançada</div>
+                    <div class="ma-flow-type">Material</div>
+                  </div>
+                  <svg class="ma-flow-status-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="rgba(74,144,255,0.08)"><animate attributeName="r" values="6;7.5;6" dur="2s" repeatCount="indefinite"/></circle><circle cx="8" cy="8" r="3" fill="#4A90FF"/></svg>
+                </div>
+                <div class="ma-flow-node status-available">
+                  <div class="ma-flow-icon" style="background:rgba(245,158,11,0.08);">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2,8 L5,2 L8,8" fill="none" stroke="#F59E0B" stroke-width="1"/><line x1="3" y1="6" x2="7" y2="6" stroke="#F59E0B" stroke-width="0.8"/></svg>
+                  </div>
+                  <div class="ma-flow-info">
+                    <div class="ma-flow-title">Prática de Diálogo</div>
+                    <div class="ma-flow-type">Tarefa</div>
+                  </div>
+                  <svg class="ma-flow-status-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/></svg>
+                </div>
+              </div>
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-locked" style="flex:1;">
+                  <div class="ma-flow-info">
+                    <div class="ma-flow-title" style="color:#333;">Checkpoint: Prompts</div>
+                    <div class="ma-flow-type">Checkpoint · 200 XP</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOC 3: Phase 3 — LOCKED — rotate(-0.5deg) -->
+        <div class="ma-doc" id="ma-doc-3" onclick="openDoc(3)" style="transform:rotate(-0.5deg); opacity:0.7;">
+          <div class="ma-stamp classified">CLASSIFIED</div>
+          <div class="ma-doc-header">
+            <span class="ma-doc-code">PROJETO FASE 03</span>
+            <span class="ma-doc-phase-num">03</span>
+          </div>
+          <div class="ma-doc-body">
+            <div class="ma-doc-title" style="color:rgba(255,255,255,0.4);">Claude Code — Primeiros Passos</div>
+            <div class="ma-doc-meta">5 NODOS · 120 MIN · BLOQUEADO</div>
+            <div class="ma-flowchart">
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-locked"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#222;">Claude Code Intro</div><div class="ma-flow-type">Material</div></div></div>
+                <div class="ma-flow-node status-locked"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#222;">Setup Ambiente</div><div class="ma-flow-type">Tarefa</div></div></div>
+              </div>
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-locked"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#222;">Primeira Task</div><div class="ma-flow-type">Tarefa</div></div></div>
+                <div class="ma-flow-node status-locked"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#222;">Review de Código</div><div class="ma-flow-type">Apresentação</div></div></div>
+              </div>
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-locked" style="flex:1;"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#222;">Checkpoint</div><div class="ma-flow-type">Checkpoint</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOC 4: Phase 4 — LOCKED — rotate(2deg) -->
+        <div class="ma-doc" id="ma-doc-4" onclick="openDoc(4)" style="transform:rotate(2deg); opacity:0.4;">
+          <div class="ma-stamp classified">CLASSIFIED</div>
+          <div class="ma-doc-header">
+            <span class="ma-doc-code">PROJETO FASE 04</span>
+            <span class="ma-doc-phase-num">04</span>
+          </div>
+          <div class="ma-doc-body">
+            <div class="ma-doc-title" style="color:rgba(255,255,255,0.2);">Claude Code no Trabalho</div>
+            <div class="ma-doc-meta">5 NODOS · 150 MIN · BLOQUEADO</div>
+            <div class="ma-flowchart">
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-locked"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#1A1A1A;">Workflow Profissional</div><div class="ma-flow-type">Material</div></div></div>
+                <div class="ma-flow-node status-locked"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#1A1A1A;">Projeto Real</div><div class="ma-flow-type">Tarefa</div></div></div>
+              </div>
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-locked"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#1A1A1A;">Code Review</div><div class="ma-flow-type">Tarefa</div></div></div>
+                <div class="ma-flow-node status-locked"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#1A1A1A;">Deploy Auto</div><div class="ma-flow-type">Apresentação</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOC 5: Phase 5 — LOCKED — rotate(-1.5deg) -->
+        <div class="ma-doc" id="ma-doc-5" onclick="openDoc(5)" style="transform:rotate(-1.5deg); opacity:0.2;">
+          <div class="ma-stamp classified">CLASSIFIED</div>
+          <div class="ma-doc-header">
+            <span class="ma-doc-code">PROJETO FASE 05</span>
+            <span class="ma-doc-phase-num">05</span>
+          </div>
+          <div class="ma-doc-body">
+            <div class="ma-doc-title" style="color:rgba(255,255,255,0.1);">Autonomia</div>
+            <div class="ma-doc-meta">5 NODOS · 180 MIN · BLOQUEADO</div>
+            <div class="ma-flowchart">
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-locked"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#111;">Estratégia Autônoma</div><div class="ma-flow-type">Material</div></div></div>
+                <div class="ma-flow-node status-locked"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#111;">Multi-Agent Flow</div><div class="ma-flow-type">Tarefa</div></div></div>
+              </div>
+              <div class="ma-flow-row">
+                <div class="ma-flow-node status-locked" style="flex:1;"><div class="ma-flow-info"><div class="ma-flow-title" style="color:#111;">Checkpoint Final</div><div class="ma-flow-type">Checkpoint</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mission bar -->
+    <div class="ma-mission-bar">
+      <span>MISSÃO ATIVA</span>
+      <span>DOCS <span>2/5</span> ABERTOS</span>
+      <span>PROGRESSO <span>35%</span></span>
+      <span>XP <span>320</span></span>
+    </div>
+  </div>
+
+  <!-- Overlay for expanded doc -->
+  <div class="ma-overlay" id="ma-overlay" onclick="closeDoc(event)">
+    <div class="ma-overlay-doc" onclick="event.stopPropagation()">
+      <div class="ma-overlay-header">
+        <span id="ma-overlay-title" style="font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim);"></span>
+        <button class="ma-overlay-close" onclick="closeDoc()">FECHAR</button>
+      </div>
+      <div class="ma-overlay-body" id="ma-overlay-body"></div>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
+    <div class="concept-footer">
+      <div>
+        <div class="concept-name">Mission Architect</div>
+        <div class="concept-desc">Mesa de trabalho com documentos espalhados, HUD de missão sobreposto e flowchart esquemático</div>
+      </div>
+      <div class="concept-hybrid">HYBRID: Command Deck + Blueprint Grid</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOOLTIP ─── -->
+<div class="node-tooltip" id="global-tooltip">
+  <div class="tt-title" id="tt-title"></div>
+  <div class="tt-type" id="tt-type"></div>
+  <div class="tt-xp" id="tt-xp"></div>
+</div>
+
+<script>
+// ─── TAB NAVIGATION ───
+function switchTab(id, btn) {
+  document.querySelectorAll('.concept-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── STAR CANVAS (shared for concepts 11 & 12) ───
+function drawStars(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    renderStars();
+  }
+
+  const stars = [];
+  for (let i = 0; i < 500; i++) {
+    stars.push({
+      x: Math.random(),
+      y: Math.random(),
+      r: Math.random() * 0.8 + 0.1,
+      o: Math.random() * 0.04 + 0.008,
+      tw: Math.random() * 4 + 2,
+      tp: Math.random() * Math.PI * 2
+    });
+  }
+
+  function renderStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const t = Date.now() / 1000;
+    stars.forEach(s => {
+      const flicker = 0.5 + 0.5 * Math.sin(t / s.tw + s.tp);
+      ctx.beginPath();
+      ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${s.o * (0.6 + 0.4 * flicker)})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(renderStars);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+}
+
+drawStars('star-canvas');
+drawStars('star-canvas-2');
+
+// ─── CONCEPT 11: NEURAL PULSE ───
+(function () {
+  const path1 = document.getElementById('spiral-seg-1');
+  const path2 = document.getElementById('spiral-seg-2');
+  const pulse = document.getElementById('neural-pulse');
+
+  if (!pulse || !path1) return;
+
+  let animating = false;
+
+  function getPointOnPath(path, t) {
+    const len = path.getTotalLength();
+    return path.getPointAtLength(len * t);
+  }
+
+  function fireNeuralPulse() {
+    if (animating) return;
+    animating = true;
+
+    const duration1 = 1200; // ms for seg 1
+    const duration2 = 1000; // ms for seg 2
+    const pause = 400; // ms pause at each phase
+    let start = null;
+
+    function animSegment(path, duration, callback) {
+      start = null;
+      function step(ts) {
+        if (!start) start = ts;
+        const progress = Math.min((ts - start) / duration, 1);
+        const pt = getPointOnPath(path, progress);
+        pulse.setAttribute('cx', pt.x);
+        pulse.setAttribute('cy', pt.y);
+        pulse.setAttribute('opacity', progress < 0.1 ? progress * 10 : progress > 0.9 ? (1 - progress) * 10 : 1);
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          callback && callback();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    animSegment(path1, duration1, () => {
+      // burst at phase 2
+      pulse.setAttribute('r', '8');
+      setTimeout(() => {
+        pulse.setAttribute('r', '4');
+        setTimeout(() => {
+          animSegment(path2, duration2, () => {
+            // burst at phase 3
+            pulse.setAttribute('r', '6');
+            setTimeout(() => {
+              pulse.setAttribute('r', '4');
+              pulse.setAttribute('opacity', '0');
+              animating = false;
+            }, 300);
+          });
+        }, pause);
+      }, 200);
+    });
+  }
+
+  // Fire immediately and every 5s
+  setTimeout(fireNeuralPulse, 800);
+  setInterval(() => {
+    if (!animating) fireNeuralPulse();
+  }, 5000);
+})();
+
+// ─── CONCEPT 11: NODE HOVER TOOLTIP ───
+(function () {
+  const tooltip = document.getElementById('global-tooltip');
+  const ttTitle = document.getElementById('tt-title');
+  const ttType = document.getElementById('tt-type');
+  const ttXp = document.getElementById('tt-xp');
+
+  document.querySelectorAll('.syn-node').forEach(node => {
+    node.style.cursor = 'pointer';
+
+    node.addEventListener('mouseenter', e => {
+      ttTitle.textContent = node.dataset.title || '';
+      ttType.textContent = node.dataset.type || '';
+      ttXp.textContent = node.dataset.xp || '';
+      tooltip.classList.add('visible');
+    });
+
+    node.addEventListener('mousemove', e => {
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top = (e.clientY - 10) + 'px';
+    });
+
+    node.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+    });
+  });
+})();
+
+// ─── CONCEPT 12: STATION PANELS ───
+function showStationPanel(event, id) {
+  const panel = document.getElementById('sp-' + id);
+  if (panel) {
+    panel.style.display = 'block';
+    panel.classList.add('visible');
+  }
+  // scan effect: brighten node dots
+  const station = document.getElementById('st' + id);
+  if (station) {
+    station.querySelectorAll('circle').forEach(c => {
+      c.style.transition = 'opacity 0.2s';
+    });
+  }
+}
+
+function hideStationPanel(id) {
+  const panel = document.getElementById('sp-' + id);
+  if (panel) panel.style.display = 'none';
+}
+
+// Force station 3 panel to default show on hover for panels 4+5 (use display:none as default, JS handles)
+// Already handled above
+
+// ─── CONCEPT 14: DOC OPEN/CLOSE ───
+const docData = {
+  1: { title: 'PROJETO FASE 01 · FUNDAMENTOS DE IA', status: 'APROVADO', color: '#22C55E' },
+  2: { title: 'PROJETO FASE 02 · PROMPTS E COMUNICAÇÃO', status: 'ATIVO', color: '#4A90FF' },
+  3: { title: 'PROJETO FASE 03 · CLAUDE CODE PRIMEIROS PASSOS', status: 'CLASSIFIED', color: '#333' },
+  4: { title: 'PROJETO FASE 04 · CLAUDE CODE NO TRABALHO', status: 'CLASSIFIED', color: '#222' },
+  5: { title: 'PROJETO FASE 05 · AUTONOMIA', status: 'CLASSIFIED', color: '#1A1A1A' },
+};
+
+function openDoc(id) {
+  const overlay = document.getElementById('ma-overlay');
+  const titleEl = document.getElementById('ma-overlay-title');
+  const bodyEl = document.getElementById('ma-overlay-body');
+  const data = docData[id];
+
+  titleEl.textContent = data.title;
+  titleEl.style.color = data.color;
+
+  // Clone doc content into overlay
+  const docEl = document.getElementById('ma-doc-' + id);
+  const bodyClone = docEl.querySelector('.ma-doc-body').cloneNode(true);
+  bodyEl.innerHTML = '';
+
+  const statusTag = document.createElement('div');
+  statusTag.style.cssText = `
+    display:inline-block;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    padding:4px 12px;
+    border:1px solid ${data.color};
+    color:${data.color};
+    margin-bottom:20px;
+  `;
+  statusTag.textContent = data.status;
+  bodyEl.appendChild(statusTag);
+  bodyEl.appendChild(bodyClone);
+
+  overlay.classList.add('open');
+}
+
+function closeDoc(e) {
+  const overlay = document.getElementById('ma-overlay');
+  overlay.classList.remove('open');
+}
+
+// ─── CONCEPT 14: ROUTE SVG DRAW ───
+(function drawMaRoute() {
+  // We'll draw the route after render using JS to get actual positions
+  function doDrawRoute() {
+    const svg = document.getElementById('ma-route-svg');
+    if (!svg) return;
+    const grid = document.getElementById('ma-docs-grid');
+    if (!grid) return;
+
+    const gridRect = grid.getBoundingClientRect();
+    const docs = [1,2,3,4,5].map(i => {
+      const el = document.getElementById('ma-doc-' + i);
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return {
+        x: r.left + r.width/2 - gridRect.left,
+        y: r.top + r.height/2 - gridRect.top
+      };
+    }).filter(Boolean);
+
+    if (docs.length < 2) return;
+
+    svg.innerHTML = '';
+    svg.setAttribute('viewBox', `0 0 ${gridRect.width} ${gridRect.height}`);
+    svg.setAttribute('width', gridRect.width);
+    svg.setAttribute('height', gridRect.height);
+
+    // Completed section (1→2)
+    if (docs[0] && docs[1]) {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const mx = (docs[0].x + docs[1].x) / 2;
+      const my = (docs[0].y + docs[1].y) / 2 - 30;
+      path.setAttribute('d', `M ${docs[0].x} ${docs[0].y} Q ${mx} ${my} ${docs[1].x} ${docs[1].y}`);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', 'rgba(74,144,255,0.3)');
+      path.setAttribute('stroke-width', '1.5');
+      svg.appendChild(path);
+    }
+
+    // Active dashed (2→3)
+    if (docs[1] && docs[2]) {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const mx = (docs[1].x + docs[2].x) / 2 + 20;
+      const my = (docs[1].y + docs[2].y) / 2;
+      path.setAttribute('d', `M ${docs[1].x} ${docs[1].y} Q ${mx} ${my} ${docs[2].x} ${docs[2].y}`);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', 'rgba(74,144,255,0.15)');
+      path.setAttribute('stroke-width', '1');
+      path.setAttribute('stroke-dasharray', '5,4');
+      svg.appendChild(path);
+    }
+
+    // Locked (3→4, 4→5)
+    [[2,3],[3,4]].forEach(([a,b]) => {
+      if (!docs[a] || !docs[b]) return;
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', `M ${docs[a].x} ${docs[a].y} L ${docs[b].x} ${docs[b].y}`);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', 'rgba(255,255,255,0.03)');
+      path.setAttribute('stroke-width', '1');
+      path.setAttribute('stroke-dasharray', '3,6');
+      svg.appendChild(path);
+    });
+
+    // Waypoints
+    docs.forEach((doc, i) => {
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', doc.x);
+      circle.setAttribute('cy', doc.y);
+      circle.setAttribute('r', '8');
+      circle.setAttribute('fill', '#050505');
+      circle.setAttribute('stroke', i < 2 ? 'rgba(74,144,255,0.35)' : 'rgba(255,255,255,0.06)');
+      circle.setAttribute('stroke-width', '1');
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', doc.x);
+      text.setAttribute('y', doc.y + 4);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('font-family', 'Inter,sans-serif');
+      text.setAttribute('font-size', '9');
+      text.setAttribute('fill', i < 2 ? 'rgba(74,144,255,0.7)' : 'rgba(255,255,255,0.15)');
+      text.textContent = i + 1;
+
+      svg.appendChild(circle);
+      svg.appendChild(text);
+    });
+  }
+
+  // Draw after DOM is painted
+  requestAnimationFrame(() => setTimeout(doDrawRoute, 100));
+  window.addEventListener('resize', () => setTimeout(doDrawRoute, 100));
+})();
+
+// ─── CONCEPT 13: BLUEPRINT ROUTING LINES ───
+(function drawBlueprintRoutes() {
+  function draw() {
+    const svg = document.getElementById('bp-route-svg');
+    const container = document.getElementById('bp-phases');
+    if (!svg || !container) return;
+
+    const cRect = container.getBoundingClientRect();
+
+    function midX(el) {
+      const r = el.getBoundingClientRect();
+      return r.left - cRect.left + r.width / 2;
+    }
+    function bottomY(el) {
+      const r = el.getBoundingClientRect();
+      return r.bottom - cRect.top;
+    }
+    function topY(el) {
+      const r = el.getBoundingClientRect();
+      return r.top - cRect.top;
+    }
+
+    const panels = [1,2,3,4,5].map(i => document.getElementById('bp-panel-' + i)).filter(Boolean);
+    if (panels.length < 2) return;
+
+    svg.setAttribute('viewBox', `0 0 ${cRect.width} ${cRect.height}`);
+    svg.innerHTML = '';
+
+    for (let i = 0; i < panels.length - 1; i++) {
+      const from = panels[i];
+      const to = panels[i + 1];
+
+      const x1 = midX(from);
+      const y1 = bottomY(from);
+      const x2 = midX(to);
+      const y2 = topY(to);
+      const midY = (y1 + y2) / 2;
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      // Right-angle routing
+      const d = `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`;
+      path.setAttribute('d', d);
+      path.setAttribute('fill', 'none');
+
+      let stroke, dasharray;
+      if (i === 0) { stroke = 'rgba(34,197,94,0.25)'; dasharray = 'none'; }
+      else if (i === 1) { stroke = 'rgba(74,144,255,0.2)'; dasharray = '5,4'; }
+      else { stroke = 'rgba(255,255,255,0.04)'; dasharray = '3,6'; }
+
+      path.setAttribute('stroke', stroke);
+      path.setAttribute('stroke-width', '1');
+      if (dasharray !== 'none') path.setAttribute('stroke-dasharray', dasharray);
+
+      // Arrowhead
+      const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      arrow.setAttribute('points', `${x2-4},${y2} ${x2+4},${y2} ${x2},${y2+6}`);
+      arrow.setAttribute('fill', stroke.replace('0.25','0.3').replace('0.2','0.25').replace('0.04','0.06'));
+
+      svg.appendChild(path);
+      svg.appendChild(arrow);
+    }
+  }
+
+  requestAnimationFrame(() => setTimeout(draw, 100));
+  window.addEventListener('resize', () => setTimeout(draw, 100));
+})();
+
+</script>
+</body>
+</html>

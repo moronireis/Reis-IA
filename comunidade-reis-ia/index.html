@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comunidade REIS [IA]</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #4A90FF;
+      --accent-hover: #6AADFF;
+      --surface-0: #000000;
+      --surface-1: #0A0A0A;
+      --surface-2: #111111;
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(255,255,255,0.70);
+      --text-tertiary: rgba(255,255,255,0.50);
+      --border-default: rgba(255,255,255,0.08);
+      --border-accent: rgba(74,144,255,0.30);
+    }
+
+    html {
+      background: var(--surface-0);
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .container { width: 100%; max-width: 520px; }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .brand span { color: var(--accent); }
+
+    .card {
+      background: var(--surface-1);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      padding: 32px 28px;
+    }
+
+    h1 { font-size: 22px; font-weight: 500; margin-bottom: 6px; line-height: 1.3; }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .field { margin-bottom: 20px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--text-primary);
+      font-family: inherit;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    input:focus, textarea:focus, select:focus { border-color: var(--border-accent); }
+    input::placeholder, textarea::placeholder { color: var(--text-tertiary); }
+
+    select {
+      appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='rgba(255,255,255,0.5)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+    select option { background: var(--surface-2); color: var(--text-primary); }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .radio-group { display: flex; gap: 12px; }
+
+    .radio-option { flex: 1; position: relative; }
+
+    .radio-option input[type="radio"] {
+      position: absolute; opacity: 0; width: 0; height: 0;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .radio-option input[type="radio"]:checked + .radio-label {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(74,144,255,0.06);
+    }
+
+    .conditional-field { display: none; margin-top: 12px; }
+    .conditional-field.visible { display: block; }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px 24px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+    button[type="submit"]:hover { background: var(--accent-hover); }
+    button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .success-msg { text-align: center; padding: 40px 20px; }
+    .success-msg h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+    .success-msg p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+    .error-msg {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #EF4444;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="brand">REIS <span>[IA]</span></div>
+
+    <div class="card">
+      <div id="form-view">
+        <h1>Interesse na Comunidade</h1>
+        <p class="subtitle">Preencha abaixo para registrar seu interesse em fazer parte da comunidade REIS [IA].</p>
+
+        <div id="error" class="error-msg"></div>
+
+        <form id="community-form">
+          <div class="field">
+            <label for="name">Nome completo</label>
+            <input type="text" id="name" name="name" placeholder="Seu nome" required />
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="seu@email.com" required />
+          </div>
+
+          <div class="field">
+            <label for="whatsapp">WhatsApp</label>
+            <input type="tel" id="whatsapp" name="whatsapp" placeholder="(11) 99999-9999" required />
+          </div>
+
+          <div class="field">
+            <label>Voce entendeu o recado da live?</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="recado-sim" name="entendeu_recado" value="Sim" required />
+                <label for="recado-sim" class="radio-label">Sim</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="recado-nao" name="entendeu_recado" value="Nao" />
+                <label for="recado-nao" class="radio-label">Nao</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="recado-parcial" name="entendeu_recado" value="Em parte" />
+                <label for="recado-parcial" class="radio-label">Em parte</label>
+              </div>
+            </div>
+            <div id="recado-detail" class="conditional-field">
+              <textarea name="recado_comentario" placeholder="Conta pra gente o que ficou claro e o que nao ficou..."></textarea>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="momento">Qual seu momento atual com AI no negocio?</label>
+            <select id="momento" name="momento" required>
+              <option value="" disabled selected>Selecione...</option>
+              <option value="Ainda nao comecei">Ainda nao comecei</option>
+              <option value="Testando algumas ferramentas">Testando algumas ferramentas</option>
+              <option value="Ja uso no dia a dia">Ja uso no dia a dia</option>
+              <option value="Quero implementar na empresa">Quero implementar na empresa</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="expectativa">O que voce espera da comunidade?</label>
+            <textarea id="expectativa" name="expectativa" placeholder="O que te motivou a querer participar..." required></textarea>
+          </div>
+
+          <button type="submit" id="submit-btn">Quero participar</button>
+        </form>
+      </div>
+
+      <div id="success-view" class="success-msg" style="display:none">
+        <h2>Recebemos seu interesse</h2>
+        <p>Vamos analisar sua aplicacao e entrar em contato em breve pelo WhatsApp ou email.</p>
+      </div>
+    </div>
+
+    <div class="footer">REIS [IA]</div>
+  </div>
+
+  <script>
+    const form = document.getElementById('community-form');
+    const errorEl = document.getElementById('error');
+    const submitBtn = document.getElementById('submit-btn');
+    const recadoRadios = document.querySelectorAll('input[name="entendeu_recado"]');
+    const recadoDetail = document.getElementById('recado-detail');
+
+    recadoRadios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        const val = document.querySelector('input[name="entendeu_recado"]:checked')?.value;
+        recadoDetail.classList.toggle('visible', val === 'Nao' || val === 'Em parte');
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+
+      const data = Object.fromEntries(new FormData(form));
+
+      try {
+        const res = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Erro ao enviar');
+        }
+
+        document.getElementById('form-view').style.display = 'none';
+        document.getElementById('success-view').style.display = 'block';
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Quero participar';
+      }
+    });
+  </script>
+</body>
+</html>

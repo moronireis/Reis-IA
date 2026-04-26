@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Os 2 Concorrentes Reais — Noiva S.A. · Inteligência Competitiva</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0A0A0A;
+      --bg-card: #1A1A1A;
+      --bg-card-2: #141414;
+      --border: #2A2A2A;
+      --border-hover: #3A3A3A;
+      --text: #FFFFFF;
+      --text-muted: #888888;
+      --text-dim: #555555;
+      --accent: #4A90FF;
+      --accent-glow: rgba(74, 144, 255, 0.3);
+      --red: #FF4A4A;
+      --red-dim: rgba(255, 74, 74, 0.15);
+      --yellow: #FFB800;
+      --yellow-dim: rgba(255, 184, 0, 0.15);
+      --orange: #FF7A2F;
+      --orange-dim: rgba(255, 122, 47, 0.15);
+      --green: #2ECC71;
+      --green-dim: rgba(46, 204, 113, 0.15);
+      --purple: #9B59B6;
+      --purple-dim: rgba(155, 89, 182, 0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 10, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+      gap: 8px;
+    }
+    .nav-brand {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .nav-brand span { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      gap: 2px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+      white-space: nowrap;
+    }
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--text); background: rgba(74,144,255,0.12); }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section { padding: 80px 0; }
+    section + section { border-top: 1px solid var(--border); }
+
+    /* ── HERO ── */
+    #hero {
+      padding: 96px 0 80px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(74, 144, 255, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+    #hero h1 {
+      font-size: clamp(26px, 5vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      line-height: 1.1;
+    }
+    #hero h1 span { color: var(--accent); }
+    .hero-sub {
+      font-size: clamp(14px, 2vw, 17px);
+      color: var(--text-muted);
+      margin-bottom: 40px;
+    }
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-number {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      display: block;
+    }
+    .hero-stat-number.muted { color: var(--text-dim); }
+    .hero-stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .hero-callout {
+      max-width: 720px;
+      margin: 0 auto;
+      background: rgba(74,144,255,0.06);
+      border: 1px solid rgba(74,144,255,0.2);
+      border-radius: 12px;
+      padding: 24px 32px;
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      text-align: left;
+    }
+    .hero-callout strong { color: var(--text); }
+
+    /* ── SECTION HEADERS ── */
+    .section-header { margin-bottom: 40px; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .section-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      max-width: 560px;
+    }
+
+    /* ── CARD BASE ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    /* ── BADGE ── */
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      display: inline-block;
+    }
+    .badge-blue   { background: rgba(74,144,255,0.15); color: #70AAFF; }
+    .badge-gray   { background: rgba(136,136,136,0.15); color: #999; }
+    .badge-red    { background: var(--red-dim); color: #FF7070; }
+    .badge-yellow { background: var(--yellow-dim); color: var(--yellow); }
+    .badge-green  { background: var(--green-dim); color: var(--green); }
+    .badge-orange { background: var(--orange-dim); color: var(--orange); }
+    .badge-purple { background: var(--purple-dim); color: #C39BD3; }
+    .badge-urgent { background: rgba(255,74,74,0.2); color: var(--red); }
+
+    /* ── 2x2 MATRIX ── */
+    .matrix-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .matrix-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .matrix-inner {
+      position: absolute;
+      inset: 48px;
+    }
+    .matrix-inner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom right,
+          rgba(255,122,47,0.04) 0%,
+          rgba(255,122,47,0.04) 50%,
+          transparent 50%
+        ),
+        linear-gradient(to bottom left,
+          rgba(74,144,255,0.07) 0%,
+          rgba(74,144,255,0.07) 50%,
+          transparent 50%
+        );
+      pointer-events: none;
+    }
+    .matrix-axis-h {
+      position: absolute;
+      left: 0; right: 0;
+      top: 50%;
+      height: 1px;
+      background: var(--border);
+    }
+    .matrix-axis-v {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 1px;
+      background: var(--border);
+    }
+    .matrix-label {
+      position: absolute;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .matrix-label.top    { top: 14px; left: 50%; transform: translateX(-50%); }
+    .matrix-label.bottom { bottom: 14px; left: 50%; transform: translateX(-50%); }
+    .matrix-label.left   { left: 14px; top: 50%; transform: translateY(-50%) rotate(-90deg); transform-origin: center center; }
+    .matrix-label.right  { right: 14px; top: 50%; transform: translateY(-50%) rotate(90deg); transform-origin: center center; }
+    .matrix-dot {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+    }
+    .matrix-dot .dot-circle {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .matrix-dot:hover .dot-circle { transform: scale(1.6); }
+    .matrix-dot .dot-label {
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 9px;
+      font-weight: 500;
+      white-space: nowrap;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .matrix-dot.hero-dot .dot-circle {
+      width: 18px; height: 18px;
+      box-shadow: 0 0 0 4px rgba(74,144,255,0.2), 0 0 20px rgba(74,144,255,0.5);
+    }
+    .matrix-dot.hero-dot .dot-label {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 10px;
+    }
+    .matrix-dot.big-dot .dot-circle {
+      width: 14px; height: 14px;
+    }
+    .matrix-dot.big-dot .dot-label {
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .zona-livre-tag {
+      position: absolute;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(74,144,255,0.4);
+      border-radius: 4px;
+      padding: 1px 5px;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+    .matrix-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 24px;
+      justify-content: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── DEEP DIVE SECTIONS ── */
+    .deepdive-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .deepdive-header {
+      padding: 32px 40px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .deepdive-header.red { border-top: 3px solid var(--red); }
+    .deepdive-header.yellow { border-top: 3px solid var(--yellow); }
+    .deepdive-name {
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .deepdive-tagline {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+    .deepdive-body {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .deepdive-cols {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    @media (max-width: 900px) { .deepdive-cols { grid-template-columns: 1fr; } }
+    .deepdive-left {
+      padding: 32px 40px;
+      border-right: 1px solid var(--border);
+    }
+    @media (max-width: 900px) { .deepdive-left { border-right: none; border-bottom: 1px solid var(--border); } }
+    .deepdive-right {
+      padding: 32px 32px;
+    }
+    .profile-block {
+      margin-bottom: 20px;
+    }
+    .profile-handle {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .profile-name {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .profile-bio {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+      border-left: 2px solid var(--border);
+      padding-left: 12px;
+      margin-bottom: 12px;
+    }
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-size: 20px;
+      font-weight: 700;
+      display: block;
+      letter-spacing: -0.02em;
+    }
+    .stat-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .info-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .info-item {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 3px 10px;
+    }
+    .price-tag {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green);
+      margin-top: 8px;
+    }
+    .threat-card {
+      border: 1px solid rgba(255,122,47,0.3);
+      border-radius: 10px;
+      padding: 20px;
+      background: rgba(255,122,47,0.04);
+    }
+    .threat-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+    .threat-list {
+      list-style: none;
+    }
+    .threat-list li {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,122,47,0.1);
+      padding-left: 14px;
+      position: relative;
+    }
+    .threat-list li:last-child { border-bottom: none; }
+    .threat-list li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    /* ── 3-column sub-cards ── */
+    .deepdive-grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    @media (max-width: 768px) { .deepdive-grid3 { grid-template-columns: 1fr; } }
+    .sub-card {
+      padding: 28px 28px;
+      border-right: 1px solid var(--border);
+    }
+    .sub-card:last-child { border-right: none; }
+    @media (max-width: 768px) {
+      .sub-card { border-right: none; border-bottom: 1px solid var(--border); }
+      .sub-card:last-child { border-bottom: none; }
+    }
+    .sub-card-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .sub-card-name {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .sub-card-handle {
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .ig-stats-mini { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+    .ig-stat-mini-num { font-size: 18px; font-weight: 700; display: block; }
+    .ig-stat-mini-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+    .ig-tags-mini { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+    .ig-tag-mini { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: rgba(74,144,255,0.1); color: var(--accent); }
+    .sub-meta-row { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .sub-meta-row strong { color: var(--text); }
+    .engagement-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+    .engagement-badge.alta { background: var(--green-dim); color: var(--green); }
+    .engagement-badge.media { background: var(--yellow-dim); color: var(--yellow); }
+    .sub-verdict {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 8px;
+      border-left: 2px solid var(--yellow);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    /* score bar in sub-card */
+    .score-bar-wrap { margin-bottom: 12px; }
+    .score-bar-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+    .score-bar-label span:first-child { color: var(--text-muted); }
+    .score-bar-label span:last-child { font-weight: 700; }
+    .score-bar { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 3px; }
+    .site-items { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .site-item { font-size: 11px; padding: 3px 8px; border-radius: 4px; }
+    .site-item.has { background: var(--green-dim); color: var(--green); }
+    .site-item.miss { background: var(--red-dim); color: #FF7070; }
+    .site-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+    .site-section-title.has { color: var(--green); }
+    .site-section-title.missing { color: var(--red); }
+
+    /* funnel flow in sub-card */
+    .funnel-flow { list-style: none; }
+    .funnel-flow li {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .funnel-flow li:last-child { border-bottom: none; }
+    .funnel-flow .step-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-dim);
+      min-width: 16px;
+      padding-top: 1px;
+    }
+    .funnel-warning {
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .funnel-warning.red { background: rgba(255,74,74,0.08); color: var(--red); border-left: 2px solid var(--red); }
+    .funnel-warning.yellow { background: rgba(255,184,0,0.08); color: var(--yellow); border-left: 2px solid var(--yellow); }
+
+    /* fatal weakness block */
+    .fatal-weakness {
+      padding: 28px 40px;
+      border-top: 1px solid var(--border);
+    }
+    .fatal-weakness-inner {
+      border: 1px solid rgba(255,74,74,0.3);
+      border-radius: 10px;
+      padding: 20px 24px;
+      background: rgba(255,74,74,0.03);
+    }
+    .fatal-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--red);
+      margin-bottom: 8px;
+    }
+    .fatal-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .fatal-text strong { color: var(--text); }
+
+    /* ── 3-COLUMN COMPARISON CARDS ── */
+    .compare3-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 768px) { .compare3-grid { grid-template-columns: 1fr; } }
+    .compare-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+    .compare-card:hover { border-color: var(--border-hover); }
+    .compare-card.red-top { border-top: 3px solid var(--red); }
+    .compare-card.yellow-top { border-top: 3px solid var(--yellow); }
+    .compare-card.blue-top {
+      border-top: 3px solid var(--accent);
+      box-shadow: 0 0 24px rgba(74,144,255,0.06);
+    }
+    .compare-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .compare-card-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .compare-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      gap: 8px;
+    }
+    .compare-row:last-of-type { border-bottom: none; }
+    .compare-row-label { color: var(--text-muted); flex-shrink: 0; }
+    .compare-row-value { color: var(--text); font-weight: 500; text-align: right; }
+    .compare-row-value.accent { color: var(--accent); }
+    .compare-row-value.red { color: var(--red); }
+    .compare-row-value.green { color: var(--green); }
+    .compare-verdict {
+      margin-top: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.03);
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* ── FUNNEL COMPARISON TABLE ── */
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead tr {
+      background: #111;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    th.col-noivasa { color: var(--accent); }
+    td {
+      padding: 11px 16px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    td:first-child { color: var(--text); font-weight: 500; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,0.02); }
+    tbody tr.score-row td { background: rgba(74,144,255,0.05); font-weight: 700; border-top: 1px solid var(--border); }
+    tbody tr.score-row td:first-child { color: var(--text); }
+    .col-noivasa-cell { color: var(--accent) !important; font-weight: 600 !important; }
+    .cell-yes   { color: var(--green);   font-size: 14px; }
+    .cell-no    { color: var(--text-dim); font-size: 14px; }
+    .cell-warn  { color: var(--yellow);  font-size: 13px; }
+    .table-callout {
+      background: linear-gradient(135deg, rgba(74,144,255,0.08), rgba(74,144,255,0.03));
+      border: 1px solid rgba(74,144,255,0.25);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-top: 20px;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .table-callout strong { color: var(--accent); }
+
+    /* ── FUNNEL BEFORE/AFTER ── */
+    .funnel-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 768px) { .funnel-cols { grid-template-columns: 1fr; } }
+    .funnel-col-header {
+      text-align: center;
+      padding: 14px 20px;
+      border-radius: 10px 10px 0 0;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .funnel-col-header.broken { background: rgba(255,74,74,0.1); color: var(--red); border: 1px solid rgba(255,74,74,0.2); border-bottom: none; }
+    .funnel-col-header.new    { background: rgba(74,144,255,0.1); color: var(--accent); border: 1px solid rgba(74,144,255,0.2); border-bottom: none; }
+    .funnel-body {
+      border-radius: 0 0 10px 10px;
+      overflow: hidden;
+    }
+    .funnel-body.broken { border: 1px solid rgba(255,74,74,0.2); }
+    .funnel-body.new    { border: 1px solid rgba(74,144,255,0.2); }
+    .funnel-step {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .funnel-step:last-child { border-bottom: none; }
+    .funnel-body.broken .funnel-step { background: rgba(255,74,74,0.02); }
+    .funnel-body.new    .funnel-step { background: rgba(74,144,255,0.02); }
+    .funnel-step-num { font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+    .funnel-step-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .funnel-step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .funnel-warn {
+      display: inline-block;
+      font-size: 11px; font-weight: 600;
+      color: var(--red);
+      background: rgba(255,74,74,0.1);
+      border-radius: 4px;
+      padding: 1px 7px; margin-top: 4px;
+    }
+    .funnel-ok {
+      display: inline-block;
+      font-size: 11px; font-weight: 600;
+      color: var(--green);
+      background: rgba(46,204,113,0.1);
+      border-radius: 4px;
+      padding: 1px 7px; margin-top: 4px;
+    }
+    .funnel-arrow { text-align: center; font-size: 16px; color: var(--text-dim); padding: 4px 0; }
+    .funnel-body.new .funnel-arrow { color: rgba(74,144,255,0.5); }
+
+    /* ── VALIDATION CHECKLIST ── */
+    .valid-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 600px) { .valid-grid { grid-template-columns: 1fr; } }
+    .valid-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+    }
+    .valid-card-num { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .valid-card-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+    .valid-card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
+    .valid-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+    .valid-total {
+      background: rgba(74,144,255,0.06);
+      border: 1px solid rgba(74,144,255,0.15);
+      border-radius: 10px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .valid-total-label { font-size: 13px; color: var(--text-muted); }
+    .valid-total-label strong { color: var(--text); }
+    .valid-total-right { display: flex; gap: 24px; }
+    .valid-total-stat { text-align: center; }
+    .valid-total-stat .num { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; display: block; }
+    .valid-total-stat .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .final-verdict {
+      margin-top: 24px;
+      background: rgba(74,144,255,0.08);
+      border: 1px solid rgba(74,144,255,0.3);
+      border-radius: 12px;
+      padding: 24px 28px;
+    }
+    .final-verdict-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .final-verdict-text {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    /* ── INSIGHT CALLOUT ── */
+    .insight-callout {
+      background: rgba(74,144,255,0.06);
+      border: 1px solid rgba(74,144,255,0.2);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-top: 24px;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .insight-callout strong { color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+    }
+    .footer-brand { font-size: 13px; font-weight: 300; color: var(--text-muted); margin-bottom: 4px; }
+    .footer-brand strong { color: var(--text); font-weight: 600; }
+    .footer-brand .accent { color: var(--accent); }
+    .footer-sub { font-size: 12px; color: var(--text-dim); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      section { padding: 56px 0; }
+      #hero { padding: 64px 0 56px; }
+      .hero-stats { gap: 24px; }
+      .matrix-inner { inset: 36px; }
+      .nav-links { display: none; }
+      .deepdive-header { padding: 24px; }
+      .deepdive-left { padding: 24px; }
+      .deepdive-right { padding: 24px; }
+      .fatal-weakness { padding: 24px; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 16px; }
+    }
+
+    /* ── UTILITIES ── */
+    .dot-sep { display: inline-block; width: 3px; height: 3px; border-radius: 50%; background: var(--text-dim); margin: 0 6px; vertical-align: middle; }
+    .mt8  { margin-top: 8px; }
+    .mt16 { margin-top: 16px; }
+    .mt24 { margin-top: 24px; }
+    .mb16 { margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">Noiva S.A. <span>·</span> Inteligência Competitiva</div>
+    <ul class="nav-links">
+      <li><a href="#hero">Resumo</a></li>
+      <li><a href="#matrix">Matriz</a></li>
+      <li><a href="#multipla">Múltipla</a></li>
+      <li><a href="#debora">Débora</a></li>
+      <li><a href="#instagram">Instagram</a></li>
+      <li><a href="#sites">Sites</a></li>
+      <li><a href="#comparativo">Comparativo</a></li>
+      <li><a href="#funil">Funil</a></li>
+      <li><a href="#validacao">Validação</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── 1. HERO ── -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-eyebrow">Inteligência Competitiva · Abril 2026</div>
+    <h1>Os 2 Concorrentes Reais<br><span>da Noiva S.A.</span></h1>
+    <p class="hero-sub">61 players mapeados. Apenas 2 representam ameaça real.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-number">61</span>
+        <span class="hero-stat-label">Players Mapeados</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-number" style="color:var(--red);">2</span>
+        <span class="hero-stat-label">Concorrentes Reais</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-number muted">59</span>
+        <span class="hero-stat-label">Irrelevantes</span>
+      </div>
+    </div>
+    <div class="hero-callout">
+      O mercado de assessoria mid-premium é um deserto de diferenciação. Dos 61 players analisados, apenas <strong>Múltipla Eventos</strong> (escala) e <strong>Noiva em Curso</strong> (audiência digital) representam ameaça concreta — por razões completamente diferentes.
+    </div>
+  </div>
+</section>
+
+<!-- ── 2. MATRIZ DE POSICIONAMENTO ── -->
+<section id="matrix">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">02 · Matriz de Posicionamento</div>
+      <h2 class="section-title">Mapa de Posicionamento Competitivo</h2>
+      <p class="section-desc">Apenas 2 players com nome. Os 59 restantes: pontos sem identidade.</p>
+    </div>
+
+    <div class="matrix-wrapper">
+      <div class="matrix-container">
+        <span class="matrix-label top">Controle Ativo</span>
+        <span class="matrix-label bottom">Sonho Passivo</span>
+        <span class="matrix-label left">Serviço Improvisado</span>
+        <span class="matrix-label right">Sistema Visível</span>
+
+        <div class="matrix-inner">
+          <div class="matrix-axis-h"></div>
+          <div class="matrix-axis-v"></div>
+
+          <!-- 59 outros: tiny dim gray cluster lower-left -->
+          <div class="matrix-dot" style="left:10%;top:72%;" title="outros">
+            <div class="dot-circle" style="width:6px;height:6px;background:#444;opacity:0.3;"></div>
+          </div>
+          <div class="matrix-dot" style="left:18%;top:80%;" title="outros">
+            <div class="dot-circle" style="width:6px;height:6px;background:#444;opacity:0.25;"></div>
+          </div>
+          <div class="matrix-dot" style="left:25%;top:68%;" title="outros">
+            <div class="dot-circle" style="width:6px;height:6px;background:#444;opacity:0.2;"></div>
+          </div>
+          <div class="matrix-dot" style="left:8%;top:85%;" title="outros">
+            <div class="dot-circle" style="width:6px;height:6px;background:#444;opacity:0.25;"></div>
+          </div>
+          <div class="matrix-dot" style="left:32%;top:76%;" title="outros">
+            <div class="dot-circle" style="width:6px;height:6px;background:#444;opacity:0.2;"></div>
+          </div>
+          <div class="matrix-dot" style="left:14%;top:90%;" title="outros">
+            <div class="dot-circle" style="width:6px;height:6px;background:#444;opacity:0.2;"></div>
+          </div>
+          <div class="matrix-dot" style="left:22%;top:60%;" title="outros">
+            <div class="dot-circle" style="width:6px;height:6px;background:#444;opacity:0.2;"></div>
+          </div>
+          <div class="matrix-dot" style="left:38%;top:82%;" title="outros">
+            <div class="dot-circle" style="width:6px;height:6px;background:#444;opacity:0.2;"></div>
+          </div>
+          <div class="matrix-dot" style="left:5%;top:65%;" title="outros">
+            <div class="dot-circle" style="width:6px;height:6px;background:#444;opacity:0.2;"></div>
+          </div>
+          <div class="matrix-dot" style="left:30%;top:88%;" title="outros">
+            <div class="dot-circle" style="width:6px;height:6px;background:#444;opacity:0.2;"></div>
+          </div>
+          <!-- Label "59 outros players" -->
+          <div style="position:absolute;left:16%;top:74%;transform:translate(-50%,-50%);pointer-events:none;">
+            <span style="font-size:8px;font-weight:600;color:#444;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">59 outros players</span>
+          </div>
+
+          <!-- Múltipla Eventos: large red dot lower-left area ~8%, 62% -->
+          <div class="matrix-dot big-dot" style="left:8%;top:62%;" title="Múltipla Eventos">
+            <div class="dot-circle" style="background:var(--red);"></div>
+            <span class="dot-label" style="color:#FF7070;font-weight:600;">Múltipla Eventos</span>
+          </div>
+
+          <!-- Noiva em Curso: large yellow dot lower-right ~58%, 68% -->
+          <div class="matrix-dot big-dot" style="left:58%;top:68%;" title="Noiva em Curso">
+            <div class="dot-circle" style="background:var(--yellow);"></div>
+            <span class="dot-label" style="color:var(--yellow);font-weight:600;">Noiva em Curso</span>
+          </div>
+
+          <!-- NOIVA S.A.: blue glowing dot, upper-right -->
+          <div class="matrix-dot hero-dot" style="left:82%;top:18%;" title="Noiva S.A.">
+            <div class="dot-circle" style="background:var(--accent);"></div>
+            <span class="zona-livre-tag">Zona Livre</span>
+            <span class="dot-label">Noiva S.A.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="matrix-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--accent);box-shadow:0 0 6px var(--accent-glow);"></div>
+          Noiva S.A.
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--red);"></div>
+          Múltipla (concorrente direto)
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--yellow);"></div>
+          Noiva em Curso (concorrente digital)
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#444;opacity:0.5;"></div>
+          59 outros (irrelevantes)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 3. DEEP DIVE: MÚLTIPLA EVENTOS ── -->
+<section id="multipla">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">03 · Concorrente #1</div>
+      <h2 class="section-title">Múltipla Eventos</h2>
+      <p class="section-desc">A maior assessoria do Brasil — mas presa no modelo analógico.</p>
+    </div>
+
+    <div class="deepdive-card">
+      <!-- Header -->
+      <div class="deepdive-header red">
+        <div class="deepdive-name">Múltipla Eventos</div>
+        <div class="deepdive-tagline">A maior assessoria do Brasil — mas presa no modelo analógico</div>
+      </div>
+
+      <!-- 2-col body -->
+      <div class="deepdive-cols">
+        <!-- Left 60% -->
+        <div class="deepdive-left">
+          <div class="profile-block">
+            <div class="profile-handle">@multiplaeventos · multiplaeventos.com.br</div>
+            <div class="profile-name">Múltipla Eventos</div>
+            <div class="profile-bio">"Seu sonho em todos os detalhes!"</div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <span class="stat-num" style="color:var(--red);">41K</span>
+              <span class="stat-lbl">Seguidores IG</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">1.500+</span>
+              <span class="stat-lbl">Eventos</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">18</span>
+              <span class="stat-lbl">Anos</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">5</span>
+              <span class="stat-lbl">Produtores</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <span class="info-item">Guarulhos · SP</span>
+            <span class="info-item">Folha de São Paulo</span>
+            <span class="info-item">Assessora oficial Mosteiro São Bento</span>
+          </div>
+          <div class="price-tag">A partir de R$3.800 (cerimonial)</div>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:16px;line-height:1.7;">
+            Referência absoluta do nicho em volume de eventos. Constrói reputação sobre exclusividade de venues e cobertura editorial. Modelo 100% analógico: indicação gera indicação, sem sistema digital de aquisição.
+          </p>
+        </div>
+
+        <!-- Right 40% -->
+        <div class="deepdive-right">
+          <div class="threat-card">
+            <div class="threat-title">Por que é uma ameaça</div>
+            <ul class="threat-list">
+              <li>Maior escala do país (1.500+ eventos)</li>
+              <li>Exclusividade de venues premium (Mosteiro São Bento)</li>
+              <li>41K seguidores — maior audiência entre assessorias</li>
+              <li>98% das clientes vêm por indicação — prova social orgânica</li>
+              <li>5 produtores em equipe — modelo já semi-escalado</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-col analysis grid -->
+      <div class="deepdive-grid3">
+        <!-- Instagram Analysis -->
+        <div class="sub-card">
+          <div class="sub-card-title">Instagram</div>
+          <div class="sub-card-handle">@multiplaeventos</div>
+          <div class="ig-stats-mini">
+            <div>
+              <span class="ig-stat-mini-num" style="color:var(--red);">41K</span>
+              <span class="ig-stat-mini-lbl">Seguidores</span>
+            </div>
+            <div>
+              <span class="ig-stat-mini-num">1.500+</span>
+              <span class="ig-stat-mini-lbl">Posts</span>
+            </div>
+          </div>
+          <div class="ig-tags-mini">
+            <span class="ig-tag-mini">Portfólio Premium</span>
+            <span class="ig-tag-mini">Luxo</span>
+            <span class="ig-tag-mini">Debutantes</span>
+          </div>
+          <div class="sub-meta-row"><strong>Frequência:</strong> 4–5x/semana</div>
+          <div class="sub-meta-row"><strong>Engajamento:</strong> <span class="engagement-badge media">Média</span></div>
+          <div class="sub-meta-row"><strong>Conteúdo:</strong> Portfólio luxo, Mosteiro</div>
+          <div class="sub-verdict">Zero estratégia de conversão. Conteúdo = portfólio puro. Sem CTA para funil.</div>
+        </div>
+
+        <!-- Site Analysis -->
+        <div class="sub-card">
+          <div class="sub-card-title">Site</div>
+          <div class="sub-card-handle">multiplaeventos.com.br</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-label">
+              <span>Score digital</span>
+              <span style="color:var(--red);">25/100</span>
+            </div>
+            <div class="score-bar"><div class="score-bar-fill" style="width:25%;background:var(--red);"></div></div>
+          </div>
+          <div class="site-section">
+            <div class="site-section-title has">Tem</div>
+            <div class="site-items">
+              <span class="site-item has">14 serviços</span>
+              <span class="site-item has">8 depoimentos</span>
+              <span class="site-item has">Portal cliente</span>
+              <span class="site-item has">WhatsApp CTA</span>
+            </div>
+          </div>
+          <div class="site-section">
+            <div class="site-section-title missing">Não tem</div>
+            <div class="site-items">
+              <span class="site-item miss">Blog</span>
+              <span class="site-item miss">Lead magnet</span>
+              <span class="site-item miss">Quiz</span>
+              <span class="site-item miss">Nurture</span>
+              <span class="site-item miss">Preço</span>
+              <span class="site-item miss">Método nomeado</span>
+            </div>
+          </div>
+          <div class="sub-verdict">Maior empresa do nicho. Site 100% institucional. CTA único: WhatsApp.</div>
+        </div>
+
+        <!-- Funil Analysis -->
+        <div class="sub-card">
+          <div class="sub-card-title">Funil da Múltipla</div>
+          <ul class="funnel-flow">
+            <li><span class="step-num">1</span>Indicação / IG orgânico</li>
+            <li><span class="step-num">2</span>Site institucional</li>
+            <li><span class="step-num">3</span>Formulário de contato</li>
+            <li><span class="step-num">4</span>Reunião presencial</li>
+            <li><span class="step-num">5</span>Proposta</li>
+          </ul>
+          <div class="funnel-warning red">Zero funil digital. 100% dependente de indicação.</div>
+        </div>
+      </div>
+
+      <!-- Fatal Weakness -->
+      <div class="fatal-weakness">
+        <div class="fatal-weakness-inner">
+          <div class="fatal-label">Fraqueza Fatal</div>
+          <div class="fatal-text">
+            A Múltipla prova que escala <strong>sem método</strong> produz o exato problema que a Noiva S.A. promete resolver. Reclamações de qualidade com múltiplos coordenadores. O modelo "reputação pura" tem teto. Sem aquisição ativa, qualquer disrupção de indicação colapsa o pipeline.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 4. DEEP DIVE: NOIVA EM CURSO ── -->
+<section id="debora">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">04 · Concorrente #2</div>
+      <h2 class="section-title">Noiva em Curso — Débora Fagundes</h2>
+      <p class="section-desc">A maior audiência de noivas do Brasil — mas presa no piso DIY.</p>
+    </div>
+
+    <div class="deepdive-card">
+      <!-- Header -->
+      <div class="deepdive-header yellow">
+        <div class="deepdive-name">Noiva em Curso — Débora Fagundes</div>
+        <div class="deepdive-tagline">A maior audiência de noivas do Brasil — mas presa no piso DIY</div>
+      </div>
+
+      <!-- 2-col body -->
+      <div class="deepdive-cols">
+        <!-- Left 60% -->
+        <div class="deepdive-left">
+          <div class="profile-block">
+            <div class="profile-handle">@noivaemcurso · noivaemcurso.com.br</div>
+            <div class="profile-name">Noiva em Curso</div>
+            <div class="profile-bio">"Te ajudo a casar gastando menos, de forma leve e divertida!"</div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <span class="stat-num" style="color:var(--yellow);">167K</span>
+              <span class="stat-lbl">Seguidores IG</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">2.000+</span>
+              <span class="stat-lbl">Posts</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">8</span>
+              <span class="stat-lbl">Anos</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <span class="info-item">Curitiba · PR</span>
+            <span class="info-item">YouTube ativo</span>
+            <span class="info-item">Grupos WhatsApp regionais</span>
+          </div>
+          <div class="info-row" style="margin-top:4px;">
+            <span class="info-item" style="font-size:11px;color:var(--text-dim);">SP · PR · RJ · SC · MG</span>
+          </div>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:16px;line-height:1.7;">
+            A maior voz educativa do mercado de casamentos no Brasil. Construiu audiência massiva com conteúdo DIY acessível. YouTube como segundo canal forte. Comunidade real com grupos regionais. Posicionamento "casar barato" cria barreira estrutural para subida de ticket.
+          </p>
+        </div>
+
+        <!-- Right 40% -->
+        <div class="deepdive-right">
+          <div class="threat-card" style="border-color:rgba(255,184,0,0.3);background:rgba(255,184,0,0.03);">
+            <div class="threat-title" style="color:var(--yellow);">Por que é uma ameaça</div>
+            <ul class="threat-list">
+              <li>167K seguidores — 4× mais que a Múltipla</li>
+              <li>Melhor execução influencer→produto digital do nicho</li>
+              <li>Comunidade real com grupos WhatsApp regionais</li>
+              <li>Conteúdo diário (1–2x/dia) com engajamento alto</li>
+              <li>Voz acessível + educativa que ressoa com noivas jovens</li>
+              <li>YouTube como segundo canal forte</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-col analysis grid -->
+      <div class="deepdive-grid3">
+        <!-- Instagram Analysis -->
+        <div class="sub-card">
+          <div class="sub-card-title">Instagram</div>
+          <div class="sub-card-handle">@noivaemcurso</div>
+          <div class="ig-stats-mini">
+            <div>
+              <span class="ig-stat-mini-num" style="color:var(--yellow);">167K</span>
+              <span class="ig-stat-mini-lbl">Seguidores</span>
+            </div>
+            <div>
+              <span class="ig-stat-mini-num">2.000+</span>
+              <span class="ig-stat-mini-lbl">Posts</span>
+            </div>
+          </div>
+          <div class="ig-tags-mini">
+            <span class="ig-tag-mini" style="background:rgba(255,184,0,0.1);color:var(--yellow);">Educativo</span>
+            <span class="ig-tag-mini" style="background:rgba(255,184,0,0.1);color:var(--yellow);">DIY</span>
+            <span class="ig-tag-mini" style="background:rgba(255,184,0,0.1);color:var(--yellow);">Humor</span>
+            <span class="ig-tag-mini" style="background:rgba(255,184,0,0.1);color:var(--yellow);">Tutorial</span>
+          </div>
+          <div class="sub-meta-row"><strong>Frequência:</strong> Diária (1–2x/dia)</div>
+          <div class="sub-meta-row"><strong>Engajamento:</strong> <span class="engagement-badge alta">Alta</span></div>
+          <div class="sub-verdict">Melhor content creator do nicho. Mas conteúdo posiciona no piso "casar barato".</div>
+        </div>
+
+        <!-- Site Analysis -->
+        <div class="sub-card">
+          <div class="sub-card-title">Site</div>
+          <div class="sub-card-handle">noivaemcurso.com.br</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-label">
+              <span>Score digital</span>
+              <span style="color:var(--yellow);">40/100</span>
+            </div>
+            <div class="score-bar"><div class="score-bar-fill" style="width:40%;background:var(--yellow);"></div></div>
+          </div>
+          <div class="site-section">
+            <div class="site-section-title has">Tem</div>
+            <div class="site-items">
+              <span class="site-item has">Grupos WhatsApp regionais</span>
+              <span class="site-item has">Combo Jornada da Noiva</span>
+              <span class="site-item has">YouTube ativo</span>
+              <span class="site-item has">167K audiência</span>
+            </div>
+          </div>
+          <div class="site-section">
+            <div class="site-section-title missing">Não tem</div>
+            <div class="site-items">
+              <span class="site-item miss">Preço claro</span>
+              <span class="site-item miss">Serviço premium</span>
+              <span class="site-item miss">Blog estruturado</span>
+              <span class="site-item miss">Quiz</span>
+              <span class="site-item miss">Método nomeado</span>
+            </div>
+          </div>
+          <div class="sub-verdict">Melhor community builder. Monetização = parcerias + produto digital de baixo ticket.</div>
+        </div>
+
+        <!-- Funil Analysis -->
+        <div class="sub-card">
+          <div class="sub-card-title">Funil da Débora</div>
+          <ul class="funnel-flow">
+            <li><span class="step-num">1</span>Instagram (167K) + YouTube</li>
+            <li><span class="step-num">2</span>Conteúdo educativo diário</li>
+            <li><span class="step-num">3</span>Grupos WhatsApp regionais</li>
+            <li><span class="step-num">4</span>Combo Jornada da Noiva</li>
+            <li><span class="step-num">5</span>Parcerias (Casar.com, fornecedores)</li>
+          </ul>
+          <div class="funnel-warning yellow">Funil digital forte, mas sem serviço premium acoplado.</div>
+        </div>
+      </div>
+
+      <!-- Fatal Weakness -->
+      <div class="fatal-weakness">
+        <div class="fatal-weakness-inner">
+          <div class="fatal-label">Fraqueza Fatal</div>
+          <div class="fatal-text">
+            Débora tem a maior audiência de noivas do Brasil, mas está presa no posicionamento <strong>"casar barato"</strong>. Sua comunidade é valiosa como influência de mercado — não como competição direta em serviço premium R$3–8K. Se ela decidir subir o ticket, precisaria reconstruir toda a narrativa. A ameaça é indireta: ela educa noivas a fazer sozinhas o que a Noiva S.A. faz como serviço.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 5. INSTAGRAM LADO A LADO ── -->
+<section id="instagram">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">05 · Instagram Comparativo</div>
+      <h2 class="section-title">Presença Digital: Noiva S.A. vs Concorrentes</h2>
+      <p class="section-desc">Os 3 players lado a lado — audiência, estratégia e funil.</p>
+    </div>
+
+    <div class="compare3-grid">
+      <!-- Múltipla -->
+      <div class="compare-card red-top">
+        <div class="compare-card-title">Múltipla Eventos</div>
+        <div class="compare-card-sub">@multiplaeventos</div>
+        <div class="compare-row">
+          <span class="compare-row-label">Seguidores</span>
+          <span class="compare-row-value red">41K</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Conteúdo</span>
+          <span class="compare-row-value">Portfólio luxo</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Engajamento</span>
+          <span class="compare-row-value"><span class="engagement-badge media">Média</span></span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">CTA</span>
+          <span class="compare-row-value">WhatsApp direto</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Funil</span>
+          <span class="compare-row-value red">Nenhum</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Ads detectados</span>
+          <span class="compare-row-value red">Nenhum</span>
+        </div>
+        <div class="compare-verdict">"Vitrine sem caixa registradora"</div>
+      </div>
+
+      <!-- Noiva em Curso -->
+      <div class="compare-card yellow-top">
+        <div class="compare-card-title">Noiva em Curso</div>
+        <div class="compare-card-sub">@noivaemcurso</div>
+        <div class="compare-row">
+          <span class="compare-row-label">Seguidores</span>
+          <span class="compare-row-value" style="color:var(--yellow);">167K</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Conteúdo</span>
+          <span class="compare-row-value">Educativo DIY</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Engajamento</span>
+          <span class="compare-row-value"><span class="engagement-badge alta">Alta</span></span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">CTA</span>
+          <span class="compare-row-value">Grupos WhatsApp</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Funil</span>
+          <span class="compare-row-value" style="color:var(--yellow);">Comunidade → baixo ticket</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Ads detectados</span>
+          <span class="compare-row-value red">Nenhum</span>
+        </div>
+        <div class="compare-verdict">"Audiência massiva, monetização mínima"</div>
+      </div>
+
+      <!-- Noiva S.A. -->
+      <div class="compare-card blue-top">
+        <div class="compare-card-title">NOIVA S.A.</div>
+        <div class="compare-card-sub">Construindo · Em execução</div>
+        <div class="compare-row">
+          <span class="compare-row-label">Seguidores</span>
+          <span class="compare-row-value accent">[Em construção]</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Conteúdo</span>
+          <span class="compare-row-value" style="font-size:11px;">30% Método · 25% Bastidor · 25% Educ. · 20% Prova</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Engajamento</span>
+          <span class="compare-row-value accent">[Em construção]</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">CTA</span>
+          <span class="compare-row-value accent">Quiz interativo</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Funil</span>
+          <span class="compare-row-value accent" style="font-size:11px;">Quiz → Bot → Nurture → Reunião → Follow-up</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Ads</span>
+          <span class="compare-row-value accent">R$500/semana → Quiz</span>
+        </div>
+        <div class="compare-verdict" style="color:var(--accent);">"Único funil completo do mercado"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 6. SITES LADO A LADO ── -->
+<section id="sites">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">06 · Auditoria de Sites</div>
+      <h2 class="section-title">Maturidade Digital: Sites Comparados</h2>
+      <p class="section-desc">Score médio dos concorrentes reais: 32/100.</p>
+    </div>
+
+    <div class="compare3-grid">
+      <!-- Múltipla -->
+      <div class="compare-card red-top">
+        <div class="compare-card-title">Múltipla Eventos</div>
+        <div class="compare-card-sub">multiplaeventos.com.br</div>
+        <div class="score-bar-wrap" style="margin-bottom:16px;">
+          <div class="score-bar-label">
+            <span style="color:var(--text-muted);">Score digital</span>
+            <span style="color:var(--red);font-weight:700;">25/100</span>
+          </div>
+          <div class="score-bar"><div class="score-bar-fill" style="width:25%;background:var(--red);"></div></div>
+        </div>
+        <div class="site-section">
+          <div class="site-section-title has">Tem</div>
+          <div class="site-items">
+            <span class="site-item has">14 serviços</span>
+            <span class="site-item has">8 depoimentos</span>
+            <span class="site-item has">Portal cliente</span>
+            <span class="site-item has">WhatsApp CTA</span>
+          </div>
+        </div>
+        <div class="site-section">
+          <div class="site-section-title missing">Não tem</div>
+          <div class="site-items">
+            <span class="site-item miss">Blog</span>
+            <span class="site-item miss">Lead magnet</span>
+            <span class="site-item miss">Quiz</span>
+            <span class="site-item miss">Nurture</span>
+            <span class="site-item miss">Preço no site</span>
+            <span class="site-item miss">Conteúdo educativo</span>
+            <span class="site-item miss">Método nomeado</span>
+          </div>
+        </div>
+        <div class="sub-verdict">Maior empresa do nicho. Site 100% institucional. CTA único: WhatsApp.</div>
+      </div>
+
+      <!-- Noiva em Curso -->
+      <div class="compare-card yellow-top">
+        <div class="compare-card-title">Noiva em Curso</div>
+        <div class="compare-card-sub">noivaemcurso.com.br</div>
+        <div class="score-bar-wrap" style="margin-bottom:16px;">
+          <div class="score-bar-label">
+            <span style="color:var(--text-muted);">Score digital</span>
+            <span style="color:var(--yellow);font-weight:700;">40/100</span>
+          </div>
+          <div class="score-bar"><div class="score-bar-fill" style="width:40%;background:var(--yellow);"></div></div>
+        </div>
+        <div class="site-section">
+          <div class="site-section-title has">Tem</div>
+          <div class="site-items">
+            <span class="site-item has">Grupos WhatsApp regionais</span>
+            <span class="site-item has">Combo Jornada da Noiva</span>
+            <span class="site-item has">YouTube ativo</span>
+            <span class="site-item has">167K audiência</span>
+          </div>
+        </div>
+        <div class="site-section">
+          <div class="site-section-title missing">Não tem</div>
+          <div class="site-items">
+            <span class="site-item miss">Preço claro</span>
+            <span class="site-item miss">Serviço premium</span>
+            <span class="site-item miss">Blog estruturado</span>
+            <span class="site-item miss">Quiz</span>
+            <span class="site-item miss">Método nomeado</span>
+          </div>
+        </div>
+        <div class="sub-verdict">Melhor community builder. Monetização = parcerias + produto digital de baixo ticket.</div>
+      </div>
+
+      <!-- Noiva S.A. -->
+      <div class="compare-card blue-top">
+        <div class="compare-card-title">NOIVA S.A.</div>
+        <div class="compare-card-sub">Score meta: 85/100</div>
+        <div class="score-bar-wrap" style="margin-bottom:16px;">
+          <div class="score-bar-label">
+            <span style="color:var(--text-muted);">Score digital (meta)</span>
+            <span style="color:var(--green);font-weight:700;">85/100</span>
+          </div>
+          <div class="score-bar"><div class="score-bar-fill" style="width:85%;background:var(--green);"></div></div>
+        </div>
+        <div class="site-section">
+          <div class="site-section-title has">Tem (meta)</div>
+          <div class="site-items">
+            <span class="site-item has">Quiz interativo</span>
+            <span class="site-item has">4 lead magnets</span>
+            <span class="site-item has">Bot qualificação</span>
+            <span class="site-item has">Nurture WhatsApp D0–D14</span>
+            <span class="site-item has">Script vendas 45min</span>
+            <span class="site-item has">Follow-up D1–D30</span>
+            <span class="site-item has">Tráfego pago</span>
+            <span class="site-item has">Programa indicação</span>
+            <span class="site-item has">Método visível nomeado</span>
+          </div>
+        </div>
+        <div class="site-section">
+          <div class="site-section-title missing">Oportunidade futura</div>
+          <div class="site-items">
+            <span class="site-item miss">Blog / SEO</span>
+          </div>
+        </div>
+        <div class="sub-verdict" style="border-color:var(--accent);">A distância é estrutural, não cosmética.</div>
+      </div>
+    </div>
+
+    <div class="insight-callout">
+      <strong>Score médio dos concorrentes reais: 32/100.</strong> Noiva S.A. meta: 85/100. A distância é estrutural, não cosmética. Nenhum player investiu em funil digital. A barra está no chão.
+    </div>
+  </div>
+</section>
+
+<!-- ── 7. COMPARATIVO DE FUNIL ── -->
+<section id="comparativo">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">07 · Checklist de Maturidade</div>
+      <h2 class="section-title">O Que Cada Um Tem — e o Que Falta</h2>
+      <p class="section-desc">13 etapas críticas. Diferentes ligas.</p>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Etapa</th>
+            <th>Múltipla Eventos</th>
+            <th>Noiva em Curso</th>
+            <th class="col-noivasa">NOIVA S.A.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Blog / SEO</td>
+            <td><span class="cell-no">✕</span></td>
+            <td><span class="cell-no">✕</span></td>
+            <td class="col-noivasa-cell"><span class="cell-warn">⚠</span> <span style="font-size:11px;">oportunidade</span></td>
+          </tr>
+          <tr>
+            <td>Instagram orgânico</td>
+            <td><span class="cell-yes">✓</span> <span style="font-size:11px;color:var(--text-muted);">41K</span></td>
+            <td><span class="cell-yes">✓</span> <span style="font-size:11px;color:var(--yellow);">167K</span></td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>Lead magnet digital</td>
+            <td><span class="cell-no">✕</span></td>
+            <td><span class="cell-warn">⚠</span> <span style="font-size:11px;color:var(--text-muted);">Combo</span></td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span> Quiz + 3 magnets</td>
+          </tr>
+          <tr>
+            <td>Quiz interativo</td>
+            <td><span class="cell-no">✕</span></td>
+            <td><span class="cell-no">✕</span></td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>Nurture automático</td>
+            <td><span class="cell-no">✕</span></td>
+            <td><span class="cell-no">✕</span></td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span> WhatsApp D0–D14</td>
+          </tr>
+          <tr>
+            <td>Qualificação pré-reunião</td>
+            <td><span class="cell-no">✕</span></td>
+            <td style="color:var(--text-dim);font-size:12px;">N/A</td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span> Bot 3 perguntas</td>
+          </tr>
+          <tr>
+            <td>Vendedora dedicada (≠ fundadora)</td>
+            <td><span class="cell-warn">⚠</span> <span style="font-size:11px;color:var(--text-muted);">Equipe 5</span></td>
+            <td style="color:var(--text-dim);font-size:12px;">N/A</td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span> Márcia</td>
+          </tr>
+          <tr>
+            <td>Script de vendas</td>
+            <td><span class="cell-no">✕</span></td>
+            <td style="color:var(--text-dim);font-size:12px;">N/A</td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span> 45min 5 blocos</td>
+          </tr>
+          <tr>
+            <td>Follow-up D1–D30</td>
+            <td><span class="cell-no">✕</span></td>
+            <td style="color:var(--text-dim);font-size:12px;">N/A</td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span> Estruturado</td>
+          </tr>
+          <tr>
+            <td>Pós-venda / indicação</td>
+            <td><span class="cell-warn">⚠</span> <span style="font-size:11px;color:var(--text-muted);">98% orgânico</span></td>
+            <td><span class="cell-no">✕</span></td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span> Programa</td>
+          </tr>
+          <tr>
+            <td>Tráfego pago</td>
+            <td><span class="cell-no">✕</span></td>
+            <td><span class="cell-no">✕</span></td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span> R$500/semana</td>
+          </tr>
+          <tr>
+            <td>Comunidade de noivas</td>
+            <td><span class="cell-no">✕</span></td>
+            <td><span class="cell-yes">✓</span> <span style="font-size:11px;color:var(--text-muted);">Grupos regionais</span></td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span> Clube (futuro)</td>
+          </tr>
+          <tr>
+            <td>Método visível nomeado</td>
+            <td><span class="cell-no">✕</span></td>
+            <td><span class="cell-no">✕</span></td>
+            <td class="col-noivasa-cell"><span class="cell-yes">✓</span></td>
+          </tr>
+          <tr class="score-row">
+            <td>SCORE</td>
+            <td style="color:var(--red);font-weight:700;font-size:15px;">1.5 / 13</td>
+            <td style="color:var(--yellow);font-weight:700;font-size:15px;">2 / 13</td>
+            <td class="col-noivasa-cell" style="font-size:15px;">12 / 13</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-callout">
+      A Múltipla tem escala sem sistema. A Débora tem audiência sem serviço premium. A Noiva S.A. tem <strong>sistema + serviço + funil</strong>. Diferentes ligas.
+    </div>
+  </div>
+</section>
+
+<!-- ── 8. FUNIL ANTES vs DEPOIS ── -->
+<section id="funil">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">08 · Funil Antes vs. Depois</div>
+      <h2 class="section-title">Da Aquisição ao Fechamento — O Que Mudou</h2>
+      <p class="section-desc">O funil antigo quebrava em múltiplos pontos. O novo elimina cada vazamento.</p>
+    </div>
+
+    <div class="funnel-cols">
+      <!-- LEFT: FUNIL ANTIGO -->
+      <div>
+        <div class="funnel-col-header broken">Funil Antigo (Quebrado)</div>
+        <div class="funnel-body broken">
+          <div class="funnel-step">
+            <div class="funnel-step-num">Topo</div>
+            <div class="funnel-step-title">Anúncio Pago</div>
+            <div class="funnel-step-desc">R$500/semana, lead chega frio, sem contexto.</div>
+          </div>
+          <div class="funnel-arrow">↓</div>
+          <div class="funnel-step">
+            <div class="funnel-step-num">Captura</div>
+            <div class="funnel-step-title">WhatsApp — Lead Frio</div>
+            <div class="funnel-step-desc">Sem contexto, sem qualificação prévia.</div>
+            <span class="funnel-warn">⚠ 40% perda aqui</span>
+          </div>
+          <div class="funnel-arrow">↓</div>
+          <div class="funnel-step">
+            <div class="funnel-step-num">Nutrição</div>
+            <div class="funnel-step-title">PDF de Preços — Enviado Frio</div>
+            <div class="funnel-step-desc">Preço antes do valor. Autoelimina leads não-qualificados.</div>
+            <span class="funnel-warn">⚠ 30% perda aqui</span>
+          </div>
+          <div class="funnel-arrow">↓</div>
+          <div class="funnel-step">
+            <div class="funnel-step-num">Reunião</div>
+            <div class="funnel-step-title">Reunião 1h30 com Giovanna</div>
+            <div class="funnel-step-desc">Noiva acha que Giovanna será sua assessora — gera decepção pós-venda.</div>
+            <span class="funnel-warn">⚠ 50% perda aqui</span>
+          </div>
+          <div class="funnel-arrow">↓</div>
+          <div class="funnel-step">
+            <div class="funnel-step-num">Follow-up</div>
+            <div class="funnel-step-title">Follow-up Informal</div>
+            <div class="funnel-step-desc">Sem cadência. Sem script. Dependente de memória.</div>
+            <span class="funnel-warn">⚠ 20% perda aqui</span>
+          </div>
+          <div class="funnel-arrow">↓</div>
+          <div class="funnel-step">
+            <div class="funnel-step-num">Resultado</div>
+            <div class="funnel-step-title">Fechamento: 8–10 de 100 leads</div>
+            <div class="funnel-step-desc">Taxa efetiva estimada: 8–10%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: FUNIL NOVO -->
+      <div>
+        <div class="funnel-col-header new">Funil Novo (Implementando)</div>
+        <div class="funnel-body new">
+          <div class="funnel-step">
+            <div class="funnel-step-num">Topo</div>
+            <div class="funnel-step-title">Instagram + TikTok + Tráfego Pago → Quiz</div>
+            <div class="funnel-step-desc">4 pilares de conteúdo: 30% Método, 25% Bastidor, 25% Educação, 20% Prova Social</div>
+            <span class="funnel-ok">✓ Tráfego qualificado</span>
+          </div>
+          <div class="funnel-arrow">↓</div>
+          <div class="funnel-step">
+            <div class="funnel-step-num">Captura</div>
+            <div class="funnel-step-title">4 Lead Magnets</div>
+            <div class="funnel-step-desc">Quiz 1 "Qual assessoria?", Quiz 2 "Quanto custa casar?", Checklist "50 Coisas", Mini Curso 3 vídeos</div>
+            <span class="funnel-ok">✓ Segmentação por perfil</span>
+          </div>
+          <div class="funnel-arrow">↓</div>
+          <div class="funnel-step">
+            <div class="funnel-step-num">Qualificação</div>
+            <div class="funnel-step-title">Bot WhatsApp — 3 Perguntas</div>
+            <div class="funnel-step-desc">Quando? Fornecedores? Budget? → Split: QUALIFICADO vs LEAD FRIO com nurture separado</div>
+            <span class="funnel-ok">✓ Zero reunião com lead frio</span>
+          </div>
+          <div class="funnel-arrow">↓</div>
+          <div class="funnel-step">
+            <div class="funnel-step-num">Nurture</div>
+            <div class="funnel-step-title">Sequência WhatsApp D0–D14</div>
+            <div class="funnel-step-desc">6 mensagens para leads frios. Aquece antes de escalar para reunião.</div>
+            <span class="funnel-ok">✓ Aproveitamento do lead frio</span>
+          </div>
+          <div class="funnel-arrow">↓</div>
+          <div class="funnel-step">
+            <div class="funnel-step-num">Reunião</div>
+            <div class="funnel-step-title">Reunião 45min com Márcia — 5 Blocos</div>
+            <div class="funnel-step-desc">Conexão → Diagnóstico → Método → Pacotes → Objeções. 4 pacotes: Início ~R$3.100, Completa ~R$4.500 (carro-chefe), Exclusiva ~R$7.500, Giovanna Direct</div>
+            <span class="funnel-ok">✓ Expectativa alinhada antes</span>
+          </div>
+          <div class="funnel-arrow">↓</div>
+          <div class="funnel-step">
+            <div class="funnel-step-num">Follow-up</div>
+            <div class="funnel-step-title">Follow-up Estruturado D+0 a D+30</div>
+            <div class="funnel-step-desc">Cadência definida. Script por dia. Sem depender de memória.</div>
+            <span class="funnel-ok">✓ Cadência previsível</span>
+          </div>
+          <div class="funnel-arrow">↓</div>
+          <div class="funnel-step">
+            <div class="funnel-step-num">Pós-venda</div>
+            <div class="funnel-step-title">Grupo VIP + Noiva Indica Noiva + Clube</div>
+            <div class="funnel-step-desc">Depoimento estruturado, programa de indicação ativo, comunidade de noivas.</div>
+            <span class="funnel-ok">✓ Motor de indicação sistematizado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 9. VALIDAÇÃO ── -->
+<section id="validacao">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">09 · Validação</div>
+      <h2 class="section-title">Checklist de Validação — Chief Strategy Advisor</h2>
+      <p class="section-desc">4 testes de baixo custo para validar as assumptions mais frágeis antes de escalar.</p>
+    </div>
+
+    <div class="valid-grid">
+
+      <div class="valid-card">
+        <div class="valid-card-num">Teste 01</div>
+        <div class="valid-card-title">Criativo "Método" vs. "Emocional"</div>
+        <div class="valid-card-desc">Rodar 2 criativos em tráfego pago: um com ângulo racional (método, etapas, sistema) vs. um com ângulo emocional (noiva presente, vivenciar). Validar qual converte melhor com o ICP real.</div>
+        <div class="valid-meta">
+          <span class="badge badge-yellow">R$200</span>
+          <span class="badge badge-blue">14 dias</span>
+        </div>
+      </div>
+
+      <div class="valid-card">
+        <div class="valid-card-num">Teste 02</div>
+        <div class="valid-card-title">5 Entrevistas com Noivas R$3–8K</div>
+        <div class="valid-card-desc">Entrevistas qualitativas com noivas no ticket-alvo. Validar vocabulário "vivenciar vs gerenciar", dores reais na contratação e decisores de escolha da assessoria.</div>
+        <div class="valid-meta">
+          <span class="badge badge-green">R$0</span>
+          <span class="badge badge-blue">7 dias</span>
+        </div>
+      </div>
+
+      <div class="valid-card">
+        <div class="valid-card-num">Teste 03</div>
+        <div class="valid-card-title">A/B de Headline no Quiz</div>
+        <div class="valid-card-desc">Testar duas headlines de entrada no quiz: "Descubra qual assessoria é pra você" vs "Quanto vai custar seu casamento?" Medir taxa de início e conclusão.</div>
+        <div class="valid-meta">
+          <span class="badge badge-yellow">R$200</span>
+          <span class="badge badge-blue">14 dias</span>
+        </div>
+      </div>
+
+      <div class="valid-card">
+        <div class="valid-card-num">Teste 04</div>
+        <div class="valid-card-title">Visualização Rápida do Método</div>
+        <div class="valid-card-desc">Reis IA produz uma representação visual do método (infográfico ou vídeo reel 60s) em 3 dias. Medir engajamento vs conteúdo emocional. Validar se o formato "sistema visível" ressoa.</div>
+        <div class="valid-meta">
+          <span class="badge badge-green">R$0 (Reis IA)</span>
+          <span class="badge badge-blue">3 dias</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="valid-total">
+      <div class="valid-total-label">
+        <strong>Investimento total para validação completa</strong><br>
+        4 testes paralelos · baixo risco · alta velocidade de aprendizado
+      </div>
+      <div class="valid-total-right">
+        <div class="valid-total-stat">
+          <span class="num">R$400</span>
+          <span class="lbl">Investimento</span>
+        </div>
+        <div class="valid-total-stat">
+          <span class="num">10 dias</span>
+          <span class="lbl">Para validar</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="final-verdict">
+      <div class="final-verdict-label">Veredicto Final</div>
+      <div class="final-verdict-text">
+        O mercado não tem concorrentes reais — tem referências. A Múltipla mostra o teto do modelo analógico. A Débora mostra o potencial de audiência digital. A Noiva S.A. pode ser a primeira a combinar <strong>escala + método + funil digital</strong>.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="footer-brand">
+      <strong>REIS <span class="accent">[IA]</span></strong> — Análise produzida pelo sistema de agentes
+    </div>
+    <div class="footer-sub">Abril 2026 &middot; Uso exclusivo Noiva S.A.</div>
+  </div>
+</footer>
+
+<script>
+  // Smooth scroll with nav offset
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        const offset = 60;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // Active nav highlight on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + entry.target.id) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { threshold: 0.25, rootMargin: '-60px 0px -40% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

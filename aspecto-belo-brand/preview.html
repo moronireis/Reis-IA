@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aspecto Belo — Design System Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #E53935;
+      --red-light: #EF5350;
+      --red-dark: #C62828;
+      --dark: #2D2D2D;
+      --gray: #666666;
+      --gray-light: #F5F5F5;
+      --border: #E0E0E0;
+      --white: #FFFFFF;
+    }
+
+    body {
+      font-family: 'Open Sans', Arial, sans-serif;
+      color: var(--dark);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--white);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header img { height: 48px; }
+    .header nav a {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--dark);
+      text-decoration: none;
+      margin-left: 32px;
+      transition: color 0.2s;
+    }
+    .header nav a:hover { color: var(--red); }
+    .header nav a.active { color: var(--red); }
+
+    /* ── Sections ── */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 64px 24px;
+    }
+    .section-alt { background: var(--gray-light); }
+    .section-alt .section { padding: 64px 24px; }
+
+    .section-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+    .section-subtitle {
+      font-size: 16px;
+      color: var(--gray);
+      margin-bottom: 48px;
+    }
+
+    /* ── Logo Display ── */
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+    }
+    .logo-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      background: var(--white);
+    }
+    .logo-card.dark-bg { background: var(--dark); }
+    .logo-card img, .logo-card object { max-width: 200px; max-height: 180px; }
+    .logo-card-label {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .logo-card.dark-bg .logo-card-label { color: #aaa; }
+
+    /* ── Color Palette ── */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+    }
+    .color-swatch {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .color-swatch-block {
+      height: 100px;
+      width: 100%;
+    }
+    .color-swatch-info {
+      padding: 12px 16px;
+      background: white;
+    }
+    .color-swatch-name {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--dark);
+    }
+    .color-swatch-hex {
+      font-family: monospace;
+      font-size: 13px;
+      color: var(--gray);
+    }
+
+    /* ── Typography ── */
+    .type-sample {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .type-sample:last-child { border-bottom: none; }
+    .type-label {
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--gray);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .type-h1 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 48px; line-height: 1.2; }
+    .type-h2 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 36px; line-height: 1.25; }
+    .type-h3 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 28px; line-height: 1.3; }
+    .type-h4 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.35; }
+    .type-body { font-family: 'Open Sans', sans-serif; font-weight: 400; font-size: 16px; line-height: 1.6; }
+    .type-caption { font-family: 'Open Sans', sans-serif; font-weight: 400; font-size: 14px; line-height: 1.5; color: var(--gray); }
+
+    /* ── Buttons ── */
+    .button-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .btn {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: var(--red);
+      color: white;
+      padding: 12px 32px;
+      box-shadow: 0 2px 8px rgba(229, 57, 53, 0.25);
+    }
+    .btn-primary:hover { background: var(--red-dark); box-shadow: 0 4px 16px rgba(229, 57, 53, 0.35); }
+    .btn-secondary {
+      background: white;
+      color: var(--red);
+      padding: 10px 30px;
+      border: 2px solid var(--red);
+    }
+    .btn-secondary:hover { background: #FFF5F5; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--red);
+      padding: 10px 24px;
+    }
+    .btn-ghost:hover { text-decoration: underline; }
+
+    /* ── Cards ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.10); }
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: #FFEBEE;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .card-icon svg { width: 24px; height: 24px; }
+    .card h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .card p { color: var(--gray); font-size: 15px; }
+
+    /* ── Form ── */
+    .form-group {
+      margin-bottom: 20px;
+      max-width: 480px;
+    }
+    .form-group label {
+      display: block;
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0 16px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 15px;
+      color: var(--dark);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .form-group textarea { height: 120px; padding: 12px 16px; resize: vertical; }
+    .form-group input:focus,
+    .form-group textarea:focus { border: 2px solid var(--red); }
+    .form-group input::placeholder { color: #999; }
+
+    /* ── Business Card Preview ── */
+    .bcard-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 32px;
+    }
+    .bcard {
+      width: 360px;
+      height: 200px;
+      border-radius: 10px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .bcard-front {
+      background: white;
+      gap: 12px;
+    }
+    .bcard-front img { height: 60px; }
+    .bcard-front .tagline {
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 300;
+      font-size: 12px;
+      color: var(--gray);
+      letter-spacing: 2px;
+    }
+    .bcard-back {
+      background: var(--red);
+      color: white;
+      gap: 6px;
+      text-align: center;
+    }
+    .bcard-back .name {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .bcard-back .role {
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 300;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    .bcard-back .contact {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 12px;
+      margin-top: 8px;
+      opacity: 0.85;
+      line-height: 1.8;
+    }
+
+    /* ── Social Media Templates ── */
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .social-template {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+    }
+    .social-post {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--gray-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      position: relative;
+    }
+    .social-post::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: var(--red);
+    }
+    .social-post .watermark {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      opacity: 0.15;
+      height: 40px;
+    }
+    .social-post h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      color: var(--dark);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .social-post p {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 16px;
+      color: var(--gray);
+      text-align: center;
+    }
+    .social-label {
+      padding: 12px 16px;
+      background: white;
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--gray);
+      text-align: center;
+    }
+
+    /* ── Story Template ── */
+    .social-story {
+      width: 270px;
+      aspect-ratio: 9/16;
+      background: linear-gradient(180deg, var(--red) 0%, var(--red-dark) 100%);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      color: white;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(229, 57, 53, 0.3);
+    }
+    .social-story h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .social-story p {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      text-align: center;
+      opacity: 0.9;
+    }
+    .social-story .swipe-up {
+      position: absolute;
+      bottom: 24px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      background: var(--dark);
+      color: white;
+      padding: 48px 24px 32px;
+      text-align: center;
+    }
+    .footer p {
+      font-size: 14px;
+      opacity: 0.6;
+      margin-top: 16px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .header { padding: 12px 16px; }
+      .header nav a { margin-left: 16px; font-size: 13px; }
+      .section { padding: 40px 16px; }
+      .section-title { font-size: 26px; }
+      .type-h1 { font-size: 32px; }
+      .type-h2 { font-size: 26px; }
+      .bcard { width: 100%; max-width: 360px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <img src="logo/aspecto-belo-logo.svg" alt="Aspecto Belo" style="height: 52px;">
+    <nav>
+      <a href="#" class="active">Inicio</a>
+      <a href="#">Servicos</a>
+      <a href="#">Portfolio</a>
+      <a href="#">Contato</a>
+    </nav>
+  </header>
+
+  <!-- ── 1. Logo Variations ── -->
+  <div class="section">
+    <h2 class="section-title">1. Logo System</h2>
+    <p class="section-subtitle">All logo variations for different use cases</p>
+    <div class="logo-grid">
+      <div class="logo-card">
+        <img src="logo/aspecto-belo-logo.svg" alt="Full Logo">
+        <span class="logo-card-label">Primary Lockup</span>
+      </div>
+      <div class="logo-card dark-bg">
+        <img src="logo/aspecto-belo-logo.svg" alt="Logo on Dark" style="filter: brightness(1.1);">
+        <span class="logo-card-label">On Dark Background</span>
+      </div>
+      <div class="logo-card">
+        <img src="logo/aspecto-belo-wordmark.svg" alt="Wordmark">
+        <span class="logo-card-label">Wordmark Only</span>
+      </div>
+      <div class="logo-card">
+        <img src="logo/aspecto-belo-favicon.svg" alt="Favicon" style="max-width: 64px;">
+        <span class="logo-card-label">Favicon</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 2. Color Palette ── -->
+  <div class="section-alt">
+    <div class="section">
+      <h2 class="section-title">2. Color Palette</h2>
+      <p class="section-subtitle">Primary and secondary brand colors</p>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #E53935;"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Aspecto Red</div>
+            <div class="color-swatch-hex">#E53935</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #2D2D2D;"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Dark Charcoal</div>
+            <div class="color-swatch-hex">#2D2D2D</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #FFFFFF; border: 1px solid #eee;"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">White</div>
+            <div class="color-swatch-hex">#FFFFFF</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #EF5350;"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Light Red</div>
+            <div class="color-swatch-hex">#EF5350</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #C62828;"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Dark Red</div>
+            <div class="color-swatch-hex">#C62828</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #666666;"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Medium Gray</div>
+            <div class="color-swatch-hex">#666666</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #F5F5F5;"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Light Gray</div>
+            <div class="color-swatch-hex">#F5F5F5</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #E0E0E0;"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Border Gray</div>
+            <div class="color-swatch-hex">#E0E0E0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 3. Typography ── -->
+  <div class="section">
+    <h2 class="section-title">3. Typography</h2>
+    <p class="section-subtitle">Montserrat for headings, Open Sans for body text</p>
+
+    <div class="type-sample">
+      <div class="type-label">H1 -- Montserrat Bold 48px</div>
+      <div class="type-h1">Transforme seu espaco com qualidade</div>
+    </div>
+    <div class="type-sample">
+      <div class="type-label">H2 -- Montserrat Bold 36px</div>
+      <div class="type-h2">Solucoes completas em reformas</div>
+    </div>
+    <div class="type-sample">
+      <div class="type-label">H3 -- Montserrat SemiBold 28px</div>
+      <div class="type-h3">Projetos residenciais e comerciais</div>
+    </div>
+    <div class="type-sample">
+      <div class="type-label">H4 -- Montserrat SemiBold 22px</div>
+      <div class="type-h4">Acabamento de alto padrao</div>
+    </div>
+    <div class="type-sample">
+      <div class="type-label">Body -- Open Sans Regular 16px</div>
+      <div class="type-body">A Aspecto Belo oferece solucoes completas em reformas e construcao, com foco em qualidade, cumprimento de prazos e acabamento impecavel. Cada projeto e tratado de forma unica, garantindo que o resultado final supere suas expectativas.</div>
+    </div>
+    <div class="type-sample">
+      <div class="type-label">Caption -- Open Sans Regular 14px</div>
+      <div class="type-caption">Projeto concluido em dezembro de 2025 - Zona Sul, Sao Paulo</div>
+    </div>
+  </div>
+
+  <!-- ── 4. Buttons ── -->
+  <div class="section-alt">
+    <div class="section">
+      <h2 class="section-title">4. Buttons</h2>
+      <p class="section-subtitle">Interactive button styles</p>
+      <div class="button-row">
+        <button class="btn btn-primary">Solicitar Orcamento</button>
+        <button class="btn btn-secondary">Ver Portfolio</button>
+        <button class="btn btn-ghost">Saiba mais</button>
+      </div>
+      <div class="button-row" style="margin-top: 16px;">
+        <button class="btn btn-primary" style="font-size: 14px; padding: 10px 24px;">Botao Pequeno</button>
+        <button class="btn btn-primary" style="font-size: 18px; padding: 16px 40px;">Botao Grande</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 5. Cards ── -->
+  <div class="section">
+    <h2 class="section-title">5. Service Cards</h2>
+    <p class="section-subtitle">Card components for services and features</p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">
+          <svg fill="none" stroke="#E53935" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h3>Reformas Residenciais</h3>
+        <p>Transformamos ambientes residenciais com qualidade, do projeto a entrega final com acabamento impecavel.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg fill="none" stroke="#E53935" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        </div>
+        <h3>Reformas Comerciais</h3>
+        <p>Espacos comerciais projetados para produtividade e impressionar seus clientes desde a entrada.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg fill="none" stroke="#E53935" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <h3>Manutencao Predial</h3>
+        <p>Servicos de manutencao preventiva e corretiva para manter seu imovel em perfeito estado.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6. Forms ── -->
+  <div class="section-alt">
+    <div class="section">
+      <h2 class="section-title">6. Form Elements</h2>
+      <p class="section-subtitle">Input fields and form components</p>
+      <div class="form-group">
+        <label>Nome completo</label>
+        <input type="text" placeholder="Digite seu nome">
+      </div>
+      <div class="form-group">
+        <label>Telefone / WhatsApp</label>
+        <input type="tel" placeholder="(11) 99999-9999">
+      </div>
+      <div class="form-group">
+        <label>Descreva seu projeto</label>
+        <textarea placeholder="Conte-nos sobre a reforma que voce precisa..."></textarea>
+      </div>
+      <button class="btn btn-primary">Enviar Solicitacao</button>
+    </div>
+  </div>
+
+  <!-- ── 7. Business Card ── -->
+  <div class="section">
+    <h2 class="section-title">7. Business Card</h2>
+    <p class="section-subtitle">Front and back layout (90mm x 50mm)</p>
+    <div class="bcard-container">
+      <div class="bcard bcard-front">
+        <img src="logo/aspecto-belo-logo.svg" alt="Logo" style="height: 72px;">
+      </div>
+      <div class="bcard bcard-back">
+        <div class="name">Nome do Profissional</div>
+        <div class="role">Engenheiro / Arquiteto</div>
+        <div class="contact">
+          (11) 99999-9999<br>
+          contato@aspectobelo.com.br<br>
+          www.aspectobelo.com.br
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 8. Social Media Templates ── -->
+  <div class="section-alt">
+    <div class="section">
+      <h2 class="section-title">8. Social Media Templates</h2>
+      <p class="section-subtitle">Instagram feed post and story format</p>
+      <div style="display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start;">
+        <!-- Feed Post -->
+        <div style="flex: 1; min-width: 300px;">
+          <div class="social-template">
+            <div class="social-post">
+              <h2>Reforma completa em 45 dias</h2>
+              <p>Do projeto a entrega, sem surpresas no orcamento.</p>
+              <img src="logo/aspecto-belo-wordmark.svg" alt="Watermark" class="watermark">
+            </div>
+            <div class="social-label">Instagram Feed Post -- 1080x1080px</div>
+          </div>
+        </div>
+        <!-- Story -->
+        <div>
+          <div class="social-story">
+            <h2>Antes & Depois</h2>
+            <p>Veja a transformacao deste apartamento no Morumbi</p>
+            <div class="swipe-up">Arraste para cima</div>
+          </div>
+          <div class="social-label" style="text-align: center; margin-top: 8px;">Story -- 1080x1920px</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <img src="logo/aspecto-belo-logo.svg" alt="Aspecto Belo" style="height: 48px; filter: brightness(2);">
+    <p>Aspecto Belo -- Solucoes & Reformas | Design System v1.0 | 2026</p>
+  </footer>
+
+</body>
+</html>

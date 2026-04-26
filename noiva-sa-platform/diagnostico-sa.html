@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>Diagnóstico SA — Raio X da Assessora · Noiva S.A.</title>
+  <meta name="description" content="Descubra o que está travando seu crescimento como assessora de casamentos. Diagnóstico exclusivo em 5-10 minutos." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Design Tokens ─── */
+    :root {
+      --rose:         #DBA99F;
+      --blush:        #FFCBC1;
+      --cream:        #F4F3EE;
+      --eucalyptus:   #4A6741;
+      --eucalyptus-light: rgba(74,103,65,0.2);
+      --taupe:        #9C958F;
+      --silver:       #BAB9B6;
+      --rose-light:   #ECC8BE;
+      --rose-dark:    #C49189;
+      --taupe-dark:   #6b635d;
+      --bg:           #0a0a0a;
+      --card-bg:      #141414;
+      --card-bg-2:    #1a1a1a;
+      --track-bg:     #2a2a2a;
+      --font-serif:   'Cormorant Garamond', Georgia, serif;
+      --font-sans:    'Montserrat', sans-serif;
+      --font-body:    'Source Sans 3', sans-serif;
+      --font-script:  'Great Vibes', cursive;
+      --glass-border: rgba(219,169,159,0.12);
+      --rose-alpha:   rgba(219,169,159,0.15);
+      --radius-card:  12px;
+      --radius-btn:   8px;
+      --radius-pill:  24px;
+    }
+
+    /* ─── Reset ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg);
+      font-family: var(--font-body);
+      color: var(--cream);
+      -webkit-font-smoothing: antialiased;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--taupe-dark); border-radius: 2px; }
+
+    /* ─── App Shell ─── */
+    #app { position: relative; z-index: 10; min-height: 100vh; }
+
+    /* ─── Screens ─── */
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .screen.active { display: flex; }
+
+    /* ─── Container ─── */
+    .container {
+      width: 100%;
+      max-width: 600px;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    @media (min-width: 480px) {
+      .container { padding-left: 24px; padding-right: 24px; }
+    }
+
+    /* ─── Logo ─── */
+    .logo {
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: 18px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .logo .noiva { color: var(--rose); }
+    .logo .sa    { color: var(--taupe); }
+
+    /* ─── Pill Badge ─── */
+    .pill-badge {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--rose);
+      border: 1px solid rgba(219,169,159,0.35);
+      border-radius: var(--radius-pill);
+      padding: 6px 16px;
+    }
+
+    /* ─── Divider ─── */
+    .divider {
+      width: 48px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rose), transparent);
+      margin: 0 auto;
+      opacity: 0.4;
+    }
+
+    /* ─── Buttons ─── */
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      height: 52px;
+      background: var(--rose);
+      color: #0a0a0a;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      border: none;
+      border-radius: var(--radius-btn);
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-outline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 44px;
+      background: transparent;
+      color: var(--taupe);
+      font-family: var(--font-sans);
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      border: 1px solid var(--track-bg);
+      border-radius: var(--radius-btn);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      text-decoration: none;
+    }
+    .btn-outline:hover { border-color: var(--rose); color: var(--rose); }
+
+    .btn-ghost {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--taupe);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+    .btn-ghost:hover { color: var(--rose); }
+
+    /* ═══════════════════════════════════════════════════════
+       SCREEN 1: WELCOME
+    ═══════════════════════════════════════════════════════ */
+    #screen-welcome {
+      padding: 40px 0 120px;
+      position: relative;
+      overflow: hidden;
+    }
+    #screen-welcome::before {
+      content: '';
+      position: absolute;
+      top: 20%; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(219,169,159,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .welcome-inner {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .welcome-title {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(32px, 8vw, 48px);
+      color: var(--cream);
+      letter-spacing: 0.02em;
+      line-height: 1.15;
+      margin: 20px 0 16px;
+    }
+
+    .welcome-subtitle {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--taupe);
+      line-height: 1.7;
+      max-width: 400px;
+      margin: 0 auto 28px;
+    }
+
+    .welcome-cta-wrap {
+      max-width: 320px;
+      margin: 0 auto 48px;
+    }
+
+    .welcome-meta-line {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--taupe-dark);
+      text-align: center;
+      margin-top: 14px;
+      text-transform: uppercase;
+    }
+
+    /* ─── Areas Section ─── */
+    .areas-section {
+      text-align: center;
+    }
+
+    .areas-title {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(18px, 4vw, 22px);
+      color: var(--cream);
+      letter-spacing: 0.04em;
+      margin-bottom: 20px;
+    }
+
+    .areas-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .areas-grid-last {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 400px) {
+      .areas-grid { grid-template-columns: 1fr; }
+      .areas-grid-last { grid-template-columns: 1fr; }
+    }
+
+    .area-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(219,169,159,0.1);
+      border-radius: var(--radius-card);
+      padding: 14px 14px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .area-card:hover {
+      border-color: rgba(219,169,159,0.25);
+      background: #1a1a1a;
+    }
+
+    .area-card-icon {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(219,169,159,0.3);
+      background: rgba(219,169,159,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .area-card-icon svg {
+      width: 20px; height: 20px;
+      stroke: var(--rose);
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .area-card-body { flex: 1; min-width: 0; }
+
+    .area-card-name {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    .area-card-desc {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--taupe);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .area-card-q-badge {
+      position: absolute;
+      bottom: 10px;
+      left: 14px;
+      font-family: var(--font-sans);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--taupe-dark);
+      background: var(--track-bg);
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    .area-card-chevron {
+      position: absolute;
+      right: 12px;
+      top: 14px;
+      color: var(--taupe-dark);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .area-card { padding-bottom: 28px; }
+
+    .welcome-footer-note {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--taupe-dark);
+      text-align: center;
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SCREEN 2-6: CATEGORY PAGES
+    ═══════════════════════════════════════════════════════ */
+    #screen-category {
+      padding: 0;
+      align-items: stretch;
+    }
+
+    /* ─── Sticky Progress Card ─── */
+    .progress-card {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 14px 16px;
+    }
+    @media (min-width: 480px) {
+      .progress-card { padding: 14px 24px; }
+    }
+
+    .progress-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .progress-label {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .progress-pct {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--rose);
+    }
+    .progress-bar-track {
+      width: 100%;
+      height: 3px;
+      background: var(--track-bg);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rose), var(--blush));
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+    .progress-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .progress-answered {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--taupe);
+    }
+    .progress-area-badge {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      color: var(--taupe);
+    }
+    .progress-area-badge strong { color: var(--rose); font-weight: 700; }
+
+    /* ─── Category Scrollable Content ─── */
+    .cat-scroll-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 140px;
+      overflow-y: auto;
+    }
+
+    /* ─── Category Header ─── */
+    .category-header {
+      text-align: center;
+      padding: 32px 16px 24px;
+      width: 100%;
+      max-width: 600px;
+    }
+    @media (min-width: 480px) {
+      .category-header { padding: 32px 24px 24px; }
+    }
+
+    .cat-icon-circle {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      border: 1px solid rgba(219,169,159,0.4);
+      background: rgba(219,169,159,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .cat-icon-circle svg {
+      width: 26px; height: 26px;
+      stroke: var(--rose);
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .cat-title {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(22px, 6vw, 30px);
+      color: var(--rose);
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+    }
+    .cat-desc {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--taupe);
+      line-height: 1.6;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* ─── Question Cards ─── */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 600px;
+      padding: 0 16px;
+    }
+    @media (min-width: 480px) {
+      .questions-list { padding: 0 24px; }
+    }
+
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid #2a2a2a;
+      border-radius: var(--radius-card);
+      padding: 18px 18px 16px;
+      transition: border-color 0.2s;
+    }
+    .question-card.answered { border-color: rgba(219,169,159,0.22); }
+
+    .card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .subtopic-label {
+      font-family: var(--font-sans);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--rose);
+      padding-top: 4px;
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .score-box-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+    .score-box {
+      width: 52px; height: 52px;
+      background: var(--card-bg-2);
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s;
+    }
+    .score-box.has-value { border-color: rgba(219,169,159,0.4); }
+    .score-number {
+      font-family: var(--font-serif);
+      font-size: 30px;
+      font-weight: 400;
+      color: var(--taupe-dark);
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .score-number.has-value { color: var(--cream); }
+    .score-status {
+      font-family: var(--font-sans);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .question-text {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--cream);
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    /* ─── Thin slider track (decorative) ─── */
+    .slider-wrap { margin-bottom: 12px; }
+    .slider-input {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+      background: var(--track-bg);
+    }
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--rose);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .slider-input::-webkit-slider-thumb:hover { transform: scale(1.3); }
+    .slider-input::-moz-range-thumb {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--rose);
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ─── Number Buttons (primary interaction) ─── */
+    .num-buttons {
+      display: flex;
+      gap: 4px;
+      justify-content: space-between;
+    }
+    .num-btn {
+      flex: 1;
+      min-width: 0;
+      height: 34px;
+      border-radius: 6px;
+      background: var(--card-bg-2);
+      border: 1px solid #2a2a2a;
+      color: var(--taupe-dark);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+    @media (max-width: 360px) {
+      .num-btn { height: 28px; font-size: 11px; }
+    }
+    .num-btn:hover {
+      border-color: rgba(219,169,159,0.4);
+      color: var(--cream);
+    }
+    .num-btn.selected {
+      border-color: rgba(219,169,159,0.55);
+      background: rgba(219,169,159,0.12);
+      color: var(--cream);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       BOTTOM FIXED NAV BAR
+    ═══════════════════════════════════════════════════════ */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 16px 20px;
+      background: linear-gradient(to top, #0a0a0a 70%, transparent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      z-index: 200;
+    }
+    @media (min-width: 480px) {
+      .bottom-bar { padding: 12px 24px 24px; }
+    }
+    .bottom-bar-inner {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-btn-prev {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      min-width: 100px;
+      padding: 0 20px;
+      background: transparent;
+      border: 1px solid var(--track-bg);
+      border-radius: var(--radius-btn);
+      color: var(--taupe);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .nav-btn-prev:hover { border-color: var(--taupe); color: var(--cream); }
+
+    .nav-btn-next {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      flex: 1;
+      background: var(--rose);
+      border: none;
+      border-radius: var(--radius-btn);
+      color: #0a0a0a;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+    .nav-btn-next:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* ═══════════════════════════════════════════════════════
+       SCREEN: LOADING
+    ═══════════════════════════════════════════════════════ */
+    #screen-loading {
+      justify-content: center;
+      text-align: center;
+      padding: 40px 16px;
+    }
+    .loading-rings {
+      position: relative;
+      width: 120px; height: 120px;
+      margin: 0 auto 32px;
+    }
+    .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1.5px solid var(--rose);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse-ring 2s ease-out infinite;
+    }
+    .ring:nth-child(1) { width: 40px; height: 40px; animation-delay: 0s; }
+    .ring:nth-child(2) { width: 70px; height: 70px; animation-delay: 0.4s; }
+    .ring:nth-child(3) { width: 100px; height: 100px; animation-delay: 0.8s; }
+    .ring:nth-child(4) { width: 130px; height: 130px; animation-delay: 1.2s; }
+    @keyframes pulse-ring {
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+      30%  { opacity: 0.8; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
+    }
+    .loading-text {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--cream);
+    }
+    .loading-sub {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      color: var(--taupe);
+      margin-top: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SCREEN: RESULTS
+    ═══════════════════════════════════════════════════════ */
+    #screen-results {
+      padding: 40px 0 60px;
+      align-items: center;
+    }
+
+    .results-badge-row {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .results-title {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(32px, 8vw, 44px);
+      color: var(--cream);
+      text-align: center;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+    .results-subtitle {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--taupe);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* ─── Overall Score Card ─── */
+    .score-main-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      padding: 28px 20px 24px;
+      text-align: center;
+      margin: 24px 0;
+    }
+
+    .score-svg-wrap {
+      position: relative;
+      width: 160px; height: 160px;
+      margin: 0 auto;
+    }
+    .score-svg-wrap svg { transform: rotate(-90deg); }
+    .score-center-text {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .score-big-pct {
+      font-family: var(--font-serif);
+      font-size: 46px;
+      font-weight: 400;
+      color: var(--cream);
+      line-height: 1;
+    }
+    .score-pct-sign {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--taupe);
+      vertical-align: super;
+    }
+
+    .score-spark {
+      margin: 12px auto 8px;
+      display: block;
+    }
+
+    .score-status-text {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--rose);
+      text-align: center;
+      max-width: 280px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* ─── Dual Radar Charts ─── */
+    .radar-dual-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 380px) {
+      .radar-dual-wrap { grid-template-columns: 1fr; }
+    }
+
+    .radar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      padding: 14px 12px 12px;
+      text-align: center;
+    }
+    .radar-card-title {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      margin-bottom: 12px;
+    }
+    .radar-card-avg {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      color: var(--taupe-dark);
+      margin-top: 10px;
+    }
+    .radar-card-avg strong { color: var(--rose); }
+
+    /* ─── Category Legend ─── */
+    .cat-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .legend-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-pill);
+      padding: 5px 10px;
+    }
+    .legend-pill-icon {
+      width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .legend-pill-icon svg {
+      width: 14px; height: 14px;
+      stroke: var(--rose);
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .legend-pill-text {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--taupe);
+      white-space: nowrap;
+    }
+    .legend-pill-pct {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--rose);
+    }
+
+    /* ─── Detalhamento por Área ─── */
+    .detail-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .detail-card-header {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: 18px;
+      color: var(--rose);
+      letter-spacing: 0.04em;
+      text-align: center;
+      padding: 18px 16px 14px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid #1f1f1f;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-row:hover { background: rgba(219,169,159,0.04); }
+
+    .detail-row-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(219,169,159,0.2);
+      background: rgba(219,169,159,0.05);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .detail-row-icon svg {
+      width: 16px; height: 16px;
+      stroke: var(--rose);
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .detail-row-name {
+      flex: 1;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--cream);
+    }
+    .detail-row-score {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--rose);
+    }
+
+    /* ─── Results CTA ─── */
+    .results-cta {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .results-cta-text {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--taupe);
+      line-height: 1.7;
+      margin-bottom: 20px;
+      max-width: 380px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .results-cta-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ─── Page Footer ─── */
+    .page-footer {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--taupe-dark);
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    /* ─── Transitions ─── */
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(32px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .slide-in { animation: slideInRight 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .fade-in  { animation: fadeInUp 0.5s ease forwards; }
+    .fade-in-delay-1 { animation: fadeInUp 0.5s ease 0.1s both; }
+    .fade-in-delay-2 { animation: fadeInUp 0.5s ease 0.2s both; }
+    .fade-in-delay-3 { animation: fadeInUp 0.5s ease 0.3s both; }
+    .fade-in-delay-4 { animation: fadeInUp 0.5s ease 0.4s both; }
+    .fade-in-delay-5 { animation: fadeInUp 0.5s ease 0.5s both; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCREEN 1: WELCOME
+  ═══════════════════════════════════════════════════════ -->
+  <div id="screen-welcome" class="screen active">
+    <div class="container">
+      <div class="welcome-inner">
+        <div class="logo" style="margin-bottom:32px;">
+          <span class="noiva">NOIVA</span> <span class="sa">S.A.</span>
+        </div>
+
+        <div class="pill-badge">Diagnóstico Exclusivo</div>
+
+        <h1 class="welcome-title" style="margin-top:16px;">
+          Raio X da Assessora<br>de Casamentos
+        </h1>
+
+        <p class="welcome-subtitle">
+          Descubra o que está travando seu crescimento e como destravar o próximo nível
+        </p>
+
+        <div class="welcome-cta-wrap">
+          <button class="btn-primary" onclick="startDiagnostic()">
+            Iniciar Avaliação &nbsp;›
+          </button>
+          <p class="welcome-meta-line">30 perguntas &nbsp;|&nbsp; 6-12 minutos</p>
+        </div>
+
+        <div class="divider" style="margin-bottom:32px;"></div>
+
+        <div class="areas-section">
+          <p class="areas-title">6 Áreas que serão avaliadas</p>
+
+          <div class="areas-grid" id="areas-grid-top"></div>
+          <div class="areas-grid-last" id="areas-grid-last"></div>
+
+          <p class="welcome-footer-note" style="margin-top:16px;">
+            Suas respostas são confidenciais e usadas apenas para seu diagnóstico
+          </p>
+        </div>
+
+        <p class="page-footer" style="margin-top:40px;">NOIVA S.A. · Assessoria SA · 2026</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCREEN 2-6: CATEGORY PAGES
+  ═══════════════════════════════════════════════════════ -->
+  <div id="screen-category" class="screen">
+
+    <!-- Sticky Progress Card -->
+    <div class="progress-card" id="progress-card">
+      <div class="progress-top-row">
+        <span class="progress-label">Progresso do Diagnóstico</span>
+        <span class="progress-pct" id="prog-pct">0%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="prog-bar" style="width:0%"></div>
+      </div>
+      <div class="progress-bottom-row">
+        <button class="btn-ghost" onclick="goToWelcome()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Voltar ao início
+        </button>
+        <span class="progress-answered" id="prog-answered">0 de 30 respondidas</span>
+        <span class="progress-area-badge" id="prog-area">Área <strong>1</strong> de 6</span>
+      </div>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="cat-scroll-area" id="cat-scroll-area">
+      <div class="category-header" id="cat-header">
+        <!-- Injected by JS -->
+      </div>
+      <div class="questions-list" id="questions-list">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+    <!-- Fixed Bottom Nav Bar -->
+    <div class="bottom-bar">
+      <div class="bottom-bar-inner">
+        <button class="nav-btn-prev" id="nav-prev-btn" onclick="prevCategory()">
+          ‹ Anterior
+        </button>
+        <button class="nav-btn-next" id="nav-next-btn" onclick="nextCategory()">
+          Próximo ›
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCREEN: LOADING
+  ═══════════════════════════════════════════════════════ -->
+  <div id="screen-loading" class="screen">
+    <div class="loading-rings">
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
+    </div>
+    <div class="loading-text">Analisando seu diagnóstico...</div>
+    <div class="loading-sub">calculando 30 competências</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCREEN: RESULTS
+  ═══════════════════════════════════════════════════════ -->
+  <div id="screen-results" class="screen">
+    <div class="container">
+
+      <div class="logo" style="margin-bottom:24px; text-align:center;">
+        <span class="noiva">NOIVA</span> <span class="sa">S.A.</span>
+      </div>
+
+      <div class="results-badge-row fade-in">
+        <span class="pill-badge">Diagnóstico Completo</span>
+      </div>
+
+      <h2 class="results-title fade-in-delay-1">Seu Raio X Completo</h2>
+      <p class="results-subtitle fade-in-delay-2">
+        Análise detalhada da sua carreira em assessoria de casamentos
+      </p>
+
+      <!-- Score Card -->
+      <div class="score-main-card fade-in-delay-2">
+        <div class="score-svg-wrap">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            <circle cx="80" cy="80" r="68" fill="none" stroke="#2a2a2a" stroke-width="8"/>
+            <circle id="score-arc" cx="80" cy="80" r="68" fill="none"
+              stroke="url(#roseGradResult)" stroke-width="8"
+              stroke-linecap="round"
+              stroke-dasharray="427.26"
+              stroke-dashoffset="427.26"/>
+            <defs>
+              <linearGradient id="roseGradResult" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#DBA99F"/>
+                <stop offset="100%" stop-color="#FFCBC1"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="score-center-text">
+            <div class="score-big-pct" id="score-pct-num">0<span class="score-pct-sign">%</span></div>
+          </div>
+        </div>
+
+        <!-- Sparkle icon -->
+        <svg class="score-spark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DBA99F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
+          <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
+          <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
+          <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
+        </svg>
+
+        <p class="score-status-text" id="score-status-text">—</p>
+      </div>
+
+      <!-- Dual Radar Charts -->
+      <div class="radar-dual-wrap fade-in-delay-3">
+        <div class="radar-card">
+          <div class="radar-card-title">Seu Resultado Atual</div>
+          <svg id="radar-actual" width="100%" viewBox="0 0 220 220" style="display:block;"></svg>
+          <div class="radar-card-avg">Média geral: <strong id="radar-avg-actual">0.0%</strong></div>
+        </div>
+        <div class="radar-card">
+          <div class="radar-card-title">Resultado Desejado</div>
+          <svg id="radar-desired" width="100%" viewBox="0 0 220 220" style="display:block;"></svg>
+          <div class="radar-card-avg">Meta: <strong style="color:#4A6741;">100% em todas</strong></div>
+        </div>
+      </div>
+
+      <!-- Category Legend Pills -->
+      <div class="cat-legend fade-in-delay-3" id="cat-legend">
+        <!-- Injected by JS -->
+      </div>
+
+      <!-- Detalhamento por Área -->
+      <div class="detail-card fade-in-delay-4">
+        <div class="detail-card-header">Detalhamento por Área</div>
+        <div id="detail-rows">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="results-cta fade-in-delay-5">
+        <p class="results-cta-text">
+          A Assessoria SA acelera seu desenvolvimento em todas essas áreas com método, acompanhamento e comunidade.
+        </p>
+        <div class="results-cta-btns">
+          <a href="assessoria-sa-apresentacao.html" class="btn-primary" style="text-decoration:none;">
+            Quero Acelerar Meus Resultados
+          </a>
+          <button class="btn-outline" onclick="restartDiagnostic()">
+            Refazer Diagnóstico
+          </button>
+        </div>
+      </div>
+
+      <p class="page-footer">NOIVA S.A. · Assessoria SA · 2026</p>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════════════ */
+const CATEGORIES = [
+  {
+    id: 'fundamentos',
+    title: 'Fundamentos da Assessoria',
+    desc: 'O quanto você domina os conceitos essenciais para atuar como assessora de casamentos.',
+    iconSVG: `<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg>`,
+    questions: [
+      { subtopic: 'Tipos de assessoria', text: 'De 0 a 10, o quanto você domina as diferenças entre assessoria completa, parcial e do dia?' },
+      { subtopic: 'Papel do cerimonialista', text: 'De 0 a 10, qual seu nível de conhecimento sobre o papel da assessora antes, durante e após o evento?' },
+      { subtopic: 'Resolução de problemas', text: 'De 0 a 10, o quanto você se sente preparada para resolver problemas sob pressão no dia do evento?' },
+      { subtopic: 'Identificação de riscos', text: 'De 0 a 10, qual sua capacidade de identificar e prevenir riscos antes de um casamento?' },
+      { subtopic: 'Inteligência emocional', text: 'De 0 a 10, como está sua inteligência emocional para lidar com noivos, famílias e situações difíceis?' },
+    ]
+  },
+  {
+    id: 'planejamento',
+    title: 'Planejamento & Organização',
+    desc: 'Sua capacidade de planejar, organizar e estruturar todos os detalhes de um casamento.',
+    iconSVG: `<svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/><path d="M9 6V4"/><path d="M15 6V4"/></svg>`,
+    questions: [
+      { subtopic: 'Planejamento orçamentário', text: 'De 0 a 10, o quanto você domina a montagem de um planejamento orçamentário completo de casamento?' },
+      { subtopic: 'Perfil do casamento', text: 'De 0 a 10, sua capacidade de identificar o estilo do casamento e adaptar todo o planejamento?' },
+      { subtopic: 'Cronograma de cerimônia', text: 'De 0 a 10, o quanto você sabe criar um cronograma detalhado de cerimônia e recepção?' },
+      { subtopic: 'Experiência do casal', text: 'De 0 a 10, seu conhecimento sobre como mapear e entregar a experiência que os noivos esperam?' },
+      { subtopic: 'Checklist de contratação', text: 'De 0 a 10, o quanto seu checklist de contratação de fornecedores está completo e testado?' },
+    ]
+  },
+  {
+    id: 'fornecedores',
+    title: 'Fornecedores & Contratos',
+    desc: 'Seu relacionamento, conhecimento técnico e capacidade de negociação com fornecedores.',
+    iconSVG: `<svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+    questions: [
+      { subtopic: 'Base de fornecedores', text: 'De 0 a 10, o quanto você tem uma rede sólida de fornecedores de confiança?' },
+      { subtopic: 'Comparativo de orçamentos', text: 'De 0 a 10, sua capacidade de solicitar, comparar e negociar orçamentos de forma profissional?' },
+      { subtopic: 'Análise técnica', text: 'De 0 a 10, o quanto você sabe avaliar tecnicamente cada tipo de fornecedor além do preço?' },
+      { subtopic: 'Contratos', text: 'De 0 a 10, seu domínio sobre cláusulas contratuais e o que precisa constar em cada contrato?' },
+      { subtopic: 'Visita técnica', text: 'De 0 a 10, sua experiência e método para realizar visitas técnicas a locais de evento?' },
+    ]
+  },
+  {
+    id: 'execucao',
+    title: 'Execução & Liderança',
+    desc: 'Sua capacidade de liderar equipe, executar no dia do evento e garantir excelência na entrega.',
+    iconSVG: `<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+    questions: [
+      { subtopic: 'Gerenciamento de equipe', text: 'De 0 a 10, o quanto você sabe montar e liderar uma equipe para o dia do evento?' },
+      { subtopic: 'Protocolos de cerimônia', text: 'De 0 a 10, seu domínio sobre protocolos, ordem de cortejo e tipos de cerimônia?' },
+      { subtopic: 'Preparação para o dia', text: 'De 0 a 10, o quanto você está preparada com mala da assessora, logística e uniforme da equipe?' },
+      { subtopic: 'Gestão no dia do evento', text: 'De 0 a 10, sua capacidade de gerenciar cronograma, imprevistos e ajustes em tempo real?' },
+      { subtopic: 'Pós-evento', text: 'De 0 a 10, o quanto você estrutura o pós-evento com reunião interna e pesquisa de satisfação?' },
+    ]
+  },
+  {
+    id: 'gestao',
+    title: 'Gestão Empresarial',
+    desc: 'Sua maturidade como empresária e a estrutura do seu negócio de assessoria.',
+    iconSVG: `<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>`,
+    questions: [
+      { subtopic: 'Formalização', text: 'De 0 a 10, o quanto seu negócio está formalizado com CNPJ, contratos e estrutura legal?' },
+      { subtopic: 'Precificação', text: 'De 0 a 10, o quanto sua precificação é baseada em cálculos reais de custo, margem e valor?' },
+      { subtopic: 'Presença digital', text: 'De 0 a 10, como está sua presença profissional, portfólio e estratégia nas redes sociais?' },
+      { subtopic: 'Captação de clientes', text: 'De 0 a 10, o quanto você domina técnicas de venda e tem um processo estruturado de captação?' },
+      { subtopic: 'Controle financeiro', text: 'De 0 a 10, seu controle de fluxo de caixa, receitas, despesas e projeção financeira?' },
+    ]
+  },
+  {
+    id: 'negocio',
+    title: 'Negócio & Realidade',
+    desc: 'A verdade sobre ferramentas, marketing, vendas e como sua agenda reflete o estágio atual do seu negócio.',
+    iconSVG: `<svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-5"/><circle cx="19" cy="8" r="1.5"/></svg>`,
+    questions: [
+      { subtopic: 'Ferramentas & apps de gestão', text: 'De 0 a 10, o quanto você usa ferramentas ou aplicativos (CRM, planilhas, apps de organização) para gerir clientes, eventos e operação?' },
+      { subtopic: 'Marketing & aquisição', text: 'De 0 a 10, o quanto seu marketing atual (redes, indicações, parcerias) traz clientes de forma consistente, sem depender da sorte?' },
+      { subtopic: 'Resultado de vendas', text: 'De 0 a 10, o quanto o volume de contratos fechados hoje está no patamar que você realmente deseja?' },
+      { subtopic: 'Agenda & delegação', text: 'De 0 a 10, o quanto sua agenda funciona sem você presa no operacional — com equipe e processos que permitem delegar de verdade?' },
+      { subtopic: 'Previsibilidade do negócio', text: 'De 0 a 10, o quanto você tem previsibilidade de receita e clientes para os próximos 3 a 6 meses?' },
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════ */
+const state = {
+  currentCat: 0,
+  answers: Array(30).fill(0)
+};
+
+function qIndex(catIdx, qIdx) { return catIdx * 5 + qIdx; }
+
+/* ═══════════════════════════════════════════════════════
+   INIT — Render welcome area cards
+═══════════════════════════════════════════════════════ */
+(function initWelcome() {
+  const gridTop  = document.getElementById('areas-grid-top');
+  const gridLast = document.getElementById('areas-grid-last');
+
+  CATEGORIES.forEach((cat, i) => {
+    const card = document.createElement('div');
+    card.className = 'area-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.innerHTML = `
+      <div class="area-card-icon">${cat.iconSVG}</div>
+      <div class="area-card-body">
+        <div class="area-card-name">${cat.title}</div>
+        <div class="area-card-desc">${cat.desc}</div>
+      </div>
+      <div class="area-card-chevron">›</div>
+      <div class="area-card-q-badge">5 perguntas</div>
+    `;
+    card.addEventListener('click', () => startFromArea(i));
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') startFromArea(i); });
+
+    if (i < 4) { gridTop.appendChild(card); }
+    else       { gridLast.appendChild(card); }
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════
+   SCREEN MANAGEMENT
+═══════════════════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* ═══════════════════════════════════════════════════════
+   WELCOME ACTIONS
+═══════════════════════════════════════════════════════ */
+function startDiagnostic() {
+  state.currentCat = 0;
+  state.answers = Array(30).fill(0);
+  renderCategory(0);
+  showScreen('screen-category');
+}
+
+function startFromArea(catIdx) {
+  state.currentCat = catIdx;
+  state.answers = Array(30).fill(0);
+  renderCategory(catIdx);
+  showScreen('screen-category');
+}
+
+function goToWelcome() {
+  showScreen('screen-welcome');
+}
+
+function restartDiagnostic() {
+  state.answers = Array(30).fill(0);
+  state.currentCat = 0;
+  showScreen('screen-welcome');
+}
+
+/* ═══════════════════════════════════════════════════════
+   STATUS LABELS
+═══════════════════════════════════════════════════════ */
+function getStatusLabel(val) {
+  if (val === 0) return { text: 'Não avaliado', color: 'var(--taupe)' };
+  if (val <= 3)  return { text: 'Crítico',      color: 'var(--rose-dark)' };
+  if (val <= 5)  return { text: 'Básico',        color: 'var(--silver)' };
+  if (val <= 7)  return { text: 'Em desenv.',    color: 'var(--rose)' };
+  if (val <= 9)  return { text: 'Bom',           color: 'var(--rose-light)' };
+  return { text: 'Excelente', color: '#4A6741' };
+}
+
+/* ═══════════════════════════════════════════════════════
+   PROGRESS UPDATE
+═══════════════════════════════════════════════════════ */
+function updateProgress() {
+  const answered = state.answers.filter(v => v > 0).length;
+  const pct = Math.round((answered / state.answers.length) * 100);
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('prog-answered').textContent = answered + ' de ' + state.answers.length + ' respondidas';
+  document.getElementById('prog-area').innerHTML =
+    'Área <strong>' + (state.currentCat + 1) + '</strong> de ' + CATEGORIES.length;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER CATEGORY
+═══════════════════════════════════════════════════════ */
+function renderCategory(catIdx) {
+  state.currentCat = catIdx;
+  const cat = CATEGORIES[catIdx];
+
+  // Header
+  const headerEl = document.getElementById('cat-header');
+  headerEl.innerHTML = `
+    <div class="cat-icon-circle">${cat.iconSVG}</div>
+    <div class="cat-title">${cat.title}</div>
+    <div class="cat-desc">${cat.desc}</div>
+  `;
+
+  // Questions
+  const listEl = document.getElementById('questions-list');
+  let html = '';
+  cat.questions.forEach((q, qIdx) => {
+    const gi = qIndex(catIdx, qIdx);
+    const val = state.answers[gi];
+    const status = getStatusLabel(val);
+    const hasVal = val > 0;
+
+    html += `
+      <div class="question-card${hasVal ? ' answered' : ''}" id="qcard-${gi}">
+        <div class="card-top-row">
+          <div class="subtopic-label">${q.subtopic}</div>
+          <div class="score-box-wrap">
+            <div class="score-box${hasVal ? ' has-value' : ''}" id="sbox-${gi}">
+              <span class="score-number${hasVal ? ' has-value' : ''}" id="snum-${gi}">${val}</span>
+            </div>
+            <div class="score-status" id="sstat-${gi}" style="color:${status.color};">${status.text}</div>
+          </div>
+        </div>
+        <div class="question-text">${q.text}</div>
+        <div class="slider-wrap">
+          <input
+            type="range"
+            class="slider-input"
+            id="slider-${gi}"
+            min="0" max="10" step="1"
+            value="${val}"
+            oninput="onSliderChange(${gi}, this.value)"
+            style="background:${buildSliderBg((val/10)*100)};"
+          />
+        </div>
+        <div class="num-buttons" id="numbtns-${gi}">
+          ${buildNumButtons(gi, val)}
+        </div>
+      </div>
+    `;
+  });
+  listEl.innerHTML = html;
+
+  // Nav buttons
+  const prevBtn = document.getElementById('nav-prev-btn');
+  const nextBtn = document.getElementById('nav-next-btn');
+  prevBtn.style.display = catIdx === 0 ? 'none' : 'flex';
+  nextBtn.textContent = catIdx === CATEGORIES.length - 1 ? 'Ver Resultados ›' : 'Próximo ›';
+
+  updateProgress();
+
+  // Animate
+  listEl.classList.remove('slide-in');
+  void listEl.offsetWidth;
+  listEl.classList.add('slide-in');
+}
+
+function buildSliderBg(fillPct) {
+  if (fillPct === 0) return 'var(--track-bg)';
+  return `linear-gradient(to right, #DBA99F 0%, #FFCBC1 ${fillPct}%, #2a2a2a ${fillPct}%, #2a2a2a 100%)`;
+}
+
+function buildNumButtons(gi, selectedVal) {
+  let html = '';
+  for (let n = 0; n <= 10; n++) {
+    const sel = (n === selectedVal && selectedVal > 0) ? ' selected' : '';
+    html += `<button class="num-btn${sel}" onclick="onNumClick(${gi}, ${n})">${n}</button>`;
+  }
+  return html;
+}
+
+/* ═══════════════════════════════════════════════════════
+   INTERACTION
+═══════════════════════════════════════════════════════ */
+function onSliderChange(gi, rawVal) {
+  const val = parseInt(rawVal, 10);
+  setAnswer(gi, val);
+  document.getElementById('slider-' + gi).style.background = buildSliderBg((val / 10) * 100);
+  updateNumButtons(gi, val);
+  updateScoreBox(gi, val);
+  updateProgress();
+}
+
+function onNumClick(gi, val) {
+  setAnswer(gi, val);
+  const slider = document.getElementById('slider-' + gi);
+  slider.value = val;
+  slider.style.background = buildSliderBg((val / 10) * 100);
+  updateNumButtons(gi, val);
+  updateScoreBox(gi, val);
+  updateProgress();
+}
+
+function setAnswer(gi, val) {
+  state.answers[gi] = val;
+  const card = document.getElementById('qcard-' + gi);
+  if (card) card.classList.toggle('answered', val > 0);
+}
+
+function updateNumButtons(gi, selectedVal) {
+  const wrap = document.getElementById('numbtns-' + gi);
+  if (!wrap) return;
+  wrap.querySelectorAll('.num-btn').forEach((btn, n) => {
+    btn.classList.toggle('selected', n === selectedVal && selectedVal > 0);
+  });
+}
+
+function updateScoreBox(gi, val) {
+  const box  = document.getElementById('sbox-' + gi);
+  const num  = document.getElementById('snum-' + gi);
+  const stat = document.getElementById('sstat-' + gi);
+  if (!box || !num || !stat) return;
+  const hasVal = val > 0;
+  box.classList.toggle('has-value', hasVal);
+  num.classList.toggle('has-value', hasVal);
+  num.textContent = val;
+  const status = getStatusLabel(val);
+  stat.textContent = status.text;
+  stat.style.color = status.color;
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════ */
+function prevCategory() {
+  if (state.currentCat > 0) {
+    renderCategory(state.currentCat - 1);
+    document.getElementById('cat-scroll-area').scrollTo(0, 0);
+    window.scrollTo(0, 0);
+  }
+}
+
+function nextCategory() {
+  if (state.currentCat < CATEGORIES.length - 1) {
+    renderCategory(state.currentCat + 1);
+    document.getElementById('cat-scroll-area').scrollTo(0, 0);
+    window.scrollTo(0, 0);
+  } else {
+    showScreen('screen-loading');
+    setTimeout(() => {
+      buildResults();
+      showScreen('screen-results');
+    }, 2200);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESULTS
+═══════════════════════════════════════════════════════ */
+function buildResults() {
+  // Category averages (0-10 scale)
+  const catAvgs = CATEGORIES.map((cat, ci) =>
+    cat.questions.reduce((sum, _, qi) => sum + state.answers[qIndex(ci, qi)], 0) / 5
+  );
+
+  // Overall percentage
+  const overallAvg = catAvgs.reduce((a, b) => a + b, 0) / CATEGORIES.length;
+  const pct = Math.round(overallAvg * 10);
+
+  // Score circle animation
+  const arc = document.getElementById('score-arc');
+  const circumference = 427.26;
+  const fraction = pct / 100;
+  setTimeout(() => {
+    arc.style.transition = 'stroke-dashoffset 1.2s ease';
+    arc.style.strokeDashoffset = circumference - (circumference * fraction);
+  }, 100);
+
+  // Animated count-up
+  animateNumber('score-pct-num', 0, pct, 1200, '%');
+
+  // Status text
+  const statusEl = document.getElementById('score-status-text');
+  if (pct <= 25)       statusEl.textContent = 'Momento de transformação! Cada passo conta na jornada.';
+  else if (pct <= 50)  statusEl.textContent = 'Você está construindo sua base. O próximo nível está próximo.';
+  else if (pct <= 75)  statusEl.textContent = 'Ótimo progresso! Foque nas áreas críticas para acelerar.';
+  else                  statusEl.textContent = 'Parabéns! Você está no caminho da excelência.';
+
+  // Radar charts
+  buildRadarActual(catAvgs);
+  buildRadarDesired();
+
+  // Legend pills
+  const legendEl = document.getElementById('cat-legend');
+  legendEl.innerHTML = '';
+  CATEGORIES.forEach((cat, i) => {
+    const catPct = Math.round(catAvgs[i] * 10);
+    const pill = document.createElement('div');
+    pill.className = 'legend-pill';
+    pill.innerHTML = `
+      <div class="legend-pill-icon">${cat.iconSVG}</div>
+      <span class="legend-pill-text">${cat.title.split(' ')[0]}</span>
+      <span class="legend-pill-pct">${catPct}%</span>
+    `;
+    legendEl.appendChild(pill);
+  });
+
+  // Average for radar card
+  document.getElementById('radar-avg-actual').textContent = pct.toFixed(1) + '%';
+
+  // Detail rows
+  const detailEl = document.getElementById('detail-rows');
+  detailEl.innerHTML = '';
+  CATEGORIES.forEach((cat, i) => {
+    const avg = catAvgs[i];
+    const row = document.createElement('div');
+    row.className = 'detail-row';
+    row.innerHTML = `
+      <div class="detail-row-icon">${cat.iconSVG}</div>
+      <div class="detail-row-name">${cat.title}</div>
+      <div class="detail-row-score">${avg.toFixed(1)}/10</div>
+    `;
+    detailEl.appendChild(row);
+  });
+}
+
+/* ─── Radar Chart — Actual ─── */
+function buildRadarActual(catAvgs) {
+  const svg = document.getElementById('radar-actual');
+  const cx = 110, cy = 110, maxR = 80;
+  svg.innerHTML = buildRadarInner(catAvgs.map(v => v / 10), cx, cy, maxR, '#DBA99F', 'rgba(219,169,159,0.15)', true);
+}
+
+/* ─── Radar Chart — Desired ─── */
+function buildRadarDesired() {
+  const svg = document.getElementById('radar-desired');
+  const cx = 110, cy = 110, maxR = 80;
+  const fullScores = CATEGORIES.map(() => 1);
+  svg.innerHTML = buildRadarInner(fullScores, cx, cy, maxR, '#4A6741', 'rgba(74,103,65,0.18)', false);
+}
+
+function buildRadarInner(fractions, cx, cy, maxR, strokeColor, fillColor, showLabels) {
+  const N = fractions.length;
+  const angles = Array.from({length: N}, (_, i) => (i * 2 * Math.PI / N) - Math.PI / 2);
+
+  let html = '';
+
+  // Grid circles at 25/50/75/100%
+  [0.25, 0.5, 0.75, 1].forEach(frac => {
+    const pts = angles.map(a => ({
+      x: cx + maxR * frac * Math.cos(a),
+      y: cy + maxR * frac * Math.sin(a)
+    }));
+    const d = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ') + ' Z';
+    html += `<path d="${d}" fill="none" stroke="#2a2a2a" stroke-width="1"/>`;
+  });
+
+  // Axis lines
+  angles.forEach(a => {
+    html += `<line x1="${cx}" y1="${cy}" x2="${(cx + maxR * Math.cos(a)).toFixed(1)}" y2="${(cy + maxR * Math.sin(a)).toFixed(1)}" stroke="#2a2a2a" stroke-width="1"/>`;
+  });
+
+  // Data polygon
+  const dataPts = angles.map((a, i) => ({
+    x: cx + maxR * fractions[i] * Math.cos(a),
+    y: cy + maxR * fractions[i] * Math.sin(a)
+  }));
+  const dataPath = dataPts.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ') + ' Z';
+  html += `<path d="${dataPath}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="2" stroke-linejoin="round"/>`;
+
+  // Vertex dots + labels
+  if (showLabels) {
+    const catShortNames = ['Fund.', 'Planj.', 'Fornec.', 'Execução', 'Gestão', 'Negócio'];
+    angles.forEach((a, i) => {
+      const px = cx + maxR * fractions[i] * Math.cos(a);
+      const py = cy + maxR * fractions[i] * Math.sin(a);
+      html += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3" fill="${strokeColor}"/>`;
+
+      // Label position — offset outward
+      const lx = cx + (maxR + 18) * Math.cos(a);
+      const ly = cy + (maxR + 18) * Math.sin(a);
+      const pct = Math.round(fractions[i] * 100);
+      const anchor = Math.cos(a) > 0.1 ? 'start' : Math.cos(a) < -0.1 ? 'end' : 'middle';
+      html += `<text x="${lx.toFixed(1)}" y="${(ly - 3).toFixed(1)}" text-anchor="${anchor}" font-family="Montserrat, sans-serif" font-size="7.5" font-weight="600" fill="#9C958F">${catShortNames[i]}</text>`;
+      html += `<text x="${lx.toFixed(1)}" y="${(ly + 8).toFixed(1)}" text-anchor="${anchor}" font-family="Montserrat, sans-serif" font-size="8" font-weight="700" fill="${strokeColor}">${pct}%</text>`;
+    });
+  } else {
+    // Desired chart — just vertex dots
+    angles.forEach((a, i) => {
+      const px = cx + maxR * fractions[i] * Math.cos(a);
+      const py = cy + maxR * fractions[i] * Math.sin(a);
+      html += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3" fill="${strokeColor}"/>`;
+    });
+  }
+
+  return html;
+}
+
+/* ─── Animated Number Count-up ─── */
+function animateNumber(id, from, to, duration, suffix) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = performance.now();
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(from + (to - from) * ease);
+    el.innerHTML = current + (suffix ? `<span class="score-pct-sign">${suffix}</span>` : '');
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+</script>
+</body>
+</html>

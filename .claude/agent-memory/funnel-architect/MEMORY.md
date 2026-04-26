@@ -10,3 +10,6 @@ Created 2026-04-14 as part of Phase A foundation.
 
 ## Working sibling
 - `offer-architect` defines WHAT each offer is; you define WHERE it sits in the ladder and HOW people move between steps.
+
+## Project
+- [project_znith_funnels.md](project_znith_funnels.md) — ZNITH dual-funnel: Master Consulting (Raio-X→Leitura→Expansao→OS) + AI Hype (qualify→route). Construcao civil niche.

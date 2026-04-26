@@ -1,0 +1,2377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planejamento Estratégico — Castelo dos Lagos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #C9A96E;
+      --gold-light: #D4B97A;
+      --gold-dark: #A68B5B;
+      --cream: #F5F0E8;
+      --cream-dark: #E8E0D0;
+      --charcoal: #1A1A1A;
+      --charcoal-light: #2A2A2A;
+      --text-dark: #0D0D0D;
+      --text-muted: #6B6B6B;
+      --text-light: #999;
+      --white: #FFFFFF;
+      --surface: #FAFAF7;
+      --border: rgba(201, 169, 110, 0.2);
+      --border-strong: rgba(201, 169, 110, 0.4);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--white);
+      color: var(--text-dark);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .font-display { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+    h1, h2, h3 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+    .container-narrow { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+    section { padding: 6rem 0; }
+
+    /* ── Confidential Bar ── */
+    .confidential-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: var(--gold);
+      color: var(--charcoal);
+      text-align: center;
+      padding: 0.4rem;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--charcoal);
+      position: relative;
+      overflow: hidden;
+      padding-top: 2rem;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(201, 169, 110, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(201, 169, 110, 0.05) 0%, transparent 50%);
+    }
+
+    .hero-content {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      padding: 2rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid rgba(201, 169, 110, 0.3);
+      border-radius: 100px;
+      color: var(--gold);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 3rem;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      color: var(--white);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
+      font-weight: 400;
+    }
+
+    .hero-sub {
+      font-size: 1.125rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 300;
+      max-width: 500px;
+      margin: 0 auto 3rem;
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta-item { text-align: center; }
+
+    .hero-meta-item .number {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--gold);
+    }
+
+    .hero-meta-item .label {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(255,255,255,0.2);
+    }
+
+    .scroll-indicator span {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(201,169,110,0.4), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* ── Navigation ── */
+    .nav {
+      position: fixed;
+      top: 1.6rem;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1rem 0;
+      transition: all 0.4s ease;
+    }
+
+    .nav.scrolled {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 0;
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: color 0.3s;
+    }
+
+    .nav.scrolled .nav-brand { color: var(--charcoal); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav.scrolled .nav-links a { color: var(--text-muted); }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── Section Headers ── */
+    .section-header { margin-bottom: 4rem; }
+
+    .section-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.875rem;
+      color: var(--gold);
+      letter-spacing: 0.15em;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      color: var(--charcoal);
+    }
+
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 300;
+      max-width: 600px;
+      line-height: 1.8;
+    }
+
+    /* ── Diagnosis ── */
+    .diagnosis { background: var(--surface); }
+
+    .diagnosis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .diagnosis-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+      transition: border-color 0.3s;
+    }
+
+    .diagnosis-card:hover { border-color: var(--border-strong); }
+
+    .diagnosis-card .icon {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 1.5rem;
+      color: var(--gold);
+    }
+
+    .diagnosis-card h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: var(--charcoal);
+      letter-spacing: -0.01em;
+    }
+    .diagnosis-card p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.8; }
+
+    /* ── Competitors ── */
+    .competitors { background: var(--charcoal); color: var(--white); }
+    .competitors .section-title { color: var(--white); }
+    .competitors .section-subtitle { color: rgba(255,255,255,0.45); }
+
+    .competitor-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+
+    .competitor-table th {
+      text-align: left;
+      padding: 1rem 1.5rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      border-bottom: 1px solid rgba(201,169,110,0.2);
+      font-weight: 500;
+    }
+
+    .competitor-table td {
+      padding: 1.25rem 1.5rem;
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.7);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      vertical-align: top;
+    }
+
+    .competitor-table tr.highlight td { color: var(--gold); font-weight: 500; }
+
+    .badge-strength {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-high { background: rgba(220, 38, 38, 0.15); color: #FCA5A5; }
+    .badge-medium { background: rgba(245, 158, 11, 0.15); color: #FCD34D; }
+    .badge-advantage { background: rgba(201, 169, 110, 0.15); color: var(--gold); }
+
+    /* ── SWOT ── */
+    .swot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .swot-card { background: var(--white); padding: 2.5rem; }
+
+    .swot-card .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+
+    .swot-card ul { list-style: none; }
+
+    .swot-card li {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      padding: 0.5rem 0;
+      padding-left: 1rem;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .swot-card li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.95rem;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+
+    /* ── Phases ── */
+    .phases { background: var(--surface); }
+    .phase-timeline { position: relative; }
+
+    .phase-item {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 3rem;
+      padding-bottom: 4rem;
+      position: relative;
+    }
+
+    .phase-item:last-child { padding-bottom: 0; }
+
+    .phase-item::before {
+      content: '';
+      position: absolute;
+      left: 100px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .phase-item:last-child::before { display: none; }
+
+    .phase-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--gold);
+      opacity: 0.6;
+      text-align: right;
+      padding-right: 3rem;
+      line-height: 1;
+    }
+
+    .phase-content h3 { font-size: 1.5rem; font-weight: 400; margin-bottom: 0.5rem; }
+
+    .phase-timing {
+      font-size: 0.75rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+    }
+
+    .phase-content p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.8; }
+
+    .phase-deliverables { list-style: none; }
+
+    .phase-deliverables li {
+      font-size: 0.85rem;
+      color: var(--text-dark);
+      padding: 0.6rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .phase-deliverables li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 8px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    /* ── Content Pillars ── */
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--charcoal);
+      border: 1px solid var(--charcoal);
+    }
+
+    .pillar-card {
+      background: var(--white);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      transition: background 0.3s;
+    }
+
+    .pillar-card:hover { background: var(--surface); }
+
+    .pillar-percentage {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .pillar-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.125rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      color: var(--charcoal);
+    }
+
+    .pillar-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.7; }
+
+    /* ── Funnel ── */
+    .funnel-section { background: var(--charcoal); color: var(--white); }
+    .funnel-section .section-title { color: var(--white); }
+    .funnel-section .section-subtitle { color: rgba(255,255,255,0.45); }
+
+    .funnel-stages { display: flex; flex-direction: column; gap: 0; }
+
+    .funnel-stage {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 2rem;
+      padding: 2.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      align-items: start;
+    }
+
+    .funnel-stage:last-child { border-bottom: none; }
+
+    .funnel-stage-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      padding-top: 0.25rem;
+    }
+
+    .funnel-stage-content h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 0.75rem;
+    }
+
+    .funnel-stage-content p { font-size: 0.85rem; color: rgba(255,255,255,0.5); line-height: 1.8; }
+
+    .funnel-stage-content .metric {
+      display: inline-block;
+      margin-top: 0.75rem;
+      padding: 0.3rem 0.8rem;
+      border: 1px solid rgba(201,169,110,0.3);
+      border-radius: 100px;
+      font-size: 0.7rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── KPIs ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+
+    .kpi-card { background: var(--white); padding: 2.5rem; text-align: center; }
+
+    .kpi-current {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-current-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      color: var(--text-light);
+      text-decoration: line-through;
+      margin-bottom: 1rem;
+    }
+
+    .kpi-arrow { display: block; color: var(--gold); margin-bottom: 0.5rem; font-size: 1.25rem; }
+
+    .kpi-target {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 400;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .kpi-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Budget ── */
+    .budget-comparison {
+      display: grid;
+      grid-template-columns: 1fr 60px 1fr;
+      gap: 0;
+      align-items: center;
+      margin-top: 3rem;
+    }
+
+    .budget-card { border: 1px solid var(--border); padding: 2.5rem; }
+    .budget-card.current { opacity: 0.5; }
+    .budget-card.proposed { border-color: var(--gold); }
+
+    .budget-card h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .budget-card.proposed h4 { color: var(--gold); }
+
+    .budget-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      font-size: 0.85rem;
+    }
+
+    .budget-line .item { color: var(--text-muted); }
+    .budget-line .value { font-weight: 500; color: var(--text-dark); }
+
+    .budget-total {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-strong);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+    }
+
+    .budget-total .value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    .budget-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      font-size: 1.5rem;
+    }
+
+    /* ── Next Steps ── */
+    .next-steps { background: var(--charcoal); color: var(--white); }
+    .next-steps .section-title { color: var(--white); }
+
+    .steps-list { list-style: none; counter-reset: steps; }
+
+    .steps-list li {
+      counter-increment: steps;
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      align-items: start;
+    }
+
+    .steps-list li::before {
+      content: counter(steps, decimal-leading-zero);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+      opacity: 0.6;
+    }
+
+    .step-content h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .step-content p { font-size: 0.85rem; color: rgba(255,255,255,0.45); line-height: 1.7; }
+
+    .step-owner {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.2rem 0.6rem;
+      border: 1px solid rgba(201,169,110,0.25);
+      border-radius: 100px;
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── Mockups ── */
+    .mockup-section { background: var(--surface); }
+    .mockup-section.dark { background: var(--charcoal); color: var(--white); }
+    .mockup-section.dark .section-title { color: var(--white); }
+    .mockup-section.dark .section-subtitle { color: rgba(255,255,255,0.45); }
+
+    .mockup-container {
+      margin-top: 3rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--white);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    }
+
+    .mockup-container.dark-mockup {
+      background: #0D0D0D;
+      border-color: rgba(255,255,255,0.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .mockup-browser-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mockup-browser-bar.dark-bar {
+      background: #161616;
+      border-bottom-color: rgba(255,255,255,0.06);
+    }
+
+    .mockup-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ddd;
+    }
+
+    .mockup-dot.dark-dot { background: #333; }
+    .mockup-dot:nth-child(1) { background: #FF5F57; }
+    .mockup-dot:nth-child(2) { background: #FEBC2E; }
+    .mockup-dot:nth-child(3) { background: #28C840; }
+
+    .mockup-url {
+      flex: 1;
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--text-light);
+      background: var(--white);
+      padding: 0.3rem 1rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+    }
+
+    .mockup-url.dark-url {
+      background: #0D0D0D;
+      color: #555;
+    }
+
+    .mockup-body { padding: 2rem; }
+
+    /* Brandbook Mockup */
+    .bb-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .bb-color-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .bb-swatch {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .bb-swatch-label {
+      font-size: 0.6rem;
+      color: var(--text-light);
+      margin-top: 0.25rem;
+      text-align: center;
+    }
+
+    .bb-type-sample h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.75rem;
+      font-weight: 300;
+      color: var(--charcoal);
+      margin-bottom: 0.25rem;
+    }
+
+    .bb-type-sample p {
+      font-size: 0.7rem;
+      color: var(--text-light);
+    }
+
+    .bb-logo-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--charcoal);
+      border-radius: 8px;
+      padding: 2rem;
+      min-height: 120px;
+    }
+
+    .bb-logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--white);
+      letter-spacing: 0.1em;
+    }
+
+    .bb-section-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    .bb-template-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .bb-template {
+      flex: 1;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Hub/CRM Mockup */
+    .hub-sidebar {
+      width: 200px;
+      background: #111;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+
+    .hub-sidebar-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      color: var(--white);
+      font-weight: 300;
+      padding-bottom: 1rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .hub-sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      cursor: default;
+    }
+
+    .hub-sidebar-item.active {
+      background: rgba(201,169,110,0.1);
+      color: var(--gold);
+    }
+
+    .hub-sidebar-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.5;
+    }
+
+    .hub-sidebar-item.active .hub-sidebar-icon { opacity: 1; }
+
+    .hub-main {
+      flex: 1;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .hub-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hub-header h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .hub-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    .hub-stat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .hub-stat-label {
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .hub-stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.75rem;
+      font-weight: 400;
+      color: var(--gold);
+    }
+
+    .hub-stat-change {
+      font-size: 0.65rem;
+      color: #4ADE80;
+      margin-top: 0.25rem;
+    }
+
+    .hub-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .hub-table th {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.3);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .hub-table td {
+      padding: 0.6rem 0.75rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.6);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .hub-badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      font-size: 0.6rem;
+      font-weight: 500;
+    }
+
+    .hub-badge.new { background: rgba(59,130,246,0.15); color: #93C5FD; }
+    .hub-badge.visit { background: rgba(201,169,110,0.15); color: var(--gold); }
+    .hub-badge.proposal { background: rgba(168,85,247,0.15); color: #C4B5FD; }
+    .hub-badge.closed { background: rgba(74,222,128,0.15); color: #4ADE80; }
+
+    .hub-layout { display: flex; min-height: 400px; }
+
+    /* Site Mockup */
+    .site-mockup-hero {
+      background: linear-gradient(135deg, #0D0D0D 0%, #1A1A1A 100%);
+      padding: 3rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .site-mockup-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 80%, rgba(201,169,110,0.08), transparent 60%);
+    }
+
+    .site-mockup-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .site-mockup-nav-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      color: var(--white);
+      font-weight: 300;
+    }
+
+    .site-mockup-nav-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .site-mockup-nav-link {
+      width: 40px;
+      height: 3px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+    }
+
+    .site-mockup-h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--white);
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
+
+    .site-mockup-h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .site-mockup-sub {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .site-mockup-btn {
+      display: inline-block;
+      padding: 0.6rem 1.5rem;
+      background: var(--gold);
+      color: var(--charcoal);
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .site-mockup-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      padding: 1.5rem 2rem;
+      background: #0D0D0D;
+    }
+
+    .site-mockup-gallery-item {
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #1A1A1A, #222);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      color: rgba(255,255,255,0.2);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .site-mockup-footer {
+      padding: 1rem 2rem;
+      background: #0A0A0A;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .site-mockup-footer span {
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 3rem 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p { font-size: 0.75rem; color: var(--text-light); letter-spacing: 0.05em; }
+
+    footer .brand-footer {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.85rem;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    footer .brand-footer span { color: var(--gold); }
+
+    /* ── Closing Section ── */
+    .closing {
+      background: var(--surface);
+      text-align: center;
+      padding: 8rem 0;
+    }
+
+    .closing h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      margin-bottom: 1.5rem;
+    }
+
+    .closing p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 550px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      section { padding: 3rem 0; }
+      .container { padding: 0 1.25rem; }
+      .container-narrow { padding: 0 1.25rem; }
+
+      /* Hero */
+      .hero { min-height: auto; padding: 6rem 0 4rem; }
+      .hero h1 { font-size: 2.25rem; }
+      .hero-sub { font-size: 1rem; margin-bottom: 2rem; }
+      .hero-meta { gap: 1.25rem; }
+      .hero-meta-item .number { font-size: 1.5rem; }
+      .hero-meta-item .label { font-size: 0.6rem; }
+      .hero-badge { font-size: 0.65rem; padding: 0.4rem 1rem; margin-bottom: 2rem; }
+      .scroll-indicator { display: none; }
+
+      /* Nav */
+      .nav-links { display: none; }
+      .confidential-bar { font-size: 0.5rem; padding: 0.3rem; letter-spacing: 0.12em; }
+      .nav { top: 1.3rem; }
+
+      /* Section headers */
+      .section-header { margin-bottom: 2.5rem; }
+      .section-title { font-size: 1.75rem; }
+      .section-subtitle { font-size: 0.9rem; }
+
+      /* Diagnosis */
+      .diagnosis-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .diagnosis-card { padding: 1.5rem; }
+
+      /* Competitors */
+      .competitor-table { display: block; overflow-x: auto; font-size: 0.75rem; }
+      .competitor-table th, .competitor-table td { padding: 0.75rem 1rem; white-space: nowrap; }
+
+      /* SWOT */
+      .swot-grid { grid-template-columns: 1fr; }
+      .swot-card { padding: 1.5rem; }
+
+      /* Phases */
+      .phase-item { grid-template-columns: 1fr; gap: 0.75rem; padding-bottom: 2.5rem; }
+      .phase-item::before { display: none; }
+      .phase-number { text-align: left; padding-right: 0; font-size: 2rem; }
+
+      /* Pillars */
+      .pillars-grid { grid-template-columns: 1fr 1fr; }
+      .pillar-card { padding: 1.5rem 1rem; }
+      .pillar-percentage { font-size: 2rem; }
+      .pillar-name { font-size: 1rem; }
+
+      /* Funnel */
+      .funnel-stage { grid-template-columns: 1fr; gap: 0.25rem; padding: 1.5rem 0; }
+
+      /* KPIs */
+      .kpi-grid { grid-template-columns: 1fr; }
+      .kpi-card { padding: 1.5rem; }
+      .kpi-target { font-size: 2rem; }
+
+      /* Budget */
+      .budget-comparison { grid-template-columns: 1fr; gap: 1rem; }
+      .budget-arrow { transform: rotate(90deg); }
+      .budget-card { padding: 1.5rem; }
+
+      /* Brandbook */
+      .bb-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .bb-logo-area { padding: 1.5rem !important; }
+
+      /* Hub */
+      .hub-sidebar { display: none; }
+      .hub-layout { min-height: auto; }
+      .hub-main { padding: 1rem; }
+      .hub-stats { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+      .hub-stat-card { padding: 0.75rem; }
+      .hub-stat-value { font-size: 1.25rem; }
+      .hub-table { display: block; overflow-x: auto; }
+      .hub-header h4 { font-size: 0.85rem; }
+
+      /* Site mockups */
+      .site-mockup-hero { padding: 2rem 1.25rem; }
+      .site-mockup-hero div[style*="font-size: 2.25rem"] { font-size: 1.4rem !important; }
+      .site-mockup-hero div[style*="font-size: 1.1rem"] { font-size: 0.85rem !important; }
+      .site-mockup-gallery { grid-template-columns: 1fr 1fr !important; }
+      .site-mockup-footer { flex-direction: column; gap: 0.25rem; padding: 0.75rem 1rem; }
+      .site-mockup-nav-links { display: none; }
+
+      /* Closing */
+      .closing { padding: 5rem 0; }
+      .closing h2 { font-size: 1.75rem; }
+
+      /* Steps */
+      .steps-list li { grid-template-columns: 40px 1fr; gap: 1rem; padding: 1.5rem 0; }
+      .steps-list li::before { font-size: 1.25rem; }
+    }
+
+    @media (max-width: 768px) {
+      .strategy-blocks { grid-template-columns: 1fr !important; }
+      .strategy-blocks > div[style*="grid-column: span 2"] { grid-column: span 1 !important; }
+      .instagram-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+
+    @media (max-width: 480px) {
+      .instagram-grid { grid-template-columns: 1fr !important; }
+      .hero h1 { font-size: 1.75rem; }
+      .hero-meta { flex-direction: column; gap: 1rem; }
+      .pillars-grid { grid-template-columns: 1fr; }
+      .hub-stats { grid-template-columns: 1fr; }
+      .section-title { font-size: 1.5rem; }
+      .phase-deliverables li { font-size: 0.8rem; }
+      .budget-line { font-size: 0.8rem; }
+    }
+
+    /* ── Animations ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <div class="confidential-bar">
+    Documento Confidencial — Castelo dos Lagos & Buffet Di Matoso
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-brand">REIS <span style="color: var(--gold)">[IA]</span></a>
+      <ul class="nav-links">
+        <li><a href="#diagnostico">Diagnóstico</a></li>
+        <li><a href="#concorrentes">Concorrentes</a></li>
+        <li><a href="#estrategia">Estratégia</a></li>
+        <li><a href="#entregas">Entregas</a></li>
+        <li><a href="#funil">Funil</a></li>
+        <li><a href="#kpis">Metas</a></li>
+        <li><a href="#investimento">Investimento</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Planejamento Estratégico 2026</div>
+      <h1>Castelo dos Lagos<br><em>& <a href="https://www.instagram.com/buffetdimatoso" target="_blank" style="color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(201,169,110,0.3);">Buffet Di Matoso</a></em></h1>
+      <p class="hero-sub">
+        Da invisibilidade ao desejo.<br>
+        Estratégia de posicionamento, conteúdo e vendas.
+      </p>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <span class="number">13</span>
+          <span class="label">Anos de História</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="number">29</span>
+          <span class="label">Anos de Gastronomia</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="number">16.000</span>
+          <span class="label">m² de Espaço</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="number">4.8</span>
+          <span class="label">Avaliação Média</span>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- Diagnóstico -->
+  <section id="diagnostico" class="diagnosis">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">01</span>
+        <h2 class="section-title">Diagnóstico</h2>
+        <p class="section-subtitle">
+          O Castelo dos Lagos tem um produto premium com 29 anos de excelência gastronômica. O problema não é o produto. É a comunicação.
+        </p>
+      </div>
+
+      <div class="diagnosis-grid">
+        <div class="diagnosis-card fade-in">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8v4l2 2"/>
+          </svg>
+          <h3>Apenas 13 eventos em 2025</h3>
+          <p>Um espaço com capacidade para 330 convidados e 16.000m² operou com uma média de pouco mais de 1 evento por mês no ano passado. O custo fixo não para.</p>
+        </div>
+
+        <div class="diagnosis-card fade-in">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <path d="M8 21h8M12 17v4"/>
+          </svg>
+          <h3>Feed sem identidade visual</h3>
+          <p>O Instagram — principal canal de decisão de noivas — não transmite o padrão premium que o espaço e a gastronomia entregam. O concorrente a 5 minutos de distância tem 15K seguidores e feed impecável.</p>
+        </div>
+
+        <div class="diagnosis-card fade-in">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 3v18h18"/>
+            <path d="M7 16l4-4 4 4 6-6"/>
+          </svg>
+          <h3>Conversão invisível</h3>
+          <p>15-20 orçamentos por dia, mas sem rastreamento. Não se sabe o custo por contrato, a taxa de conversão real, nem de onde vem cada lead. Impossível otimizar o que não se mede.</p>
+        </div>
+
+        <div class="diagnosis-card fade-in">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          <h3>Ausência de brandbook</h3>
+          <p>Sem guia de identidade visual, cada postagem sai diferente. Sem padrão, não existe reconhecimento de marca. Qualquer fornecedor que produz material para o Castelo interpreta do seu jeito.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Análise Competitiva -->
+  <section id="concorrentes" class="competitors">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Análise Competitiva</h2>
+        <p class="section-subtitle">
+          Os concorrentes diretos na região de Ribeirão Pires estão à frente na comunicação digital. Mas nenhum tem a gastronomia do Matoso.
+        </p>
+      </div>
+
+      <div class="fade-in" style="overflow-x: auto;">
+        <table class="competitor-table">
+          <thead>
+            <tr>
+              <th>Espaço</th>
+              <th>Capacidade</th>
+              <th>Preço/Pessoa</th>
+              <th>Instagram</th>
+              <th>Posicionamento</th>
+              <th>Ameaça</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="highlight">
+              <td><a href="https://www.instagram.com/castelodoslagosoficial" target="_blank" style="color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(201,169,110,0.3);">Castelo dos Lagos</a></td>
+              <td>100-330</td>
+              <td>R$100-290</td>
+              <td><a href="https://www.instagram.com/castelodoslagosoficial" target="_blank" style="color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(201,169,110,0.3);">@castelodoslagosoficial</a></td>
+              <td>Medieval + Gastronomia Premium. Nota 4.8/5</td>
+              <td><span class="badge-strength badge-advantage">Você</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.instagram.com/semigualeventos" target="_blank" style="color: rgba(255,255,255,0.7); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.15);">Sem Igual Eventos</a></td>
+              <td>50-400</td>
+              <td>R$156-276</td>
+              <td><a href="https://www.instagram.com/semigualeventos" target="_blank" style="color: rgba(255,255,255,0.7); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.15);">@semigualeventos</a> — 15K / 1.178 posts</td>
+              <td>Medieval europeu, all-inclusive. Nota 4.9/5</td>
+              <td><span class="badge-strength badge-high">Alta</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.instagram.com/sitiocaete_" target="_blank" style="color: rgba(255,255,255,0.7); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.15);">Sítio Caetê</a></td>
+              <td>100-230</td>
+              <td>R$100-115</td>
+              <td><a href="https://www.instagram.com/sitiocaete_" target="_blank" style="color: rgba(255,255,255,0.7); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.15);">@sitiocaete_</a> — Feed profissional</td>
+              <td>Rústico, all-inclusive, acessível. Nota 4.9/5</td>
+              <td><span class="badge-strength badge-medium">Média</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 3rem; padding: 2rem; border: 1px solid rgba(201,169,110,0.15);" class="fade-in">
+        <h3 style="font-size: 1.125rem; color: var(--gold); margin-bottom: 1rem;">Brecha Estratégica Principal</h3>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 1.5rem;">
+          <strong style="color: var(--white);">O Castelo dos Lagos não é um espaço de eventos com decoração temática. É um castelo de verdade.</strong> Nenhum concorrente pode copiar isso. Sem Igual pode melhorar decoração. Sítio Caetê pode refinar o rústico. Ninguém pode construir um castelo para competir. Isso é um <em>moat</em> estrutural — o ativo mais valioso em posicionamento.
+        </p>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 1.5rem;">
+          Quando uma noiva pesquisa "espaço para casamento Ribeirão Pires", ela vê 30 opções. <strong style="color: var(--gold);">Quando pesquisa "casamento em castelo São Paulo", encontra o Castelo dos Lagos. Sozinho.</strong> Sair da categoria "espaço para eventos" e criar a categoria própria: <em>destino de conto de fadas</em>.
+        </p>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.8;">
+          Combinando a narrativa do castelo com os 29 anos de gastronomia assinada do <a href="https://www.instagram.com/buffetdimatoso" target="_blank" style="color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(201,169,110,0.3);">Buffet Di Matoso</a> e a exclusividade de apenas 1 evento por dia, o posicionamento se torna irrecusável. Duas frases-chave que capturam tudo: <strong style="color: var(--white); font-style: italic;">"Toda noiva sonha com um castelo. Agora ele existe."</strong> e <strong style="color: var(--white); font-style: italic;">"Toda noiva sonha em ser rainha. Agora é possível."</strong>
+        </p>
+      </div>
+
+      <!-- Pontos Estratégicos Adicionais -->
+      <div style="margin-top: 3rem; margin-bottom: 1rem; padding: 1rem 1.5rem; border: 1px solid rgba(201,169,110,0.2); border-radius: 4px;" class="fade-in">
+        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.5); line-height: 1.6;"><strong style="color: var(--gold);">Sugestões estratégicas iniciais.</strong> As estratégias abaixo são direcionamentos preliminares. A definição final será feita em conjunto após a reunião de kickoff com toda a equipe.</p>
+      </div>
+      <div class="strategy-blocks fade-in" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06);">
+        <div style="background: var(--charcoal); padding: 2rem;">
+          <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 0.75rem;">Estratégia 01</span>
+          <h4 style="font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 500; color: var(--white); margin-bottom: 0.5rem;">Counter-Programming Sazonal</h4>
+          <p style="font-size: 0.8rem; color: rgba(255,255,255,0.45); line-height: 1.7;">Jantares temáticos medievais no inverno (50 lugares, R$350-500/pessoa). Mini-weddings na pré-temporada. Open days exclusivos para casais. Transformar meses mortos em receita.</p>
+        </div>
+        <div style="background: var(--charcoal); padding: 2rem;">
+          <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 0.75rem;">Estratégia 02</span>
+          <h4 style="font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 500; color: var(--white); margin-bottom: 0.5rem;">Di Matoso como Personagem</h4>
+          <p style="font-size: 0.8rem; color: rgba(255,255,255,0.45); line-height: 1.7;">Série "29 Anos de Mesa". Menu Autoral exclusivo do Castelo. Degustação privativa como etapa de venda. Trocar "buffet incluso" por "gastronomia assinada por Di Matoso".</p>
+        </div>
+        <div style="background: var(--charcoal); padding: 2rem;">
+          <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 0.75rem;">Estratégia 03</span>
+          <h4 style="font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 500; color: var(--white); margin-bottom: 0.5rem;">Operação Reputação 5.0</h4>
+          <p style="font-size: 0.8rem; color: rgba(255,255,255,0.45); line-height: 1.7;">De 4.8 para 5.0 em 6 meses. Responder todas as avaliações. Follow-up pós-evento em 48h. Resolver pontos fracos recorrentes. Meta: "Avaliado 5.0 por mais de 200 casais."</p>
+        </div>
+        <div style="background: var(--charcoal); padding: 2rem;">
+          <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 0.75rem;">Estratégia 04</span>
+          <h4 style="font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 500; color: var(--white); margin-bottom: 0.5rem;">Parcerias Estratégicas de Alto Impacto</h4>
+          <p style="font-size: 0.8rem; color: rgba(255,255,255,0.45); line-height: 1.7;">Cerimonialistas (5-10 casais/ano cada). Marcas de vestido de noiva (editoriais no castelo). Vinícolas (experiências co-branded). Produtoras de conteúdo de casamento.</p>
+        </div>
+        <div style="background: var(--charcoal); padding: 2rem; grid-column: span 2;">
+          <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 0.75rem;">Estratégia 05</span>
+          <h4 style="font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 500; color: var(--white); margin-bottom: 0.5rem;">Vocabulário Proprietário — Criar uma Linguagem do Castelo</h4>
+          <p style="font-size: 0.8rem; color: rgba(255,255,255,0.45); line-height: 1.7;">O salão principal vira "Salão do Trono". A entrada vira "Portal do Castelo". O jardim vira "Jardim da Torre". A cozinha vira "Cozinha Real". Isso transforma uma visita técnica em experiência narrativa. A noiva não agenda "visita ao espaço" — agenda "visita ao castelo". Criar um "Livro de Histórias" impresso premium para entregar na visita. A noiva leva para casa e mostra para a mãe, a sogra, as amigas. Marketing que circula sem algoritmo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SWOT -->
+  <section id="swot">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Análise SWOT</h2>
+      </div>
+
+      <div class="swot-grid fade-in">
+        <div class="swot-card">
+          <span class="label">Forças</span>
+          <ul>
+            <li>29 anos de experiência gastronômica do Buffet Di Matoso</li>
+            <li>16.000m² com temática medieval única na região</li>
+            <li>Exclusividade: apenas 1 evento por dia</li>
+            <li>Avaliação 4.8/5 no casamentos.com.br (96% recomendação)</li>
+            <li>Ingredientes de primeira qualidade — diferencial real e defensável</li>
+            <li>Estacionamento para 90 carros, suíte nupcial com hidromassagem</li>
+          </ul>
+        </div>
+        <div class="swot-card">
+          <span class="label">Fraquezas</span>
+          <ul>
+            <li>Feed do Instagram sem identidade — principal canal de decisão do público</li>
+            <li>Sem brandbook ou padrão de comunicação visual</li>
+            <li>Sem rastreamento de métricas (CAC, taxa de conversão, origem de leads)</li>
+            <li>Sazonalidade: período sem eventos gera custo fixo sem receita</li>
+            <li>Agência atual não entrega resultado mensurável</li>
+          </ul>
+        </div>
+        <div class="swot-card">
+          <span class="label">Oportunidades</span>
+          <ul>
+            <li>Temporada 2026 começa em abril — timing perfeito para reposicionar</li>
+            <li>Conteúdo gastronômico tem alto engajamento natural no Instagram</li>
+            <li>Nenhum concorrente comunica gastronomia como protagonista</li>
+            <li>Parcerias com fotógrafos/videomakers = conteúdo profissional a custo baixo</li>
+            <li>Reels indexados pelo Google desde 2025 — dobra a visibilidade</li>
+            <li>Ticket alto = menos eventos para atingir meta de receita</li>
+          </ul>
+        </div>
+        <div class="swot-card">
+          <span class="label">Ameaças</span>
+          <ul>
+            <li>Sem Igual Eventos a 5 min — identidade visual forte e 15K seguidores</li>
+            <li>Preço mais alto sem justificativa visual — público não percebe antes de provar</li>
+            <li>Dependência total de Instagram como canal</li>
+            <li>Meses parados geram pressão de caixa</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fases da Estratégia -->
+  <section id="estrategia" class="phases">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Fases da Estratégia</h2>
+        <p class="section-subtitle">
+          Quatro fases. Seis meses. Da fundação à previsibilidade de receita.
+        </p>
+      </div>
+
+      <div class="phase-timeline">
+        <div class="phase-item fade-in">
+          <div class="phase-number">01</div>
+          <div class="phase-content">
+            <h3>Fundação</h3>
+            <div class="phase-timing">Semanas 1-3 — Abril 2026</div>
+            <p>Parar de perder dinheiro. Construir o mínimo para converter leads que já chegam.</p>
+            <ul class="phase-deliverables">
+              <li>Brandbook operacional — paleta, tipografia, templates de feed e stories</li>
+              <li>Reestruturação completa do perfil do Instagram — bio, destaques, grid planejado</li>
+              <li>Script de atendimento comercial — resposta em menos de 5 minutos com qualificação</li>
+              <li>Software próprio: CRM + Hub de métricas + acompanhamento de marketing</li>
+              <li>Proposta comercial premium em PDF — primeira impressão que vende</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase-item fade-in">
+          <div class="phase-number">02</div>
+          <div class="phase-content">
+            <h3>Conteúdo & Conversão</h3>
+            <div class="phase-timing">Semanas 4-8 — Abril / Maio 2026</div>
+            <p>Construir prova social e a máquina de conteúdo. Fazer o Instagram virar ferramenta de venda.</p>
+            <ul class="phase-deliverables">
+              <li>Calendário editorial: 12 posts/mês + 20 stories/semana</li>
+              <li>Parceria com 2-3 fotógrafos/videomakers — conteúdo profissional recorrente</li>
+              <li>Otimização de tráfego pago — landing page com qualificação antes do WhatsApp</li>
+              <li>Google Meu Negócio otimizado — fotos, avaliações, respostas</li>
+              <li>Banco de conteúdo: sessão profissional do espaço + gastronomia</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase-item fade-in">
+          <div class="phase-number">03</div>
+          <div class="phase-content">
+            <h3>Escala & Diferenciação</h3>
+            <div class="phase-timing">Semanas 9-16 — Junho / Julho 2026</div>
+            <p>Separar o Castelo dos Lagos de toda a concorrência. A gastronomia vira protagonista.</p>
+            <ul class="phase-deliverables">
+              <li>Série "Por Trás do Buffet" — 29 anos de história como conteúdo</li>
+              <li>Degustação como etapa do funil de vendas — experiência sensorial que converte</li>
+              <li>Programa de indicação estruturado com fotógrafos, cerimonialistas, DJs</li>
+              <li>Funil de nurturing por WhatsApp — 5 toques automatizados para leads frios</li>
+              <li>Evento vitrine trimestral — open house com degustação para noivas qualificadas</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase-item fade-in">
+          <div class="phase-number">04</div>
+          <div class="phase-content">
+            <h3>Consolidação</h3>
+            <div class="phase-timing">Meses 5-6 — Agosto / Setembro 2026</div>
+            <p>Processos rodando. Métricas claras. Previsibilidade.</p>
+            <ul class="phase-deliverables">
+              <li>Análise completa de KPIs dos primeiros 4 meses</li>
+              <li>Ajuste de investimento por canal baseado em CAC real</li>
+              <li>Expansão para eventos corporativos e aniversários premium</li>
+              <li>Site profissional com SEO e galeria de eventos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Entregas: Instagram Profissional -->
+  <section class="mockup-section dark" id="entregas">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Entrega: Conteúdo Profissional</h2>
+        <p class="section-subtitle">
+          Posts a nível profissional que transformam o feed em ferramenta de venda. Cada postagem com propósito estratégico.
+        </p>
+      </div>
+
+      <div class="instagram-grid fade-in" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; overflow: hidden;">
+        <!-- Post 1 -->
+        <div style="background: #0D0D0D; padding: 0;">
+          <div style="aspect-ratio: 1; background: linear-gradient(135deg, #1A1A1A 0%, #0D0D0D 50%, rgba(201,169,110,0.15) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; position: relative; overflow: hidden;">
+            <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 70%, rgba(201,169,110,0.1), transparent 60%);"></div>
+            <svg style="width: 40px; height: 40px; color: var(--gold); opacity: 0.4; margin-bottom: 0.75rem; position: relative;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; color: var(--white); text-align: center; position: relative; line-height: 1.4; font-style: italic;">"O Momento do Portal"</span>
+            <span style="font-size: 0.6rem; color: rgba(255,255,255,0.3); margin-top: 0.25rem; position: relative;">REEL — 60s</span>
+          </div>
+          <div style="padding: 1rem;">
+            <p style="font-size: 0.7rem; color: rgba(255,255,255,0.5); line-height: 1.6; font-style: italic;">"Toda noiva sonha em ser rainha. Quando as portas do castelo se abriram, ela era."</p>
+            <span style="display: inline-block; margin-top: 0.5rem; font-size: 0.55rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em;">Narrativa Emocional</span>
+          </div>
+        </div>
+        <!-- Post 2 -->
+        <div style="background: #0D0D0D; padding: 0;">
+          <div style="aspect-ratio: 1; background: linear-gradient(180deg, #2A1F0F, #0D0D0D); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; position: relative;">
+            <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, rgba(201,169,110,0.12), transparent 60%);"></div>
+            <svg style="width: 40px; height: 40px; color: var(--gold); opacity: 0.4; margin-bottom: 0.75rem; position: relative;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; color: var(--white); text-align: center; position: relative; line-height: 1.4; font-style: italic;">"29 Anos em 29 Segundos"</span>
+            <span style="font-size: 0.6rem; color: rgba(255,255,255,0.3); margin-top: 0.25rem; position: relative;">REEL — 30s</span>
+          </div>
+          <div style="padding: 1rem;">
+            <p style="font-size: 0.7rem; color: rgba(255,255,255,0.5); line-height: 1.6; font-style: italic;">"29 anos de gastronomia. Não é buffet. É assinatura."</p>
+            <span style="display: inline-block; margin-top: 0.5rem; font-size: 0.55rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em;">Gastronomia</span>
+          </div>
+        </div>
+        <!-- Post 3 -->
+        <div style="background: #0D0D0D; padding: 0;">
+          <div style="aspect-ratio: 1; background: linear-gradient(135deg, #1A1A1A, #111 40%, rgba(201,169,110,0.08) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; position: relative;">
+            <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 40%, rgba(255,255,255,0.03), transparent 50%);"></div>
+            <svg style="width: 40px; height: 40px; color: var(--gold); opacity: 0.4; margin-bottom: 0.75rem; position: relative;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; color: var(--white); text-align: center; position: relative; line-height: 1.4; font-style: italic;">"O Castelo de Manhã"</span>
+            <span style="font-size: 0.6rem; color: rgba(255,255,255,0.3); margin-top: 0.25rem; position: relative;">CARROSSEL — 8 fotos</span>
+          </div>
+          <div style="padding: 1rem;">
+            <p style="font-size: 0.7rem; color: rgba(255,255,255,0.5); line-height: 1.6; font-style: italic;">"Antes de qualquer decoração, antes de qualquer convidado — o Castelo já conta uma história."</p>
+            <span style="display: inline-block; margin-top: 0.5rem; font-size: 0.55rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em;">Arquitetura</span>
+          </div>
+        </div>
+        <!-- Post 4 -->
+        <div style="background: #0D0D0D; padding: 0;">
+          <div style="aspect-ratio: 1; background: linear-gradient(180deg, #0D0D0D, #1A1510); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; position: relative;">
+            <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(201,169,110,0.06), transparent 50%);"></div>
+            <svg style="width: 40px; height: 40px; color: var(--gold); opacity: 0.4; margin-bottom: 0.75rem; position: relative;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; color: var(--white); text-align: center; position: relative; line-height: 1.4; font-style: italic;">"O Mapa do Castelo"</span>
+            <span style="font-size: 0.6rem; color: rgba(255,255,255,0.3); margin-top: 0.25rem; position: relative;">CARROSSEL — 6 slides</span>
+          </div>
+          <div style="padding: 1rem;">
+            <p style="font-size: 0.7rem; color: rgba(255,255,255,0.5); line-height: 1.6; font-style: italic;">"Todo castelo tem um mapa. Salão do Trono. Jardim da Torre. Cozinha Real. Este é o seu."</p>
+            <span style="display: inline-block; margin-top: 0.5rem; font-size: 0.55rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em;">Engajamento</span>
+          </div>
+        </div>
+        <!-- Post 5 -->
+        <div style="background: #0D0D0D; padding: 0;">
+          <div style="aspect-ratio: 1; background: linear-gradient(135deg, #0D0D0D, #1A1A1A); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; position: relative;">
+            <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 60%, rgba(255,255,255,0.03), transparent 40%);"></div>
+            <svg style="width: 40px; height: 40px; color: var(--gold); opacity: 0.4; margin-bottom: 0.75rem; position: relative;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; color: var(--white); text-align: center; position: relative; line-height: 1.4; font-style: italic;">"O Depoimento Sem Legenda"</span>
+            <span style="font-size: 0.6rem; color: rgba(255,255,255,0.3); margin-top: 0.25rem; position: relative;">REEL — 45s</span>
+          </div>
+          <div style="padding: 1rem;">
+            <p style="font-size: 0.7rem; color: rgba(255,255,255,0.5); line-height: 1.6; font-style: italic;">"Perguntamos pra Dona Maria o que ela achou do Castelo. Ela não conseguiu responder."</p>
+            <span style="display: inline-block; margin-top: 0.5rem; font-size: 0.55rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em;">Prova Social</span>
+          </div>
+        </div>
+        <!-- Post 6 -->
+        <div style="background: #0D0D0D; padding: 0;">
+          <div style="aspect-ratio: 1; background: linear-gradient(180deg, #1A1510, #0D0D0D); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; position: relative;">
+            <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, rgba(201,169,110,0.08), transparent 50%);"></div>
+            <svg style="width: 40px; height: 40px; color: var(--gold); opacity: 0.4; margin-bottom: 0.75rem; position: relative;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; color: var(--white); text-align: center; position: relative; line-height: 1.4; font-style: italic;">"1 Castelo. 1 Dia. 1 História."</span>
+            <span style="font-size: 0.6rem; color: rgba(255,255,255,0.3); margin-top: 0.25rem; position: relative;">STATIC — Foto Drone</span>
+          </div>
+          <div style="padding: 1rem;">
+            <p style="font-size: 0.7rem; color: rgba(255,255,255,0.5); line-height: 1.6; font-style: italic;">"Enquanto outros encaixam 2, 3 eventos no mesmo dia, o Castelo recebe apenas um. O seu."</p>
+            <span style="display: inline-block; margin-top: 0.5rem; font-size: 0.55rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em;">Exclusividade</span>
+          </div>
+        </div>
+      </div>
+      <p style="font-size: 0.65rem; color: rgba(255,255,255,0.25); text-align: center; margin-top: 1rem; font-style: italic;">* Prévias ilustrativas. O conteúdo final será produzido com fotografia e vídeo profissional no local.</p>
+    </div>
+  </section>
+
+  <!-- Entregas: Brandbook Mockup -->
+  <section class="mockup-section">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Entrega: Brandbook</h2>
+        <p class="section-subtitle">
+          Guia completo de identidade visual. Qualquer fornecedor ou profissional que produzir material para o Castelo segue este padrão.
+        </p>
+      </div>
+
+      <div class="mockup-container fade-in">
+        <div class="mockup-browser-bar">
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-url">brandbook — castelo dos lagos</div>
+        </div>
+        <div class="mockup-body">
+          <div class="bb-grid">
+            <div>
+              <span class="bb-section-label">Logotipo</span>
+              <div class="bb-logo-area" style="flex-direction: column; gap: 1rem; padding: 2.5rem;">
+                <!-- Castle Icon — Refined -->
+                <svg width="48" height="44" viewBox="0 0 48 44" fill="none">
+                  <!-- Base -->
+                  <rect x="4" y="38" width="40" height="2" fill="#C9A96E" opacity="0.4"/>
+                  <!-- Left tower -->
+                  <rect x="6" y="18" width="8" height="20" fill="none" stroke="#C9A96E" stroke-width="1" opacity="0.6"/>
+                  <rect x="6" y="14" width="2" height="4" fill="#C9A96E" opacity="0.5"/>
+                  <rect x="9" y="14" width="2" height="4" fill="#C9A96E" opacity="0.5"/>
+                  <rect x="12" y="14" width="2" height="4" fill="#C9A96E" opacity="0.5"/>
+                  <!-- Center tower (tallest) -->
+                  <rect x="17" y="8" width="14" height="30" fill="none" stroke="#C9A96E" stroke-width="1" opacity="0.8"/>
+                  <rect x="17" y="3" width="2" height="5" fill="#C9A96E" opacity="0.6"/>
+                  <rect x="21" y="3" width="2" height="5" fill="#C9A96E" opacity="0.6"/>
+                  <rect x="25" y="3" width="2" height="5" fill="#C9A96E" opacity="0.6"/>
+                  <rect x="29" y="3" width="2" height="5" fill="#C9A96E" opacity="0.6"/>
+                  <!-- Center arch door -->
+                  <path d="M21 38 V30 Q21 26 24 26 Q27 26 27 30 V38" fill="none" stroke="#C9A96E" stroke-width="1" opacity="0.7"/>
+                  <!-- Right tower -->
+                  <rect x="34" y="18" width="8" height="20" fill="none" stroke="#C9A96E" stroke-width="1" opacity="0.6"/>
+                  <rect x="34" y="14" width="2" height="4" fill="#C9A96E" opacity="0.5"/>
+                  <rect x="37" y="14" width="2" height="4" fill="#C9A96E" opacity="0.5"/>
+                  <rect x="40" y="14" width="2" height="4" fill="#C9A96E" opacity="0.5"/>
+                  <!-- Connecting walls -->
+                  <line x1="14" y1="22" x2="17" y2="22" stroke="#C9A96E" stroke-width="1" opacity="0.3"/>
+                  <line x1="31" y1="22" x2="34" y2="22" stroke="#C9A96E" stroke-width="1" opacity="0.3"/>
+                  <!-- Windows -->
+                  <rect x="22" y="14" width="4" height="5" rx="2" fill="none" stroke="#C9A96E" stroke-width="0.75" opacity="0.5"/>
+                  <rect x="8" y="24" width="3" height="4" rx="1.5" fill="none" stroke="#C9A96E" stroke-width="0.75" opacity="0.4"/>
+                  <rect x="37" y="24" width="3" height="4" rx="1.5" fill="none" stroke="#C9A96E" stroke-width="0.75" opacity="0.4"/>
+                </svg>
+                <div style="text-align: center;">
+                  <div style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; color: var(--white); letter-spacing: 0.25em; text-transform: uppercase; line-height: 1;">Castelo</div>
+                  <div style="font-family: 'Cormorant Garamond', serif; font-size: 0.7rem; font-weight: 400; color: var(--gold); letter-spacing: 0.4em; text-transform: uppercase; margin-top: 0.15rem;">dos Lagos</div>
+                </div>
+              </div>
+              <div style="margin-top: 1rem;">
+                <div class="bb-logo-area" style="background: var(--white); border: 1px solid #eee; flex-direction: column; gap: 1rem; padding: 2.5rem;">
+                  <svg width="48" height="44" viewBox="0 0 48 44" fill="none">
+                    <rect x="4" y="38" width="40" height="2" fill="#1A1A1A" opacity="0.3"/>
+                    <rect x="6" y="18" width="8" height="20" fill="none" stroke="#1A1A1A" stroke-width="1" opacity="0.4"/>
+                    <rect x="6" y="14" width="2" height="4" fill="#1A1A1A" opacity="0.35"/>
+                    <rect x="9" y="14" width="2" height="4" fill="#1A1A1A" opacity="0.35"/>
+                    <rect x="12" y="14" width="2" height="4" fill="#1A1A1A" opacity="0.35"/>
+                    <rect x="17" y="8" width="14" height="30" fill="none" stroke="#1A1A1A" stroke-width="1" opacity="0.5"/>
+                    <rect x="17" y="3" width="2" height="5" fill="#1A1A1A" opacity="0.4"/>
+                    <rect x="21" y="3" width="2" height="5" fill="#1A1A1A" opacity="0.4"/>
+                    <rect x="25" y="3" width="2" height="5" fill="#1A1A1A" opacity="0.4"/>
+                    <rect x="29" y="3" width="2" height="5" fill="#1A1A1A" opacity="0.4"/>
+                    <path d="M21 38 V30 Q21 26 24 26 Q27 26 27 30 V38" fill="none" stroke="#1A1A1A" stroke-width="1" opacity="0.45"/>
+                    <rect x="34" y="18" width="8" height="20" fill="none" stroke="#1A1A1A" stroke-width="1" opacity="0.4"/>
+                    <rect x="34" y="14" width="2" height="4" fill="#1A1A1A" opacity="0.35"/>
+                    <rect x="37" y="14" width="2" height="4" fill="#1A1A1A" opacity="0.35"/>
+                    <rect x="40" y="14" width="2" height="4" fill="#1A1A1A" opacity="0.35"/>
+                    <line x1="14" y1="22" x2="17" y2="22" stroke="#1A1A1A" stroke-width="1" opacity="0.2"/>
+                    <line x1="31" y1="22" x2="34" y2="22" stroke="#1A1A1A" stroke-width="1" opacity="0.2"/>
+                    <rect x="22" y="14" width="4" height="5" rx="2" fill="none" stroke="#1A1A1A" stroke-width="0.75" opacity="0.35"/>
+                    <rect x="8" y="24" width="3" height="4" rx="1.5" fill="none" stroke="#1A1A1A" stroke-width="0.75" opacity="0.3"/>
+                    <rect x="37" y="24" width="3" height="4" rx="1.5" fill="none" stroke="#1A1A1A" stroke-width="0.75" opacity="0.3"/>
+                  </svg>
+                  <div style="text-align: center;">
+                    <div style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; color: var(--charcoal); letter-spacing: 0.25em; text-transform: uppercase; line-height: 1;">Castelo</div>
+                    <div style="font-family: 'Cormorant Garamond', serif; font-size: 0.7rem; font-weight: 400; color: var(--gold); letter-spacing: 0.4em; text-transform: uppercase; margin-top: 0.15rem;">dos Lagos</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <span class="bb-section-label">Paleta de Cores</span>
+              <div class="bb-color-row">
+                <div>
+                  <div class="bb-swatch" style="background: #1A1A1A;"></div>
+                  <div class="bb-swatch-label">#1A1A1A</div>
+                </div>
+                <div>
+                  <div class="bb-swatch" style="background: #C9A96E;"></div>
+                  <div class="bb-swatch-label">#C9A96E</div>
+                </div>
+                <div>
+                  <div class="bb-swatch" style="background: #F5F0E8;"></div>
+                  <div class="bb-swatch-label">#F5F0E8</div>
+                </div>
+                <div>
+                  <div class="bb-swatch" style="background: #FFFFFF; border: 1px solid #ddd;"></div>
+                  <div class="bb-swatch-label">#FFFFFF</div>
+                </div>
+              </div>
+              <span class="bb-section-label">Tipografia</span>
+              <div class="bb-type-sample">
+                <h4>Cormorant Garamond</h4>
+                <p>Display — títulos e destaques</p>
+              </div>
+              <div class="bb-type-sample" style="margin-top: 0.75rem;">
+                <h4 style="font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 400;">Inter</h4>
+                <p>Corpo — textos e interface</p>
+              </div>
+            </div>
+            <div>
+              <span class="bb-section-label">Templates</span>
+              <div class="bb-template-row">
+                <div class="bb-template" style="background: linear-gradient(135deg, #1A1A1A, #2A2A2A);">Feed</div>
+                <div class="bb-template" style="background: linear-gradient(135deg, #C9A96E, #A68B5B);">Stories</div>
+              </div>
+              <div class="bb-template-row" style="margin-top: 0.75rem;">
+                <div class="bb-template" style="background: linear-gradient(135deg, #2A2A2A, #1A1A1A);">Carrossel</div>
+                <div class="bb-template" style="background: linear-gradient(135deg, #A68B5B, #C9A96E);">Destaque</div>
+              </div>
+              <div style="margin-top: 1rem;">
+                <span class="bb-section-label">Tom de Voz</span>
+                <p style="font-size: 0.7rem; color: var(--text-muted); line-height: 1.6; font-style: italic;">"Premium sem arrogância. Elegante sem ser frio. A comunicação do Castelo convida — nunca vende."</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size: 0.65rem; color: var(--text-light); text-align: center; margin-top: 1rem; font-style: italic;">* Prévia ilustrativa. O brandbook final será desenvolvido com a identidade aprovada pela equipe.</p>
+    </div>
+  </section>
+
+  <!-- Entregas: Hub / CRM -->
+  <section class="mockup-section dark">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Entrega: Hub de Marketing & CRM</h2>
+        <p class="section-subtitle">
+          Software próprio para acompanhar métricas, gerenciar leads e visualizar o funil de vendas em tempo real. Sem depender de planilhas.
+        </p>
+      </div>
+
+      <div class="mockup-container dark-mockup fade-in">
+        <div class="mockup-browser-bar dark-bar">
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-url dark-url">hub.castelodoslagos.com.br</div>
+        </div>
+        <div class="hub-layout">
+          <div class="hub-sidebar">
+            <div class="hub-sidebar-brand">Castelo <span style="color: var(--gold);">Hub</span></div>
+            <div class="hub-sidebar-item active">
+              <svg class="hub-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              Dashboard
+            </div>
+            <div class="hub-sidebar-item">
+              <svg class="hub-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Leads / CRM
+            </div>
+            <div class="hub-sidebar-item">
+              <svg class="hub-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 6-6"/></svg>
+              Métricas
+            </div>
+            <div class="hub-sidebar-item">
+              <svg class="hub-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Calendário
+            </div>
+            <div class="hub-sidebar-item">
+              <svg class="hub-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Conteúdo
+            </div>
+            <div class="hub-sidebar-item">
+              <svg class="hub-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Configurações
+            </div>
+          </div>
+          <div class="hub-main">
+            <div class="hub-header">
+              <h4>Dashboard — Abril 2026</h4>
+              <span style="font-size: 0.7rem; color: rgba(255,255,255,0.3);">Última atualização: agora</span>
+            </div>
+            <div class="hub-stats">
+              <div class="hub-stat-card">
+                <div class="hub-stat-label">Leads do mês</div>
+                <div class="hub-stat-value">147</div>
+                <div class="hub-stat-change">+32% vs. mês anterior</div>
+              </div>
+              <div class="hub-stat-card">
+                <div class="hub-stat-label">Visitas agendadas</div>
+                <div class="hub-stat-value">23</div>
+                <div class="hub-stat-change">+18% vs. mês anterior</div>
+              </div>
+              <div class="hub-stat-card">
+                <div class="hub-stat-label">Contratos fechados</div>
+                <div class="hub-stat-value">5</div>
+                <div class="hub-stat-change">+150% vs. 2025</div>
+              </div>
+              <div class="hub-stat-card">
+                <div class="hub-stat-label">CAC</div>
+                <div class="hub-stat-value">R$320</div>
+                <div class="hub-stat-change">Dentro da meta</div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size: 0.7rem; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;">Pipeline de Leads Recentes</div>
+              <table class="hub-table">
+                <thead>
+                  <tr>
+                    <th>Lead</th>
+                    <th>Data do Evento</th>
+                    <th>Convidados</th>
+                    <th>Origem</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="color: var(--white);">Carolina & Thiago</td>
+                    <td>15/08/2026</td>
+                    <td>220</td>
+                    <td>Instagram Ads</td>
+                    <td><span class="hub-badge closed">Contrato</span></td>
+                  </tr>
+                  <tr>
+                    <td style="color: var(--white);">Fernanda & Lucas</td>
+                    <td>22/11/2026</td>
+                    <td>180</td>
+                    <td>Indicação</td>
+                    <td><span class="hub-badge proposal">Proposta</span></td>
+                  </tr>
+                  <tr>
+                    <td style="color: var(--white);">Juliana & Rafael</td>
+                    <td>03/10/2026</td>
+                    <td>150</td>
+                    <td>Google</td>
+                    <td><span class="hub-badge visit">Visita</span></td>
+                  </tr>
+                  <tr>
+                    <td style="color: var(--white);">Amanda & Pedro</td>
+                    <td>A definir</td>
+                    <td>280</td>
+                    <td>Instagram Ads</td>
+                    <td><span class="hub-badge new">Novo</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size: 0.65rem; color: rgba(255,255,255,0.25); text-align: center; margin-top: 1rem; font-style: italic;">* Prévia ilustrativa. O software será desenvolvido sob medida para o Castelo dos Lagos.</p>
+    </div>
+  </section>
+
+  <!-- Entregas: Sites Profissionais -->
+  <section class="mockup-section">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">08</span>
+        <h2 class="section-title">Entrega: Sites Segmentados</h2>
+        <p class="section-subtitle">
+          Três sites com comunicação específica para cada público. Cada um fala a língua do cliente certo.
+        </p>
+      </div>
+
+      <!-- Site 1: Casamentos -->
+      <div style="margin-bottom: 1rem;">
+        <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 0.75rem;">Site 01 — Casamentos</span>
+      </div>
+      <div class="mockup-container dark-mockup fade-in">
+        <div class="mockup-browser-bar dark-bar">
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-url dark-url">castelodoslagos.com.br</div>
+        </div>
+        <div class="site-mockup-hero">
+          <div class="site-mockup-nav">
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--white); font-weight: 300; letter-spacing: 0.1em;">Castelo <span style="color: var(--gold); font-weight: 400;">dos Lagos</span></span>
+            <div class="site-mockup-nav-links">
+              <div class="site-mockup-nav-link"></div>
+              <div class="site-mockup-nav-link"></div>
+              <div class="site-mockup-nav-link"></div>
+              <div class="site-mockup-nav-link"></div>
+            </div>
+          </div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.25rem; font-weight: 300; color: var(--white); margin-bottom: 0.75rem; position: relative; line-height: 1.15;">Toda noiva sonha em ser rainha.<br><span style="font-style: italic; color: var(--gold);">Agora é possível.</span></div>
+          <div class="site-mockup-sub">16.000m² de castelo exclusivo. Gastronomia assinada há 29 anos. Apenas 1 evento por dia.</div>
+          <div class="site-mockup-btn">Agendar Visita ao Castelo</div>
+        </div>
+        <div class="site-mockup-gallery">
+          <div class="site-mockup-gallery-item">Salão do Trono</div>
+          <div class="site-mockup-gallery-item">Gastronomia Assinada</div>
+          <div class="site-mockup-gallery-item">Cerimônia</div>
+          <div class="site-mockup-gallery-item">Jardim da Torre</div>
+          <div class="site-mockup-gallery-item">Suíte Nupcial</div>
+          <div class="site-mockup-gallery-item">Depoimentos</div>
+        </div>
+        <div class="site-mockup-footer">
+          <span>Ribeirão Pires, SP — 40 min de São Paulo</span>
+          <span>4.8 ★ — Avaliado por centenas de casais</span>
+        </div>
+      </div>
+
+      <!-- Site 2: Corporativo -->
+      <div style="margin-top: 3rem; margin-bottom: 1rem;">
+        <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 0.75rem;">Site 02 — Eventos Corporativos</span>
+      </div>
+      <div class="mockup-container dark-mockup fade-in">
+        <div class="mockup-browser-bar dark-bar">
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-url dark-url">castelodoslagos.com.br/corporativo</div>
+        </div>
+        <div class="site-mockup-hero" style="background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%);">
+          <div class="site-mockup-nav">
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--white); font-weight: 300; letter-spacing: 0.1em;">Castelo <span style="color: var(--gold); font-weight: 400;">dos Lagos</span></span>
+            <div class="site-mockup-nav-links">
+              <div class="site-mockup-nav-link"></div>
+              <div class="site-mockup-nav-link"></div>
+              <div class="site-mockup-nav-link"></div>
+            </div>
+          </div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.25rem; font-weight: 300; color: var(--white); margin-bottom: 0.75rem; position: relative; line-height: 1.15;">Seu time merece um evento<br><span style="font-style: italic; color: var(--gold);">que vire história.</span></div>
+          <div class="site-mockup-sub">Não mais uma confraternização no mesmo restaurante. Um castelo medieval a 40 min de São Paulo.</div>
+          <div class="site-mockup-btn">Solicitar Proposta</div>
+        </div>
+        <div class="site-mockup-gallery" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="site-mockup-gallery-item">Confraternização</div>
+          <div class="site-mockup-gallery-item">Premiação</div>
+          <div class="site-mockup-gallery-item">Lançamento</div>
+          <div class="site-mockup-gallery-item">Team Building</div>
+        </div>
+        <div class="site-mockup-footer">
+          <span>Até 330 pessoas — Estacionamento para 90 veículos</span>
+          <span>Gastronomia Di Matoso — 29 anos</span>
+        </div>
+      </div>
+
+      <!-- Site 3: Debutantes -->
+      <div style="margin-top: 3rem; margin-bottom: 1rem;">
+        <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 0.75rem;">Site 03 — Debutantes & Celebrações</span>
+      </div>
+      <div class="mockup-container dark-mockup fade-in">
+        <div class="mockup-browser-bar dark-bar">
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-url dark-url">castelodoslagos.com.br/celebracoes</div>
+        </div>
+        <div class="site-mockup-hero" style="background: linear-gradient(135deg, #0D0D0D 0%, #1A1510 100%);">
+          <div class="site-mockup-nav">
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--white); font-weight: 300; letter-spacing: 0.1em;">Castelo <span style="color: var(--gold); font-weight: 400;">dos Lagos</span></span>
+            <div class="site-mockup-nav-links">
+              <div class="site-mockup-nav-link"></div>
+              <div class="site-mockup-nav-link"></div>
+              <div class="site-mockup-nav-link"></div>
+            </div>
+          </div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.25rem; font-weight: 300; color: var(--white); margin-bottom: 0.75rem; position: relative; line-height: 1.15;">Ela sonhou com esse dia<br><span style="font-style: italic; color: var(--gold);">a vida inteira.</span></div>
+          <div class="site-mockup-sub">Festas de 15 anos e celebrações especiais num castelo de verdade. Não uma decoração. Um castelo.</div>
+          <div class="site-mockup-btn">Comece a Planejar</div>
+        </div>
+        <div class="site-mockup-gallery" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="site-mockup-gallery-item">Recepção no Jardim</div>
+          <div class="site-mockup-gallery-item">Salão Decorado</div>
+          <div class="site-mockup-gallery-item">Sessão de Fotos</div>
+        </div>
+        <div class="site-mockup-footer">
+          <span>De 100 a 330 convidados — Tudo em um lugar só</span>
+          <span>Gastronomia premium para todas as idades</span>
+        </div>
+      </div>
+
+      <p style="font-size: 0.65rem; color: var(--text-light); text-align: center; margin-top: 1.5rem; font-style: italic;">* Prévias ilustrativas. Os sites finais serão desenvolvidos com fotografia profissional e conteúdo aprovado.</p>
+    </div>
+  </section>
+
+  <!-- Pilares de Conteúdo -->
+  <section id="conteudo">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">09</span>
+        <h2 class="section-title">Pilares de Conteúdo</h2>
+        <p class="section-subtitle">
+          Cada postagem tem um propósito. Quatro pilares que constroem desejo, confiança e autoridade.
+        </p>
+      </div>
+
+      <div class="pillars-grid fade-in">
+        <div class="pillar-card">
+          <div class="pillar-percentage">40%</div>
+          <div class="pillar-name">Gastronomia Premium</div>
+          <p class="pillar-desc">O grande diferencial. Bastidores, ingredientes, pratos finalizados. Ninguém na região tem 29 anos de buffet. Isso vende.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-percentage">25%</div>
+          <div class="pillar-name">Espaço & Experiência</div>
+          <p class="pillar-desc">O castelo em diferentes luzes. Decorações variadas. Antes e depois. O casal precisa se imaginar ali.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-percentage">25%</div>
+          <div class="pillar-name">Prova Social</div>
+          <p class="pillar-desc">Depoimentos, fotos reais de casamentos, histórias de casais. Noivas confiam em outras noivas.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-percentage">10%</div>
+          <div class="pillar-name">Conteúdo Útil</div>
+          <p class="pillar-desc">Checklists, dicas para noivas, guias de organização. Atrai no topo do funil, gera salvamentos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Funil de Vendas -->
+  <section id="funil" class="funnel-section">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">10</span>
+        <h2 class="section-title">Funil de Vendas</h2>
+        <p class="section-subtitle">
+          Do primeiro contato ao contrato assinado. Cada etapa com métrica e processo definido.
+        </p>
+      </div>
+
+      <div class="funnel-stages fade-in">
+        <div class="funnel-stage">
+          <div class="funnel-stage-label">Atração</div>
+          <div class="funnel-stage-content">
+            <h4>Tráfego Pago + Orgânico + Indicações</h4>
+            <p>Instagram Ads para mulheres 25-40, noivas, região +50km. Reels de gastronomia e espaço iluminado. Conteúdo orgânico dos 4 pilares. Rede de fotógrafos e cerimonialistas indicando.</p>
+            <span class="metric">15-20 leads/dia (atual) &rarr; 5-8 qualificados/dia</span>
+          </div>
+        </div>
+
+        <div class="funnel-stage">
+          <div class="funnel-stage-label">Qualificação</div>
+          <div class="funnel-stage-content">
+            <h4>Formulário + Resposta em &lt; 5 Minutos</h4>
+            <p>Landing page com perguntas de qualificação: data, convidados, orçamento estimado, tipo de evento. Juliane responde com script padrão. Material visual premium enviado imediatamente.</p>
+            <span class="metric">Meta: 40% agendam visita &rarr; 3-4 visitas/semana</span>
+          </div>
+        </div>
+
+        <div class="funnel-stage">
+          <div class="funnel-stage-label">Conversão</div>
+          <div class="funnel-stage-content">
+            <h4>Visita + Degustação + Proposta</h4>
+            <p>Tour guiado pelo Castelo. Degustação do Buffet Di Matoso — o "closer" definitivo. Proposta personalizada apresentada no local. O casal experimenta o que vai ter no dia do casamento.</p>
+            <span class="metric">Meta: 30% fecham contrato &rarr; 4-6 contratos/mês</span>
+          </div>
+        </div>
+
+        <div class="funnel-stage">
+          <div class="funnel-stage-label">Nurturing</div>
+          <div class="funnel-stage-content">
+            <h4>Sequência de 5 Toques por WhatsApp</h4>
+            <p>Dia 1: Agradecimento + material. Dia 3: Vídeo de 60s do espaço. Dia 7: Depoimento de casal. Dia 14: Convite para open house. Dia 30: Disponibilidade de datas.</p>
+            <span class="metric">Recuperar 15-20% dos leads que não responderam</span>
+          </div>
+        </div>
+
+        <div class="funnel-stage">
+          <div class="funnel-stage-label">Pós-Venda</div>
+          <div class="funnel-stage-content">
+            <h4>Retenção + Motor de Indicação</h4>
+            <p>Pesquisa de satisfação pós-evento. Solicitação de avaliação Google e depoimento. Fotos profissionais como agradecimento. Programa de indicação com benefícios reais.</p>
+            <span class="metric">Cada cliente satisfeito gera 2-3 indicações qualificadas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KPIs -->
+  <section id="kpis">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">11</span>
+        <h2 class="section-title">Metas de Resultado</h2>
+        <p class="section-subtitle">
+          Números reais. Sem promessa vaga. O que vamos medir e aonde vamos chegar.
+        </p>
+      </div>
+
+      <div class="kpi-grid fade-in">
+        <div class="kpi-card">
+          <div class="kpi-current">Atual</div>
+          <div class="kpi-current-value">~1/mês</div>
+          <span class="kpi-arrow">&darr;</span>
+          <div class="kpi-target">6</div>
+          <div class="kpi-label">Contratos / Mês (Meta 6 meses)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-current">Atual</div>
+          <div class="kpi-current-value">~2-3%</div>
+          <span class="kpi-arrow">&darr;</span>
+          <div class="kpi-target">12%</div>
+          <div class="kpi-label">Taxa de Conversão (Meta 6 meses)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-current">Atual</div>
+          <div class="kpi-current-value">Desconhecido</div>
+          <span class="kpi-arrow">&darr;</span>
+          <div class="kpi-target">&lt;R$350</div>
+          <div class="kpi-label">Custo por Contrato (Meta 6 meses)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Investimento -->
+  <section id="investimento" class="phases">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">12</span>
+        <h2 class="section-title">Investimento</h2>
+        <p class="section-subtitle">
+          O mesmo orçamento. Distribuído de forma inteligente. Cada real justificado.
+        </p>
+      </div>
+
+      <div class="budget-comparison fade-in">
+        <div class="budget-card current">
+          <h4>Alocação Atual</h4>
+          <div class="budget-line">
+            <span class="item">Agência de marketing</span>
+            <span class="value">R$1.800</span>
+          </div>
+          <div class="budget-line">
+            <span class="item">Tráfego pago</span>
+            <span class="value">R$1.000</span>
+          </div>
+          <div class="budget-total">
+            <span class="item">Total</span>
+            <span class="value">R$2.800</span>
+          </div>
+        </div>
+
+        <div class="budget-arrow">&rarr;</div>
+
+        <div class="budget-card proposed">
+          <h4>Alocação Proposta</h4>
+          <div class="budget-line">
+            <span class="item">Tráfego pago (Meta Ads)</span>
+            <span class="value">R$1.500</span>
+          </div>
+          <div class="budget-line">
+            <span class="item">Produção de conteúdo</span>
+            <span class="value">R$1.000</span>
+          </div>
+          <div class="budget-line">
+            <span class="item">Reserva / Testes</span>
+            <span class="value">R$300</span>
+          </div>
+          <div class="budget-total">
+            <span class="item">Total</span>
+            <span class="value">R$2.800</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; padding: 1.5rem; border: 1px solid var(--border); background: var(--white);" class="fade-in">
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.8;">
+          <strong style="color: var(--gold);">Incluso na parceria REIS [IA]:</strong> Brandbook completo, software de CRM e Hub de métricas, site profissional, estratégia de posicionamento e consultoria contínua. Ferramentas de gestão (Canva, agendamento, CRM) são entregues por nós — sem custo adicional para vocês.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Próximos Passos -->
+  <section class="next-steps">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">13</span>
+        <h2 class="section-title">Próximos Passos</h2>
+      </div>
+
+      <ul class="steps-list fade-in">
+        <li>
+          <div class="step-content">
+            <h4>Criar grupo no WhatsApp e compartilhar acessos</h4>
+            <p>Grupo com Moroni, Geraldo, Júnior e Juliane. Compartilhar acesso ao Business Manager (Meta), Instagram e Google Meu Negócio.</p>
+            <span class="step-owner">Juliane</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Levantar 3 fotógrafos/videomakers para parceria</h4>
+            <p>Profissionais da região para proposta de troca: eles usam o espaço para ensaios, vocês usam o material para conteúdo.</p>
+            <span class="step-owner">Júnior</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Definir ticket médio real e meta de faturamento 2026</h4>
+            <p>Com base nos contratos dos últimos 2 meses, calcular ticket médio por evento e projetar meta de receita mensal.</p>
+            <span class="step-owner">Geraldo</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Analisar Business Manager e métricas de tráfego</h4>
+            <p>Auditoria completa dos anúncios atuais, custos por resultado, qualidade dos leads. Diagnóstico de onde o investimento está sendo desperdiçado.</p>
+            <span class="step-owner">Moroni — REIS [IA]</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Entregar brandbook + Hub de métricas + site profissional</h4>
+            <p>Identidade visual completa, software de CRM com dashboard de métricas e site com galeria, depoimentos e formulário de qualificação.</p>
+            <span class="step-owner">Moroni — REIS [IA]</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Reunião de proposta e fechamento</h4>
+            <p>Apresentação da proposta de parceria com todos os tomadores de decisão presentes. Definir modelo de trabalho e iniciar Fase 1.</p>
+            <span class="step-owner">Todos</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Closing -->
+  <section class="closing">
+    <div class="container-narrow fade-in">
+      <h2>O Castelo merece<br>ser visto como é.</h2>
+      <p>
+        29 anos de gastronomia. 13 anos de história. 16.000m² de experiência.<br>Está na hora do mundo saber disso.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p class="brand-footer">REIS <span>[IA]</span></p>
+      <p>Documento preparado em 31 de março de 2026. Confidencial.</p>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 100);
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+
+</body>
+</html>

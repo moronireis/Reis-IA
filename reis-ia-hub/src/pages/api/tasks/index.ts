@@ -34,25 +34,47 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const supabase = createServerClient();
   const body = await request.json();
 
-  const insert = {
+  // Base insert (columns that always exist)
+  const insert: Record<string, unknown> = {
     title: body.title,
     description: body.description ?? null,
     status: body.status ?? 'todo',
     priority: body.priority ?? 'medium',
-    category: body.category ?? 'general',
     assignee_id: body.assignee_id ?? null,
     assignee_name: body.assignee_name ?? null,
     project_id: body.project_id ?? null,
     project_name: body.project_name ?? null,
     due_date: body.due_date ?? null,
-    tags: body.tags ?? [],
-    notes: body.notes ?? null,
-    completed_at: body.status === 'done' ? new Date().toISOString() : null,
   };
 
-  const { data, error } = await supabase.from('tasks').insert(insert).select().single();
+  // Extended columns (added via migration — may not exist yet)
+  if (body.category) insert.category = body.category;
+  if (body.tags && body.tags.length > 0) insert.tags = body.tags;
+  if (body.notes) insert.notes = body.notes;
+  if (body.due_time) insert.due_time = body.due_time;
+  if (body.status === 'done') insert.completed_at = new Date().toISOString();
 
-  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  let { data, error } = await supabase.from('tasks').insert(insert).select().single();
+
+  // If fails (possibly missing columns), retry with base only
+  if (error) {
+    const baseInsert: Record<string, unknown> = {
+      title: body.title,
+      description: body.description ?? null,
+      status: body.status ?? 'todo',
+      priority: body.priority ?? 'medium',
+      assignee_id: body.assignee_id ?? null,
+      assignee_name: body.assignee_name ?? null,
+      project_id: body.project_id ?? null,
+      project_name: body.project_name ?? null,
+      due_date: body.due_date ?? null,
+    };
+    const retry = await supabase.from('tasks').insert(baseInsert).select().single();
+    if (retry.error) return new Response(JSON.stringify({ error: retry.error.message }), { status: 500 });
+    data = retry.data;
+  }
+
+  if (!data) return new Response(JSON.stringify({ error: 'Failed to create task' }), { status: 500 });
 
   // Notify assignee if task is assigned to someone
   if (data.assignee_id) {

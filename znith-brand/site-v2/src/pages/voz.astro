@@ -1,0 +1,212 @@
+---
+import Layout from '../layouts/Layout.astro';
+const currentPath = '/voz';
+
+const voiceProfiles = [
+  {
+    layer: 'ZNITH Corp',
+    tagline: 'Marca Master',
+    adjectives: ['Consultivo', 'Estratégico', 'Direto', 'Estruturado', 'Confiante'],
+    description: 'Um sócio estratégico sênior falando de igual para igual com um fundador. Sem entusiasmo performático. Sem qualificações acadêmicas. Fala em resultados, estruturas e responsabilidade real.',
+    examples: [
+      'A maioria das empresas não tem problema de venda. Tem problema de estrutura comercial.',
+      'IA sem diagnóstico é automação do caos.',
+      'Crescimento previsível não é sorte. É arquitetura.',
+      'Não vendemos projetos. Entregamos resultado mensurável.',
+    ],
+    channels: 'LinkedIn institucional, propostas, website, e-mail',
+    accentColor: '#C49738',
+    signature: '"Direção. Consciência. Legado."',
+  },
+  {
+    layer: 'ZNITH.AI OS',
+    tagline: 'Produto Flagship',
+    adjectives: ['Técnico-Estratégico', 'Sistemático', 'Premium', 'Arquitetural', 'Preciso'],
+    description: 'Um sócio da McKinsey que também entende o stack tecnológico. Fala em fases, sistemas, métricas e governança. A linguagem é estruturada porque o produto é estruturado.',
+    examples: [
+      'Cinco fases. Da direção à escala. Nada no meio é improvisado.',
+      'O ZNITH.AI OS não é um projeto de consultoria. É a espinha dorsal da sua operação comercial.',
+      'Setup não é custo. É o investimento que torna todos os outros investimentos funcionarem.',
+      'Governança comercial: quando sua equipe para de depender de você para cada decisão.',
+    ],
+    channels: 'Propostas, apresentações de vendas, landing pages, reuniões executivas',
+    accentColor: '#4A78C8',
+    signature: '"Da direção à escala. Com estrutura em cada fase."',
+  },
+  {
+    layer: 'Leilaine Campioto',
+    tagline: 'Marca Pessoal',
+    adjectives: ['Pessoal', 'Profunda', 'Confrontadora com Cuidado', 'Experiente', 'Construtora'],
+    description: 'Uma líder que esteve no campo por 20+ anos. Fala a partir de experiência vivida. Não performa expertise — demonstra. Fé e propósito aparecem naturalmente, não como decoração.',
+    examples: [
+      'Eu não vendo modinha tecnológica. Eu estruturo crescimento.',
+      'Cansei de ver líder confuso chamando isso de estratégia.',
+      'Depois de 15 anos gerindo equipes comerciais, aprendi que o problema raramente é onde a empresa acha que está.',
+      'Fé sem estrutura é esperança. Estrutura sem fé é apenas técnica. Os dois juntos constroem legado.',
+    ],
+    channels: 'LinkedIn pessoal, conteúdo em vídeo, podcast, palestras, Twitter/X',
+    accentColor: '#D4A84C',
+    signature: '"Direção. Consciência. Legado. Porque IA sem direção só acelera o caos."',
+  },
+  {
+    layer: 'Líderes Leões',
+    tagline: 'Movimento e Comunidade',
+    adjectives: ['Provocativo', 'Forte', 'Inspirador com Profundidade', 'Comunitário', 'Chamativo'],
+    description: 'Um manifesto. Um chamado. Linguagem que separa — não é para todos, e a voz deixa isso claro. Fala em termos de governo, coragem e permanência. A comunidade é uma tribo, não uma base de fãs.',
+    examples: [
+      'Liderança não é posição. É governo.',
+      'Cansado de liderar no improviso? Esse é o primeiro sinal de que você está pronto.',
+      'Leões não pedem permissão para ocupar território.',
+      'Aqui, não celebramos esforço. Celebramos postura.',
+    ],
+    channels: 'Plataforma comunitária, conteúdo social do movimento, eventos, onboarding, comunicações semanais',
+    accentColor: '#EDD297',
+    signature: '"Coragem para governar. Consciência para permanecer."',
+  },
+];
+
+const coreTerms = [
+  { term: 'Direção', meaning: 'Direcionamento estratégico — saber onde ir e por quê. Não motivação, não vision boards.' },
+  { term: 'Consciência', meaning: 'Consciência do que está realmente acontecendo na operação vs. o que se assume.' },
+  { term: 'Legado', meaning: 'O resultado permanente do trabalho. Contrasta com pensamento transacional.' },
+  { term: 'Estrutura', meaning: 'A arquitetura por trás da operação comercial — processos, playbooks, fluxos.' },
+  { term: 'Arquitetura', meaning: 'O sistema de crescimento projetado. Usado tanto para arquitetura comercial quanto para ZNITH.AI OS.' },
+  { term: 'Diagnóstico', meaning: 'A avaliação honesta que precede qualquer recomendação. Verdade antes de vaidade.' },
+  { term: 'Governança', meaning: 'A capacidade de liderar, decidir e escalar sem dependência de heroísmo ou improviso.' },
+  { term: 'Previsibilidade', meaning: 'Receita, pipeline e resultados previsíveis — o objetivo da estruturação comercial.' },
+  { term: 'Operação', meaning: 'A execução comercial do dia a dia — o que a estrutura torna possível.' },
+];
+
+const prohibited = [
+  { category: 'Hype de IA', terms: 'revolucionário, disruptivo, cutting-edge, vanguarda, game-changer' },
+  { category: 'Clichês de consultoria', terms: 'sinergia, ecossistema (sem contexto), alavancar, impulsionar, potencializar' },
+  { category: 'Urgência falsa', terms: 'oferta por tempo limitado, últimas vagas (a menos que factualmente verdadeiro)' },
+  { category: 'Posicionamento de guru', terms: 'método definitivo, descobri o segredo, o sistema que ninguém te contou' },
+  { category: 'Motivação vazia', terms: 'você pode, vai lá, acredite em você, sonhe grande' },
+  { category: 'Academicismo', terms: 'no que tange, destarte, outrossim, mediante o exposto' },
+  { category: 'Promessas vagas', terms: 'resultados incríveis, sucesso garantido, transforme sua vida/empresa' },
+];
+---
+
+<Layout title="Tom de Voz" currentPath={currentPath}>
+  <div class="page-header">
+    <span class="page-overline">Capítulo 5</span>
+    <h1 class="page-title">Tom de Voz</h1>
+    <p class="page-subtitle">Quatro perfis de voz distintos. Um sistema de vocabulário unificado.</p>
+    <span class="gold-line"></span>
+  </div>
+
+  <!-- Voice Profiles -->
+  <section class="content-section" data-reveal>
+    <h2 class="section-h2">5.1 – 5.4 Perfis de Voz por Camada</h2>
+    <div style="margin-bottom:24px;"></div>
+
+    {voiceProfiles.map(profile => (
+      <div class="card" style={`border-left:3px solid ${profile.accentColor};margin-bottom:16px;`}>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+          <div>
+            <div style={`font-family:'Cinzel',serif;font-size:20px;color:${profile.accentColor};margin-bottom:2px;`}>{profile.layer}</div>
+            <div style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:#7A7A7A;">{profile.tagline}</div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            {profile.adjectives.map(adj => (
+              <span style={`font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;padding:4px 10px;border-radius:4px;background:rgba(196,151,56,0.08);border:1px solid rgba(196,151,56,0.2);color:${profile.accentColor};`}>{adj}</span>
+            ))}
+          </div>
+        </div>
+
+        <p style="font-family:'Montserrat',sans-serif;font-size:14px;color:#BBBBBB;line-height:1.7;margin-bottom:20px;">{profile.description}</p>
+
+        <div style="margin-bottom:20px;">
+          <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#7A7A7A;margin-bottom:10px;">Frases exemplares</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            {profile.examples.map(ex => (
+              <div style={`padding:12px 16px;background:#060E1F;border-radius:6px;border-left:2px solid ${profile.accentColor};font-family:'Montserrat',sans-serif;font-size:14px;color:#FFFFFF;line-height:1.5;`}>
+                "{ex}"
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding-top:16px;border-top:1px solid #253D66;">
+          <div>
+            <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#7A7A7A;margin-bottom:4px;">Canais primários</div>
+            <div style="font-family:'Montserrat',sans-serif;font-size:13px;color:#BBBBBB;">{profile.channels}</div>
+          </div>
+          <div>
+            <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#7A7A7A;margin-bottom:4px;">Frase assinatura</div>
+            <div style={`font-family:'Cinzel',serif;font-size:13px;color:${profile.accentColor};letter-spacing:0.04em;line-height:1.4;`}>{profile.signature}</div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </section>
+
+  <!-- Core Vocabulary -->
+  <section class="content-section" data-reveal>
+    <h2 class="section-h2">5.5 Vocabulário Oficial</h2>
+    <div style="margin-bottom:16px;"></div>
+    <p style="font-family:'Montserrat',sans-serif;font-size:14px;color:#BBBBBB;margin-bottom:24px;">
+      Termos centrais que aparecem em todas as camadas da marca e representam a fundação conceitual da ZNITH.
+    </p>
+    <table class="brand-table">
+      <thead>
+        <tr>
+          <th>Termo</th>
+          <th>Significado no Contexto da Marca</th>
+        </tr>
+      </thead>
+      <tbody>
+        {coreTerms.map(t => (
+          <tr>
+            <td style="color:#C49738;font-weight:600;font-family:'Cinzel',serif;font-size:15px;white-space:nowrap;">{t.term}</td>
+            <td>{t.meaning}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Prohibited Terms -->
+  <section class="content-section" data-reveal>
+    <h2 class="section-h2">Termos Proibidos — Todas as Camadas</h2>
+    <div style="margin-bottom:16px;"></div>
+    <div style="background:rgba(122,42,42,0.08);border:1px solid rgba(122,42,42,0.25);border-radius:10px;padding:4px 0;overflow:hidden;">
+      {prohibited.map((p, i) => (
+        <div style={`display:grid;grid-template-columns:180px 1fr;gap:16px;padding:14px 20px;${i < prohibited.length - 1 ? 'border-bottom:1px solid rgba(122,42,42,0.15);' : ''}`}>
+          <div style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:#A03A3A;">{p.category}</div>
+          <div style="font-family:'Montserrat',sans-serif;font-size:13px;color:#BBBBBB;line-height:1.5;">{p.terms}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Do/Don't -->
+  <section class="content-section" data-reveal>
+    <h2 class="section-h2">Exemplos — Certo e Errado</h2>
+    <div style="margin-bottom:20px;"></div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      {[
+        {
+          wrong: 'Nossas soluções inovadoras de inteligência artificial permitem que empresas transformem seus processos e alcancem resultados extraordinários através de implementações robustas e escaláveis.',
+          right: 'A maioria das empresas que nos procura já tentou IA antes. Gastaram. Não funcionou. O que fazemos diferente? Começamos pelo resultado financeiro, não pela tecnologia. Simples assim.',
+        },
+        {
+          wrong: 'Alavanque seu negócio com nossas soluções disruptivas de RevOps potencializadas por IA.',
+          right: 'Crescimento previsível não é sorte. É arquitetura. E arquitetura se constrói com diagnóstico, processo e responsabilidade — não com promessa.',
+        },
+      ].map(ex => (
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="background:rgba(122,42,42,0.08);border:1px solid rgba(122,42,42,0.3);border-radius:8px;padding:16px;">
+            <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#A03A3A;margin-bottom:8px;">Errado — AI pattern</div>
+            <p style="font-family:'Montserrat',sans-serif;font-size:13px;color:#BBBBBB;line-height:1.6;font-style:italic;">"{ex.wrong}"</p>
+          </div>
+          <div style="background:rgba(42,107,74,0.08);border:1px solid rgba(42,107,74,0.3);border-radius:8px;padding:16px;">
+            <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#3A8A60;margin-bottom:8px;">Certo — Voz ZNITH</div>
+            <p style="font-family:'Montserrat',sans-serif;font-size:13px;color:#BBBBBB;line-height:1.6;">"{ex.right}"</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</Layout>

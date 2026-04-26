@@ -1,0 +1,361 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import products from '../data/products.json';
+---
+
+<AppLayout title="Buy Box Monitor" activePage="buybox">
+
+  <!-- Header -->
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <h1 style="font-size:20px; font-weight:700; color:var(--text-primary); letter-spacing:-0.03em; margin-bottom:4px;">
+        Monitor de Buy Box em Tempo Real
+      </h1>
+      <div style="font-size:13px; color:var(--text-muted);">
+        7 SKUs Curva A · atualizado há <span id="bb-counter">8</span>s
+      </div>
+    </div>
+
+    <!-- Marketplace filter -->
+    <div style="display:flex; gap:8px;">
+      {['Todos', 'Mercado Livre', 'Shopee', 'Amazon'].map(mp => (
+        <button
+          class="btn btn-ghost filter-btn"
+          data-mp={mp}
+          style={mp === 'Todos' ? 'border-color:var(--red); color:var(--red);' : ''}
+        >
+          {mp}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Alert banner -->
+  <div data-alert-banner style="
+    background:rgba(200,16,46,0.08); border:1px solid rgba(200,16,46,0.25);
+    border-radius:10px; padding:12px 16px; margin-bottom:20px;
+    display:flex; align-items:center; gap:10px;
+    transition: opacity 0.4s;
+  ">
+    <div class="dot-red"></div>
+    <span style="font-size:13px; color:var(--text-primary);">
+      <strong style="color:var(--red);">Ação necessária:</strong> Tarê Sakura 1L perdeu Buy Box há 2h17min.
+      Perda acumulada: <strong id="total-loss" style="color:var(--red);">R$ 63,84</strong>
+    </span>
+    <button class="btn btn-red" onclick="document.getElementById('recover-modal').style.display='flex';" style="margin-left:auto; padding:6px 14px; font-size:12px;">
+      Recuperar agora
+    </button>
+  </div>
+
+  <!-- Table -->
+  <div class="card" style="overflow:hidden;">
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Marketplace</th>
+            <th>Seu preço</th>
+            <th>Concorrente</th>
+            <th>Diferença</th>
+            <th>Status Buy Box</th>
+            <th>R$/h em risco</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="products-tbody">
+          {products.map(p => (
+            <tr
+              class={p.buybox === 'LOST' ? 'row-red' : ''}
+              data-mp={p.marketplace}
+            >
+              <td style="font-weight:500; max-width:220px;">
+                <div style="font-size:13px; color:var(--text-primary); line-height:1.3;">{p.name}</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">{p.category}</div>
+              </td>
+              <td>
+                <span style="font-size:12px; color:var(--text-secondary);">{p.marketplace}</span>
+              </td>
+              <td style="font-weight:600; color:var(--text-primary);">
+                R$ {p.price.toFixed(2)}
+              </td>
+              <td style={p.diff < 0 ? 'color:var(--red); font-weight:600;' : 'color:var(--text-secondary);'}>
+                R$ {p.competitor_price.toFixed(2)}
+              </td>
+              <td>
+                {p.diff < 0
+                  ? <span class="badge badge-red">{p.diff.toFixed(2)}</span>
+                  : p.diff === 0
+                  ? <span style="font-size:12px; color:var(--text-muted);">—</span>
+                  : <span class="badge badge-green">+R${p.diff.toFixed(2)}</span>
+                }
+              </td>
+              <td>
+                {p.buybox === 'LOST' && (
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <div class="dot-red"></div>
+                    <span style="font-size:12px; color:var(--red); font-weight:600;">PERDIDO há {p.lost_since}</span>
+                  </div>
+                )}
+                {p.buybox === 'AT_RISK' && (
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <div class="dot-yellow"></div>
+                    <span style="font-size:12px; color:var(--yellow);">Risco — concorrente {p.diff.toFixed(2)}</span>
+                  </div>
+                )}
+                {p.buybox === 'ACTIVE' && (
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <div class="dot-green"></div>
+                    <span style="font-size:12px; color:var(--green);">Buy Box ativo</span>
+                  </div>
+                )}
+              </td>
+              <td>
+                {p.risk_per_hour > 0
+                  ? <span style="font-size:13px; font-weight:600; color:var(--red);">R${p.risk_per_hour}/h</span>
+                  : <span style="font-size:12px; color:var(--text-muted);">—</span>
+                }
+              </td>
+              <td>
+                {p.buybox === 'LOST' && (
+                  <button class="btn btn-red" style="padding:5px 12px; font-size:12px;" onclick="document.getElementById('recover-modal').style.display='flex';">
+                    Recuperar
+                  </button>
+                )}
+                {p.buybox === 'AT_RISK' && (
+                  <button class="btn btn-ghost" style="padding:5px 12px; font-size:12px;" onclick="window.location.href='/diagnostico'">
+                    Diagnosticar
+                  </button>
+                )}
+                {p.buybox === 'ACTIVE' && (
+                  <span style="font-size:12px; color:var(--text-muted);">—</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Live loss counter row note -->
+  <div style="margin-top:12px; font-size:12px; color:var(--text-muted); text-align:right;">
+    Perda acumulada hoje: <span id="daily-loss" style="color:var(--red); font-weight:600;">R$ 63,84</span> · contador ao vivo
+  </div>
+
+</AppLayout>
+
+<!-- Recovery Modal -->
+<div id="recover-modal" style="display:none;" class="modal-overlay" onclick="if(event.target===this) this.style.display='none';">
+  <div class="modal-box">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+      <div style="font-size:16px; font-weight:700; color:var(--text-primary); letter-spacing:-0.02em;">
+        Sugestão de Recuperação IA
+      </div>
+      <button onclick="document.getElementById('recover-modal').style.display='none';" style="background:none;border:none;cursor:pointer;color:var(--text-muted);">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div style="background:var(--red-dim); border:1px solid rgba(200,16,46,0.2); border-radius:10px; padding:14px 16px; margin-bottom:16px;">
+      <div style="font-size:12px; color:var(--red); font-weight:600; margin-bottom:6px;">PRODUTO AFETADO</div>
+      <div style="font-size:13px; color:var(--text-primary); font-weight:500;">Molho Especial Tarê Sakura 1L</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Mercado Livre · Buy Box perdido há 2h17min</div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px; font-weight:500; letter-spacing:0.05em; text-transform:uppercase;">Recomendação</div>
+      <div class="card" style="padding:16px;">
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
+          <div style="text-align:center;">
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">Atual</div>
+            <div style="font-size:20px; font-weight:700; color:var(--text-secondary);">R$ 24,99</div>
+          </div>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M14 7l5 5-5 5" stroke="var(--red)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="text-align:center;">
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">Sugerido</div>
+            <div style="font-size:20px; font-weight:700; color:var(--green);">R$ 24,80</div>
+          </div>
+        </div>
+        <div style="font-size:12px; color:var(--text-muted); line-height:1.5;">
+          Ajuste de <strong style="color:var(--text-primary);">R$ 0,19</strong> abaixo do concorrente.
+          ROI estimado: recupera Buy Box em <strong style="color:var(--green);">~15 minutos</strong> com ganho de <strong style="color:var(--green);">+R$ 340/dia</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-red" style="flex:1; justify-content:center;" id="apply-btn" onclick="applyRecovery()">
+        Aplicar ajuste
+      </button>
+      <button class="btn btn-ghost" onclick="document.getElementById('recover-modal').style.display='none';">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Success toast -->
+<div id="success-toast" class="toast" style="display:none; border-color:rgba(34,197,94,0.3);">
+  <div style="display:flex; align-items:center; gap:8px;">
+    <div class="dot-green"></div>
+    <span style="color:var(--text-primary);">Buy Box recuperado em 14 segundos. +R$340/dia projetado.</span>
+  </div>
+</div>
+
+<script>
+  // ─── State ───────────────────────────────────────────────────────────────
+  let lossBase = 63.84;
+  let lossRunning = true; // stops when recovered
+  let finalLoss = 0;
+
+  // ─── Live loss counter ───────────────────────────────────────────────────
+  const lossEl = document.getElementById('total-loss');
+  const dailyLossEl = document.getElementById('daily-loss');
+  setInterval(() => {
+    if (!lossRunning) return;
+    lossBase += (28 / 3600);
+    const formatted = `R$ ${lossBase.toFixed(2)}`;
+    if (lossEl) lossEl.textContent = formatted;
+    if (dailyLossEl) dailyLossEl.textContent = formatted;
+  }, 1000);
+
+  // ─── BB freshness counter ────────────────────────────────────────────────
+  let bbSecs = 8;
+  const bbCounter = document.getElementById('bb-counter');
+  setInterval(() => {
+    bbSecs++;
+    if (bbSecs > 20) bbSecs = 1;
+    if (bbCounter) bbCounter.textContent = String(bbSecs);
+  }, 1000);
+
+  // ─── Marketplace filter ──────────────────────────────────────────────────
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        (b as HTMLElement).style.borderColor = '';
+        (b as HTMLElement).style.color = '';
+      });
+      (btn as HTMLElement).style.borderColor = 'var(--red)';
+      (btn as HTMLElement).style.color = 'var(--red)';
+      const mp = btn.getAttribute('data-mp');
+      document.querySelectorAll('#products-tbody tr').forEach(row => {
+        const rowMp = row.getAttribute('data-mp');
+        (row as HTMLElement).style.display = (mp === 'Todos' || rowMp === mp) ? '' : 'none';
+      });
+    });
+  });
+
+  // ─── Apply recovery ──────────────────────────────────────────────────────
+  function applyRecovery() {
+    const applyBtn = document.getElementById('apply-btn') as HTMLButtonElement;
+    applyBtn.textContent = 'Aplicando...';
+    applyBtn.style.opacity = '0.7';
+    applyBtn.disabled = true;
+
+    setTimeout(() => {
+      // 1. Close modal
+      document.getElementById('recover-modal')!.style.display = 'none';
+
+      // 2. Find the Tarê Sakura row (first row = id 1 = LOST row)
+      const lostRow = document.querySelector('#products-tbody tr.row-red') as HTMLElement | null;
+
+      if (lostRow) {
+        // Stop the loss counter and capture final value
+        lossRunning = false;
+        finalLoss = lossBase;
+
+        // Phase A: yellow "Recuperando..." state
+        lostRow.classList.remove('row-red');
+        lostRow.style.animation = 'none';
+
+        // Update status cell (6th td, index 5)
+        const cells = lostRow.querySelectorAll('td');
+
+        // Status cell
+        const statusCell = cells[5] as HTMLElement;
+        statusCell.innerHTML = `
+          <div style="display:flex; align-items:center; gap:6px;">
+            <div class="dot-yellow"></div>
+            <span style="font-size:12px; color:var(--yellow); font-weight:600;">
+              Recuperando...
+            </span>
+            <svg width="12" height="12" viewBox="0 0 12 12" style="animation:spin 1s linear infinite; flex-shrink:0;">
+              <circle cx="6" cy="6" r="4.5" stroke="var(--yellow)" stroke-width="1.5" fill="none" stroke-dasharray="14 8"/>
+            </svg>
+          </div>`;
+
+        // Action cell (8th td, index 7)
+        const actionCell = cells[7] as HTMLElement;
+        actionCell.innerHTML = `<span style="font-size:12px; color:var(--text-muted);">—</span>`;
+
+        // Alert banner: freeze loss display
+        const alertBanner = document.querySelector('[data-alert-banner]') as HTMLElement | null;
+        if (alertBanner) alertBanner.style.opacity = '0.5';
+
+        // Loss counter: show frozen value
+        if (lossEl) lossEl.textContent = `R$ ${finalLoss.toFixed(2)}`;
+        if (dailyLossEl) dailyLossEl.textContent = `R$ ${finalLoss.toFixed(2)}`;
+
+        // Phase B: 3s later → green "Buy Box recuperado"
+        setTimeout(() => {
+          // Update status cell to green
+          statusCell.innerHTML = `
+            <div style="display:flex; align-items:center; gap:6px;">
+              <div class="dot-green"></div>
+              <span style="font-size:12px; color:var(--green); font-weight:600;">Buy Box recuperado</span>
+            </div>`;
+
+          // Update loss display: strikethrough + badge
+          const lossStr = `R$ ${finalLoss.toFixed(2)}`;
+          if (lossEl) lossEl.innerHTML = `<s style="opacity:0.45;">${lossStr}</s>&nbsp;<span class="badge badge-green" style="font-size:10px; padding:2px 7px; vertical-align:middle;">Recuperado</span>`;
+          if (dailyLossEl) dailyLossEl.innerHTML = `<s style="opacity:0.45;">${lossStr}</s>&nbsp;<span class="badge badge-green" style="font-size:10px; padding:2px 7px; vertical-align:middle;">Recuperado</span>`;
+
+          // Add new activity event at the top of the dashboard feed
+          // (only visible if the activity feed section exists on this page; it doesn't, so we skip)
+
+          // Show success toast
+          const toast = document.getElementById('success-toast')!;
+          toast.style.display = 'block';
+          setTimeout(() => { toast.style.display = 'none'; }, 5000);
+
+          // Inject activity event at top of any activity feed on the page
+          const activityFeed = document.getElementById('activity-feed');
+          if (activityFeed) {
+            const newEvent = document.createElement('div');
+            newEvent.style.cssText = `
+              padding:10px 0;
+              border-bottom:1px solid var(--border);
+              animation: fade-in 0.4s ease both;
+            `;
+            newEvent.innerHTML = `
+              <div style="display:flex; align-items:flex-start; gap:8px;">
+                <div style="width:6px; height:6px; border-radius:50%; margin-top:5px; flex-shrink:0; background:var(--green);"></div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:12px; color:var(--text-primary); line-height:1.4;">Buy Box Tarê Sakura recuperado — ajuste automático R$24,99 → R$24,80</div>
+                  <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">há 1s</div>
+                </div>
+              </div>`;
+            activityFeed.prepend(newEvent);
+          }
+        }, 3000);
+      }
+
+      // Reset apply button for future use
+      setTimeout(() => {
+        applyBtn.textContent = 'Aplicar ajuste';
+        applyBtn.style.opacity = '1';
+        applyBtn.disabled = false;
+      }, 1500);
+    }, 1000);
+  }
+
+  (window as any).applyRecovery = applyRecovery;
+</script>
+
+<style>
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>

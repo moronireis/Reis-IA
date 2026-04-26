@@ -1,0 +1,2009 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journey Visualization — Conceitos 6–10</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000000;
+      --surface: #0A0A0A;
+      --blue: #4A90FF;
+      --blue-dim: rgba(74,144,255,0.15);
+      --green: #22C55E;
+      --green-dim: rgba(34,197,94,0.15);
+      --purple: #8B5CF6;
+      --cyan: #00B4FF;
+      --muted: #1A1A1A;
+      --text: #FFFFFF;
+      --text-dim: #555555;
+      --text-mid: #888888;
+      --border: #1C1C1C;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── TOP NAV ─── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 52px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-inner::-webkit-scrollbar { display: none; }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--text-mid);
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      border: 1px solid var(--border);
+      transition: color 0.2s, border-color 0.2s;
+      margin-right: 8px;
+    }
+    .nav-back:hover { color: var(--text); border-color: #444; }
+
+    .nav-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+      flex-shrink: 0;
+      margin-right: 8px;
+    }
+
+    .nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      color: var(--text-dim);
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      user-select: none;
+      text-decoration: none;
+    }
+    .nav-tab:hover { color: var(--text-mid); border-color: var(--border); }
+    .nav-tab.active { color: var(--text); border-color: var(--border); background: var(--muted); }
+
+    /* ─── SECTION WRAPPER ─── */
+    .concept-section {
+      display: none;
+      min-height: calc(100vh - 52px);
+    }
+    .concept-section.active { display: block; }
+
+    /* ─── CONCEPT FOOTER ─── */
+    .concept-footer {
+      padding: 32px 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .concept-footer .c-name {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+    .concept-footer .c-desc {
+      font-size: 13px;
+      color: var(--text-mid);
+      font-weight: 400;
+    }
+
+    /* ══════════════════════════════════════════
+       CONCEPT 6 — NEBULA CONSTELLATION
+    ══════════════════════════════════════════ */
+    #nebula {
+      position: relative;
+      overflow: hidden;
+    }
+    #nebula-canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 52px - 80px);
+      min-height: 600px;
+      overflow: hidden;
+    }
+    #nebula-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .nebula-zoom-overlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.7);
+      z-index: 10;
+    }
+    .nebula-zoom-overlay.active { display: flex; }
+    .nebula-zoom-panel {
+      background: #0A0A0A;
+      border: 1px solid #222;
+      border-radius: 16px;
+      padding: 32px;
+      width: min(560px, 90vw);
+      position: relative;
+    }
+    .nbz-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-mid);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .nbz-phase-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+    .nbz-nodes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .nbz-node-card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .nbz-node-card:hover { border-color: #444; background: #161616; }
+    .nbz-node-card.completed { border-color: rgba(34,197,94,0.3); }
+    .nbz-node-card.in_progress { border-color: rgba(74,144,255,0.4); }
+    .nbz-node-card.available { border-color: rgba(255,255,255,0.12); }
+    .nbz-node-card.locked { opacity: 0.4; cursor: default; }
+    .nbz-node-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; line-height: 1.4; }
+    .nbz-node-type { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+    .nbz-node-xp { font-size: 11px; font-weight: 600; }
+    .nbz-node-status-dot {
+      width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px;
+    }
+    .nbz-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: var(--text-mid);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nbz-back-btn:hover { border-color: #555; color: var(--text); }
+    .nebula-tooltip {
+      position: fixed;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px 14px;
+      pointer-events: none;
+      z-index: 999;
+      font-size: 12px;
+      max-width: 200px;
+      display: none;
+    }
+    .nebula-tooltip.visible { display: block; }
+    .nt-title { font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .nt-type { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-mid); margin-bottom: 3px; }
+    .nt-xp { font-size: 11px; font-weight: 600; color: var(--blue); }
+
+    /* ══════════════════════════════════════════
+       CONCEPT 7 — ORBITAL RINGS
+    ══════════════════════════════════════════ */
+    #orbital {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 24px;
+    }
+    #orbital.active { display: flex; }
+    #orbital .orbital-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    #orbital .orbital-header h2 {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+    }
+    #orbital .orbital-header p {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .orbital-progress-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: var(--text-mid);
+    }
+    .orbital-progress-bar span.pct {
+      font-weight: 600;
+      color: var(--blue);
+    }
+    .orbital-system-wrap {
+      position: relative;
+      width: min(760px, 94vw);
+      aspect-ratio: 1;
+      margin: 0 auto;
+    }
+    #orbital-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .orbital-legend {
+      display: flex;
+      gap: 20px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .orbital-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--text-mid);
+    }
+    .ol-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+
+    /* ══════════════════════════════════════════
+       CONCEPT 8 — TIMELINE RIVER
+    ══════════════════════════════════════════ */
+    #river {
+      display: none;
+      padding: 0;
+      overflow: hidden;
+    }
+    #river.active { display: block; }
+    .river-container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 48px 24px 48px;
+      position: relative;
+    }
+    .river-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .river-header h2 {
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+    }
+    .river-header p {
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .river-track {
+      position: relative;
+    }
+    .river-spine {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 0;
+      bottom: 0;
+      width: 52px;
+      z-index: 1;
+    }
+    .river-spine-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 42%;
+      background: linear-gradient(180deg, #4A90FF 0%, #00B4FF 60%, rgba(74,144,255,0.2) 100%);
+      border-radius: 0 0 26px 26px;
+    }
+    .river-spine-locked {
+      position: absolute;
+      top: 42%;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.03);
+      border-radius: 0 0 26px 26px;
+    }
+    .river-flow-lines {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: 26px;
+    }
+    .river-phase {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      z-index: 2;
+    }
+    .river-phase:nth-child(even) { flex-direction: row-reverse; }
+    .river-chapter-label {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: -22px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      white-space: nowrap;
+      z-index: 3;
+    }
+    .river-phase-nodes {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 28px 16px 16px;
+    }
+    .river-phase:nth-child(odd) .river-phase-nodes { align-items: flex-end; padding-right: 44px; }
+    .river-phase:nth-child(even) .river-phase-nodes { align-items: flex-start; padding-left: 44px; }
+    .river-port {
+      position: relative;
+      width: 200px;
+      background: #0C0C0C;
+      border: 1px solid #1E1E1E;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .river-port:hover { border-color: #333; background: #111; transform: translateY(-1px); }
+    .river-port.completed { border-left: 3px solid var(--green); }
+    .river-port.in_progress { border-left: 3px solid var(--blue); }
+    .river-port.available { border-left: 3px solid rgba(255,255,255,0.15); }
+    .river-port.locked { border-left: 3px solid #222; opacity: 0.45; cursor: default; }
+    .rp-icon {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .rp-info { flex: 1; min-width: 0; }
+    .rp-title { font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rp-type { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); }
+    .river-boat {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      z-index: 10;
+    }
+    /* flow animation */
+    @keyframes riverFlow {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(400%); }
+    }
+    .flow-line {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      background: rgba(255,255,255,0.12);
+      animation: riverFlow 3s linear infinite;
+    }
+    .flow-line:nth-child(2) { left: 35%; animation-delay: -1s; }
+    .flow-line:nth-child(3) { left: 65%; animation-delay: -2s; }
+
+    /* ══════════════════════════════════════════
+       CONCEPT 9 — TOWER ASCENT
+    ══════════════════════════════════════════ */
+    #tower {
+      display: none;
+      padding: 40px 24px 0;
+    }
+    #tower.active { display: block; }
+    .tower-container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .tower-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .tower-header h2 {
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+    }
+    .tower-header p { font-size: 26px; font-weight: 700; }
+    .tower-building {
+      position: relative;
+      display: flex;
+      gap: 0;
+    }
+    .tower-left-shaft {
+      width: 36px;
+      flex-shrink: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .tower-elevator-track {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      background: #1A1A1A;
+      border-radius: 2px;
+    }
+    .tower-elevator-cab {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background: var(--blue);
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(74,144,255,0.6);
+      z-index: 5;
+      transition: top 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes elevatorPulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(74,144,255,0.6); }
+      50% { box-shadow: 0 0 20px rgba(74,144,255,0.9); }
+    }
+    .tower-elevator-cab { animation: elevatorPulse 2s ease-in-out infinite; }
+    .tower-main {
+      flex: 1;
+      border: 1px solid #1A1A1A;
+      border-radius: 4px 4px 0 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .tower-spire {
+      width: 100%;
+      height: 48px;
+      background: #0A0A0A;
+      border-bottom: 1px solid #1A1A1A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .tower-spire-line {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 20px;
+      background: linear-gradient(180deg, var(--blue), transparent);
+    }
+    .tower-spire-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 8px var(--blue);
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .tower-spire-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-top: 20px;
+    }
+    .tower-floor {
+      border-bottom: 1px solid #1A1A1A;
+      position: relative;
+      overflow: hidden;
+    }
+    .tower-floor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 10px;
+      border-bottom: 1px solid #111;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .tower-floor-header:hover { background: rgba(255,255,255,0.02); }
+    .floor-number {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+    }
+    .floor-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .floor-status-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 100px;
+    }
+    .floor-status-badge.completed { background: rgba(34,197,94,0.12); color: var(--green); }
+    .floor-status-badge.in_progress { background: rgba(74,144,255,0.12); color: var(--blue); }
+    .floor-status-badge.locked { background: rgba(255,255,255,0.04); color: var(--text-dim); }
+    .tower-floor-rooms {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      flex-wrap: wrap;
+    }
+    .tower-room {
+      flex: 0 0 auto;
+      background: #0C0C0C;
+      border: 1px solid #1E1E1E;
+      border-radius: 8px;
+      padding: 10px;
+      width: 110px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .tower-room:hover { border-color: #333; background: #111; }
+    .tower-room.completed { border-top: 2px solid var(--green); }
+    .tower-room.in_progress { border-top: 2px solid var(--blue); }
+    .tower-room.available { border-top: 2px solid rgba(255,255,255,0.1); }
+    .tower-room.locked { opacity: 0.35; cursor: default; }
+    /* construction animation for in_progress floor */
+    .tower-floor.in_progress::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 20px,
+        rgba(74,144,255,0.015) 20px,
+        rgba(74,144,255,0.015) 22px
+      );
+      animation: constructionMove 4s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes constructionMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 40px 40px; }
+    }
+    .tower-window-row {
+      display: flex;
+      gap: 8px;
+      padding: 8px 16px;
+      justify-content: flex-end;
+    }
+    .tower-window {
+      width: 16px; height: 20px;
+      border: 1px solid #222;
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+    .tower-window.lit { background: rgba(255,220,100,0.15); border-color: rgba(255,220,100,0.25); }
+    .tower-window.partial { background: rgba(74,144,255,0.1); border-color: rgba(74,144,255,0.2); }
+    @keyframes windowGlow {
+      0%, 100% { background: rgba(255,220,100,0.1); }
+      50% { background: rgba(255,220,100,0.2); }
+    }
+    .tower-window.lit { animation: windowGlow 3s ease-in-out infinite; }
+    .tr-type { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 5px; }
+    .tr-title { font-size: 11px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+    /* ══════════════════════════════════════════
+       CONCEPT 10 — NEURAL NETWORK
+    ══════════════════════════════════════════ */
+    #neural {
+      display: none;
+      padding: 40px 24px;
+    }
+    #neural.active { display: block; }
+    .neural-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .neural-header h2 {
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+    }
+    .neural-header p { font-size: 26px; font-weight: 700; }
+    .neural-canvas-wrap {
+      position: relative;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    #neural-svg {
+      width: 100%;
+      display: block;
+    }
+    .neural-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .nl-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--text-mid);
+    }
+    .nl-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .neural-instruction {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 16px;
+      font-style: italic;
+    }
+
+    /* ─── GLOBAL ANIMATIONS ─── */
+    @keyframes twinkle {
+      0%, 100% { opacity: var(--base-op, 0.6); }
+      50% { opacity: calc(var(--base-op, 0.6) * 0.4); }
+    }
+    @keyframes pulseBlue {
+      0%, 100% { filter: drop-shadow(0 0 3px rgba(74,144,255,0.4)); r: var(--base-r, 8); }
+      50% { filter: drop-shadow(0 0 8px rgba(74,144,255,0.9)); r: calc(var(--base-r, 8) + 2); }
+    }
+    @keyframes orbitRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes synapseTravel {
+      0% { offset-distance: 0%; opacity: 0; }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { offset-distance: 100%; opacity: 0; }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 640px) {
+      .river-port { width: 160px; }
+      .nbz-nodes { grid-template-columns: 1fr 1fr; }
+      .tower-room { width: 90px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a class="nav-back" href="index.html">← 1-5</a>
+    <div class="nav-divider"></div>
+    <a class="nav-tab" href="page3.html" style="color:#8B5CF6;border-bottom-color:#8B5CF6;">Hybrids →</a>
+    <div class="nav-divider"></div>
+    <a class="nav-tab active" href="#" data-target="nebula">Nebula</a>
+    <a class="nav-tab" href="#" data-target="orbital">Orbital</a>
+    <a class="nav-tab" href="#" data-target="river">River</a>
+    <a class="nav-tab" href="#" data-target="tower">Tower</a>
+    <a class="nav-tab" href="#" data-target="neural">Neural</a>
+  </div>
+</nav>
+
+<!-- TOOLTIP (shared) -->
+<div class="nebula-tooltip" id="nebulaTooltip">
+  <div class="nt-title" id="ttTitle"></div>
+  <div class="nt-type" id="ttType"></div>
+  <div class="nt-xp" id="ttXP"></div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     CONCEPT 6 — NEBULA CONSTELLATION
+════════════════════════════════════════════ -->
+<section id="nebula" class="concept-section active">
+  <div id="nebula-canvas-wrap">
+    <canvas id="nebula-canvas"></canvas>
+
+    <!-- Zoom overlay -->
+    <div class="nebula-zoom-overlay" id="nebulaOverlay">
+      <div class="nebula-zoom-panel">
+        <div class="nbz-title" id="nbzPhaseLabel">Fase</div>
+        <div class="nbz-phase-name" id="nbzPhaseName"></div>
+        <div class="nbz-nodes" id="nbzNodes"></div>
+        <button class="nbz-back-btn" id="nbzBackBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M9 1L3 7l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Voltar ao mapa
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-footer">
+    <div class="c-name">Conceito 6 — Nebula Constellation</div>
+    <div class="c-desc">Mapa estelar interativo: cada fase é uma constelação com zoom-in para ver os nós em detalhe.</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     CONCEPT 7 — ORBITAL RINGS
+════════════════════════════════════════════ -->
+<section id="orbital" class="concept-section">
+  <div class="orbital-header">
+    <h2>Sistema Solar de Progresso</h2>
+    <p>Jornada IA do Zero ao Claude Code</p>
+  </div>
+  <div class="orbital-progress-bar">
+    <span>Órbitas percorridas:</span>
+    <span class="pct">2 / 5</span>
+  </div>
+  <div class="orbital-system-wrap">
+    <svg id="orbital-svg" viewBox="0 0 760 760" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div class="orbital-legend">
+    <div class="orbital-legend-item"><div class="ol-dot" style="background:#22C55E;"></div> Concluída</div>
+    <div class="orbital-legend-item"><div class="ol-dot" style="background:#4A90FF;box-shadow:0 0 6px #4A90FF;"></div> Em andamento</div>
+    <div class="orbital-legend-item"><div class="ol-dot" style="background:#333;border:1px solid #444;"></div> Bloqueada</div>
+  </div>
+  <div class="concept-footer">
+    <div class="c-name">Conceito 7 — Orbital Rings</div>
+    <div class="c-desc">Sistema solar de aprendizado: cada fase é uma órbita ao redor da meta final.</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     CONCEPT 8 — TIMELINE RIVER
+════════════════════════════════════════════ -->
+<section id="river" class="concept-section">
+  <div class="river-container">
+    <div class="river-header">
+      <h2>Caminho do Rio</h2>
+      <p>Jornada IA do Zero ao Claude Code</p>
+    </div>
+    <div class="river-track" id="riverTrack"></div>
+  </div>
+  <div class="concept-footer">
+    <div class="c-name">Conceito 8 — Timeline River</div>
+    <div class="c-desc">Rio que flui: cada fase é um trecho com portos ao longo das margens.</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     CONCEPT 9 — TOWER ASCENT
+════════════════════════════════════════════ -->
+<section id="tower" class="concept-section">
+  <div class="tower-container">
+    <div class="tower-header">
+      <h2>Torre de Ascensão</h2>
+      <p>Jornada IA do Zero ao Claude Code</p>
+    </div>
+    <div class="tower-building" id="towerBuilding"></div>
+  </div>
+  <div class="concept-footer">
+    <div class="c-name">Conceito 9 — Tower Ascent</div>
+    <div class="c-desc">Torre de andares: cada fase é um andar iluminado conforme o progresso avança.</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     CONCEPT 10 — NEURAL NETWORK
+════════════════════════════════════════════ -->
+<section id="neural" class="concept-section">
+  <div class="neural-header">
+    <h2>Rede Neural de Conhecimento</h2>
+    <p>Jornada IA do Zero ao Claude Code</p>
+  </div>
+  <div class="neural-canvas-wrap">
+    <svg id="neural-svg" viewBox="0 0 820 560" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div class="neural-legend">
+    <div class="nl-item"><div class="nl-dot" style="background:#22C55E;box-shadow:0 0 6px #22C55E;"></div> Neurônio ativo</div>
+    <div class="nl-item"><div class="nl-dot" style="background:#4A90FF;"></div> Em ativação</div>
+    <div class="nl-item"><div class="nl-dot" style="background:#2a2a2a;border:1px solid #444;"></div> Inativo</div>
+  </div>
+  <div class="neural-instruction">Passe o mouse sobre um cluster para ver os sinais neurais se propagarem</div>
+  <div class="concept-footer">
+    <div class="c-name">Conceito 10 — Neural Network</div>
+    <div class="c-desc">Mapa de sinapses: o aprendizado se propaga como sinais elétricos numa rede neural.</div>
+  </div>
+</section>
+
+<script>
+/* ══════════════════════════════════════
+   SHARED DATA
+══════════════════════════════════════ */
+const JOURNEY = {
+  title: 'Jornada IA do Zero ao Claude Code',
+  phases: [
+    {
+      id: 1,
+      title: 'Fundamentos de IA',
+      status: 'completed',
+      progress: '5/5',
+      nodes: [
+        { title: 'O que é IA', type: 'material', status: 'completed', xp: 10 },
+        { title: 'Tipos de Modelos', type: 'material', status: 'completed', xp: 10 },
+        { title: 'Visão Geral', type: 'presentation', status: 'completed', xp: 15 },
+        { title: 'Primeiro Projeto', type: 'task', status: 'completed', xp: 25 },
+        { title: 'Checkpoint Final', type: 'checkpoint', status: 'completed', xp: 50 },
+      ]
+    },
+    {
+      id: 2,
+      title: 'Prompts e Comunicação',
+      status: 'in_progress',
+      progress: '2/5',
+      nodes: [
+        { title: 'Anatomia do Prompt', type: 'material', status: 'completed', xp: 10 },
+        { title: 'Prompt Engineering', type: 'task', status: 'completed', xp: 25 },
+        { title: 'Técnicas Avançadas', type: 'material', status: 'available', xp: 10 },
+        { title: 'Desafio Criativo', type: 'task', status: 'available', xp: 30 },
+        { title: 'Avaliação', type: 'checkpoint', status: 'locked', xp: 50 },
+      ]
+    },
+    {
+      id: 3,
+      title: 'Claude Code — Primeiros Passos',
+      status: 'locked',
+      progress: '0/5',
+      nodes: [
+        { title: 'Setup do Ambiente', type: 'material', status: 'locked', xp: 10 },
+        { title: 'Primeiro Comando', type: 'task', status: 'locked', xp: 20 },
+        { title: 'Projeto Guiado', type: 'presentation', status: 'locked', xp: 15 },
+        { title: 'Automação Simples', type: 'task', status: 'locked', xp: 30 },
+        { title: 'Checkpoint', type: 'checkpoint', status: 'locked', xp: 50 },
+      ]
+    },
+    {
+      id: 4,
+      title: 'Claude Code no Trabalho',
+      status: 'locked',
+      progress: '0/5',
+      nodes: [
+        { title: 'Casos Reais', type: 'material', status: 'locked', xp: 10 },
+        { title: 'Integração', type: 'task', status: 'locked', xp: 25 },
+        { title: 'Workflow Pro', type: 'presentation', status: 'locked', xp: 15 },
+        { title: 'Projeto Completo', type: 'task', status: 'locked', xp: 40 },
+        { title: 'Checkpoint', type: 'checkpoint', status: 'locked', xp: 50 },
+      ]
+    },
+    {
+      id: 5,
+      title: 'Autonomia',
+      status: 'locked',
+      progress: '0/5',
+      nodes: [
+        { title: 'Agentes', type: 'material', status: 'locked', xp: 15 },
+        { title: 'Sistemas Multi-Agent', type: 'presentation', status: 'locked', xp: 20 },
+        { title: 'Deploy Autônomo', type: 'task', status: 'locked', xp: 40 },
+        { title: 'Projeto Final', type: 'task', status: 'locked', xp: 60 },
+        { title: 'Graduação', type: 'checkpoint', status: 'locked', xp: 100 },
+      ]
+    }
+  ]
+};
+
+const TYPE_ICONS = { material:'M', task:'T', presentation:'P', checkpoint:'C', quiz:'Q' };
+const TYPE_COLORS = { material:'#4A90FF', task:'#8B5CF6', presentation:'#00B4FF', checkpoint:'#F59E0B', quiz:'#EC4899' };
+const STATUS_COLOR = { completed:'#22C55E', in_progress:'#4A90FF', available:'rgba(255,255,255,0.5)', locked:'rgba(255,255,255,0.08)' };
+
+/* ══════════════════════════════════════
+   NAV LOGIC
+══════════════════════════════════════ */
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', e => {
+    e.preventDefault();
+    const target = tab.dataset.target;
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.concept-section').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(target).classList.add('active');
+    window.scrollTo(0, 0);
+  });
+});
+
+/* ══════════════════════════════════════
+   CONCEPT 6 — NEBULA CONSTELLATION
+══════════════════════════════════════ */
+(function() {
+  const canvas = document.getElementById('nebula-canvas');
+  const wrap = document.getElementById('nebula-canvas-wrap');
+  const ctx = canvas.getContext('2d');
+  const tooltip = document.getElementById('nebulaTooltip');
+  const overlay = document.getElementById('nebulaOverlay');
+  const nbzBackBtn = document.getElementById('nbzBackBtn');
+
+  let W, H, stars = [], constellations = [], hoveredNode = null, animFrame;
+
+  // Phase positions — scattered naturally across canvas
+  const PHASE_POSITIONS = [
+    { cx: 0.20, cy: 0.22 },
+    { cx: 0.55, cy: 0.35 },
+    { cx: 0.75, cy: 0.62 },
+    { cx: 0.35, cy: 0.68 },
+    { cx: 0.15, cy: 0.78 },
+  ];
+
+  // Constellation shape offsets for each phase (5 nodes per phase)
+  const SHAPES = [
+    [{ dx:-30, dy:-30 }, { dx:30, dy:-20 }, { dx:0, dy:0 }, { dx:-20, dy:30 }, { dx:35, dy:35 }],   // triangle+
+    [{ dx:-40, dy:0 }, { dx:-10, dy:-30 }, { dx:20, dy:0 }, { dx:40, dy:-20 }, { dx:10, dy:30 }],   // W-ish
+    [{ dx:0, dy:-35 }, { dx:30, dy:-10 }, { dx:20, dy:25 }, { dx:-20, dy:25 }, { dx:-30, dy:-10 }], // pentagon
+    [{ dx:-35, dy:-20 }, { dx:0, dy:-35 }, { dx:35, dy:-20 }, { dx:20, dy:20 }, { dx:-20, dy:20 }], // diamond+
+    [{ dx:-20, dy:-30 }, { dx:20, dy:-30 }, { dx:40, dy:0 }, { dx:0, dy:30 }, { dx:-40, dy:0 }],    // irregular
+  ];
+
+  function nodeRadius(type) {
+    return { material:5, task:7, presentation:8, checkpoint:12, quiz:7 }[type] || 6;
+  }
+
+  function setup() {
+    const rect = wrap.getBoundingClientRect();
+    W = canvas.width = rect.width;
+    H = canvas.height = rect.height;
+
+    // Generate background stars
+    stars = [];
+    for (let i = 0; i < 600; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 0.8 + 0.2,
+        op: Math.random() * 0.04 + 0.01,
+        speed: Math.random() * 0.002 + 0.001,
+        phase: Math.random() * Math.PI * 2,
+      });
+    }
+
+    // Build constellations
+    constellations = JOURNEY.phases.map((phase, pi) => {
+      const pos = PHASE_POSITIONS[pi];
+      const cx = pos.cx * W;
+      const cy = pos.cy * H;
+      const offsets = SHAPES[pi];
+      const scale = Math.min(W, H) / 700;
+
+      const nodes = phase.nodes.map((node, ni) => ({
+        ...node,
+        x: cx + offsets[ni].dx * scale * 1.4,
+        y: cy + offsets[ni].dy * scale * 1.4,
+        r: nodeRadius(node.type) * scale,
+        twinklePhase: Math.random() * Math.PI * 2,
+        twinkleSpeed: 0.02 + Math.random() * 0.02,
+        pulsePhase: Math.random() * Math.PI * 2,
+      }));
+
+      return { phase, cx, cy, nodes, pi };
+    });
+  }
+
+  function getStarColor(status) {
+    if (status === 'completed') return { r:34, g:197, b:94 };
+    if (status === 'in_progress') return { r:74, g:144, b:255 };
+    if (status === 'available') return { r:255, g:255, b:255 };
+    return { r:80, g:80, b:80 };
+  }
+
+  function getStarBaseOpacity(status) {
+    if (status === 'completed') return 0.9;
+    if (status === 'in_progress') return 0.95;
+    if (status === 'available') return 0.55;
+    return 0.12;
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+
+    // Background nebulae
+    const neb1 = ctx.createRadialGradient(W*0.3, H*0.25, 0, W*0.3, H*0.25, W*0.35);
+    neb1.addColorStop(0, 'rgba(74,144,255,0.04)');
+    neb1.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = neb1; ctx.fillRect(0, 0, W, H);
+
+    const neb2 = ctx.createRadialGradient(W*0.75, H*0.6, 0, W*0.75, H*0.6, W*0.28);
+    neb2.addColorStop(0, 'rgba(139,92,246,0.03)');
+    neb2.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = neb2; ctx.fillRect(0, 0, W, H);
+
+    const neb3 = ctx.createRadialGradient(W*0.15, H*0.7, 0, W*0.15, H*0.7, W*0.22);
+    neb3.addColorStop(0, 'rgba(0,180,255,0.025)');
+    neb3.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = neb3; ctx.fillRect(0, 0, W, H);
+
+    // Background dust stars
+    stars.forEach(s => {
+      const twinkle = Math.sin(t * s.speed * 60 + s.phase) * 0.5 + 0.5;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${s.op * (0.5 + twinkle * 0.5)})`;
+      ctx.fill();
+    });
+
+    // Draw curved bezier connections BETWEEN phases
+    for (let i = 0; i < constellations.length - 1; i++) {
+      const a = constellations[i];
+      const b = constellations[i+1];
+      const cpx = (a.cx + b.cx) / 2 + (Math.random() < 0.5 ? -1 : 1) * 60;
+      const cpy = (a.cy + b.cy) / 2 - 40;
+      ctx.beginPath();
+      ctx.moveTo(a.cx, a.cy);
+      ctx.quadraticCurveTo(cpx, cpy, b.cx, b.cy);
+      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([4, 12]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Draw constellations
+    constellations.forEach(({ phase, nodes }) => {
+      // Constellation lines
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < nodes.length - 1; i++) {
+        const a = nodes[i];
+        const b = nodes[i + 1];
+        const alpha = phase.status === 'locked' ? 0.05 : phase.status === 'completed' ? 0.25 : 0.15;
+        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+      // Close the shape with a dim line back
+      if (nodes.length > 2) {
+        const a = nodes[nodes.length - 1];
+        const b = nodes[0];
+        ctx.strokeStyle = `rgba(255,255,255,0.04)`;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+
+      // Stars
+      nodes.forEach(node => {
+        const c = getStarColor(node.status);
+        const baseOp = getStarBaseOpacity(node.status);
+        let twinkle = Math.sin(t * node.twinkleSpeed * 60 + node.twinklePhase) * 0.3 + 0.7;
+        let op = baseOp * twinkle;
+        let r = node.r;
+
+        if (node.status === 'in_progress') {
+          const pulse = Math.sin(t * 0.05 + node.pulsePhase);
+          r = node.r + pulse * 1.5;
+          op = 0.85 + pulse * 0.1;
+        }
+
+        // Glow
+        if (node.status !== 'locked') {
+          const glowSize = r * 3;
+          const grad = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, glowSize);
+          grad.addColorStop(0, `rgba(${c.r},${c.g},${c.b},${op * 0.35})`);
+          grad.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, glowSize, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+        }
+
+        // Core
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${c.r},${c.g},${c.b},${op})`;
+        ctx.fill();
+
+        // Hover ring
+        if (hoveredNode === node) {
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, r + 4, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(${c.r},${c.g},${c.b},0.5)`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      });
+    });
+
+    animFrame = requestAnimationFrame(ts => draw(ts * 0.001));
+  }
+
+  function getNodeAtPos(mx, my) {
+    for (const con of constellations) {
+      for (const node of con.nodes) {
+        const dx = mx - node.x;
+        const dy = my - node.y;
+        if (Math.sqrt(dx*dx + dy*dy) < node.r + 8) return { node, phase: con.phase };
+      }
+    }
+    return null;
+  }
+
+  function getPhaseAtPos(mx, my) {
+    for (const con of constellations) {
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      con.nodes.forEach(n => {
+        minX = Math.min(minX, n.x - n.r - 20);
+        maxX = Math.max(maxX, n.x + n.r + 20);
+        minY = Math.min(minY, n.y - n.r - 20);
+        maxY = Math.max(maxY, n.y + n.r + 20);
+      });
+      if (mx >= minX && mx <= maxX && my >= minY && my <= maxY) return con;
+    }
+    return null;
+  }
+
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const hit = getNodeAtPos(mx, my);
+    hoveredNode = hit ? hit.node : null;
+    canvas.style.cursor = getPhaseAtPos(mx, my) ? 'pointer' : 'default';
+
+    if (hit) {
+      document.getElementById('ttTitle').textContent = hit.node.title;
+      document.getElementById('ttType').textContent = hit.node.type;
+      document.getElementById('ttXP').textContent = `+${hit.node.xp} XP`;
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top = (e.clientY - 10) + 'px';
+      tooltip.classList.add('visible');
+    } else {
+      tooltip.classList.remove('visible');
+    }
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    tooltip.classList.remove('visible');
+    hoveredNode = null;
+  });
+
+  canvas.addEventListener('click', e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const con = getPhaseAtPos(mx, my);
+    if (!con) return;
+
+    // Build zoom panel
+    document.getElementById('nbzPhaseLabel').textContent = `Fase ${con.phase.id}`;
+    document.getElementById('nbzPhaseName').textContent = con.phase.title;
+
+    const grid = document.getElementById('nbzNodes');
+    grid.innerHTML = '';
+    con.phase.nodes.forEach(node => {
+      const card = document.createElement('div');
+      card.className = `nbz-node-card ${node.status}`;
+      const dotColor = STATUS_COLOR[node.status];
+      card.innerHTML = `
+        <div class="nbz-node-type">${node.type}</div>
+        <div class="nbz-node-title">${node.title}</div>
+        <div class="nbz-node-xp">
+          <span class="nbz-node-status-dot" style="background:${dotColor};${node.status==='locked'?'':' box-shadow:0 0 4px '+dotColor+';'}"></span>
+          +${node.xp} XP
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    overlay.classList.add('active');
+  });
+
+  nbzBackBtn.addEventListener('click', () => {
+    overlay.classList.remove('active');
+  });
+
+  function init() {
+    setup();
+    requestAnimationFrame(ts => draw(ts * 0.001));
+  }
+
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(animFrame);
+    setup();
+    requestAnimationFrame(ts => draw(ts * 0.001));
+  });
+
+  // Init when section becomes visible
+  const observer = new MutationObserver(() => {
+    if (document.getElementById('nebula').classList.contains('active')) init();
+  });
+  observer.observe(document.getElementById('nebula'), { attributes: true, attributeFilter: ['class'] });
+  init();
+})();
+
+/* ══════════════════════════════════════
+   CONCEPT 7 — ORBITAL RINGS
+══════════════════════════════════════ */
+(function() {
+  const svg = document.getElementById('orbital-svg');
+  const CX = 380, CY = 380;
+  const RADII = [110, 165, 220, 278, 340];
+  const PHASE_COLORS = ['#22C55E','#4A90FF','#2a2a2a','#1a1a1a','#111'];
+  const PHASE_GLOW = ['rgba(34,197,94,0.2)','rgba(74,144,255,0.3)','none','none','none'];
+
+  function mkEl(tag, attrs) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+    return el;
+  }
+
+  // Defs
+  const defs = mkEl('defs', {});
+
+  // Filters for glows
+  ['green-glow','blue-glow'].forEach((id, i) => {
+    const filter = mkEl('filter', { id, x:'-50%', y:'-50%', width:'200%', height:'200%' });
+    const blur = mkEl('feGaussianBlur', { in:'SourceGraphic', stdDeviation: i === 0 ? '3' : '4' });
+    filter.appendChild(blur);
+    defs.appendChild(filter);
+  });
+
+  // Orbit path for animation ref
+  JOURNEY.phases.forEach((phase, pi) => {
+    const r = RADII[pi];
+    const path = mkEl('path', {
+      id: `orbit-path-${pi}`,
+      d: `M ${CX},${CY-r} A ${r},${r} 0 1 1 ${CX-0.001},${CY-r}`,
+      fill: 'none',
+    });
+    defs.appendChild(path);
+  });
+
+  svg.appendChild(defs);
+
+  // Background subtle star dust
+  for (let i = 0; i < 200; i++) {
+    const c = mkEl('circle', {
+      cx: Math.random() * 760,
+      cy: Math.random() * 760,
+      r: Math.random() * 0.8 + 0.2,
+      fill: `rgba(255,255,255,${(Math.random() * 0.04 + 0.01).toFixed(3)})`,
+    });
+    svg.appendChild(c);
+  }
+
+  // Draw rings
+  JOURNEY.phases.forEach((phase, pi) => {
+    const r = RADII[pi];
+    const color = PHASE_COLORS[pi];
+    const isCompleted = phase.status === 'completed';
+    const isInProgress = phase.status === 'in_progress';
+
+    // Glow ring (behind)
+    if (isCompleted || isInProgress) {
+      const glowRing = mkEl('circle', {
+        cx: CX, cy: CY, r,
+        fill: 'none',
+        stroke: color,
+        'stroke-width': '8',
+        opacity: '0.06',
+        filter: isCompleted ? 'url(#green-glow)' : 'url(#blue-glow)',
+      });
+      svg.appendChild(glowRing);
+    }
+
+    // Main ring
+    const ringGroup = mkEl('g', {});
+
+    if (isInProgress) {
+      // Animated rotating group for in_progress ring
+      ringGroup.setAttribute('style', 'transform-origin: 380px 380px; animation: orbitRotate 60s linear infinite;');
+    }
+
+    const ring = mkEl('circle', {
+      cx: CX, cy: CY, r,
+      fill: 'none',
+      stroke: color,
+      'stroke-width': isCompleted ? '1.5' : isInProgress ? '1.5' : '0.5',
+      opacity: isCompleted ? '0.7' : isInProgress ? '0.8' : '0.18',
+      'stroke-dasharray': isInProgress ? '6 4' : 'none',
+    });
+    ringGroup.appendChild(ring);
+    svg.appendChild(ringGroup);
+
+    // Nodes on ring
+    const nodeCount = phase.nodes.length;
+    const angleStep = (Math.PI * 2) / nodeCount;
+    const startAngle = -Math.PI / 2;
+
+    phase.nodes.forEach((node, ni) => {
+      const angle = startAngle + ni * angleStep;
+      const nx = CX + Math.cos(angle) * r;
+      const ny = CY + Math.sin(angle) * r;
+      const nodeR = node.type === 'checkpoint' ? 7 : node.type === 'presentation' ? 6 : 5;
+      const nodeColor = STATUS_COLOR[node.status];
+
+      // Glow
+      if (node.status !== 'locked') {
+        const glow = mkEl('circle', {
+          cx: nx, cy: ny, r: nodeR * 2.5,
+          fill: nodeColor,
+          opacity: '0.15',
+          filter: isCompleted ? 'url(#green-glow)' : 'url(#blue-glow)',
+        });
+        svg.appendChild(glow);
+      }
+
+      // Node dot
+      const dot = mkEl('circle', {
+        cx: nx, cy: ny, r: nodeR,
+        fill: node.status === 'locked' ? 'transparent' : nodeColor,
+        stroke: nodeColor,
+        'stroke-width': node.status === 'locked' ? '0.8' : '0',
+        opacity: node.status === 'locked' ? '0.25' : '1',
+        class: `orbital-node`,
+        style: 'cursor:pointer;',
+      });
+      if (node.status === 'in_progress') {
+        dot.style.animation = `pulseBlue 2s ease-in-out infinite`;
+      }
+      svg.appendChild(dot);
+
+      // Tooltip via title
+      const title = mkEl('title', {});
+      title.textContent = `${node.title} · ${node.type} · +${node.xp} XP`;
+      dot.appendChild(title);
+    });
+
+    // Phase label (right side of ring)
+    const labelAngle = 0; // 3 o'clock
+    const lx = CX + r + 14;
+    const ly = CY + 5;
+    const label = mkEl('text', {
+      x: lx, y: ly,
+      fill: isCompleted ? '#22C55E' : isInProgress ? '#4A90FF' : '#333',
+      'font-size': '11',
+      'font-family': 'Inter, sans-serif',
+      'font-weight': isCompleted || isInProgress ? '600' : '400',
+      opacity: isCompleted ? '0.9' : isInProgress ? '1' : '0.3',
+    });
+    label.textContent = phase.title;
+    svg.appendChild(label);
+
+    // Progress fraction
+    const fracLabel = mkEl('text', {
+      x: lx, y: ly + 14,
+      fill: '#444',
+      'font-size': '10',
+      'font-family': 'Inter, sans-serif',
+    });
+    fracLabel.textContent = phase.progress + ' nós';
+    svg.appendChild(fracLabel);
+  });
+
+  // Center sun
+  const sunGlow = mkEl('circle', { cx: CX, cy: CY, r: 48, fill: 'rgba(74,144,255,0.08)', filter: 'url(#blue-glow)' });
+  svg.appendChild(sunGlow);
+  const sun = mkEl('circle', { cx: CX, cy: CY, r: 18, fill: '#FFFFFF', opacity: '0.92' });
+  svg.appendChild(sun);
+  const sunInner = mkEl('circle', { cx: CX, cy: CY, r: 10, fill: '#4A90FF', opacity: '0.6' });
+  svg.appendChild(sunInner);
+  const sunLabel = mkEl('text', {
+    x: CX, y: CY + 34,
+    'text-anchor': 'middle',
+    fill: '#888',
+    'font-size': '9',
+    'font-family': 'Inter, sans-serif',
+    'font-weight': '600',
+    'letter-spacing': '0.1em',
+    'text-transform': 'uppercase',
+  });
+  sunLabel.textContent = 'META FINAL';
+  svg.appendChild(sunLabel);
+})();
+
+/* ══════════════════════════════════════
+   CONCEPT 8 — TIMELINE RIVER
+══════════════════════════════════════ */
+(function() {
+  const track = document.getElementById('riverTrack');
+  const TYPE_ICON_SVG = {
+    material: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="5" x2="10" y2="5" stroke="currentColor" stroke-width="1"/><line x1="4" y1="7.5" x2="8" y2="7.5" stroke="currentColor" stroke-width="1"/></svg>`,
+    task: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><polyline points="4,7 6,9 10,5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    presentation: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><line x1="7" y1="10" x2="7" y2="13" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="13" x2="10" y2="13" stroke="currentColor" stroke-width="1.2"/></svg>`,
+    checkpoint: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><polyline points="4.5,7 6.5,9 9.5,5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  };
+
+  // River spine
+  const spine = document.createElement('div');
+  spine.className = 'river-spine';
+  spine.innerHTML = `
+    <div class="river-spine-fill"></div>
+    <div class="river-spine-locked"></div>
+    <div class="river-flow-lines">
+      <div class="flow-line" style="height:60px;top:5%;animation-delay:0s;"></div>
+      <div class="flow-line" style="height:40px;top:15%;animation-delay:-1s;left:38%;"></div>
+      <div class="flow-line" style="height:50px;top:25%;animation-delay:-2s;left:62%;"></div>
+      <div class="flow-line" style="height:35px;top:35%;animation-delay:-0.5s;"></div>
+      <div class="flow-line" style="height:55px;top:8%;animation-delay:-1.5s;left:55%;"></div>
+    </div>`;
+  track.appendChild(spine);
+
+  let boatPlaced = false;
+
+  JOURNEY.phases.forEach((phase, pi) => {
+    const phaseDiv = document.createElement('div');
+    phaseDiv.className = 'river-phase';
+    phaseDiv.style.paddingTop = '36px';
+
+    // Chapter label
+    const chapterLabel = document.createElement('div');
+    chapterLabel.className = 'river-chapter-label';
+    chapterLabel.textContent = `Fase ${phase.id} · ${phase.title}`;
+    phaseDiv.appendChild(chapterLabel);
+
+    // Nodes column
+    const nodesDiv = document.createElement('div');
+    nodesDiv.className = 'river-phase-nodes';
+
+    phase.nodes.forEach(node => {
+      const port = document.createElement('div');
+      port.className = `river-port ${node.status}`;
+      const iconColor = TYPE_COLORS[node.type] || '#888';
+      port.innerHTML = `
+        <div class="rp-icon" style="background:${iconColor}18;color:${iconColor};">
+          ${TYPE_ICON_SVG[node.type] || TYPE_ICON_SVG.material}
+        </div>
+        <div class="rp-info">
+          <div class="rp-title">${node.title}</div>
+          <div class="rp-type">${node.type} · +${node.xp} XP</div>
+        </div>`;
+      nodesDiv.appendChild(port);
+
+      // Boat at current in_progress node
+      if (node.status === 'in_progress' && !boatPlaced) {
+        boatPlaced = true;
+        port.style.position = 'relative';
+        const boat = document.createElement('div');
+        boat.style.cssText = 'position:absolute;right:-36px;top:50%;transform:translateY(-50%);width:22px;height:22px;';
+        boat.innerHTML = `<svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 14 L11 4 L18 14" fill="#4A90FF" opacity="0.9"/>
+          <rect x="3" y="14" width="16" height="4" rx="2" fill="#4A90FF" opacity="0.6"/>
+        </svg>`;
+        if (pi % 2 === 0) { // odd phases go right bank
+          boat.style.right = 'auto';
+          boat.style.left = '-36px';
+        }
+        port.appendChild(boat);
+      }
+    });
+
+    phaseDiv.appendChild(nodesDiv);
+    track.appendChild(phaseDiv);
+  });
+})();
+
+/* ══════════════════════════════════════
+   CONCEPT 9 — TOWER ASCENT
+══════════════════════════════════════ */
+(function() {
+  const building = document.getElementById('towerBuilding');
+
+  // Left elevator shaft
+  const shaft = document.createElement('div');
+  shaft.className = 'tower-left-shaft';
+  shaft.style.minHeight = '100%';
+
+  const track = document.createElement('div');
+  track.className = 'tower-elevator-track';
+  shaft.appendChild(track);
+
+  const cab = document.createElement('div');
+  cab.className = 'tower-elevator-cab';
+  shaft.appendChild(cab);
+
+  building.appendChild(shaft);
+
+  // Main tower
+  const main = document.createElement('div');
+  main.className = 'tower-main';
+
+  // Spire
+  const spire = document.createElement('div');
+  spire.className = 'tower-spire';
+  spire.innerHTML = `
+    <div class="tower-spire-line"></div>
+    <div class="tower-spire-dot"></div>
+    <div class="tower-spire-label">Meta Final</div>`;
+  main.appendChild(spire);
+
+  // Floors
+  JOURNEY.phases.forEach((phase, pi) => {
+    const floor = document.createElement('div');
+    floor.className = `tower-floor ${phase.status}`;
+
+    // Window row (decorative)
+    const winRow = document.createElement('div');
+    winRow.className = 'tower-window-row';
+    for (let w = 0; w < 5; w++) {
+      const win = document.createElement('div');
+      win.className = `tower-window ${phase.status === 'completed' ? 'lit' : phase.status === 'in_progress' ? (w < 2 ? 'lit' : 'partial') : ''}`;
+      if (phase.status === 'in_progress' && w < 2) {
+        win.style.animationDelay = (w * 0.4) + 's';
+      }
+      winRow.appendChild(win);
+    }
+
+    // Floor header
+    const header = document.createElement('div');
+    header.className = 'tower-floor-header';
+    const statusLabel = phase.status === 'completed' ? 'Concluído' : phase.status === 'in_progress' ? 'Em andamento' : 'Bloqueado';
+    header.innerHTML = `
+      <div>
+        <div class="floor-number">Andar ${phase.id}</div>
+        <div class="floor-title">${phase.title}</div>
+      </div>
+      <div class="floor-status-badge ${phase.status}">${statusLabel}</div>`;
+
+    // Rooms
+    const rooms = document.createElement('div');
+    rooms.className = 'tower-floor-rooms';
+    phase.nodes.forEach(node => {
+      const room = document.createElement('div');
+      room.className = `tower-room ${node.status}`;
+      const typeColor = TYPE_COLORS[node.type] || '#888';
+      room.innerHTML = `
+        <div class="tr-type">${node.type}</div>
+        <div class="tr-title">${node.title}</div>
+        <div style="margin-top:6px;font-size:10px;font-weight:600;color:${typeColor};">+${node.xp} XP</div>`;
+      rooms.appendChild(room);
+    });
+
+    floor.appendChild(winRow);
+    floor.appendChild(header);
+    floor.appendChild(rooms);
+    main.appendChild(floor);
+  });
+
+  building.appendChild(main);
+
+  // Position elevator cab
+  requestAnimationFrame(() => {
+    const shaftH = shaft.getBoundingClientRect().height;
+    const spireH = spire.getBoundingClientRect().height;
+    const floors = main.querySelectorAll('.tower-floor');
+    let targetTop = spireH;
+    // Find in_progress floor
+    JOURNEY.phases.forEach((phase, pi) => {
+      if (phase.status === 'in_progress') {
+        const fl = floors[pi];
+        const flRect = fl.getBoundingClientRect();
+        const mainRect = main.getBoundingClientRect();
+        targetTop = flRect.top - mainRect.top + flRect.height * 0.4;
+      }
+    });
+    cab.style.top = targetTop + 'px';
+  });
+})();
+
+/* ══════════════════════════════════════
+   CONCEPT 10 — NEURAL NETWORK
+══════════════════════════════════════ */
+(function() {
+  const svg = document.getElementById('neural-svg');
+  const W = 820, H = 560;
+
+  function mkEl(tag, attrs = {}) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+    return el;
+  }
+
+  // Defs
+  const defs = mkEl('defs', {});
+
+  const blueGlow = mkEl('filter', { id:'ng-blue', x:'-80%', y:'-80%', width:'260%', height:'260%' });
+  blueGlow.appendChild(mkEl('feGaussianBlur', { in:'SourceGraphic', stdDeviation:'5' }));
+  defs.appendChild(blueGlow);
+
+  const greenGlow = mkEl('filter', { id:'ng-green', x:'-80%', y:'-80%', width:'260%', height:'260%' });
+  greenGlow.appendChild(mkEl('feGaussianBlur', { in:'SourceGraphic', stdDeviation:'4' }));
+  defs.appendChild(greenGlow);
+
+  svg.appendChild(defs);
+
+  // Phase cluster positions — organic layout
+  const CLUSTER_POS = [
+    { cx: 130, cy: 150 },
+    { cx: 330, cy: 100 },
+    { cx: 540, cy: 180 },
+    { cx: 660, cy: 380 },
+    { cx: 420, cy: 440 },
+  ];
+
+  // Node positions within each cluster — irregular biological spacing
+  const CLUSTER_OFFSETS = [
+    [{ dx:-40,dy:-30 }, { dx:40,dy:-35 }, { dx:50,dy:20 }, { dx:0,dy:45 }, { dx:-45,dy:30 }],
+    [{ dx:-45,dy:20 }, { dx:0,dy:-40 }, { dx:45,dy:10 }, { dx:20,dy:45 }, { dx:-25,dy:50 }],
+    [{ dx:-30,dy:-40 }, { dx:30,dy:-30 }, { dx:55,dy:15 }, { dx:20,dy:50 }, { dx:-50,dy:30 }],
+    [{ dx:-50,dy:-25 }, { dx:10,dy:-50 }, { dx:50,dy:-10 }, { dx:40,dy:40 }, { dx:-30,dy:45 }],
+    [{ dx:-55,dy:10 }, { dx:-15,dy:-45 }, { dx:35,dy:-40 }, { dx:55,dy:15 }, { dx:10,dy:50 }],
+  ];
+
+  // Build node data
+  const clusters = JOURNEY.phases.map((phase, pi) => {
+    const pos = CLUSTER_POS[pi];
+    const nodes = phase.nodes.map((node, ni) => {
+      const off = CLUSTER_OFFSETS[pi][ni];
+      return {
+        ...node,
+        x: pos.cx + off.dx,
+        y: pos.cy + off.dy,
+        r: node.type === 'checkpoint' ? 10 : node.type === 'presentation' ? 8 : 7,
+        id: `n-${pi}-${ni}`,
+      };
+    });
+    return { phase, nodes, cx: pos.cx, cy: pos.cy, pi };
+  });
+
+  // Background brain-fold lines
+  const folds = [
+    'M 60,200 C 150,120 280,180 350,140 C 420,100 500,160 600,130 C 680,105 740,160 800,140',
+    'M 0,350 C 80,280 200,320 320,290 C 440,260 540,320 660,300 C 750,285 800,310 820,295',
+    'M 50,460 C 150,420 280,460 380,430 C 480,400 560,445 680,420',
+  ];
+  folds.forEach(d => {
+    const line = mkEl('path', { d, fill:'none', stroke:'rgba(255,255,255,0.025)', 'stroke-width':'1.5' });
+    svg.appendChild(line);
+  });
+
+  // Background tiny dots
+  for (let i = 0; i < 120; i++) {
+    svg.appendChild(mkEl('circle', {
+      cx: Math.random() * W,
+      cy: Math.random() * H,
+      r: Math.random() * 0.6 + 0.2,
+      fill: `rgba(255,255,255,${(Math.random() * 0.03 + 0.01).toFixed(3)})`,
+    }));
+  }
+
+  // Connection layer (behind nodes)
+  const connGroup = mkEl('g', {});
+  svg.appendChild(connGroup);
+
+  // All synapse paths container
+  const synapseGroup = mkEl('g', { id:'synapse-signals' });
+  svg.appendChild(synapseGroup);
+
+  // Draw connections within each cluster
+  clusters.forEach(cluster => {
+    for (let i = 0; i < cluster.nodes.length - 1; i++) {
+      const a = cluster.nodes[i];
+      const b = cluster.nodes[i + 1];
+      const mx = (a.x + b.x) / 2 + (Math.random() - 0.5) * 30;
+      const my = (a.y + b.y) / 2 + (Math.random() - 0.5) * 30;
+      const alpha = cluster.phase.status === 'completed' ? 0.3 : cluster.phase.status === 'in_progress' ? 0.2 : 0.06;
+      const stroke = cluster.phase.status === 'completed' ? `rgba(34,197,94,${alpha})` :
+                     cluster.phase.status === 'in_progress' ? `rgba(74,144,255,${alpha})` :
+                     `rgba(255,255,255,${alpha})`;
+
+      const path = mkEl('path', {
+        d: `M ${a.x},${a.y} Q ${mx},${my} ${b.x},${b.y}`,
+        fill: 'none',
+        stroke,
+        'stroke-width': '0.8',
+        id: `conn-${cluster.pi}-${i}`,
+      });
+      connGroup.appendChild(path);
+    }
+    // Extra crossing connection for more web-like feel
+    if (cluster.nodes.length >= 4) {
+      const a = cluster.nodes[0];
+      const b = cluster.nodes[3];
+      const path = mkEl('path', {
+        d: `M ${a.x},${a.y} C ${a.x+20},${b.y-20} ${b.x-20},${a.y+20} ${b.x},${b.y}`,
+        fill: 'none',
+        stroke: cluster.phase.status === 'locked' ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)',
+        'stroke-width': '0.5',
+      });
+      connGroup.appendChild(path);
+    }
+  });
+
+  // Inter-cluster connections (between adjacent phases)
+  const interPairs = [[0,1],[1,2],[2,3],[3,4],[0,4],[1,3]];
+  interPairs.forEach(([pi, pj]) => {
+    const a = clusters[pi].nodes[clusters[pi].nodes.length - 1];
+    const b = clusters[pj].nodes[0];
+    const cpx1 = a.x + (b.x - a.x) * 0.35 + (Math.random() - 0.5) * 60;
+    const cpy1 = a.y + (b.y - a.y) * 0.2 + (Math.random() - 0.5) * 40;
+    const cpx2 = a.x + (b.x - a.x) * 0.65 + (Math.random() - 0.5) * 60;
+    const cpy2 = a.y + (b.y - a.y) * 0.8 + (Math.random() - 0.5) * 40;
+
+    const bothActive = clusters[pi].phase.status !== 'locked' && clusters[pj].phase.status !== 'locked';
+    const path = mkEl('path', {
+      d: `M ${a.x},${a.y} C ${cpx1},${cpy1} ${cpx2},${cpy2} ${b.x},${b.y}`,
+      fill: 'none',
+      stroke: bothActive ? 'rgba(74,144,255,0.12)' : 'rgba(255,255,255,0.025)',
+      'stroke-width': '0.6',
+      id: `inter-${pi}-${pj}`,
+    });
+    connGroup.appendChild(path);
+  });
+
+  // Phase labels
+  const labelOffsets = [
+    { dx: -20, dy: -65 },
+    { dx: 0, dy: -65 },
+    { dx: 20, dy: -65 },
+    { dx: 20, dy: 65 },
+    { dx: -10, dy: 65 },
+  ];
+
+  clusters.forEach((cluster, pi) => {
+    const lo = labelOffsets[pi];
+    const lx = cluster.cx + lo.dx;
+    const ly = cluster.cy + lo.dy;
+
+    const label = mkEl('text', {
+      x: lx,
+      y: ly,
+      'text-anchor': 'middle',
+      fill: cluster.phase.status === 'completed' ? 'rgba(34,197,94,0.7)' :
+            cluster.phase.status === 'in_progress' ? 'rgba(74,144,255,0.85)' :
+            'rgba(255,255,255,0.15)',
+      'font-size': '10',
+      'font-family': 'Inter, sans-serif',
+      'font-weight': '600',
+      'letter-spacing': '0.05em',
+    });
+    label.textContent = `F${cluster.phase.id}`;
+    svg.appendChild(label);
+
+    const fullLabel = mkEl('text', {
+      x: lx,
+      y: ly + 13,
+      'text-anchor': 'middle',
+      fill: cluster.phase.status !== 'locked' ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.1)',
+      'font-size': '8.5',
+      'font-family': 'Inter, sans-serif',
+    });
+    fullLabel.textContent = cluster.phase.title.length > 22 ? cluster.phase.title.slice(0,20)+'…' : cluster.phase.title;
+    svg.appendChild(fullLabel);
+  });
+
+  // Nodes (drawn on top)
+  const nodeGroup = mkEl('g', {});
+  svg.appendChild(nodeGroup);
+
+  clusters.forEach(cluster => {
+    cluster.nodes.forEach(node => {
+      const c = STATUS_COLOR[node.status];
+      const isActive = node.status !== 'locked';
+
+      // Glow circle
+      if (isActive) {
+        const glow = mkEl('circle', {
+          cx: node.x, cy: node.y, r: node.r * 2.8,
+          fill: node.status === 'completed' ? 'rgba(34,197,94,0.15)' : 'rgba(74,144,255,0.12)',
+          filter: node.status === 'completed' ? 'url(#ng-green)' : 'url(#ng-blue)',
+        });
+        nodeGroup.appendChild(glow);
+      }
+
+      // Outer ring
+      const outerRing = mkEl('circle', {
+        cx: node.x, cy: node.y, r: node.r + 3,
+        fill: 'none',
+        stroke: isActive ? c : 'rgba(255,255,255,0.08)',
+        'stroke-width': '0.5',
+        opacity: isActive ? '0.4' : '0.3',
+      });
+      nodeGroup.appendChild(outerRing);
+
+      // Core
+      const core = mkEl('circle', {
+        cx: node.x, cy: node.y, r: node.r,
+        fill: node.status === 'locked' ? '#111' : c,
+        stroke: c,
+        'stroke-width': node.status === 'locked' ? '0.8' : '0',
+        opacity: node.status === 'locked' ? '0.3' : '1',
+        style: 'cursor:pointer;',
+        id: node.id,
+        'data-cluster': cluster.pi,
+        'data-status': node.status,
+      });
+
+      // Pulse animation for in_progress
+      if (node.status === 'in_progress') {
+        core.style.animation = 'pulseBlue 2s ease-in-out infinite';
+      }
+
+      // Title tooltip
+      const title = mkEl('title', {});
+      title.textContent = `${node.title} · ${node.type} · +${node.xp} XP`;
+      core.appendChild(title);
+
+      nodeGroup.appendChild(core);
+    });
+  });
+
+  // Neural firing animation on hover
+  function fireSynapses(clusterIndex) {
+    synapseGroup.innerHTML = '';
+    const cluster = clusters[clusterIndex];
+    if (cluster.phase.status === 'locked') return;
+
+    // Fire along intra-cluster connections
+    for (let i = 0; i < cluster.nodes.length - 1; i++) {
+      const a = cluster.nodes[i];
+      const b = cluster.nodes[i + 1];
+      const mx = (a.x + b.x) / 2 + (Math.random() - 0.5) * 20;
+      const my = (a.y + b.y) / 2 + (Math.random() - 0.5) * 20;
+      const pathId = `fire-path-${i}-${Date.now()}`;
+
+      const hiddenPath = mkEl('path', {
+        d: `M ${a.x},${a.y} Q ${mx},${my} ${b.x},${b.y}`,
+        id: pathId,
+        fill: 'none',
+        stroke: 'none',
+      });
+      synapseGroup.appendChild(hiddenPath);
+
+      for (let t = 0; t < 2; t++) {
+        const signal = mkEl('circle', {
+          r: '3',
+          fill: cluster.phase.status === 'completed' ? '#22C55E' : '#4A90FF',
+          opacity: '0.9',
+        });
+        const anim = mkEl('animateMotion', {
+          dur: (0.6 + Math.random() * 0.4) + 's',
+          repeatCount: '2',
+          begin: (t * 0.3 + Math.random() * 0.2) + 's',
+        });
+        const mpath = mkEl('mpath', {});
+        mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#' + pathId);
+        anim.appendChild(mpath);
+        signal.appendChild(anim);
+
+        const fadeAnim = mkEl('animate', {
+          attributeName: 'opacity',
+          values: '0;0.9;0.9;0',
+          keyTimes: '0;0.05;0.9;1',
+          dur: (0.6 + Math.random() * 0.4) + 's',
+          repeatCount: '2',
+          begin: (t * 0.3 + Math.random() * 0.2) + 's',
+        });
+        signal.appendChild(fadeAnim);
+        synapseGroup.appendChild(signal);
+      }
+    }
+
+    // Also fire on inter-cluster paths from this cluster
+    interPairs.forEach(([pi, pj]) => {
+      if (pi !== clusterIndex && pj !== clusterIndex) return;
+      const fromCluster = clusters[pi];
+      const toCluster = clusters[pj];
+      if (fromCluster.phase.status === 'locked' || toCluster.phase.status === 'locked') return;
+
+      const a = fromCluster.nodes[fromCluster.nodes.length - 1];
+      const b = toCluster.nodes[0];
+      const cpx1 = a.x + (b.x - a.x) * 0.35 + (Math.random() - 0.5) * 40;
+      const cpy1 = a.y + (b.y - a.y) * 0.2 + (Math.random() - 0.5) * 30;
+      const cpx2 = a.x + (b.x - a.x) * 0.65 + (Math.random() - 0.5) * 40;
+      const cpy2 = a.y + (b.y - a.y) * 0.8 + (Math.random() - 0.5) * 30;
+      const pathId = `inter-fire-${pi}-${pj}-${Date.now()}`;
+
+      const hiddenPath = mkEl('path', {
+        d: `M ${a.x},${a.y} C ${cpx1},${cpy1} ${cpx2},${cpy2} ${b.x},${b.y}`,
+        id: pathId, fill: 'none', stroke: 'none',
+      });
+      synapseGroup.appendChild(hiddenPath);
+
+      const signal = mkEl('circle', { r: '2.5', fill: '#4A90FF', opacity: '0.7' });
+      const anim = mkEl('animateMotion', {
+        dur: (0.9 + Math.random() * 0.5) + 's',
+        repeatCount: '1',
+        begin: (Math.random() * 0.3) + 's',
+      });
+      const mpath = mkEl('mpath', {});
+      mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#' + pathId);
+      anim.appendChild(mpath);
+      signal.appendChild(anim);
+
+      const fadeAnim = mkEl('animate', {
+        attributeName: 'opacity',
+        values: '0;0.7;0.7;0',
+        keyTimes: '0;0.05;0.9;1',
+        dur: (0.9 + Math.random() * 0.5) + 's',
+        repeatCount: '1',
+        begin: (Math.random() * 0.3) + 's',
+      });
+      signal.appendChild(fadeAnim);
+      synapseGroup.appendChild(signal);
+    });
+  }
+
+  // Hover detection on node group
+  nodeGroup.addEventListener('mouseover', e => {
+    const target = e.target.closest('circle[data-cluster]');
+    if (!target) return;
+    const ci = parseInt(target.getAttribute('data-cluster'));
+    fireSynapses(ci);
+  });
+
+  // Auto-fire for in_progress cluster periodically
+  let autoFireInterval;
+  const ipCluster = clusters.findIndex(c => c.phase.status === 'in_progress');
+  if (ipCluster >= 0) {
+    autoFireInterval = setInterval(() => {
+      if (document.getElementById('neural').classList.contains('active')) {
+        fireSynapses(ipCluster);
+      }
+    }, 3200);
+  }
+})();
+</script>
+</body>
+</html>

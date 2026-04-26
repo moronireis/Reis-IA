@@ -116,12 +116,29 @@ You MUST read these files before producing any output:
 ## Output
 
 - **Primary deliverable**: `brain/assets/branding/movement-builder-concept.md`
+- **Voice Profile deliverable**: `.claude/voice-profiles/builders-community.md`
 
-The output document must:
+The primary document must:
 - Cover all 17 framework elements
 - Include a date header (Last updated: YYYY-MM-DD)
 - Use clear Markdown structure with headers for each element
 - Include a changelog section at the bottom
+
+### Voice Profile Generation (Mandatory)
+
+After completing the movement concept, you MUST generate or update the corresponding voice profile at `.claude/voice-profiles/builders-community.md`. The voice profile is a condensed, operational extract of the movement concept that Copy Squad agents load before writing. It must include:
+
+1. **Movement Identity** — name, cause, target, objective (condensed)
+2. **Narrative Arc** — 3-act summary (not full narrative)
+3. **Enemies** — named explicitly with one-line descriptions
+4. **Tribe Identity Signals** — language markers, self-image
+5. **Tone** — movement energy, builder identity, anti-hype stance
+6. **The Leader's Promise** — how Moroni appears in the movement
+7. **Anti-Patterns** — what the movement voice would NEVER sound like
+
+The voice profile is NOT a duplicate of the concept document. It is the operational subset that agents need to write in this voice. Think of it as the difference between a movement manifesto (concept) and a voice card (profile).
+
+When the movement concept changes, the voice profile MUST be updated in the same session.
 
 ## Rules & Constraints
 

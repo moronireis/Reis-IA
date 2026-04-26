@@ -1,5 +1,9 @@
 # Analysis Agent Memory Index
 
+## Feedback
+
+- [Output Path Authority](feedback_output_path_authority.md) — Before writing to `brain/research/`, confirm orchestrator explicitly delegated that path; if ambiguous, default to `brain/context/`.
+
 ## Project Files
 
 - [Phase 1 Source Files and Context Summary](project_phase1_files.md)

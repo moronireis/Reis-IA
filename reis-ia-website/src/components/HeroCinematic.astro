@@ -1,0 +1,275 @@
+---
+/**
+ * HeroCinematic — "Tempo, renderizado como arquitetura"
+ * Brief: brain/assets/briefs/reis-ia-website-hero-cinematic-brief.md
+ *
+ * Structure:
+ *   .hero-mesh   → mesh gradient drift background
+ *   .hero-grain  → SVG noise overlay
+ *   .hero-blade  → CSS-drawn monolithic slab (PLACEHOLDER)
+ *     ::before  → vertical blue seam with glow
+ *   .hero-headline → SplitText-ready char spans
+ *   .hero-sub, .hero-cta
+ *
+ * Client island: src/scripts/hero-motion.ts
+ */
+import '../styles/cinematic-tokens.css';
+
+const headline = 'O Tempo é Rei';
+const subcopy =
+  'Implementamos AI como estratégia de receita. Não como experimento.';
+const ctaLabel = 'Agendar diagnóstico';
+
+// Build char spans (SplitText-ready), preserving spaces with nbsp
+const chars = [...headline].map((c) => (c === ' ' ? '\u00A0' : c));
+---
+
+<section id="hero-cinematic" class="hero-cinematic" aria-label={headline}>
+  <!-- Layer 1: mesh gradient drift -->
+  <div class="hero-mesh" aria-hidden="true"></div>
+
+  <!-- Layer 2: noise grain overlay (SVG turbulence) -->
+  <div class="hero-grain" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+      <filter id="hero-noise">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+        <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.08 0" />
+      </filter>
+      <rect width="100%" height="100%" filter="url(#hero-noise)" />
+    </svg>
+  </div>
+
+  <!-- Waist horizontal line (revealed during Beat 4 scrub) -->
+  <div class="hero-waist-line" aria-hidden="true"></div>
+
+  <!-- Layer 3: blade placeholder -->
+  <!-- PLACEHOLDER: swap with /hero/blade-hero.webp when Gemini image ready -->
+  <div class="hero-blade" aria-hidden="true">
+    <!-- ::before generates the vertical blue seam with glow -->
+  </div>
+
+  <!-- Layer 4: text content -->
+  <div class="hero-content">
+    <h1 class="hero-headline" aria-label={headline}>
+      {chars.map((c) => <span data-char>{c}</span>)}
+    </h1>
+
+    <p class="hero-sub">{subcopy}</p>
+
+    <a href="/agendar" class="hero-cta" data-magnetic>
+      <span>{ctaLabel}</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </a>
+  </div>
+</section>
+
+<script>
+  import '../scripts/hero-motion.ts';
+</script>
+
+<style>
+  .hero-cinematic {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: var(--void);
+    color: var(--paper);
+    overflow: hidden;
+    padding: var(--hero-pad-y-desktop) var(--hero-gutter-desktop);
+    isolation: isolate;
+  }
+
+  @media (max-width: 768px) {
+    .hero-cinematic {
+      padding: var(--hero-pad-y-mobile) var(--hero-gutter-mobile);
+    }
+  }
+
+  /* ── Mesh gradient drift ─────────────────────── */
+  .hero-mesh {
+    position: absolute;
+    inset: -20%;
+    z-index: var(--z-mesh);
+    background:
+      radial-gradient(ellipse 60% 40% at 30% 20%, rgba(74, 144, 255, 0.12), transparent 60%),
+      radial-gradient(ellipse 50% 50% at 70% 60%, rgba(106, 173, 255, 0.08), transparent 70%),
+      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(74, 144, 255, 0.06), transparent 70%),
+      var(--void);
+    filter: blur(40px);
+    will-change: transform;
+  }
+
+  /* ── Noise grain overlay ─────────────────────── */
+  .hero-grain {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-grain);
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    opacity: 0.35;
+  }
+  .hero-grain svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* ── Waist line (horizontal reveal during scrub) ── */
+  .hero-waist-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 55%;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(74, 144, 255, 0.5) 20%,
+      rgba(74, 144, 255, 0.5) 80%,
+      transparent
+    );
+    z-index: var(--z-seam);
+  }
+
+  /* ── Blade (CSS-drawn placeholder) ───────────── */
+  .hero-blade {
+    position: absolute;
+    left: 50%;
+    bottom: var(--blade-offset-bottom);
+    transform: translateX(-50%);
+    width: var(--blade-width-desktop);
+    height: var(--blade-height);
+    z-index: var(--z-blade);
+
+    /* Monolithic slab: dark base with internal depth */
+    background: linear-gradient(
+      180deg,
+      var(--concrete-2) 0%,
+      var(--concrete-1) 30%,
+      var(--concrete-3) 100%
+    );
+
+    box-shadow:
+      /* inner highlight — architectural edge */
+      inset 1px 0 0 rgba(255, 255, 255, 0.04),
+      inset -1px 0 0 rgba(255, 255, 255, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      /* deep cast */
+      0 40px 120px rgba(0, 0, 0, 0.9),
+      0 10px 40px rgba(0, 0, 0, 0.6);
+
+    will-change: transform, opacity;
+  }
+
+  @media (max-width: 768px) {
+    .hero-blade {
+      width: var(--blade-width-mobile);
+    }
+  }
+
+  /* Vertical blue seam via ::before */
+  .hero-blade::before,
+  .hero-seam {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--seam-width);
+    height: 100%;
+    background: var(--blade-seam);
+    box-shadow: var(--seam-glow-near), var(--seam-glow-mid), var(--seam-glow-far);
+    will-change: transform, opacity, box-shadow;
+  }
+
+  /* Expose ::before as a targetable handle for GSAP by adding a real node */
+  .hero-blade::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 49%,
+      rgba(74, 144, 255, 0.05) 50%,
+      transparent 51%
+    );
+    pointer-events: none;
+  }
+
+  /* ── Text content ─────────────────────────────── */
+  .hero-content {
+    position: relative;
+    z-index: var(--z-text);
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-top: 80px;
+  }
+
+  .hero-headline {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: clamp(48px, 8vw, 128px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin: 0;
+    color: var(--paper);
+    overflow: hidden;
+  }
+
+  .hero-headline [data-char] {
+    display: inline-block;
+    will-change: transform, opacity;
+  }
+
+  .hero-sub {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: clamp(16px, 1.4vw, 20px);
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 560px;
+    margin: 0;
+  }
+
+  /* ── CTA ─────────────────────────────────────── */
+  .hero-cta {
+    z-index: var(--z-cta);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    align-self: flex-start;
+    padding: 18px 32px;
+    border: 1px solid rgba(74, 144, 255, 0.4);
+    border-radius: 2px;
+    background: rgba(74, 144, 255, 0.06);
+    color: var(--paper);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: background var(--dur-quick) var(--ease-base),
+      border-color var(--dur-quick) var(--ease-base);
+    will-change: transform;
+  }
+
+  .hero-cta:hover {
+    background: rgba(74, 144, 255, 0.12);
+    border-color: var(--blade-seam);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-blade,
+    .hero-headline [data-char],
+    .hero-sub,
+    .hero-cta {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>

@@ -110,50 +110,199 @@ Before ANY file modification in any phase or stage:
 
 ---
 
-## Agent Registry
+## Agent Registry (updated 2026-04-22 — 45 agents)
 
-### Active Agents and Their Roles
+**IMPORTANT**: `CLAUDE.md` at project root is the canonical source of truth for the agent table, workflow chains, and stack state. Read it before any planning session. The registry below is a quick reference grouped by pipeline — always cross-check against CLAUDE.md for the latest.
 
-**1. Dev Agent** (Sonnet 4.6) — Technical execution. Builds all web pages, landing pages, interactive tools, integrations, email automation, and deployment infrastructure. Reads copy from brain/assets/copy/ and follows design specs. Tech stack: Astro, React, Tailwind CSS v4, Node.js. Use for: all code, builds, deployments, integrations, and technical infrastructure.
+### Strategy & Copy Squad
 
-**2. Designer Agent** (Opus 4.6) — Visual design, UI/UX, brand identity, social media assets, presentation materials. Translates brand positioning and copy documents into premium visual experiences. Use for: wireframes, page designs, brand identity, UI components, social media templates, email templates, and all visual decisions. Does NOT create logos or brand marks — delegate those to the Logo Brand Mark Designer.
+| # | Agent | Model | Role |
+|---|---|---|---|
+| 1 | `cmo-strategist` | opus | Marketing strategy, positioning, offers, funnels, Copy Squad director |
+| 2 | `chief-strategy-advisor` | opus | **Board Advisor (Option A)** — pressure-tests macro decisions only. NOT in day-to-day pipeline |
+| 3 | `market-research-analyst` | sonnet | Market analysis, competitor research, ICP discovery |
+| 4 | `offer-architect` | opus | Grand Slam Offer design (Hormozi): dream outcome, value stack, guarantee, pricing |
+| 5 | `funnel-architect` | opus | End-to-end funnels (Brunson + DigitalMarketer + Hormozi) |
+| 6 | `direct-response-copywriter` | sonnet | Persuasive copy execution — Hormozi framework |
+| 7 | `humanizer` | sonnet | Eliminates AI patterns, injects PT-BR executive voice |
+| 8 | `reviewer` | sonnet | Quality gate (PASS/BLOCK/EXIT) — 3 rule sets + 7 vetoes |
 
-**3. Copy Agent** — Writes, reviews, and adapts all copy assets. Reads from brain/assets/copy/. Follows Revenue-First positioning, Prototype Graveyard enemy narrative, and premium brand voice. Never overwrites originals — only appends with [ADDED] or [VARIATION] tags. Use for: new copy creation, copy review, narrative integration (hourglass), Portuguese adaptations, and content calendar preparation.
+**Copy Squad pipeline**: `cmo-strategist` (brief + Hormozi 4 angles) ← `offer-architect` + `funnel-architect` upstream inputs → `direct-response-copywriter` → `humanizer` → `reviewer` → `cmo-strategist` sign-off. `chief-strategy-advisor` reviews at macro decision points only.
 
-**4. CMO Agent** — Strategic marketing oversight. Reviews funnel logic, conversion flow, channel strategy, content calendars, and positioning consistency. Does not write copy or code — provides strategic direction and flags gaps. Use for: funnel review, conversion optimization, channel strategy, positioning audits, and marketing architecture decisions.
+### Content & Social Media
 
-**5. Analysis Agent** — Reads project files and produces Context Summaries for other agents. Analyzes market data, competitor positioning, and internal assets. Output is always a structured summary, never implementation. Use for: project structure analysis, file audits, context summaries, market research, and data synthesis.
+| # | Agent | Model | Role |
+|---|---|---|---|
+| 9 | `social-media-director` (file `social-media-team.md`) | opus | Orchestrates the 4 content specialists below |
+| 10 | `hook-specialist` | sonnet | 10+ hook variations per script (4-parts framework, platform-specific timing) |
+| 11 | `reels-scriptwriter` | sonnet | Reels/Shorts/TikTok scripts with shot list + recording brief |
+| 12 | `linkedin-strategist` | sonnet | LinkedIn B2B executive content (posts, carousels, newsletters) |
+| 13 | `carousel-designer-writer` | sonnet | Carousel copy + visual briefing handoff to designer-agent |
 
-**6. Executor Agent** — Operational execution of non-code tasks: email platform setup, CRM configuration, automation testing, tool installation, deployment steps. Follows file management rules (Rule 1–4). Never overwrites original copy. Use for: platform configuration, automation setup, testing sequences, tool installation, and operational tasks.
+**Social pipeline**: `cmo-strategist` → `social-media-director` → `hook-specialist` → `{reels-scriptwriter | linkedin-strategist | carousel-designer-writer}` → `humanizer` → `reviewer` → sign-off.
 
-**7. Logo Brand Mark Designer** (Opus 4.6) — Specialist in creating logos, brand marks, symbols, icons, and visual identity assets exclusively in SVG format. Creates minimalist, geometric, premium-quality marks following the Reis IA design language. Delivers multiple variations with HTML preview pages for visual comparison at multiple sizes (16px to 128px+). Thinks like a logo designer, not a UI designer. Use for: logo creation, brand symbols, icon marks, favicons, brand asset SVGs. Does NOT modify pages, CSS, or components — only delivers final SVG assets for the Dev Agent to implement.
+### Design & Brand
 
-**8. Design System Extractor** (Opus 4.6) — Specialist in deeply analyzing and extracting complete design systems, brandbooks, and UI component libraries from reference websites. Fetches and parses full website source code (HTML, CSS, JS), extracts design tokens (colors, typography, spacing, shadows, borders, motion, effects), documents component patterns, captures animation/motion systems, and organizes everything into structured markdown files with visual HTML preview pages. Use for: reference site analysis, design token extraction, component cataloging, competitive design research. Does NOT modify Reis IA files — only extracts and documents for the Orchestrator to decide what to incorporate.
+| # | Agent | Model | Role |
+|---|---|---|---|
+| 14 | `designer-agent` | opus | UI/UX design specs, brand identity, page layouts, wireframes-as-text |
+| 15 | `art-director` | opus | **UPDATED 2026-04-15** — Unified creative head (fusion of former creative-director + cinematic-art-director). Concept + narrative + editorial typography system + grid/composition + shot grammar + lighting + hero image prompts + 3D demo direction + motion language direction. Briefs only, never code |
+| 15b | `visual-research-scout` | sonnet | **NEW 2026-04-15** — Continuous aesthetic curation from Awwwards, FWA, Typewolf, Land-book, Godly. Mood reports at `brain/design-library/mood-reports/` by aesthetic intent. Curatorial only — upstream of design-system-extractor |
+| 15c | `visual-qa-agent` | opus | **NEW 2026-04-15** — Subjective aesthetic judge. Third quality layer after copy reviewer + brand audit. APPROVE / REVISE / REJECT verdicts against mood-report references |
+| 17 | `vfx-motion-designer` | sonnet | Motion implementation (GSAP + ScrollTrigger, Three.js, Lenis, CSS/Canvas/WebGL). **MANDATORY**: consult `brain/design-library/patterns/` before implementing |
+| 18 | `logo-brand-mark-designer` | opus | SVG logos, brand marks, symbols, icons, favicons |
+| 19 | `design-system-extractor` | sonnet | **UPGRADED (Track B)** — Harvests HTML/CSS/JS/motion configs from reference URLs into `brain/design-library/references/`, plus design token analysis |
+| 20 | `brand-site-builder` | sonnet | Interactive brandbook documentation site (reis-ia-brand project) |
+| 21 | `company-brand-strategist` | opus | Corporate brand architecture, institutional positioning |
+| 22 | `personal-brand-strategist` | opus | Personal brand for Moroni — persona, archetypes, narrative |
+| 23 | `movement-brand-strategist` | opus | Builder movement/tribe/cause, rituals, vocabulary, manifesto |
+| 24 | `product-brand-strategist` | opus | Product naming, positioning, delivery experience |
 
-**9. Education Director** (Opus 4.6) — Pedagogical strategist and curriculum architect. Organizes existing material, creates the curriculum map, produces structured briefings for the Scriptwriter, reviews final scripts, manages the educational pipeline. Does NOT write scripts or create visuals — delegates to Scriptwriter and Educational Designer.
+**Design Library**: `brain/design-library/` is the shared asset for premium design work. Contains `references/` (harvested code), `patterns/SEED.md` (11+ curated motion patterns), `hero-prompts/` (Gemini/Flux skeleton + examples), `mood-reports/` (curated by visual-research-scout), `qa-verdicts/` (visual-qa-agent output), `iterations/` (workspace). `vfx-motion-designer` MUST consult `patterns/` and `references/` before implementing. `art-director` writes briefs that consume hero-prompts skeleton and mood reports.
 
-**10. Lesson Scriptwriter (Roteirista de Aulas)** (Sonnet 4.6) — Expert lesson scriptwriter. Transforms educational briefings into camera-ready video scripts for Moroni to record. Follows standard script structure (Hook → Context → Content Blocks → Recap → CTA). Produces visual element requests for the Educational Designer after script approval.
+**Design flow (2026-04-15 restructure)**: `visual-research-scout` (mood reports) → `design-system-extractor` (Track B harvests from scout recommendations) → `art-director` (unified brief: concept + type system + grid + shots + prompts + motion direction) → `designer-agent` + `vfx-motion-designer` (implementation consulting design-library) → `visual-qa-agent` (subjective aesthetic verdict).
 
-**11. Educational Designer** (Sonnet 4.6) — Visual designer for educational content. Creates mind maps, slides, diagrams, comparison tables, and transition screens for video lesson recordings. Follows REIS [IA] design system adapted for 1080p video. Activated by the Scriptwriter or directly by Moroni.
+### Education
 
-### Agent Selection Guide
+| # | Agent | Model | Role |
+|---|---|---|---|
+| 25 | `education-director` | opus | Curriculum map, lesson briefings, educational pipeline |
+| 26 | `roteirista-aulas` | sonnet | Video lesson scripts from briefings |
+| 27 | `educational-designer` | sonnet | Lesson visuals: slides, mind maps, diagrams, transitions |
 
-| Task Type | Primary Agent | Support Agent |
-|-----------|--------------|---------------|
-| Build web page | Dev Agent | Designer Agent (design first) |
-| Design UI/brand asset | Designer Agent | — |
-| Write/edit copy | Copy Agent | CMO Agent (review) |
-| Funnel/conversion review | CMO Agent | Analysis Agent (data) |
-| Project file analysis | Analysis Agent | — |
-| Platform/tool setup | Executor Agent | Dev Agent (if API work needed) |
-| Extract design system from reference site | Design System Extractor | Analysis Agent (context) |
-| Create logo / brand mark / symbol | Logo Brand Mark Designer | Designer Agent (brand context) |
-| Analyze competitor site visuals | Design System Extractor | CMO Agent (strategic review) |
-| New brand element integration | Copy Agent + Designer Agent | — |
-| Curriculum design / lesson planning | Education Director | — |
-| Write/enhance lesson script | Lesson Scriptwriter | Education Director (briefing) |
-| Create lesson visuals (slides, diagrams) | Educational Designer | Lesson Scriptwriter (visual request) |
-| Review lesson quality | Education Director | — |
+### Development & Infrastructure (transversal — support all code-producing pipelines)
+
+| # | Agent | Model | Role |
+|---|---|---|---|
+| 28 | `dev-agent` | sonnet | Astro + React + Tailwind CSS v4. Production code |
+| 29 | `integration-engineer` | sonnet | **NEW (Phase A)** — Third-party APIs, webhooks, MCP servers (FastMCP 3.0), OAuth, Supabase edge functions, automation pipelines (Whisper, ffmpeg, Playwright, wappalyzer, SearXNG) |
+| 30 | `qa-agent` | sonnet | **NEW (Phase A)** — End-to-end functional testing (Playwright + API + DB). Deploy gate — can BLOCK devops |
+| 31 | `devops-agent` | sonnet | **NEW (Phase A)** — Deploys, env vars (Vercel), CI/CD, monitoring. Respects qa-agent block. Strict git safety |
+| 32 | `data-engineer` | sonnet | **NEW (Phase A)** — Supabase schemas, migrations, RLS, indexes, triggers |
+| 33 | `execution` | sonnet | File operations, folder organization, asset generation |
+| 34 | `executor-agent` | sonnet | External platform configuration (email, CRM, booking, deploy) |
+| 35 | `analysis-agent` | sonnet | Context summaries, file audits, research |
+| 36 | `task-router` | haiku | Smart cost optimizer: classifies tasks into 4 tiers (ollama/haiku/sonnet/opus) |
+
+### Video Editing Pipeline (Stack 3 — OSS scaffold ready)
+
+| # | Agent | Model | Role |
+|---|---|---|---|
+| 37 | `video-editor-director` | opus | Receives raw video + brief, decides editorial pipeline, delegates to clip-cutter and caption-broll-operator |
+| 38 | `clip-cutter` | sonnet | Reads Whisper transcript, selects viral clips via Claude reasoning (OSS alternative to Opus Clip) |
+| 39 | `caption-broll-operator` | sonnet | Generates `.ass` subtitle files with REIS [IA] design tokens, plus B-roll queries for Pexels/Pixabay |
+
+**Video pipeline recipe**: `brain/context/video-pipeline-oss-recipe.md` (install, 7 steps, 5 ffmpeg recipes). Scaffold in `scripts/video-pipeline/` (14 files). Requires: `brew install ffmpeg`, venv + `pip install -r requirements.txt`, Pexels/Pixabay API keys. Integration real executed by `integration-engineer`.
+
+### Meta Ads Squad (Stack 4 — 2026-04-22)
+
+| # | Agent | Model | Role |
+|---|---|---|---|
+| 40 | `traffic-manager` | sonnet | **NEW (Stack 4)** — Operational media buyer. Campaign CRUD, audience config, budget distribution, creative upload via meta-ads MCP. ALL campaigns created PAUSED |
+| 41 | `ads-analyst` | sonnet | **NEW (Stack 4)** — Performance analyst. Reports, breakdowns, diagnostics, health scoring, alerting. Uses meta-ads MCP + claude-ads plugin |
+| 42 | `creative-strategist` | sonnet | **NEW (Stack 4)** — Ad creative strategy. Competitive creative analysis, briefing Copy Squad for ads, funnel stage mapping (TOFU/MOFU/BOFU), creative rotation |
+
+**MCP Server:** `meta-ads` (@getscaleforge/mcp-meta-ads) — 32 tools, Graph API v24.0, MIT, direct token auth. Configured in `.mcp.json` (gitignored).
+**Plugin:** `claude-ads` (AgriciDaniel/claude-ads v1.5.1) — 250+ audit checks, 19 skills (/ads audit, /ads math, /ads meta, etc.)
+**Safety Rules:** `.claude/rules/ads-safety.md` — campaigns PAUSED by default, R$100/day budget limit without approval, no deletes, rate limiting, multi-account safety.
+
+**Ad Accounts Accessible (as of 2026-04-22):**
+- `act_1690330771143511` — Moroni Reis (BRL)
+- `act_2980473968915513` — Noiva S/A - Oficial (BRL)
+- `act_1067594805509822` — Agente Lucrativo (BRL)
+- `act_1618363548859143` — Leo Soares 3 (BRL)
+
+**Ads pipeline:** `cmo-strategist` (campaign brief) → `creative-strategist` (competitive analysis + creative briefs) → Copy Squad (ad copy) + `designer-agent` (visuals) → `traffic-manager` (campaign CRUD — ALL PAUSED) → HUMAN APPROVAL → `ads-analyst` (performance monitoring) → feedback loop to `creative-strategist` + `cmo-strategist`.
+
+### Specialist & Support
+
+| # | Agent | Model | Role |
+|---|---|---|---|
+| 43 | `sdr-reis-ia` | opus | SDR — lead outreach, qualification, meeting booking |
+| 44 | `brand-site-builder` | sonnet | Brandbook documentation site builder |
+| 45 | `orchestrator` (this agent) | opus | Coordination, planning, delegation. NEVER implements |
+
+### Agent Selection Guide (quick reference)
+
+| Task | Primary | Support |
+|---|---|---|
+| Strategic brief + offer | `cmo-strategist` | `offer-architect`, `funnel-architect` |
+| Reels script | `social-media-director` → `hook-specialist` → `reels-scriptwriter` | humanizer, reviewer |
+| LinkedIn post | `social-media-director` → `linkedin-strategist` | humanizer, reviewer |
+| Carousel | `social-media-director` → `carousel-designer-writer` → `designer-agent` | humanizer, reviewer |
+| Hero design (premium) | `visual-research-scout` → `design-system-extractor` → `art-director` → `vfx-motion-designer` → `visual-qa-agent` | consulting `brain/design-library/` |
+| Extract reference from URL | `design-system-extractor` (Track B harvest) | — |
+| Build page | `designer-agent` → `dev-agent` | `qa-agent` before deploy |
+| External API integration | `integration-engineer` | `data-engineer`, `devops-agent` |
+| Supabase schema change | `data-engineer` | `qa-agent` (RLS review) |
+| Deploy to Vercel | `devops-agent` | `qa-agent` gate |
+| Video edit | `video-editor-director` → `clip-cutter` + `caption-broll-operator` → `integration-engineer` |
+| Competitive intel | PENDING — Stack 1 agents waiting on Meta App approval |
+| Meta Ads campaign | `creative-strategist` → Copy Squad + `designer-agent` → `traffic-manager` → APPROVAL → `ads-analyst` |
+| Ad performance report | `ads-analyst` (pulls insights via meta-ads MCP + /ads audit) |
+| Creative brief for ads | `creative-strategist` → `direct-response-copywriter` + `hook-specialist` + `designer-agent` |
+| Ad account audit | `ads-analyst` (/ads audit skill — 250+ checks, health scoring) |
+| Macro strategy review | `chief-strategy-advisor` | Used sparingly, not pipeline-default |
+
+---
+
+## Current System State (as of 2026-04-22)
+
+### Phase Status
+
+| Phase | Status | Notes |
+|---|---|---|
+| Foundation pages (Home, Builder, Systems, Agendar, Aplicar) | ✅ COMPLETE | 5 pages in reis-ia-website, PT-BR, dark mode |
+| Design System Refinement | ✅ COMPLETE | #4A90FF blue, H1-B Hourglass, 5-tier surface |
+| REIS IA HUB (Astro + React + Supabase) | ✅ COMPLETE | All modules. Deploy via `npm run deploy` (updates both Vercel URLs) |
+| **Phase A — Agency Technical Foundation** | ✅ COMPLETE (commit 2c1f0ed) | 6 new agents: integration-engineer, qa-agent, devops-agent, data-engineer, offer-architect, funnel-architect. chief-strategy-advisor activated as Board Advisor |
+| **Design Team Upgrade** | ✅ COMPLETE (commit 8bfb9d4) | cinematic-art-director + design-library + motion patterns SEED |
+| **Phase B partial — Content Specialists** | ✅ COMPLETE (commit 4bd0f60) | 4 specialists under social-media-director |
+| **Stack 3 — Video Editing (agents + recipe)** | ✅ COMPLETE (commit 30d1450) | 3 agents + OSS recipe. Scaffold Python in `scripts/video-pipeline/` (14 files, unstaged) |
+| **Stack 4 — Meta Ads Squad** | ✅ COMPLETE (2026-04-22) | 3 agents (traffic-manager, ads-analyst, creative-strategist) + meta-ads MCP (32 tools) + claude-ads plugin (250+ checks) + ads-safety.md. 4 ad accounts connected |
+| **Stack 1 — Competitive Intelligence** | 🔴 BLOCKED | Meta Ad Library API only returns political ads in 2026. Requires decision: paid provider / Playwright scraping / re-scope |
+
+### Key Resources
+
+| Resource | Path | Purpose |
+|---|---|---|
+| Rules (MANDATORY for Copy Squad) | `.claude/rules/brand-voice.md`, `hormozi-framework.md`, `humanization-rules.md` | Loaded by cmo-strategist, copywriter, humanizer, reviewer, all content specialists |
+| Brand audit checklist | `.claude/rules/brand-audit-checklist.md` | Loaded by reviewer + designer-agent for Phase 10 brand audits |
+| Ads safety rules | `.claude/rules/ads-safety.md` | Loaded by traffic-manager, ads-analyst, creative-strategist. PAUSED-by-default, budget limits, no deletes |
+| Voice profiles | `.claude/voice-profiles/moroni-personal.md`, `reis-ia-company.md`, `builders-community.md` | Copy Squad agents select based on task context |
+| Design library | `brain/design-library/` — `references/`, `patterns/SEED.md`, `hero-prompts/`, `iterations/` | Design pipeline shared asset |
+| Video pipeline recipe | `brain/context/video-pipeline-oss-recipe.md` | Full OSS stack for video editing |
+| Meta App checklist | `brain/context/meta-app-setup-checklist.md` | Setup steps for Moroni to unblock Stacks 1 + 4 |
+| Agent memory | `.claude/agent-memory/{agent-name}/MEMORY.md` | Per-agent private learning |
+| Shared knowledge | `brain/research/`, `brain/strategy/`, `brain/messaging/`, `brain/assets/` | Pipeline outputs |
+
+### Meta App Status
+- **App ID**: `2160072261434114` ("Reis IA - Gestor")
+- **Status**: Active, connected (2026-04-22)
+- **User Access Token**: Configured in `.mcp.json` (gitignored). 12 permissions granted including `ads_management`, `ads_read`, `business_management`, `leads_retrieval`, `whatsapp_business_management`.
+- **MCP Server**: `meta-ads` (@getscaleforge/mcp-meta-ads) — 32 tools for campaign management via Graph API v24.0
+- **Plugin**: `claude-ads` (AgriciDaniel/claude-ads v1.5.1) — 250+ audit checks, PPC math, A/B test design
+- **Ad Accounts**: 4 active accounts accessible (Moroni Reis, Noiva S/A, Agente Lucrativo, Leo Soares 3)
+- **Token note**: Current token is a User Access Token (expires). Future: migrate to System User token via Business Manager for non-expiring access.
+- **Stack 1 blocker**: Meta Ad Library API only returns `POLITICAL_AND_ISSUE_ADS`. Commercial ads NOT accessible via official API in 2026. Stack 1 (competitive intelligence) still blocked — requires Apify or alternative approach.
+
+### Strategy: OSS-first
+Approved 2026-04-14: substitute paid APIs with OSS wherever quality isn't compromised. Upgrade to paid only when open-source proven insufficient. Savings: ~$400/mo → ~$0–15/mo. Details in `brain/context/` research docs.
+
+### Infra Validation Rule (MANDATORY — 2026-04-14)
+
+Before running ANY end-to-end test of the agent pipeline (design, content, video, tracking, etc.):
+
+1. **Update this orchestrator.md file** with current agent registry if anything changed
+2. **Run infra validation sweep**:
+   - Every agent file referenced in CLAUDE.md exists in `.claude/agents/`
+   - Every memory stub exists in `.claude/agent-memory/`
+   - Rules, voice profiles, brain/ directories all readable
+   - Code assets (scripts/video-pipeline/*.py etc.) pass syntax check
+3. **Only after infra GREEN**, run the functional test
+4. **Never simulate agents**: if Task tool is unavailable in a sub-session, ABORT the test with clear report. Do NOT fake agent output inline.
+
+Reason: a test ran on 2026-04-14 where the sub-orchestrator's memory was stale and claimed the 4 content specialists didn't exist (they had just been committed). The test "passed" but didn't validate the real multi-agent pipeline. Stale context = false confidence.
 
 ---
 

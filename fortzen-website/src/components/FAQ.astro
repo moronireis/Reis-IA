@@ -1,0 +1,115 @@
+---
+const faqs = [
+  {
+    question: "Qual a diferença entre monitoramento com IA e monitoramento tradicional?",
+    answer: "O monitoramento tradicional depende de sensores de movimento que disparam com qualquer alteração — gatos, sombras, chuva. O sistema BATALION usa inteligência artificial treinada com milhões de horas de vídeo para identificar especificamente pessoas e veículos, eliminando até 100x mais falsos alarmes.",
+  },
+  {
+    question: "A BATALION funciona com câmeras que eu já tenho?",
+    answer: "Sim. Nosso sistema é compatível com mais de 50 fabricantes de câmeras IP, incluindo Hikvision, Intelbras, Dahua, Axis e Bosch. Na consultoria inicial, avaliamos seu sistema atual e indicamos se é possível aproveitar os equipamentos existentes.",
+  },
+  {
+    question: "Quanto custa a portaria remota comparada à portaria presencial?",
+    answer: "Em média, a portaria remota reduz os custos em 40% a 60% comparado à portaria presencial convencional. Além da economia, o sistema opera sem faltas, atrasos ou turnover, com monitoramento contínuo 24/7.",
+  },
+  {
+    question: "Como funciona o monitoramento de alarme?",
+    answer: "Quando um sensor detecta uma ocorrência, o alerta é enviado para nossa central em menos de 3 segundos. O operador verifica o evento pela câmera e, se confirmado, aciona imediatamente a resposta — ronda, polícia ou contato com o responsável. Tudo em menos de 60 segundos.",
+  },
+  {
+    question: "O sistema atende a LGPD?",
+    answer: "Sim, 100%. Nosso sistema segue todas as diretrizes da Lei Geral de Proteção de Dados. Não realizamos reconhecimento facial em áreas públicas e todos os dados de imagem são armazenados em nuvem com criptografia de ponta a ponta.",
+  },
+  {
+    question: "Qual o prazo de instalação?",
+    answer: "Após a aprovação do projeto, a instalação é realizada em 3 a 7 dias úteis, dependendo da complexidade. Sistemas simples podem ser instalados no mesmo dia da visita técnica.",
+  },
+];
+---
+
+<section class="py-24 relative">
+  <div class="section-divider absolute top-0 left-0 right-0"></div>
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-10 sm:mb-16">
+      <p class="text-blur-in text-fort-blue text-sm font-semibold tracking-wider uppercase mb-3">Dúvidas Frequentes</p>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-fort-white mb-4">
+        <span class="text-slide-up block overflow-hidden"><span class="inner">Perguntas frequentes</span></span>
+      </h2>
+      <p class="text-blur-in text-fort-text max-w-2xl mx-auto" style="transition-delay: 200ms">
+        Tudo que você precisa saber antes de contratar.
+      </p>
+    </div>
+
+    <div class="space-y-3 stagger-children" id="faq-list">
+      {faqs.map((faq, i) => (
+        <div
+          class="faq-item bg-fort-gray/20 border border-fort-border/40 rounded-2xl overflow-hidden hover:border-fort-blue/20 transition-colors duration-300"
+          data-index={i}
+        >
+          <button
+            class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
+            aria-expanded="false"
+          >
+            <span class="text-fort-white font-semibold text-sm sm:text-base leading-snug">{faq.question}</span>
+            <!-- Plus/minus icon -->
+            <span class="faq-icon shrink-0 w-7 h-7 rounded-lg border border-fort-border/60 flex items-center justify-center transition-all duration-300">
+              <svg class="faq-plus w-3.5 h-3.5 text-fort-blue transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m-8-8h16"/>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-answer overflow-hidden" style="max-height: 0; transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+            <div class="px-6 pb-5">
+              <div class="h-px bg-fort-border/30 mb-4"></div>
+              <p class="text-fort-text text-sm leading-relaxed">{faq.answer}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  const items = document.querySelectorAll(".faq-item");
+
+  items.forEach((item) => {
+    const trigger = item.querySelector(".faq-trigger") as HTMLButtonElement;
+    const answer = item.querySelector(".faq-answer") as HTMLElement;
+    const icon = item.querySelector(".faq-icon") as HTMLElement;
+    const plusSvg = item.querySelector(".faq-plus path") as SVGPathElement;
+
+    trigger?.addEventListener("click", () => {
+      const isOpen = trigger.getAttribute("aria-expanded") === "true";
+
+      // Close all others
+      items.forEach((other) => {
+        if (other !== item) {
+          const otherTrigger = other.querySelector(".faq-trigger") as HTMLButtonElement;
+          const otherAnswer = other.querySelector(".faq-answer") as HTMLElement;
+          const otherIcon = other.querySelector(".faq-icon") as HTMLElement;
+          const otherPath = other.querySelector(".faq-plus path") as SVGPathElement;
+          otherTrigger?.setAttribute("aria-expanded", "false");
+          if (otherAnswer) otherAnswer.style.maxHeight = "0";
+          otherIcon?.classList.remove("bg-fort-blue/10", "border-fort-blue/40");
+          if (otherPath) otherPath.setAttribute("d", "M12 4v16m-8-8h16");
+        }
+      });
+
+      // Toggle current
+      if (isOpen) {
+        trigger.setAttribute("aria-expanded", "false");
+        answer.style.maxHeight = "0";
+        icon?.classList.remove("bg-fort-blue/10", "border-fort-blue/40");
+        if (plusSvg) plusSvg.setAttribute("d", "M12 4v16m-8-8h16");
+      } else {
+        trigger.setAttribute("aria-expanded", "true");
+        answer.style.maxHeight = answer.scrollHeight + "px";
+        icon?.classList.add("bg-fort-blue/10", "border-fort-blue/40");
+        // Change to minus icon
+        if (plusSvg) plusSvg.setAttribute("d", "M4 12h16");
+      }
+    });
+  });
+</script>

@@ -24,9 +24,9 @@ Full business context: `brain/context/business-profile.md`
 | analysis-agent | Context summaries, tool evaluation, integration research, file audits. | sonnet |
 | executor-agent | Platform configuration: email setup, CRM, booking tools, deployment. | sonnet |
 | education-director | Curriculum mapping, lesson briefings, educational pipeline management, quality review. | opus |
-| roteirista-aulas | Video lesson scriptwriting from briefings, script enhancement/reformulation. | sonnet |
-| educational-designer | Visual elements for lessons: slides, mind maps, diagrams, transition screens. | sonnet |
-| cinematic-art-director | Cinematic vision for hero visuals, 3D product demos, hero image prompts. Sits above designer/vfx in the pipeline. | opus |
+| art-director | Unified creative head (fusion of former creative-director + cinematic-art-director). Concept + narrative + editorial typography system + grid/composition + shot grammar + lighting + hero image prompts + 3D demo direction + motion language direction. Sits above designer/vfx in the pipeline. Produces briefs, never code. | opus |
+| visual-research-scout | Continuous aesthetic curation from Awwwards, FWA, Site Inspire, Land-book, Godly, Typewolf. Produces mood reports in `brain/design-library/mood-reports/` with 20-50 annotated refs per aesthetic intent. Curatorial only — no code harvest. Upstream of design-system-extractor. | sonnet |
+| visual-qa-agent | Subjective aesthetic judge — third quality layer after reviewer (copy) and brand-audit-checklist (structural). Compares implementations against mood reports and renders APPROVE / REVISE / REJECT verdicts with aesthetic prose. Anti-mediocrity filter. | opus |
 | task-router | Smart cost optimizer: classifies tasks and routes to optimal model (ollama/haiku/sonnet/opus). | haiku |
 | chief-strategy-advisor | Board Advisor / Conselheiro Estratégico. Pressure-tests macro decisions (new pillars, launches, pricing, positioning). NOT in day-to-day pipeline. | opus |
 | integration-engineer | Third-party APIs, webhooks, MCP servers (FastMCP 3.0), OAuth, Supabase edge functions, automation pipelines (Whisper, ffmpeg, Playwright, wappalyzer, SearXNG). | sonnet |
@@ -43,18 +43,22 @@ Full business context: `brain/context/business-profile.md`
 | video-editor-director | Stack 3 lead. Plans full post-production per video: cut scoring, caption style, B-roll, aspect ratios, thumbnails. Delegates execution — never runs ffmpeg. | opus |
 | clip-cutter | Stack 3 operator. Reads Whisper transcripts and returns ranked JSON coordinates for viral clips (OSS replacement for Opus Clip). | sonnet |
 | caption-broll-operator | Stack 3 operator. Produces ASS subtitle files in REIS [IA] brand style + semantic B-roll queries and insertion timelines (OSS replacement for Submagic + Runway B-roll). | sonnet |
+| traffic-manager | Operational media buyer. Campaign CRUD, audience config, budget distribution, creative upload via meta-ads MCP. All campaigns created PAUSED. | sonnet |
+| ads-analyst | Performance analyst. Reports, breakdowns, diagnostics, health scoring, alerting. Uses meta-ads MCP + claude-ads plugin. | sonnet |
+| creative-strategist | Ad creative strategy. Competitive creative analysis, briefing Copy Squad for ads, funnel stage mapping, creative rotation. Bridge between strategy and traffic. | sonnet |
+| launch-strategist | Paid launch architect (Lancamento Pago Turbo). Plans full launch: event format, ticket pricing, creative portfolio (post-Andromeda), landing page/checkout copy, 6-phase traffic scaling, metrics analysis. Ticket funds traffic (ROAS >= 1.0), product sale = pure profit. | opus |
 
 ### Phase A — Agency Technical Foundation (2026-04-14)
 
 Phase A of the agency expansion added 6 new agents, refactored `social-media-team` into `social-media-director`, and formally activated `chief-strategy-advisor` as Board Advisor (Option A — pressure-tester at macro decision points, NOT in day-to-day pipeline). The new agents cover the technical execution layer (integration-engineer, qa-agent, devops-agent, data-engineer) and the offer/funnel strategic layer (offer-architect, funnel-architect).
 
-Phase A is foundation-only: no integrations were actually built, no MCP servers were installed. The first real task for `integration-engineer` will come in Phase B, gated on Meta App approval.
+Phase A was foundation-only: agent definitions without implementations. The first real integration landed in Stack 4 (2026-04-22): `meta-ads` MCP server (@getscaleforge/mcp-meta-ads) connected to 4 ad accounts, plus `claude-ads` plugin (250+ audit checks).
 
 ### Phase B partial — Content Specialists (2026-04-14)
 
 Phase B partial added 4 content specialists that the `social-media-director` orchestrates: `hook-specialist`, `reels-scriptwriter`, `linkedin-strategist`, `carousel-designer-writer`. Stack 2 (content production) is now fully connected to the Copy Squad: every specialist output passes through `humanizer` → `reviewer` → `social-media-director` consolidation → `cmo-strategist` sign-off before publishing. The upcoming Stack 3 (video editing: `clip-cutter`, `caption-broll-operator`) will consume the structured shot list and overlay tables produced by `reels-scriptwriter`.
 
-Delegation flow inside Stack 2: the director receives a brief from `cmo-strategist`, starts with `hook-specialist` to generate a hook menu, picks the winner, then forwards to the format-specific specialist (Reels → `reels-scriptwriter`, LinkedIn → `linkedin-strategist`, carousel → `carousel-designer-writer`). For carousel visual implementation, the carousel agent produces a designer brief consumed by `designer-agent` or `educational-designer`.
+Delegation flow inside Stack 2: the director receives a brief from `cmo-strategist`, starts with `hook-specialist` to generate a hook menu, picks the winner, then forwards to the format-specific specialist (Reels → `reels-scriptwriter`, LinkedIn → `linkedin-strategist`, carousel → `carousel-designer-writer`). For carousel visual implementation, the carousel agent produces a designer brief consumed by `designer-agent`.
 
 ### Stack 3 — Video Editing Pipeline (OSS, 2026-04-14)
 
@@ -78,6 +82,52 @@ Transversal support agents (used by most pipelines):
 - `integration-engineer`, `qa-agent`, `devops-agent`, `data-engineer` support all code-producing pipelines
 - `offer-architect` and `funnel-architect` feed the Copy Squad upstream of `direct-response-copywriter`
 - `chief-strategy-advisor` reviews `cmo-strategist` output at macro decision points only (new pillar launches, new major offers, positioning shifts, budget calls above threshold)
+
+### Stack 4 — Meta Ads Squad (2026-04-22)
+
+Stack 4 adds 3 agents that own paid traffic management for all REIS [IA] client accounts: `traffic-manager` (sonnet), `ads-analyst` (sonnet), `creative-strategist` (sonnet). The stack connects to Meta Marketing API via the `meta-ads` MCP server (@getscaleforge/mcp-meta-ads, 32 tools) and uses the `claude-ads` plugin (250+ audit checks) for enhanced analysis.
+
+**MCP Server:** `meta-ads` — @getscaleforge/mcp-meta-ads (Graph API v24.0, 32 tools, MIT, direct token auth)
+**Plugin:** `claude-ads` — AgriciDaniel/claude-ads (250+ audit checks, health scoring, PPC math, PDF reports)
+**Safety Rules:** `.claude/rules/ads-safety.md` — all campaigns PAUSED by default, budget limits, no deletes, rate limiting
+
+**Accessible Ad Accounts (as of 2026-04-22):**
+- `act_1690330771143511` — Moroni Reis (BRL)
+- `act_2980473968915513` — Noiva S/A - Oficial (BRL)
+- `act_1067594805509822` — Agente Lucrativo (BRL)
+- `act_1618363548859143` — Leo Soares 3 (BRL)
+
+Delegation flow:
+
+```
+cmo-strategist (campaign brief + objectives + ICP + budget)
+    ├→ creative-strategist (competitive analysis, creative briefs)
+    │     ├→ direct-response-copywriter (ad copy — Hormozi angles)
+    │     │     → humanizer → reviewer (Copy Squad pipeline)
+    │     ├→ hook-specialist (hooks for video ads)
+    │     │     → reels-scriptwriter (video ad scripts)
+    │     └→ designer-agent (visual creatives)
+    ├→ traffic-manager (creates campaign structure — ALL PAUSED)
+    │     → HUMAN APPROVAL (Moroni activates)
+    │     → campaign running
+    ├→ ads-analyst (monitors performance, diagnoses issues)
+    │     → reports → cmo-strategist (strategic decisions)
+    │     → alerts → traffic-manager (operational adjustments)
+    └→ creative-strategist (feedback loop: what performed → next batch)
+```
+
+### Stack 5 — Paid Launch System (Lancamento Pago Turbo, 2026-04-22)
+
+Stack 5 adds 1 agent (`launch-strategist`, opus) that orchestrates paid launches — a low-ticket event model where ticket sales fund traffic (ROAS >= 1.0) and the main product sold at event end = pure profit (~35% net margin). Based on Leonardo Tabari's "Lancamento Pago Turbo" methodology (10 lesson transcriptions + strategic prompt).
+
+**Knowledge base** (3 files in `brain/strategy/`):
+- `low-ticket-launch-playbook.md` — complete model: revenue stack, funnel architecture, 6 scaling phases, metrics, optimization protocol
+- `andromeda-creative-portfolio.md` — post-Andromeda creative portfolio strategy (10 ad types, format mix, validation protocol)
+- `event-structures.md` — Workshop (1-day) vs Challenge/Week (7-day) templates with lesson plans, engagement systems, pitch strategy
+
+**Activation**: On-demand when Moroni initiates a paid launch for any REIS [IA] product, client, or partner campaign. Not part of day-to-day pipeline.
+
+**Integration**: `launch-strategist` sits between `cmo-strategist` (who provides the brief) and the execution agents (creative-strategist, traffic-manager, ads-analyst, Copy Squad). It's the architect; they're the builders.
 
 ### Token Optimization
 
@@ -129,19 +179,42 @@ orchestrator
     |        |                 → social-media-director (consolidation)
     |        |                   → cmo-strategist (strategic sign-off)
     |        |                     → publishing (carousels route through designer-agent first)
+    +---> META ADS SQUAD (Stack 4 — paid traffic management):
+    |        +---> ADS PIPELINE:
+    |        |     cmo-strategist (campaign brief + objectives + ICP + budget)
+    |        |       → creative-strategist (competitive analysis, creative briefs)
+    |        |         → Copy Squad (ad copy) + designer-agent (visuals)
+    |        |           → traffic-manager (campaign CRUD via meta-ads MCP — ALL PAUSED)
+    |        |             → HUMAN APPROVAL → campaign active
+    |        |               → ads-analyst (performance monitoring + diagnostics)
+    |        |                 → cmo-strategist (strategic decisions)
+    |        |                   → creative-strategist (feedback loop → next creative batch)
+    +---> PAID LAUNCH PIPELINE (Lancamento Pago Turbo — activated on demand):
+    |        +---> LAUNCH PIPELINE:
+    |        |     cmo-strategist (campaign brief + ICP + budget)
+    |        |       → launch-strategist (full launch architecture: event format, pricing, funnel)
+    |        |         ├→ offer-architect (ticket offer + main product Grand Slam Offer)
+    |        |         ├→ creative-strategist (portfolio brief for 10-50 creatives — Andromeda strategy)
+    |        |         │     → Copy Squad (ad copy per angle) + designer-agent (visuals)
+    |        |         ├→ direct-response-copywriter (landing page + checkout copy)
+    |        |         │     → humanizer → reviewer
+    |        |         ├→ hook-specialist (video hooks for creative portfolio)
+    |        |         │     → reels-scriptwriter (video ad scripts)
+    |        |         ├→ traffic-manager (6-phase scaling — ALL PAUSED)
+    |        |         │     → HUMAN APPROVAL → campaigns active
+    |        |         ├→ ads-analyst (CAC vs ticket monitoring, scaling phase progression)
+    |        |         └→ social-media-director (event content + warm-up)
     +---> education-director       (curriculum mapping, briefings, quality review)
-    |        +---> EDUCATIONAL PIPELINE:
-    |        |     education-director (briefing)
-    |        |       → roteirista-aulas (script from briefing)
-    |        |         → educational-designer (visuals from approved script)
-    |        |           → education-director (final review)
     +---> BRANDING PIPELINE (Protocolo Branding):
     |        brand strategists (concept + voice profile)
-    |          → designer-agent (design system tokens)
-    |            → creative-director (motion/visual briefs)
-    |              → vfx-motion-designer (implementation)
-    |                → brand-site-builder (brandbook documentation)
-    |                  → designer-agent + reviewer (brand audit)
+    |          → visual-research-scout (mood reports — aesthetic curation)
+    |            → design-system-extractor (Track B harvest from mood-report recommendations)
+    |              → art-director (unified brief: concept + type system + grid + shots + prompts + motion direction)
+    |                → designer-agent (design system tokens + layout specs)
+    |                  → vfx-motion-designer + logo-brand-mark-designer (implementation)
+    |                    → visual-qa-agent (aesthetic verdict: APPROVE / REVISE / REJECT)
+    |                      → brand-site-builder (brandbook documentation)
+    |                        → designer-agent + reviewer (brand audit via brand-audit-checklist)
 ```
 
 ### Branding Pipeline (Protocolo Branding)
@@ -155,11 +228,12 @@ A 10-phase pipeline activated by "Protocolo Branding". Coordinates 10 agents fro
 4. `product-brand-strategist` → naming, positioning, delivery experience
 5. Voice DNA generation → each strategist produces `.claude/voice-profiles/` as mandatory deliverable
 
-**Design Phases (6-8):**
-6. `designer-agent` → design system tokens, typography, color, spacing, components
-7. `creative-director` → motion concepts, interaction patterns, visual direction
-7b. `cinematic-art-director` → cinematic shot grammar, hero image prompts, 3D demo direction (sits between creative-director and implementation)
-8. `vfx-motion-designer` + `logo-brand-mark-designer` → production code + SVG assets (both MUST consult `brain/design-library/` first)
+**Design Phases (6-8):** — updated 2026-04-15 (Design Team Restructure)
+6. `visual-research-scout` → curates mood report(s) in `brain/design-library/mood-reports/` (20-50 annotated refs by aesthetic intent) — upstream curatorial pass
+6b. `design-system-extractor` → harvests code from mood-report recommendations into `brain/design-library/references/{site}/` (Track B mandatory: real `html.html` > 50KB + 5 companion files)
+7. `art-director` → unified creative direction brief: concept + narrative + **editorial typography system** + grid/composition + shot grammar + lighting + hero image prompts + 3D demo direction + motion language direction. Single creative head (fusion of former creative-director + cinematic-art-director).
+8. `designer-agent` + `vfx-motion-designer` + `logo-brand-mark-designer` → design specs, motion implementation, SVG assets (all MUST consult `brain/design-library/patterns/` + `references/` before implementing)
+8b. `visual-qa-agent` → subjective aesthetic verdict (APPROVE / REVISE / REJECT) comparing implementation against mood reports
 
 **Documentation & Audit (9-10):**
 9. `brand-site-builder` → interactive brandbook at reis-ia-brand/
@@ -219,7 +293,7 @@ product-brand-strategist   → brain/assets/branding/product-concepts.md        
 
 1. **`references/`** — Raw source code harvested from premium sites (HTML, CSS, JS, assets, screenshots, motion configs). Written exclusively by `design-system-extractor` via its expanded Track B mission.
 2. **`patterns/`** — Distilled reusable techniques: GSAP ScrollTrigger recipes, Three.js product spins, Lenis smooth scroll, editorial type reveals, noise grain, cinematic gradient mesh, backdrop-blur cards, magnetic cursor, clip-path reveals. Starter catalog in `patterns/SEED.md` (11 curated patterns).
-3. **`hero-prompts/`** — Cinematic image prompts for Gemini / Flux / Midjourney following the REIS [IA] skeleton (dark, architectural, electric blue accent, film grain, studio lighting). Written by `cinematic-art-director`.
+3. **`hero-prompts/`** — Cinematic image prompts for Gemini / Flux / Midjourney following the REIS [IA] skeleton (dark, architectural, electric blue accent, film grain, studio lighting). Written by `art-director`.
 4. **`iterations/`** — Tadewald-style exploration workspace for numbered HTML variants (`design_system.html`, `design_system2.html`, ...) before promoting a direction to production.
 
 **MANDATORY for `vfx-motion-designer`**: before implementing any motion, consult `patterns/` and `references/` first. Reuse before reinvent. Enforced in the agent definition as the first workflow step.
@@ -229,6 +303,18 @@ product-brand-strategist   → brain/assets/branding/product-concepts.md        
 **Approved premium stack** (OSS-first): GSAP 3 + ScrollTrigger + SplitText, Three.js + React Three Fiber + Drei, Lenis, Framer Motion, Spline (embed), Canvas 2D / custom WebGL shaders. Use with critério — each added dependency is weight.
 
 See `brain/design-library/README.md` for full rules, ownership, and consumption patterns.
+
+### Design Team Restructure — 2026-04-15
+
+Phase 1 of the Design Team Audit restructured the creative head of the design pipeline:
+
+- **Merged** `creative-director` + `cinematic-art-director` → single `art-director` (opus). One unified brief covers concept, narrative, editorial typography system, grid/composition, shot grammar, lighting, hero image prompts, 3D demo direction, and motion language direction. The old two-director split caused handoff gaps and duplicated ownership of typography/motion decisions.
+- **Added** `visual-research-scout` (sonnet) — continuous aesthetic curation from Awwwards, FWA, Typewolf, Land-book, Godly. Produces mood reports at `brain/design-library/mood-reports/` by aesthetic intent (not technology). Upstream of design-system-extractor — scout discovers, extractor harvests.
+- **Added** `visual-qa-agent` (opus) — subjective aesthetic judge. Third quality layer (copy QA → brand audit checklist → visual QA). Compares implementations against curated mood-report references and renders APPROVE / REVISE / REJECT with aesthetic prose, not checklists. Anti-mediocrity filter.
+- **Upgraded** `design-system-extractor` — BLOCKING rule: Track B harvests must contain a real `html.html` > 50KB captured via WebFetch/Playwright plus 5 mandatory companion files (`design-tokens.md`, `motion-config.md`, `stack-detected.md`, `observations.md`, `suggested-patterns.md`). Skeleton/README-only harvests are prohibited.
+- **Upgraded** `vfx-motion-designer` — added "2026 Techniques" section covering native platform primitives: CSS `animation-timeline: scroll()`, View Transitions API, variable fonts + OpenType features, custom WebGL shaders beyond gradient mesh, CSS `@scope`, subgrid, `color-mix()`. Rule of engagement: check native primitives before adding JS dependencies.
+
+Phase 1 is structural only. Phase 2 (mood-report collection + real extractor harvests) and subsequent phases are pending Moroni's approval.
 
 ## Tech Stack
 

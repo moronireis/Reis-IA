@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criativos AGENTES [IA] — Roteiros + Análise Competitiva</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000; --bg-2: #0A0A0A; --card: #111; --card-2: #161616;
+      --blue: #4A90FF; --blue-rgb: 74,144,255; --green: #22C55E; --red: #EF4444; --amber: #EAB308; --purple: #A855F7; --cyan: #06B6D4;
+      --text: #fff; --text-dim: rgba(255,255,255,0.7); --text-muted: rgba(255,255,255,0.45);
+      --border: rgba(255,255,255,0.07); --border-v: rgba(255,255,255,0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: #8DC4FF; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* Nav */
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { font-weight: 300; font-size: 16px; color: var(--text-dim); }
+    .nav-brand span { color: var(--blue); font-weight: 600; }
+    .nav-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    .nav-links a { font-size: 12px; color: var(--text-muted); padding: 4px 12px; border-radius: 6px; transition: all 0.2s; }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+    /* Hero */
+    .hero { padding: 80px 0 60px; border-bottom: 1px solid var(--border); }
+    .hero-badge { display: inline-flex; padding: 4px 14px; background: rgba(var(--blue-rgb),0.1); border: 1px solid rgba(var(--blue-rgb),0.25); border-radius: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 12px; }
+    .hero p { font-size: 17px; color: var(--text-dim); max-width: 700px; line-height: 1.7; }
+    .date { font-size: 13px; color: var(--text-muted); margin-top: 12px; font-family: 'JetBrains Mono', monospace; }
+
+    /* Sections */
+    section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+    h2 { font-size: 22px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+    h2 .num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: var(--blue); color: #000; border-radius: 6px; font-size: 14px; font-weight: 700; }
+    h3 { font-size: 16px; font-weight: 600; margin: 24px 0 12px; }
+
+    /* Cards */
+    .card { background: var(--card); border: 1px solid var(--border-v); border-radius: 12px; padding: 28px; margin-bottom: 20px; transition: border-color 0.2s; }
+    .card:hover { border-color: rgba(var(--blue-rgb),0.25); }
+
+    /* Script card */
+    .script-card { border-left: 3px solid var(--blue); }
+    .script-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .script-title { font-size: 18px; font-weight: 700; }
+    .script-meta { display: flex; gap: 8px; }
+    .tag { display: inline-flex; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 600; letter-spacing: 0.04em; }
+    .tag-blue { background: rgba(var(--blue-rgb),0.1); color: var(--blue); }
+    .tag-green { background: rgba(34,197,94,0.1); color: var(--green); }
+    .tag-amber { background: rgba(245,158,11,0.1); color: var(--amber); }
+    .tag-red { background: rgba(239,68,68,0.1); color: var(--red); }
+    .tag-purple { background: rgba(168,85,247,0.1); color: var(--purple); }
+    .tag-cyan { background: rgba(6,182,212,0.1); color: var(--cyan); }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { text-align: left; padding: 10px 12px; color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border-v); font-family: 'JetBrains Mono', monospace; }
+    td { padding: 12px; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: top; line-height: 1.6; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* Hooks list */
+    .hooks-list { list-style: none; counter-reset: hook; }
+    .hooks-list li { counter-increment: hook; display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 15px; color: var(--text-dim); }
+    .hooks-list li:last-child { border-bottom: none; }
+    .hooks-list li::before { content: counter(hook, decimal-leading-zero); font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--blue); flex-shrink: 0; min-width: 24px; padding-top: 3px; }
+    .hooks-list li strong { color: var(--text); }
+
+    /* Priority badges */
+    .priority-high { color: var(--green); font-weight: 600; }
+    .priority-medium { color: var(--amber); font-weight: 600; }
+    .priority-low { color: var(--text-muted); }
+
+    /* Competitor creative */
+    .creative-pattern { display: flex; gap: 16px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .creative-pattern:last-child { border-bottom: none; }
+    .creative-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--blue); min-width: 120px; flex-shrink: 0; padding-top: 2px; }
+    .creative-value { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+
+    /* Pending section */
+    .pending-box { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.15); border-left: 3px solid var(--red); border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 20px; }
+    .pending-box h4 { color: var(--red); font-size: 14px; margin-bottom: 8px; }
+    .pending-box p { font-size: 14px; color: var(--text-dim); line-height: 1.7; }
+
+    /* Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 768px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .script-header { flex-direction: column; align-items: flex-start; }
+      nav { flex-direction: column; gap: 8px; align-items: flex-start; }
+    }
+
+    /* Footer */
+    footer { padding: 32px 0; text-align: center; font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">AGENTES <span>[IA]</span> &mdash; Criativos</div>
+  <div class="nav-links">
+    <a href="#roteiros">Roteiros</a>
+    <a href="#hooks">Hooks</a>
+    <a href="#concorrente">Concorrente</a>
+    <a href="#meus-criativos">Meus Criativos</a>
+    <a href="#matriz">Matriz de Testes</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">AGENTES [IA] &mdash; Creative Playbook</div>
+    <h1>Roteiros de Criativos + Análise Competitiva</h1>
+    <p>6 roteiros prontos para gravar, 10 hooks para testar, análise dos criativos do concorrente (Xquads/Rafa Grandi), e espaço para análise dos seus vídeos gravados.</p>
+    <div class="date">Atualizado: 2026-04-25</div>
+  </div>
+
+  <!-- ================================================================
+       ROTEIROS
+       ================================================================ -->
+  <section id="roteiros">
+    <h2><span class="num">1</span> Roteiros Prontos para Gravar</h2>
+
+    <!-- ROTEIRO 1 -->
+    <div class="card script-card" style="border-left-color: var(--blue);">
+      <div class="script-header">
+        <div class="script-title">Roteiro 1 &mdash; "Time Inteiro por R$47"</div>
+        <div class="script-meta"><span class="tag tag-blue">30s</span><span class="tag tag-green">PRIORIDADE ALTA</span></div>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;"><strong style="color:var(--amber);">Ângulo:</strong> Preço vs Valor &mdash; Ancorar o custo de um time real (R$21K/mês) e contrastar com R$47</p>
+      <table>
+        <thead><tr><th>Tempo</th><th>Visual</th><th>Fala (Moroni)</th><th>Overlay</th></tr></thead>
+        <tbody>
+          <tr><td>0-3s</td><td>Moroni olhando pra câmera, fundo escuro</td><td>"Quanto custa montar um time de marketing completo?"</td><td>QUANTO CUSTA?</td></tr>
+          <tr><td>3-8s</td><td>Números aparecendo na tela</td><td>"Copywriter: 5 mil. Estrategista: 8 mil. Designer: 5 mil. Gestor de tráfego: 3 mil. Total: 21 mil por mês."</td><td>R$21K/MÊS</td></tr>
+          <tr><td>8-13s</td><td>Corte seco &mdash; Moroni mais perto</td><td>"E se eu te falar que eu montei esse time inteiro com agentes de IA &mdash; e você pode ter acesso por R$47?"</td><td>R$47 &mdash; PAGAMENTO ÚNICO</td></tr>
+          <tr><td>13-20s</td><td>Tela do Claude Code &mdash; terminal com agentes</td><td>"São 40+ agentes especializados. Copy, design, tráfego, branding, estratégia. Não é prompt genérico. Cada um tem framework, metodologia e personalidade própria."</td><td>40+ AGENTES &middot; 7 SQUADS</td></tr>
+          <tr><td>20-27s</td><td>Volta pra Moroni</td><td>"Eu uso esses agentes todo dia no meu negócio. R$300 mil em contratos de IA. Agora abri o acesso por um preço que qualquer pessoa pode pagar."</td><td>TESTADOS EM R$300K+</td></tr>
+          <tr><td>27-30s</td><td>Tela com CTA</td><td>"Link na bio. R$47. Garantia de 7 dias."</td><td>LINK NA BIO &rarr; R$47</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ROTEIRO 2 -->
+    <div class="card script-card" style="border-left-color: var(--green);">
+      <div class="script-header">
+        <div class="script-title">Roteiro 2 &mdash; "ChatGPT vs Agentes"</div>
+        <div class="script-meta"><span class="tag tag-blue">25s</span><span class="tag tag-green">PRIORIDADE ALTA</span></div>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;"><strong style="color:var(--amber);">Ângulo:</strong> Diferenciação &mdash; Posicionar ChatGPT genérico como o inimigo</p>
+      <table>
+        <thead><tr><th>Tempo</th><th>Visual</th><th>Fala (Moroni)</th><th>Overlay</th></tr></thead>
+        <tbody>
+          <tr><td>0-3s</td><td>Moroni falando direto</td><td>"Você ainda tá pedindo pro ChatGPT escrever sua copy?"</td><td>PARA DE USAR CHATGPT</td></tr>
+          <tr><td>3-8s</td><td>Split: ChatGPT genérico vs terminal com agente</td><td>"O ChatGPT te dá a mesma resposta que dá pra todo mundo. Sem método. Sem framework. Genérico."</td><td>GENÉRICO vs ESPECIALISTA</td></tr>
+          <tr><td>8-15s</td><td>Tela do Claude Code com Copy Squad</td><td>"Agora imagina ter um copywriter com framework Hormozi embutido. Um estrategista que analisa mercado de verdade. Um designer que entrega specs nível Apple."</td><td>HORMOZI &middot; AIDA &middot; PAS</td></tr>
+          <tr><td>15-22s</td><td>Volta pra Moroni</td><td>"São 40+ agentes organizados em 7 squads. Cada um é um profissional virtual com experiência embutida. Não é prompt &mdash; é um time."</td><td>7 SQUADS ESPECIALIZADOS</td></tr>
+          <tr><td>22-25s</td><td>CTA na tela</td><td>"R$47. Link na bio. Videoaulas pra instalar em 30 minutos."</td><td>R$47 &rarr; LINK NA BIO</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ROTEIRO 3 -->
+    <div class="card script-card" style="border-left-color: var(--red);">
+      <div class="script-header">
+        <div class="script-title">Roteiro 3 &mdash; "Demo Ao Vivo"</div>
+        <div class="script-meta"><span class="tag tag-blue">45s</span><span class="tag tag-green">PRIORIDADE ALTA</span></div>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;"><strong style="color:var(--amber);">Ângulo:</strong> Prova / Demonstração &mdash; Mostrar os agentes funcionando em tempo real</p>
+      <table>
+        <thead><tr><th>Tempo</th><th>Visual</th><th>Fala (Moroni)</th><th>Overlay</th></tr></thead>
+        <tbody>
+          <tr><td>0-3s</td><td>Tela do terminal &mdash; cursor piscando</td><td>"Deixa eu te mostrar o que acontece quando você pede pro time de IA criar uma página de vendas."</td><td>DEMO AO VIVO</td></tr>
+          <tr><td>3-10s</td><td>Digitando: claude "crie uma página de vendas para produto de R$497 usando framework Hormozi"</td><td>"Eu abro o Claude Code. Peço uma página de vendas com framework Hormozi. Olha o que acontece."</td><td>&mdash;</td></tr>
+          <tr><td>10-20s</td><td>Terminal: ativando Copy Squad, framework Grand Slam Offer, pesquisa concluída, copy gerada</td><td>"O Copy Squad ativa automaticamente. Usa o framework Grand Slam Offer. Faz pesquisa de mercado. Gera a copy. Humaniza. Revisa. Tudo sozinho."</td><td>PIPELINE AUTOMÁTICO</td></tr>
+          <tr><td>20-30s</td><td>Resultado: página pronta no browser</td><td>"Em 12 minutos: página completa. Copy profissional. Design. Código. Pronta pra publicar."</td><td>12 MIN &rarr; PÁGINA PRONTA</td></tr>
+          <tr><td>30-40s</td><td>Moroni na câmera</td><td>"Isso não é teoria. Eu uso todo dia. R$300 mil em projetos entregues com esses agentes. Agora você pode ter o mesmo time por R$47."</td><td>R$300K+ EM PROJETOS</td></tr>
+          <tr><td>40-45s</td><td>CTA</td><td>"Link na bio. Garantia de 7 dias. Se não valer, devolvo 100%."</td><td>GARANTIA 7 DIAS &rarr; LINK NA BIO</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ROTEIRO 4 -->
+    <div class="card script-card" style="border-left-color: var(--amber);">
+      <div class="script-header">
+        <div class="script-title">Roteiro 4 &mdash; "Horas vs Minutos"</div>
+        <div class="script-meta"><span class="tag tag-blue">20s</span><span class="tag tag-amber">PRIORIDADE MÉDIA</span></div>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;"><strong style="color:var(--amber);">Ângulo:</strong> Economia de Tempo &mdash; Contraste dramático de tempo gasto</p>
+      <table>
+        <thead><tr><th>Tempo</th><th>Visual</th><th>Fala (Moroni)</th><th>Overlay</th></tr></thead>
+        <tbody>
+          <tr><td>0-3s</td><td>Moroni frustrado olhando tela</td><td>"Quanto tempo você gasta por semana fazendo copy, pesquisa, design, estratégia?"</td><td>QUANTO TEMPO?</td></tr>
+          <tr><td>3-8s</td><td>Timer acelerando na tela</td><td>"10 horas? 20? 30? E se um time de IA fizesse tudo isso em minutos?"</td><td>HORAS &rarr; MINUTOS</td></tr>
+          <tr><td>8-15s</td><td>Tela rápida com outputs dos agentes</td><td>"Página de vendas: 12 minutos. Pesquisa de mercado: 8 minutos. Identidade de marca: 15 minutos. Copy de email: 5 minutos."</td><td>12min &middot; 8min &middot; 15min &middot; 5min</td></tr>
+          <tr><td>15-20s</td><td>Moroni sorrindo + CTA</td><td>"40+ agentes. R$47. Link na bio."</td><td>40+ AGENTES &rarr; R$47</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ROTEIRO 5 -->
+    <div class="card script-card" style="border-left-color: var(--purple);">
+      <div class="script-header">
+        <div class="script-title">Roteiro 5 &mdash; "Não É Prompt"</div>
+        <div class="script-meta"><span class="tag tag-blue">15s</span><span class="tag tag-green">PRIORIDADE ALTA</span></div>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;"><strong style="color:var(--amber);">Ângulo:</strong> Hook Forte / Formato Rápido &mdash; Pattern interrupt nos primeiros 2 segundos</p>
+      <table>
+        <thead><tr><th>Tempo</th><th>Visual</th><th>Fala (Moroni)</th><th>Overlay</th></tr></thead>
+        <tbody>
+          <tr><td>0-2s</td><td>Close no rosto, energia alta</td><td>"Isso aqui NÃO é prompt."</td><td>NÃO É PROMPT.</td></tr>
+          <tr><td>2-6s</td><td>Tela do terminal com squads</td><td>"É um time de 40 profissionais de IA. Copywriter. Designer. Estrategista. Gestor de tráfego."</td><td>40+ PROFISSIONAIS DE IA</td></tr>
+          <tr><td>6-10s</td><td>Output rápido aparecendo</td><td>"Cada um com framework próprio. Trabalhando 24 horas por dia."</td><td>24H POR DIA &middot; R$47</td></tr>
+          <tr><td>10-15s</td><td>CTA direto</td><td>"Link na bio. R$47. Instala em 30 minutos."</td><td>&rarr; LINK NA BIO</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ROTEIRO 6 -->
+    <div class="card script-card" style="border-left-color: var(--cyan);">
+      <div class="script-header">
+        <div class="script-title">Roteiro 6 &mdash; "Antes vs Depois"</div>
+        <div class="script-meta"><span class="tag tag-blue">30s</span><span class="tag tag-amber">PRIORIDADE MÉDIA</span></div>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;"><strong style="color:var(--amber);">Ângulo:</strong> Transformação &mdash; Antes/Depois visual com tempos reais</p>
+      <table>
+        <thead><tr><th>Tempo</th><th>Visual</th><th>Fala (Moroni)</th><th>Overlay</th></tr></thead>
+        <tbody>
+          <tr><td>0-5s</td><td>Split screen: "ANTES" cinza / "DEPOIS" azul</td><td>"Antes: 3 horas pra escrever uma copy mediana no ChatGPT."</td><td>ANTES: 3 HORAS</td></tr>
+          <tr><td>5-10s</td><td>"DEPOIS" ganha destaque</td><td>"Depois: 12 minutos. Copy profissional com framework Hormozi. Humanizada. Revisada."</td><td>DEPOIS: 12 MINUTOS</td></tr>
+          <tr><td>10-15s</td><td>Antes: pesquisa Google 2 dias</td><td>"Antes: 2 dias pesquisando mercado no Google."</td><td>ANTES: 2 DIAS</td></tr>
+          <tr><td>15-20s</td><td>Depois: relatório pronto na tela</td><td>"Depois: relatório completo com gaps, oportunidades e posicionamento em 8 minutos."</td><td>DEPOIS: 8 MINUTOS</td></tr>
+          <tr><td>20-25s</td><td>Moroni na câmera</td><td>"A diferença? Um time de 40+ agentes de IA especializados. Trabalhando pra você."</td><td>40+ AGENTES ESPECIALIZADOS</td></tr>
+          <tr><td>25-30s</td><td>CTA</td><td>"R$47. Pagamento único. Link na bio."</td><td>R$47 &rarr; LINK NA BIO</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       HOOKS
+       ================================================================ -->
+  <section id="hooks">
+    <h2><span class="num">2</span> 10 Hooks para Testar (primeiros 3 segundos)</h2>
+    <div class="card">
+      <ol class="hooks-list">
+        <li><strong>"Quanto custa montar um time de marketing completo?"</strong> &mdash; ângulo preço</li>
+        <li><strong>"Você ainda tá pedindo pro ChatGPT escrever sua copy?"</strong> &mdash; ângulo diferenciação</li>
+        <li><strong>"Isso aqui NÃO é prompt."</strong> &mdash; ângulo choque / pattern interrupt</li>
+        <li><strong>"Eu montei um time de 40 profissionais por R$47."</strong> &mdash; ângulo curiosidade</li>
+        <li><strong>"3 horas pra escrever uma copy? Eu faço em 12 minutos."</strong> &mdash; ângulo tempo</li>
+        <li><strong>"Seu concorrente já tá usando agentes de IA. Você ainda tá no ChatGPT."</strong> &mdash; ângulo FOMO</li>
+        <li><strong>"Deixa eu te mostrar o que acontece quando eu peço pro meu time de IA..."</strong> &mdash; ângulo demo</li>
+        <li><strong>"Copywriter de R$5 mil por mês? Eu tenho um que trabalha 24h por R$47."</strong> &mdash; ângulo comparação</li>
+        <li><strong>"Esse time faturou R$300 mil em projetos. E agora custa R$47."</strong> &mdash; ângulo prova</li>
+        <li><strong>"Para tudo. Eu preciso te mostrar uma coisa."</strong> &mdash; ângulo pattern interrupt</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       CONCORRENTE
+       ================================================================ -->
+  <section id="concorrente">
+    <h2><span class="num">3</span> Análise de Criativos do Concorrente (Xquads / Rafa Grandi)</h2>
+
+    <div class="card">
+      <h3 style="margin-top:0;color:var(--blue);">Padrões de Ads Identificados</h3>
+      <div class="creative-pattern"><span class="creative-label">HOOK PRINCIPAL</span><span class="creative-value">"As maiores mentes do [X] trabalhando para você" &mdash; rotating word no vídeo (marketing, copy, tráfego, branding, vendas, estratégia, storytelling)</span></div>
+      <div class="creative-pattern"><span class="creative-label">FORMATO</span><span class="creative-value">Vídeo 9:16 vertical (Reels/Stories) &mdash; demo real no Claude Code no terminal. Player Vturb na LP.</span></div>
+      <div class="creative-pattern"><span class="creative-label">ÂNGULO 1</span><span class="creative-value"><strong>Quantidade:</strong> "136 agentes, 11 squads, 94 tasks" &mdash; números grandes para impressionar</span></div>
+      <div class="creative-pattern"><span class="creative-label">ÂNGULO 2</span><span class="creative-value"><strong>Autoridade:</strong> "Clonados das maiores referências" &mdash; Gary Halbert, David Ogilvy, Alex Hormozi, Pedro Sobral</span></div>
+      <div class="creative-pattern"><span class="creative-label">ÂNGULO 3</span><span class="creative-value"><strong>Preço:</strong> "R$67 pagamento único" vs custo de time real &mdash; compra por impulso</span></div>
+      <div class="creative-pattern"><span class="creative-label">ÂNGULO 4</span><span class="creative-value"><strong>Demo:</strong> Tela do terminal com agentes executando &mdash; "veja em ação" &mdash; prova visual</span></div>
+      <div class="creative-pattern"><span class="creative-label">CTA</span><span class="creative-value">"Quero Acesso ao Xquads" / "QUERO MEU ACESSO AGORA" &mdash; urgência + botão com ícone play</span></div>
+      <div class="creative-pattern"><span class="creative-label">TRUST BARS</span><span class="creative-value">Garantia 7 dias + Pagamento seguro + Acesso imediato (repetidos no hero, pricing e CTA final)</span></div>
+      <div class="creative-pattern"><span class="creative-label">TRACKING</span><span class="creative-value">UTM passthrough (ig/paid) + FB Pixel 1290652196087643 + ViewContent value:R$67</span></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;color:var(--amber);">O que Copiar (adaptado) vs O que Evitar</h3>
+      <div class="grid-2">
+        <div>
+          <h3 style="color:var(--green);font-size:14px;">Adaptar para Nós</h3>
+          <ul style="list-style:none;font-size:14px;color:var(--text-dim);line-height:2;">
+            <li>&#9656; Demo ao vivo no terminal (prova visual forte)</li>
+            <li>&#9656; Vídeo vertical 9:16 como formato principal</li>
+            <li>&#9656; Ancoragem de preço (time real vs R$47)</li>
+            <li>&#9656; Rotating word no hero da LP</li>
+            <li>&#9656; Sticky price card ao lado das entregas</li>
+            <li>&#9656; Garantia como seção dedicada (não enterrada)</li>
+            <li>&#9656; Ticker/marquee com proof points</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="color:var(--red);font-size:14px;">Evitar / Diferenciar</h3>
+          <ul style="list-style:none;font-size:14px;color:var(--text-dim);line-height:2;">
+            <li>&#9656; Nomes de "gurus clonados" (Halbert, Ogilvy) &mdash; questionável</li>
+            <li>&#9656; Verde neon (#D1FF02) &mdash; nossa cor é azul #4A90FF</li>
+            <li>&#9656; 136 agentes inflados &mdash; nossos 40+ são reais e testados</li>
+            <li>&#9656; "xquads | by raxo" &mdash; branding fraco, nosso é REIS [IA]</li>
+            <li>&#9656; Sem prova de uso real &mdash; nós temos R$300K+ verificável</li>
+            <li>&#9656; Timer falso / escassez fabricada</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;color:var(--blue);">Nosso Diferencial vs Xquads</h3>
+      <table>
+        <thead><tr><th>Critério</th><th>Xquads</th><th>AGENTES [IA]</th><th>Vantagem</th></tr></thead>
+        <tbody>
+          <tr><td>Preço</td><td>R$67</td><td>R$47</td><td style="color:var(--green)">Nós &mdash; 30% mais barato</td></tr>
+          <tr><td>Produção real</td><td>Sem comprovação</td><td>R$300K+ em contratos</td><td style="color:var(--green)">Nós &mdash; prova concreta</td></tr>
+          <tr><td>Pipelines</td><td>Tasks individuais</td><td>Pipelines completos (5 agentes em sequência)</td><td style="color:var(--green)">Nós &mdash; workflow integrado</td></tr>
+          <tr><td>Quantidade</td><td>136 agentes / 11 squads</td><td>40+ agentes / 7 squads</td><td style="color:var(--red)">Eles &mdash; número maior</td></tr>
+          <tr><td>Referências</td><td>Nomes famosos "clonados"</td><td>Frameworks (Hormozi, AIDA, PAS)</td><td>Neutro &mdash; abordagens diferentes</td></tr>
+          <tr><td>Suporte</td><td>Email</td><td>WhatsApp 30 dias</td><td style="color:var(--green)">Nós &mdash; mais pessoal</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       MEUS CRIATIVOS
+       ================================================================ -->
+  <section id="meus-criativos">
+    <h2><span class="num">4</span> Análise dos Meus Criativos Gravados</h2>
+    <p style="color:var(--text-dim);margin-bottom:24px;">14 vídeos gravados em 14/04/2026 (~15s cada). Transcritos via Whisper. Todos são variações do mesmo conceito: apresentação dos 40+ agentes.</p>
+
+    <!-- DIAGNÓSTICO GERAL -->
+    <div class="card" style="border-left:3px solid var(--amber);">
+      <h3 style="margin-top:0;color:var(--amber);">Diagnóstico Geral &mdash; Os 14 Criativos</h3>
+      <table>
+        <thead><tr><th>Critério</th><th>Score</th><th>Diagnóstico</th></tr></thead>
+        <tbody>
+          <tr><td>Hook (0-3s)</td><td style="color:var(--red);font-weight:700;">2/5</td><td>Todos começam igual: "Mais de 40 agentes aqui..." &mdash; não tem pattern interrupt, não prende atenção. O viewer não tem razão para parar de scrollar.</td></tr>
+          <tr><td>Clareza da proposta</td><td style="color:var(--amber);font-weight:700;">3/5</td><td>Fica claro que são agentes de IA, mas não explica O QUE fazem de diferente do ChatGPT ou POR QUE o viewer deveria se importar.</td></tr>
+          <tr><td>Prova visual</td><td style="color:var(--amber);font-weight:700;">3/5</td><td>Parece mostrar a tela dos squads no Claude Code &mdash; bom, mas poderia mostrar um agente EXECUTANDO algo (output real).</td></tr>
+          <tr><td>Diferenciação</td><td style="color:var(--red);font-weight:700;">1/5</td><td>Nenhum vídeo posiciona contra ChatGPT/IA genérica. Nenhum menciona frameworks (Hormozi, AIDA). Soa genérico.</td></tr>
+          <tr><td>Ancoragem de preço</td><td style="color:var(--red);font-weight:700;">1/5</td><td>Nenhum vídeo menciona preço (R$47) ou contrasta com custo de time real (R$21K/mês). Oportunidade enorme perdida.</td></tr>
+          <tr><td>CTA</td><td style="color:var(--red);font-weight:700;">1/5</td><td>Nenhum vídeo tem CTA claro ("link na bio", "R$47", "garantia 7 dias"). Os vídeos terminam sem direção.</td></tr>
+          <tr><td>Energia / Confiança</td><td style="color:var(--amber);font-weight:700;">3/5</td><td>Tom natural e conversacional &mdash; bom. Mas falta intensidade nos primeiros 3 segundos.</td></tr>
+          <tr><td>Duração</td><td style="color:var(--green);font-weight:700;">5/5</td><td>~15s cada &mdash; perfeito para Reels/Stories. Formato certo.</td></tr>
+          <tr><td style="font-weight:700;color:var(--text);">SCORE GERAL</td><td style="color:var(--amber);font-weight:700;">2.4/5</td><td style="color:var(--text);">Base sólida (formato, tom, visual), mas falta hook forte, CTA, preço e diferenciação.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PROBLEMAS IDENTIFICADOS -->
+    <div class="card" style="border-left:3px solid var(--red);">
+      <h3 style="margin-top:0;color:var(--red);">5 Problemas Críticos</h3>
+      <ol style="list-style:decimal;padding-left:20px;font-size:14px;color:var(--text-dim);line-height:2.2;">
+        <li><strong style="color:var(--text);">Todos os 14 vídeos são a mesma coisa.</strong> Mesmo hook, mesma estrutura, mesma mensagem. Não tem variação de ângulo. É a mesma frase ("mais de 40 agentes") repetida 14 vezes com palavras levemente diferentes.</li>
+        <li><strong style="color:var(--text);">Sem hook nos primeiros 3 segundos.</strong> Nenhum vídeo abre com uma pergunta, choque, ou pattern interrupt. Começa direto listando features ("40 agentes, design, copy..."). O viewer scrolla antes de entender o valor.</li>
+        <li><strong style="color:var(--text);">Sem CTA.</strong> Nenhum vídeo diz "link na bio", "R$47", ou "garantia 7 dias". O viewer assiste, acha interessante, e não sabe o que fazer.</li>
+        <li><strong style="color:var(--text);">Sem ancoragem de preço.</strong> O maior argumento de venda (R$47 vs R$21K/mês de time real) não aparece em nenhum vídeo.</li>
+        <li><strong style="color:var(--text);">Sem diferenciação.</strong> Nenhum vídeo explica por que isso é diferente de usar ChatGPT. "Agentes de IA" é genérico &mdash; o viewer não entende o que muda.</li>
+      </ol>
+    </div>
+
+    <!-- O QUE FUNCIONA -->
+    <div class="card" style="border-left:3px solid var(--green);">
+      <h3 style="margin-top:0;color:var(--green);">O que Funciona (manter)</h3>
+      <ul style="list-style:none;font-size:14px;color:var(--text-dim);line-height:2.2;">
+        <li>&#9656; <strong style="color:var(--text);">Formato perfeito</strong> &mdash; 15s vertical, ideal para Reels/Stories</li>
+        <li>&#9656; <strong style="color:var(--text);">Tom conversacional</strong> &mdash; natural, não forçado, não "guru"</li>
+        <li>&#9656; <strong style="color:var(--text);">Mostra a tela real</strong> &mdash; prova visual dos squads no Claude Code</li>
+        <li>&#9656; <strong style="color:var(--text);">Talking head + screen</strong> &mdash; formato com maior retention no Reels</li>
+        <li>&#9656; <strong style="color:var(--text);">Menção a múltiplas áreas</strong> &mdash; design, copy, tráfego, apps &mdash; mostra amplitude</li>
+      </ul>
+    </div>
+
+    <!-- TRANSCRIÇÕES AGRUPADAS -->
+    <div class="card">
+      <h3 style="margin-top:0;color:var(--blue);">Transcrições dos 14 Vídeos (resumo agrupado)</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Todos ~15s. Agrupados por variação de abertura.</p>
+
+      <h3 style="color:var(--text-dim);font-size:14px;">Grupo A &mdash; "Mais de 40 agentes aqui..." (8 vídeos)</h3>
+      <div style="background:var(--bg-2);padding:16px;border-radius:8px;margin-bottom:16px;font-size:13px;color:var(--text-muted);line-height:1.8;">
+        <p><strong style="color:var(--text-dim);">#1:</strong> "Mais de 40 agentes aqui, mais de 40 funcionários que vai ter hoje, design, criação de aplicativos, gestão de tráfico, tudo pronto aqui pra você. Todos os agentes trabalhando, que nem funcionários, mas assim 24 horas por dia, sete dias por semana."</p>
+        <p style="margin-top:8px;"><strong style="color:var(--text-dim);">#3:</strong> "Mais de 40 agente pra trabalhar pra você, design, criação de aplicativos, tráfego pago, edição, criação de conteúdo e tudo mais..."</p>
+        <p style="margin-top:8px;"><strong style="color:var(--text-dim);">#5:</strong> "Mais de 40 agentes de IA pra você utilizar hoje, agentes de design, de copy, de tráfego, e agentes pra desenvolver aplicativos, tudo pronto aqui..."</p>
+        <p style="margin-top:8px;"><em style="color:var(--text-muted);">+ 5 variações similares (#6, #7, #9, #12, #13)</em></p>
+      </div>
+
+      <h3 style="color:var(--text-dim);font-size:14px;">Grupo B &mdash; "Agora você pode ter..." (4 vídeos)</h3>
+      <div style="background:var(--bg-2);padding:16px;border-radius:8px;margin-bottom:16px;font-size:13px;color:var(--text-muted);line-height:1.8;">
+        <p><strong style="color:var(--text-dim);">#2:</strong> "Agora você pode ter mais de 40 agentes para sua operação, agentes de design, cópia, desenvolvimento de aplicativos, tudo pronto aqui..."</p>
+        <p style="margin-top:8px;"><strong style="color:var(--text-dim);">#10:</strong> "Agora você pode ter mais de 40 agentes de IA para trabalhar para você, agentes de design, copy, tráfego, criação de aplicativo..."</p>
+        <p style="margin-top:8px;"><em style="color:var(--text-muted);">+ 2 variações similares (#4, #11)</em></p>
+      </div>
+
+      <h3 style="color:var(--text-dim);font-size:14px;">Grupo C &mdash; Hook diferenciado (2 vídeos) &#9733;</h3>
+      <div style="background:var(--bg-2);padding:16px;border-radius:8px;margin-bottom:8px;font-size:13px;color:var(--text-muted);line-height:1.8;border:1px solid rgba(var(--blue-rgb),0.15);">
+        <p><strong style="color:var(--green);">#8 (MELHOR):</strong> "Todo mundo falando de Claude Code, mas aqui eu sou honesto, mais de 40 agentes, 40 funcionários pra você trabalhar hoje, time de tráfego, design, criação de site, aplicativo, tudo pronto hoje pra você ter na sua operação. 24 horas, 7 dias por semana."</p>
+        <p style="margin-top:8px;"><strong style="color:var(--blue);">#14:</strong> "Um Vandeclado de Code, mas aqui 40 agentes mais pra você usar de design, criação de aplicativo, criação de software..."</p>
+      </div>
+      <p style="font-size:12px;color:var(--blue);">&#9733; O vídeo #8 é o melhor &mdash; abre com "Todo mundo falando de Claude Code, mas..." (pattern interrupt + referência ao trend). Usar essa estrutura como base.</p>
+    </div>
+
+    <!-- SUGESTÕES DE NOVAS VARIAÇÕES -->
+    <div class="card" style="border-left:3px solid var(--blue);">
+      <h3 style="margin-top:0;color:var(--blue);">6 Novas Variações para Regravar (baseado nos seus + concorrente)</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Mesmo formato (15s, talking head + tela), mas com hooks diferentes, CTA, e preço.</p>
+
+      <div style="background:var(--bg-2);padding:20px;border-radius:8px;margin-bottom:16px;border:1px solid var(--border);">
+        <p style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px;">VARIAÇÃO A &mdash; PREÇO CHOQUE</p>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">"Quanto custa um time de marketing? Copywriter: 5 mil. Designer: 5 mil. Estrategista: 8 mil. <em>(mostra tela com squads)</em> Eu montei esse time inteiro com agentes de IA. E custa R$47. Quarenta e sete reais. Link na bio. Garantia de 7 dias."</p>
+      </div>
+
+      <div style="background:var(--bg-2);padding:20px;border-radius:8px;margin-bottom:16px;border:1px solid var(--border);">
+        <p style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px;">VARIAÇÃO B &mdash; ANTI-CHATGPT</p>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">"Você ainda tá pedindo pro ChatGPT escrever sua copy? <em>(pausa, olha pra câmera)</em> Isso aqui não é prompt. É um time de 40 profissionais de IA. Cada um com framework próprio. Copy, design, tráfego, branding. <em>(mostra tela)</em> R$47. Link na bio."</p>
+      </div>
+
+      <div style="background:var(--bg-2);padding:20px;border-radius:8px;margin-bottom:16px;border:1px solid var(--border);">
+        <p style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px;">VARIAÇÃO C &mdash; DEMO RÁPIDA</p>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">"Olha o que acontece quando eu peço pro meu time de IA criar uma página de vendas. <em>(tela: digita comando, Copy Squad ativa, output aparece)</em> 12 minutos. Página completa. Copy profissional. R$47 pra ter esse time. Link na bio."</p>
+      </div>
+
+      <div style="background:var(--bg-2);padding:20px;border-radius:8px;margin-bottom:16px;border:1px solid var(--border);">
+        <p style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px;">VARIAÇÃO D &mdash; TREND + HONESTIDADE (baseado no seu #8)</p>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">"Todo mundo falando de Claude Code. Mas ninguém te fala o que realmente funciona. <em>(mostra tela)</em> 40+ agentes especializados. Não é prompt genérico. Cada um tem framework de verdade. Eu uso todo dia &mdash; R$300 mil em projetos. R$47. Link na bio."</p>
+      </div>
+
+      <div style="background:var(--bg-2);padding:20px;border-radius:8px;margin-bottom:16px;border:1px solid var(--border);">
+        <p style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px;">VARIAÇÃO E &mdash; RESULTADO CONCRETO</p>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">"Ontem criei uma landing page em 12 minutos. Uma pesquisa de mercado em 8. Uma identidade de marca em 15. <em>(mostra outputs na tela)</em> Tudo com agentes de IA que eu construí. Agora estou vendendo eles por R$47. Link na bio."</p>
+      </div>
+
+      <div style="background:var(--bg-2);padding:20px;border-radius:8px;border:1px solid var(--border);">
+        <p style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px;">VARIAÇÃO F &mdash; FOMO / CONCORRÊNCIA</p>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">"Seu concorrente já tá usando agentes de IA e você ainda tá no ChatGPT. <em>(mostra tela com squads)</em> 40+ agentes. Copy, design, tráfego, estratégia. Cada um com framework profissional. R$47. Se não valer, devolvo em 7 dias. Link na bio."</p>
+      </div>
+    </div>
+
+    <!-- CHECKLIST ANTES DE REGRAVAR -->
+    <div class="card">
+      <h3 style="margin-top:0;color:var(--amber);">Checklist Antes de Regravar</h3>
+      <ul style="list-style:none;font-size:14px;color:var(--text-dim);line-height:2.4;">
+        <li>&#9744; <strong style="color:var(--text);">Hook nos primeiros 2 segundos</strong> &mdash; pergunta, choque, ou afirmação bold</li>
+        <li>&#9744; <strong style="color:var(--text);">Mencionar preço</strong> &mdash; "R$47" tem que aparecer em todo vídeo</li>
+        <li>&#9744; <strong style="color:var(--text);">CTA explícito</strong> &mdash; "Link na bio" no final de todo vídeo</li>
+        <li>&#9744; <strong style="color:var(--text);">Mencionar garantia</strong> &mdash; "7 dias, devolvo se não valer" tira o risco</li>
+        <li>&#9744; <strong style="color:var(--text);">Diferenciar de IA genérica</strong> &mdash; "não é prompt" / "não é ChatGPT" / "tem framework"</li>
+        <li>&#9744; <strong style="color:var(--text);">Variar o ângulo</strong> &mdash; gravar no mínimo 3 ângulos diferentes (preço, demo, FOMO)</li>
+        <li>&#9744; <strong style="color:var(--text);">Mostrar output real</strong> &mdash; não só a lista de squads, mas um agente gerando resultado</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       MATRIZ DE TESTES
+       ================================================================ -->
+  <section id="matriz">
+    <h2><span class="num">5</span> Matriz de Testes &mdash; O que Gravar Primeiro</h2>
+
+    <div class="card">
+      <table>
+        <thead><tr><th>Ordem</th><th>Roteiro</th><th>Formato</th><th>Duração</th><th>Ângulo</th><th>Prioridade</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Demo Ao Vivo (#3)</td><td>Talking head + screen recording</td><td>45s</td><td>Prova</td><td class="priority-high">GRAVAR PRIMEIRO</td></tr>
+          <tr><td>2</td><td>Não É Prompt (#5)</td><td>Talking head direto</td><td>15s</td><td>Hook forte</td><td class="priority-high">ALTA &mdash; volume</td></tr>
+          <tr><td>3</td><td>Time Inteiro (#1)</td><td>Talking head + overlays</td><td>30s</td><td>Preço vs Valor</td><td class="priority-high">ALTA</td></tr>
+          <tr><td>4</td><td>ChatGPT vs Agentes (#2)</td><td>Talking head + split screen</td><td>25s</td><td>Diferenciação</td><td class="priority-high">ALTA</td></tr>
+          <tr><td>5</td><td>Antes vs Depois (#6)</td><td>Split screen + talking head</td><td>30s</td><td>Transformação</td><td class="priority-medium">MÉDIA</td></tr>
+          <tr><td>6</td><td>Horas vs Minutos (#4)</td><td>Talking head + timer</td><td>20s</td><td>Tempo</td><td class="priority-medium">MÉDIA</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;color:var(--amber);">Estratégia de Teste</h3>
+      <div class="grid-2" style="gap:20px;">
+        <div style="background:var(--bg-2);padding:20px;border-radius:8px;border:1px solid var(--border);">
+          <h3 style="margin-top:0;font-size:14px;color:var(--green);">Semana 1 &mdash; Volume</h3>
+          <ul style="list-style:none;font-size:13px;color:var(--text-dim);line-height:2;">
+            <li>&#9656; Gravar roteiros 3, 5, 1 e 2</li>
+            <li>&#9656; Testar 4 hooks diferentes por roteiro</li>
+            <li>&#9656; Publicar orgânico primeiro (Reels + Stories)</li>
+            <li>&#9656; Medir: retention rate nos primeiros 3s</li>
+          </ul>
+        </div>
+        <div style="background:var(--bg-2);padding:20px;border-radius:8px;border:1px solid var(--border);">
+          <h3 style="margin-top:0;font-size:14px;color:var(--green);">Semana 2 &mdash; Escalar</h3>
+          <ul style="list-style:none;font-size:13px;color:var(--text-dim);line-height:2;">
+            <li>&#9656; Pegar os 2 melhores hooks orgânicos</li>
+            <li>&#9656; Subir como ad no Meta (Instagram + Facebook)</li>
+            <li>&#9656; R$20-30/dia por criativo pra validar</li>
+            <li>&#9656; Medir: CTR, CPC, conversão no Kiwify</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  REIS [IA] &mdash; Creative Playbook | Atualizado: 2026-04-25
+</footer>
+
+</body>
+</html>

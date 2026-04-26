@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REIS [IA] — Journey Platform (Conceito Final)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset ──────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── Design Tokens ──────────────────────────────────────────────────────── */
+:root {
+  --bg:           #020206;
+  --surface-1:    #08080E;
+  --surface-2:    #0E0E16;
+  --surface-3:    #14141E;
+  --border:       rgba(255,255,255,0.05);
+  --border-hover: rgba(255,255,255,0.09);
+  --text:         #FFFFFF;
+  --text-2:       rgba(255,255,255,0.55);
+  --text-3:       rgba(255,255,255,0.28);
+  --blue:         #4A90FF;
+  --green:        #22C55E;
+  --amber:        #F59E0B;
+  --font:         'Inter', -apple-system, sans-serif;
+  --mono:         'JetBrains Mono', monospace;
+
+  /* content type colors */
+  --type-task:         #4A90FF;
+  --type-material:     #A78BFA;
+  --type-presentation: #2DD4BF;
+  --type-checkpoint:   #22C55E;
+  --type-quiz:         #F59E0B;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* ─── Background Atmosphere ──────────────────────────────────────────────── */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Radial blue tint */
+.atmosphere::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 40% 30%, rgba(74,144,255,0.015) 0%, transparent 65%);
+}
+
+/* Scanline micro-texture */
+.atmosphere::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(255,255,255,0.004) 2px,
+    rgba(255,255,255,0.004) 3px
+  );
+}
+
+/* Star dust particles */
+.star {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* ─── HUD Corner Brackets ────────────────────────────────────────────────── */
+.hud-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hud-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+}
+.hud-corner svg { display: block; }
+.hud-corner--tl { top: 10px;  left: 10px; }
+.hud-corner--tr { top: 10px;  right: 10px; transform: scaleX(-1); }
+.hud-corner--bl { bottom: 10px; left: 10px; transform: scaleY(-1); }
+.hud-corner--br { bottom: 10px; right: 10px; transform: scale(-1,-1); }
+
+/* ─── Meta Strip (above everything) ─────────────────────────────────────── */
+.meta-strip {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 6px 0 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.meta-strip a {
+  color: var(--text-3);
+  text-decoration: none;
+  font-size: 9px;
+  letter-spacing: 0.10em;
+  transition: color 150ms;
+}
+.meta-strip a:hover { color: var(--text-2); }
+.meta-strip .divider-dot {
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: var(--text-3);
+  opacity: 0.4;
+}
+
+/* ─── App Shell ──────────────────────────────────────────────────────────── */
+.app {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 24px); /* 24px for meta-strip */
+}
+
+/* ─── Top Bar ────────────────────────────────────────────────────────────── */
+.topbar {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: rgba(8,8,14,0.95);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  backdrop-filter: blur(8px);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.wordmark {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+.wordmark-reis {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+.wordmark-ia {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--blue);
+  letter-spacing: 0.04em;
+}
+
+.topbar-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+}
+
+.journey-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.clock {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+}
+
+.xp-display {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+  text-shadow: 0 0 12px rgba(74,144,255,0.4);
+  letter-spacing: 0.03em;
+}
+
+/* ─── Content Row ────────────────────────────────────────────────────────── */
+.content-row {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ─── Left Panel ─────────────────────────────────────────────────────────── */
+.panel-left {
+  width: 210px;
+  flex-shrink: 0;
+  background: var(--surface-1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-left-inner {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 0 10px;
+  scrollbar-width: none;
+}
+.panel-left-inner::-webkit-scrollbar { display: none; }
+
+.nav-section-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 0 18px;
+  margin-bottom: 10px;
+}
+
+.phase-entry {
+  padding: 9px 18px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: background 150ms, border-color 150ms;
+  position: relative;
+}
+.phase-entry:hover {
+  background: rgba(255,255,255,0.015);
+}
+.phase-entry.active {
+  border-left-color: var(--blue);
+  background: rgba(74,144,255,0.04);
+}
+.phase-entry.active .phase-title { color: var(--text); }
+.phase-entry.completed .phase-title { color: rgba(255,255,255,0.6); }
+.phase-entry.locked {
+  cursor: default;
+}
+.phase-entry.locked:hover { background: transparent; }
+
+.phase-entry-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot.completed {
+  background: var(--green);
+}
+.status-dot.active {
+  background: var(--blue);
+  box-shadow: 0 0 6px rgba(74,144,255,0.6);
+  animation: ledPulse 2s ease-in-out infinite;
+}
+.status-dot.available {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.4);
+}
+.status-dot.locked {
+  background: rgba(255,255,255,0.12);
+}
+
+.phase-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  line-height: 1.3;
+}
+
+.phase-entry-bottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 14px;
+}
+
+.phase-progress-text {
+  font-size: 10px;
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.phase-progress-bar {
+  width: 46px;
+  height: 2px;
+  border-radius: 1px;
+  background: rgba(255,255,255,0.07);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.phase-progress-fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.5s ease;
+}
+.completed .phase-progress-fill { background: var(--green); }
+.active .phase-progress-fill { background: var(--blue); }
+.available .phase-progress-fill { background: rgba(255,255,255,0.3); }
+
+.phase-locked-label {
+  font-size: 9px;
+  color: var(--text-3);
+  padding-left: 14px;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+/* Left panel bottom */
+.panel-left-footer {
+  padding: 14px 18px 18px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.footer-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 8px;
+}
+
+.overall-pct {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--blue);
+  text-shadow: 0 0 16px rgba(74,144,255,0.35);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.overall-bar {
+  height: 2px;
+  border-radius: 1px;
+  background: rgba(255,255,255,0.07);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.overall-bar-fill {
+  height: 100%;
+  width: 35%;
+  background: var(--blue);
+  border-radius: 1px;
+}
+
+.overall-detail {
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+/* ─── Center Panel ───────────────────────────────────────────────────────── */
+.panel-center {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 24px 28px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.06) transparent;
+}
+.panel-center::-webkit-scrollbar { width: 4px; }
+.panel-center::-webkit-scrollbar-track { background: transparent; }
+.panel-center::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+}
+
+/* Phase Header */
+.phase-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.phase-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+.phase-header-text { flex: 1; }
+
+.phase-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.phase-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+
+.phase-status-pill {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.phase-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.65;
+  margin-top: 10px;
+  max-width: 540px;
+}
+
+.phase-progress-block {
+  margin-top: 16px;
+}
+
+.phase-prog-bar {
+  height: 2px;
+  border-radius: 1px;
+  background: rgba(255,255,255,0.07);
+  overflow: hidden;
+  margin-bottom: 7px;
+}
+.phase-prog-fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+.phase-prog-meta {
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+.section-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* Node Cards */
+.nodes-list { display: flex; flex-direction: column; gap: 6px; }
+
+.node-card {
+  background: rgba(14,14,22,0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+  position: relative;
+  overflow: hidden;
+  animation: fadeSlideUp 0.3s ease both;
+}
+
+/* Glass shimmer top line */
+.node-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.045) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.node-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.09);
+  background: rgba(20,20,30,0.90);
+}
+
+.node-card.status-completed {
+  border-left: 3px solid var(--green);
+  background: rgba(34,197,94,0.02);
+}
+.node-card.status-completed::after {
+  background: linear-gradient(90deg, transparent 0%, rgba(34,197,94,0.04) 50%, transparent 100%);
+}
+
+.node-card.status-active,
+.node-card.status-available {
+  border-left: 3px solid var(--blue);
+  box-shadow: 0 0 0 1px rgba(74,144,255,0.06);
+}
+
+.node-card.status-locked {
+  opacity: 0.22;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Room badge */
+.room-badge {
+  position: absolute;
+  top: 7px;
+  right: 11px;
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+}
+.status-completed .room-badge  { color: rgba(34,197,94,0.30); }
+.status-active .room-badge,
+.status-available .room-badge  { color: rgba(74,144,255,0.35); }
+.status-locked .room-badge     { color: var(--text-3); }
+.node-card:not([class*="status-"]) .room-badge { color: var(--text-3); }
+
+/* Card icon */
+.card-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Card body */
+.card-body { flex: 1; min-width: 0; }
+
+.card-type-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.card-type-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.card-required-tag {
+  font-size: 8px;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px;
+  padding: 0px 4px;
+  line-height: 1.6;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.status-completed .card-title { color: rgba(255,255,255,0.65); }
+
+.card-detail {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* Card right */
+.card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.card-xp {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--amber);
+  text-shadow: 0 0 10px rgba(245,158,11,0.35);
+  letter-spacing: 0.02em;
+}
+
+.card-chevron {
+  font-size: 14px;
+  color: var(--text-3);
+  line-height: 1;
+}
+
+/* ─── Right Panel ────────────────────────────────────────────────────────── */
+.panel-right {
+  width: 252px;
+  flex-shrink: 0;
+  background: var(--surface-1);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 20px 18px;
+  scrollbar-width: none;
+}
+.panel-right::-webkit-scrollbar { display: none; }
+
+/* Progress Ring */
+.ring-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0 16px;
+}
+
+.ring-container {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 8px;
+}
+
+.ring-svg {
+  width: 72px;
+  height: 72px;
+  transform: rotate(-90deg);
+}
+
+.ring-track {
+  fill: none;
+  stroke: rgba(255,255,255,0.04);
+  stroke-width: 3;
+}
+
+.ring-fill {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 188.5; /* 2*pi*30 */
+  stroke-dashoffset: 188.5;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1);
+  filter: drop-shadow(0 0 4px rgba(74,144,255,0.4));
+}
+
+.ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--blue);
+  text-shadow: 0 0 12px rgba(74,144,255,0.4);
+}
+
+.ring-caption {
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.panel-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 14px 0;
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.015);
+  border-radius: 8px;
+  padding: 11px 10px;
+}
+
+.stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+.stat-value.blue  { color: var(--blue); text-shadow: 0 0 10px rgba(74,144,255,0.3); }
+.stat-value.amber { color: var(--amber); text-shadow: 0 0 10px rgba(245,158,11,0.3); }
+.stat-value.green { color: var(--green); }
+.stat-value.white { color: var(--text); }
+
+/* Activity log */
+.section-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+
+.activity-list { display: flex; flex-direction: column; gap: 0; }
+
+.activity-entry {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 0;
+  line-height: 1.4;
+}
+
+.activity-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(74,144,255,0.25);
+  flex-shrink: 0;
+}
+.activity-entry.latest .activity-dot {
+  background: var(--blue);
+  box-shadow: 0 0 4px rgba(74,144,255,0.5);
+}
+
+.activity-time {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: rgba(74,144,255,0.4);
+  flex-shrink: 0;
+  width: 32px;
+}
+
+.activity-desc {
+  font-size: 10px;
+  color: var(--text-2);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-xp {
+  font-size: 10px;
+  color: var(--blue);
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+/* Journey info */
+.journey-info { display: flex; flex-direction: column; gap: 5px; }
+
+.info-row {
+  font-size: 10px;
+  color: var(--text-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.info-row span:last-child { color: var(--text-2); }
+
+/* ─── Bottom Bar ─────────────────────────────────────────────────────────── */
+.bottombar {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  background: var(--surface-1);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.bottom-cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  height: 100%;
+  border-right: 1px solid var(--border);
+}
+.bottom-cell:last-child { border-right: none; }
+
+.bottom-live-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ledPulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 1; }
+}
+
+/* ─── SVG Icons ──────────────────────────────────────────────────────────── */
+.icon-svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ─── Flash on click ─────────────────────────────────────────────────────── */
+@keyframes borderFlash {
+  0%   { box-shadow: 0 0 0 2px rgba(74,144,255,0.5); }
+  100% { box-shadow: 0 0 0 2px rgba(74,144,255,0); }
+}
+.node-flash {
+  animation: borderFlash 0.25s ease-out;
+}
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  html, body { overflow: auto; }
+
+  .app { height: auto; min-height: 100vh; }
+
+  .topbar { padding: 0 14px; }
+  .journey-title { max-width: 160px; font-size: 12px; }
+
+  .content-row { flex-direction: column; }
+
+  .panel-left {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-left-inner {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 12px 14px;
+    gap: 6px;
+  }
+  .nav-section-label { display: none; }
+  .phase-entry {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.02);
+    white-space: nowrap;
+  }
+  .phase-entry.active {
+    border-left: none;
+    border-bottom: 2px solid var(--blue);
+    background: rgba(74,144,255,0.06);
+  }
+  .phase-entry-bottom { display: none; }
+  .phase-locked-label { display: none; }
+  .phase-entry-top { margin-bottom: 0; }
+
+  .panel-left-footer { display: none; }
+
+  .panel-center { padding: 18px 16px; }
+
+  .panel-right {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding: 16px;
+  }
+  .ring-block { display: none; }
+
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+  .stat-card { padding: 8px; }
+  .stat-value { font-size: 13px; }
+
+  .activity-list { display: none; }
+  .journey-info { display: none; }
+
+  .bottombar { display: none; }
+
+  .hud-frame { display: none; }
+
+  .meta-strip { padding: 5px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background Atmosphere -->
+<div class="atmosphere" id="atmosphere"></div>
+
+<!-- HUD Corners -->
+<div class="hud-frame">
+  <div class="hud-corner hud-corner--tl">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M1 17 L1 1 L17 1" stroke="rgba(74,144,255,0.12)" stroke-width="1" fill="none"/>
+    </svg>
+  </div>
+  <div class="hud-corner hud-corner--tr">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M1 17 L1 1 L17 1" stroke="rgba(74,144,255,0.12)" stroke-width="1" fill="none"/>
+    </svg>
+  </div>
+  <div class="hud-corner hud-corner--bl">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M1 17 L1 1 L17 1" stroke="rgba(74,144,255,0.12)" stroke-width="1" fill="none"/>
+    </svg>
+  </div>
+  <div class="hud-corner hud-corner--br">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M1 17 L1 1 L17 1" stroke="rgba(74,144,255,0.12)" stroke-width="1" fill="none"/>
+    </svg>
+  </div>
+</div>
+
+<!-- Meta Strip -->
+<div class="meta-strip">
+  <a href="index.html">← Voltar aos conceitos</a>
+  <span class="divider-dot"></span>
+  <span>Conceito Final — REIS [IA] Journey Platform</span>
+</div>
+
+<!-- App -->
+<div class="app">
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="wordmark">
+        <span class="wordmark-reis">REIS</span>
+        <span class="wordmark-ia">&thinsp;[IA]</span>
+      </div>
+      <div class="topbar-divider"></div>
+      <span class="journey-title">IA do Zero ao Claude Code</span>
+    </div>
+    <div class="topbar-right">
+      <span class="clock" id="clock">00:00</span>
+      <div class="topbar-divider"></div>
+      <span class="xp-display" id="xp-counter">0 XP</span>
+    </div>
+  </header>
+
+  <!-- Content Row -->
+  <div class="content-row">
+
+    <!-- Left Panel — Phase Navigation -->
+    <nav class="panel-left">
+      <div class="panel-left-inner" id="phase-nav">
+        <div class="nav-section-label">Fases</div>
+
+        <!-- Phase 1: Completed -->
+        <div class="phase-entry completed" data-phase="1" onclick="setPhase(1)">
+          <div class="phase-entry-top">
+            <div class="status-dot completed"></div>
+            <span class="phase-title">Fundamentos de IA</span>
+          </div>
+          <div class="phase-entry-bottom">
+            <span class="phase-progress-text">5/5</span>
+            <div class="phase-progress-bar"><div class="phase-progress-fill" style="width:100%"></div></div>
+          </div>
+        </div>
+
+        <!-- Phase 2: Active -->
+        <div class="phase-entry active" data-phase="2" onclick="setPhase(2)">
+          <div class="phase-entry-top">
+            <div class="status-dot active"></div>
+            <span class="phase-title">Modelos de Linguagem</span>
+          </div>
+          <div class="phase-entry-bottom">
+            <span class="phase-progress-text">2/5</span>
+            <div class="phase-progress-bar"><div class="phase-progress-fill" style="width:40%"></div></div>
+          </div>
+        </div>
+
+        <!-- Phase 3: Available -->
+        <div class="phase-entry available" data-phase="3" onclick="setPhase(3)">
+          <div class="phase-entry-top">
+            <div class="status-dot available"></div>
+            <span class="phase-title">Engenharia de Prompts</span>
+          </div>
+          <div class="phase-entry-bottom">
+            <span class="phase-progress-text">0/6</span>
+            <div class="phase-progress-bar"><div class="phase-progress-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <!-- Phase 4: Available -->
+        <div class="phase-entry available" data-phase="4" onclick="setPhase(4)">
+          <div class="phase-entry-top">
+            <div class="status-dot available"></div>
+            <span class="phase-title">Automacoes Praticas</span>
+          </div>
+          <div class="phase-entry-bottom">
+            <span class="phase-progress-text">0/5</span>
+            <div class="phase-progress-bar"><div class="phase-progress-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <!-- Phase 5: Locked -->
+        <div class="phase-entry locked" data-phase="5">
+          <div class="phase-entry-top">
+            <div class="status-dot locked"></div>
+            <span class="phase-title">Claude Code Avancado</span>
+          </div>
+          <div class="phase-locked-label">Bloqueada</div>
+        </div>
+
+      </div>
+
+      <div class="panel-left-footer">
+        <div class="footer-label">Progresso</div>
+        <div class="overall-pct" id="overall-pct">0%</div>
+        <div class="overall-bar">
+          <div class="overall-bar-fill"></div>
+        </div>
+        <div class="overall-detail">7 de 25 itens</div>
+      </div>
+    </nav>
+
+    <!-- Center Panel — Phase Detail -->
+    <main class="panel-center" id="phase-detail">
+      <!-- populated by JS -->
+    </main>
+
+    <!-- Right Panel — Stats & Activity -->
+    <aside class="panel-right">
+
+      <!-- Progress Ring -->
+      <div class="ring-block">
+        <div class="ring-container">
+          <svg class="ring-svg" viewBox="0 0 72 72">
+            <circle class="ring-track" cx="36" cy="36" r="30"/>
+            <circle class="ring-fill" id="ring-fill" cx="36" cy="36" r="30"/>
+          </svg>
+          <div class="ring-label" id="ring-label">0%</div>
+        </div>
+        <div class="ring-caption">Progresso Geral</div>
+      </div>
+
+      <div class="panel-divider"></div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">XP Total</div>
+          <div class="stat-value amber" id="stat-xp">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Nodes</div>
+          <div class="stat-value white">7/25</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Streak</div>
+          <div class="stat-value green">3 dias</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ritmo</div>
+          <div class="stat-value white">2.1/dia</div>
+        </div>
+      </div>
+
+      <div class="panel-divider"></div>
+
+      <!-- Activity Log -->
+      <div class="section-title">Atividade</div>
+      <div class="activity-list">
+
+        <div class="activity-entry latest">
+          <div class="activity-dot"></div>
+          <span class="activity-time">14:32</span>
+          <span class="activity-desc">GPT-4 vs Claude — concluido</span>
+          <span class="activity-xp">+20</span>
+        </div>
+
+        <div class="activity-entry">
+          <div class="activity-dot"></div>
+          <span class="activity-time">13:10</span>
+          <span class="activity-desc">Quiz: Tipos de modelos</span>
+          <span class="activity-xp">+15</span>
+        </div>
+
+        <div class="activity-entry">
+          <div class="activity-dot"></div>
+          <span class="activity-time">10:44</span>
+          <span class="activity-desc">Checkpoint F1 aprovado</span>
+          <span class="activity-xp">+30</span>
+        </div>
+
+        <div class="activity-entry">
+          <div class="activity-dot"></div>
+          <span class="activity-time">Ontem</span>
+          <span class="activity-desc">Fase 1 completa</span>
+          <span class="activity-xp">+50</span>
+        </div>
+
+        <div class="activity-entry">
+          <div class="activity-dot"></div>
+          <span class="activity-time">01 abr</span>
+          <span class="activity-desc">Jornada iniciada</span>
+          <span class="activity-xp">+10</span>
+        </div>
+
+      </div>
+
+      <div class="panel-divider"></div>
+
+      <!-- Journey Info -->
+      <div class="journey-info">
+        <div class="info-row">
+          <span>Inicio</span>
+          <span>01 abr 2026</span>
+        </div>
+        <div class="info-row">
+          <span>Previsao</span>
+          <span>~30 abr 2026</span>
+        </div>
+        <div class="info-row">
+          <span>Mentor</span>
+          <span>Moroni Reis</span>
+        </div>
+      </div>
+
+    </aside>
+
+  </div><!-- end content-row -->
+
+  <!-- Bottom Bar -->
+  <footer class="bottombar">
+    <div class="bottom-cell">Fase 2 / 5</div>
+    <div class="bottom-cell">
+      <div class="bottom-live-dot"></div>
+      Em progresso
+    </div>
+    <div class="bottom-cell">7 concluidos</div>
+    <div class="bottom-cell">320 XP</div>
+  </footer>
+
+</div><!-- end app -->
+
+<script>
+/* ─── Data ───────────────────────────────────────────────────────────────── */
+const PHASES = {
+  1: {
+    code: 'F1',
+    name: 'Fundamentos de IA',
+    status: 'completed',
+    desc: 'Conceitos essenciais de inteligencia artificial para profissionais de negocios. Do que e IA ao impacto real em empresas como a sua.',
+    completed: 5,
+    total: 5,
+    xp_earned: 110,
+    xp_total: 110,
+    duration: '~85 min',
+    nodes: [
+      { id: '1.1', type: 'material',     title: 'O que e Inteligencia Artificial',   xp: 15, required: true,  status: 'completed', detail: 'Concluido em 01 abr' },
+      { id: '1.2', type: 'presentation', title: 'Historia e evolucao dos modelos',   xp: 20, required: false, status: 'completed', detail: 'Concluido em 01 abr' },
+      { id: '1.3', type: 'material',     title: 'IA Generativa vs Discriminativa',   xp: 15, required: true,  status: 'completed', detail: 'Concluido em 02 abr' },
+      { id: '1.4', type: 'quiz',         title: 'Quiz: Conceitos Fundamentais',      xp: 20, required: true,  status: 'completed', detail: 'Nota: 9.5/10' },
+      { id: '1.5', type: 'checkpoint',   title: 'Checkpoint Fase 1',                xp: 40, required: true,  status: 'completed', detail: 'Aprovado em 02 abr' },
+    ]
+  },
+  2: {
+    code: 'F2',
+    name: 'Modelos de Linguagem',
+    status: 'active',
+    desc: 'Entenda como os grandes modelos de linguagem funcionam, quais as diferencas entre eles e como escolher o modelo certo para cada caso de uso no seu negocio.',
+    completed: 2,
+    total: 5,
+    xp_earned: 45,
+    xp_total: 110,
+    duration: '~97 min',
+    nodes: [
+      { id: '2.1', type: 'material',     title: 'Como funcionam os LLMs',            xp: 20, required: true,  status: 'completed', detail: 'Concluido em 03 abr' },
+      { id: '2.2', type: 'material',     title: 'GPT-4 vs Claude vs Gemini',         xp: 20, required: false, status: 'completed', detail: 'Concluido em 03 abr' },
+      { id: '2.3', type: 'task',         title: 'Exercicio: Escolha do modelo ideal', xp: 25, required: true,  status: 'active',    detail: '~20 min' },
+      { id: '2.4', type: 'presentation', title: 'Benchmarks e metricas praticas',    xp: 20, required: false, status: 'available', detail: '~18 min' },
+      { id: '2.5', type: 'checkpoint',   title: 'Checkpoint Fase 2',                xp: 40, required: true,  status: 'locked',    detail: 'Bloqueado' },
+    ]
+  },
+  3: {
+    code: 'F3',
+    name: 'Engenharia de Prompts',
+    status: 'available',
+    desc: 'A habilidade mais subestimada do profissional moderno. Aprenda a comunicar com precisao, extrair valor dos modelos e criar workflows de IA reproduziveis.',
+    completed: 0,
+    total: 6,
+    xp_earned: 0,
+    xp_total: 130,
+    duration: '~110 min',
+    nodes: [
+      { id: '3.1', type: 'material',     title: 'Anatomia de um bom prompt',         xp: 15, required: true,  status: 'available', detail: '~12 min' },
+      { id: '3.2', type: 'material',     title: 'Chain of thought e few-shot',        xp: 20, required: false, status: 'available', detail: '~15 min' },
+      { id: '3.3', type: 'task',         title: 'Laboratorio de prompts',             xp: 25, required: true,  status: 'available', detail: '~25 min' },
+      { id: '3.4', type: 'presentation', title: 'Prompt engineering para negocios',   xp: 20, required: false, status: 'available', detail: '~18 min' },
+      { id: '3.5', type: 'quiz',         title: 'Quiz: Tecnicas avancadas',           xp: 15, required: true,  status: 'locked',    detail: 'Bloqueado' },
+      { id: '3.6', type: 'checkpoint',   title: 'Checkpoint Fase 3',                 xp: 40, required: true,  status: 'locked',    detail: 'Bloqueado' },
+    ]
+  },
+  4: {
+    code: 'F4',
+    name: 'Automacoes Praticas',
+    status: 'available',
+    desc: 'Construa automacoes reais que economizam horas por semana. Ferramentas no-code, integracao com APIs e os primeiros workflows da sua empresa.',
+    completed: 0,
+    total: 5,
+    xp_earned: 0,
+    xp_total: 110,
+    duration: '~105 min',
+    nodes: [
+      { id: '4.1', type: 'material',     title: 'Mapa de automacoes de negocios',    xp: 20, required: true,  status: 'available', detail: '~15 min' },
+      { id: '4.2', type: 'presentation', title: 'Make vs N8N vs Zapier',             xp: 15, required: false, status: 'available', detail: '~12 min' },
+      { id: '4.3', type: 'task',         title: 'Projeto: Automacao de email',       xp: 30, required: true,  status: 'locked',    detail: 'Bloqueado' },
+      { id: '4.4', type: 'task',         title: 'Projeto: Dashboard de metricas',    xp: 30, required: true,  status: 'locked',    detail: 'Bloqueado' },
+      { id: '4.5', type: 'checkpoint',   title: 'Checkpoint Fase 4',                xp: 40, required: true,  status: 'locked',    detail: 'Bloqueado' },
+    ]
+  },
+  5: {
+    code: 'F5',
+    name: 'Claude Code Avancado',
+    status: 'locked',
+    desc: 'O nivel mais avancado da jornada. Desenvolva solucoes com Claude Code, implemente agentes de IA e construa sistemas que trabalham por voce 24/7.',
+    completed: 0,
+    total: 5,
+    xp_earned: 0,
+    xp_total: 150,
+    duration: '~120 min',
+    nodes: [
+      { id: '5.1', type: 'material',     title: 'Introducao ao Claude Code',        xp: 20, required: true,  status: 'locked', detail: 'Bloqueado' },
+      { id: '5.2', type: 'material',     title: 'Arquitetura de agentes de IA',     xp: 25, required: true,  status: 'locked', detail: 'Bloqueado' },
+      { id: '5.3', type: 'task',         title: 'Construindo seu primeiro agente',  xp: 35, required: true,  status: 'locked', detail: 'Bloqueado' },
+      { id: '5.4', type: 'task',         title: 'Agente de automacao empresarial',  xp: 40, required: true,  status: 'locked', detail: 'Bloqueado' },
+      { id: '5.5', type: 'checkpoint',   title: 'Checkpoint Final — Certificado',  xp: 50, required: true,  status: 'locked', detail: 'Bloqueado' },
+    ]
+  }
+};
+
+const TYPE_CONFIG = {
+  task:         { color: '#4A90FF', label: 'Tarefa',        icon: 'task' },
+  material:     { color: '#A78BFA', label: 'Material',      icon: 'material' },
+  presentation: { color: '#2DD4BF', label: 'Apresentacao',  icon: 'presentation' },
+  checkpoint:   { color: '#22C55E', label: 'Checkpoint',    icon: 'checkpoint' },
+  quiz:         { color: '#F59E0B', label: 'Quiz',          icon: 'quiz' },
+};
+
+/* ─── Icon SVGs ──────────────────────────────────────────────────────────── */
+function getIcon(type, color) {
+  const icons = {
+    task: `<svg class="icon-svg" viewBox="0 0 14 14" fill="none" stroke="${color}" stroke-width="1.25">
+      <rect x="1.5" y="1.5" width="11" height="11" rx="1.5"/>
+      <line x1="4" y1="5" x2="10" y2="5"/><line x1="4" y1="7.5" x2="10" y2="7.5"/><line x1="4" y1="10" x2="7.5" y2="10"/>
+    </svg>`,
+    material: `<svg class="icon-svg" viewBox="0 0 14 14" fill="none" stroke="${color}" stroke-width="1.25">
+      <rect x="2" y="1.5" width="8.5" height="11" rx="1"/>
+      <path d="M4 4.5h4.5M4 7h4.5M4 9.5h2.5"/>
+      <path d="M10.5 3.5V13" stroke="${color}" stroke-width="1" opacity="0.4"/>
+    </svg>`,
+    presentation: `<svg class="icon-svg" viewBox="0 0 14 14" fill="none" stroke="${color}" stroke-width="1.25">
+      <rect x="1" y="2" width="12" height="8" rx="1.5"/>
+      <line x1="7" y1="10" x2="7" y2="13"/>
+      <line x1="4.5" y1="13" x2="9.5" y2="13"/>
+      <line x1="4" y1="5" x2="10" y2="5"/><line x1="4" y1="7.5" x2="8" y2="7.5"/>
+    </svg>`,
+    checkpoint: `<svg class="icon-svg" viewBox="0 0 14 14" fill="none" stroke="${color}" stroke-width="1.25">
+      <path d="M3 2 L3 12"/>
+      <path d="M3 2 L10 4.5 L3 7"/>
+      <line x1="3" y1="12" x2="6" y2="12"/>
+    </svg>`,
+    quiz: `<svg class="icon-svg" viewBox="0 0 14 14" fill="none" stroke="${color}" stroke-width="1.25">
+      <circle cx="7" cy="7" r="5.5"/>
+      <path d="M5.2 5.4 C5.2 4.2 6 3.5 7 3.5 C8 3.5 8.8 4.2 8.8 5.2 C8.8 6.2 8 6.8 7 7.3 L7 8.2"/>
+      <circle cx="7" cy="10" r="0.5" fill="${color}" stroke="none"/>
+    </svg>`,
+  };
+  return icons[type] || icons.task;
+}
+
+/* ─── Render Phase Detail ────────────────────────────────────────────────── */
+let currentPhase = 2;
+
+function renderPhase(phaseId) {
+  const p = PHASES[phaseId];
+  if (!p) return;
+
+  const statusColors = {
+    completed: { text: '#22C55E', bg: 'rgba(34,197,94,0.08)', border: '#22C55E', pill: 'rgba(34,197,94,0.12)', pillText: '#22C55E', pillLabel: 'Concluida' },
+    active:    { text: '#4A90FF', bg: 'rgba(74,144,255,0.08)', border: '#4A90FF', pill: 'rgba(74,144,255,0.12)', pillText: '#4A90FF', pillLabel: 'Em progresso' },
+    available: { text: 'rgba(255,255,255,0.45)', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.15)', pill: 'rgba(255,255,255,0.06)', pillText: 'rgba(255,255,255,0.45)', pillLabel: 'Disponivel' },
+    locked:    { text: 'rgba(255,255,255,0.2)',  bg: 'rgba(255,255,255,0.02)', border: 'rgba(255,255,255,0.06)', pill: 'rgba(255,255,255,0.04)', pillText: 'rgba(255,255,255,0.25)', pillLabel: 'Bloqueada' },
+  };
+  const sc = statusColors[p.status];
+  const pct = Math.round((p.completed / p.total) * 100);
+  const progFill = `background: ${sc.border}; width: ${pct}%`;
+
+  /* Nodes HTML */
+  const nodesHtml = p.nodes.map((n, i) => {
+    const tc = TYPE_CONFIG[n.type];
+    const cardClass = `node-card status-${n.status}`;
+    const delay = `animation-delay: ${i * 55}ms`;
+    const iconBg  = `background: ${tc.color}14; border: 1px solid ${tc.color}28;`;
+    const typeLabelColor = `color: ${tc.color}b3;`;
+
+    let detailIcon = '';
+    if (n.status === 'completed') detailIcon = `<span style="color:var(--green);margin-right:3px;font-size:9px;">&#10003;</span>`;
+
+    return `
+    <div class="${cardClass}" style="${delay}" onclick="flashCard(this)">
+      <span class="room-badge">${n.id}</span>
+      <div class="card-icon" style="${iconBg}">
+        ${getIcon(n.type, tc.color)}
+      </div>
+      <div class="card-body">
+        <div class="card-type-row">
+          <span class="card-type-label" style="${typeLabelColor}">${tc.label}</span>
+          ${n.required ? '<span class="card-required-tag">Obrigatorio</span>' : ''}
+        </div>
+        <div class="card-title">${n.title}</div>
+        <div class="card-detail">${detailIcon}${n.detail}</div>
+      </div>
+      <div class="card-right">
+        <span class="card-xp">+${n.xp}</span>
+        <span class="card-chevron">›</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('phase-detail').innerHTML = `
+    <div class="phase-header">
+      <div class="phase-badge" style="border: 2px solid ${sc.border}; color: ${sc.text}; box-shadow: 0 0 16px ${sc.border}40;">
+        ${p.code}
+      </div>
+      <div class="phase-header-text">
+        <div class="phase-name">${p.name}</div>
+        <div class="phase-header-meta">
+          <span class="phase-status-pill" style="background: ${sc.pill}; color: ${sc.pillText};">${sc.pillLabel}</span>
+        </div>
+      </div>
+    </div>
+    <p class="phase-desc">${p.desc}</p>
+    <div class="phase-progress-block">
+      <div class="phase-prog-bar">
+        <div class="phase-prog-fill" style="${progFill}"></div>
+      </div>
+      <div class="phase-prog-meta">${p.completed}/${p.total} concluidos &middot; ${p.xp_earned} de ${p.xp_total} XP &middot; ${p.duration}</div>
+    </div>
+    <div class="section-divider"></div>
+    <div class="nodes-list">${nodesHtml}</div>
+  `;
+}
+
+/* ─── Set Active Phase ───────────────────────────────────────────────────── */
+function setPhase(id) {
+  if (PHASES[id].status === 'locked') return;
+  currentPhase = id;
+
+  /* Update nav */
+  document.querySelectorAll('.phase-entry').forEach(el => {
+    const elId = parseInt(el.dataset.phase);
+    el.classList.remove('active');
+    if (elId === id) el.classList.add('active');
+  });
+
+  /* Render */
+  renderPhase(id);
+}
+
+/* ─── Card flash on click ────────────────────────────────────────────────── */
+function flashCard(el) {
+  el.classList.remove('node-flash');
+  void el.offsetWidth; /* reflow */
+  el.classList.add('node-flash');
+  setTimeout(() => el.classList.remove('node-flash'), 300);
+}
+
+/* ─── Stars ──────────────────────────────────────────────────────────────── */
+function buildStars() {
+  const container = document.getElementById('atmosphere');
+  /* Seeded positions using golden ratio scatter */
+  const PHI = 137.508;
+  for (let i = 0; i < 25; i++) {
+    const el = document.createElement('div');
+    el.className = 'star';
+    const x = ((i * PHI * 3.7) % 97) + 1.5;
+    const y = ((i * PHI * 2.3) % 96) + 2;
+    const opacity = 0.03 + (i % 5) * 0.007;
+    el.style.cssText = `left:${x}%;top:${y}%;opacity:${opacity};`;
+    container.appendChild(el);
+  }
+}
+
+/* ─── Clock ──────────────────────────────────────────────────────────────── */
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('clock').textContent = `${h}:${m}`;
+}
+
+/* ─── Count-up ───────────────────────────────────────────────────────────── */
+function countUp(targetEl, end, duration, suffix) {
+  const start = performance.now();
+  function step(now) {
+    const elapsed = now - start;
+    const t = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3); /* easeOutCubic */
+    const val = Math.round(ease * end);
+    targetEl.textContent = val + (suffix || '');
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ─── Progress Ring ──────────────────────────────────────────────────────── */
+function animateRing(pct) {
+  const circ = 2 * Math.PI * 30; /* 188.5 */
+  const offset = circ * (1 - pct / 100);
+  const fill = document.getElementById('ring-fill');
+  const label = document.getElementById('ring-label');
+
+  /* Give a frame for layout */
+  requestAnimationFrame(() => {
+    fill.style.strokeDashoffset = offset;
+  });
+
+  /* Count-up label */
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / 800, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    label.textContent = Math.round(ease * pct) + '%';
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ─── Init ───────────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  buildStars();
+  updateClock();
+  setInterval(updateClock, 60000);
+
+  renderPhase(currentPhase);
+
+  /* Count-up animations — slight delay for polish */
+  setTimeout(() => {
+    countUp(document.getElementById('xp-counter'), 320, 650, ' XP');
+    countUp(document.getElementById('stat-xp'), 320, 650, '');
+    countUp(document.getElementById('overall-pct'), 35, 700, '%');
+    animateRing(35);
+  }, 200);
+});
+</script>
+</body>
+</html>

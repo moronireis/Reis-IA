@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../lib/supabase-server';
+import { sendFormResultsEmail } from '../../../lib/email';
 
 export const prerender = false;
 
@@ -131,6 +132,17 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
       }));
 
       await supabase.from('notifications').insert(notifications);
+    }
+
+    // Send email with form results to student + backup to admin
+    const userEmail = profile.email;
+    if (userEmail) {
+      sendFormResultsEmail({
+        to: userEmail,
+        userName,
+        formType: updated.form_type,
+        formData: (updated.data || {}) as Record<string, unknown>,
+      }).catch(() => {}); // fire-and-forget, don't block response
     }
 
     // Save to hub_knowledge for permanent record

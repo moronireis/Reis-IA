@@ -1,0 +1,2203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>Quanto Custa Casar? · Noiva S.A.</title>
+  <meta name="description" content="Descubra uma estimativa personalizada do custo do seu casamento em menos de 2 minutos." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Design Tokens ─── */
+    :root {
+      --rose:           #DBA99F;
+      --blush:          #FFCBC1;
+      --cream:          #F4F3EE;
+      --eucalyptus:     #4A6741;
+      --taupe:          #9C958F;
+      --rose-light:     #ECC8BE;
+      --rose-dark:      #C49189;
+      --taupe-dark:     #6b635d;
+      --bg:             #0a0a0a;
+      --bg2:            #111111;
+      --bg3:            #1a1a1a;
+      --card:           #141414;
+      --card2:          #1e1e1e;
+      --border:         rgba(219,169,159,0.15);
+      --rose-alpha:     rgba(219,169,159,0.12);
+      --blush-alpha:    rgba(255,203,193,0.08);
+      --taupe-alpha:    rgba(156,149,143,0.10);
+      --font-serif:     'Cormorant Garamond', Georgia, serif;
+      --font-sans:      'Montserrat', sans-serif;
+      --font-body:      'Source Sans 3', sans-serif;
+      --radius:         12px;
+      --radius-sm:      8px;
+      --radius-btn:     12px;
+      --shadow:         0 4px 32px rgba(0,0,0,0.5);
+      --shadow-rose:    0 4px 24px rgba(219,169,159,0.15);
+      --transition:     0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ─── Reset ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg);
+      font-family: var(--font-body);
+      color: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior: none;
+    }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--taupe-dark); border-radius: 2px; }
+
+    /* ─── App Shell ─── */
+    #app {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+    }
+
+    /* ─── Ambient background ─── */
+    #app::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(219,169,159,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(219,169,159,0.04) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Screens ─── */
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 28px 16px 80px;
+      position: relative;
+      z-index: 1;
+    }
+    .screen.active { display: flex; }
+    .screen.exit-left  { animation: exitLeft  0.35s cubic-bezier(0.4,0,1,1) forwards; }
+    .screen.enter-right { animation: enterRight 0.35s cubic-bezier(0,0,0.2,1) forwards; }
+    .screen.exit-right  { animation: exitRight  0.35s cubic-bezier(0.4,0,1,1) forwards; }
+    .screen.enter-left  { animation: enterLeft  0.35s cubic-bezier(0,0,0.2,1) forwards; }
+
+    @keyframes exitLeft  { to { opacity: 0; transform: translateX(-40px); } }
+    @keyframes enterRight { from { opacity: 0; transform: translateX(40px); } }
+    @keyframes exitRight  { to { opacity: 0; transform: translateX(40px); } }
+    @keyframes enterLeft  { from { opacity: 0; transform: translateX(-40px); } }
+
+    @media (min-width: 480px) {
+      .screen { padding: 32px 24px 80px; }
+    }
+
+    /* ─── Container ─── */
+    .container {
+      width: 100%;
+      max-width: 620px;
+    }
+
+    /* ─── Progress Bar ─── */
+    .progress-wrap {
+      width: 100%;
+      max-width: 620px;
+      margin-bottom: 32px;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .progress-label {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--taupe);
+    }
+    .progress-count {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--taupe);
+    }
+    .progress-track {
+      width: 100%;
+      height: 2px;
+      background: rgba(156,149,143,0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rose-dark), var(--rose), var(--blush));
+      border-radius: 2px;
+      transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 0%;
+    }
+
+    /* ─── Logo ─── */
+    .logo {
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: 15px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 0;
+      text-align: center;
+    }
+    .logo .noiva { color: var(--rose); }
+    .logo .sa    { color: var(--taupe); }
+
+    /* ─── Divider ─── */
+    .divider {
+      width: 40px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rose), transparent);
+      margin: 20px auto;
+      opacity: 0.45;
+    }
+    .divider-sm {
+      width: 24px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rose), transparent);
+      margin: 14px auto;
+      opacity: 0.35;
+    }
+
+    /* ─── Back Button ─── */
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: var(--taupe);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      padding: 4px 0;
+      transition: color var(--transition);
+      margin-bottom: 24px;
+    }
+    .back-btn:hover { color: var(--rose); }
+    .back-btn svg { width: 14px; height: 14px; }
+
+    /* ─── Question Header ─── */
+    .question-header {
+      margin-bottom: 28px;
+    }
+    .step-tag {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rose);
+      margin-bottom: 10px;
+    }
+    .question-title {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(22px, 5vw, 30px);
+      line-height: 1.2;
+      color: var(--cream);
+      letter-spacing: 0.02em;
+    }
+    .question-subtitle {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--taupe);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* ─── Option Cards Grid ─── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .cards-grid.cols-3 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    @media (max-width: 400px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .cards-grid.cols-3 { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 401px) and (max-width: 520px) {
+      .cards-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ─── Option Card ─── */
+    .opt-card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0;
+      cursor: pointer;
+      transition:
+        border-color var(--transition),
+        box-shadow var(--transition),
+        transform 0.18s ease;
+      overflow: hidden;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .opt-card:hover {
+      border-color: rgba(219,169,159,0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 0px var(--rose);
+    }
+    .opt-card.selected {
+      border-color: var(--rose);
+      box-shadow: 0 0 0 1px var(--rose), 0 8px 32px rgba(219,169,159,0.18);
+      transform: translateY(-1px);
+    }
+    .opt-card.selected .card-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Card visual area */
+    .card-visual {
+      width: 100%;
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Card content */
+    .card-body {
+      padding: 12px 14px 14px;
+    }
+    .card-name {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--cream);
+      line-height: 1.3;
+      margin-bottom: 3px;
+    }
+    .card-hint {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--taupe);
+      line-height: 1.4;
+    }
+
+    /* Check mark */
+    .card-check {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 22px;
+      height: 22px;
+      background: var(--rose);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(0.6);
+      transition: opacity 0.2s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 2;
+    }
+    .card-check svg { width: 12px; height: 12px; color: #fff; }
+
+    /* ─── Card Visual Patterns ─── */
+
+    /* Campo / Fazenda */
+    .visual-campo {
+      background:
+        linear-gradient(160deg, #1a2e1a 0%, #0f1f0f 40%, #1c2a0e 100%);
+    }
+    .visual-campo::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 120% 60% at 50% 80%, rgba(74,103,65,0.35) 0%, transparent 60%),
+        linear-gradient(180deg, transparent 30%, rgba(74,103,65,0.15) 100%);
+    }
+    .visual-campo .card-icon { color: rgba(180,220,160,0.85); }
+
+    /* Praia */
+    .visual-praia {
+      background:
+        linear-gradient(160deg, #0d1e2e 0%, #0a1520 40%, #0e2030 100%);
+    }
+    .visual-praia::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 100% 50% at 50% 100%, rgba(30,100,140,0.4) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 30% at 20% 20%, rgba(219,169,159,0.1) 0%, transparent 50%);
+    }
+    .visual-praia .card-icon { color: rgba(160,210,240,0.85); }
+
+    /* Igreja + Salão */
+    .visual-igreja {
+      background:
+        linear-gradient(160deg, #1e1a14 0%, #15120c 40%, #1c1808 100%);
+    }
+    .visual-igreja::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 100% 80% at 50% 10%, rgba(219,169,159,0.12) 0%, transparent 60%),
+        linear-gradient(180deg, transparent 0%, rgba(100,80,40,0.15) 100%);
+    }
+    .visual-igreja .card-icon { color: rgba(235,210,170,0.85); }
+
+    /* Espaço Exclusivo */
+    .visual-exclusivo {
+      background:
+        linear-gradient(160deg, #1a1220 0%, #110c18 40%, #18101e 100%);
+    }
+    .visual-exclusivo::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 100% 60% at 50% 50%, rgba(180,140,220,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(219,169,159,0.08) 0%, transparent 50%);
+    }
+    .visual-exclusivo .card-icon { color: rgba(200,170,235,0.85); }
+
+    /* Minimalista */
+    .visual-minimal {
+      background:
+        linear-gradient(135deg, #1a1a1a 0%, #111 50%, #161616 100%);
+    }
+    .visual-minimal::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 24px,
+        rgba(219,169,159,0.04) 24px,
+        rgba(219,169,159,0.04) 25px
+      );
+    }
+    .visual-minimal .card-icon { color: rgba(219,169,159,0.6); }
+
+    /* Romântica */
+    .visual-romantica {
+      background:
+        linear-gradient(135deg, #1e1014 0%, #150c10 50%, #1c1016 100%);
+    }
+    .visual-romantica::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 100% 80% at 50% 50%, rgba(219,169,159,0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 80% 20%, rgba(255,203,193,0.07) 0%, transparent 50%);
+    }
+    .visual-romantica .card-icon { color: rgba(219,169,159,0.9); }
+
+    /* Luxuosa */
+    .visual-luxo {
+      background:
+        linear-gradient(135deg, #1a1510 0%, #120f08 50%, #18130c 100%);
+    }
+    .visual-luxo::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 80% at 50% 50%, rgba(219,169,159,0.14) 0%, transparent 60%);
+    }
+    .visual-luxo .card-icon { color: rgba(240,215,160,0.85); }
+
+    /* Rústica */
+    .visual-rustica {
+      background:
+        linear-gradient(135deg, #1c1810 0%, #141008 50%, #1a1810 100%);
+    }
+    .visual-rustica::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 100% 60% at 50% 80%, rgba(100,130,60,0.2) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 20% 20%, rgba(219,169,159,0.08) 0%, transparent 50%);
+    }
+    .visual-rustica .card-icon { color: rgba(190,200,140,0.85); }
+
+    /* Bar visuals */
+    .visual-bar-basic {
+      background: linear-gradient(135deg, #111820 0%, #0c1018 100%);
+    }
+    .visual-bar-basic::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(100,150,180,0.1) 0%, transparent 60%);
+    }
+    .visual-bar-basic .card-icon { color: rgba(160,200,220,0.75); }
+
+    .visual-bar-parcial {
+      background: linear-gradient(135deg, #14100a 0%, #100c06 100%);
+    }
+    .visual-bar-parcial::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(160,80,60,0.15) 0%, transparent 60%);
+    }
+    .visual-bar-parcial .card-icon { color: rgba(220,160,130,0.85); }
+
+    .visual-bar-completo {
+      background: linear-gradient(135deg, #16101a 0%, #10080e 100%);
+    }
+    .visual-bar-completo::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(180,130,220,0.12) 0%, transparent 60%);
+    }
+    .visual-bar-completo .card-icon { color: rgba(200,160,240,0.85); }
+
+    .visual-bar-mocktail {
+      background: linear-gradient(135deg, #101a12 0%, #08100a 100%);
+    }
+    .visual-bar-mocktail::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(60,140,80,0.15) 0%, transparent 60%);
+    }
+    .visual-bar-mocktail .card-icon { color: rgba(140,210,160,0.85); }
+
+    /* Foto visuals */
+    .visual-foto-essencial {
+      background: linear-gradient(135deg, #151215 0%, #0f0c0f 100%);
+    }
+    .visual-foto-essencial::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(219,169,159,0.08) 0%, transparent 60%);
+    }
+    .visual-foto-essencial .card-icon { color: rgba(219,169,159,0.7); }
+
+    .visual-foto-completo {
+      background: linear-gradient(135deg, #151215 0%, #0f0c0f 100%);
+    }
+    .visual-foto-completo::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(219,169,159,0.13) 0%, transparent 60%);
+    }
+    .visual-foto-completo .card-icon { color: rgba(219,169,159,0.85); }
+
+    .visual-foto-premium {
+      background: linear-gradient(135deg, #15120a 0%, #100e06 100%);
+    }
+    .visual-foto-premium::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 50%, rgba(240,210,140,0.12) 0%, transparent 60%);
+    }
+    .visual-foto-premium .card-icon { color: rgba(240,210,140,0.9); }
+
+    /* Música visuals */
+    .visual-dj {
+      background: linear-gradient(135deg, #101018 0%, #080810 100%);
+    }
+    .visual-dj::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(80,80,200,0.15) 0%, transparent 60%);
+    }
+    .visual-dj .card-icon { color: rgba(160,160,240,0.85); }
+
+    .visual-dj-live {
+      background: linear-gradient(135deg, #100e18 0%, #0c0a12 100%);
+    }
+    .visual-dj-live::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(140,80,180,0.15) 0%, transparent 60%);
+    }
+    .visual-dj-live .card-icon { color: rgba(190,140,230,0.85); }
+
+    .visual-banda {
+      background: linear-gradient(135deg, #14100c 0%, #100c08 100%);
+    }
+    .visual-banda::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(219,169,159,0.12) 0%, transparent 60%);
+    }
+    .visual-banda .card-icon { color: rgba(219,169,159,0.85); }
+
+    .visual-orquestra {
+      background: linear-gradient(135deg, #141414 0%, #0e0e0e 100%);
+    }
+    .visual-orquestra::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 50%, rgba(240,210,150,0.1) 0%, transparent 60%),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 18px,
+          rgba(219,169,159,0.03) 18px,
+          rgba(219,169,159,0.03) 19px
+        );
+    }
+    .visual-orquestra .card-icon { color: rgba(240,215,160,0.9); }
+
+    /* Assessoria visuals */
+    .visual-pensando {
+      background: linear-gradient(135deg, #121212 0%, #0e0e0e 100%);
+    }
+    .visual-pensando .card-icon { color: rgba(156,149,143,0.6); }
+
+    .visual-inicio {
+      background: linear-gradient(135deg, #141016 0%, #100c12 100%);
+    }
+    .visual-inicio::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(219,169,159,0.1) 0%, transparent 60%);
+    }
+    .visual-inicio .card-icon { color: rgba(219,169,159,0.8); }
+
+    .visual-completa {
+      background: linear-gradient(135deg, #16100e 0%, #120c0a 100%);
+    }
+    .visual-completa::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(219,169,159,0.15) 0%, transparent 60%);
+    }
+    .visual-completa .card-icon { color: rgba(219,169,159,1); }
+
+    /* Guest count visuals */
+    .visual-guests {
+      background: linear-gradient(135deg, #111214 0%, #0d0e10 100%);
+    }
+    .visual-guests::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+
+    /* card-icon shared */
+    .card-icon {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-icon svg {
+      width: 40px;
+      height: 40px;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    }
+
+    /* ─── Buttons ─── */
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      height: 52px;
+      background: var(--rose);
+      color: #fff;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--radius-btn);
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(219,169,159,0.25);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-outline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 48px;
+      background: transparent;
+      color: var(--taupe);
+      font-family: var(--font-sans);
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      border: 1px solid var(--taupe-dark);
+      border-radius: var(--radius-btn);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--rose); color: var(--rose); }
+
+    /* ─── SCREEN: INTRO ─── */
+    #screen-intro {
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .intro-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(219,169,159,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .intro-inner {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+    }
+    .intro-logo {
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: 14px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      margin-bottom: 40px;
+    }
+    .intro-logo span { color: var(--rose); }
+    .intro-tag {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--rose);
+      margin-bottom: 16px;
+    }
+    .intro-title {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(38px, 10vw, 58px);
+      line-height: 1.1;
+      color: var(--cream);
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .intro-title em {
+      font-style: italic;
+      color: var(--rose);
+    }
+    .intro-subtitle {
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--taupe);
+      line-height: 1.6;
+      margin-bottom: 40px;
+      max-width: 380px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .intro-cta {
+      max-width: 280px;
+      margin: 0 auto;
+    }
+    .intro-meta {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--taupe-dark);
+      margin-top: 16px;
+    }
+
+    /* ─── Next Button Container ─── */
+    .next-wrap {
+      margin-top: 8px;
+    }
+    .next-hint {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: var(--taupe-dark);
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    /* ─── RESULT SCREEN ─── */
+    .result-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .result-tag {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--rose);
+      margin-bottom: 12px;
+    }
+    .result-title {
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: clamp(20px, 4.5vw, 26px);
+      color: var(--taupe);
+      letter-spacing: 0.02em;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+    .result-range {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(30px, 7vw, 44px);
+      color: var(--cream);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+    .result-range .accent { color: var(--rose); }
+
+    /* Breakdown */
+    .breakdown {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .breakdown-title {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      margin-bottom: 16px;
+    }
+    .breakdown-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .breakdown-row:last-child { margin-bottom: 0; }
+    .breakdown-label {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--cream);
+      flex: 1;
+      min-width: 0;
+    }
+    .breakdown-bar-track {
+      width: 80px;
+      height: 4px;
+      background: rgba(156,149,143,0.15);
+      border-radius: 2px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .breakdown-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rose-dark), var(--rose));
+      border-radius: 2px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .breakdown-value {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--rose);
+      flex-shrink: 0;
+      width: 100px;
+      text-align: right;
+    }
+
+    /* Lead Form */
+    .lead-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .lead-card-title {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(18px, 4vw, 22px);
+      color: var(--cream);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .lead-card-sub {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--taupe);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .form-field {
+      margin-bottom: 12px;
+    }
+    .form-label {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%;
+      height: 46px;
+      background: var(--bg3);
+      border: 1px solid rgba(156,149,143,0.2);
+      border-radius: var(--radius-sm);
+      padding: 0 14px;
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 400;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .form-input::placeholder { color: var(--taupe-dark); }
+    .form-input:focus {
+      border-color: var(--rose);
+      box-shadow: 0 0 0 3px rgba(219,169,159,0.1);
+    }
+    .form-input.error {
+      border-color: #c0392b;
+    }
+    .field-error {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: #e07070;
+      margin-top: 4px;
+      display: none;
+    }
+    .field-error.visible { display: block; }
+
+    /* Success state */
+    .success-state {
+      display: none;
+      text-align: center;
+      padding: 16px 0;
+    }
+    .success-state.visible { display: block; }
+    .success-icon {
+      width: 48px; height: 48px;
+      background: var(--rose-alpha);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .success-icon svg { width: 22px; height: 22px; color: var(--rose); }
+    .success-title {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: 20px;
+      color: var(--cream);
+      margin-bottom: 8px;
+    }
+    .success-sub {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--taupe);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .instagram-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--rose);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: opacity 0.2s;
+    }
+    .instagram-link:hover { opacity: 0.75; }
+    .instagram-link svg { width: 16px; height: 16px; }
+
+    /* ─── Lead Gate Screen ─── */
+    .lead-gate-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .lead-gate-icon {
+      width: 56px; height: 56px;
+      background: var(--rose-alpha);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .lead-gate-icon svg { width: 26px; height: 26px; color: var(--rose); }
+    .lead-gate-title {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(22px, 5vw, 28px);
+      line-height: 1.2;
+      color: var(--cream);
+      margin-bottom: 10px;
+    }
+    .lead-gate-sub {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--taupe);
+      line-height: 1.6;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .lead-gate-sub strong {
+      color: var(--rose);
+      font-weight: 500;
+    }
+    .lead-gate-benefits {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 28px;
+      padding: 16px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .lead-gate-benefit {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--cream);
+      line-height: 1.4;
+    }
+    .lead-gate-benefit svg {
+      width: 16px; height: 16px;
+      color: var(--rose);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .lead-privacy {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--taupe-dark);
+      text-align: center;
+      margin-top: 14px;
+      line-height: 1.4;
+    }
+    .lead-privacy svg {
+      width: 12px; height: 12px;
+      vertical-align: -2px;
+      margin-right: 3px;
+      color: var(--taupe);
+    }
+
+    /* ─── Pulse animation on intro CTA ─── */
+    @keyframes subtlePulse {
+      0%, 100% { box-shadow: 0 4px 16px rgba(219,169,159,0.15); }
+      50% { box-shadow: 0 8px 32px rgba(219,169,159,0.3); }
+    }
+    .btn-pulse {
+      animation: subtlePulse 2.8s ease-in-out infinite;
+    }
+
+    /* ─── Fade in on screen mount ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up {
+      animation: fadeUp 0.5s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+    .fade-up-d1 { animation-delay: 0.05s; opacity: 0; }
+    .fade-up-d2 { animation-delay: 0.12s; opacity: 0; }
+    .fade-up-d3 { animation-delay: 0.2s;  opacity: 0; }
+    .fade-up-d4 { animation-delay: 0.28s; opacity: 0; }
+
+    /* ─── Spacer ─── */
+    .spacer { flex: 1; }
+
+    /* ─── Ring decoration ─── */
+    .ring-deco {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    /* ─── Guests icon row ─── */
+    .guests-dots {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 4px;
+    }
+    .guests-dot {
+      background: currentColor;
+      border-radius: 50%;
+      width: 8px;
+      height: 8px;
+      opacity: 0.7;
+    }
+    .guests-dot.lg { width: 10px; height: 10px; opacity: 0.9; }
+
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ════════════════════ INTRO ════════════════════ -->
+  <section class="screen active" id="screen-intro">
+    <div class="intro-glow"></div>
+    <div class="intro-inner">
+      <div class="intro-logo fade-up fade-up-d1"><span>Noiva</span> S.A.</div>
+
+      <div class="intro-tag fade-up fade-up-d2">Calculadora de Casamento</div>
+      <h1 class="intro-title fade-up fade-up-d2">
+        Quanto Custa<br><em>Casar?</em>
+      </h1>
+      <div class="divider fade-up fade-up-d2"></div>
+      <p class="intro-subtitle fade-up fade-up-d3">
+        Descubra uma estimativa personalizada do seu casamento em menos de 2 minutos
+      </p>
+      <div class="intro-cta fade-up fade-up-d4">
+        <button class="btn-primary btn-pulse" onclick="startQuiz()">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px">
+            <path d="M7 10l3 3 3-3M10 5v8" stroke-linecap="round" stroke-linejoin="round" transform="rotate(-90 10 10)"/>
+          </svg>
+          Começar
+        </button>
+        <p class="intro-meta">7 perguntas &middot; resultado via WhatsApp &middot; gratuito</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ STEP 2: LOCAL ════════════════════ -->
+  <section class="screen" id="screen-local">
+    <div class="container">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Seu casamento</span>
+          <span class="progress-count" id="count-local">1 / 7</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="pbar-local"></div></div>
+      </div>
+      <button class="back-btn" onclick="goBack(1)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5l-5 5 5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Voltar
+      </button>
+      <div class="question-header fade-up fade-up-d1">
+        <div class="step-tag">Localização</div>
+        <h2 class="question-title">Onde será o grande dia?</h2>
+        <p class="question-subtitle">Escolha o tipo de espaço que mais combina com o seu sonho</p>
+      </div>
+      <div class="cards-grid fade-up fade-up-d2" id="cards-local">
+        <div class="opt-card" data-step="local" data-value="campo" onclick="selectCard(this,'local')">
+          <div class="card-visual visual-campo">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M4 36 C12 28 18 32 24 24 C30 16 36 20 44 12" stroke-linecap="round"/>
+                <path d="M4 40 C12 32 20 36 28 28 C36 20 40 24 44 20" stroke-linecap="round" opacity="0.5"/>
+                <circle cx="24" cy="16" r="4"/>
+                <path d="M24 20v8" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Campo / Fazenda</div>
+            <div class="card-hint">Natureza &amp; ar livre</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="local" data-value="praia" onclick="selectCard(this,'local')">
+          <div class="card-visual visual-praia">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M4 32 Q12 24 24 26 Q36 28 44 20" stroke-linecap="round"/>
+                <path d="M4 36 Q14 28 24 30 Q34 32 44 26" stroke-linecap="round" opacity="0.5"/>
+                <path d="M16 28 Q20 20 24 16 Q28 12 28 8" stroke-linecap="round"/>
+                <circle cx="24" cy="14" r="5"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Praia</div>
+            <div class="card-hint">Pôr do sol &amp; brisa do mar</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="local" data-value="igreja" onclick="selectCard(this,'local')">
+          <div class="card-visual visual-igreja">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M24 4v6M21 7h6"/>
+                <path d="M14 18h20v26H14z"/>
+                <path d="M14 18L24 10l10 8"/>
+                <rect x="20" y="30" width="8" height="14"/>
+                <path d="M20 22h8M20 26h8"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Igreja + Salão</div>
+            <div class="card-hint">Tradicional &amp; elegante</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="local" data-value="exclusivo" onclick="selectCard(this,'local')">
+          <div class="card-visual visual-exclusivo">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M8 40V18L24 6l16 12v22H8z"/>
+                <path d="M8 18h32"/>
+                <path d="M18 40V28h12v12"/>
+                <circle cx="24" cy="14" r="3"/>
+                <path d="M16 22h4M28 22h4M16 28h4M28 28h4"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Espaço Exclusivo</div>
+            <div class="card-hint">Luxo &amp; exclusividade</div>
+          </div>
+        </div>
+      </div>
+      <div class="next-wrap fade-up fade-up-d3">
+        <button class="btn-primary" id="next-local" disabled onclick="goNext(2)">Continuar</button>
+        <p class="next-hint">Selecione uma opção para continuar</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ STEP 3: CONVIDADOS ════════════════════ -->
+  <section class="screen" id="screen-convidados">
+    <div class="container">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Seu casamento</span>
+          <span class="progress-count">2 / 7</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="pbar-convidados"></div></div>
+      </div>
+      <button class="back-btn" onclick="goBack(2)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5l-5 5 5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Voltar
+      </button>
+      <div class="question-header fade-up fade-up-d1">
+        <div class="step-tag">Convidados</div>
+        <h2 class="question-title">Quantos convidados você imagina?</h2>
+        <p class="question-subtitle">O número de pessoas é um dos maiores fatores no custo total</p>
+      </div>
+      <div class="cards-grid fade-up fade-up-d2" id="cards-convidados">
+        <div class="opt-card" data-step="convidados" data-value="ate100" onclick="selectCard(this,'convidados')">
+          <div class="card-visual visual-guests" style="background:linear-gradient(135deg,#121416 0%,#0e1012 100%);">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" style="color:rgba(219,169,159,0.5)">
+                <circle cx="18" cy="16" r="5"/>
+                <circle cx="30" cy="16" r="5"/>
+                <path d="M8 38c0-6 4.5-10 10-10h12c5.5 0 10 4 10 10" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Até 100</div>
+            <div class="card-hint">Íntimo &amp; especial</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="convidados" data-value="100-200" onclick="selectCard(this,'convidados')">
+          <div class="card-visual visual-guests" style="background:linear-gradient(135deg,#141416 0%,#101012 100%);">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" style="color:rgba(219,169,159,0.65)">
+                <circle cx="12" cy="16" r="4"/>
+                <circle cx="24" cy="14" r="5"/>
+                <circle cx="36" cy="16" r="4"/>
+                <path d="M4 38c0-5 3-8 8-8h24c5 0 8 3 8 8" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">100 – 200</div>
+            <div class="card-hint">A festa ideal</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="convidados" data-value="200-350" onclick="selectCard(this,'convidados')">
+          <div class="card-visual visual-guests" style="background:linear-gradient(135deg,#151416 0%,#111012 100%);">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" style="color:rgba(219,169,159,0.8)">
+                <circle cx="8" cy="18" r="3.5"/>
+                <circle cx="18" cy="14" r="4.5"/>
+                <circle cx="30" cy="14" r="4.5"/>
+                <circle cx="40" cy="18" r="3.5"/>
+                <circle cx="24" cy="20" r="4"/>
+                <path d="M2 40c0-4 2.5-7 6-7h32c3.5 0 6 3 6 7" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">200 – 350</div>
+            <div class="card-hint">Grande celebração</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="convidados" data-value="350+" onclick="selectCard(this,'convidados')">
+          <div class="card-visual visual-guests" style="background:linear-gradient(135deg,#161416 0%,#121012 100%);">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" style="color:rgba(219,169,159,1)">
+                <circle cx="6" cy="20" r="3"/>
+                <circle cx="14" cy="15" r="4"/>
+                <circle cx="24" cy="13" r="4.5"/>
+                <circle cx="34" cy="15" r="4"/>
+                <circle cx="42" cy="20" r="3"/>
+                <circle cx="19" cy="22" r="3"/>
+                <circle cx="29" cy="22" r="3"/>
+                <path d="M2 42c0-4 2-6 5-6h34c3 0 5 2 5 6" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">350+</div>
+            <div class="card-hint">Evento memorável</div>
+          </div>
+        </div>
+      </div>
+      <div class="next-wrap fade-up fade-up-d3">
+        <button class="btn-primary" id="next-convidados" disabled onclick="goNext(3)">Continuar</button>
+        <p class="next-hint">Selecione uma opção para continuar</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ STEP 4: DECORAÇÃO ════════════════════ -->
+  <section class="screen" id="screen-decoracao">
+    <div class="container">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Seu casamento</span>
+          <span class="progress-count">3 / 7</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="pbar-decoracao"></div></div>
+      </div>
+      <button class="back-btn" onclick="goBack(3)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5l-5 5 5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Voltar
+      </button>
+      <div class="question-header fade-up fade-up-d1">
+        <div class="step-tag">Decoração</div>
+        <h2 class="question-title">Qual estilo combina com você?</h2>
+        <p class="question-subtitle">A decoração transforma o ambiente e cria a atmosfera do seu dia</p>
+      </div>
+      <div class="cards-grid fade-up fade-up-d2" id="cards-decoracao">
+        <div class="opt-card" data-step="decoracao" data-value="minimalista" onclick="selectCard(this,'decoracao')">
+          <div class="card-visual visual-minimal">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="12" y="12" width="24" height="24" rx="2"/>
+                <line x1="12" y1="24" x2="36" y2="24"/>
+                <line x1="24" y1="12" x2="24" y2="36"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Minimalista</div>
+            <div class="card-hint">Clean &amp; atemporal</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="decoracao" data-value="romantica" onclick="selectCard(this,'decoracao')">
+          <div class="card-visual visual-romantica">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M24 38 C20 34 10 28 10 20 C10 14 14 10 19 10 C21.5 10 23.5 11 24 13 C24.5 11 26.5 10 29 10 C34 10 38 14 38 20 C38 28 28 34 24 38Z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Romântica</div>
+            <div class="card-hint">Flores &amp; delicadeza</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="decoracao" data-value="luxuosa" onclick="selectCard(this,'decoracao')">
+          <div class="card-visual visual-luxo">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polygon points="24,6 29,18 42,18 32,26 36,38 24,30 12,38 16,26 6,18 19,18"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Luxuosa</div>
+            <div class="card-hint">Abundância &amp; grandiosidade</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="decoracao" data-value="rustica" onclick="selectCard(this,'decoracao')">
+          <div class="card-visual visual-rustica">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M10 38 L10 22 L24 10 L38 22 L38 38"/>
+                <path d="M18 38 L18 28 Q18 24 24 24 Q30 24 30 28 L30 38"/>
+                <path d="M8 38 L40 38"/>
+                <path d="M16 22 Q24 18 32 22"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Rústica / Boho</div>
+            <div class="card-hint">Natural &amp; descontraída</div>
+          </div>
+        </div>
+      </div>
+      <div class="next-wrap fade-up fade-up-d3">
+        <button class="btn-primary" id="next-decoracao" disabled onclick="goNext(4)">Continuar</button>
+        <p class="next-hint">Selecione uma opção para continuar</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ STEP 5: BAR ════════════════════ -->
+  <section class="screen" id="screen-bar">
+    <div class="container">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Seu casamento</span>
+          <span class="progress-count">4 / 7</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="pbar-bar"></div></div>
+      </div>
+      <button class="back-btn" onclick="goBack(4)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5l-5 5 5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Voltar
+      </button>
+      <div class="question-header fade-up fade-up-d1">
+        <div class="step-tag">Bar &amp; Bebidas</div>
+        <h2 class="question-title">Como será o bar?</h2>
+        <p class="question-subtitle">O serviço de bar é lembrado pelos convidados por muito tempo</p>
+      </div>
+      <div class="cards-grid fade-up fade-up-d2" id="cards-bar">
+        <div class="opt-card" data-step="bar" data-value="basico" onclick="selectCard(this,'bar')">
+          <div class="card-visual visual-bar-basic">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 10 L14 26 L14 40 L34 40 L34 26 L28 10 Z"/>
+                <line x1="12" y1="26" x2="36" y2="26"/>
+                <path d="M20 10 H28"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Básico</div>
+            <div class="card-hint">Refrigerante, água &amp; suco</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="bar" data-value="parcial" onclick="selectCard(this,'bar')">
+          <div class="card-visual visual-bar-parcial">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M16 10 L10 24 Q10 32 18 32 Q26 32 26 24 L20 10 Z"/>
+                <line x1="8" y1="24" x2="28" y2="24"/>
+                <path d="M26 24 Q26 18 32 14 Q36 12 38 16 Q38 22 34 26 L30 40 L28 40"/>
+                <path d="M28 40 L32 40"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Open Bar Parcial</div>
+            <div class="card-hint">Cerveja, vinho &amp; espumante</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="bar" data-value="completo" onclick="selectCard(this,'bar')">
+          <div class="card-visual visual-bar-completo">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M16 8 L10 24 Q10 34 18 34 Q26 34 26 24 L20 8 Z"/>
+                <line x1="8" y1="24" x2="28" y2="24"/>
+                <path d="M28 20 Q34 14 40 18 Q42 20 40 24 L36 36"/>
+                <path d="M32 36 L40 36"/>
+                <circle cx="38" cy="12" r="3"/>
+                <path d="M38 9 L38 6"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Open Bar Completo</div>
+            <div class="card-hint">Drinks, coquetéis &amp; premium</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="bar" data-value="mocktail" onclick="selectCard(this,'bar')">
+          <div class="card-visual visual-bar-mocktail">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M18 8 L12 24 Q12 34 20 34 Q28 34 28 24 L22 8 Z"/>
+                <line x1="10" y1="24" x2="30" y2="24"/>
+                <path d="M22 34 L22 40"/>
+                <path d="M16 40 L28 40"/>
+                <path d="M28 16 Q32 12 36 16 Q40 20 36 24 Q34 26 30 24"/>
+                <circle cx="30" cy="20" r="1.5" fill="currentColor"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Sem Álcool Premium</div>
+            <div class="card-hint">Craft mocktails &amp; especiais</div>
+          </div>
+        </div>
+      </div>
+      <div class="next-wrap fade-up fade-up-d3">
+        <button class="btn-primary" id="next-bar" disabled onclick="goNext(5)">Continuar</button>
+        <p class="next-hint">Selecione uma opção para continuar</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ STEP 6: FOTO ════════════════════ -->
+  <section class="screen" id="screen-foto">
+    <div class="container">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Seu casamento</span>
+          <span class="progress-count">5 / 7</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="pbar-foto"></div></div>
+      </div>
+      <button class="back-btn" onclick="goBack(5)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5l-5 5 5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Voltar
+      </button>
+      <div class="question-header fade-up fade-up-d1">
+        <div class="step-tag">Foto &amp; Filme</div>
+        <h2 class="question-title">Registro do grande dia?</h2>
+        <p class="question-subtitle">As memórias visuais durarão para sempre — como você quer guardar?</p>
+      </div>
+      <div class="cards-grid cols-3 fade-up fade-up-d2" id="cards-foto">
+        <div class="opt-card" data-step="foto" data-value="essencial" onclick="selectCard(this,'foto')">
+          <div class="card-visual visual-foto-essencial">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="6" y="14" width="36" height="26" rx="3"/>
+                <circle cx="24" cy="27" r="7"/>
+                <circle cx="24" cy="27" r="3"/>
+                <path d="M16 14 L20 8 L28 8 L32 14"/>
+                <circle cx="38" cy="20" r="2"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Essencial</div>
+            <div class="card-hint">1 foto + 1 vídeo</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="foto" data-value="completo" onclick="selectCard(this,'foto')">
+          <div class="card-visual visual-foto-completo">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="4" y="16" width="28" height="22" rx="2"/>
+                <circle cx="18" cy="27" r="5"/>
+                <circle cx="18" cy="27" r="2"/>
+                <path d="M12 16 L15 11 L21 11 L24 16"/>
+                <path d="M32 22 L42 18 L42 34 L32 30 Z"/>
+                <path d="M36 8 C40 4 44 8 40 12" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Completo</div>
+            <div class="card-hint">2 equipes + drone</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="foto" data-value="premium" onclick="selectCard(this,'foto')">
+          <div class="card-visual visual-foto-premium">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="4" y="16" width="28" height="22" rx="2"/>
+                <circle cx="18" cy="27" r="5"/>
+                <circle cx="18" cy="27" r="2"/>
+                <path d="M12 16 L15 11 L21 11 L24 16"/>
+                <path d="M32 22 L42 18 L42 34 L32 30 Z"/>
+                <path d="M36 8 C40 4 44 8 40 12" stroke-linecap="round"/>
+                <path d="M32 12 L36 8"/>
+                <polygon points="18,6 20,10 24,10 21,13 22,17 18,15 14,17 15,13 12,10 16,10" style="stroke-width:1"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Premium</div>
+            <div class="card-hint">Equipe completa + álbum</div>
+          </div>
+        </div>
+      </div>
+      <div class="next-wrap fade-up fade-up-d3">
+        <button class="btn-primary" id="next-foto" disabled onclick="goNext(6)">Continuar</button>
+        <p class="next-hint">Selecione uma opção para continuar</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ STEP 7: MÚSICA ════════════════════ -->
+  <section class="screen" id="screen-musica">
+    <div class="container">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Seu casamento</span>
+          <span class="progress-count">6 / 7</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="pbar-musica"></div></div>
+      </div>
+      <button class="back-btn" onclick="goBack(6)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5l-5 5 5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Voltar
+      </button>
+      <div class="question-header fade-up fade-up-d1">
+        <div class="step-tag">Música &amp; Entretenimento</div>
+        <h2 class="question-title">A trilha sonora do seu casamento?</h2>
+        <p class="question-subtitle">A música cria a energia e a emoção de cada momento</p>
+      </div>
+      <div class="cards-grid fade-up fade-up-d2" id="cards-musica">
+        <div class="opt-card" data-step="musica" data-value="dj" onclick="selectCard(this,'musica')">
+          <div class="card-visual visual-dj">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="24" cy="24" r="14"/>
+                <circle cx="24" cy="24" r="4"/>
+                <circle cx="24" cy="24" r="1.5" fill="currentColor"/>
+                <line x1="24" y1="10" x2="24" y2="20"/>
+                <line x1="24" y1="28" x2="24" y2="38"/>
+                <line x1="10" y1="24" x2="20" y2="24"/>
+                <line x1="28" y1="24" x2="38" y2="24"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">DJ</div>
+            <div class="card-hint">Energia &amp; versatilidade</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="musica" data-value="dj-cerimonia" onclick="selectCard(this,'musica')">
+          <div class="card-visual visual-dj-live">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="16" cy="24" r="10"/>
+                <circle cx="16" cy="24" r="3"/>
+                <path d="M28 10 C32 8 36 10 38 14 C40 18 38 28 34 30" stroke-linecap="round"/>
+                <path d="M32 14 C34 13 36 14 37 16 C38 18 37 22 35 24" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">DJ + Cerimônia</div>
+            <div class="card-hint">DJ e violino / sax ao vivo</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="musica" data-value="banda" onclick="selectCard(this,'musica')">
+          <div class="card-visual visual-banda">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M8 38 L8 20 Q8 16 12 14 L16 12 L16 38"/>
+                <path d="M22 38 L22 14 L30 10 L30 38"/>
+                <path d="M36 38 L36 18 Q36 14 40 16 L40 38"/>
+                <path d="M14 22 Q18 20 22 22"/>
+                <path d="M28 16 Q32 14 36 16"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Banda ao Vivo</div>
+            <div class="card-hint">Show completo na pista</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="musica" data-value="orquestra" onclick="selectCard(this,'musica')">
+          <div class="card-visual visual-orquestra">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M10 32 Q10 24 16 20 Q22 16 24 10"/>
+                <path d="M24 10 Q26 16 32 20 Q38 24 38 32"/>
+                <path d="M8 32 L40 32"/>
+                <path d="M14 32 L14 40"/>
+                <path d="M24 32 L24 40"/>
+                <path d="M34 32 L34 40"/>
+                <path d="M10 40 L38 40"/>
+                <circle cx="24" cy="8" r="3"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Orquestra / Show</div>
+            <div class="card-hint">Experiência inesquecível</div>
+          </div>
+        </div>
+      </div>
+      <div class="next-wrap fade-up fade-up-d3">
+        <button class="btn-primary" id="next-musica" disabled onclick="goNext(7)">Continuar</button>
+        <p class="next-hint">Selecione uma opção para continuar</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ STEP 8: ASSESSORIA ════════════════════ -->
+  <section class="screen" id="screen-assessoria">
+    <div class="container">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Seu casamento</span>
+          <span class="progress-count">7 / 7</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="pbar-assessoria"></div></div>
+      </div>
+      <button class="back-btn" onclick="goBack(7)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5l-5 5 5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Voltar
+      </button>
+      <div class="question-header fade-up fade-up-d1">
+        <div class="step-tag">Assessoria</div>
+        <h2 class="question-title">Você pretende contratar uma assessoria?</h2>
+        <p class="question-subtitle">Uma boa assessoria transforma o planejamento e garante o seu sonho</p>
+      </div>
+      <div class="cards-grid cols-3 fade-up fade-up-d2" id="cards-assessoria">
+        <div class="opt-card" data-step="assessoria" data-value="pensando" onclick="selectCard(this,'assessoria')">
+          <div class="card-visual visual-pensando">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="24" cy="20" r="12"/>
+                <path d="M24 8 C30 8 34 12 34 18 C34 22 32 25 29 27 L29 32 L19 32 L19 27 C16 25 14 22 14 18 C14 12 18 8 24 8Z"/>
+                <line x1="19" y1="35" x2="29" y2="35"/>
+                <line x1="21" y1="38" x2="27" y2="38"/>
+                <circle cx="20" cy="19" r="1.5" fill="currentColor" opacity="0.6"/>
+                <circle cx="28" cy="19" r="1.5" fill="currentColor" opacity="0.6"/>
+                <path d="M20 23 Q24 26 28 23" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Ainda pensando</div>
+            <div class="card-hint">Estou pesquisando</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="assessoria" data-value="inicio" onclick="selectCard(this,'assessoria')">
+          <div class="card-visual visual-inicio">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M8 36 L8 28 L16 20 L24 28 L32 20 L40 28 L40 36"/>
+                <path d="M8 36 L40 36"/>
+                <circle cx="24" cy="14" r="6"/>
+                <path d="M20 14 L24 10 L28 14"/>
+                <path d="M24 10 L24 6"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Início / Parcial</div>
+            <div class="card-hint">Nos últimos meses</div>
+          </div>
+        </div>
+        <div class="opt-card" data-step="assessoria" data-value="completa" onclick="selectCard(this,'assessoria')">
+          <div class="card-visual visual-completa">
+            <div class="card-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M24 6 L28 16 L40 16 L30 23 L34 34 L24 27 L14 34 L18 23 L8 16 L20 16 Z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card-check">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Completa</div>
+            <div class="card-hint">Do início ao fim</div>
+          </div>
+        </div>
+      </div>
+      <div class="next-wrap fade-up fade-up-d3">
+        <button class="btn-primary" id="next-assessoria" disabled onclick="calculateAndShow()">Ver minha estimativa</button>
+        <p class="next-hint">Selecione uma opção para continuar</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ LEAD GATE ════════════════════ -->
+  <section class="screen" id="screen-lead">
+    <div class="container">
+      <div class="lead-gate-header fade-up fade-up-d1">
+        <div class="lead-gate-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 12l2 2 4-4"/>
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+          </svg>
+        </div>
+        <div class="logo" style="margin-bottom:16px;"><span class="noiva">Noiva</span> <span class="sa">S.A.</span></div>
+        <h2 class="lead-gate-title">Sua estimativa está pronta!</h2>
+        <p class="lead-gate-sub">Preencha seus dados abaixo e receba o <strong>resultado personalizado</strong> direto no seu WhatsApp com dicas de como economizar.</p>
+      </div>
+
+      <div class="lead-gate-benefits fade-up fade-up-d2">
+        <div class="lead-gate-benefit">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Estimativa detalhada por categoria
+        </div>
+        <div class="lead-gate-benefit">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Dicas personalizadas para economizar
+        </div>
+        <div class="lead-gate-benefit">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3.5 3.5L13 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Conversa com especialista em planejamento
+        </div>
+      </div>
+
+      <div class="lead-card fade-up fade-up-d3" style="border:none;background:transparent;padding:0;">
+        <form id="lead-form" onsubmit="submitLead(event)" novalidate>
+          <div class="form-field">
+            <label class="form-label" for="f-nome">Seu nome</label>
+            <input class="form-input" id="f-nome" type="text" placeholder="Como você se chama?" autocomplete="given-name" />
+            <div class="field-error" id="err-nome">Por favor, informe seu nome.</div>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="f-whatsapp">WhatsApp</label>
+            <input class="form-input" id="f-whatsapp" type="tel" placeholder="(11) 9 0000-0000" autocomplete="tel" />
+            <div class="field-error" id="err-whatsapp">Por favor, informe um WhatsApp válido.</div>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="f-email">E-mail</label>
+            <input class="form-input" id="f-email" type="email" placeholder="seu@email.com.br" autocomplete="email" />
+            <div class="field-error" id="err-email">Por favor, informe um e-mail válido.</div>
+          </div>
+          <div style="margin-top:20px;">
+            <button type="submit" class="btn-primary btn-pulse" id="submit-btn">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+              Receber resultado no WhatsApp
+            </button>
+          </div>
+        </form>
+        <p class="lead-privacy">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>
+          Seus dados estão seguros. Não compartilhamos com terceiros.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  /* ═══════════════════════════════════════════════
+     STATE
+  ═══════════════════════════════════════════════ */
+  const state = {
+    local: null,
+    convidados: null,
+    decoracao: null,
+    bar: null,
+    foto: null,
+    musica: null,
+    assessoria: null
+  };
+
+  /* ═══════════════════════════════════════════════
+     COST DATA
+  ═══════════════════════════════════════════════ */
+  const costs = {
+    local: {
+      campo:     { min: 15000, max: 30000, label: 'Campo / Fazenda' },
+      praia:     { min: 20000, max: 40000, label: 'Praia' },
+      igreja:    { min: 10000, max: 25000, label: 'Igreja + Salão' },
+      exclusivo: { min: 25000, max: 60000, label: 'Espaço Exclusivo' }
+    },
+    decoracao: {
+      minimalista: { min: 5000,  max: 12000, label: 'Decoração Minimalista' },
+      romantica:   { min: 12000, max: 25000, label: 'Decoração Romântica' },
+      luxuosa:     { min: 25000, max: 50000, label: 'Decoração Luxuosa' },
+      rustica:     { min: 8000,  max: 18000, label: 'Decoração Rústica / Boho' }
+    },
+    bar: {
+      basico:    { min: 3000,  max: 5000,  label: 'Bar Básico' },
+      parcial:   { min: 8000,  max: 15000, label: 'Open Bar Parcial' },
+      completo:  { min: 15000, max: 30000, label: 'Open Bar Completo' },
+      mocktail:  { min: 5000,  max: 10000, label: 'Bar Sem Álcool Premium' }
+    },
+    foto: {
+      essencial: { min: 5000,  max: 8000,  label: 'Foto & Filme Essencial' },
+      completo:  { min: 10000, max: 18000, label: 'Foto & Filme Completo' },
+      premium:   { min: 18000, max: 35000, label: 'Foto & Filme Premium' }
+    },
+    musica: {
+      dj:             { min: 3000,  max: 6000,  label: 'DJ' },
+      'dj-cerimonia': { min: 6000,  max: 12000, label: 'DJ + Cerimônia ao Vivo' },
+      banda:          { min: 12000, max: 25000, label: 'Banda ao Vivo' },
+      orquestra:      { min: 25000, max: 50000, label: 'Orquestra / Show' }
+    }
+  };
+
+  const guestMultipliers = {
+    'ate100':  0.7,
+    '100-200': 1.0,
+    '200-350': 1.4,
+    '350+':    1.8
+  };
+
+  const TOTAL_STEPS = 7;
+
+  /* ═══════════════════════════════════════════════
+     SCREEN NAVIGATION
+  ═══════════════════════════════════════════════ */
+  const screenMap = [
+    'screen-intro',
+    'screen-local',
+    'screen-convidados',
+    'screen-decoracao',
+    'screen-bar',
+    'screen-foto',
+    'screen-musica',
+    'screen-assessoria',
+    'screen-lead'
+  ];
+
+  function getScreen(idx) {
+    return document.getElementById(screenMap[idx]);
+  }
+
+  function showScreen(fromIdx, toIdx) {
+    const from = getScreen(fromIdx);
+    const to   = getScreen(toIdx);
+    const forward = toIdx > fromIdx;
+
+    from.classList.remove('active');
+    from.classList.add(forward ? 'exit-left' : 'exit-right');
+
+    to.style.display = 'flex';
+    to.classList.add(forward ? 'enter-right' : 'enter-left');
+
+    // Trigger reflow for animation
+    to.getBoundingClientRect();
+
+    setTimeout(() => {
+      from.classList.remove('exit-left', 'exit-right');
+      from.style.display = '';
+      to.classList.remove('enter-right', 'enter-left');
+      to.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }, 380);
+  }
+
+  let currentScreen = 0;
+
+  function startQuiz() {
+    showScreen(0, 1);
+    currentScreen = 1;
+    updateProgress(1);
+  }
+
+  function goNext(nextStepIdx) {
+    showScreen(currentScreen, nextStepIdx);
+    currentScreen = nextStepIdx;
+    updateProgress(nextStepIdx);
+  }
+
+  function goBack(currentIdx) {
+    const prev = currentIdx - 1;
+    showScreen(currentIdx, prev);
+    currentScreen = prev;
+    updateProgress(prev);
+  }
+
+  function updateProgress(screenIdx) {
+    // screenIdx 1–7 are the question steps, 8 is result
+    if (screenIdx === 0 || screenIdx >= 8) return;
+    const pct = ((screenIdx - 1) / TOTAL_STEPS) * 100;
+    const bars = document.querySelectorAll('.progress-fill');
+    bars.forEach(b => b.style.width = pct + '%');
+  }
+
+  /* ═══════════════════════════════════════════════
+     CARD SELECTION
+  ═══════════════════════════════════════════════ */
+  function selectCard(el, step) {
+    const container = document.getElementById('cards-' + step);
+    container.querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    state[step] = el.dataset.value;
+
+    const nextBtn = document.getElementById('next-' + step);
+    if (nextBtn) {
+      nextBtn.disabled = false;
+      nextBtn.classList.remove('btn-disabled');
+    }
+  }
+
+  /* ═══════════════════════════════════════════════
+     CALCULATION
+  ═══════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════
+     CALCULATION
+  ═══════════════════════════════════════════════ */
+  let calcResult = { totalMin: 0, totalMax: 0, breakdown: [], multiplier: 1 };
+
+  function calculateAndShow() {
+    const multiplier = guestMultipliers[state.convidados] || 1.0;
+
+    let totalMin = 0;
+    let totalMax = 0;
+    const breakdown = [];
+
+    ['local', 'decoracao', 'bar', 'foto', 'musica'].forEach(cat => {
+      const sel = state[cat];
+      if (!sel || !costs[cat][sel]) return;
+      const c = costs[cat][sel];
+      const cMin = Math.round(c.min * multiplier);
+      const cMax = Math.round(c.max * multiplier);
+      totalMin += cMin;
+      totalMax += cMax;
+      breakdown.push({ label: c.label, min: cMin, max: cMax });
+    });
+
+    calcResult = { totalMin, totalMax, breakdown, multiplier };
+
+    // Go to lead gate screen (index 8)
+    showScreen(currentScreen, 8);
+    currentScreen = 8;
+  }
+
+  function formatCurrency(val) {
+    return 'R$\u202F' + val.toLocaleString('pt-BR');
+  }
+  function formatCurrencyShort(val) {
+    return 'R$\u202F' + Math.round(val / 1000).toLocaleString('pt-BR') + 'K';
+  }
+
+  /* ═══════════════════════════════════════════════
+     WHATSAPP NUMBER — Noiva S.A.
+  ═══════════════════════════════════════════════ */
+  const NOIVASA_WHATSAPP = '5511918548938';
+
+  /* ═══════════════════════════════════════════════
+     FORM SUBMISSION → WhatsApp redirect
+  ═══════════════════════════════════════════════ */
+  function submitLead(e) {
+    e.preventDefault();
+
+    const nome     = document.getElementById('f-nome');
+    const whatsapp = document.getElementById('f-whatsapp');
+    const email    = document.getElementById('f-email');
+    let valid = true;
+
+    // Reset errors
+    ['nome','whatsapp','email'].forEach(f => {
+      document.getElementById('f-' + f).classList.remove('error');
+      document.getElementById('err-' + f).classList.remove('visible');
+    });
+
+    if (!nome.value.trim() || nome.value.trim().length < 2) {
+      nome.classList.add('error');
+      document.getElementById('err-nome').classList.add('visible');
+      valid = false;
+    }
+    const phone = whatsapp.value.replace(/\D/g, '');
+    if (phone.length < 10) {
+      whatsapp.classList.add('error');
+      document.getElementById('err-whatsapp').classList.add('visible');
+      valid = false;
+    }
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(email.value.trim())) {
+      email.classList.add('error');
+      document.getElementById('err-email').classList.add('visible');
+      valid = false;
+    }
+    if (!valid) return;
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = 'Enviando...';
+
+    const leadName = nome.value.trim();
+
+    const leadData = {
+      nome:       leadName,
+      whatsapp:   phone,
+      email:      email.value.trim().toLowerCase(),
+      selections: { ...state },
+      estimatedMin: calcResult.totalMin,
+      estimatedMax: calcResult.totalMax,
+      multiplier: calcResult.multiplier,
+      timestamp:  new Date().toISOString(),
+      source:     'quiz-quanto-custa'
+    };
+
+    // Log to console — replace with webhook integration
+    console.log('[Noiva SA Quiz] Lead captured:', JSON.stringify(leadData, null, 2));
+
+    // Build WhatsApp message with estimate summary
+    const breakdownText = calcResult.breakdown
+      .map(b => `• ${b.label}: ${formatCurrencyShort(b.min)} – ${formatCurrencyShort(b.max)}`)
+      .join('\n');
+
+    const wppMsg = `Oi! Sou ${leadName} e acabei de fazer o quiz "Quanto Custa Casar?" 💍\n\nMinha estimativa ficou entre *${formatCurrencyShort(calcResult.totalMin)}* e *${formatCurrencyShort(calcResult.totalMax)}*\n\n${breakdownText}\n\nGostaria de receber o resultado completo e conversar sobre o planejamento do meu casamento!`;
+
+    const wppUrl = 'https://wa.me/' + NOIVASA_WHATSAPP + '?text=' + encodeURIComponent(wppMsg);
+
+    // Redirect to WhatsApp after brief delay
+    setTimeout(() => {
+      window.open(wppUrl, '_blank');
+      // Show confirmation in case redirect is blocked
+      btn.innerHTML = 'Abrindo WhatsApp...';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg> Não abriu? Toque aqui`;
+      }, 2000);
+    }, 600);
+  }
+
+  /* ═══════════════════════════════════════════════
+     WHATSAPP MASK
+  ═══════════════════════════════════════════════ */
+  document.getElementById('f-whatsapp').addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length >= 7) {
+      v = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
+    } else if (v.length >= 3) {
+      v = '(' + v.slice(0,2) + ') ' + v.slice(2);
+    } else if (v.length >= 1) {
+      v = '(' + v;
+    }
+    e.target.value = v;
+  });
+</script>
+
+</body>
+</html>

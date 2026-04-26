@@ -1,0 +1,541 @@
+---
+---
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pesquisa MDV - Máquina de Vendas | Reis IA</title>
+  <meta name="description" content="Ajude-nos a criar o melhor conteúdo para você. Responda a pesquisa do programa MDV." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000;
+      --surface-1: #0A0A0A;
+      --surface-2: #111;
+      --surface-3: #1A1A1A;
+      --border: rgba(255,255,255,0.08);
+      --border-focus: #4A90FF;
+      --text-primary: #fff;
+      --text-secondary: rgba(255,255,255,0.6);
+      --text-muted: rgba(255,255,255,0.35);
+      --blue: #4A90FF;
+      --blue-soft: rgba(74,144,255,0.1);
+      --blue-hover: rgba(74,144,255,0.15);
+      --green: #22C55E;
+      --green-soft: rgba(34,197,94,0.1);
+      --red: #EF4444;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .brand {
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .brand span { color: var(--blue); }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 16px;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 15px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .time-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 20px;
+    }
+
+    .time-badge svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--text-muted);
+    }
+
+    .form-section {
+      margin-bottom: 40px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .field {
+      margin-bottom: 24px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .field label .required {
+      color: var(--blue);
+      margin-left: 2px;
+    }
+
+    .field .hint {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 15px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--blue-soft);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    textarea { resize: vertical; min-height: 100px; }
+
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .option-group.grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .option-item {
+      position: relative;
+    }
+
+    .option-item input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .option-item label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 400;
+      transition: all 0.2s;
+    }
+
+    .option-item label:hover {
+      background: var(--blue-soft);
+      border-color: rgba(74,144,255,0.2);
+    }
+
+    .option-item input:checked + label {
+      background: var(--blue-soft);
+      border-color: var(--blue);
+      color: var(--text-primary);
+    }
+
+    .check-mark {
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .radio-mark {
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .option-item input:checked + label .check-mark,
+    .option-item input:checked + label .radio-mark {
+      border-color: var(--blue);
+      background: var(--blue);
+    }
+
+    .option-item input:checked + label .check-mark::after {
+      content: '';
+      width: 10px;
+      height: 6px;
+      border-left: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(-45deg) translateY(-1px);
+    }
+
+    .option-item input:checked + label .radio-mark::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .submit-btn:hover { opacity: 0.9; }
+    .submit-btn:active { transform: scale(0.99); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .success-screen.active { display: block; }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--green-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .success-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: var(--green);
+    }
+
+    .success-screen h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .success-screen p {
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+
+    .error-msg {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      color: var(--red);
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .error-msg.active { display: block; }
+
+    .form-container.hidden { display: none; }
+
+    .footer {
+      text-align: center;
+      padding: 40px 0 20px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 24px 16px 60px; }
+      .header h1 { font-size: 22px; }
+      .option-group.grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">REIS <span>[IA]</span></div>
+      <h1>MDV vai ser atualizado.<br/>Mas antes, preciso ouvir vocês.</h1>
+      <p>O Máquina de Vendas vai ganhar mais conteúdos, mais profundidade e mais resultado. Só que quem vai definir o que entra sou eu junto com vocês. Responde aqui com sinceridade — cada resposta vai ser lida por mim pessoalmente.</p>
+      <div class="time-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+        2 minutos
+      </div>
+    </div>
+
+    <div id="error-msg" class="error-msg"></div>
+
+    <form id="survey-form" class="form-container">
+
+      <div class="form-section">
+        <div class="section-label">Seus Dados</div>
+
+        <div class="field">
+          <label>Nome completo <span class="required">*</span></label>
+          <input type="text" name="nome" required placeholder="Seu nome" />
+        </div>
+
+        <div class="field">
+          <label>Email <span class="required">*</span></label>
+          <input type="email" name="email" required placeholder="seu@email.com" />
+        </div>
+
+        <div class="field">
+          <label>WhatsApp <span class="required">*</span></label>
+          <input type="tel" name="whatsapp" required placeholder="(11) 99999-9999" />
+        </div>
+
+        <div class="field">
+          <label>O que você faz hoje?</label>
+          <div class="hint">Seu negócio, cargo, área de atuação</div>
+          <input type="text" name="negocio" placeholder="Ex: Dono de agência, Freelancer, CLT em marketing..." />
+        </div>
+
+        <div class="field">
+          <label>Faturamento mensal atual (aproximado)</label>
+          <div class="option-group">
+            <div class="option-item">
+              <input type="radio" name="faturamento" id="fat_1" value="Ainda não faturo" />
+              <label for="fat_1"><span class="radio-mark"></span>Ainda não faturo / estou começando</label>
+            </div>
+            <div class="option-item">
+              <input type="radio" name="faturamento" id="fat_2" value="Até R$5.000" />
+              <label for="fat_2"><span class="radio-mark"></span>Até R$5.000/mês</label>
+            </div>
+            <div class="option-item">
+              <input type="radio" name="faturamento" id="fat_3" value="R$5.000 a R$15.000" />
+              <label for="fat_3"><span class="radio-mark"></span>R$5.000 a R$15.000/mês</label>
+            </div>
+            <div class="option-item">
+              <input type="radio" name="faturamento" id="fat_4" value="R$15.000 a R$50.000" />
+              <label for="fat_4"><span class="radio-mark"></span>R$15.000 a R$50.000/mês</label>
+            </div>
+            <div class="option-item">
+              <input type="radio" name="faturamento" id="fat_5" value="Acima de R$50.000" />
+              <label for="fat_5"><span class="radio-mark"></span>Acima de R$50.000/mês</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-label">Onde você está hoje</div>
+
+        <div class="field">
+          <label>Me conta seu momento agora <span class="required">*</span></label>
+          <div class="hint">Não precisa ser bonito. Só real. Onde você está na vida, no trabalho, com IA.</div>
+          <textarea name="momento_vida" required rows="3" placeholder="Ex: Tô no CLT querendo sair, comecei a estudar IA mas tô travado, tenho negócio mas não sei aplicar IA ainda..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>O que você quer conquistar com IA? <span class="required">*</span></label>
+          <div class="hint">Seu objetivo real — o que te fez entrar no MDV</div>
+          <textarea name="objetivo_principal" required rows="3" placeholder="Ex: Criar uma renda com automações, usar IA pra vender mais no meu negócio, montar uma agência..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>O que te trava hoje? O que te impede de avançar?</label>
+          <div class="hint">Pode desabafar. Isso aqui é pra eu entender de verdade onde posso ajudar.</div>
+          <textarea name="dificuldades" rows="3" placeholder="Ex: Começo e não termino, não sei precificar, não sei por onde começar, falta de tempo..."></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-label">Sobre o MDV — fala a real</div>
+
+        <div class="field">
+          <label>O que você achou do MDV até agora? Seja sincero.</label>
+          <div class="hint">Não precisa ser educado. Precisa ser honesto. O que funcionou, o que faltou, o que te frustrou.</div>
+          <textarea name="feedback_curso" rows="3" placeholder="Fala sem filtro... isso vai direto pra mim e vai mudar o programa."></textarea>
+        </div>
+
+        <div class="field">
+          <label>O que você quer aprender? Que aulas fazem falta? <span class="required">*</span></label>
+          <div class="hint">Escreve com suas palavras. Isso aqui vai virar conteúdo de verdade.</div>
+          <textarea name="sugestoes_aulas" required rows="4" placeholder="Ex: Quero aula sobre como conseguir clientes, como precificar automação, como usar IA no meu dia a dia..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Quer falar mais alguma coisa?</label>
+          <div class="hint">Espaço livre. Crítica, ideia, sugestão, desabafo — tudo conta.</div>
+          <textarea name="observacoes" rows="3" placeholder="Se tiver algo que eu preciso saber, escreve aqui..."></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submit-btn">
+        Enviar Respostas
+      </button>
+    </form>
+
+    <div id="success-screen" class="success-screen">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </div>
+      <h2>Recebido.</h2>
+      <p>Vou ler pessoalmente cada resposta. O MDV vai ser atualizado com base no que vocês pediram. Fique de olho no grupo — as novidades vêm em breve.</p>
+    </div>
+
+    <div class="footer">
+      REIS <span style="color: var(--blue)">[IA]</span> — Máquina de Vendas
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('survey-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const errorMsg = document.getElementById('error-msg');
+    const successScreen = document.getElementById('success-screen');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.classList.remove('active');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="loading-spinner"></span>Enviando...';
+
+      const formData = new FormData(form);
+
+      const data = {
+        nome: formData.get('nome'),
+        email: formData.get('email'),
+        whatsapp: formData.get('whatsapp'),
+        negocio: formData.get('negocio'),
+        faturamento: formData.get('faturamento'),
+        momento_vida: formData.get('momento_vida'),
+        objetivo_principal: formData.get('objetivo_principal'),
+        dificuldades: formData.get('dificuldades'),
+        feedback_curso: formData.get('feedback_curso'),
+        sugestoes_aulas: formData.get('sugestoes_aulas'),
+        observacoes: formData.get('observacoes'),
+      };
+
+      try {
+        const res = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Erro ao enviar');
+        }
+
+        form.classList.add('hidden');
+        successScreen.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        errorMsg.textContent = err.message || 'Erro ao enviar. Tente novamente.';
+        errorMsg.classList.add('active');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Enviar Respostas';
+      }
+    });
+  </script>
+</body>
+</html>

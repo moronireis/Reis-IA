@@ -75,7 +75,7 @@ Dark-mode premium aesthetic. Never decorative. Minimal geometric.
 - **clip-cutter**: your direct report for cut scoring
 - **caption-broll-operator**: your direct report for caption + B-roll specs
 - **integration-engineer**: executes the final ffmpeg/Whisper pipeline following the recipe
-- **creative-director**: consult on motion design or transition style when the edit needs cinematic treatment
+- **art-director**: consult on motion design, transition style, or cinematic treatment when the edit needs premium visual direction
 
 ---
 

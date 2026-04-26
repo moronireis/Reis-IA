@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carrossel Visual — R$80K Onde Não Gastar | Noiva S.A.</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --rose:        #DBA99F;
+  --blush:       #FFCBC1;
+  --cream:       #F4F3EE;
+  --eucalyptus:  #4A6741;
+  --taupe:       #9C958F;
+  --bg:          #0a0a0a;
+}
+
+body {
+  background: #161616;
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px 56px;
+  gap: 20px;
+}
+
+/* ── Page header ── */
+.page-header {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(219,169,159,0.35);
+}
+
+/* ── Viewer ── */
+.viewer {
+  width: 100%;
+  max-width: 480px;
+}
+
+.slides-wrap {
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 32px 100px rgba(0,0,0,0.8);
+}
+
+.slides-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.77,0,0.175,1);
+}
+
+/* ── Slide base: 4:5 portrait (Instagram best) ── */
+.slide {
+  flex: 0 0 100%;
+  aspect-ratio: 4/5;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 36px 32px;
+}
+
+/* Photo background */
+.slide-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  transition: transform 8s ease;
+}
+
+/* Gradient overlay */
+.slide-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Grain texture */
+.slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* All content above overlay */
+.slide > *:not(.slide-photo):not(.slide-overlay) {
+  position: relative;
+  z-index: 3;
+}
+
+/* Brand watermark */
+.brand-wm {
+  position: absolute;
+  top: 20px;
+  left: 32px;
+  z-index: 4;
+  font-family: 'Great Vibes', cursive;
+  font-size: 22px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.02em;
+}
+
+/* Slide counter */
+.slide-num {
+  position: absolute;
+  top: 22px;
+  right: 28px;
+  z-index: 4;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.35);
+}
+
+/* ════════════════════════════════
+   SLIDE 1 — CAPA
+════════════════════════════════ */
+.s1 .slide-overlay {
+  background: linear-gradient(
+    160deg,
+    rgba(10,10,10,0.25) 0%,
+    rgba(10,10,10,0.55) 50%,
+    rgba(10,10,10,0.88) 100%
+  );
+}
+
+.s1 .tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 12px;
+}
+
+.s1 .valor {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 68px;
+  font-weight: 300;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.s1 .seta {
+  font-size: 18px;
+  color: var(--rose);
+  margin: 8px 0;
+  opacity: 0.8;
+}
+
+.s1 .onde {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--blush);
+  margin-bottom: 20px;
+}
+
+.s1 .subtitulo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(244,243,238,0.75);
+  line-height: 1.55;
+  max-width: 300px;
+}
+
+/* ════════════════════════════════
+   SLIDE 2 — CONTEXTO
+════════════════════════════════ */
+.s2 .slide-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(10,10,10,0.95) 0%,
+    rgba(10,10,10,0.65) 55%,
+    rgba(10,10,10,0.3) 100%
+  );
+}
+
+.s2 .eyebrow {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 14px;
+}
+
+.s2 .quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: #fff;
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+
+.s2 .quote em {
+  font-style: italic;
+  color: var(--blush);
+}
+
+.s2 .divider {
+  width: 30px;
+  height: 1px;
+  background: rgba(219,169,159,0.5);
+  margin-bottom: 14px;
+}
+
+.s2 .sub {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(244,243,238,0.6);
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+/* ════════════════════════════════
+   SLIDES 3–6 — ERROS
+════════════════════════════════ */
+.s-erro .slide-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(10,10,10,0.97) 0%,
+    rgba(10,10,10,0.75) 45%,
+    rgba(10,10,10,0.35) 100%
+  );
+}
+
+.erro-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.erro-badge .num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(219,169,159,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--rose);
+}
+
+.erro-badge .lbl {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(219,169,159,0.6);
+}
+
+.erro-titulo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 34px;
+  font-weight: 500;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+
+.erro-titulo em {
+  font-style: italic;
+  color: var(--rose);
+}
+
+.erro-linha {
+  width: 28px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--rose), transparent);
+  margin-bottom: 14px;
+}
+
+.erro-texto {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(244,243,238,0.7);
+  line-height: 1.65;
+  max-width: 340px;
+}
+
+.erro-texto strong {
+  color: var(--blush);
+  font-weight: 600;
+}
+
+.erro-pill {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 6px 14px;
+  background: rgba(219,169,159,0.08);
+  border: 1px solid rgba(219,169,159,0.2);
+  border-radius: 4px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(219,169,159,0.45);
+}
+
+/* ════════════════════════════════
+   SLIDE 7 — PAYOFF
+════════════════════════════════ */
+.s7 .slide-overlay {
+  background: linear-gradient(
+    160deg,
+    rgba(10,10,10,0.2) 0%,
+    rgba(10,10,10,0.6) 50%,
+    rgba(10,10,10,0.92) 100%
+  );
+}
+
+.s7 .payoff-eyebrow {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 14px;
+}
+
+.s7 .payoff-l1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(244,243,238,0.7);
+  margin-bottom: 10px;
+}
+
+.s7 .payoff-l2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 38px;
+  font-weight: 500;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 18px;
+}
+
+.s7 .payoff-l2 em {
+  font-style: italic;
+  color: var(--rose);
+}
+
+.s7 .payoff-divider {
+  width: 32px;
+  height: 1px;
+  background: rgba(219,169,159,0.4);
+  margin-bottom: 14px;
+}
+
+.s7 .payoff-sub {
+  font-size: 13px;
+  color: rgba(244,243,238,0.6);
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+/* ════════════════════════════════
+   SLIDE 8 — CTA
+════════════════════════════════ */
+.s8 .slide-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(10,10,10,0.97) 0%,
+    rgba(10,10,10,0.8) 40%,
+    rgba(10,10,10,0.5) 100%
+  );
+}
+
+.s8 { justify-content: center; align-items: center; }
+
+.s8 .cta-eyebrow {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.s8 .cta-word {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px;
+  font-weight: 300;
+  color: var(--rose);
+  letter-spacing: 0.06em;
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 20px;
+}
+
+.s8 .cta-texto {
+  font-size: 13px;
+  color: rgba(244,243,238,0.75);
+  text-align: center;
+  line-height: 1.65;
+  max-width: 260px;
+  margin-bottom: 28px;
+}
+
+.s8 .cta-texto strong {
+  color: var(--blush);
+  font-weight: 600;
+}
+
+.s8 .cta-btn {
+  background: transparent;
+  border: 1px solid rgba(219,169,159,0.4);
+  border-radius: 40px;
+  padding: 12px 28px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--blush);
+}
+
+/* ── Controls ── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-dots { display: flex; gap: 5px; align-items: center; }
+
+.dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(219,169,159,0.2);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.dot.active { background: var(--rose); width: 18px; border-radius: 3px; }
+
+.arr {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(219,169,159,0.07);
+  border: 1px solid rgba(219,169,159,0.15);
+  color: var(--rose);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.arr:hover { background: rgba(219,169,159,0.13); }
+.arr:disabled { opacity: 0.2; cursor: default; }
+
+.slide-lbl {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(156,149,143,0.5);
+  text-transform: uppercase;
+  text-align: center;
+  min-height: 14px;
+}
+
+.hint {
+  font-size: 10px;
+  color: rgba(156,149,143,0.25);
+  letter-spacing: 0.08em;
+  text-align: center;
+  max-width: 400px;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<p class="page-header">Noiva S.A. — Carrossel Visual · Instagram 4:5</p>
+
+<div class="viewer">
+  <div class="slides-wrap">
+    <div class="slides-track" id="track">
+
+      <!-- ══ SLIDE 1 — CAPA ══ -->
+      <div class="slide s1">
+        <img class="slide-photo" src="https://images.unsplash.com/photo-1519741497674-611481863552?w=900&q=85&fit=crop&crop=center" alt="Casamento elegante">
+        <div class="slide-overlay"></div>
+        <span class="brand-wm">Noiva S.A.</span>
+        <span class="slide-num">1 / 8</span>
+        <p class="tag">Planejamento Financeiro</p>
+        <p class="valor">R$80K</p>
+        <p class="seta">↓</p>
+        <p class="onde">Onde Não Gastar</p>
+        <p class="subtitulo">"Flores, buffet e foto já comem metade. A gente precisa conversar."</p>
+      </div>
+
+      <!-- ══ SLIDE 2 — CONTEXTO ══ -->
+      <div class="slide s2">
+        <img class="slide-photo" src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=900&q=85&fit=crop&crop=center" alt="Planejamento de casamento">
+        <div class="slide-overlay"></div>
+        <span class="brand-wm">Noiva S.A.</span>
+        <span class="slide-num">2 / 8</span>
+        <p class="eyebrow">A verdade que ninguém conta</p>
+        <p class="quote">Já planejei casamentos<br>de <em>R$50K a R$500K.</em></p>
+        <div class="divider"></div>
+        <p class="sub">O que muda é o tamanho, não o erro. O erro mais comum: gastar no que aparece na foto e cortar no que faz o dia funcionar.</p>
+      </div>
+
+      <!-- ══ SLIDE 3 — ERRO 1 ══ -->
+      <div class="slide s-erro">
+        <img class="slide-photo" src="https://images.unsplash.com/photo-1561543847-216ddfe6e776?w=900&q=85&fit=crop&crop=center" alt="Decoração de mesa de casamento">
+        <div class="slide-overlay"></div>
+        <span class="brand-wm">Noiva S.A.</span>
+        <span class="slide-num">3 / 8</span>
+        <div class="erro-badge">
+          <span class="num">1</span>
+          <span class="lbl">Primeiro Erro</span>
+        </div>
+        <p class="erro-titulo">Decoração demais<br><em>na mesa</em></p>
+        <div class="erro-linha"></div>
+        <p class="erro-texto">Ninguém senta pra olhar a flor. Sentam pra comer, conversar e dançar.<br><br>Corta o arranjo. Investe no que fica mais tempo ali: <strong>a comida.</strong></p>
+        <span class="erro-pill">Erro 1: Decoração demais na mesa</span>
+      </div>
+
+      <!-- ══ SLIDE 4 — ERRO 2 ══ -->
+      <div class="slide s-erro">
+        <img class="slide-photo" src="https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=900&q=85&fit=crop&crop=center" alt="Convite de casamento">
+        <div class="slide-overlay"></div>
+        <span class="brand-wm">Noiva S.A.</span>
+        <span class="slide-num">4 / 8</span>
+        <div class="erro-badge">
+          <span class="num">2</span>
+          <span class="lbl">Segundo Erro</span>
+        </div>
+        <p class="erro-titulo"><em>Convite impresso</em><br>caro</p>
+        <div class="erro-linha"></div>
+        <p class="erro-texto"><strong>Vai pro lixo. Sempre.</strong><br><br>Digital bem feito resolve — e você economiza de <strong>R$3K a R$8K</strong> dependendo da lista.</p>
+        <span class="erro-pill">Erro 2: Convite impresso caro → vai pro lixo</span>
+      </div>
+
+      <!-- ══ SLIDE 5 — ERRO 3 ══ -->
+      <div class="slide s-erro">
+        <img class="slide-photo" src="https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=900&q=85&fit=crop&crop=center" alt="Pista de dança casamento">
+        <div class="slide-overlay"></div>
+        <span class="brand-wm">Noiva S.A.</span>
+        <span class="slide-num">5 / 8</span>
+        <div class="erro-badge">
+          <span class="num">3</span>
+          <span class="lbl">Terceiro Erro</span>
+        </div>
+        <p class="erro-titulo">DJ genérico<br><em>barato</em></p>
+        <div class="erro-linha"></div>
+        <p class="erro-texto">Música ruim esvazia a pista. Pista vazia — o casamento esvaziou.<br><br><strong>É o sentimento que fica.</strong> Investe num DJ que conheça o casal de verdade.</p>
+        <span class="erro-pill">Erro 3: DJ genérico barato</span>
+      </div>
+
+      <!-- ══ SLIDE 6 — ERRO 4 ══ -->
+      <div class="slide s-erro">
+        <img class="slide-photo" src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=900&q=85&fit=crop&crop=center" alt="Assessoria de casamento">
+        <div class="slide-overlay"></div>
+        <span class="brand-wm">Noiva S.A.</span>
+        <span class="slide-num">6 / 8</span>
+        <div class="erro-badge">
+          <span class="num">4</span>
+          <span class="lbl">Quarto Erro — esse dói</span>
+        </div>
+        <p class="erro-titulo">Cortar<br><em>a assessoria</em></p>
+        <div class="erro-linha"></div>
+        <p class="erro-texto">Você vai pagar o dobro resolvendo erros que a assessora pagaria <strong>metade pra evitar.</strong><br><br>É a decisão mais cara do planejamento.</p>
+        <span class="erro-pill">Erro 4: Cortar a assessoria</span>
+      </div>
+
+      <!-- ══ SLIDE 7 — PAYOFF ══ -->
+      <div class="slide s7">
+        <img class="slide-photo" src="https://images.unsplash.com/photo-1511285560929-80b456503681?w=900&q=85&fit=crop&crop=center" alt="Momento romântico casamento">
+        <div class="slide-overlay"></div>
+        <span class="brand-wm">Noiva S.A.</span>
+        <span class="slide-num">7 / 8</span>
+        <p class="payoff-eyebrow">A verdade final</p>
+        <p class="payoff-l1">Casamento bom não é o mais caro.</p>
+        <p class="payoff-l2">É o mais bem<br><em>planejado.</em></p>
+        <div class="payoff-divider"></div>
+        <p class="payoff-sub">Onde você gasta importa tanto quanto quanto você gasta.</p>
+      </div>
+
+      <!-- ══ SLIDE 8 — CTA ══ -->
+      <div class="slide s8">
+        <img class="slide-photo" src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=900&q=85&fit=crop&crop=center" alt="Alianças de casamento">
+        <div class="slide-overlay"></div>
+        <span class="brand-wm">Noiva S.A.</span>
+        <span class="slide-num">8 / 8</span>
+        <p class="cta-eyebrow">Quer o guia completo?</p>
+        <p class="cta-word">ORÇAMENTO</p>
+        <p class="cta-texto">Comente <strong>ORÇAMENTO</strong> para receber um guia completo no seu direct</p>
+        <div class="cta-btn">Comente aqui embaixo</div>
+      </div>
+
+    </div><!-- /track -->
+  </div><!-- /wrap -->
+</div><!-- /viewer -->
+
+<div class="controls">
+  <button class="arr" id="prev" onclick="nav(-1)" disabled>←</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="arr" id="next" onclick="nav(1)">→</button>
+</div>
+
+<p class="slide-lbl" id="lbl"></p>
+
+<p class="hint">
+  Setas / swipe para navegar · Teclas ← → também funcionam<br>
+  Para exportar: capturar cada slide individualmente (1080×1350px recomendado)
+</p>
+
+<script>
+const TOTAL = 8;
+const LABELS = [
+  'Capa — Hook',
+  'Contexto',
+  'Erro 1 — Decoração demais na mesa',
+  'Erro 2 — Convite impresso caro',
+  'Erro 3 — DJ genérico barato',
+  'Erro 4 — Cortar a assessoria',
+  'Payoff',
+  'CTA — Comente ORÇAMENTO',
+];
+
+let cur = 0;
+const track = document.getElementById('track');
+const dotsEl = document.getElementById('dots');
+const lblEl  = document.getElementById('lbl');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+
+for (let i = 0; i < TOTAL; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => go(i);
+  dotsEl.appendChild(d);
+}
+
+function go(n) {
+  cur = Math.max(0, Math.min(TOTAL - 1, n));
+  track.style.transform = `translateX(-${cur * 100}%)`;
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+  lblEl.textContent = LABELS[cur];
+  prevBtn.disabled = cur === 0;
+  nextBtn.disabled = cur === TOTAL - 1;
+}
+
+function nav(d) { go(cur + d); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') nav(1);
+  if (e.key === 'ArrowLeft')  nav(-1);
+});
+
+let sx = 0;
+track.parentElement.addEventListener('touchstart', e => { sx = e.touches[0].clientX; });
+track.parentElement.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - sx;
+  if (Math.abs(dx) > 40) nav(dx < 0 ? 1 : -1);
+});
+
+go(0);
+</script>
+</body>
+</html>

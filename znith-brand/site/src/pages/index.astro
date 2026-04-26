@@ -1,0 +1,388 @@
+---
+import '../styles/global.css';
+
+const navSections = [
+  { href: '/marca', label: 'A Marca', desc: 'Origem, missão, valores e promessa central' },
+  { href: '/arquitetura', label: 'Arquitetura de Marca', desc: 'Hierarquia, sub-marcas, ecossistema' },
+  { href: '/identidade', label: 'Identidade Visual', desc: 'Logo system, área de proteção, uso correto' },
+  { href: '/cores', label: 'Paleta de Cores', desc: 'Navy, dourado, neutros, semânticas, superfícies' },
+  { href: '/tipografia', label: 'Tipografia', desc: 'Cinzel, Montserrat, escala e pares tipográficos' },
+  { href: '/grafismos', label: 'Grafismos & Patterns', desc: 'Seis elementos gráficos e suas aplicações' },
+  { href: '/componentes', label: 'Componentes', desc: 'Botões, cards, forms — demos interativos' },
+  { href: '/voz', label: 'Tom de Voz', desc: 'Perfis de voz por camada, vocabulário, proibições' },
+  { href: '/personal', label: 'Leilaine Campioto', desc: 'Marca pessoal, arquétipos, pilares de conteúdo' },
+  { href: '/produto', label: 'ZNITH.AI OS', desc: 'Produto flagship, 5 fases, ICP, promessa' },
+  { href: '/movimento', label: 'Líderes Leões', desc: 'Manifesto, símbolos, rituais, tribo' },
+  { href: '/aplicacoes', label: 'Aplicações', desc: 'Website, redes sociais, documentos, print' },
+];
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZNITH Brandbook — Versão 1.0</title>
+    <link rel="icon" type="image/png" href="/logos/Z-3.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      /* =========================================
+         COMPONENT: Cover Page — Cinematic Entrance
+         TRIGGER: page-load (sequenced)
+         TIMING: 0-2800ms staggered, cubic-bezier(0.16, 1, 0.3, 1)
+         TIERS: full (particles + all anims) | reduced (no particles) | minimal (no anims)
+         prefers-reduced-motion: all elements visible immediately, no animation
+         ========================================= */
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body {
+        background: #050B17;
+        color: #BBBBBB;
+        font-family: 'Montserrat', sans-serif;
+        min-height: 100vh;
+      }
+
+      /* --- Hero Section --- */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 64px 24px 120px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* --- Step 2: Radial Glow --- */
+      .hero-glow {
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 600px;
+        height: 400px;
+        background: radial-gradient(ellipse, rgba(212, 160, 74, 0.08) 0%, transparent 70%);
+        opacity: 0;
+        animation: glow-appear 600ms ease-in 400ms forwards;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      @keyframes glow-appear {
+        to { opacity: 1; }
+      }
+
+      /* --- Step 3: Logo Materialize --- */
+      .hero-logo {
+        width: 200px;
+        height: auto;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 2;
+        opacity: 0;
+        transform: scale(0.96);
+        animation: logo-materialize 800ms cubic-bezier(0.16, 1, 0.3, 1) 800ms forwards;
+      }
+
+      @keyframes logo-materialize {
+        to { opacity: 1; transform: scale(1); }
+      }
+
+      .hero-logo img {
+        width: 100%;
+        height: auto;
+        animation: glow-pulse 4s ease-in-out infinite 2s;
+      }
+
+      @keyframes glow-pulse {
+        0%, 100% { filter: drop-shadow(0 0 40px rgba(212, 160, 74, 0.15)); }
+        50% { filter: drop-shadow(0 0 50px rgba(212, 160, 74, 0.28)); }
+      }
+
+      /* --- Step 1: Version badge --- */
+      .hero-version {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: #D4A04A;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 2;
+        opacity: 0;
+        animation: text-appear 500ms ease-out 600ms forwards;
+      }
+
+      /* --- Step 4: Title, Tagline, Sub --- */
+      .hero-title {
+        font-family: 'Cinzel', serif;
+        font-size: clamp(40px, 6vw, 80px);
+        font-weight: 400;
+        color: #FFFFFF;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        margin-bottom: 12px;
+        position: relative;
+        z-index: 2;
+        opacity: 0;
+        animation: text-appear 500ms ease-out 1200ms forwards;
+      }
+
+      .hero-tagline {
+        font-family: 'Montserrat', sans-serif;
+        font-size: clamp(12px, 1.4vw, 15px);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: #D4A04A;
+        margin-bottom: 16px;
+        position: relative;
+        z-index: 2;
+        opacity: 0;
+        animation: text-appear 500ms ease-out 1400ms forwards;
+      }
+
+      .hero-sub {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        color: #7A7A7A;
+        margin-bottom: 56px;
+        letter-spacing: 0.04em;
+        position: relative;
+        z-index: 2;
+        opacity: 0;
+        animation: text-appear 500ms ease-out 1600ms forwards;
+      }
+
+      @keyframes text-appear {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* --- Step 5: Gold Line --- */
+      .hero-gold-line {
+        height: 2px;
+        background: #D4A04A;
+        margin: 0 auto 48px;
+        position: relative;
+        z-index: 2;
+        width: 0;
+        animation: line-draw 600ms cubic-bezier(0.16, 1, 0.3, 1) 1800ms forwards;
+      }
+
+      @keyframes line-draw {
+        to { width: 80px; }
+      }
+
+      /* --- Step 6: Nav Grid + Staggered Cards --- */
+      .nav-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 12px;
+        max-width: 960px;
+        width: 100%;
+        text-align: left;
+        position: relative;
+        z-index: 2;
+      }
+
+      .nav-card {
+        background: #14203A;
+        border: 1px solid #2A3A5A;
+        border-radius: 10px;
+        padding: 18px 20px;
+        text-decoration: none;
+        display: block;
+        opacity: 0;
+        transform: translateY(16px);
+        animation: card-enter 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        transition: transform 250ms ease-out, border-color 250ms ease-out, box-shadow 250ms ease-out;
+      }
+
+      @keyframes card-enter {
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .nav-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(212, 160, 74, 0.35);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 160, 74, 0.06);
+      }
+
+      .nav-card-label {
+        font-family: 'Cinzel', serif;
+        font-size: 14px;
+        color: #FFFFFF;
+        margin-bottom: 4px;
+      }
+
+      .nav-card-desc {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 12px;
+        color: #7A7A7A;
+        line-height: 1.5;
+      }
+
+      /* --- Step 7: Gold Particles (desktop only) --- */
+      .particles {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .particle {
+        position: absolute;
+        bottom: -10px;
+        left: var(--x);
+        width: 2px;
+        height: 2px;
+        background: #D4A04A;
+        border-radius: 50%;
+        opacity: 0;
+        animation: particle-rise var(--duration) ease-in-out var(--delay) infinite;
+      }
+
+      @keyframes particle-rise {
+        0% { transform: translateY(0); opacity: 0; }
+        10% { opacity: 0.12; }
+        90% { opacity: 0.06; }
+        100% { transform: translateY(-100vh); opacity: 0; }
+      }
+
+      @media (max-width: 767px) {
+        .particles { display: none; }
+      }
+
+      /* --- Footer Bar --- */
+      .footer-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(5, 11, 23, 0.92);
+        border-top: 1px solid #2A3A5A;
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        backdrop-filter: blur(8px);
+        z-index: 10;
+      }
+
+      .footer-enter {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Cinzel', serif;
+        font-size: 12px;
+        color: #000000;
+        background: linear-gradient(135deg, #D4A04A, #F0CC5E, #D4A04A);
+        background-size: 200% 200%;
+        animation: gradient-shift 6s ease-in-out infinite;
+        padding: 10px 28px;
+        border-radius: 6px;
+        text-decoration: none;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 700;
+        transition: opacity 0.2s ease, transform 0.15s ease;
+        box-shadow: 0 0 24px rgba(212, 160, 74, 0.3);
+      }
+
+      @keyframes gradient-shift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+
+      .footer-enter:hover {
+        opacity: 0.92;
+        transform: scale(1.02);
+      }
+
+      /* --- prefers-reduced-motion --- */
+      @media (prefers-reduced-motion: reduce) {
+        .particles { display: none; }
+        .hero-glow,
+        .hero-logo,
+        .hero-version,
+        .hero-title,
+        .hero-tagline,
+        .hero-sub,
+        .nav-card {
+          opacity: 1 !important;
+          transform: none !important;
+          animation: none !important;
+        }
+        .hero-logo img {
+          animation: none !important;
+          filter: drop-shadow(0 0 40px rgba(212, 160, 74, 0.15));
+        }
+        .hero-gold-line {
+          width: 80px !important;
+          animation: none !important;
+        }
+        .footer-enter {
+          animation: none !important;
+          background: linear-gradient(135deg, #D4A04A, #F0CC5E);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Particles (desktop only, hidden via CSS on mobile + reduced-motion) -->
+    <div class="particles" aria-hidden="true">
+      <div class="particle" style="--x: 15%; --delay: 0s; --duration: 18s;"></div>
+      <div class="particle" style="--x: 35%; --delay: 3s; --duration: 20s;"></div>
+      <div class="particle" style="--x: 55%; --delay: 6s; --duration: 16s;"></div>
+      <div class="particle" style="--x: 75%; --delay: 1s; --duration: 22s;"></div>
+      <div class="particle" style="--x: 90%; --delay: 8s; --duration: 19s;"></div>
+      <div class="particle" style="--x: 25%; --delay: 4s; --duration: 21s;"></div>
+    </div>
+
+    <section class="hero">
+      <!-- Radial glow behind logo -->
+      <div class="hero-glow" aria-hidden="true"></div>
+
+      <div class="hero-version">Brandbook &amp; Design System</div>
+
+      <div class="hero-logo">
+        <img
+          src="/logos/ZINITH_oficial_png.png"
+          alt="ZNITH — Direção. Consciência. Legado."
+        />
+      </div>
+
+      <h1 class="hero-title">ZNITH</h1>
+      <p class="hero-tagline">Direção. Consciência. Legado.</p>
+      <p class="hero-sub">Versão 1.0 &mdash; Abril 2026</p>
+
+      <div class="hero-gold-line"></div>
+
+      <nav class="nav-grid">
+        {navSections.map((section, i) => (
+          <a href={section.href} class="nav-card" style={`animation-delay: calc(2000ms + (${i} * 60ms));`}>
+            <div class="nav-card-label">{section.label}</div>
+            <div class="nav-card-desc">{section.desc}</div>
+          </a>
+        ))}
+      </nav>
+    </section>
+
+    <div class="footer-bar">
+      <a href="/marca" class="footer-enter">
+        Entrar no Brandbook
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M7 1L13 7L7 13M13 7H1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </body>
+</html>

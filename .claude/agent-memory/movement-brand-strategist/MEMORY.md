@@ -27,3 +27,8 @@
 - Revenue metrics are the tribe's primary status currency (R$10K, R$100K milestones)
 - "Shipped" is the highest-status verb — completing projects > consuming content
 - Brazilian context is an asset — Frente/Linha de Frente have deep cultural resonance
+
+## Client Projects
+
+- [Noiva S.A.](project_noiva_sa.md) — Wedding ecosystem movement for Giovanna Paola. Delivered v1.0 movement architecture (2026-04-08).
+- [Lideres Leoes](project_lideres_leoes.md) — Faith-based leadership movement for Leilaine Campioto / ZNITH. Governance-over-performance cause, lion+gold+navy (2026-04-08).

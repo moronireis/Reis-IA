@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estratégia de Funil — REIS [IA] Agent Squad</title>
+  <meta name="description" content="Estratégia completa: Low-Ticket → Conteúdo → Comunidade → Mentoria" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%234A90FF'/%3E%3Cpath d='M8 5h16M8 27h16M10 5 C10 13 16 16 16 16 C16 16 22 19 22 27M22 5 C22 13 16 16 16 16 C16 16 10 19 10 27' stroke='%23000' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --blue: #4A90FF;
+      --blue-dim: rgba(74, 144, 255, 0.10);
+      --blue-border: rgba(74, 144, 255, 0.25);
+      --gray-100: #f5f5f5;
+      --gray-300: #d4d4d4;
+      --gray-400: #a3a3a3;
+      --gray-500: #737373;
+      --gray-600: #525252;
+      --gray-700: #404040;
+      --gray-800: #262626;
+      --gray-900: #171717;
+      --green: #22c55e;
+      --red: #ef4444;
+      --amber: #f59e0b;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--black);
+      color: var(--gray-100);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* ─── Nav ─── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--gray-800);
+      padding: 0 24px;
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px;
+    }
+    .nav-brand { font-weight: 300; font-size: 18px; letter-spacing: 0.5px; }
+    .nav-brand .ia { color: var(--blue); }
+    .nav-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    .nav-links a {
+      color: var(--gray-400); text-decoration: none; font-size: 12px;
+      padding: 4px 10px; border-radius: 6px; transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .nav-links a:hover { color: var(--white); background: var(--gray-800); }
+    /* ─── Layout ─── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 100px 0; border-bottom: 1px solid var(--gray-800); }
+    section:first-of-type { padding-top: 140px; }
+    .section-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--blue); margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 42px); font-weight: 700;
+      line-height: 1.15; margin-bottom: 16px; color: var(--white);
+    }
+    .section-sub {
+      font-size: 17px; color: var(--gray-400); max-width: 700px;
+      line-height: 1.7; margin-bottom: 48px;
+    }
+    /* ─── Hero ─── */
+    .hero { text-align: center; padding: 160px 0 100px; }
+    .hero .section-title { font-size: clamp(32px, 5vw, 56px); margin-bottom: 20px; }
+    .hero .section-sub { margin: 0 auto 48px; text-align: center; }
+    .badge {
+      display: inline-block; padding: 6px 16px; border-radius: 100px;
+      border: 1px solid var(--blue-border); background: var(--blue-dim);
+      color: var(--blue); font-size: 13px; font-weight: 500; margin-bottom: 24px;
+    }
+    /* ─── Funnel Diagram ─── */
+    .funnel { display: flex; flex-direction: column; gap: 0; max-width: 640px; margin: 0 auto; }
+    .funnel-step {
+      display: flex; align-items: center; gap: 20px;
+      padding: 20px 24px; position: relative;
+      border-left: 2px solid var(--gray-700);
+      margin-left: 20px;
+    }
+    .funnel-step:last-child { border-left-color: transparent; }
+    .funnel-dot {
+      position: absolute; left: -9px; top: 24px;
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid; background: var(--black);
+    }
+    .funnel-content { flex: 1; }
+    .funnel-label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .funnel-desc { font-size: 14px; color: var(--gray-400); }
+    .funnel-price {
+      font-size: 14px; font-weight: 600; padding: 4px 12px;
+      border-radius: 6px; white-space: nowrap;
+    }
+    .step-traffic .funnel-dot { border-color: var(--blue); }
+    .step-traffic .funnel-label { color: var(--blue); }
+    .step-traffic .funnel-price { background: rgba(74,144,255,0.1); color: var(--blue); }
+    .step-lowtick .funnel-dot { border-color: var(--green); }
+    .step-lowtick .funnel-label { color: var(--green); }
+    .step-lowtick .funnel-price { background: rgba(34,197,94,0.1); color: var(--green); }
+    .step-content .funnel-dot { border-color: var(--amber); }
+    .step-content .funnel-label { color: var(--amber); }
+    .step-content .funnel-price { background: rgba(245,158,11,0.1); color: var(--amber); }
+    .step-bridge .funnel-dot { border-color: var(--gray-400); }
+    .step-bridge .funnel-label { color: var(--gray-400); }
+    .step-hub .funnel-dot { border-color: #a78bfa; }
+    .step-hub .funnel-label { color: #a78bfa; }
+    .step-hub .funnel-price { background: rgba(167,139,250,0.1); color: #a78bfa; }
+    .step-mentoria .funnel-dot { border-color: #f472b6; }
+    .step-mentoria .funnel-label { color: #f472b6; }
+    .step-mentoria .funnel-price { background: rgba(244,114,182,0.1); color: #f472b6; }
+    /* ─── Cards ─── */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .card {
+      background: var(--gray-900); border: 1px solid var(--gray-800);
+      border-radius: 12px; padding: 28px; transition: border-color 0.2s;
+    }
+    .card:hover { border-color: var(--gray-700); }
+    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--white); }
+    .card-text { font-size: 14px; color: var(--gray-400); line-height: 1.6; }
+    .card-tag {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 100px; margin-bottom: 12px;
+    }
+    /* ─── Table ─── */
+    .table-wrap { overflow-x: auto; margin-top: 24px; border-radius: 12px; border: 1px solid var(--gray-800); }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    thead { background: var(--gray-900); }
+    th { padding: 14px 20px; text-align: left; font-weight: 600; color: var(--gray-300); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    td { padding: 14px 20px; border-top: 1px solid var(--gray-800); color: var(--gray-300); }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .td-label { color: var(--white); font-weight: 500; }
+    .td-competitor { color: var(--gray-500); }
+    .td-us { color: var(--blue); font-weight: 500; }
+    /* ─── Quote ─── */
+    .quote-block {
+      border-left: 3px solid var(--gray-700); padding: 24px 28px;
+      background: var(--gray-900); border-radius: 0 12px 12px 0;
+      margin: 24px 0; font-style: italic; color: var(--gray-400);
+      font-size: 15px; line-height: 1.8;
+    }
+    .quote-attr { font-style: normal; font-size: 13px; color: var(--gray-500); margin-top: 12px; }
+    /* ─── Metrics ─── */
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+    .metric-card {
+      background: var(--gray-900); border: 1px solid var(--gray-800);
+      border-radius: 12px; padding: 20px; text-align: center;
+    }
+    .metric-value { font-size: 28px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+    .metric-value.green { color: var(--green); }
+    .metric-value.blue { color: var(--blue); }
+    .metric-label { font-size: 12px; color: var(--gray-500); }
+    /* ─── Timeline ─── */
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item {
+      display: grid; grid-template-columns: 80px 1fr; gap: 20px;
+      padding: 16px 0; border-bottom: 1px solid var(--gray-800);
+    }
+    .tl-day { font-size: 13px; font-weight: 600; color: var(--blue); padding-top: 2px; }
+    .tl-title { font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 2px; }
+    .tl-desc { font-size: 13px; color: var(--gray-500); }
+    /* ─── Decision Board ─── */
+    .decision-item {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 20px 0; border-bottom: 1px solid var(--gray-800);
+    }
+    .decision-num {
+      width: 32px; height: 32px; min-width: 32px;
+      border-radius: 8px; background: var(--blue-dim);
+      color: var(--blue); font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .decision-q { font-size: 15px; font-weight: 500; color: var(--white); margin-bottom: 4px; }
+    .decision-opts { font-size: 13px; color: var(--gray-500); }
+    /* ─── Angle Cards ─── */
+    .angle-num { font-size: 48px; font-weight: 700; color: var(--gray-800); line-height: 1; margin-bottom: 8px; }
+    .angle-hook { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 8px; }
+    .angle-target { font-size: 12px; color: var(--gray-500); margin-top: 12px; }
+    /* ─── Phases ─── */
+    .phase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .phase-card { padding: 28px; border-radius: 12px; border: 1px solid var(--gray-800); background: var(--gray-900); }
+    .phase-tag { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 100px; display: inline-block; margin-bottom: 12px; }
+    /* ─── Hub Stack ─── */
+    .stack-item {
+      display: grid; grid-template-columns: 40px 1fr auto; gap: 16px; align-items: center;
+      padding: 16px 0; border-bottom: 1px solid var(--gray-800);
+    }
+    .stack-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; background: var(--blue-dim); color: var(--blue);
+    }
+    .stack-name { font-size: 14px; font-weight: 500; color: var(--white); }
+    .stack-desc { font-size: 13px; color: var(--gray-500); }
+    .stack-exc {
+      font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px;
+      background: rgba(34,197,94,0.1); color: var(--green); white-space: nowrap;
+    }
+    /* ─── Trigger Table ─── */
+    .trigger-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+    .trigger-card {
+      padding: 16px; border-radius: 10px; border: 1px solid var(--gray-800);
+      background: var(--gray-900);
+    }
+    .trigger-if { font-size: 12px; font-weight: 600; color: var(--amber); margin-bottom: 4px; }
+    .trigger-then { font-size: 13px; color: var(--gray-300); }
+    /* ─── Responsive ─── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      section { padding: 60px 0; }
+      .hero { padding: 120px 0 60px; }
+      .card-grid { grid-template-columns: 1fr; }
+      .trigger-grid { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .tl-item { grid-template-columns: 60px 1fr; }
+    }
+    /* ─── Animations ─── */
+    @media (prefers-reduced-motion: no-preference) {
+      .fade-in { opacity: 0; transform: translateY(16px); transition: opacity 0.5s, transform 0.5s; }
+      .fade-in.visible { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">REIS <span class="ia">[IA]</span></div>
+    <div class="nav-links">
+      <a href="#funil">Funil</a>
+      <a href="#concorrente">Concorrente</a>
+      <a href="#produto">Produto</a>
+      <a href="#criativos">Criativos</a>
+      <a href="#bridge">Bridge</a>
+      <a href="#hub">Hub</a>
+      <a href="#mentoria">Mentoria</a>
+      <a href="#economics">Economics</a>
+      <a href="#trafego">Trafego</a>
+      <a href="#decisoes">Decisoes</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="top">
+  <div class="container">
+    <div class="badge">Estrategia Interna</div>
+    <h1 class="section-title">Estrategia de Funil<br>REIS <span style="color:var(--blue)">[IA]</span> Agent Squad</h1>
+    <p class="section-sub">Low-Ticket R$67 &rarr; Conteudo/Aulas &rarr; Comunidade R$497 &rarr; Journey Personalizado &rarr; Mentoria R$3-5K</p>
+  </div>
+</section>
+
+<!-- Funnel Diagram -->
+<section id="funil">
+  <div class="container">
+    <div class="section-label">Arquitetura</div>
+    <h2 class="section-title">Mapa do Funil</h2>
+    <p class="section-sub">Cada etapa se conecta com a proxima. O low-ticket auto-liquida o trafego. O lucro real esta no Hub e na mentoria.</p>
+
+    <div class="funnel">
+      <div class="funnel-step step-traffic">
+        <div class="funnel-dot"></div>
+        <div class="funnel-content">
+          <div class="funnel-label">Trafego Pago</div>
+          <div class="funnel-desc">Instagram Ads (Reels/Stories) + Organico</div>
+        </div>
+        <div class="funnel-price">CPC R$1,50-3</div>
+      </div>
+      <div class="funnel-step step-lowtick">
+        <div class="funnel-dot"></div>
+        <div class="funnel-content">
+          <div class="funnel-label">Landing Page + Video</div>
+          <div class="funnel-desc">Pagina de venda com video demo + checkout Kiwify</div>
+        </div>
+        <div class="funnel-price">R$67</div>
+      </div>
+      <div class="funnel-step step-content">
+        <div class="funnel-dot"></div>
+        <div class="funnel-content">
+          <div class="funnel-label">Ativacao: 12 Videoaulas + Agentes</div>
+          <div class="funnel-desc">3 modulos (Setup, Operacao, Lucro) + Grupo WhatsApp 30 dias</div>
+        </div>
+        <div class="funnel-price">3h conteudo</div>
+      </div>
+      <div class="funnel-step step-bridge">
+        <div class="funnel-dot"></div>
+        <div class="funnel-content">
+          <div class="funnel-label">Sequencia de 14 Dias</div>
+          <div class="funnel-desc">Email + WhatsApp: ativacao, FOMO, desafio, oferta Hub</div>
+        </div>
+      </div>
+      <div class="funnel-step step-hub">
+        <div class="funnel-dot"></div>
+        <div class="funnel-content">
+          <div class="funnel-label">Hub Community</div>
+          <div class="funnel-desc">Journey personalizado, academia, vault, comunidade, acesso Moroni</div>
+        </div>
+        <div class="funnel-price">R$497</div>
+      </div>
+      <div class="funnel-step step-mentoria">
+        <div class="funnel-dot"></div>
+        <div class="funnel-content">
+          <div class="funnel-label">Mentoria 1:1</div>
+          <div class="funnel-desc">8-12 semanas, calls semanais, suporte direto, pathway Partners</div>
+        </div>
+        <div class="funnel-price">R$3-5K</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Concorrente -->
+<section id="concorrente">
+  <div class="container">
+    <div class="section-label">Analise Competitiva</div>
+    <h2 class="section-title">Xquads &mdash; Rafael Grandi / Raxo</h2>
+    <p class="section-sub">Concorrente direto ja validando o modelo com trafego pago. Mapeamos produto, criativo, LP e checkout.</p>
+
+    <div class="card-grid" style="margin-bottom:32px">
+      <div class="card">
+        <div class="card-tag" style="background:rgba(239,68,68,0.1);color:var(--red);">Produto</div>
+        <div class="card-title">136+ Agentes de IA para Claude Code</div>
+        <div class="card-text">
+          11 squads (Copy, Hormozi, Traffic, Branding, Cybersec, Storytelling, Advisory, Design, Data, Movement, Executive)<br><br>
+          94 tasks executaveis + 21 workflows<br>
+          Videoaulas de setup ao avancado<br>
+          Garantia 7 dias<br><br>
+          <strong style="color:var(--white)">Preco: R$67</strong> (Kiwify, pagamento unico)
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-tag" style="background:rgba(239,68,68,0.1);color:var(--red);">Landing Page</div>
+        <div class="card-title">raxo.com.br/xquads</div>
+        <div class="card-text">
+          Dark theme hacker/dev, accents lime (#D1FF02)<br>
+          Font monospace (JetBrains Mono)<br>
+          Grid canvas animado + glow effects<br><br>
+          <strong style="color:var(--white)">Headline:</strong> "136 Agentes de IA Especializados Trabalhando Para Voce"<br><br>
+          Estrutura: Hero &rarr; social proof &rarr; video demo &rarr; 11 squads &rarr; bio &rarr; preco &rarr; FAQ &rarr; CTA
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-tag" style="background:rgba(239,68,68,0.1);color:var(--red);">Criativo Instagram</div>
+        <div class="card-title">Video direto para camera, tom conversacional</div>
+        <div class="card-text">
+          <strong style="color:var(--white)">Hook:</strong> "Cloud Code pra ca, Cloud Code pra la, mas vamos ser honestos"<br><br>
+          <strong style="color:var(--white)">Urgencia:</strong> "Nao vou trabalhar remarketing, esse video nao aparece de novo"<br><br>
+          <strong style="color:var(--white)">Target:</strong> Amplo (medico, advogado, agencia, empresario)<br><br>
+          <strong style="color:var(--white)">CTA:</strong> "Clica aqui embaixo agora, R$67"
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-block">
+      "E Cloud Code pra ca, Cloud Code pra la, mas vamos ser honestos, galera. Eu troquei todo o meu time por esses agentes aqui, o. Sao mais de 120 agentes, desde o time de Advisor, Branding, Storytel, C-Level, Cyberseguranca pra criacao dos teus aplicativos, trafego pago e ate design. E tudo isso aqui tu vai levar pra casa hoje por R$67,00 com videoaulas, ta? Como instalar o Cloud Code, como instalar os agentes e como criar os teus primeiros projetos. Cara, independentemente se voce e medico, advogado, dono de agencia, empresario, isso aqui vai literalmente salvar a tua pele. Sao mais de 120 funcionarios trabalhando 7 dias por semana, 24 horas por dia pra voce. E tudo isso aqui por R$67,00. E se tu nao garantir essa condicao agora, esquece. Porque esse video nao vai aparecer de novo pra ti porque eu nao vou trabalhar remarketing. Entao clica aqui embaixo agora, R$67,00 e garante isso aqui pra tua empresa. Para de usar a inteligencia artificial como se fosse um Google pra ficar fazendo pesquisa. Cria um time que vai trabalhar pra ti. Clica aqui embaixo agora e eu te espero do outro lado."
+      <div class="quote-attr">&mdash; Transcricao do criativo (Instagram Ad)</div>
+    </div>
+  </div>
+</section>
+
+<!-- Produto -->
+<section id="produto">
+  <div class="container">
+    <div class="section-label">Nosso Produto</div>
+    <h2 class="section-title">REIS [IA] Agent Squad</h2>
+    <p class="section-sub">25 agentes testados em producao real, organizados em 7 squads. R$67, pagamento unico.</p>
+
+    <div class="card-grid" style="margin-bottom:48px">
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <div class="card-title" style="margin:0">Strategy Squad</div>
+        </div>
+        <div class="card-text"><strong style="color:var(--gray-300)">CMO Strategist, Market Research Analyst</strong><br>Pesquisa de mercado, posicionamento, estrategia de marketing</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="1.5"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>
+          <div class="card-title" style="margin:0">Copy Squad</div>
+        </div>
+        <div class="card-text"><strong style="color:var(--gray-300)">Copywriter, Humanizer, Reviewer</strong><br>Copy persuasivo, humanizacao, controle de qualidade</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          <div class="card-title" style="margin:0">Brand Squad</div>
+        </div>
+        <div class="card-text"><strong style="color:var(--gray-300)">Company, Personal, Movement, Product Brand</strong><br>Branding completo: empresa, pessoa, movimento, produto</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          <div class="card-title" style="margin:0">Design Squad</div>
+        </div>
+        <div class="card-text"><strong style="color:var(--gray-300)">Designer Agent, Creative Director</strong><br>Design specs, direcao criativa, UI/UX</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="1.5"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          <div class="card-title" style="margin:0">Education Squad</div>
+        </div>
+        <div class="card-text"><strong style="color:var(--gray-300)">Education Director, Roteirista, Educational Designer</strong><br>Cursos, roteiros, materiais didaticos</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <div class="card-title" style="margin:0">Growth Squad</div>
+        </div>
+        <div class="card-text"><strong style="color:var(--gray-300)">Dev Agent, Executor, Analysis Agent</strong><br>Desenvolvimento, ferramentas, analise</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          <div class="card-title" style="margin:0">Operations Squad</div>
+        </div>
+        <div class="card-text"><strong style="color:var(--gray-300)">Task Router, Orchestrator</strong><br>Coordenacao, otimizacao de custos, delegacao inteligente</div>
+      </div>
+    </div>
+
+    <!-- Comparison -->
+    <h3 style="font-size:20px;font-weight:600;margin-bottom:20px;color:var(--white)">Diferenciacao vs. Xquads</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Dimensao</th><th>Xquads</th><th>REIS [IA] Agent Squad</th></tr></thead>
+        <tbody>
+          <tr><td class="td-label">Posicionamento</td><td class="td-competitor">Ferramenta tech / hacker</td><td class="td-us">Estrategia de negocio com IA</td></tr>
+          <tr><td class="td-label">Publico</td><td class="td-competitor">Devs, early adopters</td><td class="td-us">Empresarios, donos de negocio</td></tr>
+          <tr><td class="td-label">Tom</td><td class="td-competitor">"Troquei meu time por agentes"</td><td class="td-us">"Agentes que geram receita"</td></tr>
+          <tr><td class="td-label">Estetica</td><td class="td-competitor">Dark/hacker, terminal</td><td class="td-us">Premium/Apple, consultivo</td></tr>
+          <tr><td class="td-label">Profundidade</td><td class="td-competitor">136 agentes (quantidade)</td><td class="td-us">25 testados em producao (qualidade)</td></tr>
+          <tr><td class="td-label">Prova</td><td class="td-competitor">"Funciona pra mim"</td><td class="td-us">"Funciona no meu negocio real"</td></tr>
+          <tr><td class="td-label">Ecossistema</td><td class="td-competitor">Produto isolado (Kiwify)</td><td class="td-us">Porta de entrada Hub + Mentoria</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Videoaulas -->
+    <h3 style="font-size:20px;font-weight:600;margin:48px 0 20px;color:var(--white)">12 Videoaulas Incluidas (3h)</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-tag" style="background:rgba(74,144,255,0.1);color:var(--blue)">Modulo 1 &mdash; Setup</div>
+        <div class="card-text" style="line-height:2">
+          1. O que e Claude Code e por que muda tudo <span style="color:var(--gray-600)">10 min</span><br>
+          2. Instalacao e configuracao passo a passo <span style="color:var(--gray-600)">15 min</span><br>
+          3. Como instalar os agentes do Squad <span style="color:var(--gray-600)">10 min</span><br>
+          4. Sua primeira tarefa com um agente <span style="color:var(--gray-600)">10 min</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-tag" style="background:rgba(245,158,11,0.1);color:var(--amber)">Modulo 2 &mdash; Operacao</div>
+        <div class="card-text" style="line-height:2">
+          5. Como delegar tarefas para cada squad <span style="color:var(--gray-600)">15 min</span><br>
+          6. Workflow completo: pesquisa a copy pronta <span style="color:var(--gray-600)">20 min</span><br>
+          7. Como criar conteudo com o Copy Squad <span style="color:var(--gray-600)">15 min</span><br>
+          8. Como fazer pesquisa de mercado com IA <span style="color:var(--gray-600)">15 min</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-tag" style="background:rgba(34,197,94,0.1);color:var(--green)">Modulo 3 &mdash; Lucro</div>
+        <div class="card-text" style="line-height:2">
+          9. 5 formas de gerar receita com agentes <span style="color:var(--gray-600)">20 min</span><br>
+          10. Como precificar projetos de IA <span style="color:var(--gray-600)">15 min</span><br>
+          11. Como vender agentes para clientes <span style="color:var(--gray-600)">20 min</span><br>
+          12. Proximo passo: jornada REIS [IA] <span style="color:var(--gray-600)">10 min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Criativos -->
+<section id="criativos">
+  <div class="container">
+    <div class="section-label">Criativos</div>
+    <h2 class="section-title">5 Angulos para Instagram Ads</h2>
+    <p class="section-sub">Video direto para camera, Moroni fala. 30-60 segundos. Celular, qualidade boa mas nao "produzida demais". Sempre com legenda.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="angle-num">01</div>
+        <div class="card-tag" style="background:rgba(74,144,255,0.1);color:var(--blue)">Desafio ao Status Quo</div>
+        <div class="angle-hook">"Voce ainda ta usando ChatGPT como Google? Olha isso aqui."</div>
+        <div class="card-text">Mostrar tela com agentes funcionando. "Enquanto voce digita prompt por prompt, eu tenho 25 agentes que fazem pesquisa, copy, branding e conteudo. Tudo ao mesmo tempo."</div>
+        <div class="angle-target">Publico: Empreendedores, freelancers, agencias</div>
+      </div>
+      <div class="card">
+        <div class="angle-num">02</div>
+        <div class="card-tag" style="background:rgba(34,197,94,0.1);color:var(--green)">Prova de Producao Real</div>
+        <div class="angle-hook">"Isso aqui substituiu 7 profissionais no meu negocio."</div>
+        <div class="card-text">Screencast: pesquisa de mercado &rarr; copy &rarr; revisao &rarr; publicacao. "Esse fluxo levava 3 dias com freelancers. Agora leva 45 minutos."</div>
+        <div class="angle-target">Publico: Donos de negocio, agencias, produtores de conteudo</div>
+      </div>
+      <div class="card">
+        <div class="angle-num">03</div>
+        <div class="card-tag" style="background:rgba(245,158,11,0.1);color:var(--amber)">O Custo da Inacao</div>
+        <div class="angle-hook">"Sabe quanto custa um time de marketing? R$25K por mes no minimo."</div>
+        <div class="card-text">"Copywriter: R$5K. Designer: R$5K. Estrategista: R$8K. Ou voce pega 25 agentes por R$67. Uma vez. 80% do resultado por 0,3% do custo."</div>
+        <div class="angle-target">Publico: PMEs, empreendedores solo, freelancers</div>
+      </div>
+      <div class="card">
+        <div class="angle-num">04</div>
+        <div class="card-tag" style="background:rgba(167,139,250,0.1);color:#a78bfa">Bastidores do Negocio</div>
+        <div class="angle-hook">"Deixa eu te mostrar como eu toco meu negocio inteiro com IA."</div>
+        <div class="card-text">Tour pelo setup: orquestrador, pesquisa, copy, humanizacao, qualidade. "Eu criei isso pra mim. Funcionou tao bem que empacoitei pra voce."</div>
+        <div class="angle-target">Publico: Curiosos sobre IA, early adopters, agencias</div>
+      </div>
+      <div class="card">
+        <div class="angle-num">05</div>
+        <div class="card-tag" style="background:rgba(244,114,182,0.1);color:#f472b6">Resposta ao Hype</div>
+        <div class="angle-hook">"Todo mundo fala de IA. Quase ninguem usa de verdade pra ganhar dinheiro."</div>
+        <div class="card-text">"A maioria ta usando IA pra perguntar receita de bolo. Enquanto isso, tem gente montando times inteiros de agentes. Para de brincar de IA e comeca a lucrar."</div>
+        <div class="angle-target">Publico: Empreendedores frustrados com IA generica</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:32px">
+      <div class="card-title">Framework de Teste</div>
+      <div class="card-text">
+        <strong style="color:var(--white)">Semana 1-2:</strong> Testar 5 hooks, R$50/dia (R$10 por variacao). CTR &lt; 1% = mata. CTR &gt; 2% = escala.<br>
+        <strong style="color:var(--white)">Semana 3-4:</strong> Escalar 2 melhores, R$100-200/dia. Testar duracao, com/sem screencast, com/sem preco.<br>
+        <strong style="color:var(--white)">Semana 5+:</strong> Escalar vencedores + novos formatos (carrossel, collabs, behind-the-scenes).
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bridge -->
+<section id="bridge">
+  <div class="container">
+    <div class="section-label">Upsell</div>
+    <h2 class="section-title">Bridge: Low-Ticket &rarr; Hub R$497</h2>
+    <p class="section-sub">Sequencia de 14 dias por email + WhatsApp. Grupo WhatsApp fecha em 30 dias. Aula 12 e pitch deliberado pro Hub.</p>
+
+    <div class="timeline" style="margin-bottom:48px">
+      <div class="tl-item">
+        <div class="tl-day">Dia 0</div>
+        <div><div class="tl-title">Email de boas-vindas</div><div class="tl-desc">Entrega do acesso. "Sua primeira missao: instale e rode seu primeiro agente em 30 minutos."</div></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-day">Dia 1</div>
+        <div><div class="tl-title">WhatsApp automatico</div><div class="tl-desc">"Conseguiu instalar? Se precisar de ajuda, manda aqui no grupo."</div></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-day">Dia 3</div>
+        <div><div class="tl-title">Email: "O que voce perdeu"</div><div class="tl-desc">Resultado real gerado pelos agentes. Cria FOMO e incentiva uso.</div></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-day">Dia 5</div>
+        <div><div class="tl-title">Email: "Os agentes sao o comeco"</div><div class="tl-desc">Introduz ecossistema REIS [IA]. "Os agentes sao o time. O Hub e o escritorio." Primeira mencao ao Hub.</div></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-day">Dia 7</div>
+        <div><div class="tl-title">Email: "Desafio de 7 dias"</div><div class="tl-desc">Gerar R$1.000 usando os agentes. Quem completa ganha 30% desconto no Hub.</div></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-day">Dia 10</div>
+        <div><div class="tl-title">Email: "O limite dos agentes sozinhos"</div><div class="tl-desc">"Os agentes executam. Mas quem define a estrategia?" Hub como camada de estrategia + comunidade.</div></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-day">Dia 14</div>
+        <div><div class="tl-title">Email: "Oferta exclusiva"</div><div class="tl-desc">R$497 a vista ou 12x R$51. Bonus exclusivo para compradores do Squad. Deadline: 48h.</div></div>
+      </div>
+    </div>
+
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--white)">Triggers Comportamentais</h3>
+    <div class="trigger-grid">
+      <div class="trigger-card">
+        <div class="trigger-if">SE completou 80%+ das aulas</div>
+        <div class="trigger-then">Email especial com oferta do Hub</div>
+      </div>
+      <div class="trigger-card">
+        <div class="trigger-if">SE enviou mensagem no WhatsApp</div>
+        <div class="trigger-then">DM pessoal do Moroni com convite</div>
+      </div>
+      <div class="trigger-card">
+        <div class="trigger-if">SE inativo 7+ dias</div>
+        <div class="trigger-then">Email de reativacao: "O que aconteceu?"</div>
+      </div>
+      <div class="trigger-card">
+        <div class="trigger-if">SE compartilhou resultado no grupo</div>
+        <div class="trigger-then">Reconhecimento publico + convite Hub</div>
+      </div>
+      <div class="trigger-card">
+        <div class="trigger-if">SE perguntou sobre servicos avancados</div>
+        <div class="trigger-then">DM com link para aplicacao de mentoria</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Hub -->
+<section id="hub">
+  <div class="container">
+    <div class="section-label">Comunidade</div>
+    <h2 class="section-title">Hub REIS [IA] &mdash; R$497</h2>
+    <p class="section-sub">"Os agentes sao o time. O Hub e o escritorio." A vista ou 12x R$51.</p>
+
+    <div style="margin-bottom:48px">
+      <div class="stack-item">
+        <div class="stack-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div><div class="stack-name">Jornada Personalizada</div><div class="stack-desc">Constellation UI com fases que desbloqueiam baseado no perfil</div></div>
+        <div class="stack-exc">Exclusivo</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div><div class="stack-name">Comunidade de Builders</div><div class="stack-desc">Grupo de empresarios que usam IA para lucrar</div></div>
+        <div class="stack-exc">Exclusivo</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        </div>
+        <div><div class="stack-name">Academia Completa</div><div class="stack-desc">Cursos avancados: vender IA, precificar, prospectar</div></div>
+        <div class="stack-exc">Exclusivo</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/></svg>
+        </div>
+        <div><div class="stack-name">Vault de Conhecimento</div><div class="stack-desc">Templates, frameworks, SOPs, propostas</div></div>
+        <div class="stack-exc">Exclusivo</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div><div class="stack-name">Atualizacoes de Agentes</div><div class="stack-desc">Novos agentes e squads antes de todo mundo</div></div>
+        <div class="stack-exc">Exclusivo</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+        <div><div class="stack-name">Suporte Continuo</div><div class="stack-desc">Comunidade com suporte permanente (nao 30 dias)</div></div>
+        <div class="stack-exc">Exclusivo</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div><div class="stack-name">Desafios Mensais</div><div class="stack-desc">Missoes com premiacao para gerar resultado</div></div>
+        <div class="stack-exc">Exclusivo</div>
+      </div>
+      <div class="stack-item" style="border-bottom:none">
+        <div class="stack-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div><div class="stack-name">Acesso ao Moroni</div><div class="stack-desc">Lives mensais, Q&A, feedback em projetos</div></div>
+        <div class="stack-exc">Exclusivo</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--white)">Objecoes Mapeadas</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Objecao</th><th>Resposta</th></tr></thead>
+        <tbody>
+          <tr><td class="td-label">"Ja tenho os agentes, pra que pagar mais?"</td><td>"Ter um time e saber liderar um time sao coisas diferentes. O Hub e a camada de estrategia."</td></tr>
+          <tr><td class="td-label">"R$497 e caro"</td><td>"Sao R$41/mes. Se os agentes te gerarem 1 cliente de R$2K, o Hub se paga 4x."</td></tr>
+          <tr><td class="td-label">"Posso aprender sozinho"</td><td>"Pode. E vai levar 6 meses pra juntar o que o Hub entrega no dia 1."</td></tr>
+          <tr><td class="td-label">"Nao sei se vou usar"</td><td>"O Hub tem jornada personalizada. Ele se adapta a voce."</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Mentoria -->
+<section id="mentoria">
+  <div class="container">
+    <div class="section-label">Backend</div>
+    <h2 class="section-title">Mentoria 1:1 &mdash; R$3-5K</h2>
+    <p class="section-sub">Nao e vendida — e oferecida para quem demonstra sinais de prontidao. Qualificacao por comportamento, nao por pitch.</p>
+
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--white)">Sinais de Qualificacao</h3>
+    <div class="card-grid" style="margin-bottom:48px">
+      <div class="card">
+        <div class="card-title" style="color:var(--green)">Muito Alto</div>
+        <div class="card-text">Postou resultado na comunidade (cliente fechado)</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--blue)">Alto</div>
+        <div class="card-text">Completou 70%+ da jornada no Hub</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--blue)">Alto</div>
+        <div class="card-text">Fez pergunta avancada sobre precificacao/vendas</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--amber)">Medio</div>
+        <div class="card-text">Participou de 3+ lives</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--amber)">Medio</div>
+        <div class="card-text">Esta no Hub ha 60+ dias e ativo</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--white)">Funil de Aplicacao</h3>
+    <div class="funnel" style="margin-bottom:32px">
+      <div class="funnel-step step-hub">
+        <div class="funnel-dot"></div>
+        <div class="funnel-content">
+          <div class="funnel-label">Convite</div>
+          <div class="funnel-desc">Email, DM ou live — baseado em sinais de qualificacao</div>
+        </div>
+      </div>
+      <div class="funnel-step step-hub">
+        <div class="funnel-dot"></div>
+        <div class="funnel-content">
+          <div class="funnel-label">Pagina de Aplicacao</div>
+          <div class="funnel-desc">Formulario com 15 perguntas de qualificacao</div>
+        </div>
+      </div>
+      <div class="funnel-step step-mentoria">
+        <div class="funnel-dot"></div>
+        <div class="funnel-content">
+          <div class="funnel-label">Review + Call</div>
+          <div class="funnel-desc">Moroni avalia e agenda call de vendas (45-60 min)</div>
+        </div>
+      </div>
+      <div class="funnel-step step-mentoria">
+        <div class="funnel-dot"></div>
+        <div class="funnel-content">
+          <div class="funnel-label">Fechamento</div>
+          <div class="funnel-desc">8-12 semanas, calls semanais, WhatsApp direto, pathway Partners</div>
+        </div>
+        <div class="funnel-price">R$3-5K</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Economics -->
+<section id="economics">
+  <div class="container">
+    <div class="section-label">Numeros</div>
+    <h2 class="section-title">Unit Economics</h2>
+    <p class="section-sub">O low-ticket auto-liquida o trafego. O lucro real esta no Hub e na mentoria.</p>
+
+    <div class="metrics-grid" style="margin-bottom:48px">
+      <div class="metric-card">
+        <div class="metric-value blue">R$1,50-3</div>
+        <div class="metric-label">CPC medio (Meta Ads)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">1,5-3%</div>
+        <div class="metric-label">CTR do anuncio</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">3-5%</div>
+        <div class="metric-label">Conversao da pagina</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value green">R$57</div>
+        <div class="metric-label">Ticket medio</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">R$30-60</div>
+        <div class="metric-label">Custo por venda</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value green">Sim</div>
+        <div class="metric-label">Auto-liquida (conv &gt; 3%)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">5-10%</div>
+        <div class="metric-label">Conv. low-ticket &rarr; Hub</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value blue">R$497</div>
+        <div class="metric-label">Ticket Hub</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">3-5%</div>
+        <div class="metric-label">Conv. Hub &rarr; Mentoria</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value blue">R$3-5K</div>
+        <div class="metric-label">Ticket Mentoria</div>
+      </div>
+      <div class="metric-card" style="grid-column: span 2">
+        <div class="metric-value green" style="font-size:36px">~R$214-294</div>
+        <div class="metric-label">LTV por comprador low-ticket (funil completo)</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Conclusao Financeira</div>
+      <div class="card-text">Cada R$1 gasto em trafego retorna R$1 no low-ticket (auto-liquidacao) e R$3-5 no backend. O lucro real esta na comunidade e na mentoria.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Trafego -->
+<section id="trafego">
+  <div class="container">
+    <div class="section-label">Trafego</div>
+    <h2 class="section-title">3 Fases de Escala</h2>
+    <p class="section-sub">12 semanas de validacao a escala completa.</p>
+
+    <div class="phase-grid">
+      <div class="phase-card">
+        <div class="phase-tag" style="background:rgba(74,144,255,0.1);color:var(--blue)">Fase 1 &mdash; Semanas 1-4</div>
+        <div class="card-title">Validacao</div>
+        <div class="card-text" style="margin-bottom:16px">
+          Meta Ads R$50/dia + Instagram organico + WhatsApp broadcast para base existente
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px">
+          <span style="color:var(--gray-500)">Budget mensal</span>
+          <span style="color:var(--white);font-weight:600">~R$1.500</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px">
+          <span style="color:var(--gray-500)">Meta</span>
+          <span style="color:var(--green);font-weight:600">50-100 vendas</span>
+        </div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-tag" style="background:rgba(245,158,11,0.1);color:var(--amber)">Fase 2 &mdash; Semanas 5-8</div>
+        <div class="card-title">Escala Inicial</div>
+        <div class="card-text" style="margin-bottom:16px">
+          Meta Ads R$150-300/dia + YouTube Shorts + LinkedIn organico + Programa de afiliados (30%)
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px">
+          <span style="color:var(--gray-500)">Budget mensal</span>
+          <span style="color:var(--white);font-weight:600">~R$6-10K</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px">
+          <span style="color:var(--gray-500)">Meta</span>
+          <span style="color:var(--green);font-weight:600">200-400 vendas/mes</span>
+        </div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-tag" style="background:rgba(34,197,94,0.1);color:var(--green)">Fase 3 &mdash; Semanas 9-12</div>
+        <div class="card-title">Escala Completa</div>
+        <div class="card-text" style="margin-bottom:16px">
+          Meta Ads R$300-500/dia + YouTube (organico + ads) + Collabs/Podcast
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px">
+          <span style="color:var(--gray-500)">Budget mensal</span>
+          <span style="color:var(--white);font-weight:600">~R$13-19K</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px">
+          <span style="color:var(--gray-500)">Meta</span>
+          <span style="color:var(--green);font-weight:600">Volume + backend</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Decisoes -->
+<section id="decisoes" style="border-bottom:none">
+  <div class="container">
+    <div class="section-label">Validacao</div>
+    <h2 class="section-title">Decisoes Pendentes</h2>
+    <p class="section-sub">Itens que precisam da tua validacao antes de executar.</p>
+
+    <div style="max-width:640px">
+      <div class="decision-item">
+        <div class="decision-num">1</div>
+        <div>
+          <div class="decision-q">Nome do produto</div>
+          <div class="decision-opts">Recomendacao: REIS [IA] Agent Squad &mdash; ou alternativas?</div>
+        </div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-num">2</div>
+        <div>
+          <div class="decision-q">Preco exato</div>
+          <div class="decision-opts">R$49 / R$57 / R$67</div>
+        </div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-num">3</div>
+        <div>
+          <div class="decision-q">Plataforma de entrega</div>
+          <div class="decision-opts">Kiwify Members ou direto no Hub?</div>
+        </div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-num">4</div>
+        <div>
+          <div class="decision-q">Formato dos agentes</div>
+          <div class="decision-opts">GitHub repo / download direto / script de instalacao</div>
+        </div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-num">5</div>
+        <div>
+          <div class="decision-q">Comissao de afiliado</div>
+          <div class="decision-opts">20% ou 30%?</div>
+        </div>
+      </div>
+      <div class="decision-item" style="border-bottom:none">
+        <div class="decision-num">6</div>
+        <div>
+          <div class="decision-q">Order bump</div>
+          <div class="decision-opts">Sim/nao — e o que inclui?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer style="padding:48px 24px;text-align:center;border-top:1px solid var(--gray-800)">
+  <div style="font-weight:300;font-size:18px;margin-bottom:12px">REIS <span style="color:var(--blue)">[IA]</span></div>
+  <div style="font-size:12px;color:var(--gray-600)">Documento estrategico interno &mdash; Abril 2026</div>
+</footer>
+
+<script>
+// Fade in on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.card, .metric-card, .funnel-step, .tl-item, .decision-item, .trigger-card, .phase-card, .stack-item').forEach(el => {
+  el.classList.add('fade-in');
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>

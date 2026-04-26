@@ -75,11 +75,11 @@ Apply these consistently across all pages:
 
 ## Brand Elements in Code
 
-Two visual motifs must appear on every page at least once:
+Two optional brand motifs — use where contextually appropriate:
 
-1. **H1-B Hourglass** — Central brand symbol representing TIME. Use as an SVG icon or CSS-drawn element. Minimal geometric style, architectural feel. Appears across all layers: Systems pillar, metrics sections, efficiency messaging, and any content referencing "O Tempo e Rei."
+1. **H1-B Hourglass** — Primary brand symbol representing TIME. Use as an SVG icon or CSS-drawn element. Minimal geometric style, architectural feel. Appears in: Systems pillar, metrics sections, efficiency messaging, and any content referencing "O Tempo e Rei."
 
-2. **Z7 Symbol** — Represents the Z7 philosophy (7 zones of transformation). Used in Time Builders content, product sections (Z7 Hours, Z7 Days, Z7 Months), methodology sections, and the 7 Stages framework.
+2. **Z7 Symbol** — Represents the Z7 philosophy (7 zones of transformation). Use ONLY in Builders/methodology content: product sections (Z7 Hours, Z7 Days, Z7 Months), methodology sections, and the 7 Stages framework.
 
 Style: line art or geometric solid, matching the brand's minimal aesthetic. Never decorative or ornate.
 
@@ -92,9 +92,26 @@ Style: line art or geometric solid, matching the brand's minimal aesthetic. Neve
 For any background, visual effect, or animation task, consult the skill files first:
 - For backgrounds and visual effects: `.claude/skills/visual-backgrounds.md`
 - For micro-interactions and interactive UI: `.claude/skills/interactive-ui.md`
+- For animation best practices: `brain/design-library/patterns/emil-design-eng-skill.md`
 - Reference components are in `src/components/backgrounds/` -- iterate from them, do not create from scratch
 
 **Installed visual stack:** `@react-three/fiber`, `@react-three/drei`, `three`, `framer-motion`, `@tsparticles/react`, `@tsparticles/slim`, `shadergradient`, `gsap`, `simplex-noise`, `@types/three`
+
+### Animation Performance Rules
+
+- **Only animate `transform` and `opacity`** — these skip layout/paint, run on GPU
+- **CSS animations > JS under load** — CSS runs off main thread; Framer Motion (`requestAnimationFrame`) drops frames during page loads
+- **Framer Motion caveat**: shorthand `x`/`y`/`scale` props are NOT hardware-accelerated. Use `transform: "translateX()"` for GPU compositing.
+- **WAAPI** (`element.animate()`) gives JS control with CSS performance — use for programmatic animations without libraries
+- **UI animations stay under 300ms** — button feedback 100-160ms, dropdowns 150-250ms, modals 200-500ms
+- **Use custom easing curves**, not CSS defaults:
+  - Entry: `cubic-bezier(0.23, 1, 0.32, 1)` (strong ease-out)
+  - On-screen: `cubic-bezier(0.77, 0, 0.175, 1)` (strong ease-in-out)
+- **Never `transition: all`** — specify exact properties
+
+### Design Quality Plugin
+
+The `impeccable` plugin is installed globally. Use `/audit` for a11y/performance checks and `/polish` for final quality pass before deploy.
 
 ---
 
@@ -124,6 +141,39 @@ For any background, visual effect, or animation task, consult the skill files fi
 
 ---
 
+## IDS Protocol (Inventory-Decide-Source)
+
+Before creating ANY new file, you MUST execute this 3-step protocol:
+
+### Step 1: Inventory
+Run Glob and Grep to find existing files that might serve the same purpose:
+- Glob for files with similar names in the target directory
+- Glob for files with the same extension in `src/components/`, `src/layouts/`, `src/pages/`
+- Grep for similar functionality (component names, class names, exported functions)
+
+### Step 2: Decide
+Based on inventory results, choose ONE:
+- **REUSE** — An existing file already does what is needed. Use it directly.
+- **ADAPT** — An existing file is close but needs modification. Edit it instead of creating new.
+- **CREATE** — No existing file serves the purpose. Justify why creation is necessary.
+
+### Step 3: Log
+Include the IDS decision in your BUILD RESULT output:
+```
+IDS Decision:
+- Searched: [what you searched for]
+- Found: [relevant existing files, or "none"]
+- Decision: [REUSE / ADAPT / CREATE]
+- Justification: [why]
+```
+
+### IDS Violations
+- Creating a file without running Step 1 is a protocol violation
+- Creating a file when a REUSE or ADAPT option exists is waste
+- Not logging the decision in BUILD RESULT makes the decision unauditable
+
+---
+
 ## Placeholder Handling
 
 Many copy files contain placeholders (e.g., `[METRIC]`, `[TESTIMONIAL]`, `[CASE STUDY]`, `[DATE]`). These are intentional — real data will replace them later (Phase 4).
@@ -141,6 +191,12 @@ When completing a task, report:
 
 ```
 BUILD RESULT
+
+IDS Decision:
+- Searched: [what you searched for]
+- Found: [relevant existing files, or "none"]
+- Decision: [REUSE / ADAPT / CREATE]
+- Justification: [why]
 
 Files Created:
 [list]

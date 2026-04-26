@@ -128,6 +128,21 @@ export default function BrandingForm({
     setHasChanges(true);
   }
 
+  function getMissingRequired(): { section: number; fields: string[] }[] {
+    const missing: { section: number; fields: string[] }[] = [];
+    sections.forEach((section, i) => {
+      const missingFields: string[] = [];
+      for (const field of section.fields) {
+        if (!field.required) continue;
+        const val = data[field.id];
+        const empty = Array.isArray(val) ? val.length === 0 : !val || String(val).trim() === '';
+        if (empty) missingFields.push(field.label);
+      }
+      if (missingFields.length > 0) missing.push({ section: i, fields: missingFields });
+    });
+    return missing;
+  }
+
   function handleCheckboxChange(fieldId: string, option: string, checked: boolean) {
     setData(prev => {
       const current: string[] = Array.isArray(prev[fieldId]) ? prev[fieldId] : [];
@@ -375,7 +390,7 @@ export default function BrandingForm({
         {sections.map((section, i) => (
           <button
             key={i}
-            onClick={() => setActiveSection(i)}
+            onClick={() => { if (hasChanges && !isSubmitted) doSave(); setActiveSection(i); }}
             style={{
               padding: '6px 12px',
               borderRadius: '6px',
@@ -420,7 +435,7 @@ export default function BrandingForm({
       {/* Navigation between sections */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <button
-          onClick={() => setActiveSection(prev => Math.max(0, prev - 1))}
+          onClick={() => { if (hasChanges && !isSubmitted) doSave(); setActiveSection(prev => Math.max(0, prev - 1)); }}
           disabled={activeSection === 0}
           style={{
             padding: '8px 16px',
@@ -438,7 +453,7 @@ export default function BrandingForm({
           {activeSection + 1} / {sections.length}
         </span>
         <button
-          onClick={() => setActiveSection(prev => Math.min(sections.length - 1, prev + 1))}
+          onClick={() => { if (hasChanges && !isSubmitted) doSave(); setActiveSection(prev => Math.min(sections.length - 1, prev + 1)); }}
           disabled={activeSection === sections.length - 1}
           style={{
             padding: '8px 16px',
@@ -475,7 +490,19 @@ export default function BrandingForm({
             {saving ? 'Salvando...' : 'Salvar rascunho'}
           </button>
           <button
-            onClick={() => doSave('submitted')}
+            onClick={() => {
+              const missing = getMissingRequired();
+              if (missing.length > 0) {
+                const first = missing[0];
+                setActiveSection(first.section);
+                showToast(`Preencha os campos obrigatorios na secao "${sections[first.section].title}": ${first.fields.join(', ')}`, 'error');
+                return;
+              }
+              if (progress < 50) {
+                if (!confirm(`Voce preencheu apenas ${progress}% do formulario. Deseja enviar mesmo assim?`)) return;
+              }
+              doSave('submitted');
+            }}
             disabled={saving}
             style={{
               padding: '10px 20px',

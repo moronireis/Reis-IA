@@ -1,0 +1,34 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'hero';
+  href?: string;
+  class?: string;
+  type?: 'button' | 'submit';
+  size?: 'md' | 'lg' | 'hero';
+}
+
+const {
+  variant = 'primary',
+  href,
+  class: className = '',
+  type = 'button',
+  size,
+} = Astro.props;
+
+const effectiveSize = size ?? (variant === 'hero' ? 'hero' : 'md');
+const sizeClass = `btn-${effectiveSize}`;
+const variantClass = variant === 'hero' ? 'btn-primary' : `btn-${variant}`;
+const classes = `btn ${variantClass} ${sizeClass} ${className}`.trim();
+---
+
+{href ? (
+  <a href={href} class={classes}>
+    <slot />
+    {variant === 'ghost' && <span class="arrow-icon" aria-hidden="true">&rarr;</span>}
+  </a>
+) : (
+  <button type={type} class={classes}>
+    <slot />
+    {variant === 'ghost' && <span class="arrow-icon" aria-hidden="true">&rarr;</span>}
+  </button>
+)}

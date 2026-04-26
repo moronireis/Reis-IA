@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=block" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1080px;
+      height: 1350px;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: #F4EFE6;
+      position: relative;
+    }
+
+    /* --- Castelo dos Lagos Tokens --- */
+    :root {
+      --forest-deep: #1E2E24;
+      --forest-mid: #2F4A3A;
+      --cream: #F4EFE6;
+      --near-black: #0E0E0C;
+      --gold: #C9A96E;
+      --bronze: #8A6A3E;
+      --on-dark-heading: rgba(244, 239, 230, 1.00);
+      --on-dark-primary: rgba(244, 239, 230, 0.92);
+      --on-dark-secondary: rgba(244, 239, 230, 0.60);
+      --on-dark-muted: rgba(244, 239, 230, 0.45);
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-structural: 'Inter', -apple-system, sans-serif;
+    }
+
+    /* --- SLIDE BASE --- */
+    .slide {
+      width: 1080px;
+      height: 1350px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 72px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* --- BACKGROUNDS --- */
+    .bg-forest-deep { background: var(--forest-deep); }
+    .bg-forest-mid { background: var(--forest-mid); }
+    .bg-cream { background: var(--cream); color: var(--near-black); }
+    .bg-near-black { background: var(--near-black); }
+    .bg-gradient-forest {
+      background: linear-gradient(175deg, var(--forest-deep) 0%, #162018 60%, var(--near-black) 100%);
+    }
+    .bg-gradient-gold {
+      background: linear-gradient(175deg, var(--forest-deep) 0%, #2a3a2d 50%, var(--forest-mid) 100%);
+    }
+
+    /* --- PHOTO BACKGROUND --- */
+    .has-bg-photo {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    /* Dark overlay for text readability over photos */
+    .has-bg-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .overlay-dark::after {
+      background: linear-gradient(180deg,
+        rgba(14,14,12,0.55) 0%,
+        rgba(14,14,12,0.40) 30%,
+        rgba(14,14,12,0.50) 70%,
+        rgba(14,14,12,0.75) 100%);
+    }
+    .overlay-heavy::after {
+      background: linear-gradient(180deg,
+        rgba(14,14,12,0.70) 0%,
+        rgba(14,14,12,0.55) 30%,
+        rgba(14,14,12,0.60) 70%,
+        rgba(14,14,12,0.82) 100%);
+    }
+    .overlay-forest::after {
+      background: linear-gradient(180deg,
+        rgba(30,46,36,0.65) 0%,
+        rgba(30,46,36,0.45) 30%,
+        rgba(30,46,36,0.55) 70%,
+        rgba(30,46,36,0.80) 100%);
+    }
+    .overlay-cinematic::after {
+      background: linear-gradient(180deg,
+        rgba(14,14,12,0.30) 0%,
+        rgba(14,14,12,0.15) 30%,
+        rgba(14,14,12,0.25) 60%,
+        rgba(14,14,12,0.85) 100%);
+    }
+
+    /* --- Subtle texture overlay --- */
+    .slide:not(.has-bg-photo)::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 30% 90%, rgba(201,169,110,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slide > * { position: relative; z-index: 1; }
+
+    /* --- GOLD HAIRLINE (top decorative) --- */
+    .hairline-top {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent 5%, var(--gold) 30%, var(--gold) 70%, transparent 95%);
+      z-index: 2;
+    }
+
+    /* --- BRAND MARK --- */
+    .brand {
+      position: absolute;
+      bottom: 48px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      z-index: 2;
+    }
+    .brand__name {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 22px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--on-dark-muted);
+    }
+    .brand__name--cream {
+      color: rgba(14, 14, 12, 0.35);
+    }
+
+    /* --- TYPOGRAPHY --- */
+    .display {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+    .display-lg { font-size: 96px; }
+    .display-md { font-size: 72px; }
+    .display-sm { font-size: 56px; }
+
+    .heading {
+      font-family: var(--font-structural);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      line-height: 1.3;
+    }
+    .heading-lg { font-size: 36px; }
+    .heading-md { font-size: 28px; }
+    .heading-sm { font-size: 22px; }
+
+    .body-text {
+      font-family: var(--font-structural);
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--on-dark-primary);
+    }
+    .body-lg { font-size: 32px; }
+    .body-md { font-size: 26px; }
+    .body-sm { font-size: 22px; }
+
+    .label {
+      font-family: var(--font-structural);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 18px;
+      color: var(--gold);
+    }
+
+    /* --- ACCENT --- */
+    .gold { color: var(--gold); }
+    .cream-text { color: var(--cream); }
+    .muted { color: var(--on-dark-secondary); }
+
+    /* --- GOLD LINE DIVIDER --- */
+    .divider {
+      width: 80px;
+      height: 1px;
+      background: var(--gold);
+      margin: 32px auto;
+    }
+    .divider-wide {
+      width: 160px;
+    }
+
+    /* --- CENTERED LAYOUT --- */
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .gap-16 { gap: 16px; }
+    .gap-24 { gap: 24px; }
+    .gap-32 { gap: 32px; }
+    .gap-40 { gap: 40px; }
+    .flex-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .w-full { width: 100%; }
+
+    /* --- VENDOR GRID --- */
+    .vendor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 40px;
+      width: 100%;
+      max-width: 820px;
+    }
+    .vendor-item {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 24px;
+      border: 1px solid rgba(201,169,110,0.15);
+      border-radius: 4px;
+    }
+    .vendor-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-style: italic;
+      flex-shrink: 0;
+      border-right: 1px solid rgba(201,169,110,0.2);
+      padding-right: 20px;
+    }
+    .vendor-name {
+      font-family: var(--font-structural);
+      font-weight: 400;
+      font-size: 24px;
+      color: var(--on-dark-primary);
+      letter-spacing: 0.02em;
+    }
+
+    /* --- DATE BLOCK --- */
+    .date-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 48px 64px;
+      border: 1px solid rgba(201,169,110,0.25);
+      border-radius: 4px;
+    }
+    .date-day {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 120px;
+      line-height: 1;
+      color: var(--gold);
+      letter-spacing: -0.03em;
+    }
+    .date-month {
+      font-family: var(--font-structural);
+      font-weight: 500;
+      font-size: 28px;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--on-dark-primary);
+    }
+    .date-weekday {
+      font-family: var(--font-structural);
+      font-weight: 300;
+      font-size: 22px;
+      color: var(--on-dark-secondary);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .date-time {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-style: italic;
+      font-size: 40px;
+      color: var(--gold);
+      margin-top: 8px;
+    }
+
+    /* --- CTA BUTTON (editorial line style) --- */
+    .cta {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-style: italic;
+      font-size: 36px;
+      color: var(--gold);
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    /* --- NUMBER HIGHLIGHT --- */
+    .number-highlight {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 160px;
+      line-height: 1;
+      color: var(--gold);
+      opacity: 0.15;
+      position: absolute;
+      top: 60px;
+      right: 72px;
+    }
+
+    /* --- QUOTE MARKS --- */
+    .quote-mark {
+      font-family: var(--font-display);
+      font-size: 200px;
+      line-height: 0.6;
+      color: var(--gold);
+      opacity: 0.12;
+    }
+
+    /* --- LIST STYLE --- */
+    .feature-list {
+      list-style: none;
+      width: 100%;
+      max-width: 760px;
+    }
+    .feature-list li {
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(201,169,110,0.12);
+      font-family: var(--font-structural);
+      font-weight: 300;
+      font-size: 28px;
+      color: var(--on-dark-primary);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .feature-list li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Slide counter */
+    .slide-counter {
+      position: absolute;
+      bottom: 48px;
+      right: 72px;
+      font-family: var(--font-structural);
+      font-weight: 300;
+      font-size: 16px;
+      color: var(--on-dark-muted);
+      letter-spacing: 0.1em;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <!-- Slide content injected here by renderer -->
+  {{SLIDE_CONTENT}}
+</body>
+</html>

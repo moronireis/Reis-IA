@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journey Visualization — Deep Space Navigator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000000;
+      --dark: #020208;
+      --surface: #0A0A0A;
+      --surface-2: #0C0C0C;
+      --blue: #4A90FF;
+      --blue-dim: rgba(74,144,255,0.3);
+      --green: #22C55E;
+      --muted: #1A1A1A;
+      --text: #FFFFFF;
+      --text-dim: #666666;
+      --text-mid: #999999;
+      --border: #1A1A1A;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── TOP NAV ─── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.97);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-inner::-webkit-scrollbar { display: none; }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 16px 14px 14px;
+      color: var(--text-dim);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      white-space: nowrap;
+      border-right: 1px solid var(--border);
+      padding-right: 14px;
+      margin-right: 2px;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--text-mid); }
+
+    .nav-sep {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: #222;
+      text-transform: uppercase;
+      white-space: nowrap;
+      padding: 0 10px 0 4px;
+      border-right: 1px solid var(--border);
+      margin-right: 4px;
+      user-select: none;
+    }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 14px 18px 12px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-dim);
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      white-space: nowrap;
+      position: relative;
+    }
+    .nav-tab::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--blue);
+      transition: width 0.25s ease;
+    }
+    .nav-tab.active { color: var(--text); }
+    .nav-tab.active::after { width: 100%; }
+    .nav-tab:hover { color: var(--text-mid); }
+    .nav-tab .tab-num {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    /* ─── PANELS ─── */
+    .concept-panel { display: none; }
+    .concept-panel.active { display: block; }
+
+    /* ─── SHARED FOOTER ─── */
+    .concept-footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 0 0;
+      margin-top: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .concept-footer .cf-name {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+    .concept-footer .cf-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+    .concept-footer .cf-family {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: #222;
+      text-transform: uppercase;
+      text-align: right;
+    }
+
+    /* ═══════════════════════════════════════════════
+       VARIATION A — STAR CHART NAVIGATOR
+    ═══════════════════════════════════════════════ */
+    #va {
+      background: #000;
+      min-height: calc(100vh - 57px);
+      display: none;
+      flex-direction: column;
+    }
+    #va.active { display: flex; }
+
+    /* coordinate grid */
+    .va-grid-bg {
+      position: fixed;
+      inset: 57px 0 0 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .va-grid-line-h {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: #060606;
+    }
+    .va-grid-line-v {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: #060606;
+    }
+    .va-grid-label {
+      position: absolute;
+      font-size: 9px;
+      color: #1A1A1A;
+      letter-spacing: 0.06em;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* star dust */
+    .va-stars {
+      position: fixed;
+      inset: 57px 0 0 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .va-star {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 50%;
+    }
+
+    .va-topbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid #0A0A0A;
+    }
+    .va-topbar-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: #333;
+      text-transform: uppercase;
+    }
+    .va-topbar-center {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .va-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .va-xp-count {
+      font-size: 12px;
+      color: var(--blue);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+    .va-mini-route {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .va-mini-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1A1A1A;
+      position: relative;
+      z-index: 1;
+    }
+    .va-mini-dot.done { background: var(--green); }
+    .va-mini-dot.active { background: var(--blue); }
+    .va-mini-line {
+      width: 16px;
+      height: 1px;
+      background: #1A1A1A;
+    }
+    .va-mini-line.done { background: rgba(74,144,255,0.4); }
+
+    .va-canvas-area {
+      flex: 1;
+      position: relative;
+      z-index: 10;
+      overflow: hidden;
+    }
+    .va-svg-container {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* station hover panel */
+    .va-hover-panel {
+      position: absolute;
+      width: 280px;
+      background: rgba(8,8,12,0.92);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+      padding: 16px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 50;
+    }
+    .va-hover-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .va-hp-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .va-hp-node {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .va-hp-node:last-child { border-bottom: none; }
+    .va-hp-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .va-hp-dot.done { background: var(--green); }
+    .va-hp-dot.avail { background: var(--blue); animation: pulse-blue 2s infinite; }
+    .va-hp-dot.locked { background: #1A1A1A; border: 1px solid #333; }
+    .va-hp-node-title {
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+      flex: 1;
+    }
+    .va-hp-node-type {
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+    .va-hp-node-xp {
+      font-size: 10px;
+      color: rgba(74,144,255,0.7);
+      font-weight: 600;
+    }
+
+    .va-bottombar {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid #0A0A0A;
+      padding: 10px 32px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .va-bb-item {
+      font-size: 11px;
+      color: #333;
+      letter-spacing: 0.04em;
+    }
+    .va-bb-item span { color: rgba(255,255,255,0.5); }
+    .va-bb-eta {
+      margin-left: auto;
+      font-size: 10px;
+      color: rgba(74,144,255,0.5);
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(74,144,255,0.15);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* Station label */
+    .va-station-label {
+      cursor: pointer;
+    }
+
+    @keyframes pulse-blue {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(74,144,255,0.4); }
+      50% { box-shadow: 0 0 0 4px rgba(74,144,255,0); }
+    }
+    @keyframes radar-ping {
+      0% { r: 20; opacity: 0.6; }
+      100% { r: 36; opacity: 0; }
+    }
+    @keyframes ship-float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(0, -2px); }
+    }
+    @keyframes dash-flow {
+      from { stroke-dashoffset: 24; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    .va-page-wrapper { padding: 0 32px 40px; }
+
+    /* ═══════════════════════════════════════════════
+       VARIATION B — TACTICAL SPACE
+    ═══════════════════════════════════════════════ */
+    #vb {
+      background: #000;
+      min-height: calc(100vh - 57px);
+      display: none;
+    }
+    #vb.active { display: block; }
+
+    .vb-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 48px;
+    }
+    .vb-hud-frame {
+      position: relative;
+      border: 1px solid #1A1A1A;
+      padding: 2px;
+    }
+    /* Corner brackets */
+    .vb-hud-frame::before, .vb-hud-frame::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-color: #2A2A2A;
+      border-style: solid;
+    }
+    .vb-hud-frame::before {
+      top: -1px; left: -1px;
+      border-width: 2px 0 0 2px;
+    }
+    .vb-hud-frame::after {
+      bottom: -1px; right: -1px;
+      border-width: 0 2px 2px 0;
+    }
+
+    .vb-hud-inner {
+      position: relative;
+      padding: 32px;
+    }
+    .vb-hud-inner::before, .vb-hud-inner::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-color: #2A2A2A;
+      border-style: solid;
+    }
+    .vb-hud-inner::before {
+      top: -1px; right: -1px;
+      border-width: 2px 2px 0 0;
+    }
+    .vb-hud-inner::after {
+      bottom: -1px; left: -1px;
+      border-width: 0 0 2px 2px;
+    }
+
+    .vb-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #0E0E0E;
+    }
+    .vb-header-title {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      color: #22C55E;
+      text-transform: uppercase;
+    }
+    .vb-header-sub {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: #1A3A20;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+    .vb-status-bar {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .vb-status-item {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: #1E4A25;
+      text-transform: uppercase;
+    }
+    .vb-status-item.active { color: #22C55E; }
+
+    /* Tactical route area */
+    .vb-main {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 32px;
+    }
+    .vb-route-area {
+      position: relative;
+      min-height: 420px;
+    }
+    .vb-svg-route {
+      width: 100%;
+      height: 420px;
+    }
+
+    /* Side mission panel */
+    .vb-mission-panel {
+      border: 1px solid #0E0E0E;
+      padding: 20px;
+    }
+    .vb-mission-panel.active-panel { border-color: rgba(34,197,94,0.15); }
+    .vb-mp-header {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: #22C55E;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #0E0E0E;
+    }
+    .vb-mp-obj {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.025);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      line-height: 1.4;
+    }
+    .vb-mp-obj:last-child { border-bottom: none; }
+    .vb-mp-check {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+      font-weight: 600;
+      margin-top: 1px;
+    }
+    .vb-mp-check.done { color: #22C55E; }
+    .vb-mp-check.avail { color: rgba(255,255,255,0.9); }
+    .vb-mp-check.locked { color: #333; }
+    .vb-mp-obj-text.done { color: rgba(34,197,94,0.8); }
+    .vb-mp-obj-text.avail { color: rgba(255,255,255,0.7); }
+    .vb-mp-obj-text.locked { color: #333; }
+
+    /* Bottom readout */
+    .vb-readout {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      margin-top: 32px;
+      background: #0E0E0E;
+      border: 1px solid #0E0E0E;
+    }
+    .vb-readout-cell {
+      background: #000;
+      padding: 12px 16px;
+      text-align: center;
+    }
+    .vb-readout-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: #1E4A25;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .vb-readout-value {
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      color: #22C55E;
+      font-weight: 500;
+    }
+
+    .vb-waypoint {
+      cursor: pointer;
+    }
+    .vb-waypoint:hover .vb-sq-fill { opacity: 0.2; }
+
+    @keyframes cursor-blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    @keyframes route-flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .vb-blink { animation: cursor-blink 1s infinite; }
+
+    /* ═══════════════════════════════════════════════
+       VARIATION C — HOLOGRAPHIC DISPLAY
+    ═══════════════════════════════════════════════ */
+    #vc {
+      background: var(--dark);
+      min-height: calc(100vh - 57px);
+      display: none;
+      position: relative;
+      overflow: hidden;
+    }
+    #vc.active { display: block; }
+
+    /* Full viewport scanlines overlay */
+    .vc-scanlines {
+      position: fixed;
+      inset: 57px 0 0 0;
+      pointer-events: none;
+      z-index: 5;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(74,144,255,0.012) 0px,
+        rgba(74,144,255,0.012) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    }
+
+    /* Projector base ellipse at bottom */
+    .vc-projector-base {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 80px;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .vc-projector-ellipse {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid rgba(74,144,255,0.12);
+      background: transparent;
+      box-shadow: 0 0 40px rgba(74,144,255,0.06), 0 0 80px rgba(74,144,255,0.03);
+    }
+    .vc-projector-glow {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 40px;
+      background: radial-gradient(ellipse, rgba(74,144,255,0.04) 0%, transparent 70%);
+    }
+
+    .vc-topbar {
+      position: relative;
+      z-index: 10;
+      padding: 14px 32px;
+      border-bottom: 1px solid rgba(74,144,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .vc-topbar-title {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: rgba(74,144,255,0.5);
+      text-transform: uppercase;
+    }
+    .vc-progress-arc {
+      position: relative;
+      width: 48px;
+      height: 24px;
+      overflow: hidden;
+    }
+
+    .vc-main {
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 24px 120px;
+      display: flex;
+      gap: 48px;
+      align-items: flex-start;
+    }
+
+    /* Vertical route - bottom to top */
+    .vc-route-col {
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      gap: 0;
+      padding: 60px 0;
+      position: relative;
+    }
+
+    .vc-phase-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      position: relative;
+    }
+
+    .vc-phase-hex {
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .vc-hex-svg {
+      width: 44px;
+      height: 44px;
+      filter: drop-shadow(0 0 6px rgba(74,144,255,0.15));
+      transition: filter 0.3s;
+    }
+    .vc-phase-hex:hover .vc-hex-svg {
+      filter: drop-shadow(0 0 12px rgba(74,144,255,0.4));
+    }
+
+    .vc-phase-label {
+      opacity: 0.7;
+      min-width: 180px;
+    }
+    .vc-label-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      position: relative;
+    }
+    .vc-label-title::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: repeating-linear-gradient(
+        to right,
+        rgba(74,144,255,0.08) 0px, rgba(74,144,255,0.08) 1px,
+        transparent 1px, transparent 3px
+      );
+      pointer-events: none;
+    }
+    .vc-label-prog {
+      font-size: 11px;
+      color: rgba(74,144,255,0.5);
+      margin-top: 2px;
+    }
+
+    /* Connector line between hexes */
+    .vc-connector {
+      width: 1px;
+      height: 48px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* Holographic hover panel */
+    .vc-holo-panel {
+      position: absolute;
+      right: -320px;
+      top: -20px;
+      width: 280px;
+      background: rgba(74,144,255,0.03);
+      border: 1px solid rgba(74,144,255,0.12);
+      border-radius: 8px;
+      padding: 16px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 24px rgba(74,144,255,0.06);
+      z-index: 20;
+    }
+    .vc-holo-panel.visible { opacity: 1; }
+    .vc-holo-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(74,144,255,0.015) 0px,
+        rgba(74,144,255,0.015) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+    }
+    .vc-hp-title {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: rgba(74,144,255,0.7);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(74,144,255,0.08);
+      padding-bottom: 8px;
+    }
+    .vc-hp-node {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 0;
+    }
+    .vc-hp-node-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .vc-hp-node-dot.done { background: rgba(34,197,94,0.8); box-shadow: 0 0 4px rgba(34,197,94,0.4); }
+    .vc-hp-node-dot.avail { background: rgba(74,144,255,0.9); box-shadow: 0 0 6px rgba(74,144,255,0.5); }
+    .vc-hp-node-dot.locked { background: rgba(74,144,255,0.1); border: 1px solid rgba(74,144,255,0.15); }
+    .vc-hp-node-text {
+      font-size: 12px;
+      color: rgba(74,144,255,0.75);
+    }
+    .vc-hp-node-text.done { color: rgba(34,197,94,0.75); }
+
+    @keyframes holo-flicker {
+      0%, 95%, 100% { opacity: 1; }
+      96% { opacity: 0.92; }
+      97% { opacity: 1; }
+      98% { opacity: 0.88; }
+    }
+    @keyframes hex-wobble {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-1px); }
+    }
+    .vc-main-content { animation: holo-flicker 8s infinite; }
+    .vc-active-hex { animation: hex-wobble 4s ease-in-out infinite; }
+
+    /* ═══════════════════════════════════════════════
+       VARIATION D — EXPLORATION LOG
+    ═══════════════════════════════════════════════ */
+    #vd {
+      background: #080808;
+      min-height: calc(100vh - 57px);
+      display: none;
+    }
+    #vd.active { display: block; }
+
+    .vd-wrapper {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .vd-header {
+      margin-bottom: 48px;
+    }
+    .vd-title {
+      font-size: 20px;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .vd-subtitle {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .vd-progress-label {
+      font-size: 12px;
+      color: rgba(74,144,255,0.7);
+      margin-top: 6px;
+    }
+
+    /* Timeline */
+    .vd-timeline {
+      position: relative;
+      padding-left: 80px;
+    }
+    .vd-timeline-line {
+      position: absolute;
+      left: 40px;
+      top: 8px;
+      bottom: 8px;
+      width: 1.5px;
+      background: #1A1A1A;
+    }
+
+    .vd-entry {
+      position: relative;
+      margin-bottom: 32px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .vd-entry.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .vd-entry.faded { opacity: 0.4; }
+
+    /* Timeline node */
+    .vd-tl-node {
+      position: absolute;
+      left: -46px;
+      top: 18px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #1A1A1A;
+      border: 1.5px solid #1A1A1A;
+    }
+    .vd-tl-node.done { background: var(--green); border-color: var(--green); }
+    .vd-tl-node.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      box-shadow: 0 0 8px rgba(74,144,255,0.4);
+      animation: tl-pulse 3s infinite;
+    }
+    .vd-tl-connector {
+      position: absolute;
+      left: -40px;
+      top: 24px;
+      width: 20px;
+      height: 1px;
+      background: #141414;
+    }
+    .vd-tl-connector.done { background: #1A3020; }
+
+    /* "You are here" marker */
+    .vd-here-marker {
+      position: absolute;
+      left: -70px;
+      top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .vd-here-arrow {
+      font-size: 11px;
+      color: var(--blue);
+    }
+    .vd-here-label {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      color: rgba(74,144,255,0.6);
+      text-transform: uppercase;
+    }
+
+    /* Entry card */
+    .vd-card {
+      background: #0C0C0C;
+      border: 1px solid #141414;
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .vd-active .vd-card {
+      border-left: 2px solid var(--blue);
+      animation: left-border-pulse 3s infinite;
+    }
+    .vd-card-phase {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .vd-card-title {
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .vd-card-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .vd-node-list { display: flex; flex-direction: column; gap: 0; }
+    .vd-node-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .vd-node-row:last-child { border-bottom: none; }
+    .vd-node-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .vd-node-dot.done { background: var(--green); }
+    .vd-node-dot.avail { background: var(--blue); }
+    .vd-node-dot.locked { background: #222; border: 1px solid #2A2A2A; }
+    .vd-node-title { font-size: 13px; color: rgba(255,255,255,0.8); flex: 1; }
+    .vd-node-type-pill {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      padding: 2px 7px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    .vd-node-type-pill.material { background: rgba(74,144,255,0.1); color: rgba(74,144,255,0.7); }
+    .vd-node-type-pill.task { background: rgba(34,197,94,0.1); color: rgba(34,197,94,0.7); }
+    .vd-node-type-pill.checkpoint { background: rgba(245,158,11,0.1); color: rgba(245,158,11,0.7); }
+    .vd-node-type-pill.presentation { background: rgba(139,92,246,0.1); color: rgba(139,92,246,0.7); }
+    .vd-node-xp { font-size: 11px; color: rgba(74,144,255,0.5); font-weight: 500; white-space: nowrap; }
+
+    .vd-card-footer {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .vd-progress-bar {
+      flex: 1;
+      height: 2px;
+      background: #1A1A1A;
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .vd-progress-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 1px;
+      transition: width 0.8s ease;
+    }
+    .vd-progress-fill.active-fill { background: var(--blue); }
+    .vd-progress-text { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+
+    .vd-eta {
+      text-align: center;
+      padding: 24px 0;
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+
+    @keyframes tl-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(74,144,255,0.4); }
+      50% { box-shadow: 0 0 0 4px rgba(74,144,255,0); }
+    }
+    @keyframes left-border-pulse {
+      0%, 100% { border-left-color: rgba(74,144,255,0.8); }
+      50% { border-left-color: rgba(74,144,255,0.3); }
+    }
+
+    /* ═══════════════════════════════════════════════
+       VARIATION E — MISSION CONTROL LIVE
+    ═══════════════════════════════════════════════ */
+    #ve {
+      background: #000;
+      min-height: calc(100vh - 57px);
+      display: none;
+      flex-direction: column;
+    }
+    #ve.active { display: flex; }
+
+    .ve-topbar {
+      border-bottom: 1px solid #111;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .ve-rec-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #EF4444;
+      animation: rec-blink 1s step-end infinite;
+      flex-shrink: 0;
+    }
+    @keyframes rec-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .ve-topbar-label {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+    }
+    .ve-timestamp {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ve-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Left panel — route overview */
+    .ve-left {
+      width: 260px;
+      flex-shrink: 0;
+      border-right: 1px solid #111;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .ve-left-title {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .ve-route-list { display: flex; flex-direction: column; gap: 0; }
+    .ve-route-phase {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 8px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.15s;
+      position: relative;
+    }
+    .ve-route-phase:hover { background: rgba(255,255,255,0.02); }
+    .ve-route-phase.selected { background: rgba(74,144,255,0.04); }
+    .ve-route-phase.selected .ve-rp-name { color: var(--text); }
+
+    /* Connecting line between phases */
+    .ve-route-connector {
+      position: absolute;
+      left: 19px;
+      top: -8px;
+      width: 1px;
+      height: 8px;
+      background: #111;
+    }
+    .ve-route-connector.done { background: rgba(34,197,94,0.2); }
+    .ve-rp-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 600;
+      color: #333;
+      transition: all 0.2s;
+    }
+    .ve-rp-circle.done { border-color: var(--green); background: rgba(34,197,94,0.1); color: var(--green); }
+    .ve-rp-circle.active {
+      border-color: var(--blue);
+      background: rgba(74,144,255,0.1);
+      color: var(--blue);
+      box-shadow: 0 0 8px rgba(74,144,255,0.2);
+    }
+    .ve-rp-circle.locked { border-color: #111; color: #222; }
+    .ve-rp-info { flex: 1; min-width: 0; }
+    .ve-rp-name {
+      font-size: 12px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.2s;
+    }
+    .ve-rp-sub {
+      font-size: 10px;
+      color: #333;
+      margin-top: 2px;
+    }
+    .ve-rp-sub.active-sub { color: rgba(74,144,255,0.5); }
+
+    /* Scan line effect */
+    .ve-scan-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(74,144,255,0.4), transparent);
+      pointer-events: none;
+      animation: scan-down 10s linear infinite;
+    }
+    @keyframes scan-down {
+      from { top: 0; }
+      to { top: 100%; }
+    }
+
+    /* Right panel — mission detail */
+    .ve-right {
+      flex: 1;
+      padding: 24px 28px;
+      overflow-y: auto;
+    }
+    .ve-mission-header {
+      margin-bottom: 20px;
+    }
+    .ve-mission-phase-num {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .ve-mission-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 10px;
+    }
+    .ve-mission-stats {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .ve-stat-item {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+    }
+    .ve-stat-item span { color: var(--text-mid); font-weight: 500; }
+    .ve-stat-item.active-stat span { color: var(--blue); }
+
+    .ve-divider { border: none; border-top: 1px solid #111; margin: 20px 0; }
+
+    /* Node list */
+    .ve-node-list { display: flex; flex-direction: column; gap: 0; }
+    .ve-node-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .ve-node-row:last-child { border-bottom: none; }
+    .ve-led {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .ve-led.done { background: var(--green); }
+    .ve-led.active { background: var(--blue); animation: led-pulse 2s infinite; }
+    .ve-led.pending { background: #333; border: 1px solid #444; }
+    .ve-led.locked { background: #111; border: 1px solid #1A1A1A; }
+    @keyframes led-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(74,144,255,0.5); }
+      50% { box-shadow: 0 0 0 4px rgba(74,144,255,0); }
+    }
+    .ve-node-title { flex: 1; font-size: 13px; color: rgba(255,255,255,0.85); }
+    .ve-node-type-tag {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      padding: 2px 7px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .ve-node-type-tag.material { background: rgba(74,144,255,0.08); color: rgba(74,144,255,0.6); }
+    .ve-node-type-tag.task { background: rgba(34,197,94,0.08); color: rgba(34,197,94,0.6); }
+    .ve-node-type-tag.checkpoint { background: rgba(245,158,11,0.08); color: rgba(245,158,11,0.6); }
+    .ve-node-type-tag.presentation { background: rgba(139,92,246,0.08); color: rgba(139,92,246,0.6); }
+    .ve-node-time {
+      font-size: 11px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .ve-node-time.done-time { color: rgba(34,197,94,0.5); }
+    .ve-node-time.est-time { color: rgba(255,255,255,0.25); }
+    .ve-node-time.locked-time { color: #222; }
+
+    /* Mini timeline */
+    .ve-mini-timeline {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #0A0A0A;
+    }
+    .ve-mt-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: #222;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .ve-mt-track {
+      position: relative;
+      height: 2px;
+      background: #111;
+      margin: 0 0 24px;
+    }
+    .ve-mt-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: rgba(34,197,94,0.3);
+    }
+    .ve-mt-dots {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      top: -9px;
+    }
+    .ve-mt-dot-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .ve-mt-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #1A1A1A;
+      border: 1px solid #222;
+      position: relative;
+      z-index: 1;
+    }
+    .ve-mt-dot.done { background: var(--green); border-color: var(--green); }
+    .ve-mt-dot.active { background: var(--blue); border-color: var(--blue); }
+    .ve-mt-ts {
+      font-size: 9px;
+      color: #222;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .ve-mt-ts.done-ts { color: rgba(34,197,94,0.35); }
+    .ve-mt-ts.active-ts { color: rgba(74,144,255,0.35); }
+
+    /* Telemetry bar */
+    .ve-telemetry {
+      border-top: 1px solid #111;
+      padding: 0;
+      display: flex;
+      flex-shrink: 0;
+    }
+    .ve-telem-cell {
+      flex: 1;
+      padding: 12px 16px;
+      border-right: 1px solid #111;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .ve-telem-cell:last-child { border-right: none; }
+    .ve-telem-label {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      color: #222;
+      text-transform: uppercase;
+    }
+    .ve-telem-value {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.7);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ─── SHARED PAGE FOOTER ─── */
+    .page-footer-wrap { padding: 0 32px 40px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .ve-body { flex-direction: column; }
+      .ve-left { width: 100%; border-right: none; border-bottom: 1px solid #111; }
+      .ve-right { padding: 20px 16px; }
+      .ve-telemetry { flex-wrap: wrap; }
+      .ve-telem-cell { min-width: 50%; }
+      .vb-main { grid-template-columns: 1fr; }
+      .vc-main { flex-direction: column; padding-bottom: 80px; }
+      .vc-holo-panel { position: static; width: 100%; margin-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── TOP NAV ─── -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-link">&#8592; 1–5</a>
+    <a href="page2.html" class="nav-link">&#8592; 6–10</a>
+    <a href="page3.html" class="nav-link">&#8592; Hybrids</a>
+    <span class="nav-sep">Deep Space</span>
+    <button class="nav-tab active" onclick="switchTab('va',this)">
+      Star Chart
+      <span class="tab-num">A</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('vb',this)">
+      Tactical
+      <span class="tab-num">B</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('vc',this)">
+      Holographic
+      <span class="tab-num">C</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('vd',this)">
+      Explorer Log
+      <span class="tab-num">D</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('ve',this)">
+      Mission Control
+      <span class="tab-num">E</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     VARIATION A — STAR CHART NAVIGATOR
+════════════════════════════════════════════════════════════════ -->
+<div id="va" class="concept-panel active">
+
+  <!-- coordinate grid -->
+  <div class="va-grid-bg" id="vaGrid"></div>
+  <!-- star dust -->
+  <div class="va-stars" id="vaStars"></div>
+
+  <!-- top bar -->
+  <div class="va-topbar">
+    <span class="va-topbar-label">Star Chart</span>
+    <span class="va-topbar-center">Estacao 2 de 5</span>
+    <div class="va-topbar-right">
+      <span class="va-xp-count">320 XP</span>
+      <div class="va-mini-route">
+        <div class="va-mini-dot done"></div>
+        <div class="va-mini-line done"></div>
+        <div class="va-mini-dot active"></div>
+        <div class="va-mini-line"></div>
+        <div class="va-mini-dot"></div>
+        <div class="va-mini-line"></div>
+        <div class="va-mini-dot"></div>
+        <div class="va-mini-line"></div>
+        <div class="va-mini-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- main canvas -->
+  <div class="va-canvas-area">
+    <svg class="va-svg-container" id="vaSvg" viewBox="0 0 900 520" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <filter id="blueGlow">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="softGlow">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <marker id="arrowHead" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="rgba(74,144,255,0.5)"/>
+        </marker>
+      </defs>
+
+      <!-- Route — full S-curve -->
+      <!-- Completed section: Phase1 to midway -->
+      <path id="routeCompleted"
+        d="M 120,80 C 220,80 280,180 380,220 C 440,245 480,245 540,240"
+        fill="none"
+        stroke="#4A90FF"
+        stroke-width="1.5"
+        filter="url(#blueGlow)"
+        stroke-linecap="round"
+      />
+      <!-- Active section: midway toward Phase3 -->
+      <path id="routeActive"
+        d="M 540,240 C 600,235 640,280 680,310"
+        fill="none"
+        stroke="#4A90FF"
+        stroke-width="1.5"
+        stroke-opacity="0.5"
+        stroke-dasharray="8,6"
+        stroke-linecap="round"
+      />
+      <!-- Locked sections: rest of route -->
+      <path id="routeLocked"
+        d="M 680,310 C 720,340 750,380 800,400 C 830,412 850,430 870,460"
+        fill="none"
+        stroke="rgba(255,255,255,0.04)"
+        stroke-width="1.5"
+        stroke-dasharray="2,6"
+        stroke-linecap="round"
+      />
+
+      <!-- Ship indicator with trail -->
+      <g id="vaShip" style="animation: ship-float 3s ease-in-out infinite;">
+        <!-- trail dots -->
+        <circle cx="498" cy="243" r="2" fill="rgba(74,144,255,0.08)"/>
+        <circle cx="513" cy="241" r="2.5" fill="rgba(74,144,255,0.14)"/>
+        <circle cx="528" cy="240" r="2.5" fill="rgba(74,144,255,0.22)"/>
+        <!-- ship chevron -->
+        <path d="M 540,233 L 550,240 L 540,247 L 543,240 Z"
+          fill="#4A90FF" opacity="0.9" filter="url(#softGlow)"/>
+      </g>
+
+      <!-- Station 1 — COMPLETED -->
+      <g class="va-station-label" id="station1"
+         onmouseenter="showVaPanel(1, 120, 80)"
+         onmouseleave="hideVaPanel()">
+        <!-- radar ping (behind circle) -->
+        <circle cx="120" cy="80" r="20" fill="none" stroke="rgba(34,197,94,0.08)" stroke-width="1"/>
+        <!-- outer ring -->
+        <circle cx="120" cy="80" r="20" fill="none" stroke="#22C55E" stroke-width="1.5" opacity="0.6"/>
+        <!-- fill -->
+        <circle cx="120" cy="80" r="16" fill="rgba(34,197,94,0.1)"/>
+        <!-- check -->
+        <path d="M 113,80 L 118,85 L 128,74" stroke="#22C55E" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- label -->
+        <text x="148" y="76" font-family="Inter" font-size="13" font-weight="600" fill="rgba(255,255,255,0.85)">Fundamentos de IA</text>
+        <text x="148" y="92" font-family="Inter" font-size="11" fill="rgba(255,255,255,0.3)">5/5 concluidos</text>
+      </g>
+
+      <!-- Station 2 — ACTIVE -->
+      <g class="va-station-label" id="station2"
+         onmouseenter="showVaPanel(2, 380, 220)"
+         onmouseleave="hideVaPanel()">
+        <!-- radar ping animation -->
+        <circle cx="380" cy="220" r="20" fill="none" stroke="rgba(74,144,255,0.2)" stroke-width="1">
+          <animate attributeName="r" from="20" to="36" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" from="0.5" to="0" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <!-- outer ring -->
+        <circle cx="380" cy="220" r="20" fill="none" stroke="#4A90FF" stroke-width="1.5"/>
+        <!-- inner bg -->
+        <circle cx="380" cy="220" r="16" fill="rgba(74,144,255,0.07)"/>
+        <!-- pulsing inner dot -->
+        <circle cx="380" cy="220" r="5" fill="#4A90FF" opacity="0.8">
+          <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <!-- label -->
+        <text x="408" y="216" font-family="Inter" font-size="13" font-weight="600" fill="rgba(255,255,255,0.85)">Prompts e Comunicacao</text>
+        <text x="408" y="232" font-family="Inter" font-size="11" fill="rgba(74,144,255,0.6)">2/5 — em andamento</text>
+      </g>
+
+      <!-- Station 3 — LOCKED -->
+      <g class="va-station-label" id="station3"
+         onmouseenter="showVaPanel(3, 680, 310)"
+         onmouseleave="hideVaPanel()">
+        <circle cx="680" cy="310" r="20" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.5"/>
+        <circle cx="680" cy="310" r="16" fill="rgba(255,255,255,0.01)"/>
+        <text x="708" y="306" font-family="Inter" font-size="13" font-weight="500" fill="rgba(255,255,255,0.2)">Claude Code - Primeiros Passos</text>
+        <text x="708" y="322" font-family="Inter" font-size="11" fill="rgba(255,255,255,0.1)">Bloqueado</text>
+      </g>
+
+      <!-- Station 4 — LOCKED -->
+      <g class="va-station-label" id="station4"
+         onmouseenter="showVaPanel(4, 800, 400)"
+         onmouseleave="hideVaPanel()">
+        <circle cx="800" cy="400" r="20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.3"/>
+        <circle cx="800" cy="400" r="16" fill="none"/>
+        <text x="828" y="396" font-family="Inter" font-size="13" font-weight="500" fill="rgba(255,255,255,0.12)">Claude Code no Trabalho</text>
+        <text x="828" y="412" font-family="Inter" font-size="11" fill="rgba(255,255,255,0.07)">Bloqueado</text>
+      </g>
+
+      <!-- Station 5 — LOCKED -->
+      <g class="va-station-label" id="station5"
+         onmouseenter="showVaPanel(5, 870, 460)"
+         onmouseleave="hideVaPanel()">
+        <circle cx="870" cy="460" r="20" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.2"/>
+        <text x="820" y="494" font-family="Inter" font-size="13" font-weight="500" fill="rgba(255,255,255,0.08)">Autonomia</text>
+        <text x="820" y="510" font-family="Inter" font-size="11" fill="rgba(255,255,255,0.05)">Bloqueado</text>
+      </g>
+    </svg>
+
+    <!-- Hover panel -->
+    <div class="va-hover-panel" id="vaHoverPanel">
+      <div class="va-hp-title" id="vaHpTitle">FASE</div>
+      <div id="vaHpNodes"></div>
+    </div>
+  </div>
+
+  <!-- bottom bar -->
+  <div class="va-bottombar">
+    <span class="va-bb-item">Distancia Percorrida: <span>35%</span></span>
+    <span class="va-bb-item">Fase Atual: <span>Prompts e Comunicacao</span></span>
+    <span class="va-bb-eta">ETA: ~4 semanas</span>
+  </div>
+
+  <!-- page footer -->
+  <div class="page-footer-wrap">
+    <div class="concept-footer">
+      <div>
+        <div class="cf-name">Star Chart Navigator</div>
+        <div class="cf-desc">Apple Maps meets astronomical precision — the cleanest possible space navigation</div>
+      </div>
+      <div class="cf-family">Deep Space Family</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     VARIATION B — TACTICAL SPACE
+════════════════════════════════════════════════════════════════ -->
+<div id="vb" class="concept-panel">
+  <div class="vb-wrapper">
+    <div class="vb-hud-frame">
+      <div class="vb-hud-inner">
+
+        <div class="vb-header">
+          <div>
+            <div class="vb-header-title">Tactical Navigation System</div>
+            <div class="vb-header-sub">Jornada IA do Zero ao Claude Code</div>
+          </div>
+          <div class="vb-status-bar">
+            <span class="vb-status-item">SYS: OK</span>
+            <span class="vb-status-item active">WAYPOINT 02 ACTIVE</span>
+            <span class="vb-status-item">UPLINK: STABLE</span>
+          </div>
+        </div>
+
+        <div class="vb-main">
+          <!-- SVG Tactical Route -->
+          <div class="vb-route-area">
+            <svg class="vb-svg-route" viewBox="0 0 500 420" preserveAspectRatio="xMidYMid meet">
+              <!-- Route lines: angular zigzag -->
+              <!-- Segment 1 completed: WP1 to WP2 (double line) -->
+              <line x1="80" y1="60" x2="80" y2="160" stroke="#22C55E" stroke-width="1" opacity="0.5"/>
+              <line x1="84" y1="60" x2="84" y2="160" stroke="#22C55E" stroke-width="1" opacity="0.5"/>
+              <line x1="80" y1="160" x2="220" y2="200" stroke="#22C55E" stroke-width="1" opacity="0.5"/>
+              <line x1="80" y1="164" x2="220" y2="204" stroke="#22C55E" stroke-width="1" opacity="0.5"/>
+
+              <!-- Segment 2 active: WP2 to WP3 (dashed single) -->
+              <line x1="220" y1="200" x2="380" y2="160" stroke="#22C55E" stroke-width="1"
+                stroke-dasharray="6,4" opacity="0.6">
+                <animate attributeName="stroke-dashoffset" from="20" to="0" dur="0.8s" repeatCount="indefinite"/>
+              </line>
+
+              <!-- Segment 3-4 locked: dotted -->
+              <line x1="380" y1="160" x2="420" y2="280" stroke="#1A1A1A" stroke-width="1" stroke-dasharray="2,6"/>
+              <line x1="420" y1="280" x2="340" y2="380" stroke="#1A1A1A" stroke-width="1" stroke-dasharray="2,6"/>
+
+              <!-- Waypoint 1 — COMPLETED -->
+              <g class="vb-waypoint" onclick="selectVbPhase(1)">
+                <rect x="64" y="44" width="32" height="32" fill="rgba(34,197,94,0.15)" stroke="#22C55E" stroke-width="1.5"/>
+                <!-- crosshair -->
+                <line x1="76" y1="60" x2="100" y2="60" stroke="#22C55E" stroke-width="0.8" opacity="0.4"/>
+                <line x1="80" y1="56" x2="80" y2="80" stroke="#22C55E" stroke-width="0.8" opacity="0.4"/>
+                <text x="80" y="65" text-anchor="middle" font-family="Inter" font-size="11" font-weight="700" fill="#22C55E">01</text>
+              </g>
+              <text x="100" y="57" font-family="Inter" font-size="10" font-weight="500" letter-spacing="0.1em" fill="rgba(34,197,94,0.7)" text-transform="uppercase">FUNDAMENTOS DE IA</text>
+              <text x="100" y="70" font-family="Inter" font-size="9" fill="#1A3A20" letter-spacing="0.06em">5/5 CLEAR</text>
+
+              <!-- Waypoint 2 — ACTIVE -->
+              <g class="vb-waypoint" onclick="selectVbPhase(2)">
+                <rect x="204" y="184" width="32" height="32" fill="rgba(34,197,94,0.05)" stroke="#22C55E" stroke-width="1.5"/>
+                <!-- crosshair -->
+                <line x1="208" y1="200" x2="240" y2="200" stroke="#22C55E" stroke-width="0.8" opacity="0.4"/>
+                <line x1="220" y1="188" x2="220" y2="220" stroke="#22C55E" stroke-width="0.8" opacity="0.4"/>
+                <!-- blink cursor -->
+                <text x="220" y="205" text-anchor="middle" font-family="Inter" font-size="11" font-weight="700" fill="#22C55E" class="vb-blink">02</text>
+              </g>
+              <text x="244" y="198" font-family="Inter" font-size="10" font-weight="500" letter-spacing="0.1em" fill="rgba(34,197,94,0.7)">PROMPTS E COMUNICACAO</text>
+              <text x="244" y="211" font-family="Inter" font-size="9" fill="#22C55E" letter-spacing="0.06em" opacity="0.5">2/5 — EM ANDAMENTO</text>
+
+              <!-- Waypoint 3 — LOCKED -->
+              <g class="vb-waypoint" onclick="selectVbPhase(3)">
+                <rect x="364" y="144" width="32" height="32" fill="none" stroke="#1A1A1A" stroke-width="1" stroke-dasharray="3,3"/>
+                <text x="380" y="165" text-anchor="middle" font-family="Inter" font-size="11" font-weight="700" fill="#1A1A1A">03</text>
+              </g>
+              <text x="404" y="158" font-family="Inter" font-size="10" letter-spacing="0.08em" fill="#1A2A1A">CLAUDE CODE - PRIMEIROS PASSOS</text>
+              <text x="404" y="171" font-family="Inter" font-size="9" fill="#111" letter-spacing="0.06em">LOCKED</text>
+
+              <!-- Waypoint 4 — LOCKED -->
+              <g class="vb-waypoint" onclick="selectVbPhase(4)">
+                <rect x="404" y="264" width="32" height="32" fill="none" stroke="#141414" stroke-width="1" stroke-dasharray="3,3"/>
+                <text x="420" y="285" text-anchor="middle" font-family="Inter" font-size="11" font-weight="700" fill="#141414">04</text>
+              </g>
+              <text x="320" y="270" font-family="Inter" font-size="10" letter-spacing="0.08em" fill="#111">CLAUDE CODE NO TRABALHO</text>
+
+              <!-- Waypoint 5 — LOCKED -->
+              <g class="vb-waypoint" onclick="selectVbPhase(5)">
+                <rect x="324" y="364" width="32" height="32" fill="none" stroke="#111" stroke-width="1" stroke-dasharray="3,3"/>
+                <text x="340" y="385" text-anchor="middle" font-family="Inter" font-size="11" font-weight="700" fill="#111">05</text>
+              </g>
+              <text x="364" y="378" font-family="Inter" font-size="10" letter-spacing="0.08em" fill="#111">AUTONOMIA</text>
+            </svg>
+          </div>
+
+          <!-- Mission objectives panel -->
+          <div class="vb-mission-panel active-panel" id="vbMissionPanel">
+            <div class="vb-mp-header" id="vbMpHeader">WAYPOINT 02 — PROMPTS</div>
+            <div id="vbMpObjectives">
+              <div class="vb-mp-obj">
+                <span class="vb-mp-check done">[x]</span>
+                <span class="vb-mp-obj-text done">OBJ 2.1 — Material: Anatomia de um prompt</span>
+              </div>
+              <div class="vb-mp-obj">
+                <span class="vb-mp-check done">[x]</span>
+                <span class="vb-mp-obj-text done">OBJ 2.2 — Task: Praticar 5 prompts</span>
+              </div>
+              <div class="vb-mp-obj">
+                <span class="vb-mp-check avail">[ ]</span>
+                <span class="vb-mp-obj-text avail">OBJ 2.3 — Material: Contexto avancado</span>
+              </div>
+              <div class="vb-mp-obj">
+                <span class="vb-mp-check avail">[ ]</span>
+                <span class="vb-mp-obj-text avail">OBJ 2.4 — Task: Template reutilizavel</span>
+              </div>
+              <div class="vb-mp-obj">
+                <span class="vb-mp-check locked">[~]</span>
+                <span class="vb-mp-obj-text locked">OBJ 2.5 — Checkpoint: Revisao final</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom readouts -->
+        <div class="vb-readout">
+          <div class="vb-readout-cell">
+            <div class="vb-readout-label">Waypoints</div>
+            <div class="vb-readout-value">1/5 CLEAR</div>
+          </div>
+          <div class="vb-readout-cell">
+            <div class="vb-readout-label">Objectives</div>
+            <div class="vb-readout-value">7/25 DONE</div>
+          </div>
+          <div class="vb-readout-cell">
+            <div class="vb-readout-label">XP Accrued</div>
+            <div class="vb-readout-value">320 PTS</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="concept-footer">
+      <div>
+        <div class="cf-name">Tactical Space</div>
+        <div class="cf-desc">Military-grade HUD aesthetics — austere, information-dense, zero decoration</div>
+      </div>
+      <div class="cf-family">Deep Space Family</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     VARIATION C — HOLOGRAPHIC DISPLAY
+════════════════════════════════════════════════════════════════ -->
+<div id="vc" class="concept-panel">
+  <div class="vc-scanlines"></div>
+  <div class="vc-projector-base">
+    <div class="vc-projector-ellipse"></div>
+    <div class="vc-projector-glow"></div>
+  </div>
+
+  <div class="vc-topbar">
+    <span class="vc-topbar-title">Holographic Interface v3.1</span>
+    <svg class="vc-progress-arc" viewBox="0 0 48 24">
+      <path d="M 4,24 A 20,20 0 0,1 44,24" fill="none" stroke="rgba(74,144,255,0.1)" stroke-width="2"/>
+      <path d="M 4,24 A 20,20 0 0,1 44,24" fill="none" stroke="rgba(74,144,255,0.5)" stroke-width="2"
+        stroke-dasharray="62.8" stroke-dashoffset="40.8"/>
+    </svg>
+    <span style="font-size:10px;color:rgba(74,144,255,0.4);letter-spacing:0.1em;">35% COMPLETE</span>
+  </div>
+
+  <div class="vc-main vc-main-content">
+    <!-- Vertical route column (bottom=1 to top=5) -->
+    <div class="vc-route-col" style="min-width:200px;">
+
+      <!-- Phase 5 (top — locked) -->
+      <div class="vc-phase-row">
+        <div class="vc-phase-hex" onmouseenter="showVcPanel(5)" onmouseleave="hideVcPanel()">
+          <svg class="vc-hex-svg" viewBox="0 0 44 44">
+            <polygon points="22,2 40,12 40,32 22,42 4,32 4,12" fill="rgba(74,144,255,0.01)" stroke="rgba(74,144,255,0.08)" stroke-width="1.5"/>
+            <text x="22" y="27" text-anchor="middle" font-family="Inter" font-size="10" fill="rgba(74,144,255,0.15)" font-weight="600">05</text>
+          </svg>
+          <div class="vc-holo-panel" id="vcPanel5">
+            <div class="vc-hp-title">Fase 05 — Autonomia</div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot locked"></div><span class="vc-hp-node-text">Bloqueado</span></div>
+          </div>
+        </div>
+        <div class="vc-phase-label">
+          <div class="vc-label-title" style="opacity:0.2;">Autonomia</div>
+          <div class="vc-label-prog" style="opacity:0.2;">0/5</div>
+        </div>
+      </div>
+
+      <div class="vc-connector" style="background:rgba(74,144,255,0.04);"></div>
+
+      <!-- Phase 4 (locked) -->
+      <div class="vc-phase-row">
+        <div class="vc-phase-hex" onmouseenter="showVcPanel(4)" onmouseleave="hideVcPanel()">
+          <svg class="vc-hex-svg" viewBox="0 0 44 44">
+            <polygon points="22,2 40,12 40,32 22,42 4,32 4,12" fill="rgba(74,144,255,0.01)" stroke="rgba(74,144,255,0.1)" stroke-width="1.5"/>
+            <text x="22" y="27" text-anchor="middle" font-family="Inter" font-size="10" fill="rgba(74,144,255,0.2)" font-weight="600">04</text>
+          </svg>
+          <div class="vc-holo-panel" id="vcPanel4">
+            <div class="vc-hp-title">Fase 04 — Claude Code no Trabalho</div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot locked"></div><span class="vc-hp-node-text">Bloqueado</span></div>
+          </div>
+        </div>
+        <div class="vc-phase-label">
+          <div class="vc-label-title" style="opacity:0.25;">Claude Code no Trabalho</div>
+          <div class="vc-label-prog" style="opacity:0.25;">0/5</div>
+        </div>
+      </div>
+
+      <div class="vc-connector" style="background:rgba(74,144,255,0.04);"></div>
+
+      <!-- Phase 3 (locked) -->
+      <div class="vc-phase-row">
+        <div class="vc-phase-hex" onmouseenter="showVcPanel(3)" onmouseleave="hideVcPanel()">
+          <svg class="vc-hex-svg" viewBox="0 0 44 44">
+            <polygon points="22,2 40,12 40,32 22,42 4,32 4,12" fill="rgba(74,144,255,0.02)" stroke="rgba(74,144,255,0.15)" stroke-width="1.5"/>
+            <text x="22" y="27" text-anchor="middle" font-family="Inter" font-size="10" fill="rgba(74,144,255,0.3)" font-weight="600">03</text>
+          </svg>
+          <div class="vc-holo-panel" id="vcPanel3">
+            <div class="vc-hp-title">Fase 03 — Claude Code Primeiros Passos</div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot locked"></div><span class="vc-hp-node-text">Bloqueado — 5 itens</span></div>
+          </div>
+        </div>
+        <div class="vc-phase-label">
+          <div class="vc-label-title" style="opacity:0.3;">Claude Code - Primeiros Passos</div>
+          <div class="vc-label-prog" style="opacity:0.3;">0/5</div>
+        </div>
+      </div>
+
+      <div class="vc-connector" style="background:rgba(74,144,255,0.15);"></div>
+
+      <!-- Phase 2 (active) -->
+      <div class="vc-phase-row">
+        <div class="vc-phase-hex vc-active-hex" onmouseenter="showVcPanel(2)" onmouseleave="hideVcPanel()">
+          <svg class="vc-hex-svg" viewBox="0 0 44 44" style="filter:drop-shadow(0 0 8px rgba(74,144,255,0.35));">
+            <polygon points="22,2 40,12 40,32 22,42 4,32 4,12" fill="rgba(74,144,255,0.06)" stroke="#4A90FF" stroke-width="1.5">
+              <animate attributeName="stroke-opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+            </polygon>
+            <text x="22" y="27" text-anchor="middle" font-family="Inter" font-size="10" fill="#4A90FF" font-weight="600">02</text>
+          </svg>
+          <div class="vc-holo-panel" id="vcPanel2">
+            <div class="vc-hp-title">Fase 02 — Prompts e Comunicacao</div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot done"></div><span class="vc-hp-node-text done">Material: Anatomia de um prompt</span></div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot done"></div><span class="vc-hp-node-text done">Task: Praticar 5 prompts</span></div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot avail"></div><span class="vc-hp-node-text">Material: Contexto avancado</span></div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot avail"></div><span class="vc-hp-node-text">Task: Template reutilizavel</span></div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot locked"></div><span class="vc-hp-node-text">Checkpoint: Revisao</span></div>
+          </div>
+        </div>
+        <div class="vc-phase-label">
+          <div class="vc-label-title">Prompts e Comunicacao</div>
+          <div class="vc-label-prog">2/5 — ativo</div>
+        </div>
+      </div>
+
+      <div class="vc-connector" style="background:rgba(74,144,255,0.35);"></div>
+
+      <!-- Phase 1 (completed — at bottom) -->
+      <div class="vc-phase-row">
+        <div class="vc-phase-hex" onmouseenter="showVcPanel(1)" onmouseleave="hideVcPanel()">
+          <svg class="vc-hex-svg" viewBox="0 0 44 44">
+            <polygon points="22,2 40,12 40,32 22,42 4,32 4,12" fill="rgba(34,197,94,0.06)" stroke="rgba(34,197,94,0.6)" stroke-width="1.5"/>
+            <path d="M 15,22 L 20,28 L 30,16" stroke="#22C55E" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="vc-holo-panel" id="vcPanel1">
+            <div class="vc-hp-title">Fase 01 — Fundamentos de IA</div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot done"></div><span class="vc-hp-node-text done">Material: O que e IA</span></div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot done"></div><span class="vc-hp-node-text done">Material: Historia e conceitos</span></div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot done"></div><span class="vc-hp-node-text done">Apresentacao: Casos de uso</span></div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot done"></div><span class="vc-hp-node-text done">Task: Mapa mental</span></div>
+            <div class="vc-hp-node"><div class="vc-hp-node-dot done"></div><span class="vc-hp-node-text done">Checkpoint: Revisao final</span></div>
+          </div>
+        </div>
+        <div class="vc-phase-label">
+          <div class="vc-label-title" style="opacity:0.6;">Fundamentos de IA</div>
+          <div class="vc-label-prog" style="color:rgba(34,197,94,0.5);">5/5 — concluido</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Spacer -->
+    <div style="flex:1;position:relative;">
+      <div style="position:absolute;top:40px;left:0;right:0;font-size:10px;letter-spacing:0.12em;color:rgba(74,144,255,0.15);text-transform:uppercase;text-align:center;">Passe o cursor sobre as estacoes</div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div style="position:relative;z-index:10;padding:0 32px 40px;">
+    <div class="concept-footer">
+      <div>
+        <div class="cf-name">Holographic Display</div>
+        <div class="cf-desc">Translucent depth, scanlines, projector base — futuristic hologram projection</div>
+      </div>
+      <div class="cf-family">Deep Space Family</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     VARIATION D — EXPLORATION LOG
+════════════════════════════════════════════════════════════════ -->
+<div id="vd" class="concept-panel">
+  <div class="vd-wrapper">
+    <div class="vd-header">
+      <div class="vd-title">Diario de Bordo</div>
+      <div class="vd-subtitle">Jornada IA do Zero ao Claude Code</div>
+      <div class="vd-progress-label">Fase 2 de 5 em andamento</div>
+    </div>
+
+    <div class="vd-timeline">
+      <div class="vd-timeline-line"></div>
+
+      <!-- Entry 1 — COMPLETED -->
+      <div class="vd-entry" data-delay="0">
+        <div class="vd-tl-node done"></div>
+        <div class="vd-tl-connector done"></div>
+        <div class="vd-card">
+          <div class="vd-card-phase">Fase 01</div>
+          <div class="vd-card-title">Fundamentos de IA</div>
+          <div class="vd-card-desc">Conceitos essenciais, historia e casos de uso reais de inteligencia artificial no contexto do trabalho.</div>
+          <div class="vd-node-list">
+            <div class="vd-node-row">
+              <div class="vd-node-dot done"></div>
+              <span class="vd-node-title">O que e IA</span>
+              <span class="vd-node-type-pill material">Material</span>
+              <span class="vd-node-xp">+50 XP</span>
+            </div>
+            <div class="vd-node-row">
+              <div class="vd-node-dot done"></div>
+              <span class="vd-node-title">Historia e conceitos fundamentais</span>
+              <span class="vd-node-type-pill material">Material</span>
+              <span class="vd-node-xp">+50 XP</span>
+            </div>
+            <div class="vd-node-row">
+              <div class="vd-node-dot done"></div>
+              <span class="vd-node-title">Casos de uso no mercado</span>
+              <span class="vd-node-type-pill presentation">Apresent.</span>
+              <span class="vd-node-xp">+60 XP</span>
+            </div>
+            <div class="vd-node-row">
+              <div class="vd-node-dot done"></div>
+              <span class="vd-node-title">Mapa mental de IA</span>
+              <span class="vd-node-type-pill task">Task</span>
+              <span class="vd-node-xp">+70 XP</span>
+            </div>
+            <div class="vd-node-row">
+              <div class="vd-node-dot done"></div>
+              <span class="vd-node-title">Revisao da fase</span>
+              <span class="vd-node-type-pill checkpoint">Checkpoint</span>
+              <span class="vd-node-xp">+80 XP</span>
+            </div>
+          </div>
+          <div class="vd-card-footer">
+            <div class="vd-progress-bar"><div class="vd-progress-fill" style="width:100%;"></div></div>
+            <span class="vd-progress-text">5/5 concluidos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Entry 2 — ACTIVE -->
+      <div class="vd-entry vd-active" data-delay="150">
+        <div class="vd-tl-node active"></div>
+        <div class="vd-tl-connector"></div>
+        <div class="vd-here-marker">
+          <span class="vd-here-arrow">&#8594;</span>
+          <span class="vd-here-label">Voce esta aqui</span>
+        </div>
+        <div class="vd-card">
+          <div class="vd-card-phase">Fase 02 — Em andamento</div>
+          <div class="vd-card-title">Prompts e Comunicacao</div>
+          <div class="vd-card-desc">Como se comunicar com modelos de linguagem de forma eficaz — anatomia do prompt, contexto e templates.</div>
+          <div class="vd-node-list">
+            <div class="vd-node-row">
+              <div class="vd-node-dot done"></div>
+              <span class="vd-node-title">Anatomia de um prompt</span>
+              <span class="vd-node-type-pill material">Material</span>
+              <span class="vd-node-xp">+50 XP</span>
+            </div>
+            <div class="vd-node-row">
+              <div class="vd-node-dot done"></div>
+              <span class="vd-node-title">Praticar 5 prompts reais</span>
+              <span class="vd-node-type-pill task">Task</span>
+              <span class="vd-node-xp">+60 XP</span>
+            </div>
+            <div class="vd-node-row">
+              <div class="vd-node-dot avail"></div>
+              <span class="vd-node-title">Contexto avancado</span>
+              <span class="vd-node-type-pill material">Material</span>
+              <span class="vd-node-xp">+50 XP</span>
+            </div>
+            <div class="vd-node-row">
+              <div class="vd-node-dot avail"></div>
+              <span class="vd-node-title">Criar template reutilizavel</span>
+              <span class="vd-node-type-pill task">Task</span>
+              <span class="vd-node-xp">+70 XP</span>
+            </div>
+            <div class="vd-node-row">
+              <div class="vd-node-dot locked"></div>
+              <span class="vd-node-title">Revisao da fase</span>
+              <span class="vd-node-type-pill checkpoint">Checkpoint</span>
+              <span class="vd-node-xp">+80 XP</span>
+            </div>
+          </div>
+          <div class="vd-card-footer">
+            <div class="vd-progress-bar"><div class="vd-progress-fill active-fill" style="width:40%;"></div></div>
+            <span class="vd-progress-text">2/5 concluidos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Entry 3 — LOCKED -->
+      <div class="vd-entry faded" data-delay="300">
+        <div class="vd-tl-node"></div>
+        <div class="vd-tl-connector"></div>
+        <div class="vd-card" style="cursor:default;">
+          <div class="vd-card-phase">Fase 03</div>
+          <div class="vd-card-title" style="color:rgba(255,255,255,0.4);">Claude Code - Primeiros Passos</div>
+          <div style="font-size:12px;color:#222;margin-top:8px;">5 itens — bloqueado</div>
+        </div>
+      </div>
+
+      <!-- Entry 4 — LOCKED -->
+      <div class="vd-entry faded" data-delay="400">
+        <div class="vd-tl-node"></div>
+        <div class="vd-tl-connector"></div>
+        <div class="vd-card">
+          <div class="vd-card-phase">Fase 04</div>
+          <div class="vd-card-title" style="color:rgba(255,255,255,0.4);">Claude Code no Trabalho</div>
+          <div style="font-size:12px;color:#222;margin-top:8px;">5 itens — bloqueado</div>
+        </div>
+      </div>
+
+      <!-- Entry 5 — LOCKED -->
+      <div class="vd-entry faded" data-delay="500">
+        <div class="vd-tl-node"></div>
+        <div class="vd-tl-connector"></div>
+        <div class="vd-card">
+          <div class="vd-card-phase">Fase 05</div>
+          <div class="vd-card-title" style="color:rgba(255,255,255,0.3);">Autonomia</div>
+          <div style="font-size:12px;color:#222;margin-top:8px;">5 itens — bloqueado</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="vd-eta">~4 semanas restantes para conclusao</div>
+
+    <div class="concept-footer">
+      <div>
+        <div class="cf-name">Exploration Log</div>
+        <div class="cf-desc">Captain's log aesthetic — warm, readable, human-first. The antidote to dashboard overload.</div>
+      </div>
+      <div class="cf-family">Deep Space Family</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     VARIATION E — MISSION CONTROL LIVE
+════════════════════════════════════════════════════════════════ -->
+<div id="ve" class="concept-panel">
+
+  <!-- Top bar -->
+  <div class="ve-topbar">
+    <div class="ve-rec-dot"></div>
+    <span class="ve-topbar-label">Mission Control — Live</span>
+    <span class="ve-timestamp" id="veTimestamp">00:00:00</span>
+  </div>
+
+  <!-- Body: left + right split -->
+  <div class="ve-body" style="flex:1;min-height:0;overflow:hidden;">
+
+    <!-- Left: route overview -->
+    <div class="ve-left" style="position:relative;overflow:hidden;">
+      <div class="ve-scan-line"></div>
+      <div class="ve-left-title">Rota da Missao</div>
+      <div class="ve-route-list">
+
+        <div class="ve-route-phase selected" onclick="selectVePhase(2,this)" data-phase="1">
+          <div class="ve-rp-circle done">&#10003;</div>
+          <div class="ve-rp-info">
+            <div class="ve-rp-name">Fundamentos de IA</div>
+            <div class="ve-rp-sub">5/5 clear</div>
+          </div>
+        </div>
+
+        <div class="ve-route-phase selected" onclick="selectVePhase(2,this)" data-phase="2" id="vePhase2Btn" style="background:rgba(74,144,255,0.04);">
+          <div class="ve-route-connector done"></div>
+          <div class="ve-rp-circle active">2</div>
+          <div class="ve-rp-info">
+            <div class="ve-rp-name" style="color:var(--text);">Prompts e Comunicacao</div>
+            <div class="ve-rp-sub active-sub">2/5 — ativo</div>
+          </div>
+        </div>
+
+        <div class="ve-route-phase" onclick="selectVePhase(3,this)" data-phase="3">
+          <div class="ve-route-connector"></div>
+          <div class="ve-rp-circle locked">3</div>
+          <div class="ve-rp-info">
+            <div class="ve-rp-name">Claude Code - Primeiros Passos</div>
+            <div class="ve-rp-sub">Bloqueado</div>
+          </div>
+        </div>
+
+        <div class="ve-route-phase" onclick="selectVePhase(4,this)" data-phase="4">
+          <div class="ve-route-connector"></div>
+          <div class="ve-rp-circle locked">4</div>
+          <div class="ve-rp-info">
+            <div class="ve-rp-name">Claude Code no Trabalho</div>
+            <div class="ve-rp-sub">Bloqueado</div>
+          </div>
+        </div>
+
+        <div class="ve-route-phase" onclick="selectVePhase(5,this)" data-phase="5">
+          <div class="ve-route-connector"></div>
+          <div class="ve-rp-circle locked">5</div>
+          <div class="ve-rp-info">
+            <div class="ve-rp-name">Autonomia</div>
+            <div class="ve-rp-sub">Bloqueado</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: mission detail -->
+    <div class="ve-right" id="veRightPanel">
+      <!-- content injected by JS -->
+    </div>
+
+  </div>
+
+  <!-- Telemetry -->
+  <div class="ve-telemetry">
+    <div class="ve-telem-cell">
+      <div class="ve-telem-label">Velocidade</div>
+      <div class="ve-telem-value" id="veSpeed">0 nodes/dia</div>
+    </div>
+    <div class="ve-telem-cell">
+      <div class="ve-telem-label">Streak</div>
+      <div class="ve-telem-value" id="veStreak">0 dias</div>
+    </div>
+    <div class="ve-telem-cell">
+      <div class="ve-telem-label">XP Total</div>
+      <div class="ve-telem-value" id="veXP">0</div>
+    </div>
+    <div class="ve-telem-cell">
+      <div class="ve-telem-label">ETA</div>
+      <div class="ve-telem-value" id="veETA">— semanas</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─── JAVASCRIPT ─── -->
+<script>
+/* ── TAB SWITCHING ── */
+function switchTab(id, btn) {
+  document.querySelectorAll('.concept-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+
+  // Trigger panel-specific init
+  if (id === 'vd') initVdAnimations();
+  if (id === 've') initVeMissionControl();
+  if (id === 'va') buildVaGrid();
+}
+
+/* ══════════════════════════════════════════════
+   VARIATION A — STAR CHART
+═══════════════════════════════════════════════ */
+
+// Build coordinate grid + stars on load
+function buildVaGrid() {
+  const grid = document.getElementById('vaGrid');
+  const stars = document.getElementById('vaStars');
+  if (grid.children.length > 0) return; // already built
+
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+
+  // Horizontal lines
+  const coords = ['δ +90°','δ +60°','δ +42°','δ +20°','δ 0°','δ -20°','δ -42°','δ -60°'];
+  for (let i = 0; i < 8; i++) {
+    const y = i * 120 + 40;
+    const line = document.createElement('div');
+    line.className = 'va-grid-line-h';
+    line.style.top = y + 'px';
+    grid.appendChild(line);
+    const label = document.createElement('div');
+    label.className = 'va-grid-label';
+    label.style.cssText = `top:${y - 10}px;left:8px;`;
+    label.textContent = coords[i] || '';
+    grid.appendChild(label);
+  }
+
+  // Vertical lines
+  const aCoords = ['α 0h','α 3h','α 6h','α 9h','α 12h','α 15h','α 18h','α 21h'];
+  for (let i = 0; i < 8; i++) {
+    const x = i * 120 + 60;
+    const line = document.createElement('div');
+    line.className = 'va-grid-line-v';
+    line.style.left = x + 'px';
+    grid.appendChild(line);
+    const label = document.createElement('div');
+    label.className = 'va-grid-label';
+    label.style.cssText = `left:${x + 4}px;bottom:8px;`;
+    label.textContent = aCoords[i] || '';
+    grid.appendChild(label);
+  }
+
+  // Stars — 50 subtle dots
+  for (let i = 0; i < 50; i++) {
+    const star = document.createElement('div');
+    star.className = 'va-star';
+    const size = Math.random() * 1.5 + 0.5;
+    star.style.cssText = `
+      left:${Math.random() * 100}%;
+      top:${Math.random() * 100}%;
+      width:${size}px;height:${size}px;
+      opacity:${Math.random() * 0.15 + 0.05};
+    `;
+    stars.appendChild(star);
+  }
+}
+
+// Hover panel data
+const vaPanelData = {
+  1: {
+    title: 'FASE 01 — FUNDAMENTOS',
+    nodes: [
+      {status:'done', title:'O que e IA', type:'Material', xp:'+50'},
+      {status:'done', title:'Historia e conceitos', type:'Material', xp:'+50'},
+      {status:'done', title:'Casos de uso', type:'Apresent.', xp:'+60'},
+      {status:'done', title:'Mapa mental de IA', type:'Task', xp:'+70'},
+      {status:'done', title:'Revisao da fase', type:'Checkpoint', xp:'+80'},
+    ]
+  },
+  2: {
+    title: 'FASE 02 — PROMPTS',
+    nodes: [
+      {status:'done', title:'Anatomia de um prompt', type:'Material', xp:'+50'},
+      {status:'done', title:'Praticar 5 prompts', type:'Task', xp:'+60'},
+      {status:'avail', title:'Contexto avancado', type:'Material', xp:'+50'},
+      {status:'avail', title:'Template reutilizavel', type:'Task', xp:'+70'},
+      {status:'locked', title:'Revisao da fase', type:'Checkpoint', xp:'+80'},
+    ]
+  },
+  3: {
+    title: 'FASE 03 — CLAUDE CODE',
+    nodes: [
+      {status:'locked', title:'Instalacao e setup', type:'Material', xp:'+60'},
+      {status:'locked', title:'Primeiros comandos', type:'Task', xp:'+70'},
+      {status:'locked', title:'Ferramentas basicas', type:'Material', xp:'+60'},
+      {status:'locked', title:'Projeto simples', type:'Task', xp:'+80'},
+      {status:'locked', title:'Revisao', type:'Checkpoint', xp:'+90'},
+    ]
+  },
+  4: {
+    title: 'FASE 04 — TRABALHO',
+    nodes: [
+      {status:'locked', title:'Workflows produtivos', type:'Material', xp:'+70'},
+      {status:'locked', title:'Automacao de tarefas', type:'Task', xp:'+80'},
+      {status:'locked', title:'Integrações', type:'Material', xp:'+70'},
+      {status:'locked', title:'Projeto profissional', type:'Task', xp:'+90'},
+      {status:'locked', title:'Revisao', type:'Checkpoint', xp:'+100'},
+    ]
+  },
+  5: {
+    title: 'FASE 05 — AUTONOMIA',
+    nodes: [
+      {status:'locked', title:'Autonomia total', type:'Material', xp:'+80'},
+      {status:'locked', title:'Agentes complexos', type:'Task', xp:'+90'},
+      {status:'locked', title:'Projetos avancados', type:'Material', xp:'+80'},
+      {status:'locked', title:'Deploy e escala', type:'Task', xp:'+100'},
+      {status:'locked', title:'Certificacao final', type:'Checkpoint', xp:'+120'},
+    ]
+  }
+};
+
+function showVaPanel(phaseNum, svgX, svgY) {
+  const panel = document.getElementById('vaHoverPanel');
+  const data = vaPanelData[phaseNum];
+  if (!data) return;
+
+  document.getElementById('vaHpTitle').textContent = data.title;
+
+  const nodesEl = document.getElementById('vaHpNodes');
+  nodesEl.innerHTML = data.nodes.map(n => `
+    <div class="va-hp-node">
+      <div class="va-hp-dot ${n.status}"></div>
+      <span class="va-hp-node-title">${n.title}</span>
+      <span class="va-hp-node-type">${n.type}</span>
+      <span class="va-hp-node-xp">${n.xp}</span>
+    </div>
+  `).join('');
+
+  // Position near station
+  const canvas = document.querySelector('.va-canvas-area');
+  const rect = canvas.getBoundingClientRect();
+  const svgEl = document.getElementById('vaSvg');
+  const vb = svgEl.viewBox.baseVal;
+
+  const scaleX = rect.width / vb.width;
+  const scaleY = rect.height / vb.height;
+
+  let px = svgX * scaleX + 40;
+  let py = svgY * scaleY - 20;
+
+  if (px + 300 > rect.width) px = svgX * scaleX - 300;
+  if (py < 0) py = 10;
+
+  panel.style.left = px + 'px';
+  panel.style.top = py + 'px';
+  panel.classList.add('visible');
+}
+function hideVaPanel() {
+  document.getElementById('vaHoverPanel').classList.remove('visible');
+}
+
+// Animate dash flow on active route
+(function animateActiveDash() {
+  const path = document.getElementById('routeActive');
+  if (!path) return;
+  let offset = 0;
+  setInterval(() => {
+    offset -= 1;
+    path.style.strokeDashoffset = offset;
+  }, 40);
+})();
+
+// Init grid on load for first panel
+buildVaGrid();
+
+/* ══════════════════════════════════════════════
+   VARIATION B — TACTICAL
+═══════════════════════════════════════════════ */
+const vbPhaseData = {
+  1: {
+    header: 'WAYPOINT 01 — FUNDAMENTOS',
+    objectives: [
+      {check:'done', text:'OBJ 1.1 — Material: O que e IA'},
+      {check:'done', text:'OBJ 1.2 — Material: Historia e conceitos'},
+      {check:'done', text:'OBJ 1.3 — Apresent.: Casos de uso'},
+      {check:'done', text:'OBJ 1.4 — Task: Mapa mental'},
+      {check:'done', text:'OBJ 1.5 — Checkpoint: Revisao'},
+    ]
+  },
+  2: {
+    header: 'WAYPOINT 02 — PROMPTS',
+    objectives: [
+      {check:'done', text:'OBJ 2.1 — Material: Anatomia de um prompt'},
+      {check:'done', text:'OBJ 2.2 — Task: Praticar 5 prompts'},
+      {check:'avail', text:'OBJ 2.3 — Material: Contexto avancado'},
+      {check:'avail', text:'OBJ 2.4 — Task: Template reutilizavel'},
+      {check:'locked', text:'OBJ 2.5 — Checkpoint: Revisao final'},
+    ]
+  },
+  3: {
+    header: 'WAYPOINT 03 — CLAUDE CODE INICIO',
+    objectives: [
+      {check:'locked', text:'OBJ 3.1 — Material: Setup'},
+      {check:'locked', text:'OBJ 3.2 — Task: Primeiros comandos'},
+      {check:'locked', text:'OBJ 3.3 — Material: Ferramentas'},
+      {check:'locked', text:'OBJ 3.4 — Task: Projeto simples'},
+      {check:'locked', text:'OBJ 3.5 — Checkpoint: Revisao'},
+    ]
+  },
+  4: {
+    header: 'WAYPOINT 04 — CLAUDE CODE TRABALHO',
+    objectives: [
+      {check:'locked', text:'OBJ 4.1 — Material: Workflows'},
+      {check:'locked', text:'OBJ 4.2 — Task: Automacao'},
+      {check:'locked', text:'OBJ 4.3 — Material: Integracoes'},
+      {check:'locked', text:'OBJ 4.4 — Task: Projeto'},
+      {check:'locked', text:'OBJ 4.5 — Checkpoint'},
+    ]
+  },
+  5: {
+    header: 'WAYPOINT 05 — AUTONOMIA',
+    objectives: [
+      {check:'locked', text:'OBJ 5.1 — Material: Autonomia'},
+      {check:'locked', text:'OBJ 5.2 — Task: Agentes'},
+      {check:'locked', text:'OBJ 5.3 — Material: Avancado'},
+      {check:'locked', text:'OBJ 5.4 — Task: Deploy'},
+      {check:'locked', text:'OBJ 5.5 — Checkpoint: Certificacao'},
+    ]
+  }
+};
+
+function selectVbPhase(n) {
+  const data = vbPhaseData[n];
+  if (!data) return;
+  document.getElementById('vbMpHeader').textContent = data.header;
+  const checkLabel = {done:'[x]', avail:'[ ]', locked:'[~]'};
+  document.getElementById('vbMpObjectives').innerHTML = data.objectives.map(o => `
+    <div class="vb-mp-obj">
+      <span class="vb-mp-check ${o.check}">${checkLabel[o.check]}</span>
+      <span class="vb-mp-obj-text ${o.check}">${o.text}</span>
+    </div>
+  `).join('');
+}
+
+/* ══════════════════════════════════════════════
+   VARIATION C — HOLOGRAPHIC
+═══════════════════════════════════════════════ */
+function showVcPanel(n) {
+  document.querySelectorAll('.vc-holo-panel').forEach(p => p.classList.remove('visible'));
+  const panel = document.getElementById('vcPanel' + n);
+  if (panel) panel.classList.add('visible');
+}
+function hideVcPanel() {
+  document.querySelectorAll('.vc-holo-panel').forEach(p => p.classList.remove('visible'));
+}
+
+/* ══════════════════════════════════════════════
+   VARIATION D — EXPLORATION LOG
+═══════════════════════════════════════════════ */
+function initVdAnimations() {
+  const entries = document.querySelectorAll('#vd .vd-entry');
+  entries.forEach((entry, i) => {
+    const delay = parseInt(entry.dataset.delay || 0);
+    setTimeout(() => {
+      entry.classList.add('visible');
+    }, delay + 80);
+  });
+}
+
+// Auto-init if VD is shown on load (it won't be, but just in case)
+// initVdAnimations();
+
+/* ══════════════════════════════════════════════
+   VARIATION E — MISSION CONTROL
+═══════════════════════════════════════════════ */
+const veMissionData = {
+  1: {
+    num: '01',
+    title: 'Fundamentos de IA',
+    status: 'CONCLUIDO',
+    progress: 100,
+    xp: 310,
+    nodes: [
+      {led:'done', title:'O que e IA', type:'material', typeLabel:'Material', time:'Concluido em 8 min', timeClass:'done-time'},
+      {led:'done', title:'Historia e conceitos fundamentais', type:'material', typeLabel:'Material', time:'Concluido em 12 min', timeClass:'done-time'},
+      {led:'done', title:'Casos de uso no mercado', type:'presentation', typeLabel:'Apresent.', time:'Concluido em 15 min', timeClass:'done-time'},
+      {led:'done', title:'Mapa mental de IA', type:'task', typeLabel:'Task', time:'Concluido em 20 min', timeClass:'done-time'},
+      {led:'done', title:'Revisao da fase', type:'checkpoint', typeLabel:'Checkpoint', time:'Concluido em 10 min', timeClass:'done-time'},
+    ],
+    timeline: [
+      {dot:'done', ts:'Dia 1', tsClass:'done-ts'},
+      {dot:'done', ts:'Dia 2', tsClass:'done-ts'},
+      {dot:'done', ts:'Dia 3', tsClass:'done-ts'},
+      {dot:'done', ts:'Dia 5', tsClass:'done-ts'},
+      {dot:'done', ts:'Dia 6', tsClass:'done-ts'},
+    ],
+    fillPct: '100%'
+  },
+  2: {
+    num: '02',
+    title: 'Prompts e Comunicacao',
+    status: 'ATIVO',
+    progress: 40,
+    xp: 110,
+    nodes: [
+      {led:'done', title:'Anatomia de um prompt', type:'material', typeLabel:'Material', time:'Concluido em 12 min', timeClass:'done-time'},
+      {led:'done', title:'Praticar 5 prompts reais', type:'task', typeLabel:'Task', time:'Concluido em 18 min', timeClass:'done-time'},
+      {led:'active', title:'Contexto avancado', type:'material', typeLabel:'Material', time:'Est. 15 min', timeClass:'est-time'},
+      {led:'pending', title:'Criar template reutilizavel', type:'task', typeLabel:'Task', time:'Est. 20 min', timeClass:'est-time'},
+      {led:'locked', title:'Revisao da fase', type:'checkpoint', typeLabel:'Checkpoint', time:'Bloqueado', timeClass:'locked-time'},
+    ],
+    timeline: [
+      {dot:'done', ts:'Dia 7', tsClass:'done-ts'},
+      {dot:'done', ts:'Dia 9', tsClass:'done-ts'},
+      {dot:'active', ts:'Hoje', tsClass:'active-ts'},
+      {dot:'', ts:'—', tsClass:''},
+      {dot:'', ts:'—', tsClass:''},
+    ],
+    fillPct: '40%'
+  },
+  3: {
+    num: '03',
+    title: 'Claude Code - Primeiros Passos',
+    status: 'BLOQUEADO',
+    progress: 0,
+    xp: 0,
+    nodes: [
+      {led:'locked', title:'Instalacao e configuracao', type:'material', typeLabel:'Material', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Primeiros comandos', type:'task', typeLabel:'Task', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Ferramentas essenciais', type:'material', typeLabel:'Material', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Projeto simples completo', type:'task', typeLabel:'Task', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Revisao e certificado', type:'checkpoint', typeLabel:'Checkpoint', time:'Bloqueado', timeClass:'locked-time'},
+    ],
+    timeline: [
+      {dot:'', ts:'—', tsClass:''},
+      {dot:'', ts:'—', tsClass:''},
+      {dot:'', ts:'—', tsClass:''},
+      {dot:'', ts:'—', tsClass:''},
+      {dot:'', ts:'—', tsClass:''},
+    ],
+    fillPct: '0%'
+  },
+  4: {
+    num: '04',
+    title: 'Claude Code no Trabalho',
+    status: 'BLOQUEADO',
+    progress: 0,
+    xp: 0,
+    nodes: [
+      {led:'locked', title:'Workflows produtivos', type:'material', typeLabel:'Material', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Automacao de tarefas rotineiras', type:'task', typeLabel:'Task', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Integracoes com ferramentas', type:'material', typeLabel:'Material', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Projeto profissional real', type:'task', typeLabel:'Task', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Revisao avancada', type:'checkpoint', typeLabel:'Checkpoint', time:'Bloqueado', timeClass:'locked-time'},
+    ],
+    timeline: [{dot:'',ts:'—',tsClass:''},{dot:'',ts:'—',tsClass:''},{dot:'',ts:'—',tsClass:''},{dot:'',ts:'—',tsClass:''},{dot:'',ts:'—',tsClass:''}],
+    fillPct: '0%'
+  },
+  5: {
+    num: '05',
+    title: 'Autonomia',
+    status: 'BLOQUEADO',
+    progress: 0,
+    xp: 0,
+    nodes: [
+      {led:'locked', title:'Autonomia e agentes', type:'material', typeLabel:'Material', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Agentes complexos', type:'task', typeLabel:'Task', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Projetos avancados', type:'material', typeLabel:'Material', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Deploy e escalabilidade', type:'task', typeLabel:'Task', time:'Bloqueado', timeClass:'locked-time'},
+      {led:'locked', title:'Certificacao final', type:'checkpoint', typeLabel:'Checkpoint', time:'Bloqueado', timeClass:'locked-time'},
+    ],
+    timeline: [{dot:'',ts:'—',tsClass:''},{dot:'',ts:'—',tsClass:''},{dot:'',ts:'—',tsClass:''},{dot:'',ts:'—',tsClass:''},{dot:'',ts:'—',tsClass:''}],
+    fillPct: '0%'
+  }
+};
+
+function renderVePanel(phaseNum) {
+  const d = veMissionData[phaseNum];
+  if (!d) return;
+
+  const statusColor = d.status === 'ATIVO' ? '#4A90FF' : d.status === 'CONCLUIDO' ? '#22C55E' : '#333';
+
+  const nodesHtml = d.nodes.map(n => `
+    <div class="ve-node-row">
+      <div class="ve-led ${n.led}"></div>
+      <span class="ve-node-title">${n.title}</span>
+      <span class="ve-node-type-tag ${n.type}">${n.typeLabel}</span>
+      <span class="ve-node-time ${n.timeClass}">${n.time}</span>
+    </div>
+  `).join('');
+
+  const timelineDots = d.timeline.map(t => `
+    <div class="ve-mt-dot-wrap">
+      <div class="ve-mt-dot ${t.dot}"></div>
+      <span class="ve-mt-ts ${t.tsClass}">${t.ts}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('veRightPanel').innerHTML = `
+    <div class="ve-mission-header">
+      <div class="ve-mission-phase-num">Fase ${d.num}</div>
+      <div class="ve-mission-title">${d.title}</div>
+      <div class="ve-mission-stats">
+        <span class="ve-stat-item ${d.status === 'ATIVO' ? 'active-stat' : ''}">STATUS: <span style="color:${statusColor}">${d.status}</span></span>
+        <span class="ve-stat-item">PROGRESSO: <span>${d.progress}%</span></span>
+        <span class="ve-stat-item">XP GANHO: <span>${d.xp}</span></span>
+      </div>
+    </div>
+    <hr class="ve-divider">
+    <div class="ve-node-list">${nodesHtml}</div>
+    <div class="ve-mini-timeline">
+      <div class="ve-mt-label">Timeline de conclusao</div>
+      <div class="ve-mt-track">
+        <div class="ve-mt-fill" style="width:${d.fillPct}"></div>
+        <div class="ve-mt-dots">${timelineDots}</div>
+      </div>
+    </div>
+  `;
+}
+
+function selectVePhase(n, btnEl) {
+  document.querySelectorAll('.ve-route-phase').forEach(b => b.classList.remove('selected'));
+  if (btnEl) btnEl.classList.add('selected');
+  renderVePanel(n);
+}
+
+// Telemetry counter animation
+function animateTelemetry() {
+  const targets = {veSpeed: '2.1 nodes/dia', veStreak: '3 dias', veXP: '320', veETA: '4 semanas'};
+  const numericTargets = {veSpeed: 2.1, veStreak: 3, veXP: 320, veETA: 4};
+  const units = {veSpeed: ' nodes/dia', veStreak: ' dias', veXP: '', veETA: ' semanas'};
+  const duration = 1200;
+  const start = performance.now();
+
+  function step(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3); // ease out cubic
+
+    document.getElementById('veSpeed').textContent =
+      (numericTargets.veSpeed * ease).toFixed(1) + units.veSpeed;
+    document.getElementById('veStreak').textContent =
+      Math.round(numericTargets.veStreak * ease) + units.veStreak;
+    document.getElementById('veXP').textContent =
+      Math.round(numericTargets.veXP * ease);
+    document.getElementById('veETA').textContent =
+      Math.round(numericTargets.veETA * ease) + units.veETA;
+
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function initVeMissionControl() {
+  renderVePanel(2); // default: phase 2 active
+  animateTelemetry();
+}
+
+// Timestamp updater
+function updateTimestamp() {
+  const el = document.getElementById('veTimestamp');
+  if (el) {
+    const now = new Date();
+    el.textContent =
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0') + ':' +
+      String(now.getSeconds()).padStart(2,'0');
+  }
+}
+setInterval(updateTimestamp, 1000);
+updateTimestamp();
+
+// If Mission Control tab is active on first load, init it
+// (it won't be default — VA is default — but guard in case)
+
+/* ── ON PAGE LOAD: init variation A (default active) ── */
+window.addEventListener('DOMContentLoaded', () => {
+  buildVaGrid();
+  // Trigger VD animations if panel is somehow active
+  if (document.getElementById('vd').classList.contains('active')) initVdAnimations();
+});
+</script>
+</body>
+</html>

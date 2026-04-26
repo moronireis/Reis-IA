@@ -175,12 +175,29 @@ You MUST read these files before producing any output:
 ## Output
 
 - **Primary deliverable**: `brain/assets/branding/company-reis-ia-concept.md`
+- **Voice Profile deliverable**: `.claude/voice-profiles/reis-ia-company.md`
 
-The output document must:
+The primary document must:
 - Cover all 17 framework elements
 - Include a date header (Last updated: YYYY-MM-DD)
 - Use clear Markdown structure with headers for each element
 - Include a changelog section at the bottom
+
+### Voice Profile Generation (Mandatory)
+
+After completing the brand concept, you MUST generate or update the corresponding voice profile at `.claude/voice-profiles/reis-ia-company.md`. The voice profile is a condensed, operational extract of the brand concept that Copy Squad agents load before writing. It must include:
+
+1. **Brand Essence** — the irreducible core + hierarchy (Tempo -> Eficiencia -> Receita)
+2. **Voice Identity** — the 5 voice adjectives with definitions
+3. **Tone Spectrum** — channel-specific tone adjustments table
+4. **Vocabulary** — USE and NEVER USE word lists
+5. **How Moroni Sounds in Company Content** — the leader's voice within institutional framing
+6. **PT-BR Tone Rules** — Portuguese-specific voice calibration
+7. **Anti-Patterns** — what the company voice would NEVER sound like
+
+The voice profile is NOT a duplicate of the concept document. It is the operational subset that agents need to write in this voice. Think of it as the difference between a brand bible (concept) and a voice card (profile).
+
+When the brand concept changes, the voice profile MUST be updated in the same session.
 
 ## Rules & Constraints
 

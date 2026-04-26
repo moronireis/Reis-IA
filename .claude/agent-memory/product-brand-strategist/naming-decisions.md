@@ -46,3 +46,58 @@ Diagnostico > Arquitetura > Construcao > Calibracao > Lancamento > Vigilia
 - Metallurgical vocabulary is universally understood in Brazilian Portuguese
 - "Turma" carries warmth that "cohort" or "batch" lacks — preferred for group naming
 - English suffixes (Engine, Agent, Protocol) are already normalized in Brazilian B2B vocabulary
+
+## Noiva S.A. — Client Project (2026-04-08)
+
+### Assessment Packages — Rejected: Smart / Essential / Master
+- SaaS B2B naming pattern inappropriate for wedding brides
+- No emotional connection, generic, easily copied
+- "Master" has masculine/corporate connotation
+
+### Assessment Packages — Adopted: Assessoria Inicio / Completa / Exclusiva
+- Portuguese-native, emotionally resonant, SEO-aligned
+- "Completa" kills the "do I need more?" objection (flagship)
+- "Exclusiva" is THE status word in Brazilian weddings
+- All use "Assessoria" prefix matching Google search behavior
+
+### Future Products:
+- Clube da Noiva S.A. (community), Conexao S.A. (events)
+- Formacao S.A. (assessor training), Gestao Solo/Equipe (SaaS tiers)
+
+### Key Insight:
+For Brazilian service businesses: descriptive PT-BR names > clever English names. The bride searches "assessoria completa" — the name IS the SEO keyword.
+
+## ZNITH — Client Project (2026-04-08)
+
+### ZNITH.AI OS — Flagship Product Name: RETAINED
+- Original name kept. "OS" frames as infrastructure (not consultancy), justifying R$50K-R$150K pricing
+- Dropped long subtitle "Arquitetura de Crescimento Comercial com IA" — used only as positioning copy
+- Evaluated alternatives: ZNITH Command (too militaristic), ZNITH Directrix (too abstract), ZNITH Nexus (less unique), ZNITH Arquitetura Comercial (less ownable)
+
+### Phase Names — Architectural Construction Metaphor
+1. LEITURA (Reading) — diagnostic
+2. PROJETO (Design/Blueprint) — architecture design
+3. OBRA (Construction) — implementation
+4. AJUSTE (Calibration) — optimization
+5. GOVERNO (Governance) — client takes control
+- All single Portuguese words, no modifiers. Clean, memorable.
+- "Governo" bridges to Lideres Leoes movement vocabulary.
+
+### Product Categories (NOT quality tiers):
+- ARQUITETURA — project-based, structure-building (OS, Consulting Expansao)
+- ACOMPANHAMENTO — ongoing strategic accompaniment (RCaaS / Consulting Receita)
+- INTELIGENCIA — AI-delivered (ZNITH.AI Agente)
+- DESENVOLVIMENTO — leader-focused (Mentoria, Formacao)
+
+### Support Tiers — Frequency-based, not quality-based:
+- Acompanhamento Mensal / Semanal / Integrado
+- "Suporte" (support) never used — implies something is broken
+
+### Completion Credential: Selo ZNITH (ZNITH Seal)
+- Not certification. Not graduation. A seal of implementation.
+- Full designation: "Selo ZNITH — Arquitetura Comercial Implantada"
+
+### Key Pattern: B2B consultancy naming
+- For high-ticket B2B consulting: "OS" framing > "consultoria" framing (infrastructure justifies premium pricing)
+- Phase names as single Portuguese words (no English) for service products targeting Brazilian C-level
+- Frequency-based support naming avoids tier hierarchy that implies quality difference

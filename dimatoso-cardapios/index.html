@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Buffet Di Matoso · Cardápios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ch:#1A1A1A;--ch-w:#242020;--ch-l:#2A2A2A;--cr:#FAFAF7;--gd:#B8860B;--gs:#8E6A0A;--bg:#3D1F1F;--bd:rgba(184,134,11,.35);--bds:rgba(184,134,11,.60);--bdw:rgba(184,134,11,.12);--od:rgba(250,250,247,1);--odp:rgba(250,250,247,.94);--ods:rgba(250,250,247,.65);--odm:rgba(250,250,247,.50);--odq:rgba(250,250,247,.35);--e:cubic-bezier(.16,1,.3,1)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--ch);color:var(--odp);line-height:1.75}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+a{color:inherit;text-decoration:none}
+
+.hero{padding:10rem 0 4rem;text-align:center;position:relative;overflow:hidden;border-bottom:1px solid var(--bdw)}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 25% 75%,rgba(184,134,11,.12) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:2}
+.hero-supra{font-size:.6rem;font-weight:400;letter-spacing:.3em;text-transform:uppercase;color:var(--ods);opacity:.7;margin-bottom:.6rem}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2.2rem,6vw,4rem);line-height:1.08;letter-spacing:-.02em;color:var(--od);margin-bottom:1rem}
+.hero h1 em{font-style:italic;font-weight:400;color:var(--gd)}
+.hero-sub{font-weight:300;font-size:.95rem;line-height:1.8;color:var(--ods);max-width:550px;margin:0 auto}
+
+/* TABS — pure CSS, elevated design */
+.tabs{margin-top:3rem}
+.tab-nav{display:flex;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative;border-bottom:1px solid var(--bd)}
+.tab-nav label{flex:1;text-align:center;padding:1.4rem 2rem;font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:400;color:var(--odm);cursor:pointer;transition:all .5s var(--e);background:transparent;min-width:170px;white-space:nowrap;position:relative;border-bottom:2px solid transparent}
+.tab-nav label::after{content:'';position:absolute;bottom:-1px;left:50%;width:0;height:2px;background:var(--gd);transition:all .5s var(--e);transform:translateX(-50%)}
+.tab-nav label:hover{color:var(--od);background:rgba(184,134,11,.04)}
+.tab-nav label:hover::after{width:40%}
+.tab-nav label em{font-style:italic;color:var(--gd);transition:color .4s var(--e)}
+input[name="tab"]{display:none}
+#tab-churrasco:checked ~ .tabs .tab-nav label[for="tab-churrasco"],
+#tab-rubi:checked ~ .tabs .tab-nav label[for="tab-rubi"],
+#tab-esmeralda:checked ~ .tabs .tab-nav label[for="tab-esmeralda"],
+#tab-diamante:checked ~ .tabs .tab-nav label[for="tab-diamante"]{color:var(--od);background:rgba(184,134,11,.06);border-bottom-color:var(--gd)}
+#tab-churrasco:checked ~ .tabs .tab-nav label[for="tab-churrasco"]::after,
+#tab-rubi:checked ~ .tabs .tab-nav label[for="tab-rubi"]::after,
+#tab-esmeralda:checked ~ .tabs .tab-nav label[for="tab-esmeralda"]::after,
+#tab-diamante:checked ~ .tabs .tab-nav label[for="tab-diamante"]::after{width:100%}
+.tab-content{display:none;padding:4rem 0;animation:fadeTab .8s var(--e)}
+@keyframes fadeTab{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+#tab-churrasco:checked ~ .tabs #content-churrasco,
+#tab-rubi:checked ~ .tabs #content-rubi,
+#tab-esmeralda:checked ~ .tabs #content-esmeralda,
+#tab-diamante:checked ~ .tabs #content-diamante{display:block}
+
+section{padding:5rem 0;border-top:1px solid var(--bdw)}
+section.warm{background:var(--ch-w)}
+.sh{margin-bottom:3rem;display:grid;grid-template-columns:auto 1fr;gap:2rem;align-items:baseline}
+.sn{font-family:'Cormorant Garamond',serif;font-size:.75rem;font-weight:400;letter-spacing:.15em;color:var(--gd)}
+.st{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.8rem,3.5vw,2.6rem);line-height:1.15;letter-spacing:-.02em;color:var(--od)}
+.st em{font-style:italic;color:var(--gd)}
+.sl{font-weight:300;font-size:.92rem;line-height:1.8;color:var(--ods);max-width:680px;margin-top:.8rem}
+
+/* Menu category — card style with gold left accent */
+.cat{margin-bottom:3rem;background:var(--ch-w);border-left:3px solid var(--gd);padding:2.5rem 2.5rem;transition:border-left-width .5s var(--e),background .5s var(--e)}
+.cat:hover{border-left-width:5px;background:var(--ch-l)}
+.cat-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--od);margin-bottom:.4rem;letter-spacing:-.01em}
+.cat-title em{font-style:italic;color:var(--gd)}
+.cat-sub{font-size:.62rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gd);margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid var(--bdw)}
+.cat-items{font-size:.88rem;font-weight:300;line-height:1.85;color:var(--ods)}
+.cat-items strong{color:var(--odp);font-weight:500}
+
+/* Hairline divider */
+.hr{width:100%;height:1px;background:var(--bdw);margin:2.5rem 0}
+
+/* Price table — elevated */
+.price-wrap{background:var(--ch-w);padding:2.5rem;margin-top:2rem;border:1px solid var(--bdw);position:relative;overflow:hidden}
+.price-wrap::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--gd) 0%,var(--gs) 50%,var(--gd) 100%)}
+.price-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.price-table th{text-align:left;padding:1rem .8rem;border-bottom:2px solid var(--bd);font-family:'Cormorant Garamond',serif;font-size:.62rem;font-weight:400;letter-spacing:.15em;text-transform:uppercase;color:var(--gd)}
+.price-table th:first-child{width:90px}
+.price-table td{padding:1.1rem .8rem;border-bottom:1px solid var(--bdw);color:var(--odp);vertical-align:middle;transition:all .3s var(--e)}
+.price-table td:first-child{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:300;color:var(--gd);border-right:1px solid var(--bdw)}
+.price-table td.price{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:400;color:var(--od);letter-spacing:.01em}
+.price-table tbody tr{transition:background .3s var(--e)}
+.price-table tbody tr:hover{background:rgba(184,134,11,.05)}
+.price-table tbody tr:hover td{color:var(--od)}
+.price-table tbody tr:hover td.price{color:var(--gd)}
+.price-year{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--gd);margin-bottom:.8rem;margin-top:2.5rem;display:flex;align-items:center;gap:1rem}
+.price-year::after{content:'';flex:1;height:1px;background:var(--bdw)}
+.price-note{font-size:.7rem;color:var(--odm);margin-top:1rem;font-style:italic;padding-top:1rem;border-top:1px solid var(--bdw)}
+
+/* Photo slots — hover glow */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bdw);margin-top:2.5rem}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdw);margin-top:2.5rem}
+@media(max-width:768px){.g2,.g3{grid-template-columns:1fr}}
+.ph{aspect-ratio:4/3;background:linear-gradient(135deg,var(--ch-w) 0%,var(--ch) 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:all .6s var(--e)}
+.ph::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(184,134,11,.06) 0%,transparent 60%);opacity:0;transition:opacity .6s var(--e)}
+.ph:hover::after{opacity:1}
+.ph:hover{background:var(--ch-l)}
+.ph span{font-size:.55rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--odq);border:1px dashed var(--bdw);padding:.6rem 1.2rem;max-width:220px;text-align:center;line-height:1.5;position:relative;z-index:1;transition:border-color .4s var(--e),color .4s var(--e)}
+.ph:hover span{border-color:var(--bd);color:var(--odm)}
+
+/* Obs box */
+.obs{background:var(--ch-w);border-left:2px solid var(--gd);padding:1.5rem 2rem;margin-top:2rem}
+.obs p{font-size:.78rem;font-weight:300;line-height:1.7;color:var(--ods)}
+.obs p strong{color:var(--gd);font-weight:500}
+
+/* CTA — elevated with glow */
+.cta{padding:6rem 0;text-align:center;border-top:1px solid var(--bdw);position:relative;overflow:hidden;background:var(--ch-w)}
+.cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 80%,rgba(184,134,11,.1) 0%,transparent 60%);pointer-events:none}
+.cta::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.025;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");background-size:200px}
+.cta h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.15;color:var(--od);max-width:600px;margin:0 auto 1.5rem;position:relative}
+.cta h2 em{font-style:italic;color:var(--gd)}
+.cta-btn{display:inline-block;font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400;color:var(--gd);padding:.8rem 2.5rem;border:1px solid var(--gd);transition:all .6s var(--e);position:relative;letter-spacing:.03em}
+.cta-btn:hover{color:var(--ch);background:var(--gd);box-shadow:0 0 40px rgba(184,134,11,.2),0 0 80px rgba(184,134,11,.08)}
+.contact-row{display:flex;justify-content:center;gap:2.5rem;margin-top:2.5rem;flex-wrap:wrap;position:relative}
+.c-item{text-align:center;display:flex;flex-direction:column;gap:.2rem}
+.c-label{font-size:.5rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--odm)}
+.c-val{font-size:.8rem;color:var(--odp)}
+
+footer{background:#0F0F0F;padding:1.5rem 0;text-align:center;border-top:1px solid var(--bdw)}
+footer p{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--odq)}
+footer em{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gd);text-transform:none;letter-spacing:0}
+
+@media(max-width:768px){.container{padding:0 1.75rem}.sh{grid-template-columns:1fr;gap:.6rem}.tab-nav{overflow-x:auto;-webkit-overflow-scrolling:touch}.tab-nav label{min-width:130px;padding:1rem;font-size:.95rem}}
+</style>
+</head>
+<body>
+
+<input type="radio" name="tab" id="tab-churrasco" checked>
+<input type="radio" name="tab" id="tab-rubi">
+<input type="radio" name="tab" id="tab-esmeralda">
+<input type="radio" name="tab" id="tab-diamante">
+
+<section class="hero">
+<div class="hero-inner">
+<div class="hero-supra">Buffet Di Matoso</div>
+<h1>Cardápios <em>Di Matoso</em></h1>
+<p class="hero-sub">Todos os cardápios são sugestivos — personalizamos de acordo com suas ideias e preferências. Pacote completo com Castelo dos Lagos.</p>
+</div>
+</section>
+
+<div class="tabs">
+
+<div class="tab-nav container">
+<label for="tab-churrasco">Churrasco <em>à Gaúcha</em></label>
+<label for="tab-rubi">Jantar <em>Rubi</em></label>
+<label for="tab-esmeralda">Jantar <em>Esmeralda</em></label>
+<label for="tab-diamante">Jantar <em>Diamante</em></label>
+</div>
+
+<!-- ==================== CHURRASCO ==================== -->
+<div class="tab-content" id="content-churrasco">
+<div class="container">
+
+<div class="cat">
+<div class="cat-sub">Bebidas</div>
+<div class="cat-items"><strong>Sem Álcool:</strong> Água Mineral, Suco Tetra Pak (2 sabores), Coca-Cola, Coca Zero, Guaraná Antártica, Guaraná Diet, Sprite, Fanta Laranja e Água com Gás.<br><strong>Cerveja:</strong> Original · <strong>Cortesia:</strong> 01 caixa cerveja sem álcool</div>
+</div>
+
+<div class="cat">
+<div class="cat-title">Prato Principal — <em>Churrasco à Gaúcha</em></div>
+<div class="cat-sub">Servido estilo churrascaria</div>
+<div class="cat-items">
+<strong>Guarnição (05 tipos):</strong> Arroz Branco, Maionese de Legumes ou Salpicão de Frango, Farofa Temperada com Linguiça e Carne, Pão Francês e Vinagrete.<br><br>
+<strong>Acompanhamentos:</strong> Mandioca, Polenta Frita e Batata Frita.<br><br>
+<strong>Saladas (14 tipos):</strong> Árabe (Tabule), Italiana (Rúcula, Mussarela de Búfala e Tomate Seco), Primavera, Verão (Acelga, Shoyo e Gergelim), Alface/Tomate/Cebola, Escarola com Bacon, Agrião com Manga, Tomate Cereja com Azeitona, Ovo de Codorna com Cebola Roxa, Cenoura e Beterraba, Caponata de Berinjela, Sunomono, Grão de Bico com Atum.<br><br>
+<strong>Carnes (08 tipos):</strong> Picanha, Alcatra, Maminha, Costela Bovina, Linguiça Toscana, Asa de Frango, Fraldinha e Coração.
+</div>
+</div>
+
+<div class="hr"></div>
+
+<div class="cat">
+<div class="cat-title">Sobremesa e <em>Café de Saída</em></div>
+<div class="cat-items">
+<strong>Sobremesa:</strong> Bolo (01 opção) com recheio escolhido pelo cliente, servido com sorvete de creme. Recheios: Mousse Chocolate, Trufado, Brigadeiro, Prestígio, Doce de Leite com Nozes, Abacaxi com Coco, Creme de Maracujá, Morango e outros.<br><br>
+<strong>Brinde Noivos:</strong> 01 champanhe nacional servida no balde de prata com 02 taças de vidro.<br><br>
+<strong>Mesa de Café:</strong> Samovar de prata, xícaras de porcelana, café adoçado e amargo, 05 tipos de petit four, pastilha de chocolate com menta, bombons e 04 tipos de balas.
+</div>
+</div>
+
+<div class="g3">
+<div class="ph"><span>Foto · Churrasco sendo servido no rechaud</span></div>
+<div class="ph"><span>Foto · Mesa de saladas montada</span></div>
+<div class="ph"><span>Foto · Sobremesa e bolo</span></div>
+</div>
+
+<div class="hr"></div>
+
+<div class="price-year">Valores 2026</div>
+<table class="price-table">
+<thead><tr><th>Pessoas</th><th>Seg–Qui</th><th>Sex / Dom / Feriado</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><td>100</td><td class="price">R$ 28.990</td><td class="price">R$ 34.790</td><td class="price">R$ 41.190</td></tr>
+<tr><td>150</td><td class="price">R$ 34.790</td><td class="price">R$ 41.990</td><td class="price">R$ 48.590</td></tr>
+<tr><td>200</td><td class="price">R$ 38.990</td><td class="price">R$ 47.990</td><td class="price">R$ 55.590</td></tr>
+<tr><td>250</td><td class="price">R$ 45.740</td><td class="price">R$ 55.990</td><td class="price">R$ 62.990</td></tr>
+<tr><td>300</td><td class="price">R$ 51.890</td><td class="price">R$ 62.390</td><td class="price">R$ 70.190</td></tr>
+</tbody>
+</table>
+<p class="price-note">* Incluso: Buffet + Espaço Castelo dos Lagos + DJ, Som e Iluminação para a festa.</p>
+</div>
+</div>
+
+<!-- ==================== RUBI ==================== -->
+<div class="tab-content" id="content-rubi">
+<div class="container">
+
+<div class="cat">
+<div class="cat-title">Jantar <em>Rubi</em></div>
+<div class="cat-sub">Coquetel de entrada + jantar completo</div>
+<div class="cat-items">
+<strong>Coquetel (50 min):</strong> Salgados fritos e assados (05 tipos de cada): Espeto de Frango com Bacon, Ouriço 4 Queijos, Camarão Empanado, Bombom de Carne com Abacaxi, Rissoles, Mini-kibe, Coxinha Brasileira, Croquete de Bacalhau, Pião de Mandioca, Estrela de Milho, Coração de Peito de Peru, Ouriço Tailandês. Folhados, Charlote, Tortinhas, Empadas, Esfihas, Mini-Quiches.<br><br>
+<strong>Prato principal, sobremesa, brinde e café de saída</strong> seguem o padrão Di Matoso completo.
+</div>
+</div>
+
+<div class="g2">
+<div class="ph"><span>Foto · Coquetel de entrada com salgados variados</span></div>
+<div class="ph"><span>Foto · Prato principal Jantar Rubi</span></div>
+</div>
+
+<div class="hr"></div>
+
+<div class="price-year">Valores 2026</div>
+<table class="price-table">
+<thead><tr><th>Pessoas</th><th>Seg–Qui</th><th>Sex / Dom / Feriado</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><td>100</td><td class="price">R$ 26.490</td><td class="price">R$ 32.190</td><td class="price">R$ 38.490</td></tr>
+<tr><td>150</td><td class="price">R$ 31.490</td><td class="price">R$ 38.240</td><td class="price">R$ 44.240</td></tr>
+<tr><td>200</td><td class="price">R$ 34.390</td><td class="price">R$ 42.790</td><td class="price">R$ 50.590</td></tr>
+<tr><td>250</td><td class="price">R$ 40.490</td><td class="price">R$ 49.740</td><td class="price">R$ 56.990</td></tr>
+<tr><td>300</td><td class="price">R$ 45.590</td><td class="price">R$ 55.490</td><td class="price">R$ 63.290</td></tr>
+</tbody>
+</table>
+<p class="price-note">* Incluso: Buffet + Espaço Castelo dos Lagos + DJ, Som e Iluminação.</p>
+</div>
+</div>
+
+<!-- ==================== ESMERALDA ==================== -->
+<div class="tab-content" id="content-esmeralda">
+<div class="container">
+
+<div class="cat">
+<div class="cat-title">Jantar <em>Esmeralda</em></div>
+<div class="cat-sub">Coquetel premium + jantar completo</div>
+<div class="cat-items">
+<strong>Coquetel (50 min):</strong> Salgados fritos e assados (05 tipos de cada) — mesma seleção premium: Espeto de Frango com Bacon, Ouriço 4 Queijos, Camarão Empanado, Croquete de Bacalhau, Coração de Peito de Peru com Mussarela de Búfala, Ouriço Tailandês, Folhados variados, Charlote de Frango Defumado, Tortinhas, Empadas de Camarão, Esfihas, Mini-Quiches.<br><br>
+<strong>Prato principal, sobremesa, brinde e café de saída</strong> seguem o padrão Di Matoso completo com opções ampliadas.
+</div>
+</div>
+
+<div class="g2">
+<div class="ph"><span>Foto · Mesa de coquetel Esmeralda</span></div>
+<div class="ph"><span>Foto · Prato principal Jantar Esmeralda</span></div>
+</div>
+
+<div class="hr"></div>
+
+<div class="price-year">Valores 2026</div>
+<table class="price-table">
+<thead><tr><th>Pessoas</th><th>Seg–Qui</th><th>Sex / Dom / Feriado</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><td>100</td><td class="price">R$ 30.990</td><td class="price">R$ 36.790</td><td class="price">R$ 43.190</td></tr>
+<tr><td>150</td><td class="price">R$ 37.490</td><td class="price">R$ 44.240</td><td class="price">R$ 50.540</td></tr>
+<tr><td>200</td><td class="price">R$ 41.990</td><td class="price">R$ 50.390</td><td class="price">R$ 57.990</td></tr>
+<tr><td>250</td><td class="price">R$ 49.240</td><td class="price">R$ 58.990</td><td class="price">R$ 64.990</td></tr>
+<tr><td>300</td><td class="price">R$ 55.790</td><td class="price">R$ 65.390</td><td class="price">R$ 73.490</td></tr>
+</tbody>
+</table>
+<p class="price-note">* Incluso: Buffet + Espaço Castelo dos Lagos + DJ, Som e Iluminação.</p>
+</div>
+</div>
+
+<!-- ==================== DIAMANTE ==================== -->
+<div class="tab-content" id="content-diamante">
+<div class="container">
+
+<div class="cat">
+<div class="cat-title">Jantar <em>Diamante</em></div>
+<div class="cat-sub">Coquetel premium completo + jantar top</div>
+<div class="cat-items">
+<strong>Coquetel (50 min):</strong> Salgados fritos (05 tipos): Espeto de Frango com Bacon, Ouriço 4 Queijos, Camarão Empanado, Bombom de Carne com Abacaxi, Rissoles, Mini-kibe, Coxinha Brasileira, Croquete de Bacalhau, Pião de Mandioca com Carne Seca, Estrela de Milho com Queijo, Coração de Peito de Peru com Mussarela de Búfala, Ouriço Tailandês.<br><br>
+<strong>Salgados assados (05 tipos):</strong> Folhados (Palmito, Aliche, Tomate Seco c/Queijo, Presunto e Queijo, Frango c/Catupiry), Charlote de Frango Defumado, Tortinha de Ricota com Espinafre, Tortinha de Kani Kamma com Palmito, Tortinha Carne Seca, Empadas (Palmito, Frango e Camarão), Esfihas (Carne, Frango e Calabresa), Mini-Quiches (4 Queijos, Alho Poró, Peito de Peru).<br><br>
+<strong>Prato principal, sobremesa premium, brinde e café de saída</strong> — versão mais completa do cardápio Di Matoso.
+</div>
+</div>
+
+<div class="g3">
+<div class="ph"><span>Foto · Coquetel Diamante completo</span></div>
+<div class="ph"><span>Foto · Prato principal premium</span></div>
+<div class="ph"><span>Foto · Mesa de sobremesas Diamante</span></div>
+</div>
+
+<div class="hr"></div>
+
+<div class="price-year">Valores 2026</div>
+<table class="price-table">
+<thead><tr><th>Pessoas</th><th>Seg–Qui</th><th>Sex / Dom / Feriado</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><td>100</td><td class="price">R$ 30.990</td><td class="price">R$ 36.790</td><td class="price">R$ 43.190</td></tr>
+<tr><td>150</td><td class="price">R$ 37.490</td><td class="price">R$ 44.240</td><td class="price">R$ 50.540</td></tr>
+<tr><td>200</td><td class="price">R$ 41.990</td><td class="price">R$ 50.390</td><td class="price">R$ 57.990</td></tr>
+<tr><td>250</td><td class="price">R$ 49.240</td><td class="price">R$ 58.990</td><td class="price">R$ 64.990</td></tr>
+<tr><td>300</td><td class="price">R$ 55.790</td><td class="price">R$ 65.390</td><td class="price">R$ 73.490</td></tr>
+</tbody>
+</table>
+<p class="price-note">* Incluso: Buffet + Espaço Castelo dos Lagos + DJ, Som e Iluminação.</p>
+</div>
+</div>
+
+</div><!-- /tabs -->
+
+<!-- SHARED: MATERIAIS E STAFF -->
+<section class="warm"><div class="container">
+<div class="sh"><div class="sn">—</div><div><div class="st">Materiais e <em>Staff</em> · Inclusos em todos os cardápios.</div></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2rem;margin-top:1rem">
+<div><div class="cat-sub">Tecidos</div><div class="cat-items">Toalhas redondas adamascadas pérola ou pretas · Guardanapos de boca em tecido branco</div></div>
+<div><div class="cat-sub">Utensílios</div><div class="cat-items">Pratos de porcelana · Talheres de inox · Réchauds de inox · Copos e taças em vidro</div></div>
+<div><div class="cat-sub">Equipe</div><div class="cat-items">Coordenador de evento · Maître · Garçons · Passadores de carnes · Copeiros · Cozinheiras · Auxiliares · Churrasqueiros</div></div>
+</div>
+</div></section>
+
+<!-- SHARED: OBSERVAÇÕES -->
+<section><div class="container">
+<div class="sh"><div class="sn">—</div><div><div class="st">Observações <em>gerais</em>.</div></div></div>
+<div class="obs">
+<p><strong>1)</strong> Horário de atendimento: 5 horas de serviço.</p>
+<p><strong>2)</strong> Horário adicional: consultar equipe de vendas.</p>
+<p><strong>3)</strong> Crianças de 0 a 4 anos não pagam. De 5 a 10 anos pagam meia. Acima de 11 pagam inteira.</p>
+<p><strong>4)</strong> Taxas extras para servir vinho e bebidas destiladas (mão de obra, utensílios e gelo): consultar equipe.</p>
+<p style="margin-top:1rem"><strong>Forma de pagamento:</strong> 10% a 20% de sinal na assinatura do contrato. Saldo restante até 20 dias antes do evento (PIX). Opção à vista disponível.</p>
+</div>
+<p style="font-size:.75rem;color:var(--odm);margin-top:1.5rem;font-style:italic">Todos os cardápios são sugestivos. O contratante pode sugerir alterações ou montar um cardápio personalizado. Consulte a equipe de vendas.</p>
+</div></section>
+
+<!-- CTA -->
+<section class="cta"><div class="container">
+<h2>Solicite o cardápio completo <em>para o seu evento</em>.</h2>
+<a href="https://wa.me/5511955906035" class="cta-btn" target="_blank">Falar com a equipe →</a>
+<div class="contact-row">
+<div class="c-item"><div class="c-label">WhatsApp</div><div class="c-val">(11) 9 5590-6035</div></div>
+<div class="c-item"><div class="c-label">Email</div><div class="c-val">contato@castelodoslagos.com.br</div></div>
+<div class="c-item"><div class="c-label">Site</div><div class="c-val">www.dimatoso.com.br</div></div>
+</div>
+</div></section>
+
+<footer><p>Buffet Di Matoso · Cardápios · Pacote <em>Castelo dos Lagos</em></p></footer>
+
+<script>
+const reduced=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+// Scroll progress
+if(!reduced){const bar=document.createElement('div');bar.id='scroll-progress';bar.setAttribute('aria-hidden','true');const fill=document.createElement('div');fill.className='fill';bar.appendChild(fill);document.body.appendChild(bar);let t=false;window.addEventListener('scroll',()=>{if(!t){requestAnimationFrame(()=>{const p=window.scrollY/(document.documentElement.scrollHeight-window.innerHeight);fill.style.transform='scaleX('+Math.min(p,1)+')';bar.classList.toggle('vis',window.scrollY>60);t=false});t=true}},{passive:true})}
+// Fade-up on sections
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity=1;e.target.style.transform='translateY(0)';io.unobserve(e.target)}})},{threshold:.08});
+document.querySelectorAll('section:not(.hero) > .container > *, .tab-content > .container > .cat, .tab-content > .container > .g2, .tab-content > .container > .g3, .tab-content > .container > .price-year, .tab-content > .container > .price-wrap, .tab-content > .container > .hr').forEach((el,i)=>{if(reduced){el.style.opacity=1;return}el.style.opacity=0;el.style.transform='translateY(20px)';el.style.transition='opacity 1.2s cubic-bezier(.16,1,.3,1) '+(i%5*.06)+'s, transform 1.2s cubic-bezier(.16,1,.3,1) '+(i%5*.06)+'s';io.observe(el)});
+</script>
+</body>
+</html>

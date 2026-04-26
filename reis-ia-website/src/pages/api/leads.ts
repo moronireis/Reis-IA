@@ -139,7 +139,7 @@ async function sendEmails(lead: Lead): Promise<void> {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendKey}` },
         body: JSON.stringify({
-          from: 'REIS [IA] <leads@reisia.com.br>',
+          from: 'REIS [IA] <leads@moronireis.com.br>',
           to: notifyEmail,
           subject: isBooking
             ? `Sessão agendada: ${lead.name} — ${lead.company} (${lead.booking!.date} ${lead.booking!.time})`
@@ -206,7 +206,7 @@ async function sendEmails(lead: Lead): Promise<void> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendKey}` },
       body: JSON.stringify({
-        from: 'REIS [IA] <contato@reisia.com.br>',
+        from: 'REIS [IA] <contato@moronireis.com.br>',
         to: lead.email,
         subject: isBooking
           ? `Sessão confirmada — ${lead.booking!.date} às ${lead.booking!.time}`

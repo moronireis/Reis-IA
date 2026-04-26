@@ -1,0 +1,2539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journey Visualization — Concept Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000000;
+      --surface: #0A0A0A;
+      --blue: #4A90FF;
+      --green: #22C55E;
+      --purple: #8B5CF6;
+      --amber: #F59E0B;
+      --pink: #EC4899;
+      --muted: #333333;
+      --text: #FFFFFF;
+      --text-dim: #666666;
+      --text-mid: #999999;
+      --border: #1A1A1A;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── TOP NAV ─── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-inner::-webkit-scrollbar { display: none; }
+
+    .nav-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      white-space: nowrap;
+      padding-right: 16px;
+      border-right: 1px solid var(--border);
+      margin-right: 8px;
+    }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 16px 20px 14px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-dim);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .nav-tab::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--blue);
+      transition: width 0.25s ease;
+    }
+
+    .nav-tab.active { color: var(--text); }
+    .nav-tab.active::after { width: 100%; }
+    .nav-tab:hover { color: var(--text-mid); }
+
+    .nav-tab .tab-num {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    /* ─── CONCEPT PANELS ─── */
+    .concept-panel {
+      display: none;
+      min-height: calc(100vh - 57px);
+    }
+    .concept-panel.active { display: block; }
+
+    /* ─── SHARED UTILITIES ─── */
+    .page-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .concept-footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 0 0;
+      margin-top: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .concept-footer .concept-name {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .concept-footer .concept-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      max-width: 480px;
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    /* ─── KEYFRAMES ─── */
+    @keyframes pulse-border {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @keyframes glow-progress {
+      0%, 100% { box-shadow: 0 0 6px rgba(74,144,255,0.4); }
+      50% { box-shadow: 0 0 14px rgba(74,144,255,0.8); }
+    }
+
+    @keyframes scan-rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes draw-stroke {
+      from { stroke-dashoffset: 800; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    @keyframes travel-dot {
+      0% { offset-distance: 0%; opacity: 0; }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { offset-distance: 100%; opacity: 0; }
+    }
+
+    @keyframes seal-open {
+      from { transform: scaleX(1); }
+      to { transform: scaleX(0.3); }
+    }
+
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spine-fill {
+      from { height: 0; }
+      to { height: 100%; }
+    }
+
+    @keyframes breath {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.04); opacity: 1; }
+    }
+
+    /* ════════════════════════════════════════════
+       CONCEPT 1 — HORIZON STRATA
+    ════════════════════════════════════════════ */
+    #strata .strata-outer {
+      position: relative;
+      animation: fade-in-up 0.4s ease both;
+    }
+
+    #strata .depth-gauge {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      background: var(--border);
+      border-radius: 0 0 3px 3px;
+      z-index: 10;
+    }
+
+    #strata .depth-fill {
+      width: 100%;
+      background: linear-gradient(to bottom, var(--blue), #1a4a8a);
+      border-radius: 3px;
+      animation: spine-fill 1.2s ease 0.3s both;
+    }
+
+    #strata .depth-label {
+      position: absolute;
+      left: 16px;
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      writing-mode: vertical-rl;
+    }
+
+    #strata .depth-label.top { top: 12px; }
+    #strata .depth-label.bottom { bottom: 12px; }
+
+    .stratum {
+      position: relative;
+      padding: 28px 28px 28px 44px;
+      border-bottom: none;
+      overflow: hidden;
+      min-height: 190px;
+    }
+
+    .stratum .watermark {
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 80px;
+      font-weight: 700;
+      color: var(--text);
+      opacity: 0.028;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .stratum .phase-label {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .stratum .phase-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .stratum .phase-title.completed { color: var(--green); }
+    .stratum .phase-title.in-progress { color: var(--blue); }
+    .stratum .phase-title.locked { color: var(--text-dim); }
+
+    .stratum .nodes-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .s-node {
+      width: 110px;
+      height: 72px;
+      border: 1px solid;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      flex-shrink: 0;
+    }
+
+    .s-node:hover { transform: translateY(-2px); }
+
+    .s-node.type-material { border-color: var(--green); }
+    .s-node.type-task { border-color: var(--blue); }
+    .s-node.type-presentation { border-color: var(--purple); }
+    .s-node.type-checkpoint { border-color: var(--amber); }
+
+    .s-node.completed { background: rgba(34,197,94,0.06); }
+    .s-node.completed:hover { box-shadow: 0 0 12px rgba(34,197,94,0.2); }
+    .s-node.in-progress { animation: pulse-border 2s ease infinite; }
+    .s-node.in-progress:hover { box-shadow: 0 0 12px rgba(74,144,255,0.3); }
+    .s-node.available { opacity: 0.7; }
+    .s-node.locked { opacity: 0.28; pointer-events: none; }
+
+    .s-node .node-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .s-node .node-label {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      font-weight: 500;
+    }
+
+    .s-node.locked::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 6px,
+        rgba(255,255,255,0.03) 6px,
+        rgba(255,255,255,0.03) 7px
+      );
+      border-radius: 4px;
+    }
+
+    .stratum-progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stratum-progress-track {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .stratum-progress-fill {
+      height: 100%;
+      border-radius: 1px;
+      transition: width 1s ease;
+    }
+
+    .stratum-progress-fill.completed {
+      background: var(--green);
+    }
+    .stratum-progress-fill.in-progress {
+      background: var(--blue);
+      animation: glow-progress 2s ease infinite;
+    }
+
+    .stratum-progress-pct {
+      font-size: 10px;
+      color: var(--text-dim);
+      font-weight: 500;
+      min-width: 28px;
+      text-align: right;
+    }
+
+    .wave-separator {
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+      display: block;
+    }
+
+    .strata-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .strata-title {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .strata-meta {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .strata-badge {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text-dim);
+    }
+
+    /* ════════════════════════════════════════════
+       CONCEPT 2 — COMMAND DECK
+    ════════════════════════════════════════════ */
+    #command .cmd-outer {
+      position: relative;
+      animation: fade-in-up 0.4s ease both;
+    }
+
+    #command .hud-frame {
+      border: 1px solid #1A1A1A;
+      border-radius: 2px;
+      padding: 0;
+      position: relative;
+    }
+
+    /* Corner brackets */
+    .hud-frame::before,
+    .hud-frame::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+    }
+
+    .hud-frame::before {
+      top: -1px; left: -1px;
+      border-top: 2px solid #2A2A2A;
+      border-left: 2px solid #2A2A2A;
+    }
+
+    .hud-frame::after {
+      bottom: -1px; right: -1px;
+      border-bottom: 2px solid #2A2A2A;
+      border-right: 2px solid #2A2A2A;
+    }
+
+    .hud-corner-tr,
+    .hud-corner-bl {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+    }
+
+    .hud-corner-tr {
+      top: -1px; right: -1px;
+      border-top: 2px solid #2A2A2A;
+      border-right: 2px solid #2A2A2A;
+    }
+
+    .hud-corner-bl {
+      bottom: -1px; left: -1px;
+      border-bottom: 2px solid #2A2A2A;
+      border-left: 2px solid #2A2A2A;
+    }
+
+    .hud-statusbar {
+      background: #050505;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .hud-status-item {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hud-status-item .val {
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .hud-seg-progress {
+      display: flex;
+      gap: 3px;
+    }
+
+    .hud-seg {
+      width: 28px;
+      height: 4px;
+      border-radius: 1px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .hud-seg.done { background: var(--blue); }
+    .hud-seg.active { background: rgba(74,144,255,0.5); }
+
+    .hud-panels {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .cmd-panel {
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      position: relative;
+      transition: border-color 0.3s;
+    }
+
+    .cmd-panel.p-completed { border-color: rgba(34,197,94,0.25); }
+    .cmd-panel.p-active { border-color: rgba(74,144,255,0.35); }
+    .cmd-panel.p-locked { opacity: 0.35; }
+
+    /* Phase bracket accents */
+    .cmd-panel-bracket-tl,
+    .cmd-panel-bracket-tr {
+      position: absolute;
+      top: -1px;
+      width: 8px;
+      height: 8px;
+    }
+    .cmd-panel-bracket-tl { left: -1px; border-top: 1px solid; border-left: 1px solid; }
+    .cmd-panel-bracket-tr { right: -1px; border-top: 1px solid; border-right: 1px solid; }
+    .p-completed .cmd-panel-bracket-tl,
+    .p-completed .cmd-panel-bracket-tr { border-color: var(--green); }
+    .p-active .cmd-panel-bracket-tl,
+    .p-active .cmd-panel-bracket-tr { border-color: var(--blue); animation: breath 2s ease infinite; }
+    .p-locked .cmd-panel-bracket-tl,
+    .p-locked .cmd-panel-bracket-tr { border-color: #2A2A2A; }
+
+    .p1 .cmd-panel-bracket-tl, .p1 .cmd-panel-bracket-tr { border-color: var(--blue); }
+    .p2 .cmd-panel-bracket-tl, .p2 .cmd-panel-bracket-tr { border-color: var(--green); }
+    .p3 .cmd-panel-bracket-tl, .p3 .cmd-panel-bracket-tr { border-color: var(--purple); }
+    .p4 .cmd-panel-bracket-tl, .p4 .cmd-panel-bracket-tr { border-color: var(--amber); }
+    .p5 .cmd-panel-bracket-tl, .p5 .cmd-panel-bracket-tr { border-color: var(--pink); }
+
+    .cmd-panel-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cmd-phase-num {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+    }
+
+    .p-completed .cmd-phase-num { border-color: var(--green); color: var(--green); }
+    .p-active .cmd-phase-num { border-color: var(--blue); color: var(--blue); }
+
+    .cmd-phase-title {
+      font-size: 13px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .cmd-status-tag {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+
+    .tag-completed { background: rgba(34,197,94,0.12); color: var(--green); }
+    .tag-active { background: rgba(74,144,255,0.12); color: var(--blue); }
+    .tag-locked { background: rgba(255,255,255,0.04); color: var(--text-dim); }
+
+    .cmd-nodes-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .cmd-nodes-row::-webkit-scrollbar { display: none; }
+
+    .cmd-node-wrap {
+      display: flex;
+      align-items: center;
+    }
+
+    .cmd-node {
+      width: 88px;
+      height: 88px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .cmd-node:hover { transform: scale(1.04); }
+
+    .cmd-node.n-completed { border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.04); }
+    .cmd-node.n-active { border-color: rgba(74,144,255,0.6); }
+    .cmd-node.n-available { border-color: #1E1E1E; }
+    .cmd-node.n-locked { border-color: #111; opacity: 0.25; }
+
+    /* Scanning border animation */
+    .cmd-node.n-active::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 3px;
+      background: conic-gradient(from 0deg, transparent 0deg, var(--blue) 40deg, transparent 80deg);
+      animation: scan-rotate 2s linear infinite;
+      opacity: 0.8;
+      z-index: 0;
+    }
+
+    .cmd-node.n-active::after {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: #050A14;
+      border-radius: 2px;
+      z-index: 1;
+    }
+
+    .cmd-node-inner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .cmd-node-icon { font-size: 20px; line-height: 1; }
+
+    .cmd-node-label {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .cmd-check-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 14px;
+      height: 14px;
+      background: var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .cmd-arrow {
+      width: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--border);
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .cmd-progress-wrap {
+      padding: 0 16px 14px;
+    }
+
+    .cmd-progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .cmd-progress-label span {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .cmd-progress-track {
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .cmd-progress-fill {
+      height: 100%;
+      border-radius: 1px;
+      transition: width 1s ease;
+    }
+
+    /* ════════════════════════════════════════════
+       CONCEPT 3 — BLUEPRINT GRID
+    ════════════════════════════════════════════ */
+    #blueprint .bp-outer {
+      animation: fade-in-up 0.4s ease both;
+    }
+
+    #blueprint .bp-bg {
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      background-color: #010101;
+      border-radius: 4px;
+      padding: 32px;
+      position: relative;
+    }
+
+    .bp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 36px;
+    }
+
+    .bp-title-block { display: flex; flex-direction: column; gap: 4px; }
+    .bp-eyebrow { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); }
+    .bp-main-title { font-size: 18px; font-weight: 300; letter-spacing: 0.04em; color: var(--text); }
+
+    .bp-progress-badge {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid #1E3A5F;
+      color: var(--blue);
+      padding: 6px 14px;
+      border-radius: 2px;
+      background: rgba(74,144,255,0.06);
+    }
+
+    .bp-phases {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .bp-phase {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .bp-phase.align-left .bp-room-wrap {
+      margin-left: 0;
+      margin-right: auto;
+      max-width: 80%;
+    }
+
+    .bp-phase.align-right .bp-room-wrap {
+      margin-left: auto;
+      margin-right: 0;
+      max-width: 80%;
+    }
+
+    .bp-room-wrap {
+      border: 1px dashed;
+      border-radius: 2px;
+      padding: 16px;
+      position: relative;
+      width: 100%;
+    }
+
+    .bp-phase.st-completed .bp-room-wrap { border-color: rgba(34,197,94,0.35); }
+    .bp-phase.st-in-progress .bp-room-wrap { border-color: rgba(74,144,255,0.5); }
+    .bp-phase.st-locked .bp-room-wrap { border-color: #1A1A1A; }
+
+    .bp-room-wrap:hover {
+      border-style: solid;
+      transition: border 0.3s;
+    }
+
+    /* Draw-on animation on hover */
+    .bp-room-wrap .draw-rect {
+      position: absolute;
+      inset: -1px;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    .bp-phase-label-outside {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      padding-left: 2px;
+    }
+
+    .bp-phase.align-right .bp-phase-label-outside {
+      text-align: right;
+      padding-right: 2px;
+      padding-left: 0;
+    }
+
+    .bp-room-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #111;
+    }
+
+    .bp-room-title {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .bp-room-dims {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    .bp-nodes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: #111;
+      border: 1px solid #111;
+      border-radius: 2px;
+    }
+
+    .bp-room-node {
+      background: #040404;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      position: relative;
+    }
+
+    .bp-room-node:hover { background: #080808; }
+
+    .bp-room-num {
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      font-family: 'Inter', monospace;
+    }
+
+    .bp-room-node-title {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .bp-room-node.n-completed { background: rgba(34,197,94,0.04); }
+    .bp-room-node.n-locked { opacity: 0.3; }
+
+    .bp-room-node.n-locked::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 5px,
+        rgba(255,255,255,0.025) 5px,
+        rgba(255,255,255,0.025) 6px
+      );
+    }
+
+    .bp-room-node.n-in-progress {
+      animation: pulse-border 2.5s ease infinite;
+    }
+
+    .bp-node-type-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    .bp-node-type-label {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+
+    .bp-connector {
+      display: flex;
+      padding: 0;
+      position: relative;
+      height: 32px;
+    }
+
+    .bp-phase.align-left .bp-connector-line {
+      left: 40px;
+    }
+    .bp-phase.align-right .bp-connector-line {
+      right: 40px;
+      left: auto;
+    }
+
+    .bp-connector-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: #1A1A1A;
+    }
+
+    /* Dimension annotations */
+    .bp-dim-annotation {
+      position: absolute;
+      right: -80px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bp-dim-line {
+      width: 1px;
+      height: 40px;
+      background: #1A1A1A;
+    }
+
+    .bp-dim-text {
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      white-space: nowrap;
+      writing-mode: vertical-rl;
+    }
+
+    /* ════════════════════════════════════════════
+       CONCEPT 4 — SIGNAL TOWER
+    ════════════════════════════════════════════ */
+    #signal .sig-outer {
+      animation: fade-in-up 0.4s ease both;
+    }
+
+    .sig-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sig-strength {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .sig-strength strong {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .sig-tower {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      padding: 0 60px;
+    }
+
+    .sig-spine-wrap {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 2px;
+      background: #111;
+      z-index: 1;
+    }
+
+    .sig-spine-fill {
+      width: 100%;
+      background: linear-gradient(to bottom, var(--blue), rgba(74,144,255,0.2));
+      box-shadow: 0 0 8px rgba(74,144,255,0.3);
+      animation: spine-fill 1.5s ease 0.5s both;
+    }
+
+    .sig-crossbar-wrap {
+      width: 100%;
+      position: relative;
+      z-index: 2;
+      padding: 20px 0;
+    }
+
+    .sig-crossbar-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .sig-junction {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid;
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 700;
+      z-index: 3;
+      flex-shrink: 0;
+    }
+
+    .sig-phase-name {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+
+    .sig-phase-status {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .sig-waveform-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 100%;
+      height: 100px;
+      position: relative;
+    }
+
+    .sig-peak-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .sig-peak-wrap:hover { transform: scale(1.06); }
+
+    .sig-peak-label {
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      max-width: 60px;
+      text-align: center;
+    }
+
+    .sig-peak-svg {
+      overflow: visible;
+    }
+
+    .sig-peak-tip {
+      transition: r 0.2s;
+    }
+
+    .sig-peak-wrap:hover .sig-peak-tip {
+      r: 4;
+    }
+
+    .sig-flat-line {
+      width: 60px;
+      height: 2px;
+      background: #1A1A1A;
+      border-radius: 1px;
+    }
+
+    .sig-crossbar-divider {
+      width: 100%;
+      height: 1px;
+      background: #0A0A0A;
+    }
+
+    /* Traveling dot */
+    .sig-traveling-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 8px var(--blue);
+      position: absolute;
+      animation: travel-h 3s ease-in-out infinite;
+    }
+
+    @keyframes travel-h {
+      0% { left: 0%; transform: translateY(-20px); opacity: 0; }
+      10% { opacity: 1; }
+      50% { left: 50%; transform: translateY(20px); }
+      90% { opacity: 1; }
+      100% { left: 100%; transform: translateY(-20px); opacity: 0; }
+    }
+
+    /* ════════════════════════════════════════════
+       CONCEPT 5 — VAULT DOORS
+    ════════════════════════════════════════════ */
+    #vault .vault-outer {
+      animation: fade-in-up 0.4s ease both;
+    }
+
+    .vault-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .vault-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .vault-eyebrow {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .vault-heading {
+      font-size: 16px;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .vault-dot-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .vault-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+    }
+
+    .vault-dot.cleared { background: var(--blue); border-color: var(--blue); }
+    .vault-dot.active { border-color: var(--blue); background: rgba(74,144,255,0.2); }
+
+    .vault-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .vault-chamber {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      position: relative;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      overflow: hidden;
+    }
+
+    .vault-chamber.ch-cleared {
+      border-color: rgba(34,197,94,0.2);
+      box-shadow: 0 0 24px rgba(34,197,94,0.04);
+    }
+
+    .vault-chamber.ch-open {
+      border-color: rgba(74,144,255,0.3);
+      box-shadow: 0 0 24px rgba(74,144,255,0.06);
+    }
+
+    .vault-chamber.ch-sealed {
+      opacity: 0.4;
+    }
+
+    .vault-chamber.ch-sealed::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 10px,
+        rgba(255,255,255,0.02) 10px,
+        rgba(255,255,255,0.02) 11px
+      );
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .vault-chamber-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .vault-chamber-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .vault-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .ch-cleared .vault-circle { border-color: var(--green); color: var(--green); }
+    .ch-open .vault-circle { border-color: var(--blue); color: var(--blue); }
+
+    /* Arc progress on circle */
+    .vault-arc {
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+    }
+
+    .vault-chamber-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .vault-phase-num {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .vault-chamber-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .vault-access-tag {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    .tag-cleared { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+    .tag-open { background: rgba(74,144,255,0.1); color: var(--blue); border: 1px solid rgba(74,144,255,0.2); }
+    .tag-sealed { background: rgba(255,255,255,0.04); color: var(--text-dim); border: 1px solid #1A1A1A; }
+
+    .vault-deposits {
+      padding: 14px 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .deposit-box {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .deposit-box:hover { border-color: #2A2A2A; background: rgba(255,255,255,0.02); }
+
+    .deposit-stripe {
+      width: 3px;
+      flex-shrink: 0;
+    }
+
+    .deposit-content {
+      padding: 8px 10px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .deposit-title {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .deposit-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .deposit-type {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .deposit-xp {
+      font-size: 9px;
+      color: var(--amber);
+      font-weight: 600;
+    }
+
+    .deposit-status {
+      margin-left: auto;
+      font-size: 13px;
+    }
+
+    .vault-connector {
+      width: 100px;
+      height: 48px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vault-connector-body {
+      width: 100px;
+      height: 48px;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      background: #030303;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .vault-seal-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .seal-line {
+      height: 1px;
+      background: var(--border);
+      border-radius: 1px;
+      transition: transform 0.4s ease;
+    }
+
+    .vault-connector:hover .seal-line:first-child { transform: translateY(-4px); }
+    .vault-connector:hover .seal-line:last-child { transform: translateY(4px); }
+
+    .seal-line-open { background: var(--green); width: 40px; }
+    .seal-line-sealed { background: var(--border); width: 32px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .page-wrapper { padding: 24px 16px 60px; }
+
+      .stratum { padding: 20px 16px 20px 32px; min-height: auto; }
+      .s-node { width: 90px; height: 64px; }
+
+      .hud-panels { padding: 12px; }
+      .cmd-node { width: 72px; height: 72px; }
+
+      .bp-bg { padding: 20px 16px; }
+      .bp-phase.align-right .bp-room-wrap,
+      .bp-phase.align-left .bp-room-wrap { max-width: 100%; }
+      .bp-dim-annotation { display: none; }
+      .bp-nodes-grid { grid-template-columns: 1fr; }
+
+      .sig-tower { padding: 0 20px; }
+      .sig-waveform-row { gap: 2px; }
+
+      .vault-deposits { grid-template-columns: 1fr; }
+      .vault-connector { width: 80px; }
+      .vault-connector-body { width: 80px; }
+
+      .concept-footer { flex-direction: column; gap: 8px; align-items: flex-start; }
+      .concept-footer .concept-desc { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAVIGATION ─── -->
+<nav class="top-nav" style="padding-bottom:0;">
+  <!-- Page links row -->
+  <div style="display:flex;gap:6px;padding:10px 24px 0;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid #111;">
+    <span style="font-size:11px;font-weight:700;color:#fff;padding:8px 12px;background:rgba(255,255,255,0.06);border-radius:6px 6px 0 0;white-space:nowrap;">Pag 1: Puros</span>
+    <a href="page2.html" style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);padding:8px 12px;text-decoration:none;white-space:nowrap;border-radius:6px 6px 0 0;transition:color 0.15s;">Pag 2: Criativos</a>
+    <a href="page3.html" style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);padding:8px 12px;text-decoration:none;white-space:nowrap;border-radius:6px 6px 0 0;transition:color 0.15s;">Pag 3: Hybrids</a>
+    <a href="page4.html" style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);padding:8px 12px;text-decoration:none;white-space:nowrap;border-radius:6px 6px 0 0;transition:color 0.15s;">Pag 4: Deep Space</a>
+    <a href="page5.html" style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);padding:8px 12px;text-decoration:none;white-space:nowrap;border-radius:6px 6px 0 0;transition:color 0.15s;">Pag 5: Finals</a>
+    <a href="page6.html" style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);padding:8px 12px;text-decoration:none;white-space:nowrap;border-radius:6px 6px 0 0;transition:color 0.15s;">Pag 6: New</a>
+    <a href="final.html" style="font-size:11px;font-weight:700;color:#F59E0B;padding:8px 14px;text-decoration:none;white-space:nowrap;border-radius:6px 6px 0 0;border:1px solid rgba(245,158,11,0.25);border-bottom:none;background:rgba(245,158,11,0.04);transition:color 0.15s;">FINAL ★</a>
+  </div>
+  <!-- Concept tabs row -->
+  <div class="nav-inner">
+    <span class="nav-label">Conceitos 1-5</span>
+    <button class="nav-tab active" data-target="strata">
+      <span class="tab-num">01</span>
+      Horizon Strata
+    </button>
+    <button class="nav-tab" data-target="command">
+      <span class="tab-num">02</span>
+      Command Deck
+    </button>
+    <button class="nav-tab" data-target="blueprint">
+      <span class="tab-num">03</span>
+      Blueprint Grid
+    </button>
+    <button class="nav-tab" data-target="signal">
+      <span class="tab-num">04</span>
+      Signal Tower
+    </button>
+    <button class="nav-tab" data-target="vault">
+      <span class="tab-num">05</span>
+      Vault Doors
+    </button>
+  </div>
+</nav>
+
+
+<!-- ════════════════════════════════════════════
+     CONCEPT 1 — HORIZON STRATA
+════════════════════════════════════════════ -->
+<div id="strata" class="concept-panel active">
+  <div class="page-wrapper">
+
+    <div class="strata-header">
+      <div class="strata-title">Jornada IA do Zero ao Claude Code</div>
+      <div class="strata-meta">
+        <span class="strata-badge">7 / 20 nós concluídos</span>
+        <span class="strata-badge" style="border-color:#1A3A1A; color: var(--green);">Fase 1 Concluída</span>
+      </div>
+    </div>
+
+    <div class="strata-outer">
+      <!-- Depth gauge -->
+      <div class="depth-gauge">
+        <div class="depth-fill" style="height: 35%;"></div>
+      </div>
+      <span class="depth-label top">SURFACE</span>
+      <span class="depth-label bottom">CORE</span>
+
+      <!-- PHASE 1 -->
+      <div class="stratum" style="background:#0C0C0C; padding-left: 56px;">
+        <span class="watermark">01</span>
+        <div class="phase-label">Fase 01</div>
+        <div class="phase-title completed">Fundamentos de IA</div>
+        <div class="nodes-row">
+          <div class="s-node type-material completed" title="Material">
+            <div class="node-icon">📄</div>
+            <div class="node-label">Material</div>
+          </div>
+          <div class="s-node type-material completed" title="Material">
+            <div class="node-icon">📄</div>
+            <div class="node-label">Material</div>
+          </div>
+          <div class="s-node type-presentation completed" title="Apresentação">
+            <div class="node-icon">🎞</div>
+            <div class="node-label">Slides</div>
+          </div>
+          <div class="s-node type-task completed" title="Tarefa">
+            <div class="node-icon">✏</div>
+            <div class="node-label">Tarefa</div>
+          </div>
+          <div class="s-node type-checkpoint completed" title="Checkpoint">
+            <div class="node-icon">🏁</div>
+            <div class="node-label">Checkpoint</div>
+          </div>
+        </div>
+        <div class="stratum-progress-wrap">
+          <div class="stratum-progress-track">
+            <div class="stratum-progress-fill completed" style="width: 100%;"></div>
+          </div>
+          <span class="stratum-progress-pct" style="color:var(--green);">100%</span>
+        </div>
+      </div>
+
+      <!-- Wavy separator -->
+      <svg class="wave-separator" height="24" viewBox="0 0 1200 24" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,12 C150,4 300,20 450,12 C600,4 750,20 900,12 C1050,4 1150,18 1200,12 L1200,24 L0,24 Z" fill="#0A0A0A" stroke="#1A1A1A" stroke-width="1"/>
+      </svg>
+
+      <!-- PHASE 2 -->
+      <div class="stratum" style="background:#0A0A0A; padding-left: 56px;">
+        <span class="watermark">02</span>
+        <div class="phase-label">Fase 02</div>
+        <div class="phase-title in-progress">Prompts e Comunicação</div>
+        <div class="nodes-row">
+          <div class="s-node type-material completed" title="Material">
+            <div class="node-icon">📄</div>
+            <div class="node-label">Material</div>
+          </div>
+          <div class="s-node type-task completed" title="Tarefa">
+            <div class="node-icon">✏</div>
+            <div class="node-label">Tarefa</div>
+          </div>
+          <div class="s-node type-material in-progress available" title="Em andamento">
+            <div class="node-icon">📄</div>
+            <div class="node-label">Material</div>
+          </div>
+          <div class="s-node type-task available" title="Disponível">
+            <div class="node-icon">✏</div>
+            <div class="node-label">Tarefa</div>
+          </div>
+          <div class="s-node type-checkpoint locked" title="Bloqueado">
+            <div class="node-icon">🔒</div>
+            <div class="node-label">Checkpoint</div>
+          </div>
+        </div>
+        <div class="stratum-progress-wrap">
+          <div class="stratum-progress-track">
+            <div class="stratum-progress-fill in-progress" style="width: 40%;"></div>
+          </div>
+          <span class="stratum-progress-pct" style="color:var(--blue);">40%</span>
+        </div>
+      </div>
+
+      <svg class="wave-separator" height="24" viewBox="0 0 1200 24" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,10 C200,20 400,4 600,12 C800,20 1000,6 1200,14 L1200,24 L0,24 Z" fill="#080808" stroke="#161616" stroke-width="1"/>
+      </svg>
+
+      <!-- PHASE 3 -->
+      <div class="stratum" style="background:#080808; padding-left: 56px;">
+        <span class="watermark">03</span>
+        <div class="phase-label">Fase 03</div>
+        <div class="phase-title locked">Claude Code — Primeiros Passos</div>
+        <div class="nodes-row">
+          <div class="s-node type-material locked"><div class="node-icon">📄</div><div class="node-label">Material</div></div>
+          <div class="s-node type-task locked"><div class="node-icon">✏</div><div class="node-label">Tarefa</div></div>
+          <div class="s-node type-material locked"><div class="node-icon">📄</div><div class="node-label">Material</div></div>
+          <div class="s-node type-task locked"><div class="node-icon">✏</div><div class="node-label">Tarefa</div></div>
+          <div class="s-node type-checkpoint locked"><div class="node-icon">🔒</div><div class="node-label">Checkpoint</div></div>
+        </div>
+        <div class="stratum-progress-wrap">
+          <div class="stratum-progress-track"><div class="stratum-progress-fill" style="width:0%; background: var(--muted);"></div></div>
+          <span class="stratum-progress-pct">0%</span>
+        </div>
+      </div>
+
+      <svg class="wave-separator" height="24" viewBox="0 0 1200 24" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,14 C100,6 300,22 500,10 C700,2 900,18 1200,10 L1200,24 L0,24 Z" fill="#060606" stroke="#141414" stroke-width="1"/>
+      </svg>
+
+      <!-- PHASE 4 -->
+      <div class="stratum" style="background:#060606; padding-left: 56px;">
+        <span class="watermark">04</span>
+        <div class="phase-label">Fase 04</div>
+        <div class="phase-title locked">Claude Code no Trabalho</div>
+        <div class="nodes-row">
+          <div class="s-node type-material locked"><div class="node-icon">📄</div><div class="node-label">Material</div></div>
+          <div class="s-node type-task locked"><div class="node-icon">✏</div><div class="node-label">Tarefa</div></div>
+          <div class="s-node type-presentation locked"><div class="node-icon">🎞</div><div class="node-label">Slides</div></div>
+          <div class="s-node type-task locked"><div class="node-icon">✏</div><div class="node-label">Tarefa</div></div>
+          <div class="s-node type-checkpoint locked"><div class="node-icon">🔒</div><div class="node-label">Checkpoint</div></div>
+        </div>
+        <div class="stratum-progress-wrap">
+          <div class="stratum-progress-track"><div class="stratum-progress-fill" style="width:0%; background: var(--muted);"></div></div>
+          <span class="stratum-progress-pct">0%</span>
+        </div>
+      </div>
+
+      <svg class="wave-separator" height="24" viewBox="0 0 1200 24" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,8 C250,18 450,2 700,12 C900,20 1100,8 1200,16 L1200,24 L0,24 Z" fill="#040404" stroke="#121212" stroke-width="1"/>
+      </svg>
+
+      <!-- PHASE 5 -->
+      <div class="stratum" style="background:#040404; padding-left: 56px;">
+        <span class="watermark">05</span>
+        <div class="phase-label">Fase 05</div>
+        <div class="phase-title locked">Autonomia</div>
+        <div class="nodes-row">
+          <div class="s-node type-material locked"><div class="node-icon">📄</div><div class="node-label">Material</div></div>
+          <div class="s-node type-task locked"><div class="node-icon">✏</div><div class="node-label">Tarefa</div></div>
+          <div class="s-node type-material locked"><div class="node-icon">📄</div><div class="node-label">Material</div></div>
+          <div class="s-node type-task locked"><div class="node-icon">✏</div><div class="node-label">Tarefa</div></div>
+          <div class="s-node type-checkpoint locked"><div class="node-icon">🔒</div><div class="node-label">Checkpoint</div></div>
+        </div>
+        <div class="stratum-progress-wrap">
+          <div class="stratum-progress-track"><div class="stratum-progress-fill" style="width:0%; background: var(--muted);"></div></div>
+          <span class="stratum-progress-pct">0%</span>
+        </div>
+      </div>
+    </div><!-- /strata-outer -->
+
+    <div class="concept-footer">
+      <span class="concept-name">Concept 01 — Horizon Strata</span>
+      <span class="concept-desc">Geological depth metaphor: each phase is a layer you excavate. Progress descends from surface to core.</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     CONCEPT 2 — COMMAND DECK
+════════════════════════════════════════════ -->
+<div id="command" class="concept-panel">
+  <div class="page-wrapper">
+
+    <div class="cmd-outer">
+      <div class="hud-frame">
+        <div class="hud-corner-tr"></div>
+        <div class="hud-corner-bl"></div>
+
+        <!-- Status bar -->
+        <div class="hud-statusbar">
+          <div class="hud-status-item">
+            MISSION <span class="val" style="margin-left:6px;">2/5 ACTIVE</span>
+          </div>
+          <div class="hud-status-item">
+            XP <span class="val" style="margin-left:6px;">420 / 1200</span>
+          </div>
+          <div class="hud-status-item">
+            COMPLETION
+            <div class="hud-seg-progress" style="margin-left:8px;">
+              <div class="hud-seg done"></div>
+              <div class="hud-seg active"></div>
+              <div class="hud-seg"></div>
+              <div class="hud-seg"></div>
+              <div class="hud-seg"></div>
+            </div>
+          </div>
+          <div class="hud-status-item" style="margin-left:auto;">
+            <span style="color: var(--green);">● ONLINE</span>
+          </div>
+        </div>
+
+        <!-- Panels -->
+        <div class="hud-panels">
+
+          <!-- Panel 1 — Completed -->
+          <div class="cmd-panel p-completed p1">
+            <div class="cmd-panel-bracket-tl"></div>
+            <div class="cmd-panel-bracket-tr"></div>
+            <div class="cmd-panel-header">
+              <div class="cmd-phase-num">01</div>
+              <div class="cmd-phase-title">Fundamentos de IA</div>
+              <span class="cmd-status-tag tag-completed">Completed</span>
+            </div>
+            <div class="cmd-nodes-row">
+              <div class="cmd-node-wrap">
+                <div class="cmd-node n-completed">
+                  <div class="cmd-check-badge">
+                    <svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4L3 5.5L6.5 2" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+                  </div>
+                  <div class="cmd-node-inner"><div class="cmd-node-icon">📄</div><div class="cmd-node-label">Material</div></div>
+                </div>
+              </div>
+              <div class="cmd-arrow">›</div>
+              <div class="cmd-node-wrap">
+                <div class="cmd-node n-completed">
+                  <div class="cmd-check-badge"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4L3 5.5L6.5 2" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+                  <div class="cmd-node-inner"><div class="cmd-node-icon">📄</div><div class="cmd-node-label">Material</div></div>
+                </div>
+              </div>
+              <div class="cmd-arrow">›</div>
+              <div class="cmd-node-wrap">
+                <div class="cmd-node n-completed">
+                  <div class="cmd-check-badge"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4L3 5.5L6.5 2" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+                  <div class="cmd-node-inner"><div class="cmd-node-icon">🎞</div><div class="cmd-node-label">Slides</div></div>
+                </div>
+              </div>
+              <div class="cmd-arrow">›</div>
+              <div class="cmd-node-wrap">
+                <div class="cmd-node n-completed">
+                  <div class="cmd-check-badge"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4L3 5.5L6.5 2" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+                  <div class="cmd-node-inner"><div class="cmd-node-icon">✏</div><div class="cmd-node-label">Tarefa</div></div>
+                </div>
+              </div>
+              <div class="cmd-arrow">›</div>
+              <div class="cmd-node-wrap">
+                <div class="cmd-node n-completed">
+                  <div class="cmd-check-badge"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4L3 5.5L6.5 2" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+                  <div class="cmd-node-inner"><div class="cmd-node-icon">🏁</div><div class="cmd-node-label">Checkpoint</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="cmd-progress-wrap">
+              <div class="cmd-progress-label">
+                <span>Progress</span><span style="color:var(--green);">5 / 5</span>
+              </div>
+              <div class="cmd-progress-track">
+                <div class="cmd-progress-fill" style="width:100%; background:var(--green);"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 2 — Active -->
+          <div class="cmd-panel p-active p2">
+            <div class="cmd-panel-bracket-tl"></div>
+            <div class="cmd-panel-bracket-tr"></div>
+            <div class="cmd-panel-header">
+              <div class="cmd-phase-num">02</div>
+              <div class="cmd-phase-title">Prompts e Comunicação</div>
+              <span class="cmd-status-tag tag-active">Active</span>
+            </div>
+            <div class="cmd-nodes-row">
+              <div class="cmd-node-wrap">
+                <div class="cmd-node n-completed">
+                  <div class="cmd-check-badge"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4L3 5.5L6.5 2" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+                  <div class="cmd-node-inner"><div class="cmd-node-icon">📄</div><div class="cmd-node-label">Material</div></div>
+                </div>
+              </div>
+              <div class="cmd-arrow">›</div>
+              <div class="cmd-node-wrap">
+                <div class="cmd-node n-completed">
+                  <div class="cmd-check-badge"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4L3 5.5L6.5 2" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+                  <div class="cmd-node-inner"><div class="cmd-node-icon">✏</div><div class="cmd-node-label">Tarefa</div></div>
+                </div>
+              </div>
+              <div class="cmd-arrow">›</div>
+              <!-- ACTIVE node with scanning border -->
+              <div class="cmd-node-wrap">
+                <div class="cmd-node n-active">
+                  <div class="cmd-node-inner"><div class="cmd-node-icon">📄</div><div class="cmd-node-label">Material</div></div>
+                </div>
+              </div>
+              <div class="cmd-arrow">›</div>
+              <div class="cmd-node-wrap">
+                <div class="cmd-node n-available">
+                  <div class="cmd-node-inner"><div class="cmd-node-icon">✏</div><div class="cmd-node-label">Tarefa</div></div>
+                </div>
+              </div>
+              <div class="cmd-arrow">›</div>
+              <div class="cmd-node-wrap">
+                <div class="cmd-node n-locked">
+                  <div class="cmd-node-inner"><div class="cmd-node-icon">🔒</div><div class="cmd-node-label">Checkpoint</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="cmd-progress-wrap">
+              <div class="cmd-progress-label">
+                <span>Progress</span><span style="color:var(--blue);">2 / 5</span>
+              </div>
+              <div class="cmd-progress-track">
+                <div class="cmd-progress-fill" style="width:40%; background:var(--blue); animation: glow-progress 2s ease infinite;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 3 — Locked -->
+          <div class="cmd-panel p-locked p3">
+            <div class="cmd-panel-bracket-tl"></div>
+            <div class="cmd-panel-bracket-tr"></div>
+            <div class="cmd-panel-header">
+              <div class="cmd-phase-num">03</div>
+              <div class="cmd-phase-title">Claude Code — Primeiros Passos</div>
+              <span class="cmd-status-tag tag-locked">Locked</span>
+            </div>
+            <div class="cmd-nodes-row">
+              <div class="cmd-node-wrap"><div class="cmd-node n-locked"><div class="cmd-node-inner"><div class="cmd-node-icon">🔒</div><div class="cmd-node-label">Material</div></div></div></div>
+              <div class="cmd-arrow">›</div>
+              <div class="cmd-node-wrap"><div class="cmd-node n-locked"><div class="cmd-node-inner"><div class="cmd-node-icon">🔒</div><div class="cmd-node-label">Tarefa</div></div></div></div>
+              <div class="cmd-arrow">›</div>
+              <div class="cmd-node-wrap"><div class="cmd-node n-locked"><div class="cmd-node-inner"><div class="cmd-node-icon">🔒</div><div class="cmd-node-label">Material</div></div></div></div>
+              <div class="cmd-arrow">›</div>
+              <div class="cmd-node-wrap"><div class="cmd-node n-locked"><div class="cmd-node-inner"><div class="cmd-node-icon">🔒</div><div class="cmd-node-label">Tarefa</div></div></div></div>
+              <div class="cmd-arrow">›</div>
+              <div class="cmd-node-wrap"><div class="cmd-node n-locked"><div class="cmd-node-inner"><div class="cmd-node-icon">🔒</div><div class="cmd-node-label">Checkpoint</div></div></div></div>
+            </div>
+            <div class="cmd-progress-wrap">
+              <div class="cmd-progress-label"><span>Progress</span><span>0 / 5</span></div>
+              <div class="cmd-progress-track"><div class="cmd-progress-fill" style="width:0%;"></div></div>
+            </div>
+          </div>
+
+          <!-- Panels 4 & 5 collapsed -->
+          <div class="cmd-panel p-locked p4" style="opacity:0.25;">
+            <div class="cmd-panel-bracket-tl"></div><div class="cmd-panel-bracket-tr"></div>
+            <div class="cmd-panel-header">
+              <div class="cmd-phase-num">04</div>
+              <div class="cmd-phase-title">Claude Code no Trabalho</div>
+              <span class="cmd-status-tag tag-locked">Locked</span>
+            </div>
+          </div>
+
+          <div class="cmd-panel p-locked p5" style="opacity:0.18;">
+            <div class="cmd-panel-bracket-tl"></div><div class="cmd-panel-bracket-tr"></div>
+            <div class="cmd-panel-header">
+              <div class="cmd-phase-num">05</div>
+              <div class="cmd-phase-title">Autonomia</div>
+              <span class="cmd-status-tag tag-locked">Locked</span>
+            </div>
+          </div>
+
+        </div><!-- /hud-panels -->
+      </div><!-- /hud-frame -->
+    </div>
+
+    <div class="concept-footer">
+      <span class="concept-name">Concept 02 — Command Deck</span>
+      <span class="concept-desc">Mission control HUD aesthetic. Each phase is an operational panel. Active nodes pulse with a scanning border animation.</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     CONCEPT 3 — BLUEPRINT GRID
+════════════════════════════════════════════ -->
+<div id="blueprint" class="concept-panel">
+  <div class="page-wrapper">
+    <div class="bp-outer">
+      <div class="bp-bg">
+
+        <div class="bp-header">
+          <div class="bp-title-block">
+            <span class="bp-eyebrow">Technical Drawing — Rev. 2</span>
+            <span class="bp-main-title">Jornada IA do Zero ao Claude Code</span>
+          </div>
+          <div class="bp-progress-badge">Blueprint Progress: 1/5 Wings Built</div>
+        </div>
+
+        <div class="bp-phases">
+
+          <!-- Phase 1 — Completed, align left -->
+          <div class="bp-phase align-left st-completed">
+            <div class="bp-phase-label-outside">Phase 01 — Fundamentos de IA</div>
+            <div class="bp-room-wrap">
+              <div class="bp-room-header">
+                <span class="bp-room-title" style="color:var(--green);">Wing A — Fundamentos</span>
+                <span class="bp-room-dims">5 Nodes | ~2.5h | Completed</span>
+              </div>
+              <div class="bp-nodes-grid">
+                <div class="bp-room-node n-completed">
+                  <span class="bp-room-num">1.1</span>
+                  <span class="bp-room-node-title">Material</span>
+                  <span><span class="bp-node-type-dot" style="background:var(--green);"></span><span class="bp-node-type-label">reading &nbsp; ✓</span></span>
+                </div>
+                <div class="bp-room-node n-completed">
+                  <span class="bp-room-num">1.2</span>
+                  <span class="bp-room-node-title">Material</span>
+                  <span><span class="bp-node-type-dot" style="background:var(--green);"></span><span class="bp-node-type-label">reading &nbsp; ✓</span></span>
+                </div>
+                <div class="bp-room-node n-completed">
+                  <span class="bp-room-num">1.3</span>
+                  <span class="bp-room-node-title">Apresentação</span>
+                  <span><span class="bp-node-type-dot" style="background:var(--purple);"></span><span class="bp-node-type-label">slides &nbsp; ✓</span></span>
+                </div>
+                <div class="bp-room-node n-completed">
+                  <span class="bp-room-num">1.4</span>
+                  <span class="bp-room-node-title">Tarefa</span>
+                  <span><span class="bp-node-type-dot" style="background:var(--blue);"></span><span class="bp-node-type-label">task &nbsp; ✓</span></span>
+                </div>
+                <div class="bp-room-node n-completed" style="grid-column: span 2;">
+                  <span class="bp-room-num">1.5</span>
+                  <span class="bp-room-node-title">Checkpoint — Avaliação Final</span>
+                  <span><span class="bp-node-type-dot" style="background:var(--amber);"></span><span class="bp-node-type-label">checkpoint &nbsp; ✓</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Connector -->
+          <div class="bp-phase align-right" style="pointer-events:none;">
+            <div class="bp-connector">
+              <div class="bp-connector-line" style="left: auto; right: 20%; background: rgba(74,144,255,0.3);"></div>
+            </div>
+          </div>
+
+          <!-- Phase 2 — In progress, align right -->
+          <div class="bp-phase align-right st-in-progress">
+            <div class="bp-phase-label-outside">Phase 02 — Prompts e Comunicação</div>
+            <div class="bp-room-wrap">
+              <div class="bp-room-header">
+                <span class="bp-room-title" style="color:var(--blue);">Wing B — Prompts</span>
+                <span class="bp-room-dims">5 Nodes | ~3h | In Progress</span>
+              </div>
+              <div class="bp-nodes-grid">
+                <div class="bp-room-node n-completed">
+                  <span class="bp-room-num">2.1</span>
+                  <span class="bp-room-node-title">Material</span>
+                  <span><span class="bp-node-type-dot" style="background:var(--green);"></span><span class="bp-node-type-label">reading &nbsp; ✓</span></span>
+                </div>
+                <div class="bp-room-node n-completed">
+                  <span class="bp-room-num">2.2</span>
+                  <span class="bp-room-node-title">Tarefa</span>
+                  <span><span class="bp-node-type-dot" style="background:var(--blue);"></span><span class="bp-node-type-label">task &nbsp; ✓</span></span>
+                </div>
+                <div class="bp-room-node n-in-progress" style="animation: pulse-border 2s ease infinite; border: 1px solid rgba(74,144,255,0.5);">
+                  <span class="bp-room-num">2.3</span>
+                  <span class="bp-room-node-title">Material</span>
+                  <span><span class="bp-node-type-dot" style="background:var(--blue);"></span><span class="bp-node-type-label">reading — active</span></span>
+                </div>
+                <div class="bp-room-node n-available">
+                  <span class="bp-room-num">2.4</span>
+                  <span class="bp-room-node-title">Tarefa</span>
+                  <span><span class="bp-node-type-dot" style="background:var(--blue);"></span><span class="bp-node-type-label">task — available</span></span>
+                </div>
+                <div class="bp-room-node n-locked" style="grid-column: span 2;">
+                  <span class="bp-room-num">2.5</span>
+                  <span class="bp-room-node-title">Checkpoint</span>
+                  <span><span class="bp-node-type-dot" style="background:var(--amber);"></span><span class="bp-node-type-label">checkpoint — locked</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Connector -->
+          <div class="bp-phase align-left" style="pointer-events:none;">
+            <div class="bp-connector">
+              <div class="bp-connector-line" style="left: 20%; background: #1A1A1A;"></div>
+            </div>
+          </div>
+
+          <!-- Phase 3 — Locked, align left -->
+          <div class="bp-phase align-left st-locked">
+            <div class="bp-phase-label-outside" style="color:#333;">Phase 03 — Claude Code: Primeiros Passos</div>
+            <div class="bp-room-wrap" style="opacity:0.4;">
+              <div class="bp-room-header">
+                <span class="bp-room-title" style="color:var(--text-dim);">Wing C — Claude Code</span>
+                <span class="bp-room-dims">5 Nodes | ~4h | Locked</span>
+              </div>
+              <div class="bp-nodes-grid">
+                <div class="bp-room-node n-locked"><span class="bp-room-num">3.1</span><span class="bp-room-node-title">Material</span><span class="bp-node-type-label">locked</span></div>
+                <div class="bp-room-node n-locked"><span class="bp-room-num">3.2</span><span class="bp-room-node-title">Tarefa</span><span class="bp-node-type-label">locked</span></div>
+                <div class="bp-room-node n-locked"><span class="bp-room-num">3.3</span><span class="bp-room-node-title">Material</span><span class="bp-node-type-label">locked</span></div>
+                <div class="bp-room-node n-locked"><span class="bp-room-num">3.4</span><span class="bp-room-node-title">Tarefa</span><span class="bp-node-type-label">locked</span></div>
+                <div class="bp-room-node n-locked" style="grid-column: span 2;"><span class="bp-room-num">3.5</span><span class="bp-room-node-title">Checkpoint</span><span class="bp-node-type-label">locked</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Collapsed phases 4+5 -->
+          <div class="bp-phase align-right" style="pointer-events:none;">
+            <div class="bp-connector"><div class="bp-connector-line" style="right: 20%; left: auto; background: #111;"></div></div>
+          </div>
+
+          <div class="bp-phase align-right st-locked">
+            <div class="bp-phase-label-outside" style="color:#222; text-align:right;">Phase 04 — Claude Code no Trabalho</div>
+            <div class="bp-room-wrap" style="opacity:0.2; border-color: #111;">
+              <div class="bp-room-header"><span class="bp-room-title" style="color:#333;">Wing D — Advanced</span><span class="bp-room-dims" style="color:#222;">5 Nodes | Locked</span></div>
+              <div class="bp-nodes-grid">
+                <div class="bp-room-node n-locked" style="background:#020202;"><span class="bp-room-num">4.1</span><span class="bp-room-node-title" style="color:#2A2A2A;">Locked</span></div>
+                <div class="bp-room-node n-locked" style="background:#020202;"><span class="bp-room-num">4.2</span><span class="bp-room-node-title" style="color:#2A2A2A;">Locked</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bp-phase align-left" style="pointer-events:none;">
+            <div class="bp-connector"><div class="bp-connector-line" style="left: 20%; background: #0A0A0A;"></div></div>
+          </div>
+
+          <div class="bp-phase align-left st-locked">
+            <div class="bp-phase-label-outside" style="color:#1A1A1A;">Phase 05 — Autonomia</div>
+            <div class="bp-room-wrap" style="opacity:0.1; border-color: #0D0D0D;">
+              <div class="bp-room-header"><span class="bp-room-title" style="color:#222;">Wing E — Autonomy</span><span class="bp-room-dims" style="color:#1A1A1A;">5 Nodes | Locked</span></div>
+              <div class="bp-nodes-grid">
+                <div class="bp-room-node n-locked" style="background:#010101;"><span class="bp-room-num">5.1</span><span class="bp-room-node-title" style="color:#1A1A1A;">Locked</span></div>
+                <div class="bp-room-node n-locked" style="background:#010101;"><span class="bp-room-num">5.2</span><span class="bp-room-node-title" style="color:#1A1A1A;">Locked</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /bp-phases -->
+      </div><!-- /bp-bg -->
+    </div>
+
+    <div class="concept-footer">
+      <span class="concept-name">Concept 03 — Blueprint Grid</span>
+      <span class="concept-desc">Architectural floor plan. Phases are labeled wings on a technical drawing. Grid background, dashed borders, room-number conventions.</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     CONCEPT 4 — SIGNAL TOWER
+════════════════════════════════════════════ -->
+<div id="signal" class="concept-panel">
+  <div class="page-wrapper">
+    <div class="sig-outer">
+
+      <div class="sig-header">
+        <div>
+          <div style="font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim); margin-bottom:4px;">Jornada IA do Zero ao Claude Code</div>
+          <div class="sig-strength">Signal Strength: <strong>35%</strong></div>
+        </div>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim);">7 / 20 nodes</div>
+          <div style="width:120px; height:2px; background:var(--border); border-radius:1px; overflow:hidden;">
+            <div style="height:100%; width:35%; background:var(--blue); animation: glow-progress 2s ease infinite;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sig-tower">
+
+        <!-- Spine -->
+        <div class="sig-spine-wrap">
+          <div class="sig-spine-fill" style="height: 35%;"></div>
+        </div>
+
+        <!-- Phase 1 — Completed -->
+        <div class="sig-crossbar-wrap">
+          <div class="sig-crossbar-header">
+            <div class="sig-junction" style="border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.08);">1</div>
+            <div>
+              <div class="sig-phase-name" style="color: var(--green);">Fundamentos de IA</div>
+              <div class="sig-phase-status">Completed — 5/5</div>
+            </div>
+          </div>
+          <div class="sig-waveform-row">
+            <!-- 5 Completed peaks -->
+            <div class="sig-peak-wrap">
+              <svg class="sig-peak-svg" width="56" height="56" viewBox="0 0 56 56">
+                <defs>
+                  <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#22C55E" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#22C55E" stop-opacity="0.1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M4,48 L16,48 L20,12 L28,52 L36,6 L44,48 L52,48" fill="none" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4,48 L16,48 L20,12 L28,52 L36,6 L44,48 L52,48 L52,56 L4,56 Z" fill="url(#g1)"/>
+                <circle class="sig-peak-tip" cx="36" cy="6" r="3" fill="#22C55E"/>
+              </svg>
+              <span class="sig-peak-label">Material</span>
+            </div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#1A1A1A" stroke-width="1"/></svg>
+            <div class="sig-peak-wrap">
+              <svg class="sig-peak-svg" width="56" height="56" viewBox="0 0 56 56">
+                <path d="M4,48 L16,48 L20,18 L28,52 L36,10 L44,48 L52,48" fill="none" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle class="sig-peak-tip" cx="36" cy="10" r="3" fill="#22C55E"/>
+              </svg>
+              <span class="sig-peak-label">Material</span>
+            </div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#1A1A1A" stroke-width="1"/></svg>
+            <div class="sig-peak-wrap">
+              <svg class="sig-peak-svg" width="56" height="56" viewBox="0 0 56 56">
+                <path d="M4,48 L16,48 L20,14 L28,52 L36,8 L44,48 L52,48" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle class="sig-peak-tip" cx="36" cy="8" r="3" fill="#8B5CF6"/>
+              </svg>
+              <span class="sig-peak-label">Slides</span>
+            </div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#1A1A1A" stroke-width="1"/></svg>
+            <div class="sig-peak-wrap">
+              <svg class="sig-peak-svg" width="56" height="56" viewBox="0 0 56 56">
+                <path d="M4,48 L16,48 L20,20 L28,52 L36,12 L44,48 L52,48" fill="none" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle class="sig-peak-tip" cx="36" cy="12" r="3" fill="#4A90FF"/>
+              </svg>
+              <span class="sig-peak-label">Tarefa</span>
+            </div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#1A1A1A" stroke-width="1"/></svg>
+            <div class="sig-peak-wrap">
+              <svg class="sig-peak-svg" width="56" height="56" viewBox="0 0 56 56">
+                <path d="M4,48 L16,48 L20,16 L28,52 L36,4 L44,48 L52,48" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle class="sig-peak-tip" cx="36" cy="4" r="3" fill="#F59E0B"/>
+              </svg>
+              <span class="sig-peak-label">Check</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sig-crossbar-divider"></div>
+
+        <!-- Phase 2 — In Progress -->
+        <div class="sig-crossbar-wrap">
+          <div class="sig-crossbar-header">
+            <div class="sig-junction" style="border-color: var(--blue); color: var(--blue); background: rgba(74,144,255,0.08); animation: breath 2s ease infinite;">2</div>
+            <div>
+              <div class="sig-phase-name" style="color: var(--blue);">Prompts e Comunicação</div>
+              <div class="sig-phase-status">In Progress — 2/5</div>
+            </div>
+          </div>
+          <div class="sig-waveform-row" style="position:relative;">
+            <!-- Traveling dot on active path -->
+            <div class="sig-traveling-dot"></div>
+            <div class="sig-peak-wrap">
+              <svg class="sig-peak-svg" width="56" height="56" viewBox="0 0 56 56">
+                <path d="M4,48 L16,48 L20,18 L28,52 L36,10 L44,48 L52,48" fill="none" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="36" cy="10" r="3" fill="#22C55E"/>
+              </svg>
+              <span class="sig-peak-label">Material</span>
+            </div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#1A1A1A" stroke-width="1"/></svg>
+            <div class="sig-peak-wrap">
+              <svg class="sig-peak-svg" width="56" height="56" viewBox="0 0 56 56">
+                <path d="M4,48 L16,48 L20,22 L28,52 L36,14 L44,48 L52,48" fill="none" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="36" cy="14" r="3" fill="#4A90FF"/>
+              </svg>
+              <span class="sig-peak-label">Tarefa</span>
+            </div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#1A1A1A" stroke-width="1"/></svg>
+            <!-- Active peak — animated -->
+            <div class="sig-peak-wrap" style="animation: breath 1.8s ease infinite;">
+              <svg class="sig-peak-svg" width="56" height="56" viewBox="0 0 56 56">
+                <path d="M4,48 L16,48 L20,24 L28,52 L36,16 L44,48 L52,48" fill="none" stroke="#4A90FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="36" cy="16" r="4" fill="#4A90FF" style="filter: drop-shadow(0 0 6px #4A90FF)"/>
+              </svg>
+              <span class="sig-peak-label" style="color:var(--blue);">Material</span>
+            </div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#1A1A1A" stroke-width="1"/></svg>
+            <!-- Available — short peak -->
+            <div class="sig-peak-wrap" style="opacity:0.5;">
+              <svg class="sig-peak-svg" width="56" height="40" viewBox="0 0 56 40">
+                <path d="M4,36 L16,36 L20,22 L28,38 L36,20 L44,36 L52,36" fill="none" stroke="#4A90FF" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 2"/>
+              </svg>
+              <span class="sig-peak-label">Tarefa</span>
+            </div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#111" stroke-width="1"/></svg>
+            <!-- Locked — flat -->
+            <div class="sig-peak-wrap" style="opacity:0.2;">
+              <div class="sig-flat-line" style="margin-bottom:8px;"></div>
+              <span class="sig-peak-label">Check</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sig-crossbar-divider"></div>
+
+        <!-- Phase 3 — Locked, just junction -->
+        <div class="sig-crossbar-wrap" style="opacity:0.3;">
+          <div class="sig-crossbar-header">
+            <div class="sig-junction" style="border-color: #222; color: #333;">3</div>
+            <div>
+              <div class="sig-phase-name" style="color: #333;">Claude Code — Primeiros Passos</div>
+              <div class="sig-phase-status" style="color: #222;">Locked</div>
+            </div>
+          </div>
+          <div class="sig-waveform-row">
+            <div class="sig-peak-wrap" style="opacity:0.4;"><div class="sig-flat-line"></div><span class="sig-peak-label" style="color:#222;">—</span></div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#111" stroke-width="1"/></svg>
+            <div class="sig-peak-wrap" style="opacity:0.4;"><div class="sig-flat-line"></div><span class="sig-peak-label" style="color:#222;">—</span></div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#111" stroke-width="1"/></svg>
+            <div class="sig-peak-wrap" style="opacity:0.4;"><div class="sig-flat-line"></div><span class="sig-peak-label" style="color:#222;">—</span></div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#111" stroke-width="1"/></svg>
+            <div class="sig-peak-wrap" style="opacity:0.4;"><div class="sig-flat-line"></div><span class="sig-peak-label" style="color:#222;">—</span></div>
+            <svg width="20" height="2"><line x1="0" y1="1" x2="20" y2="1" stroke="#111" stroke-width="1"/></svg>
+            <div class="sig-peak-wrap" style="opacity:0.4;"><div class="sig-flat-line"></div><span class="sig-peak-label" style="color:#222;">—</span></div>
+          </div>
+        </div>
+
+        <div class="sig-crossbar-divider"></div>
+
+        <!-- Phases 4 + 5 very faded -->
+        <div class="sig-crossbar-wrap" style="opacity:0.15;">
+          <div class="sig-crossbar-header">
+            <div class="sig-junction" style="border-color:#111; color:#1A1A1A;">4</div>
+            <div><div class="sig-phase-name" style="color:#1A1A1A;">Claude Code no Trabalho</div></div>
+          </div>
+        </div>
+        <div class="sig-crossbar-divider"></div>
+        <div class="sig-crossbar-wrap" style="opacity:0.08;">
+          <div class="sig-crossbar-header">
+            <div class="sig-junction" style="border-color:#0D0D0D; color:#111;">5</div>
+            <div><div class="sig-phase-name" style="color:#111;">Autonomia</div></div>
+          </div>
+        </div>
+
+      </div><!-- /sig-tower -->
+    </div>
+
+    <div class="concept-footer">
+      <span class="concept-name">Concept 04 — Signal Tower</span>
+      <span class="concept-desc">EKG waveform metaphor. A central spine carries signal to each phase. Completed nodes emit full-amplitude peaks; locked nodes are flat.</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     CONCEPT 5 — VAULT DOORS
+════════════════════════════════════════════ -->
+<div id="vault" class="concept-panel">
+  <div class="page-wrapper">
+    <div class="vault-outer">
+
+      <div class="vault-header">
+        <div class="vault-title-block">
+          <span class="vault-eyebrow">Vault Access System</span>
+          <span class="vault-heading">Jornada IA do Zero ao Claude Code</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+          <div style="font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-dim);">1 / 5 Chambers Cleared</div>
+          <div class="vault-dot-row">
+            <div class="vault-dot cleared"></div>
+            <div class="vault-dot active"></div>
+            <div class="vault-dot"></div>
+            <div class="vault-dot"></div>
+            <div class="vault-dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vault-stack">
+
+        <!-- Chamber 1 — Cleared -->
+        <div class="vault-chamber ch-cleared">
+          <div class="vault-chamber-top">
+            <div class="vault-chamber-left">
+              <div class="vault-circle">
+                <svg style="position:absolute;inset:-3px;" width="42" height="42" viewBox="0 0 42 42">
+                  <circle cx="21" cy="21" r="18" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="113" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 21 21)" style="opacity:0.3;"/>
+                </svg>
+                1
+              </div>
+              <div class="vault-chamber-title-wrap">
+                <span class="vault-phase-num">Phase 01</span>
+                <span class="vault-chamber-title">Fundamentos de IA</span>
+              </div>
+            </div>
+            <span class="vault-access-tag tag-cleared">Cleared</span>
+          </div>
+          <div class="vault-deposits">
+            <div class="deposit-box">
+              <div class="deposit-stripe" style="background:var(--green);"></div>
+              <div class="deposit-content">
+                <span class="deposit-title">Material de Estudo</span>
+                <div class="deposit-meta">
+                  <span class="deposit-type">Reading</span>
+                  <span class="deposit-xp">+20 XP</span>
+                  <span class="deposit-status">✓</span>
+                </div>
+              </div>
+            </div>
+            <div class="deposit-box">
+              <div class="deposit-stripe" style="background:var(--green);"></div>
+              <div class="deposit-content">
+                <span class="deposit-title">Material Avançado</span>
+                <div class="deposit-meta">
+                  <span class="deposit-type">Reading</span>
+                  <span class="deposit-xp">+20 XP</span>
+                  <span class="deposit-status">✓</span>
+                </div>
+              </div>
+            </div>
+            <div class="deposit-box">
+              <div class="deposit-stripe" style="background:var(--purple);"></div>
+              <div class="deposit-content">
+                <span class="deposit-title">Apresentação Slides</span>
+                <div class="deposit-meta">
+                  <span class="deposit-type">Slides</span>
+                  <span class="deposit-xp">+25 XP</span>
+                  <span class="deposit-status">✓</span>
+                </div>
+              </div>
+            </div>
+            <div class="deposit-box">
+              <div class="deposit-stripe" style="background:var(--blue);"></div>
+              <div class="deposit-content">
+                <span class="deposit-title">Tarefa Prática</span>
+                <div class="deposit-meta">
+                  <span class="deposit-type">Task</span>
+                  <span class="deposit-xp">+40 XP</span>
+                  <span class="deposit-status">✓</span>
+                </div>
+              </div>
+            </div>
+            <div class="deposit-box" style="grid-column: span 2;">
+              <div class="deposit-stripe" style="background:var(--amber);"></div>
+              <div class="deposit-content">
+                <span class="deposit-title">Checkpoint — Avaliação Final da Fase 01</span>
+                <div class="deposit-meta">
+                  <span class="deposit-type">Checkpoint</span>
+                  <span class="deposit-xp">+60 XP</span>
+                  <span class="deposit-status">✓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector 1→2 Open -->
+        <div class="vault-connector">
+          <div class="vault-connector-body">
+            <div class="vault-seal-lines">
+              <div class="seal-line seal-line-open"></div>
+              <div class="seal-line seal-line-open"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chamber 2 — Open -->
+        <div class="vault-chamber ch-open">
+          <div class="vault-chamber-top">
+            <div class="vault-chamber-left">
+              <div class="vault-circle" style="animation: breath 2s ease infinite;">
+                <svg style="position:absolute;inset:-3px;" width="42" height="42" viewBox="0 0 42 42">
+                  <circle cx="21" cy="21" r="18" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-dasharray="113" stroke-dashoffset="68" stroke-linecap="round" transform="rotate(-90 21 21)" style="opacity:0.6;"/>
+                </svg>
+                2
+              </div>
+              <div class="vault-chamber-title-wrap">
+                <span class="vault-phase-num">Phase 02</span>
+                <span class="vault-chamber-title">Prompts e Comunicação</span>
+              </div>
+            </div>
+            <span class="vault-access-tag tag-open">Open</span>
+          </div>
+          <div class="vault-deposits">
+            <div class="deposit-box">
+              <div class="deposit-stripe" style="background:var(--green);"></div>
+              <div class="deposit-content">
+                <span class="deposit-title">Material de Estudo</span>
+                <div class="deposit-meta">
+                  <span class="deposit-type">Reading</span>
+                  <span class="deposit-xp">+20 XP</span>
+                  <span class="deposit-status">✓</span>
+                </div>
+              </div>
+            </div>
+            <div class="deposit-box">
+              <div class="deposit-stripe" style="background:var(--blue);"></div>
+              <div class="deposit-content">
+                <span class="deposit-title">Tarefa Inicial</span>
+                <div class="deposit-meta">
+                  <span class="deposit-type">Task</span>
+                  <span class="deposit-xp">+40 XP</span>
+                  <span class="deposit-status">✓</span>
+                </div>
+              </div>
+            </div>
+            <div class="deposit-box" style="border-color: rgba(74,144,255,0.3); animation: pulse-border 2s ease infinite;">
+              <div class="deposit-stripe" style="background:var(--blue);"></div>
+              <div class="deposit-content">
+                <span class="deposit-title">Material Avançado</span>
+                <div class="deposit-meta">
+                  <span class="deposit-type">Reading</span>
+                  <span class="deposit-xp">+20 XP</span>
+                  <span class="deposit-status" style="color:var(--blue);">▶</span>
+                </div>
+              </div>
+            </div>
+            <div class="deposit-box" style="opacity:0.6;">
+              <div class="deposit-stripe" style="background:var(--blue);"></div>
+              <div class="deposit-content">
+                <span class="deposit-title">Tarefa Avançada</span>
+                <div class="deposit-meta">
+                  <span class="deposit-type">Task</span>
+                  <span class="deposit-xp">+40 XP</span>
+                  <span class="deposit-status" style="color:var(--text-dim);">○</span>
+                </div>
+              </div>
+            </div>
+            <div class="deposit-box" style="opacity:0.3; grid-column: span 2;">
+              <div class="deposit-stripe" style="background:var(--amber);"></div>
+              <div class="deposit-content">
+                <span class="deposit-title">Checkpoint — Avaliação Final da Fase 02</span>
+                <div class="deposit-meta">
+                  <span class="deposit-type">Checkpoint</span>
+                  <span class="deposit-xp">+60 XP</span>
+                  <span class="deposit-status" style="color:var(--text-dim);">🔒</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector 2→3 Sealed -->
+        <div class="vault-connector">
+          <div class="vault-connector-body">
+            <div class="vault-seal-lines">
+              <div class="seal-line seal-line-sealed" style="width:48px;"></div>
+              <div class="seal-line seal-line-sealed" style="width:36px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chamber 3 — Sealed -->
+        <div class="vault-chamber ch-sealed">
+          <div class="vault-chamber-top">
+            <div class="vault-chamber-left">
+              <div class="vault-circle" style="border-color:#1A1A1A; color:#333;">3</div>
+              <div class="vault-chamber-title-wrap">
+                <span class="vault-phase-num" style="color:#333;">Phase 03</span>
+                <span class="vault-chamber-title" style="color:#444;">Claude Code — Primeiros Passos</span>
+              </div>
+            </div>
+            <span class="vault-access-tag tag-sealed">Sealed</span>
+          </div>
+          <div class="vault-deposits" style="opacity:0.4;">
+            <div class="deposit-box" style="border-color:#111;"><div class="deposit-stripe" style="background:#1A1A1A;"></div><div class="deposit-content"><span class="deposit-title" style="color:#333;">Locked</span></div></div>
+            <div class="deposit-box" style="border-color:#111;"><div class="deposit-stripe" style="background:#1A1A1A;"></div><div class="deposit-content"><span class="deposit-title" style="color:#333;">Locked</span></div></div>
+          </div>
+        </div>
+
+        <!-- Connector 3→4 Sealed -->
+        <div class="vault-connector" style="opacity:0.4;">
+          <div class="vault-connector-body">
+            <div class="vault-seal-lines">
+              <div class="seal-line seal-line-sealed" style="width:48px;"></div>
+              <div class="seal-line seal-line-sealed" style="width:48px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chamber 4 — Sealed, very faded -->
+        <div class="vault-chamber ch-sealed" style="opacity:0.25;">
+          <div class="vault-chamber-top">
+            <div class="vault-chamber-left">
+              <div class="vault-circle" style="border-color:#111; color:#1A1A1A;">4</div>
+              <div class="vault-chamber-title-wrap">
+                <span class="vault-phase-num" style="color:#222;">Phase 04</span>
+                <span class="vault-chamber-title" style="color:#2A2A2A;">Claude Code no Trabalho</span>
+              </div>
+            </div>
+            <span class="vault-access-tag tag-sealed">Sealed</span>
+          </div>
+        </div>
+
+        <!-- Connector 4→5 Sealed -->
+        <div class="vault-connector" style="opacity:0.15;">
+          <div class="vault-connector-body">
+            <div class="vault-seal-lines">
+              <div class="seal-line" style="width:48px; background:#0D0D0D;"></div>
+              <div class="seal-line" style="width:48px; background:#0D0D0D;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chamber 5 — Sealed, barely visible -->
+        <div class="vault-chamber ch-sealed" style="opacity:0.12;">
+          <div class="vault-chamber-top">
+            <div class="vault-chamber-left">
+              <div class="vault-circle" style="border-color:#0D0D0D; color:#111;">5</div>
+              <div class="vault-chamber-title-wrap">
+                <span class="vault-phase-num" style="color:#1A1A1A;">Phase 05</span>
+                <span class="vault-chamber-title" style="color:#1E1E1E;">Autonomia</span>
+              </div>
+            </div>
+            <span class="vault-access-tag tag-sealed" style="opacity:0.5;">Sealed</span>
+          </div>
+        </div>
+
+      </div><!-- /vault-stack -->
+    </div>
+
+    <div class="concept-footer">
+      <span class="concept-name">Concept 05 — Vault Doors</span>
+      <span class="concept-desc">Secure vault metaphor. Phases are chambers connected by corridors. Locked phases are physically sealed; cleared chambers glow open.</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─── TAB SWITCHING SCRIPT ─── -->
+<script>
+  (function () {
+    var tabs = document.querySelectorAll('.nav-tab');
+    var panels = document.querySelectorAll('.concept-panel');
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var target = tab.getAttribute('data-target');
+
+        tabs.forEach(function (t) { t.classList.remove('active'); });
+        panels.forEach(function (p) { p.classList.remove('active'); });
+
+        tab.classList.add('active');
+        var panel = document.getElementById(target);
+        if (panel) { panel.classList.add('active'); }
+
+        // Restart animations on the newly shown panel
+        panel.querySelectorAll('[style*="animation"]').forEach(function (el) {
+          el.style.animationPlayState = 'running';
+        });
+
+        // Smooth scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+    // Node hover tooltips (subtle)
+    document.querySelectorAll('.s-node, .cmd-node, .bp-room-node, .sig-peak-wrap, .deposit-box').forEach(function (el) {
+      el.addEventListener('mouseenter', function () {
+        this.style.cursor = 'pointer';
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

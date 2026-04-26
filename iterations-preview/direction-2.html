@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>REIS [IA] — Direction 02 — Architectural Precision</title>
+<meta name="description" content="REIS [IA] home page — Direction 02 Architectural Precision. Linear / Raycast / Cursor lineage.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* =========================================
+     DIRECTION 02 — ARCHITECTURAL PRECISION
+     Lineage: Linear + Raycast + Cursor + Vercel + Framer
+     Motion budget: medium. Vanilla JS + rAF.
+     Signature: radial pointer spotlight + magnetic CTA + state-machine demo
+     ========================================= */
+  :root{
+    --bg-0:#000;
+    --bg-1:#0A0A0A;
+    --bg-2:#141414;
+    --bg-3:#1A1A1A;
+    --bg-hover:#161616;
+    --accent:#4A90FF;
+    --accent-bright:#6AADFF;
+    --accent-dim:rgba(74,144,255,.16);
+    --text-1:#fff;
+    --text-2:rgba(255,255,255,.70);
+    --text-3:rgba(255,255,255,.50);
+    --text-4:rgba(255,255,255,.32);
+    --hairline:rgba(255,255,255,.08);
+    --hairline-strong:rgba(255,255,255,.14);
+    --hairline-blue:rgba(74,144,255,.28);
+    --sans:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --house:cubic-bezier(0.16,1,0.3,1);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg-1);color:var(--text-1);font-family:var(--sans);
+    font-size:16px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    font-feature-settings:"tnum" 1,"ss01" 1,"cv11" 1;
+  }
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+  h1,h2,h3,h4,p{margin:0}
+  figure{margin:0}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+  .container{max-width:1240px;margin:0 auto;padding:0 32px;position:relative}
+  @media (max-width:720px){.container{padding:0 20px}}
+
+  .chapter{padding:160px 0;position:relative}
+  .chapter.bg-0{background:var(--bg-0)}
+  .chapter.bg-1{background:var(--bg-1)}
+  @media (max-width:720px){.chapter{padding:96px 0}}
+
+  .ch-mark{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:32px;font-weight:500}
+  .ch-mark .sep{color:var(--text-4);margin:0 8px}
+
+  .lede{font-size:clamp(18px,1.4vw,20px);line-height:1.55;color:var(--text-2);max-width:640px;margin-top:24px;font-weight:400}
+
+  /* ---- HERO with pointer spotlight ---- */
+  .hero{
+    background:var(--bg-0);
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:140px 0;
+    position:relative;overflow:hidden;
+    --x:50%;--y:50%;
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(600px circle at var(--x) var(--y), rgba(74,144,255,.20), transparent 65%);
+    opacity:0;transition:opacity 800ms var(--house);
+    will-change:background;
+  }
+  .hero.is-lit::before{opacity:1}
+  .hero::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      linear-gradient(to bottom, rgba(0,0,0,.3), transparent 20%, transparent 80%, rgba(0,0,0,.5));
+  }
+  .hero > *{position:relative;z-index:1}
+
+  .hero-strip{position:absolute;top:28px;left:32px;right:32px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-4);z-index:2}
+  .hero-strip-bottom{top:auto;bottom:28px}
+  @media (max-width:720px){.hero-strip{left:20px;right:20px}}
+
+  h1.hero-h1{
+    font-size:clamp(46px,6.8vw,96px);
+    font-weight:600;
+    letter-spacing:-.03em;
+    line-height:1.02;
+    max-width:14ch;
+    opacity:0;transform:translateY(20px);
+    transition:opacity 700ms var(--house),transform 700ms var(--house);
+  }
+  h1.hero-h1.is-in{opacity:1;transform:none}
+  .hero-lede{opacity:0;transform:translateY(16px);transition:opacity 700ms var(--house) 200ms,transform 700ms var(--house) 200ms}
+  .hero-lede.is-in{opacity:1;transform:none}
+
+  .hero-actions{
+    margin-top:48px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;
+    opacity:0;transform:translateY(16px);
+    transition:opacity 700ms var(--house) 350ms,transform 700ms var(--house) 350ms;
+  }
+  .hero-actions.is-in{opacity:1;transform:none}
+
+  .btn-primary{
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--accent);color:#000;padding:15px 28px;
+    font-weight:500;font-size:14px;letter-spacing:.01em;
+    transition:background 200ms var(--house),transform 150ms var(--house);
+    border-radius:2px;
+    will-change:transform;
+  }
+  .btn-primary:hover{background:var(--accent-bright)}
+  .btn-primary:active{transform:scale(.97)}
+
+  .link-echo{font-size:14px;color:var(--text-2);position:relative;padding-bottom:3px}
+  .link-echo::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform 200ms var(--house)}
+  .link-echo:hover{color:var(--text-1)}
+  .link-echo:hover::after{transform:scaleX(1)}
+
+  kbd{
+    display:inline-block;font-family:var(--mono);font-size:11px;font-weight:500;
+    color:var(--text-2);background:var(--bg-3);
+    border:1px solid var(--hairline-strong);border-radius:4px;
+    padding:3px 7px;margin-left:4px;
+    box-shadow:0 1px 0 rgba(255,255,255,.04) inset;
+  }
+
+  /* ---- PILLARS (symmetric 3-up) ---- */
+  .pillars h2{font-size:clamp(36px,4.4vw,64px);font-weight:600;letter-spacing:-.02em;line-height:1.08;max-width:16ch}
+  .pillars-grid{
+    margin-top:80px;
+    display:grid;grid-template-columns:repeat(12,1fr);gap:24px;
+  }
+  .pillar-card{
+    grid-column:span 4;
+    background:var(--bg-2);border:1px solid var(--hairline);
+    padding:32px 28px 28px;
+    display:flex;flex-direction:column;gap:16px;
+    transition:background 200ms var(--house),border-color 200ms var(--house);
+    position:relative;
+    min-height:280px;
+  }
+  .pillar-card:hover{background:var(--bg-hover);border-color:var(--hairline-strong)}
+  .pillar-card .chip{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);display:inline-block;padding:4px 8px;background:var(--bg-3);border:1px solid var(--hairline);align-self:flex-start;border-radius:3px}
+  .pillar-card h3{font-size:clamp(22px,2vw,28px);font-weight:600;letter-spacing:-.01em;line-height:1.25;margin-top:8px}
+  .pillar-card p{font-size:15px;line-height:1.55;color:var(--text-2);flex:1}
+  .pillar-card .meta{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-4);border-top:1px solid var(--hairline);padding-top:16px;display:flex;justify-content:space-between}
+  @media (max-width:960px){.pillar-card{grid-column:1 / -1}}
+
+  /* ---- METHOD DEMO (state machine) ---- */
+  .method h2{font-size:clamp(36px,4.4vw,64px);font-weight:600;letter-spacing:-.02em;line-height:1.08;max-width:20ch}
+  .sm{
+    margin-top:80px;background:var(--bg-2);border:1px solid var(--hairline);
+    display:grid;grid-template-columns:320px 1fr;min-height:420px;position:relative;
+    overflow:hidden;
+  }
+  @media (max-width:860px){.sm{grid-template-columns:1fr;min-height:auto}}
+  .sm-phases{
+    background:var(--bg-2);border-right:1px solid var(--hairline);
+    display:flex;flex-direction:column;
+  }
+  @media (max-width:860px){.sm-phases{border-right:0;border-bottom:1px solid var(--hairline)}}
+  .sm-phase{
+    padding:22px 28px;border-bottom:1px solid var(--hairline);
+    cursor:pointer;transition:background 300ms var(--house),border-left-color 300ms var(--house);
+    border-left:2px solid transparent;
+    background:var(--bg-3);
+    display:flex;flex-direction:column;gap:6px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--text-3);
+  }
+  .sm-phase:last-child{border-bottom:0}
+  .sm-phase .pname{color:var(--text-2);font-size:12px;letter-spacing:.08em}
+  .sm-phase.active{
+    background:var(--bg-3);
+    border-left-color:var(--accent);
+    color:var(--accent);
+    background-image:linear-gradient(90deg, var(--accent-dim), transparent 70%);
+  }
+  .sm-phase.active .pname{color:var(--text-1)}
+
+  .sm-body{padding:48px 48px 64px;position:relative;display:flex;flex-direction:column;justify-content:center;min-height:420px}
+  @media (max-width:720px){.sm-body{padding:32px 24px 48px;min-height:280px}}
+  .sm-slide{position:absolute;inset:48px 48px 64px;opacity:0;transform:translateY(12px);transition:opacity 400ms var(--house),transform 400ms var(--house);pointer-events:none}
+  @media (max-width:720px){.sm-slide{inset:32px 24px 48px}}
+  .sm-slide.active{opacity:1;transform:none;pointer-events:auto}
+  .sm-slide .tag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+  .sm-slide h4{font-size:clamp(22px,2.2vw,32px);font-weight:600;letter-spacing:-.015em;line-height:1.2;margin-bottom:14px}
+  .sm-slide p{font-size:15px;line-height:1.6;color:var(--text-2);max-width:480px}
+  .sm-slide .kv{margin-top:22px;display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3)}
+  .sm-slide .kv b{color:var(--text-1);font-weight:500}
+
+  .sm-progress{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--hairline)}
+  .sm-progress > i{display:block;height:100%;background:var(--accent);width:0;transition:width 80ms linear}
+
+  .sm-hint{margin-top:20px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--text-4);text-transform:uppercase}
+
+  /* ---- PROOF (symmetric 4-up dashboard) ---- */
+  .proof h2{font-size:clamp(36px,4.4vw,64px);font-weight:600;letter-spacing:-.02em;line-height:1.08}
+  .proof-grid{
+    margin-top:80px;
+    display:grid;grid-template-columns:repeat(12,1fr);gap:20px;
+  }
+  .metric-card{
+    grid-column:span 3;background:var(--bg-2);border:1px solid var(--hairline);
+    padding:28px 24px 24px;display:flex;flex-direction:column;gap:20px;min-height:240px;
+  }
+  @media (max-width:960px){.metric-card{grid-column:span 6}}
+  @media (max-width:560px){.metric-card{grid-column:1 / -1}}
+  .chip-blue{
+    display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);background:var(--accent-dim);padding:4px 8px;border-radius:3px;align-self:flex-start;
+  }
+  .metric-card .num{
+    font-size:clamp(44px,5.5vw,72px);font-weight:500;letter-spacing:-.02em;line-height:1;
+    font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;
+  }
+  .metric-card .cap{font-size:13px;line-height:1.5;color:var(--text-2);flex:1}
+  .metric-card .src{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-4);padding-top:14px;border-top:1px solid var(--hairline)}
+
+  /* ---- CLOSE ---- */
+  .close{text-align:center;background:var(--bg-0)}
+  .close h2{font-size:clamp(36px,4.4vw,64px);font-weight:600;letter-spacing:-.02em;line-height:1.08;max-width:18ch;margin:0 auto}
+  .close .lede{margin:24px auto 40px}
+  .close .btn-primary{margin-top:8px}
+  .close .kb-hint{display:block;margin-top:20px;font-family:var(--mono);font-size:11px;color:var(--text-4);letter-spacing:.08em;text-transform:uppercase}
+
+  /* ---- FOOTER ---- */
+  footer{background:var(--bg-1);border-top:1px solid var(--hairline);padding:72px 0 40px}
+  .footer-grid{display:grid;grid-template-columns:1fr 2fr 1fr;gap:48px;align-items:start}
+  .wordmark{font-weight:300;font-size:22px;letter-spacing:-.01em}
+  .wordmark .ia{color:var(--accent)}
+  .f-links{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3)}
+  .f-links a{display:block;padding:5px 0;transition:color 150ms var(--house)}
+  .f-links a:hover{color:var(--text-1)}
+  .f-links h4{color:var(--text-4);margin-bottom:12px;font-weight:500}
+  .sys-strip{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-4);text-align:right;line-height:1.9}
+  .sys-strip b{color:var(--text-2);font-weight:500}
+  .f-base{margin-top:56px;padding-top:20px;border-top:1px solid var(--hairline);display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-4)}
+  @media (max-width:820px){.footer-grid{grid-template-columns:1fr;gap:32px}.sys-strip{text-align:left}.f-links{grid-template-columns:1fr 1fr}}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity 700ms var(--house),transform 700ms var(--house)}
+  .reveal.is-in{opacity:1;transform:none}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+    .reveal,.hero-h1,.hero-lede,.hero-actions{opacity:1 !important;transform:none !important}
+    .hero::before{opacity:1 !important;background:radial-gradient(600px circle at 50% 55%, rgba(74,144,255,.18), transparent 65%) !important}
+    .sm-slide{position:static;opacity:1 !important;transform:none !important;margin-bottom:32px;inset:auto}
+    .sm-body{min-height:auto;display:block;padding:32px 24px}
+  }
+</style>
+</head>
+<body>
+
+  <!-- CHAPTER 01 — HERO -->
+  <section class="hero" id="hero" aria-label="Chapter 01 — Opening">
+    <div class="hero-strip">
+      <div>REIS [IA] — SYSTEMS / BUILDERS / MARKETING</div>
+      <div><a href="/">← Direções</a></div>
+    </div>
+
+    <div class="container">
+      <div class="ch-mark" style="color:var(--text-3)">CH.01 <span class="sep">/</span> Opening</div>
+      <h1 class="hero-h1">AI vira receita quando<br/>o método é arquitetura.</h1>
+      <p class="lede hero-lede">Sistemas orientados por AI desenhados como ferramentas de P&L. Construídos sob disciplina de engenharia, operados sob disciplina de investimento.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" id="magnetic">Agendar diagnóstico →</button>
+        <span style="color:var(--text-4);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase">Pressione <kbd>⌘</kbd><kbd>K</kbd></span>
+        <a class="link-echo" href="#method">Ver método →</a>
+      </div>
+    </div>
+
+    <div class="hero-strip hero-strip-bottom">
+      <div>V1.0 / DARK / 2026</div>
+      <div>SCROLL TO EXPLORE ↓</div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 02 — PILLARS -->
+  <section class="chapter bg-1 pillars" aria-label="Chapter 02 — Pillars">
+    <div class="container reveal">
+      <div class="ch-mark">CH.02 <span class="sep">/</span> Pillars</div>
+      <h2>Três sistemas. Uma única tese de receita.</h2>
+      <p class="lede">Cada pilar é uma camada operacional separada. Juntos, formam a infraestrutura de receita assistida por AI.</p>
+
+      <div class="pillars-grid">
+        <article class="pillar-card">
+          <span class="chip">01 / Systems</span>
+          <h3>Implementação de AI ligada ao P&L.</h3>
+          <p>Agentes e automações desenhados pelo retorno financeiro que precisam produzir em 90 dias — não pela elegância técnica.</p>
+          <div class="meta"><span>Diagnose → Build</span><span>↗</span></div>
+        </article>
+        <article class="pillar-card">
+          <span class="chip">02 / Builders</span>
+          <h3>Comunidade dos operadores.</h3>
+          <p>Sala de mentoria para os executivos construindo receita com AI. Método compartilhado, cases reais, decisão semanal.</p>
+          <div class="meta"><span>Mentoria</span><span>↗</span></div>
+        </article>
+        <article class="pillar-card">
+          <span class="chip">03 / Marketing</span>
+          <h3>Demanda de alto ticket.</h3>
+          <p>O funil que leva o cliente certo até a mesa de diagnóstico. Sem SaaS, sem autopagamento, sem ruído.</p>
+          <div class="meta"><span>Geração de demanda</span><span>↗</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 03 — METHOD DEMO -->
+  <section class="chapter bg-1 method" id="method" aria-label="Chapter 03 — Method">
+    <div class="container reveal">
+      <div class="ch-mark">CH.03 <span class="sep">/</span> Method</div>
+      <h2>O método como state machine.</h2>
+      <p class="lede">Cada fase tem entrada, saída e indicador. A máquina abaixo executa o ciclo como executaria no seu negócio.</p>
+
+      <div class="sm" id="sm">
+        <div class="sm-phases" role="tablist" aria-label="Method phases">
+          <button class="sm-phase active" data-i="0" role="tab"><span>Phase 01</span><span class="pname">Diagnose</span></button>
+          <button class="sm-phase" data-i="1" role="tab"><span>Phase 02</span><span class="pname">Map</span></button>
+          <button class="sm-phase" data-i="2" role="tab"><span>Phase 03</span><span class="pname">Build</span></button>
+          <button class="sm-phase" data-i="3" role="tab"><span>Phase 04</span><span class="pname">Attribute</span></button>
+          <button class="sm-phase" data-i="4" role="tab"><span>Phase 05</span><span class="pname">Compound</span></button>
+        </div>
+        <div class="sm-body">
+          <div class="sm-slide active" data-i="0">
+            <div class="tag">Phase 01 / Diagnose</div>
+            <h4>O P&L antes da tecnologia.</h4>
+            <p>Duas semanas de diagnóstico. Mapeamos onde a receita está travada e quais alavancas AI pode mover antes do próximo trimestre.</p>
+            <div class="kv"><span>Duração</span><b>14 dias</b><span>Output</span><b>Mapa de receita travada</b><span>Risco</span><b>Baixo</b></div>
+          </div>
+          <div class="sm-slide" data-i="1">
+            <div class="tag">Phase 02 / Map</div>
+            <h4>Vetores de alavanca definidos.</h4>
+            <p>Priorização dos três a cinco vetores com maior ROI de AI. Cada vetor ganha hipótese de receita, KPI e responsável.</p>
+            <div class="kv"><span>Duração</span><b>7 dias</b><span>Output</span><b>Roadmap de 90 dias</b><span>Risco</span><b>Baixo</b></div>
+          </div>
+          <div class="sm-slide" data-i="2">
+            <div class="tag">Phase 03 / Build</div>
+            <h4>Sistemas em produção.</h4>
+            <p>Implementação dos agentes, integrações e automações sob disciplina de engenharia. Cada release é medida por receita gerada.</p>
+            <div class="kv"><span>Duração</span><b>60 dias</b><span>Output</span><b>Sistema em produção</b><span>Risco</span><b>Médio</b></div>
+          </div>
+          <div class="sm-slide" data-i="3">
+            <div class="tag">Phase 04 / Attribute</div>
+            <h4>Cada real rastreável.</h4>
+            <p>Atribuição completa: cada real de receita ligado ao sistema que o produziu. O board finalmente sabe o que AI entregou.</p>
+            <div class="kv"><span>Duração</span><b>Contínuo</b><span>Output</span><b>Dashboard de receita</b><span>Risco</span><b>Baixo</b></div>
+          </div>
+          <div class="sm-slide" data-i="4">
+            <div class="tag">Phase 05 / Compound</div>
+            <h4>A receita vira sistema.</h4>
+            <p>Cada novo sistema construído reduz o custo marginal do próximo. O método se torna o novo passivo produtivo da empresa.</p>
+            <div class="kv"><span>Duração</span><b>Permanente</b><span>Output</span><b>Infra de receita</b><span>Risco</span><b>Estratégico</b></div>
+          </div>
+          <div class="sm-progress"><i id="sm-bar"></i></div>
+        </div>
+      </div>
+      <div class="sm-hint">Passe o cursor sobre o painel para pausar / Press <kbd>space</kbd> to pause</div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 04 — PROOF -->
+  <section class="chapter bg-1 proof" aria-label="Chapter 04 — Proof">
+    <div class="container reveal">
+      <div class="ch-mark">CH.04 <span class="sep">/</span> Proof</div>
+      <h2>Números.</h2>
+      <p class="lede">Doze clientes ativos. Seis meses de operação. Quatro indicadores que importam.</p>
+
+      <div class="proof-grid">
+        <figure class="metric-card">
+          <span class="chip-blue">Fig 4.1</span>
+          <div class="num" data-ticker data-end="2.4" data-prefix="R$ " data-suffix="M" data-decimals="1">R$ 0.0M</div>
+          <div class="cap">Receita atribuída a sistemas de AI no período.</div>
+          <div class="src">N=12 / 6 meses</div>
+        </figure>
+        <figure class="metric-card">
+          <span class="chip-blue">Fig 4.2</span>
+          <div class="num" data-ticker data-end="94" data-suffix=" dias">0 dias</div>
+          <div class="cap">Tempo médio até o primeiro real atribuído.</div>
+          <div class="src">Median / N=12</div>
+        </figure>
+        <figure class="metric-card">
+          <span class="chip-blue">Fig 4.3</span>
+          <div class="num" data-ticker data-end="87" data-suffix="%">0%</div>
+          <div class="cap">Dos projetos de AI no mercado morrem sem receita.</div>
+          <div class="src">Benchmark 2025</div>
+        </figure>
+        <figure class="metric-card">
+          <span class="chip-blue">Fig 4.4</span>
+          <div class="num" data-ticker data-end="3.1" data-suffix="x" data-decimals="1">0.0x</div>
+          <div class="cap">Múltiplo médio de payback no primeiro ano.</div>
+          <div class="src">Average / N=12</div>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 05 — CLOSE -->
+  <section class="chapter close" aria-label="Chapter 05 — Close">
+    <div class="container reveal">
+      <div class="ch-mark">CH.05 <span class="sep">/</span> Close</div>
+      <h2>Quando você estiver pronto para ver o sistema por dentro.</h2>
+      <p class="lede">Uma conversa de 45 minutos. Sem pitch. Só o recorte onde AI deveria estar trabalhando.</p>
+      <button class="btn-primary">Agendar diagnóstico →</button>
+      <span class="kb-hint">Atalho: <kbd>⌘</kbd><kbd>K</kbd></span>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer aria-label="Footer">
+    <div class="container footer-grid">
+      <div class="wordmark">REIS <span class="ia">[IA]</span></div>
+      <div class="f-links">
+        <div><h4>Pilares</h4><a href="#">Systems</a><a href="#">Builders</a><a href="#">Marketing</a></div>
+        <div><h4>Empresa</h4><a href="#">Método</a><a href="#">Cases</a><a href="#">Contato</a></div>
+        <div><h4>Acesso</h4><a href="#">Agendar</a><a href="#">Aplicar</a><a href="#">Hub</a></div>
+      </div>
+      <div class="sys-strip">
+        VERSION <b>/ 1.0</b><br/>
+        BUILT <b>/ 2026</b><br/>
+        STATUS <b>/ LIVE</b>
+      </div>
+    </div>
+    <div class="container f-base">
+      <div>© REIS [IA] / 2026 / O Tempo é Rei</div>
+      <div>Direction 02 — Architectural Precision</div>
+    </div>
+  </footer>
+
+<script>
+(() => {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ===== HERO: entrance + radial spotlight + magnetic CTA =====
+  const hero = document.getElementById('hero');
+  const h1 = document.querySelector('.hero-h1');
+  const lede = document.querySelector('.hero-lede');
+  const actions = document.querySelector('.hero-actions');
+
+  requestAnimationFrame(() => {
+    hero.classList.add('is-lit');
+    h1.classList.add('is-in');
+    lede.classList.add('is-in');
+    actions.classList.add('is-in');
+  });
+
+  if (!reduced && !matchMedia('(hover:none)').matches){
+    let tx=0,ty=0,cx=innerWidth/2,cy=innerHeight*0.45;
+    hero.style.setProperty('--x', cx+'px');
+    hero.style.setProperty('--y', cy+'px');
+    hero.addEventListener('pointermove', (e) => {
+      const r = hero.getBoundingClientRect();
+      tx = e.clientX - r.left;
+      ty = e.clientY - r.top;
+    });
+    const loop = () => {
+      cx += (tx - cx) * 0.12;
+      cy += (ty - cy) * 0.12;
+      hero.style.setProperty('--x', cx+'px');
+      hero.style.setProperty('--y', cy+'px');
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  } else {
+    hero.style.setProperty('--x', '50%');
+    hero.style.setProperty('--y', '55%');
+  }
+
+  // Magnetic CTA
+  const mag = document.getElementById('magnetic');
+  if (mag && !reduced && !matchMedia('(hover:none)').matches){
+    let mtx=0,mty=0,mx=0,my=0;
+    mag.addEventListener('pointermove', (e) => {
+      const r = mag.getBoundingClientRect();
+      const rx = e.clientX - (r.left + r.width/2);
+      const ry = e.clientY - (r.top + r.height/2);
+      const dist = Math.hypot(rx,ry);
+      if (dist < 120){
+        mtx = rx * 0.25;
+        mty = ry * 0.35;
+      }
+    });
+    mag.addEventListener('pointerleave', () => { mtx=0; mty=0; });
+    const ml = () => {
+      mx += (mtx - mx) * 0.18;
+      my += (mty - my) * 0.18;
+      mag.style.transform = `translate(${mx}px, ${my}px)`;
+      requestAnimationFrame(ml);
+    };
+    requestAnimationFrame(ml);
+  }
+
+  // ===== Chapter reveals =====
+  if ('IntersectionObserver' in window && !reduced){
+    const io = new IntersectionObserver((es) => {
+      es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin:'0px 0px -10% 0px' });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('is-in'));
+  }
+
+  // ===== STATE MACHINE DEMO =====
+  const sm = document.getElementById('sm');
+  if (sm && !reduced){
+    const phases = [...sm.querySelectorAll('.sm-phase')];
+    const slides = [...sm.querySelectorAll('.sm-slide')];
+    const bar = document.getElementById('sm-bar');
+    const perPhase = 2800; // ms
+    const total = perPhase * phases.length;
+    let startT = performance.now();
+    let idx = 0;
+    let paused = false;
+    let inView = false;
+
+    const setActive = (i) => {
+      idx = i;
+      phases.forEach((p,j) => p.classList.toggle('active', j===i));
+      slides.forEach((s,j) => s.classList.toggle('active', j===i));
+    };
+
+    phases.forEach(p => p.addEventListener('click', () => {
+      setActive(+p.dataset.i);
+      startT = performance.now() - idx*perPhase;
+    }));
+
+    sm.addEventListener('pointerenter', () => { paused = true; });
+    sm.addEventListener('pointerleave', () => { paused = false; startT = performance.now() - (idx*perPhase + Math.min(perPhase-1,0)); });
+
+    // keyboard
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && document.activeElement && sm.contains(document.activeElement)){
+        e.preventDefault(); paused = !paused;
+      }
+      if (e.key === 'ArrowRight' && sm.contains(document.activeElement)){ setActive((idx+1)%phases.length); startT = performance.now() - idx*perPhase; }
+      if (e.key === 'ArrowLeft' && sm.contains(document.activeElement)){ setActive((idx-1+phases.length)%phases.length); startT = performance.now() - idx*perPhase; }
+    });
+
+    const ioSm = new IntersectionObserver((es) => {
+      es.forEach(e => {
+        inView = e.isIntersecting;
+        if (inView){ startT = performance.now(); setActive(0); }
+      });
+    }, { threshold: 0.3 });
+    ioSm.observe(sm);
+
+    const tick = (now) => {
+      if (inView && !paused){
+        const elapsed = (now - startT) % total;
+        const next = Math.floor(elapsed / perPhase);
+        if (next !== idx) setActive(next);
+        bar.style.width = ((elapsed/total)*100) + '%';
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  // ===== Number tickers =====
+  const easeOutExpo = t => 1 - Math.pow(2, -10 * t);
+  const fmt = (v,d) => d > 0 ? v.toFixed(d) : Math.round(v).toString();
+  const ticks = document.querySelectorAll('[data-ticker]');
+  if (reduced){
+    ticks.forEach(el => {
+      const end = parseFloat(el.dataset.end);
+      const d = parseInt(el.dataset.decimals||'0',10);
+      el.textContent = (el.dataset.prefix||'') + fmt(end,d) + (el.dataset.suffix||'');
+    });
+  } else if (ticks.length){
+    const tio = new IntersectionObserver((es) => {
+      es.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target; tio.unobserve(el);
+        const end = parseFloat(el.dataset.end);
+        const d = parseInt(el.dataset.decimals||'0',10);
+        const pfx = el.dataset.prefix||''; const sfx = el.dataset.suffix||'';
+        const dur = 1200; const t0 = performance.now();
+        const step = (now) => {
+          const p = Math.min(1, (now - t0)/dur);
+          el.textContent = pfx + fmt(end*easeOutExpo(p), d) + sfx;
+          if (p<1) requestAnimationFrame(step);
+          else el.textContent = pfx + fmt(end,d) + sfx;
+        };
+        requestAnimationFrame(step);
+      });
+    }, { threshold: 0.4 });
+    ticks.forEach(el => tio.observe(el));
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZNITH — Arquitetura Comercial com Direção</title>
+<meta name="description" content="ZNITH Consulting Expansão — Apresentação Estratégica V2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --navy-900: #091022;
+  --navy-950: #050B17;
+  --navy-800: #0D1828;
+  --navy-700: #14203A;
+  --navy-600: #1C2A4A;
+  --navy-500: #2A3A5A;
+  --gold: #DF9F3E;
+  --gold-light: #FFD161;
+  --white: #FFFFFF;
+  --neutral-300: #BBBBBB;
+  --neutral-400: #999999;
+  --neutral-500: #7A7A7A;
+  --neutral-600: #555555;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-architectural: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --font-display: 'Cinzel', Georgia, serif;
+  --font-body: 'Montserrat', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--navy-950); }
+body { font-family: var(--font-body); color: var(--white); -webkit-font-smoothing: antialiased; }
+
+/* ============================================================
+   DECK CONTAINER
+   ============================================================ */
+#deck {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================================
+   SLIDE BASE
+   ============================================================ */
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  /* background stays fixed — content translates */
+  background: var(--navy-900);
+}
+.slide.impact { background: var(--navy-950); }
+.slide.active {
+  opacity: 1;
+  pointer-events: all;
+  z-index: 2;
+}
+.slide.exiting {
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Inner content wrapper — this is what translates on transition */
+.slide-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 60px 96px;
+}
+
+/* ============================================================
+   EYEBROW
+   ============================================================ */
+.eyebrow {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  line-height: 1;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   FOOTER (wordmark + counter)
+   ============================================================ */
+.slide-footer {
+  position: absolute;
+  bottom: 32px;
+  left: 96px;
+  right: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-wordmark {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+.footer-counter {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+
+/* ============================================================
+   GOLD RULE UTILITY
+   ============================================================ */
+.gold-rule {
+  display: block;
+  height: 1px;
+  background: var(--gold);
+  transform-origin: left center;
+}
+.gold-rule.center { transform-origin: center; }
+.gold-rule.right { transform-origin: right center; }
+
+/* ============================================================
+   ANIMATION CLASSES
+   ============================================================ */
+.anim { opacity: 0; }
+.slide.active .anim { animation-fill-mode: both; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scaleInX {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes scaleInY {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+@keyframes growRight {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes drawPath {
+  from { stroke-dashoffset: var(--path-len); }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes exitLeft {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-60px); }
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+#nav-prev, #nav-next {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 30%;
+  cursor: pointer;
+  z-index: 100;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+#nav-prev { left: 0; }
+#nav-next { right: 0; }
+
+/* Progress bar (mobile) */
+#progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width 0.4s var(--ease-out-expo);
+  z-index: 200;
+}
+
+/* Focus ring for keyboard nav */
+#nav-prev:focus-visible, #nav-next:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: -4px;
+}
+
+/* ============================================================
+   PRINT MODE
+   ============================================================ */
+@media print {
+  html, body { overflow: visible; height: auto; }
+  #deck { height: auto; }
+  #nav-prev, #nav-next, #progress-bar { display: none; }
+  .slide {
+    position: relative !important;
+    opacity: 1 !important;
+    pointer-events: all !important;
+    page-break-after: always;
+    width: 297mm;
+    height: 210mm;
+    display: flex !important;
+  }
+  .anim {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .slide-content { padding: 40px 64px; }
+  .slide-footer { bottom: 20px; left: 64px; right: 64px; }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .anim { transition: opacity 200ms ease !important; }
+  .slide.active .anim { opacity: 1 !important; transform: none !important; animation: fadeIn 200ms ease both !important; }
+}
+
+/* ============================================================
+   RESPONSIVE SCALING
+   ============================================================ */
+@media (max-width: 1279px) {
+  .slide-content { padding: 48px 64px; }
+  .slide-footer { left: 64px; right: 64px; }
+}
+@media (max-width: 767px) {
+  .slide-content { padding: 48px 24px 80px; }
+  .slide-footer { left: 24px; right: 24px; bottom: 20px; }
+}
+@media (min-width: 1921px) {
+  #deck { max-width: 1600px; margin: 0 auto; }
+  body { background: var(--navy-950); }
+}
+
+/* ============================================================
+   OVERVIEW GRID (Esc key)
+   ============================================================ */
+#overview {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(5,11,23,0.97);
+  z-index: 500;
+  padding: 60px;
+  overflow-y: auto;
+}
+#overview.visible { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.overview-thumb {
+  aspect-ratio: 16/9;
+  background: var(--navy-900);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--neutral-400);
+  letter-spacing: 0.1em;
+  transition: border-color 0.2s;
+}
+.overview-thumb:hover { border-color: var(--gold); color: var(--gold); }
+.overview-thumb.current { border-color: var(--gold); }
+
+/* ============================================================
+   SLIDE 1 — COVER
+   ============================================================ */
+#s1 { background: var(--navy-950); }
+#s1 .slide-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+#s1 .eyebrow-cover {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+#s1 .cenit-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 16px 4px rgba(223,159,62,0.6);
+  margin: 0 auto 8px;
+}
+#s1 .wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(48px, 5vw, 72px);
+  letter-spacing: 0.32em;
+  color: var(--white);
+  line-height: 1;
+}
+#s1 .cover-rule {
+  width: 120px;
+  height: 1px;
+  background: var(--gold);
+  margin: 24px auto;
+  transform-origin: center;
+}
+#s1 .cover-subhead {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(14px, 1.4vw, 20px);
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.04em;
+}
+#s1 .cover-meta {
+  position: absolute;
+  bottom: 60px;
+  right: 96px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.1em;
+  text-align: right;
+}
+
+/* ============================================================
+   SLIDE 2 — O PROBLEMA
+   ============================================================ */
+#s2 { background: var(--navy-950); }
+#s2 .s2-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  flex: 1;
+  margin-top: 48px;
+}
+#s2 .s2-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(40px, 5.5vw, 88px);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: var(--white);
+}
+#s2 .s2-headline .faded {
+  color: var(--white);
+  transition: color 400ms ease-in-out;
+}
+#s2 .s2-headline .faded.dimmed { color: rgba(255,255,255,0.5); }
+#s2 .s2-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+#s2 .chart-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--neutral-500);
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   SLIDE 3 — CEMITÉRIO
+   ============================================================ */
+#s3 { background: var(--navy-950); }
+#s3 .s3-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 3.5vw, 56px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin: 32px auto 0;
+  max-width: 900px;
+}
+#s3 .s3-headline .emphasis { color: var(--white); }
+#s3 .s3-headline .rest { color: rgba(255,255,255,0.65); }
+#s3 .ghost-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 32px auto 0;
+  max-width: 740px;
+  width: 100%;
+}
+#s3 .ghost-item {
+  height: 32px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  opacity: 0.25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--neutral-300);
+  letter-spacing: 0.08em;
+}
+#s3 .s3-caption {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(14px, 1.3vw, 18px);
+  color: var(--gold);
+  text-align: center;
+  margin-top: 24px;
+}
+
+/* ============================================================
+   SLIDE 4 — DIAGNÓSTICO
+   ============================================================ */
+#s4 .s4-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(40px, 6vw, 96px);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+#s4 .gold-word { color: var(--white); transition: color 0.4s ease-in-out; }
+#s4 .gold-word.revealed { color: var(--gold); }
+#s4 .blueprint-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+/* ============================================================
+   SLIDE 5 — ARQUITETURA
+   ============================================================ */
+#s5 .s5-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  flex: 1;
+  margin-top: 48px;
+}
+#s5 .s5-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 3.5vw, 56px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+#s5 .s5-headline .gold-w { color: var(--gold); }
+#s5 .s5-rule { width: 80px; margin: 24px 0; }
+#s5 .s5-subhead {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(14px, 1.4vw, 20px);
+  color: var(--neutral-300);
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  max-width: 440px;
+}
+#s5 .ziggurat {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+  align-items: center;
+}
+#s5 .ziggurat-plate {
+  border: 1px solid rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.02);
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  height: 44px;
+}
+#s5 .plate-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+  margin-right: 12px;
+  min-width: 24px;
+}
+#s5 .plate-label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+#s5 .cenit-top {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 10px 2px rgba(223,159,62,0.5);
+  margin-bottom: 4px;
+}
+
+/* ============================================================
+   SLIDE 6 — CREDENTIALS
+   ============================================================ */
+#s6 .s6-inner {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 0;
+  flex: 1;
+  margin-top: 48px;
+  align-items: center;
+}
+#s6 .portrait-col {
+  position: relative;
+  align-self: stretch;
+}
+#s6 .portrait-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--navy-700);
+  border-right: 1px solid var(--gold);
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#s6 .portrait-placeholder span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.1em;
+}
+#s6 .credentials-col {
+  padding-left: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+#s6 .cred-item {
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+#s6 .cred-item:last-of-type { border-bottom: none; }
+#s6 .cred-number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(56px, 7vw, 112px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--gold);
+  display: inline-block;
+}
+#s6 .cred-number.white { color: var(--white); font-size: clamp(44px, 5.5vw, 88px); }
+#s6 .cred-suffix {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.1em;
+  display: block;
+  margin-top: 4px;
+}
+#s6 .cred-signature {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 16px;
+  color: var(--gold);
+  margin-top: 20px;
+}
+#s6 .eyebrow { text-align: right; }
+
+/* ============================================================
+   SLIDE 7 — LEITURA ESTRATÉGICA (intro)
+   ============================================================ */
+#s7 .s7-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0;
+}
+#s7 .lens-mark {
+  margin-bottom: 32px;
+}
+#s7 .s7-subhead {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(16px, 2vw, 24px);
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.01em;
+  margin-bottom: 16px;
+}
+#s7 .s7-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(48px, 7.5vw, 120px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--white);
+}
+#s7 .s7-headline .gold-period { color: var(--gold); }
+
+/* ============================================================
+   SLIDE 8 — ANCHOR (ZNITH Consulting Expansão)
+   ============================================================ */
+#s8 { background: var(--navy-950); }
+#s8 .s8-ambient {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(223,159,62,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+#s8 .s8-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+#s8 .s8-intro-line {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(14px, 1.4vw, 20px);
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  margin-bottom: 40px;
+}
+#s8 .s8-frame {
+  position: relative;
+  padding: 48px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+/* Animated border drawn via pseudo-elements + clip-path on SVG */
+#s8 .s8-border-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+#s8 .s8-cenit {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 20px 6px rgba(223,159,62,0.6);
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
+}
+#s8 .s8-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(64px, 9vw, 144px);
+  letter-spacing: 0.12em;
+  color: var(--white);
+  line-height: 1;
+  position: relative;
+  z-index: 2;
+}
+#s8 .s8-product {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(28px, 4vw, 64px);
+  letter-spacing: 0.02em;
+  color: var(--gold);
+  line-height: 1;
+  margin-top: 8px;
+  position: relative;
+  z-index: 2;
+}
+#s8 .s8-rule {
+  width: 120px;
+  margin: 28px auto;
+  position: relative;
+  z-index: 2;
+}
+#s8 .s8-tagline {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(14px, 1.5vw, 22px);
+  color: rgba(255,255,255,0.8);
+  letter-spacing: 0.06em;
+  position: relative;
+  z-index: 2;
+}
+
+/* ============================================================
+   GLOBAL FLEX HELPERS
+   ============================================================ */
+.flex-col { display: flex; flex-direction: column; }
+.flex-1 { flex: 1; }
+.mt-auto { margin-top: auto; }
+
+/* ============================================================
+   SLIDE 10 — CRONOGRAMA
+   ============================================================ */
+.s10-col { display: flex; flex-direction: column; padding-top: 0; }
+.s10-col-header {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.s10-col-week {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(20px, 2vw, 32px);
+  color: var(--white);
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+}
+.s10-col-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(12px, 1vw, 14px);
+  color: rgba(255,255,255,0.75);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   SLIDE 12 — ENTREGÁVEIS
+   ============================================================ */
+.s12-item {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.s12-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--gold);
+  min-width: 40px;
+}
+.s12-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(14px, 1.4vw, 22px);
+  color: var(--white);
+  letter-spacing: 0.01em;
+}
+
+/* ============================================================
+   SLIDE 14 — TRÊS CAMINHOS
+   ============================================================ */
+.s14-col {
+  padding: 0 32px;
+  display: flex;
+  flex-direction: column;
+}
+.s14-col:first-child { padding-left: 0; }
+.s14-col:last-child  { padding-right: 0; }
+.s14-option-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.s14-product-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(20px, 2vw, 32px);
+  color: var(--white);
+  letter-spacing: -0.01em;
+}
+.s14-desc {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(12px, 1vw, 15px);
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+/* ============================================================
+   SLIDE 15 — FILTRO
+   ============================================================ */
+.s15-col-header {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.s15-yes-item, .s15-not-item {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(14px, 1.3vw, 20px);
+  color: var(--white);
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.s15-not-item {
+  position: relative;
+  overflow: visible;
+}
+/* Strike-through: gold line drawn across */
+.s15-not-item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--gold);
+  width: 0;
+  transition: none;
+}
+.s15-not-item.strike-animate {
+  opacity: 0.5;
+  transition: opacity 300ms ease 300ms;
+}
+.s15-not-item.strike-animate::after {
+  animation: growRight 500ms var(--ease-out-expo) forwards;
+}
+
+/* ============================================================
+   SLIDE 16 — CTA BUTTON
+   ============================================================ */
+.s16-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 320px;
+  height: 64px;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 200ms ease, border-opacity 200ms ease;
+  position: relative;
+  z-index: 2;
+}
+.s16-cta:hover {
+  background: rgba(223,159,62,0.08);
+}
+.s16-cta span { transition: transform 200ms ease; display:inline-block; }
+.s16-cta:hover span { transform: translateX(2px); }
+.s16-cta:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
+
+/* ============================================================
+   SLIDE 1 — re-center all content (override flex-col default)
+   ============================================================ */
+#s1 .slide-content {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE OVERRIDES
+   ============================================================ */
+@media (max-width: 767px) {
+  /* S2: stack */
+  #s2 .s2-inner { grid-template-columns: 1fr; gap: 32px; margin-top: 32px; }
+  #s2 .s2-chart { display: none; } /* chart hidden on smallest screens */
+
+  /* S5: stack */
+  #s5 .s5-inner { grid-template-columns: 1fr; gap: 32px; }
+
+  /* S6: stack */
+  #s6 .s6-inner { grid-template-columns: 1fr; gap: 32px; }
+  #s6 .portrait-placeholder { min-height: 200px; }
+
+  /* S8 anchor: scale down frame */
+  #s8 .s8-frame { padding: 32px 24px; }
+  #s8 .s8-brand { font-size: 56px; }
+
+  /* S9: timeline full width */
+  /* S10: accordion on mobile */
+  #s10 > .slide-content > div:last-child { grid-template-columns: 1fr; }
+  .s10-col { border-left: none !important; border-top: 1px solid rgba(255,255,255,0.1); padding: 16px 0 !important; }
+
+  /* S11: stack */
+  #s11 .slide-content > div { grid-template-columns: 1fr; }
+
+  /* S12: stack */
+  #s12 .slide-content > div:last-child { grid-template-columns: 1fr; }
+
+  /* S13: scale number */
+  #s13-number { font-size: 96px !important; }
+
+  /* S14: stack */
+  #s14 .slide-content > div:last-child { grid-template-columns: 1fr; }
+  .s14-col { border-left: none !important; border-right: none !important; border-top: 1px solid rgba(255,255,255,0.08); padding: 16px 0 !important; }
+
+  /* S15: stack */
+  #s15 .slide-content > div:last-child { grid-template-columns: 1fr; }
+
+  /* S16 CTA */
+  .s16-cta { width: 90%; font-size: 11px; height: 56px; }
+
+  /* Eyebrow font smaller */
+  .eyebrow { font-size: 9px; letter-spacing: 0.18em; }
+}
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- NAV ZONES -->
+  <button id="nav-prev" aria-label="Slide anterior" tabindex="1"></button>
+  <button id="nav-next" aria-label="Próximo slide" tabindex="2"></button>
+
+  <!-- PROGRESS BAR (mobile) -->
+  <div id="progress-bar"></div>
+
+  <!-- OVERVIEW GRID -->
+  <div id="overview" role="dialog" aria-label="Visão geral dos slides"></div>
+
+  <!-- ============================================================
+       SLIDE 1 — COVER
+       ============================================================ -->
+  <section id="s1" class="slide impact" role="region" aria-label="Slide 1 de 16: Capa">
+    <div class="slide-content">
+      <div class="anim" style="animation: fadeIn 600ms var(--ease-out-expo) 0ms both;">
+        <div class="eyebrow-cover" id="s1-eyebrow">— DIREÇÃO. CONSCIÊNCIA. LEGADO.</div>
+      </div>
+      <div class="anim" style="animation: popIn 800ms var(--ease-out-expo) 400ms both;">
+        <div class="cenit-dot"></div>
+      </div>
+      <div class="anim" style="animation: fadeUp 1200ms var(--ease-out-expo) 600ms both;">
+        <div class="wordmark">ZNITH</div>
+      </div>
+      <div class="cover-rule anim" style="animation: scaleInX 1000ms var(--ease-out-expo) 1200ms both;"></div>
+      <div class="anim" style="animation: fadeIn 600ms var(--ease-out-expo) 1800ms both;">
+        <div class="cover-subhead">Arquitetura Comercial com Direção</div>
+      </div>
+      <div class="cover-meta anim" style="animation: fadeIn 400ms ease 2000ms both;">
+        APRESENTAÇÃO ESTRATÉGICA / V2 / 04.2026
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">01 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 2 — O PROBLEMA
+       ============================================================ -->
+  <section id="s2" class="slide impact" role="region" aria-label="Slide 2 de 16: O Problema que Ninguém Nomeia">
+    <div class="slide-content flex-col">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both;">01 — O PROBLEMA QUE NINGUÉM NOMEIA</div>
+      <div class="s2-inner">
+        <div>
+          <h1 class="s2-headline">
+            <span class="anim" style="display:block; animation: fadeUp 600ms var(--ease-out-expo) 200ms both;">Sua empresa</span>
+            <span class="anim" style="display:block; animation: fadeUp 600ms var(--ease-out-expo) 400ms both;">não está crescendo.</span>
+            <span class="anim faded" id="s2-faded" style="display:block; animation: fadeUp 600ms var(--ease-out-expo) 600ms both;">Está se movimentando.</span>
+          </h1>
+        </div>
+        <div class="s2-chart anim" style="animation: fadeIn 600ms ease 1200ms both;">
+          <svg width="280" height="140" viewBox="0 0 280 140" fill="none" aria-hidden="true">
+            <!-- Serrated revenue line -->
+            <polyline id="chart-revenue" points="0,120 30,90 50,110 80,60 110,80 140,40 170,65 210,35 250,55 280,20"
+              stroke="#555555" stroke-width="1.5" fill="none"
+              stroke-dasharray="600" stroke-dashoffset="600">
+              <animate attributeName="stroke-dashoffset" from="600" to="0" dur="1.6s" begin="1.4s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+            </polyline>
+            <!-- Flat predictability line -->
+            <line id="chart-predict" x1="0" y1="80" x2="280" y2="80"
+              stroke="rgba(223,159,62,0.3)" stroke-width="1"
+              stroke-dasharray="280" stroke-dashoffset="280">
+              <animate attributeName="stroke-dashoffset" from="280" to="0" dur="0.8s" begin="3s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+            </line>
+          </svg>
+          <div style="display:flex; justify-content:space-between; width:280px;">
+            <span class="chart-label">RECEITA MENSAL</span>
+            <span class="chart-label" style="color: rgba(223,159,62,0.6);">PREVISIBILIDADE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">02 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 3 — CEMITÉRIO DE FERRAMENTAS
+       ============================================================ -->
+  <section id="s3" class="slide impact" role="region" aria-label="Slide 3 de 16: O Cemitério de Ferramentas">
+    <div class="slide-content flex-col" style="align-items:center;">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both; align-self:flex-start;">02 — O INVENTÁRIO DO QUE NÃO FUNCIONOU</div>
+      <h1 class="s3-headline anim" style="animation: fadeUp 800ms var(--ease-out-expo) 300ms both;">
+        <span class="emphasis">Você já tentou. CRM. Automação.<br>Tráfego. Treinamento.</span>
+        <span class="rest"> Não funcionou.</span>
+      </h1>
+      <div class="ghost-grid" id="ghost-grid">
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1100ms both;">CRM+</div>
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1160ms both;">FLOW</div>
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1220ms both;">LEAD.io</div>
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1280ms both;">PIPE</div>
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1340ms both;">AUTO</div>
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1400ms both;">TRACK</div>
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1460ms both;">ADS</div>
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1520ms both;">LEARN</div>
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1580ms both;">CHAT</div>
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1640ms both;">SEND</div>
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1700ms both;">SYNC</div>
+        <div class="ghost-item anim" style="animation: fadeIn 400ms ease 1760ms both;">HUB</div>
+      </div>
+      <p class="s3-caption anim" style="animation: fadeIn 400ms ease 2000ms both;">O problema nunca foi a ferramenta.</p>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">03 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 4 — O DIAGNÓSTICO HONESTO
+       ============================================================ -->
+  <section id="s4" class="slide" role="region" aria-label="Slide 4 de 16: O Diagnóstico Honesto">
+    <div class="slide-content flex-col">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both;">03 — O DIAGNÓSTICO</div>
+      <!-- Blueprint SVG background -->
+      <div class="blueprint-bg" aria-hidden="true">
+        <svg width="900" height="500" viewBox="0 0 900 500" fill="none">
+          <g stroke="#DF9F3E" stroke-width="1">
+            <!-- Abstract commercial architecture blueprint -->
+            <rect x="100" y="50" width="300" height="180" rx="2"
+              stroke-dasharray="960" stroke-dashoffset="960">
+              <animate attributeName="stroke-dashoffset" from="960" to="0" dur="2s" begin="0.3s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+            </rect>
+            <rect x="500" y="80" width="200" height="120" rx="2"
+              stroke-dasharray="640" stroke-dashoffset="640">
+              <animate attributeName="stroke-dashoffset" from="640" to="0" dur="1.8s" begin="0.6s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+            </rect>
+            <line x1="400" y1="140" x2="500" y2="140"
+              stroke-dasharray="100" stroke-dashoffset="100">
+              <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.8s" begin="1.2s" fill="freeze"/>
+            </line>
+            <rect x="200" y="300" width="400" height="120" rx="2"
+              stroke-dasharray="1040" stroke-dashoffset="1040">
+              <animate attributeName="stroke-dashoffset" from="1040" to="0" dur="2s" begin="0.9s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+            </rect>
+            <line x1="250" y1="230" x2="250" y2="300"
+              stroke-dasharray="70" stroke-dashoffset="70">
+              <animate attributeName="stroke-dashoffset" from="70" to="0" dur="0.6s" begin="1.5s" fill="freeze"/>
+            </line>
+            <line x1="550" y1="200" x2="550" y2="300"
+              stroke-dasharray="100" stroke-dashoffset="100">
+              <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.8s" begin="1.5s" fill="freeze"/>
+            </line>
+            <!-- Small nodes -->
+            <circle cx="250" cy="140" r="3" fill="#DF9F3E" opacity="0">
+              <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.8s" fill="freeze"/>
+            </circle>
+            <circle cx="550" cy="140" r="3" fill="#DF9F3E" opacity="0">
+              <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.9s" fill="freeze"/>
+            </circle>
+          </g>
+        </svg>
+      </div>
+      <div class="s4-headline flex-col flex-1">
+        <h1>
+          <span class="anim" style="display:block; animation: fadeUp 700ms var(--ease-out-expo) 500ms both;">O problema nunca foi a ferramenta.</span>
+          <span class="anim" style="display:block; animation: fadeUp 700ms var(--ease-out-expo) 800ms both;">
+            Foi a ausência de <span class="gold-word" id="s4-gold">arquitetura.</span>
+          </span>
+        </h1>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">04 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 5 — O QUE É ARQUITETURA COMERCIAL
+       ============================================================ -->
+  <section id="s5" class="slide" role="region" aria-label="Slide 5 de 16: O Que É Arquitetura Comercial">
+    <div class="slide-content flex-col">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both;">04 — DEFINIÇÃO</div>
+      <div class="s5-inner">
+        <div>
+          <h1 class="s5-headline">
+            <span class="anim" style="display:block; animation: fadeUp 600ms var(--ease-out-expo) 200ms both;">Arquitetura comercial:</span>
+            <span class="anim" style="display:block; animation: fadeUp 600ms var(--ease-out-expo) 400ms both;">a estrutura <span class="gold-w">invisível</span></span>
+            <span class="anim" style="display:block; animation: fadeUp 600ms var(--ease-out-expo) 600ms both;">que separa crescer de se esforçar.</span>
+          </h1>
+          <div class="gold-rule s5-rule anim" style="animation: scaleInX 600ms var(--ease-out-expo) 900ms both;"></div>
+          <p class="s5-subhead anim" style="animation: fadeIn 600ms ease 1100ms both;">Cinco camadas. Uma ordem. Uma só direção.</p>
+        </div>
+        <!-- Ziggurat -->
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
+          <div class="cenit-top anim" style="animation: popIn 600ms var(--ease-out-expo) 2200ms both;"></div>
+          <div class="ziggurat" id="ziggurat">
+            <!-- Built bottom-up in JS, defined here as static with animation delays -->
+            <div class="ziggurat-plate anim" style="width:320px; animation: fadeUp 500ms var(--ease-out-expo) 800ms both;">
+              <span class="plate-num">01 —</span><span class="plate-label">ESTRATÉGIA</span>
+            </div>
+            <div class="ziggurat-plate anim" style="width:270px; animation: fadeUp 500ms var(--ease-out-expo) 1050ms both;">
+              <span class="plate-num">02 —</span><span class="plate-label">PLAYBOOKS</span>
+            </div>
+            <div class="ziggurat-plate anim" style="width:220px; animation: fadeUp 500ms var(--ease-out-expo) 1300ms both;">
+              <span class="plate-num">03 —</span><span class="plate-label">CADÊNCIA</span>
+            </div>
+            <div class="ziggurat-plate anim" style="width:170px; animation: fadeUp 500ms var(--ease-out-expo) 1550ms both;">
+              <span class="plate-num">04 —</span><span class="plate-label">CRM / DADOS</span>
+            </div>
+            <div class="ziggurat-plate anim" style="width:120px; animation: fadeUp 500ms var(--ease-out-expo) 1800ms both;">
+              <span class="plate-num">05 —</span><span class="plate-label">IA</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">05 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 6 — CREDENTIALS
+       ============================================================ -->
+  <section id="s6" class="slide" role="region" aria-label="Slide 6 de 16: Autoridade">
+    <div class="slide-content flex-col">
+      <div class="eyebrow anim" style="text-align:right; animation: fadeIn 400ms ease 0ms both;">05 — AUTORIDADE</div>
+      <div class="s6-inner">
+        <div class="portrait-col anim" style="animation: fadeIn 1000ms ease 200ms, fadeUp 1000ms var(--ease-out-expo) 200ms both; animation-fill-mode: both;">
+          <div class="portrait-placeholder">
+            <span>LEILAINE CAMPIOTO</span>
+          </div>
+        </div>
+        <div class="credentials-col">
+          <div class="cred-item anim" style="animation: fadeIn 400ms ease 600ms both;">
+            <span class="cred-number" id="cred1" data-target="20" data-suffix="+">0+</span>
+            <span class="cred-suffix">ANOS EM LIDERANÇA COMERCIAL</span>
+          </div>
+          <div class="cred-item anim" style="animation: fadeIn 400ms ease 1200ms both;">
+            <span class="cred-number" id="cred2" data-target="500" data-prefix="R$ " data-suffix="M+">R$ 0M+</span>
+            <span class="cred-suffix">EM VENDAS INFLUENCIADAS</span>
+          </div>
+          <div class="cred-item anim" style="animation: fadeIn 400ms ease 1800ms both;">
+            <span class="cred-number white" id="cred3">R$20M → R$80M</span>
+            <span class="cred-suffix">UMA EMPRESA ESCALADA POR LEILAINE</span>
+          </div>
+          <p class="cred-signature anim" style="animation: fadeIn 400ms ease 2400ms both;">— LEILAINE CAMPIOTO / FOUNDER, ZNITH</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">06 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 7 — O QUE VEM ANTES
+       ============================================================ -->
+  <section id="s7" class="slide" role="region" aria-label="Slide 7 de 16: Primeiro Toque">
+    <div class="slide-content flex-col">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both;">06 — PRIMEIRO TOQUE</div>
+      <div class="s7-inner">
+        <!-- Lens / cenit mark -->
+        <div class="lens-mark anim" style="animation: fadeIn 1200ms var(--ease-out-expo) 200ms both;">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <line x1="8" y1="8" x2="32" y2="56"
+              stroke="#DF9F3E" stroke-width="1"
+              stroke-dasharray="54" stroke-dashoffset="54">
+              <animate attributeName="stroke-dashoffset" from="54" to="0" dur="0.8s" begin="0.3s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+            </line>
+            <line x1="56" y1="8" x2="32" y2="56"
+              stroke="#DF9F3E" stroke-width="1"
+              stroke-dasharray="54" stroke-dashoffset="54">
+              <animate attributeName="stroke-dashoffset" from="54" to="0" dur="0.8s" begin="0.5s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+            </line>
+            <circle cx="32" cy="56" r="3" fill="#DF9F3E" opacity="0">
+              <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.1s" fill="freeze"/>
+            </circle>
+          </svg>
+        </div>
+        <p class="s7-subhead anim" style="animation: fadeIn 400ms ease 800ms both;">O que vem antes de qualquer implantação</p>
+        <h1 class="s7-headline anim" style="animation: fadeUp 900ms var(--ease-out-expo) 1200ms both;">
+          A Leitura Estratégica<span class="gold-period anim" id="s7-period" style="animation: popIn 400ms var(--ease-out-expo) 2100ms both;">.</span>
+        </h1>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">07 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 8 — ANCHOR (THE PRODUCT)
+       ============================================================ -->
+  <section id="s8" class="slide impact" role="region" aria-label="Slide 8 de 16: ZNITH Consulting Expansão">
+    <div class="slide-content flex-col" style="align-items:center; justify-content:center; text-align:center;">
+      <div class="s8-ambient anim" style="animation: fadeIn 1200ms ease 400ms both;" aria-hidden="true"></div>
+      <div class="eyebrow anim" style="animation: fadeIn 600ms ease 200ms both; position:relative; z-index:2;">07 — PRODUTO</div>
+
+      <!-- Intro line -->
+      <p class="s8-intro-line anim" style="animation: fadeIn 600ms ease 300ms both;">
+        A entrada real pro trabalho com a ZNITH —
+      </p>
+
+      <!-- Frame drawn via SVG -->
+      <div class="s8-frame">
+        <svg class="s8-border-svg" id="s8-frame-svg" aria-hidden="true">
+          <!-- Top edge L→R -->
+          <line id="s8-top" x1="0" y1="0" x2="100%" y2="0" stroke="#DF9F3E" stroke-width="1"
+            stroke-dasharray="1000" stroke-dashoffset="1000">
+            <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="0.4s" begin="0.8s" fill="freeze"/>
+          </line>
+          <!-- Right edge T→B -->
+          <line id="s8-right" x1="100%" y1="0" x2="100%" y2="100%" stroke="#DF9F3E" stroke-width="1"
+            stroke-dasharray="400" stroke-dashoffset="400">
+            <animate attributeName="stroke-dashoffset" from="400" to="0" dur="0.4s" begin="1.2s" fill="freeze"/>
+          </line>
+          <!-- Bottom edge R→L -->
+          <line id="s8-bottom" x1="100%" y1="100%" x2="0" y2="100%" stroke="#DF9F3E" stroke-width="1"
+            stroke-dasharray="1000" stroke-dashoffset="1000">
+            <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="0.4s" begin="1.6s" fill="freeze"/>
+          </line>
+          <!-- Left edge B→T -->
+          <line id="s8-left" x1="0" y1="100%" x2="0" y2="0" stroke="#DF9F3E" stroke-width="1"
+            stroke-dasharray="400" stroke-dashoffset="400">
+            <animate attributeName="stroke-dashoffset" from="400" to="0" dur="0.4s" begin="2.0s" fill="freeze"/>
+          </line>
+        </svg>
+
+        <div class="s8-cenit anim" style="animation: popIn 600ms var(--ease-out-expo) 2400ms both;"></div>
+
+        <h1 class="s8-brand anim" style="animation: fadeUp 1000ms var(--ease-out-expo) 2400ms both;">ZNITH</h1>
+        <p class="s8-product anim" style="animation: fadeUp 800ms var(--ease-out-expo) 2700ms both;">Consulting Expansão</p>
+        <div class="gold-rule s8-rule anim" style="animation: scaleInX 700ms var(--ease-out-expo) 3100ms both;"></div>
+        <p class="s8-tagline anim" style="animation: fadeIn 500ms ease 3400ms both;">Arquitetura Comercial em 8 Semanas</p>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">08 / 16</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 9 — O QUE É (EM UMA FRASE)
+       ============================================================ -->
+  <section id="s9" class="slide" role="region" aria-label="Slide 9 de 16: Escopo">
+    <div class="slide-content flex-col">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both;">08 — ESCOPO</div>
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; text-align:center;">
+        <h1 class="anim" style="font-family:var(--font-display); font-weight:700; font-size:clamp(22px,3.5vw,56px); letter-spacing:-0.02em; line-height:1.1; animation: fadeUp 800ms var(--ease-out-expo) 200ms both;">
+          <span style="color:var(--gold);">8 semanas.</span>
+          <span style="color:var(--white);"> Diagnóstico. Arquitetura. Roadmap. Executável.</span>
+        </h1>
+        <!-- Timeline -->
+        <div class="anim" style="margin-top:56px; position:relative; width:min(960px,80vw); animation: fadeIn 200ms ease 600ms both;">
+          <!-- Rule draws L→R -->
+          <svg width="100%" height="40" viewBox="0 0 960 40" preserveAspectRatio="none" aria-hidden="true" style="overflow:visible;">
+            <line x1="0" y1="20" x2="960" y2="20" stroke="rgba(255,255,255,0.4)" stroke-width="1"
+              stroke-dasharray="960" stroke-dashoffset="960">
+              <animate attributeName="stroke-dashoffset" from="960" to="0" dur="1.4s" begin="0.8s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+            </line>
+            <!-- 8 circles -->
+            <circle cx="60"   cy="20" r="5" fill="none" stroke="#DF9F3E" stroke-width="1" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.7s"  fill="freeze"/></circle>
+            <circle cx="197"  cy="20" r="5" fill="none" stroke="#DF9F3E" stroke-width="1" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.82s" fill="freeze"/></circle>
+            <circle cx="334"  cy="20" r="5" fill="none" stroke="#DF9F3E" stroke-width="1" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.94s" fill="freeze"/></circle>
+            <circle cx="471"  cy="20" r="5" fill="none" stroke="#DF9F3E" stroke-width="1" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.06s" fill="freeze"/></circle>
+            <circle cx="608"  cy="20" r="5" fill="none" stroke="#DF9F3E" stroke-width="1" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.18s" fill="freeze"/></circle>
+            <circle cx="745"  cy="20" r="5" fill="none" stroke="#DF9F3E" stroke-width="1" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.30s" fill="freeze"/></circle>
+            <circle cx="882"  cy="20" r="5" fill="none" stroke="#DF9F3E" stroke-width="1" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.42s" fill="freeze"/></circle>
+            <circle cx="960"  cy="20" r="5" fill="none" stroke="#DF9F3E" stroke-width="1" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.54s" fill="freeze"/></circle>
+            <!-- Labels above -->
+            <text x="60"  y="9" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.5)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.7s" fill="freeze"/>S1</text>
+            <text x="197" y="9" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.5)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.7s" fill="freeze"/>S2</text>
+            <text x="334" y="9" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.5)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.7s" fill="freeze"/>S3</text>
+            <text x="471" y="9" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.5)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.7s" fill="freeze"/>S4</text>
+            <text x="608" y="9" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.5)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.7s" fill="freeze"/>S5</text>
+            <text x="745" y="9" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.5)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.7s" fill="freeze"/>S6</text>
+            <text x="882" y="9" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.5)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.7s" fill="freeze"/>S7</text>
+            <text x="960" y="9" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.5)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.7s" fill="freeze"/>S8</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">09 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 10 — AS 8 SEMANAS (CRONOGRAMA)
+       ============================================================ -->
+  <section id="s10" class="slide" role="region" aria-label="Slide 10 de 16: Cronograma">
+    <div class="slide-content flex-col">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both;">09 — CRONOGRAMA</div>
+      <h2 class="anim" style="font-family:var(--font-display); font-weight:700; font-size:clamp(28px,3.5vw,56px); letter-spacing:-0.02em; margin:16px 0 24px; animation: fadeUp 700ms var(--ease-out-expo) 200ms both;">As 8 semanas, dia a dia.</h2>
+      <!-- Progress rule with dots -->
+      <div class="anim" style="position:relative; margin-bottom:24px; animation: fadeIn 200ms ease 500ms both;">
+        <svg width="100%" height="20" viewBox="0 0 1248 20" preserveAspectRatio="none" aria-hidden="true" style="overflow:visible;">
+          <line x1="0" y1="10" x2="1248" y2="10" stroke="#DF9F3E" stroke-width="1"
+            stroke-dasharray="1248" stroke-dashoffset="1248">
+            <animate attributeName="stroke-dashoffset" from="1248" to="0" dur="1.4s" begin="0.6s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+          </line>
+          <circle cx="150"  cy="10" r="4" fill="#DF9F3E" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.6s" fill="freeze"/></circle>
+          <circle cx="462"  cy="10" r="4" fill="#DF9F3E" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.7s" fill="freeze"/></circle>
+          <circle cx="773"  cy="10" r="4" fill="#DF9F3E" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.8s" fill="freeze"/></circle>
+          <circle cx="1086" cy="10" r="4" fill="#DF9F3E" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.9s" fill="freeze"/></circle>
+        </svg>
+      </div>
+      <!-- 4-column table -->
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0; flex:1; border-top:none;">
+        <div class="s10-col anim" style="animation: fadeUp 500ms var(--ease-out-expo) 800ms both; padding-right:24px;">
+          <div class="s10-col-header">FASE 01 / COLETA</div>
+          <div class="s10-col-week">S1</div>
+          <p class="s10-col-body">Kick-off estratégico. Coleta profunda de dados, acessos, CRM e histórico comercial. Entrevistas com liderança e time.</p>
+        </div>
+        <div class="s10-col anim" style="animation: fadeUp 500ms var(--ease-out-expo) 1000ms both; padding: 0 24px; border-left:1px solid rgba(255,255,255,0.1);">
+          <div class="s10-col-header">FASE 02 / DIAGNÓSTICO</div>
+          <div class="s10-col-week">S2 — S3</div>
+          <p class="s10-col-body">Leitura do funil, processo e cadência. Análise de CRM, dependência do dono, gargalos estruturais e pontos de perda de receita.</p>
+        </div>
+        <div class="s10-col anim" style="animation: fadeUp 500ms var(--ease-out-expo) 1200ms both; padding: 0 24px; border-left:1px solid rgba(255,255,255,0.1);">
+          <div class="s10-col-header">FASE 03 / DESENHO</div>
+          <div class="s10-col-week">S4 — S5</div>
+          <p class="s10-col-body">Arquitetura Comercial: funil-alvo, playbooks, cadências, lógica de CRM, pontos de IA aplicável e critérios de qualificação.</p>
+        </div>
+        <div class="s10-col anim" style="animation: fadeUp 500ms var(--ease-out-expo) 1400ms both; padding-left:24px; border-left:1px solid rgba(255,255,255,0.1);">
+          <div class="s10-col-header">FASE 04 / PLANO</div>
+          <div class="s10-col-week">S6 — S7 — S8</div>
+          <p class="s10-col-body">Roadmap priorizado, quick wins, projetos estruturantes, métricas de governança. Apresentação executiva final e entrega do Caderno.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">10 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 11 — O CADERNO (OBJECT REVEAL)
+       ============================================================ -->
+  <section id="s11" class="slide impact" role="region" aria-label="Slide 11 de 16: O Entregável Central">
+    <div class="slide-content flex-col">
+      <div style="display:grid; grid-template-columns:7fr 5fr; gap:64px; flex:1; align-items:center;">
+        <!-- Caderno mockup -->
+        <div class="anim" style="animation: fadeUp 1200ms var(--ease-out-expo) 400ms both; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+          <!-- Book cover: flat 2D editorial treatment (A-series 1.414 ratio) -->
+          <div style="position:relative; width:300px; height:424px; background:var(--navy-800); border:1px solid var(--navy-500); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; box-shadow: 20px 20px 40px rgba(0,0,0,0.4);">
+            <!-- Gold spine detail (left edge) -->
+            <div style="position:absolute; left:0; top:0; bottom:0; width:8px; background:linear-gradient(180deg, #DF9F3E 0%, #8B5E1A 100%);"></div>
+            <!-- Cover content -->
+            <div style="text-align:center; padding: 0 32px;">
+              <div style="font-family:var(--font-display); font-weight:700; font-size:22px; letter-spacing:0.24em; color:var(--gold); margin-bottom:16px;">ZNITH</div>
+              <div style="width:60px; height:1px; background:var(--gold); margin:0 auto 16px;"></div>
+              <div style="font-family:var(--font-body); font-weight:500; font-size:11px; letter-spacing:0.16em; color:rgba(255,255,255,0.7); text-transform:uppercase; line-height:1.8;">ARQUITETURA<br>COMERCIAL</div>
+              <div style="width:40px; height:1px; background:rgba(223,159,62,0.4); margin:20px auto;"></div>
+              <div style="font-family:var(--font-body); font-weight:300; font-size:9px; letter-spacing:0.2em; color:rgba(255,255,255,0.4); text-transform:uppercase;">EDIÇÃO DO CLIENTE</div>
+            </div>
+          </div>
+          <!-- Shelf rule (appears after book lands) -->
+          <div class="anim" style="width:400px; height:1px; background:var(--gold); margin-top:0; animation: scaleInX 800ms var(--ease-out-expo) 1700ms both;"></div>
+        </div>
+        <!-- Text column -->
+        <div style="display:flex; flex-direction:column; align-items:flex-end; text-align:right;">
+          <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both;">10 — O ENTREGÁVEL CENTRAL</div>
+          <h1 class="anim" style="font-family:var(--font-display); font-weight:700; font-size:clamp(32px,4vw,64px); letter-spacing:-0.02em; line-height:1.05; margin-top:24px; animation: fadeUp 700ms var(--ease-out-expo) 300ms both;">
+            Caderno de<br><span style="color:var(--gold);">Arquitetura Comercial.</span>
+          </h1>
+          <div class="gold-rule anim" style="width:80px; margin:24px 0; transform-origin:right; animation: scaleInX 600ms var(--ease-out-expo) 800ms both;"></div>
+          <p class="anim" style="font-family:var(--font-body); font-weight:300; font-size:clamp(13px,1.2vw,18px); color:rgba(255,255,255,0.7); line-height:1.5; max-width:360px; animation: fadeIn 600ms ease 1000ms both;">
+            Um objeto. Não um PDF. Editado, impresso, entregue. O artefato estratégico que a liderança leva à reunião de sócios.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">11 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 12 — ENTREGÁVEIS
+       ============================================================ -->
+  <section id="s12" class="slide" role="region" aria-label="Slide 12 de 16: Entregáveis">
+    <div class="slide-content flex-col">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both;">11 — ENTREGÁVEIS</div>
+      <div style="display:grid; grid-template-columns:5fr 7fr; gap:80px; flex:1; align-items:center; margin-top:24px;">
+        <div>
+          <h1 class="anim" style="font-family:var(--font-display); font-weight:700; font-size:clamp(28px,3.5vw,56px); letter-spacing:-0.02em; line-height:1.1; animation: fadeUp 800ms var(--ease-out-expo) 200ms both;">
+            Não é um PDF.<br>É uma decisão documentada.
+          </h1>
+        </div>
+        <ol style="list-style:none; display:flex; flex-direction:column; gap:0;">
+          <li class="s12-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 400ms both;"><span class="s12-num">01 —</span><span class="s12-title">Diagnóstico Comercial Profundo</span></li>
+          <li class="s12-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 520ms both;"><span class="s12-num">02 —</span><span class="s12-title">Desenho de Arquitetura Customizada</span></li>
+          <li class="s12-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 640ms both;"><span class="s12-num">03 —</span><span class="s12-title">Caderno de Arquitetura Comercial</span></li>
+          <li class="s12-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 760ms both;"><span class="s12-num">04 —</span><span class="s12-title">Playbooks Comerciais Base (3–5)</span></li>
+          <li class="s12-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 880ms both;"><span class="s12-num">05 —</span><span class="s12-title">Roadmap de Implantação Priorizado</span></li>
+          <li class="s12-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 1000ms both;"><span class="s12-num">06 —</span><span class="s12-title">Recomendação de IA Aplicável</span></li>
+          <li class="s12-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 1120ms both; border-bottom:none;"><span class="s12-num">07 —</span><span class="s12-title">Apresentação Executiva à Liderança</span></li>
+        </ol>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">12 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 13 — INVESTIMENTO (NUMBER HERO)
+       ============================================================ -->
+  <section id="s13" class="slide" role="region" aria-label="Slide 13 de 16: Investimento">
+    <div class="slide-content flex-col" style="align-items:center; justify-content:center; text-align:center; background: radial-gradient(ellipse at center, rgba(9,16,34,1) 60%, rgba(5,11,23,1) 100%);">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both; align-self:flex-start;">12 — INVESTIMENTO</div>
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0;">
+        <div class="anim" style="font-family:var(--font-body); font-weight:500; font-size:12px; letter-spacing:0.32em; color:var(--gold); text-transform:uppercase; margin-bottom:24px; animation: fadeIn 600ms ease 200ms both;">INVESTIMENTO</div>
+        <div id="s13-number" class="anim" style="font-family:var(--font-display); font-weight:700; font-size:clamp(72px,15vw,240px); letter-spacing:-0.04em; line-height:0.9; color:var(--white); animation: fadeUp 800ms var(--ease-out-expo) 400ms both;">R$ 0</div>
+        <div class="gold-rule anim" style="width:200px; margin:32px auto; transform-origin:center; animation: scaleInX 800ms var(--ease-out-expo) 1200ms both;"></div>
+        <p class="anim" style="font-family:var(--font-display); font-weight:400; font-style:italic; font-size:clamp(14px,1.5vw,22px); color:rgba(223,159,62,0.8); animation: fadeIn 500ms ease 1500ms both;">8 semanas — Prazo fechado — Garantia de Arquitetura Implantável</p>
+      </div>
+      <!-- Guarantee seal -->
+      <div class="anim" style="position:absolute; bottom:80px; right:96px; animation: fadeIn 800ms ease 2000ms both;" aria-label="Garantia ZNITH">
+        <svg width="72" height="72" viewBox="0 0 72 72" fill="none" aria-hidden="true">
+          <circle cx="36" cy="36" r="34" stroke="#DF9F3E" stroke-width="1"
+            stroke-dasharray="213" stroke-dashoffset="213">
+            <animate attributeName="stroke-dashoffset" from="213" to="0" dur="0.8s" begin="1.8s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+          </circle>
+          <text font-family="'JetBrains Mono', monospace" font-size="7" fill="rgba(223,159,62,0.8)" letter-spacing="1.5">
+            <textPath href="#seal-path" startOffset="8%">GARANTIA · ZNITH · ARQUITETURA ·</textPath>
+          </text>
+          <defs>
+            <path id="seal-path" d="M36,36 m-26,0 a26,26 0 1,1 52,0 a26,26 0 1,1 -52,0"/>
+          </defs>
+          <!-- Zenith mark in center -->
+          <line x1="36" y1="22" x2="28" y2="46" stroke="#DF9F3E" stroke-width="0.8" opacity="0">
+            <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.2s" fill="freeze"/>
+          </line>
+          <line x1="36" y1="22" x2="44" y2="46" stroke="#DF9F3E" stroke-width="0.8" opacity="0">
+            <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.3s" fill="freeze"/>
+          </line>
+          <circle cx="36" cy="46" r="2" fill="#DF9F3E" opacity="0">
+            <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.4s" fill="freeze"/>
+          </circle>
+        </svg>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">13 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 14 — TRÊS CAMINHOS
+       ============================================================ -->
+  <section id="s14" class="slide" role="region" aria-label="Slide 14 de 16: Caminhos de Implantação">
+    <div class="slide-content flex-col">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both;">13 — CAMINHOS DE IMPLANTAÇÃO</div>
+      <h2 class="anim" style="font-family:var(--font-display); font-weight:700; font-size:clamp(22px,3vw,48px); letter-spacing:-0.02em; margin:16px 0 40px; text-align:center; animation: fadeUp 800ms var(--ease-out-expo) 200ms both;">
+        Semana 8: três caminhos. Honestamente apresentados.
+      </h2>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0; flex:1;">
+        <div class="s14-col anim" style="animation: fadeUp 700ms var(--ease-out-expo) 600ms both;">
+          <div class="s14-option-label">OPÇÃO A</div>
+          <div class="s14-product-name">ZNITH.AI OS</div>
+          <div class="gold-rule" style="width:40px; margin:16px 0;"></div>
+          <p class="s14-desc">A ZNITH implanta o que foi desenhado. Setup R$50K–R$150K + recorrência. Recomendado quando o cliente quer velocidade e não quer gerir a implantação internamente.</p>
+        </div>
+        <div class="s14-col anim" style="animation: fadeUp 700ms var(--ease-out-expo) 600ms both; border-left:1px solid rgba(255,255,255,0.08); border-right:1px solid rgba(255,255,255,0.08);">
+          <div class="s14-option-label">OPÇÃO B</div>
+          <div class="s14-product-name">Consulting Receita</div>
+          <div class="gold-rule" style="width:40px; margin:16px 0;"></div>
+          <p class="s14-desc">A ZNITH acompanha a implantação interna via governança contínua. R$5K–R$15K/mês. Recomendado quando o cliente tem time operacional forte e quer autonomia.</p>
+        </div>
+        <div class="s14-col anim" style="animation: fadeUp 700ms var(--ease-out-expo) 600ms both;">
+          <div class="s14-option-label">OPÇÃO C</div>
+          <div class="s14-product-name">Execução Interna</div>
+          <div class="gold-rule" style="width:40px; margin:16px 0;"></div>
+          <p class="s14-desc">O cliente implanta sozinho com base no Caderno. A ZNITH libera o trabalho integralmente. Sem contratos adicionais. Respeitamos essa decisão.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">14 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 15 — FILTRO (É PARA QUEM)
+       ============================================================ -->
+  <section id="s15" class="slide" role="region" aria-label="Slide 15 de 16: Filtro">
+    <div class="slide-content flex-col">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 0ms both;">14 — FILTRO</div>
+      <h2 class="anim" style="font-family:var(--font-display); font-weight:700; font-size:clamp(22px,3vw,48px); letter-spacing:-0.02em; line-height:1.1; margin:16px 0 40px; animation: fadeUp 800ms var(--ease-out-expo) 200ms both;">
+        Não é pra qualquer empresa.<br>É pra quem já vende e quer estruturar.
+      </h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:64px; flex:1;">
+        <!-- IS FOR -->
+        <div>
+          <div class="s15-col-header" style="color:var(--gold);">É PARA QUEM —</div>
+          <ul style="list-style:none; margin-top:24px; display:flex; flex-direction:column; gap:0;">
+            <li class="s15-yes-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 500ms both;">Fatura acima de R$1M/ano e trava no mesmo patamar</li>
+            <li class="s15-yes-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 600ms both;">Tem processo comercial que "mais ou menos acontece"</li>
+            <li class="s15-yes-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 700ms both;">Quer documentar e delegar sem perder qualidade</li>
+            <li class="s15-yes-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 800ms both;">Tem liderança disponível para 2h/semana durante 8 semanas</li>
+            <li class="s15-yes-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 900ms both;">Quer clareza antes de investir em tecnologia</li>
+          </ul>
+        </div>
+        <!-- IS NOT FOR -->
+        <div>
+          <div class="s15-col-header" style="color:rgba(255,255,255,0.4);">NÃO É PARA QUEM —</div>
+          <ul style="list-style:none; margin-top:24px; display:flex; flex-direction:column; gap:0;">
+            <li class="s15-not-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 500ms both;">Está em estágio inicial sem processo de vendas mínimo</li>
+            <li class="s15-not-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 600ms both;">Busca mais uma ferramenta, não estrutura</li>
+            <li class="s15-not-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 700ms both;">Não tem liderança para dedicar 2h/semana</li>
+            <li class="s15-not-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 800ms both;">Quer resultado sem envolvimento executivo</li>
+            <li class="s15-not-item anim" style="animation: fadeUp 400ms var(--ease-out-expo) 900ms both;">Quer escalar caos com mais tecnologia</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">15 / 16</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 16 — CLOSE / CTA
+       ============================================================ -->
+  <section id="s16" class="slide impact" role="region" aria-label="Slide 16 de 16: Próximo Passo">
+    <div class="slide-content flex-col" style="align-items:center; justify-content:center; text-align:center;">
+      <div class="eyebrow anim" style="animation: fadeIn 400ms ease 500ms both; letter-spacing:0.32em;">— PRÓXIMO PASSO —</div>
+      <h1 class="anim" style="font-family:var(--font-display); font-weight:700; font-size:clamp(48px,6vw,88px); letter-spacing:-0.03em; margin-top:32px; line-height:1; animation: fadeUp 900ms var(--ease-out-expo) 900ms both;">
+        Leitura Estratégica.
+      </h1>
+      <p class="anim" style="font-family:var(--font-body); font-weight:300; font-size:clamp(16px,2vw,28px); color:rgba(255,255,255,0.7); margin-top:16px; animation: fadeIn 600ms ease 1300ms both;">
+        45 minutos. Com a Leilaine. Sem custo.
+      </p>
+      <div class="gold-rule anim" style="width:120px; margin:28px auto; transform-origin:center; animation: scaleInX 700ms var(--ease-out-expo) 1700ms both;"></div>
+      <a href="https://znith.com.br/leitura" target="_blank" class="s16-cta anim" style="animation: fadeUp 600ms var(--ease-out-expo) 2000ms both;" aria-label="Agendar a Leitura Estratégica">
+        AGENDAR A LEITURA ESTRATÉGICA
+      </a>
+      <p class="anim" style="font-family:var(--font-body); font-weight:400; font-size:12px; color:rgba(255,255,255,0.4); margin-top:16px; animation: fadeIn 400ms ease 2300ms both;">
+        znith.com.br/leitura
+      </p>
+      <!-- Cenit dot — third callback -->
+      <div class="anim" style="width:4px; height:4px; border-radius:50%; background:var(--gold); box-shadow:0 0 16px 4px rgba(223,159,62,0.6); margin-top:80px; animation: popIn 800ms var(--ease-out-expo) 2600ms both;" aria-hidden="true"></div>
+    </div>
+    <div class="slide-footer">
+      <span class="footer-wordmark">ZNITH</span>
+      <span class="footer-counter">16 / 16</span>
+    </div>
+  </section>
+
+</div><!-- #deck -->
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let current = 0;
+const TOTAL = 16;
+
+// ============================================================
+// SLIDE NAVIGATION
+// ============================================================
+function goTo(n, direction) {
+  if (n < 0 || n >= TOTAL) return;
+  const slides = document.querySelectorAll('.slide');
+  const prev = slides[current];
+  const next = slides[n];
+
+  // Exit current
+  if (prev && prev !== next) {
+    prev.classList.add('exiting');
+    prev.classList.remove('active');
+    // Translate all anim children left on exit
+    const elems = prev.querySelectorAll('.anim');
+    elems.forEach((el, i) => {
+      el.style.transition = `opacity 500ms var(--ease-in-out-cubic) ${i * 20}ms, transform 500ms var(--ease-in-out-cubic) ${i * 20}ms`;
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(-60px)';
+    });
+    setTimeout(() => {
+      prev.classList.remove('exiting');
+      // Reset
+      elems.forEach(el => {
+        el.style.transition = '';
+        el.style.opacity = '';
+        el.style.transform = '';
+      });
+    }, 550);
+  }
+
+  current = n;
+
+  // Small delay before incoming (empty stage moment)
+  setTimeout(() => {
+    next.classList.add('active');
+    // Re-trigger CSS animations by removing and re-adding 'active'
+    const anims = next.querySelectorAll('.anim');
+    anims.forEach(el => {
+      el.style.animationPlayState = 'running';
+    });
+
+    // Trigger slide-specific JS hooks
+    onSlideEnter(n);
+  }, 200);
+
+  updateProgress();
+  updateURL(n);
+}
+
+function next() { goTo(current + 1); }
+function prev() { goTo(current - 1); }
+
+// ============================================================
+// PROGRESS BAR
+// ============================================================
+function updateProgress() {
+  const pct = ((current + 1) / TOTAL) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+// ============================================================
+// URL HASH
+// ============================================================
+function updateURL(n) {
+  history.replaceState(null, '', '#/slide/' + (n + 1));
+}
+function slideFromURL() {
+  const m = location.hash.match(/#\/slide\/(\d+)/);
+  if (m) {
+    const n = parseInt(m[1], 10) - 1;
+    if (n >= 0 && n < TOTAL) return n;
+  }
+  return 0;
+}
+
+// ============================================================
+// KEYBOARD
+// ============================================================
+document.addEventListener('keydown', e => {
+  switch(e.key) {
+    case 'ArrowRight': case 'ArrowDown': next(); break;
+    case 'ArrowLeft':  case 'ArrowUp':   prev(); break;
+    case 'Home': goTo(0); break;
+    case 'End':  goTo(TOTAL - 1); break;
+    case 'Escape': toggleOverview(); break;
+    case 'f': case 'F': toggleFullscreen(); break;
+  }
+});
+
+// ============================================================
+// TOUCH / SWIPE
+// ============================================================
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
+}, { passive: true });
+
+// ============================================================
+// CLICK ZONES
+// ============================================================
+document.getElementById('nav-prev').addEventListener('click', prev);
+document.getElementById('nav-next').addEventListener('click', next);
+
+// ============================================================
+// FULLSCREEN
+// ============================================================
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
+// ============================================================
+// OVERVIEW
+// ============================================================
+function toggleOverview() {
+  const ov = document.getElementById('overview');
+  ov.classList.toggle('visible');
+  if (ov.classList.contains('visible')) buildOverview();
+}
+function buildOverview() {
+  const ov = document.getElementById('overview');
+  if (ov.children.length) return;
+  const titles = [
+    'COVER','O PROBLEMA','CEMITÉRIO','DIAGNÓSTICO','ARQUITETURA',
+    'AUTORIDADE','LEITURA','PRODUTO','ESCOPO','CRONOGRAMA',
+    'CADERNO','ENTREGÁVEIS','INVESTIMENTO','CAMINHOS','FILTRO','PRÓXIMO PASSO'
+  ];
+  titles.forEach((t, i) => {
+    const d = document.createElement('div');
+    d.className = 'overview-thumb' + (i === current ? ' current' : '');
+    d.setAttribute('tabindex', '0');
+    d.setAttribute('role', 'button');
+    d.setAttribute('aria-label', 'Ir para slide ' + (i+1) + ': ' + t);
+    d.textContent = (i+1).toString().padStart(2,'0') + ' — ' + t;
+    d.addEventListener('click', () => { toggleOverview(); goTo(i); });
+    d.addEventListener('keydown', e => { if (e.key === 'Enter') { toggleOverview(); goTo(i); }});
+    ov.appendChild(d);
+  });
+}
+
+// ============================================================
+// COUNT-UP (S6, S13)
+// ============================================================
+function countUp(el, target, prefix, suffix, duration) {
+  const fmt = new Intl.NumberFormat('pt-BR');
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / duration, 1);
+    // ease-out-expo
+    const ease = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+    const val = Math.round(ease * target);
+    el.textContent = (prefix || '') + fmt.format(val) + (suffix || '');
+    if (p < 1) requestAnimationFrame(step);
+    else {
+      el.textContent = (prefix || '') + fmt.format(target) + (suffix || '');
+      // Settling pulse
+      el.style.transition = 'opacity 100ms ease';
+      el.style.opacity = '0.85';
+      setTimeout(() => { el.style.opacity = '1'; }, 100);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+// ============================================================
+// SLIDE-SPECIFIC ENTER HOOKS
+// ============================================================
+function onSlideEnter(n) {
+  // Slide 2: fading final word ("movimentando.")
+  if (n === 1) {
+    setTimeout(() => {
+      const el = document.getElementById('s2-faded');
+      if (el) el.classList.add('dimmed');
+    }, 1400); // 600ms anim delay + 600ms anim duration + 200ms settle
+  }
+
+  // Slide 4: gold word transition
+  if (n === 3) {
+    setTimeout(() => {
+      const gw = document.getElementById('s4-gold');
+      if (gw) gw.classList.add('revealed');
+    }, 1800); // after line 2 lands + delay
+  }
+
+  // Slide 6: count-up numbers
+  if (n === 5) {
+    setTimeout(() => {
+      const c1 = document.getElementById('cred1');
+      if (c1) countUp(c1, 20, '', '+', 900);
+    }, 800);
+    setTimeout(() => {
+      const c2 = document.getElementById('cred2');
+      if (c2) countUp(c2, 500, 'R$ ', 'M+', 900);
+    }, 1400);
+  }
+
+  // Slide 13: count-up
+  if (n === 12) {
+    setTimeout(() => {
+      const cn = document.getElementById('s13-number');
+      if (cn) countUp(cn, 35000, 'R$ ', '', 1400);
+    }, 800);
+  }
+
+  // Slide 15: strike-through animation
+  if (n === 14) {
+    setTimeout(() => {
+      const items = document.querySelectorAll('.s15-not-item');
+      items.forEach((item, i) => {
+        setTimeout(() => {
+          item.classList.add('strike-animate');
+        }, i * 150);
+      });
+    }, 1200);
+  }
+
+  // Slide 8: silence beat of 400ms before animations (handled by CSS delays)
+  // The CSS animations already start at proper offsets
+}
+
+// ============================================================
+// PRINT MODE
+// ============================================================
+if (location.search.includes('print=1')) {
+  document.querySelectorAll('.slide').forEach(s => {
+    s.style.position = 'relative';
+    s.style.opacity = '1';
+    s.style.pointerEvents = 'all';
+  });
+  document.querySelectorAll('.anim').forEach(el => {
+    el.style.opacity = '1';
+    el.style.transform = 'none';
+    el.style.animation = 'none';
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  const startSlide = location.search.includes('print=1') ? 0 : slideFromURL();
+  current = startSlide;
+  const slides = document.querySelectorAll('.slide');
+  slides[current].classList.add('active');
+  updateProgress();
+  onSlideEnter(current);
+});
+</script>
+</body>
+</html>

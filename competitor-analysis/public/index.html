@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analise Competitiva — Rafael Brandao (@rafa.grandi)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0a0a0a;
+      color: #e5e5e5;
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    /* Header */
+    header {
+      padding: 48px 0 32px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    header .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(74, 144, 255, 0.15);
+      color: #4A90FF;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    header h1 {
+      font-size: 32px;
+      font-weight: 300;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    header h1 strong { font-weight: 600; }
+    header p { color: #888; font-size: 15px; }
+    .date { color: #555; font-size: 13px; margin-top: 8px; }
+
+    /* Section */
+    section { padding: 48px 0; border-bottom: 1px solid #1a1a1a; }
+    section:last-child { border-bottom: none; }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2 .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: #4A90FF;
+      color: #000;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 500;
+      color: #ccc;
+      margin: 24px 0 12px;
+    }
+
+    /* Cards */
+    .profile-card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .profile-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: #4A90FF;
+    }
+    .profile-name { font-size: 18px; font-weight: 600; color: #fff; }
+    .profile-handle { font-size: 14px; color: #666; }
+    .profile-stats {
+      display: flex;
+      gap: 24px;
+      margin: 16px 0;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 20px; font-weight: 700; color: #fff; }
+    .stat-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+    .bio-text {
+      background: #0d0d0d;
+      border-left: 3px solid #4A90FF;
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-size: 14px;
+      color: #aaa;
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* Screenshots */
+    .screenshot-card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .screenshot-card img {
+      width: 100%;
+      display: block;
+    }
+    .screenshot-card .caption {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #888;
+      border-top: 1px solid #222;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #1a1a1a;
+      font-size: 14px;
+    }
+    th {
+      color: #666;
+      font-weight: 500;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    td { color: #ccc; }
+    tr:hover td { background: rgba(74, 144, 255, 0.03); }
+
+    /* Tags */
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .tag-green { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+    .tag-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+    .tag-blue { background: rgba(74, 144, 255, 0.15); color: #4A90FF; }
+    .tag-yellow { background: rgba(234, 179, 8, 0.15); color: #eab308; }
+    .tag-gray { background: rgba(150, 150, 150, 0.15); color: #999; }
+
+    /* Funnel diagram */
+    .funnel {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 32px;
+      margin: 24px 0;
+    }
+    .funnel-node {
+      background: #0d0d0d;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 8px 0;
+      position: relative;
+    }
+    .funnel-node.main {
+      border-color: #4A90FF;
+      background: rgba(74, 144, 255, 0.05);
+    }
+    .funnel-node.low {
+      border-color: #22c55e;
+      background: rgba(34, 197, 94, 0.05);
+    }
+    .funnel-node.high {
+      border-color: #eab308;
+      background: rgba(234, 179, 8, 0.05);
+    }
+    .funnel-node.future {
+      border-color: #555;
+      border-style: dashed;
+      opacity: 0.6;
+    }
+    .funnel-node h4 { font-size: 15px; color: #fff; margin-bottom: 4px; }
+    .funnel-node p { font-size: 13px; color: #888; }
+    .funnel-arrow {
+      text-align: center;
+      color: #333;
+      font-size: 20px;
+      padding: 4px 0;
+    }
+    .funnel-branches {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    @media (max-width: 768px) {
+      .funnel-branches { grid-template-columns: 1fr; }
+    }
+
+    /* Ad copy block */
+    .ad-copy {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 12px 0;
+    }
+    .ad-copy .page-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .ad-copy .copy-text {
+      font-size: 14px;
+      color: #aaa;
+      line-height: 1.7;
+    }
+    .ad-copy .meta-info {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #1a1a1a;
+    }
+    .ad-copy .meta-info span {
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Strength / Weakness */
+    .insight-list { list-style: none; }
+    .insight-list li {
+      padding: 12px 16px;
+      border-bottom: 1px solid #1a1a1a;
+      font-size: 14px;
+      color: #ccc;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .insight-list li:last-child { border-bottom: none; }
+    .insight-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .icon-green { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .icon-red { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .icon-blue { background: rgba(74, 144, 255, 0.2); color: #4A90FF; }
+
+    /* Verdict */
+    .verdict {
+      background: linear-gradient(135deg, rgba(74, 144, 255, 0.08), rgba(74, 144, 255, 0.02));
+      border: 1px solid rgba(74, 144, 255, 0.2);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 24px 0;
+    }
+    .verdict h3 {
+      color: #4A90FF;
+      font-size: 18px;
+      margin: 0 0 16px 0;
+    }
+    .verdict p { color: #aaa; font-size: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- HEADER -->
+    <header>
+      <div class="badge">Analise Competitiva</div>
+      <h1><strong>Rafael Brandao</strong> — @rafa.grandi</h1>
+      <p>Ecossistema completo: perfil, empresas, anuncios ativos, funil mapeado</p>
+      <div class="date">Gerado em 22 de abril de 2026 | REIS [IA] Intelligence</div>
+    </header>
+
+    <!-- SECTION 1: PERFIL -->
+    <section>
+      <h2><span class="num">1</span> Perfil Principal</h2>
+      <div class="grid-2">
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-avatar">RB</div>
+            <div>
+              <div class="profile-name">Rafael Brandao</div>
+              <div class="profile-handle">@rafa.grandi</div>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <div class="stat">
+              <div class="stat-num">83.7K</div>
+              <div class="stat-label">Followers</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">332</div>
+              <div class="stat-label">Posts</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">329</div>
+              <div class="stat-label">Following</div>
+            </div>
+          </div>
+          <div class="bio-text">
+            Construindo a Ultra-personalizacao de tecnologia em tempo Real! Lesgooo<br>
+            Socio/Fundador @estudiosow @raxo.io
+          </div>
+          <div style="margin-top: 12px;">
+            <span class="tag tag-blue">Verificado</span>
+            <span class="tag tag-gray">Tech/IA</span>
+            <span class="tag tag-gray">Empreendedorismo</span>
+          </div>
+        </div>
+        <div class="screenshot-card">
+          <img src="rafa-grandi-posts.png" alt="Perfil Instagram @rafa.grandi">
+          <div class="caption">Feed do Instagram — conteudo de IA, tech, bastidores. Estilo casual, falando pra camera.</div>
+        </div>
+      </div>
+
+      <h3>Contas Relacionadas (sugeridas pelo Instagram)</h3>
+      <table>
+        <tr>
+          <th>Perfil</th>
+          <th>Nome</th>
+          <th>Nicho</th>
+        </tr>
+        <tr><td>@leandroladeiran</td><td>Leandro Ladeira Neiva</td><td><span class="tag tag-yellow">Marketing Digital</span></td></tr>
+        <tr><td>@pedrosobral</td><td>Pedro Sobral</td><td><span class="tag tag-yellow">Trafego Pago</span></td></tr>
+        <tr><td>@leosoares.ia</td><td>Leo Soares</td><td><span class="tag tag-blue">IA para Negocios</span></td></tr>
+        <tr><td>@oalanicolas</td><td>Alan Nicolas</td><td><span class="tag tag-blue">IA para Negocios</span></td></tr>
+        <tr><td>@brunogabarra</td><td>Bruno Gabarra</td><td><span class="tag tag-blue">IA</span></td></tr>
+        <tr><td>@omateus.brito</td><td>Mateus Brito</td><td><span class="tag tag-blue">IA aplicada</span></td></tr>
+        <tr><td>@lucaspit.ai</td><td>Lucas Garcia Pit</td><td><span class="tag tag-blue">IA & Negocios</span></td></tr>
+        <tr><td>@estabilidade.nao.existe</td><td>Flavio Augusto</td><td><span class="tag tag-yellow">Empreendedorismo</span></td></tr>
+        <tr><td>@segredosdaaudiencia</td><td>Samuel Pereira</td><td><span class="tag tag-yellow">Audiencia/Lancamentos</span></td></tr>
+        <tr><td>@orodolfosouza</td><td>Rodolfo Souza</td><td><span class="tag tag-yellow">Marketing</span></td></tr>
+        <tr><td>@gurudoprompt</td><td>Guru do Prompt</td><td><span class="tag tag-blue">ChatGPT/IA</span></td></tr>
+      </table>
+    </section>
+
+    <!-- SECTION 2: ECOSSISTEMA -->
+    <section>
+      <h2><span class="num">2</span> Ecossistema de Negocios</h2>
+
+      <div class="grid-3">
+        <!-- SOW -->
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-avatar" style="background: #1a1a1a; font-size: 14px;">SOW</div>
+            <div>
+              <div class="profile-name">Estudio SOW</div>
+              <div class="profile-handle">@estudiosow</div>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <div class="stat">
+              <div class="stat-num">8.2K</div>
+              <div class="stat-label">Followers</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">257</div>
+              <div class="stat-label">Posts</div>
+            </div>
+          </div>
+          <div class="bio-text">
+            Maior Estudio de Conteudo do Nordeste<br>
+            Podcast | Lives | Cursos | Fotos
+          </div>
+          <span class="tag tag-green">Ativo — High Ticket</span>
+        </div>
+
+        <!-- Brandaoo -->
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-avatar" style="background: rgba(34,197,94,0.15); color: #22c55e; font-size: 14px;">B</div>
+            <div>
+              <div class="profile-name">Brandaoo</div>
+              <div class="profile-handle">Pagina Facebook</div>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <div class="stat">
+              <div class="stat-num">R$67</div>
+              <div class="stat-label">Ticket</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">10</div>
+              <div class="stat-label">Ads Ativos</div>
+            </div>
+          </div>
+          <div class="bio-text">
+            +120 Agentes de Inteligencia Artificial trabalhando pra voce 24h por dia
+          </div>
+          <span class="tag tag-green">Ativo — Low Ticket</span>
+        </div>
+
+        <!-- RAXO -->
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-avatar" style="background: #1a1a1a; font-size: 14px;">RX</div>
+            <div>
+              <div class="profile-name">RAXO</div>
+              <div class="profile-handle">@raxo.io</div>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <div class="stat">
+              <div class="stat-num">123</div>
+              <div class="stat-label">Followers</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">0</div>
+              <div class="stat-label">Posts</div>
+            </div>
+          </div>
+          <div class="bio-text">
+            A era do Software GENERICO acabou!<br>
+            Construimos um Sistema que SO VOCE TEM!
+          </div>
+          <span class="tag tag-gray">Embrionario — Site offline</span>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 16px;">
+        <div class="screenshot-card">
+          <img src="estudio-sow-ig.png" alt="Estudio SOW Instagram">
+          <div class="caption">@estudiosow — "SOW Creative House and Studio"</div>
+        </div>
+        <div class="screenshot-card">
+          <img src="raxo-ig.png" alt="RAXO Instagram">
+          <div class="caption">@raxo.io — 0 posts, projeto recem-criado</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: FUNNEL MAP -->
+    <section>
+      <h2><span class="num">3</span> Mapa do Funil</h2>
+
+      <div class="funnel">
+        <div class="funnel-node main">
+          <h4>Instagram Pessoal — @rafa.grandi</h4>
+          <p>83.7K seguidores | Conteudo organico sobre IA, tecnologia, bastidores | Verificado</p>
+        </div>
+        <div class="funnel-arrow">|</div>
+        <div class="funnel-branches">
+          <div>
+            <div class="funnel-node low">
+              <h4>BRANDAOO</h4>
+              <p>Low-ticket R$67</p>
+              <p style="margin-top: 8px; color: #22c55e;">"120 agentes de IA por R$67"</p>
+            </div>
+            <div style="padding: 8px 16px; font-size: 12px; color: #555;">
+              Ads video -> Landing page -> Checkout direto<br>
+              10 ads ativos desde mar/2026<br>
+              Provavelmente GPTs/prompts empacotados
+            </div>
+          </div>
+          <div>
+            <div class="funnel-node high">
+              <h4>ESTUDIO SOW</h4>
+              <p>High-ticket (servico)</p>
+              <p style="margin-top: 8px; color: #eab308;">Producao de conteudo premium</p>
+            </div>
+            <div style="padding: 8px 16px; font-size: 12px; color: #555;">
+              Ads video -> WhatsApp -> Venda consultiva<br>
+              7 ads ativos desde dez/2025 (4+ meses!)<br>
+              Podcast, lives, cursos, fotos
+            </div>
+          </div>
+          <div>
+            <div class="funnel-node future">
+              <h4>RAXO</h4>
+              <p>Software custom com IA</p>
+              <p style="margin-top: 8px; color: #555;">Anti-SaaS generico</p>
+            </div>
+            <div style="padding: 8px 16px; font-size: 12px; color: #555;">
+              Site offline | 0 posts | 123 followers<br>
+              "Sistema que SO VOCE TEM"<br>
+              Projeto futuro — nao lancado
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ADS ANALYSIS -->
+    <section>
+      <h2><span class="num">4</span> Anuncios Ativos — Biblioteca de Anuncios Meta</h2>
+
+      <h3>Brandaoo — 10 anuncios ativos (produto low-ticket)</h3>
+      <div class="ad-copy">
+        <div class="page-name">Brandaoo <span class="tag tag-green" style="margin-left: 8px;">Ativo</span></div>
+        <div class="copy-text">
+          +120 Agentes de Inteligencia Artificial trabalhando para voce 24 horas por dia. Tudo isso por apenas R$67.<br><br>
+          Clique AGORA abaixo e garanta essa condicoes especial.
+        </div>
+        <div class="meta-info">
+          <span>Formato: Video (30s-51s)</span>
+          <span>Desde: 30/mar/2026</span>
+          <span>Plataformas: FB + IG + AN + Messenger</span>
+          <span>Variantes: 10 criativos, 1 copy</span>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 16px;">
+        <div class="screenshot-card">
+          <img src="brandaoo-ads.png" alt="Brandaoo Ads">
+          <div class="caption">Brandaoo ads — mesma copy, diferentes criativos em video</div>
+        </div>
+        <div class="screenshot-card">
+          <img src="brandaoo-ads-2.png" alt="Brandaoo Ads page 2">
+          <div class="caption">Mais variantes — split test de criativo com copy fixo</div>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 32px;">Estudio SOW — 7 anuncios ativos (servico high-ticket)</h3>
+
+      <div class="ad-copy">
+        <div class="page-name">Estudio SOW <span class="tag tag-green" style="margin-left: 8px;">Ativo desde dez/2025</span></div>
+        <div class="copy-text">
+          "As pessoas antes de comprar o seu produto, compram o rosto, compram a estetica, a marca e ate os seus significados. O seu maior produto sempre vai ser a sua imagem e a forma como voce quer que as pessoas te vejam!"
+        </div>
+        <div class="meta-info">
+          <span>CTA: WhatsApp</span>
+          <span>Desde: dez/2025 (4+ meses!)</span>
+          <span>Formato: Video (46s-68s)</span>
+        </div>
+      </div>
+
+      <div class="ad-copy">
+        <div class="copy-text">"Hoje voce se posiciona como empresario, ou como influenciador?!"</div>
+        <div class="meta-info"><span>CTA: WhatsApp</span><span>Desde: 16/dez/2025</span></div>
+      </div>
+
+      <div class="ad-copy">
+        <div class="copy-text">"Enquanto voces levarem as redes sociais como brincadeira, terao resultados de brincadeira."</div>
+        <div class="meta-info"><span>CTA: WhatsApp</span><span>Desde: 23/dez/2025</span></div>
+      </div>
+
+      <div class="ad-copy">
+        <div class="copy-text">"Voce ja ouviu a frase 'Nao se julga um livro pela capa'? Na internet, isso nao muda. O seu posicionamento e o que define a credibilidade do seu produto."</div>
+        <div class="meta-info"><span>CTA: WhatsApp</span><span>Desde: 16/dez/2025</span></div>
+      </div>
+
+      <div class="ad-copy">
+        <div class="copy-text">"Tempo de qualidade e a chave pra qualquer negocio ou profissional que deseja engatar de verdade aqui no digital!"</div>
+        <div class="meta-info"><span>CTA: WhatsApp</span><span>Desde: 4/dez/2025</span></div>
+      </div>
+
+      <div class="ad-copy">
+        <div class="copy-text">"Criar o proprio podcast pode ser seu maior aliado quando nos referimos a: vendas, estrategia, posicionamento e performance!"</div>
+        <div class="meta-info"><span>CTA: WhatsApp</span><span>Desde: 11/dez/2025</span></div>
+      </div>
+
+      <div class="ad-copy">
+        <div class="copy-text">"Clique abaixo e fale agora conosco!"</div>
+        <div class="meta-info"><span>CTA: WhatsApp</span><span>Desde: 16/abr/2026</span></div>
+      </div>
+
+      <div class="screenshot-card" style="margin-top: 16px;">
+        <img src="estudio-sow-ads.png" alt="Estudio SOW Ads">
+        <div class="caption">Ads do Estudio SOW — 3 copies visiveis, todos com CTA para WhatsApp</div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: DEEP FUNNEL WALKTHROUGH -->
+    <section>
+      <h2><span class="num">5</span> Funil Completo — Cada Etapa Capturada</h2>
+
+      <p style="color: #888; margin-bottom: 24px; font-size: 15px;">
+        Caminho completo que o lead percorre: Ad (Meta) -> Landing Page (raxo.com.br/xquads) -> Checkout (Kiwify).
+        Cada etapa foi navegada e capturada via Playwright.
+      </p>
+
+      <!-- Step 1: Ad -->
+      <div class="profile-card" style="border-color: #333;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <div class="profile-avatar" style="width: 36px; height: 36px; font-size: 14px; border-radius: 6px; background: rgba(239,68,68,0.15); color: #ef4444;">1</div>
+          <div>
+            <div class="profile-name">Etapa 1 — Anuncio (Meta Ads)</div>
+            <div class="profile-handle">Pagina: Brandaoo | Plataformas: FB + IG + AN + Messenger</div>
+          </div>
+        </div>
+        <div class="ad-copy" style="margin: 0;">
+          <div class="copy-text">
+            +120 Agentes de Inteligencia Artificial trabalhando para voce 24 horas por dia. Tudo isso por apenas R$67.<br>
+            Clique AGORA abaixo e garanta essa condicoes especial.
+          </div>
+          <div class="meta-info">
+            <span>Formato: Video (30-51s)</span>
+            <span>CTA: Saiba mais</span>
+            <span>Destino: www.raxo.com.br/xquads</span>
+          </div>
+        </div>
+        <div style="margin-top: 12px; font-size: 13px; color: #555;">
+          <strong style="color: #888;">Pagina Facebook:</strong> Brandaoo — 25 seguidores, categoria "Fotografia e videografia", 0 posts organicos.
+          Pagina fantasma criada exclusivamente para veicular ads.
+        </div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="screenshot-card">
+            <img src="brandaoo-ads.png" alt="Brandaoo Ads">
+            <div class="caption">Ads na Biblioteca de Anuncios — 10 criativos ativos</div>
+          </div>
+          <div class="screenshot-card">
+            <img src="funnel-3-fb-brandaoo.png" alt="Pagina Brandaoo">
+            <div class="caption">Pagina Facebook "Brandaoo" — 25 seguidores, zero posts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Landing Page -->
+      <div style="text-align: center; color: #333; font-size: 24px; padding: 8px 0;">&#8595;</div>
+
+      <div class="profile-card" style="border-color: #333;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <div class="profile-avatar" style="width: 36px; height: 36px; font-size: 14px; border-radius: 6px; background: rgba(234,179,8,0.15); color: #eab308;">2</div>
+          <div>
+            <div class="profile-name">Etapa 2 — Landing Page</div>
+            <div class="profile-handle">raxo.com.br/xquads | Produto: Xquads by RAXO</div>
+          </div>
+        </div>
+
+        <table style="margin: 0 0 16px 0;">
+          <tr><th>Elemento</th><th>Detalhe</th></tr>
+          <tr><td>Produto</td><td><strong>Xquads</strong> — 136 Agentes de IA Especializados para Claude Code</td></tr>
+          <tr><td>Preco</td><td><strong>R$67</strong> pagamento unico (valor percebido declarado: R$297)</td></tr>
+          <tr><td>Entrega</td><td>Agentes .md para Claude Code + videoaulas de instalacao</td></tr>
+          <tr><td>Garantia</td><td>7 dias — devolucao total</td></tr>
+          <tr><td>Order Bump</td><td>"Acesso Vitalicio" — 4x de R$4,06 (atualizacoes futuras)</td></tr>
+          <tr><td>Checkout</td><td>Kiwify (pay.kiwify.com.br/TcQ5eM1)</td></tr>
+          <tr><td>CNPJ</td><td>SOW HOUSE PRODUCOES E TREINAMENTOS LTDA</td></tr>
+          <tr><td>Pagamento</td><td>Cartao (ate 4x R$18,24) ou PIX</td></tr>
+        </table>
+
+        <h3 style="margin-top: 24px;">Estrutura da Landing Page (scroll completo)</h3>
+        <table>
+          <tr><th>Secao</th><th>Conteudo</th><th>Tecnica</th></tr>
+          <tr>
+            <td><span class="tag tag-green">Hero</span></td>
+            <td>"As maiores mentes do BR trabalhando para voce dentro do Claude Code"</td>
+            <td>Headline bold, background com codigo, badge "11 SQUADS · 136 AGENTES · R$67"</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">Social Proof Ticker</span></td>
+            <td>Features em loop infinito</td>
+            <td>Marquee animation com icones</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-yellow">Video Demo</span></td>
+            <td>"Veja o Xquads em acao dentro do Claude Code"</td>
+            <td>Video do Rafael mostrando uso real no terminal</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-red">Problema/Solucao</span></td>
+            <td>"IA generica entrega resultados genericos. Xquads entrega especialistas."</td>
+            <td>Split layout com terminal mockup (Gary Halbert gerando carta de vendas)</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">11 Squads</span></td>
+            <td>Cards: Copy, Hormozi, Trafego, Branding, Narrativa, Consultivo, Design, Dados, Movimento, Executivo, Cybersecurity</td>
+            <td>Grid 2 colunas com icones e bullet points por squad</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">Fit Section</span></td>
+            <td>"Para quem" vs "Nao e para voce"</td>
+            <td>Checklist verde/vermelho classico</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-yellow">Founder Bio</span></td>
+            <td>Rafael Grandi — "Founder · Builder · AI Architect"</td>
+            <td>Foto + credenciais + bullets</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">Value Stack</span></td>
+            <td>136 Agentes + 94 Tasks + 21 Workflows + Videoaulas</td>
+            <td>Cards com icones</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">Pricing CTA</span></td>
+            <td>"R$67 — pagamento unico" + garantia + trust badges</td>
+            <td>Dark section com headline verde neon grande</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-yellow">Garantia</span></td>
+            <td>"7 dias para decidir — sem risco nenhum"</td>
+            <td>Shield icon + texto direto</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-gray">FAQ</span></td>
+            <td>6 perguntas: Claude Code, squads inclusos, Mac/Windows, atualizacoes, suporte</td>
+            <td>Accordion</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-red">Ultima Chance</span></td>
+            <td>"136 especialistas. 11 squads. R$67"</td>
+            <td>CTA final com urgencia</td>
+          </tr>
+        </table>
+
+        <h3 style="margin-top: 24px;">Screenshots da Landing Page</h3>
+        <div class="grid-2">
+          <div class="screenshot-card">
+            <img src="funnel-1-landing-top.png" alt="Landing Hero">
+            <div class="caption">Hero — headline bold + badge "11 SQUADS · 136 AGENTES · R$67"</div>
+          </div>
+          <div class="screenshot-card">
+            <img src="funnel-1-landing-mid1.png" alt="Landing Video">
+            <div class="caption">Video demo — Rafael mostrando o Xquads no Claude Code</div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="screenshot-card">
+            <img src="funnel-1-landing-mid2.png" alt="Landing Problem/Solution">
+            <div class="caption">Problema/Solucao — terminal mockup com Gary Halbert</div>
+          </div>
+          <div class="screenshot-card">
+            <img src="funnel-1-landing-mid3.png" alt="Landing Squads">
+            <div class="caption">11 Squads — Copy, Hormozi, Trafego, Branding...</div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="screenshot-card">
+            <img src="funnel-1-landing-pricing.png" alt="Landing Pricing">
+            <div class="caption">Ultima Chance — CTA final "R$67 pagamento unico"</div>
+          </div>
+          <div class="screenshot-card" style="background: #0d0d0d; display: flex; flex-direction: column; justify-content: center;">
+            <div style="padding: 24px;">
+              <h3 style="color: #fff; margin: 0 0 16px 0;">Nomes que ele cita como "clonados"</h3>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <span class="tag tag-blue">Gary Halbert</span>
+                <span class="tag tag-blue">David Ogilvy</span>
+                <span class="tag tag-blue">Eugene Schwartz</span>
+                <span class="tag tag-blue">Dan Kennedy</span>
+                <span class="tag tag-yellow">Alex Hormozi</span>
+                <span class="tag tag-yellow">Pedro Sobral</span>
+                <span class="tag tag-green">David Aaker</span>
+                <span class="tag tag-green">Al Ries</span>
+                <span class="tag tag-green">Marty Neumeier</span>
+                <span class="tag tag-gray">Ray Dalio</span>
+                <span class="tag tag-gray">Charlie Munger</span>
+                <span class="tag tag-gray">Naval Ravikant</span>
+                <span class="tag tag-gray">Brad Frost</span>
+                <span class="tag tag-gray">Dan Mall</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Checkout -->
+      <div style="text-align: center; color: #333; font-size: 24px; padding: 8px 0;">&#8595;</div>
+
+      <div class="profile-card" style="border-color: #333;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <div class="profile-avatar" style="width: 36px; height: 36px; font-size: 14px; border-radius: 6px; background: rgba(34,197,94,0.15); color: #22c55e;">3</div>
+          <div>
+            <div class="profile-name">Etapa 3 — Checkout (Kiwify)</div>
+            <div class="profile-handle">pay.kiwify.com.br/TcQ5eM1 | Vendedor: SOW HOUSE PRODUCOES E TREINAMENTOS LTDA</div>
+          </div>
+        </div>
+
+        <table style="margin: 0 0 16px 0;">
+          <tr><th>Elemento</th><th>Detalhe</th></tr>
+          <tr><td>Plataforma</td><td>Kiwify</td></tr>
+          <tr><td>Titulo do produto</td><td>"+120 Agentes de IA treinados"</td></tr>
+          <tr><td>Timer</td><td>Countdown falso "Oferta por tempo limitado" (barra vermelha topo)</td></tr>
+          <tr><td>Banner</td><td>Foto do Rafael + "Aprender IA nao deve ser assustador, deve ser uma Vibe"</td></tr>
+          <tr><td>Campos</td><td>Nome, Email, Confirmar email, CPF/CNPJ, Telefone</td></tr>
+          <tr><td>Pagamento</td><td>Cartao (ate 4x R$18,24) ou PIX</td></tr>
+          <tr>
+            <td><span class="tag tag-red">Order Bump</span></td>
+            <td><strong>"SIM, EU ACEITO ESSA OFERTA ESPECIAL!"</strong> — Acesso Vitalicio: atualizacoes + novos agentes — 4x de R$4,06</td>
+          </tr>
+          <tr><td>CTA</td><td>"Pagar agora"</td></tr>
+          <tr><td>Razao social</td><td>SOW HOUSE PRODUCOES E TREINAMENTOS LTDA</td></tr>
+        </table>
+
+        <div class="grid-2">
+          <div class="screenshot-card">
+            <img src="funnel-2-checkout.png" alt="Checkout Top">
+            <div class="caption">Checkout Kiwify — timer falso + banner + campos de dados</div>
+          </div>
+          <div class="screenshot-card">
+            <img src="funnel-2-checkout-bot.png" alt="Checkout Bottom">
+            <div class="caption">Order bump "Acesso Vitalicio" + botao "Pagar agora"</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Post-purchase -->
+      <div style="text-align: center; color: #333; font-size: 24px; padding: 8px 0;">&#8595;</div>
+
+      <div class="profile-card" style="border-color: #555; border-style: dashed;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <div class="profile-avatar" style="width: 36px; height: 36px; font-size: 14px; border-radius: 6px; background: rgba(150,150,150,0.15); color: #999;">4</div>
+          <div>
+            <div class="profile-name">Etapa 4 — Pos-Compra (inferido)</div>
+            <div class="profile-handle">Area de membros Kiwify + suporte por email</div>
+          </div>
+        </div>
+        <div style="font-size: 14px; color: #888; line-height: 1.8;">
+          Com base na landing page e FAQ, o comprador recebe:<br>
+          <span style="color: #ccc;">1.</span> Area de membros Kiwify com videoaulas de instalacao<br>
+          <span style="color: #ccc;">2.</span> Arquivos .md dos 136 agentes para copiar no Claude Code<br>
+          <span style="color: #ccc;">3.</span> 94 tasks + 21 workflows como comandos prontos<br>
+          <span style="color: #ccc;">4.</span> Suporte por email para duvidas de instalacao<br>
+          <span style="color: #ccc;">5.</span> (Se comprou o bump) Atualizacoes futuras de agentes
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: TRANSCRICOES DOS CRIATIVOS -->
+    <section>
+      <h2><span class="num">6</span> Transcricoes dos 11 Criativos (Whisper AI)</h2>
+
+      <p style="color: #888; margin-bottom: 24px; font-size: 15px;">
+        11 videos baixados da Ad Library via Playwright e transcritos com OpenAI Whisper (model: small, language: pt).
+        Todos os videos sao o <strong style="color: #fff;">mesmo pitch gravado 11 vezes</strong> com pequenas variacoes.
+      </p>
+
+      <!-- Script Anatomy -->
+      <div class="profile-card" style="border-color: rgba(74,144,255,0.3);">
+        <h3 style="margin-top: 0; color: #4A90FF;">Anatomia do Script (padrao em todos)</h3>
+        <table>
+          <tr><th>Tempo</th><th>Elemento</th><th>Exemplo real</th></tr>
+          <tr>
+            <td><span class="tag tag-red">0-3s</span></td>
+            <td><strong>Hook</strong></td>
+            <td>"Ate quando tu vai usar IA como se fosse um Google?"</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-yellow">3-6s</span></td>
+            <td><strong>Prova pessoal</strong></td>
+            <td>"Eu troquei meu time inteiro por esses agentes"</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">6-15s</span></td>
+            <td><strong>Stack de valor</strong></td>
+            <td>"120 agentes: branding, copy, trafego, design, cyberseguranca..."</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">15-25s</span></td>
+            <td><strong>Entrega + preco</strong></td>
+            <td>"Tudo isso por R$67 com videoaulas passo a passo"</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-red">25-35s</span></td>
+            <td><strong>Urgencia falsa</strong></td>
+            <td>"Esse video nao vai aparecer de novo, nao vou trabalhar remarketing"</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-yellow">35-50s</span></td>
+            <td><strong>CTA</strong></td>
+            <td>"Clica aqui embaixo agora e garante essa condicao"</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Hooks -->
+      <div class="profile-card" style="margin-top: 16px;">
+        <h3 style="margin-top: 0; color: #eab308;">7 Hooks Usados (primeiros 3 segundos)</h3>
+        <ul class="insight-list">
+          <li><span class="insight-icon icon-red">1</span><span>"E Claude Code pra ca, Claude Code pra la, galera" <span class="tag tag-gray" style="margin-left: 8px;">3 videos</span></span></li>
+          <li><span class="insight-icon icon-red">2</span><span>"Ate quando tu vai ficar usando IA como se fosse um Google?" <span class="tag tag-gray" style="margin-left: 8px;">3 videos</span></span></li>
+          <li><span class="insight-icon icon-red">3</span><span>"A partir de hoje, voce vai colocar a IA pra trabalhar pra voce" <span class="tag tag-gray" style="margin-left: 8px;">1 video</span></span></li>
+          <li><span class="insight-icon icon-red">4</span><span>"Imagina ter um time de mais de 120 agentes" <span class="tag tag-gray" style="margin-left: 8px;">2 videos</span></span></li>
+          <li><span class="insight-icon icon-red">5</span><span>"Aqui dentro, eu tenho mais de 120 funcionarios trabalhando 24h sem ficar doente" <span class="tag tag-gray" style="margin-left: 8px;">1 video</span></span></li>
+          <li><span class="insight-icon icon-red">6</span><span>"Eu acabei de criar quatro aulas te ensinando a usar todos esses agentes" <span class="tag tag-gray" style="margin-left: 8px;">1 video</span></span></li>
+        </ul>
+      </div>
+
+      <!-- Repeating phrases -->
+      <div class="profile-card" style="margin-top: 16px;">
+        <h3 style="margin-top: 0; color: #22c55e;">Frases-Chave Repetidas</h3>
+        <table>
+          <tr><th>Frase</th><th>Frequencia</th></tr>
+          <tr><td>"Para de usar IA como se fosse um Google"</td><td><strong>6/11</strong> videos</td></tr>
+          <tr><td>"120 agentes trabalhando 24h por dia"</td><td><strong>11/11</strong> videos</td></tr>
+          <tr><td>"R$67"</td><td><strong>11/11</strong> videos</td></tr>
+          <tr><td>"Videoaulas passo a passo"</td><td><strong>11/11</strong> videos</td></tr>
+          <tr><td>"Esse video nao vai aparecer de novo / nao vou trabalhar remarketing"</td><td><strong>8/11</strong> videos</td></tr>
+          <tr><td>"Vai salvar a tua pele"</td><td><strong>4/11</strong> videos</td></tr>
+          <tr><td>"Medico, advogado, empresario, dono de agencia"</td><td><strong>4/11</strong> videos</td></tr>
+          <tr><td>"Criar um time que trabalha por voce"</td><td><strong>7/11</strong> videos</td></tr>
+        </table>
+      </div>
+
+      <!-- Full transcripts accordion-style -->
+      <h3 style="margin-top: 32px;">Transcricoes Completas</h3>
+
+      <div class="ad-copy">
+        <div class="page-name">Video 1 <span class="tag tag-blue" style="margin-left: 8px;">44s</span></div>
+        <div class="copy-text" style="font-size: 13px; line-height: 1.8;">
+          E Claude Code pra ca, Claude Code pra la, galera. Mas, vamos ser honesto, eu troquei meu time inteiro por esses agentes de marketing. Sao mais de 120 agentes desde o time de branding, copy, trafego pago, design, cyberseguranca pra se tu for criar os teus aplicativos e ate um time de advisors pros teus projetos. E vamos ser honesto, tu vai levar tudo isso pra casa aqui por R$67 hoje com video-aulas, te ensinando a instalar o Cloud Code e instalar os agentes e criar os teus primeiros projetos na pratica. E tu so vai ver esse anuncio dessa vez, ta? Porque eu nao vou trabalhar re-marketing. R$67 a que tu vai investir hoje pra colocar um time de mais de 120 pessoas trabalhando pra voce dentro do teu negocio. Seja voce um empresario, um medico, um advogado, um dono de agencia, enfim. Isso aqui vai salvar a tua pele. Clica aqui embaixo agora e garante essa condicao mais do que especial.
+        </div>
+      </div>
+
+      <div class="ad-copy">
+        <div class="page-name">Video 2 <span class="tag tag-blue" style="margin-left: 8px;">47s</span></div>
+        <div class="copy-text" style="font-size: 13px; line-height: 1.8;">
+          Ate quando tu vai ficar usando inteligencia artificial como se fosse um Google, so pra ficar fazendo pergunta besta. Olha isso daqui, o. Hoje tu vai levar pra casa 120 agentes de inteligencia artificial pra automatizar as tuas tarefas. Desde no time de advisor, branding, cop, trafego pago e ate design, galera. E tudo isso aqui com videoaulas, ta te explicando como tu instala o Cloud Code, como tu instala os agentes e como tu cria os seus primeiros projetos na pratica. Tudo isso daqui, galera, por R$67. E tu nao vai ver esse anuncio de novo, ta? Porque eu nao vou trabalhar remarketing. Tu so tem essa oportunidade de entrar na nossa comunidade por R$67, conseguir todos esses 120 agentes e ainda aprender como utilizar inteligencia artificial nao como um Google, mas como um time trabalhando pra voce. Entao clica aqui embaixo agora e garante essa condicao mais do que especial. R$67, rapaziada. Clica aqui, o. Espero do outro lado.
+        </div>
+      </div>
+
+      <div class="ad-copy">
+        <div class="page-name">Video 3 <span class="tag tag-blue" style="margin-left: 8px;">51s</span></div>
+        <div class="copy-text" style="font-size: 13px; line-height: 1.8;">
+          A partir de hoje, voce vai colocar a inteligencia artificial pra trabalhar pra voce e parar de usar ela como se fosse um Google. Sao mais de 120 agentes de inteligencia artificial pra trabalhar pra voce dentro dos teus projetos. Desde no time de design, brand, trafego pago, story telling, copyright, e ate database pra se tu for fazer os teus projetos de aplicativo. Cara, tudo isso daqui tu vai levar pra casa hoje por R$67, com videoaulas. Te ensinando desde como instalar o Cloud Code, como instalar os agentes e como criar os teus primeiros projetos na pratica. Essa condicao e exclusiva pra voce que ta vendo esse video agora e nao vai aparecer de novo. Entao clica aqui embaixo agora e por R$67 tu vai levar um curso completo e todos esses agentes pra casa hoje pra colocar eles pra trabalhar pra voce. Ja deu de usar inteligencia artificial como se fosse um Google pra ficar pesquisando coisa. Vamos criar um time pra trabalhar pra voce. Clique aqui embaixo agora e nao perde essa condicao.
+        </div>
+      </div>
+
+      <div class="ad-copy">
+        <div class="page-name">Video 4 <span class="tag tag-blue" style="margin-left: 8px;">50s</span></div>
+        <div class="copy-text" style="font-size: 13px; line-height: 1.8;">
+          E Cloud Code pra ca, Cloud Code pra la, mas vamos ser honesto, galera. Eu troquei meu time inteiro por esses agentes aqui, o. Desde um time de Advisor, Branding, Storytelling, C-Level, Copy, Cyber-Seguranca e ate Trafego Pago. Sao mais de 120 agentes que tu vai levar pra casa hoje por R$67 com videoaulas, ta? Desde como instalar o Cloud Code, como instalar os agentes e como comecar a criar os teus primeiros projetos dentro da tua empresa com esses agentes. Para de utilizar a inteligencia artificial como se fosse um Google ou so pra ficar fazendo busca e pesquisa, cria um time que vai trabalhar 24 horas por dia pra voce sete dias por semana. Nao importa se voce e medico, advogado, empresario, dono de agencia, isso aqui vai literalmente salvar a tua pele. Esse video nao vai aparecer pra ti de novo, porque eu nao vou trabalhar remarketing. Entao clica aqui embaixo agora e garante por R$67 todos esses agentes de inteligencia artificial ou entao tu vai ficar como 99% das pessoas pra tras.
+        </div>
+      </div>
+
+      <div class="ad-copy">
+        <div class="page-name">Video 5 <span class="tag tag-blue" style="margin-left: 8px;">40s</span></div>
+        <div class="copy-text" style="font-size: 13px; line-height: 1.8;">
+          Aqui dentro, eu tenho mais de 120 funcionarios trabalhando 24 horas por dia pra mim sem ficar doente, sem cansar e sem nunca dormir. Sao mais de 120 agentes de inteligencia artificial trabalhando 24 horas por dia, desde o time de advisor, brand, C-level, cop, story telling, trafego pago, tudo isso aqui trabalhando na minha empresa. E tudo isso, galera, voces vao ter acesso por R$67 mais quatro videoaulas, te ensinando desde como instalar o Cloud Code, como instalar os agentes e como criar os seus primeiros projetos de automacao na pratica. R$67 vai levar tudo isso aqui pra casa hoje e comecar a automatizar toda a tua vida. Clica aqui embaixo e garante essa condicao mais do que especial.
+        </div>
+      </div>
+
+      <div class="ad-copy">
+        <div class="page-name">Videos 6-11 <span class="tag tag-gray" style="margin-left: 8px;">mesma estrutura, variacoes de gravacao</span></div>
+        <div class="copy-text" style="font-size: 13px; line-height: 1.8; color: #666;">
+          Os videos 6 a 11 seguem a mesma estrutura exata com pequenas variacoes de palavras. Todos mencionam: 120 agentes, R$67, videoaulas, Cloud Code, e usam urgencia falsa ("nao vou trabalhar remarketing"). A unica variacao real e no hook dos primeiros 3 segundos.
+        </div>
+      </div>
+
+      <!-- Vulnerabilities from transcripts -->
+      <div class="verdict" style="margin-top: 24px; border-color: rgba(239,68,68,0.3); background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02));">
+        <h3 style="color: #ef4444;">Vulnerabilidades Expostas nas Transcricoes</h3>
+        <ul class="insight-list">
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Zero resultado concreto</strong> — nenhum dos 11 videos menciona um resultado financeiro, caso real, ou numero de clientes. 100% promessa, 0% prova.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Urgencia 100% falsa</strong> — diz "nao vou trabalhar remarketing" e "esse video nao vai aparecer de novo" em 8/11 videos, enquanto tem 10 ads ativos ha semanas na Ad Library.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Inconsistencia no produto</strong> — os ads dizem "120 agentes" mas a landing page vende "136 agentes em 11 squads". Qual e o numero real?</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Tom casual / gauchao</strong> — "rapaziada", "tu", "isso aqui vai salvar a tua pele". Publico diferente do C-level executivo que a Reis IA atinge.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Promessa vaga universalista</strong> — "medico, advogado, empresario, dono de agencia" — tenta atingir todo mundo, nao posiciona pra ninguem.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Produto e commodity</strong> — arquivos .md com prompts para Claude Code. Qualquer pessoa pode replicar. Sem moat, sem diferencial real.</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 7: COMPARATIVO -->
+    <section>
+      <h2><span class="num">7</span> Comparativo: Brandaoo vs Estudio SOW</h2>
+
+      <table>
+        <tr>
+          <th>Metrica</th>
+          <th>Estudio SOW</th>
+          <th>Brandaoo</th>
+        </tr>
+        <tr>
+          <td>Tipo</td>
+          <td><span class="tag tag-yellow">Servico High-Ticket</span></td>
+          <td><span class="tag tag-green">Produto Low-Ticket R$67</span></td>
+        </tr>
+        <tr>
+          <td>Formato dos Ads</td>
+          <td>Video curto (46s-68s)</td>
+          <td>Video curto (30s-51s)</td>
+        </tr>
+        <tr>
+          <td>CTA</td>
+          <td>WhatsApp (venda consultiva)</td>
+          <td>Checkout direto</td>
+        </tr>
+        <tr>
+          <td>Copy Variations</td>
+          <td>7 copies distintos</td>
+          <td>1 copy unico, 10 criativos</td>
+        </tr>
+        <tr>
+          <td>Rodando desde</td>
+          <td><strong>Dez 2025 (4+ meses)</strong></td>
+          <td>Mar 2026 (1 mes)</td>
+        </tr>
+        <tr>
+          <td>Plataformas</td>
+          <td>Todas (5)</td>
+          <td>Todas (5)</td>
+        </tr>
+        <tr>
+          <td>Estrategia de Teste</td>
+          <td>Teste de copy (mensagem)</td>
+          <td>Teste de criativo (visual)</td>
+        </tr>
+        <tr>
+          <td>Tom</td>
+          <td>Provocativo / Autoridade</td>
+          <td>Direto / Escassez / Urgencia</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- SECTION 8: STRENGTHS / WEAKNESSES -->
+    <section>
+      <h2><span class="num">8</span> Analise Estrategica Completa</h2>
+
+      <p style="color: #888; margin-bottom: 24px; font-size: 15px;">
+        Analise honesta — o que ele faz bem (e devemos aprender ou replicar), o que e fraco (e podemos atacar),
+        e o que ele faz diferente de nos (pra entender o posicionamento real dele no mercado).
+      </p>
+
+      <!-- VANTAGENS REAIS -->
+      <div class="profile-card" style="border-color: rgba(34,197,94,0.3);">
+        <h3 style="margin-top: 0; color: #22c55e;">Vantagens Reais — O que ele faz BEM</h3>
+        <ul class="insight-list">
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Velocidade de execucao absurda</strong> — criou 136 agentes, landing page premium, 11 criativos em video, checkout com order bump, e colocou tudo no ar em semanas. Enquanto muitos planejam, ele ja esta vendendo.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Landing page de alto nivel</strong> — raxo.com.br/xquads e uma pagina dark mode, bem desenhada, com terminal mockup, video demo, anatomia clara do produto. Visual de dev premium — nao parece amador.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Longevidade dos ads SOW</strong> — mesmos anuncios rodando ha 4+ meses ininterruptos. Se estao no ar desde dezembro 2025, o CAC fecha. Ele sabe o que funciona e nao mexe.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Creative testing disciplinado</strong> — 11 videos com copy fixo, variando apenas o criativo. Isso e a abordagem correta de split test: isolar a variavel visual e encontrar o winner. Nao e amador.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Funil 2-tier completo</strong> — low-ticket (R$67 Xquads) como porta de entrada que captura lead + servico high-ticket (Estudio SOW) como backend. Modelo classico que funciona.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Base organica de 83K seguidores</strong> — nao comecou do zero. Tem audiencia, social proof, e o Instagram sugere ele junto com Pedro Sobral, Leandro Ladeira, Alan Nicolas. Ele esta no cluster certo.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Posicionamento no Claude Code especificamente</strong> — enquanto 90% do mercado ainda fala de "ChatGPT", ele ja vende pra usuarios de Claude Code. Sinal de que ele esta num nivel tecnico acima da media do nicho.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Hook pattern eficaz</strong> — "Ate quando tu vai usar IA como se fosse um Google?" e um hook que funciona porque ataca a identidade do viewer. Ele usa 6 variacoes de hook, o que mostra que testou e iterou.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Preco de impulso</strong> — R$67 pagamento unico e um no-brainer. Nao precisa de consideracao longa. Ate 4x de R$18. Barreira zero. E a oferta ainda tem order bump (acesso vitalicio por 4x R$4).</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Naming e branding do produto</strong> — "Xquads" tem nome proprio, identidade visual verde neon, logo "by RAXO". Nao e "Meu Pacote de Agentes". Ele tratou como produto real com marca.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Todas as 5 plataformas Meta</strong> — roda em Facebook, Instagram, Audience Network, Messenger. Maximiza alcance sem complexidade de multi-canal.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-green">+</span>
+            <span><strong>Clareza da proposta</strong> — em 3 segundos voce entende o que ele vende. "120 agentes de IA por R$67." Sem ambiguidade, sem jargao. Simples e direto.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- VULNERABILIDADES -->
+      <div class="profile-card" style="margin-top: 16px; border-color: rgba(239,68,68,0.3);">
+        <h3 style="margin-top: 0; color: #ef4444;">Vulnerabilidades — Onde atacar</h3>
+        <ul class="insight-list">
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Zero resultado concreto</strong> — em 11 videos e na landing inteira, nenhum numero de resultado, nenhum case, nenhum depoimento. 100% promessa, 0% prova. Nenhum "cliente X fez Y com os agentes".</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Urgencia 100% fabricada</strong> — diz "nao vou trabalhar remarketing" em 8/11 videos enquanto roda 10 ads ativos ha semanas. Mentira verificavel. Qualquer um pode abrir a Ad Library e ver.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Inconsistencia nos numeros</strong> — ads dizem "120 agentes", landing page diz "136 agentes em 11 squads", titulo do checkout diz "+120 agentes". Qual e o numero real? Parece que nem ele sabe.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Produto commodity sem moat</strong> — sao arquivos .md com prompts. Qualquer dev pode recriar em um fim de semana. Sem infraestrutura, sem software, sem API proprietaria. E prompts empacotados com videoaulas.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Pagina Facebook fantasma</strong> — "Brandaoo" tem 25 seguidores, zero posts, categoria "Fotografia e videografia" (nada a ver com IA). Pagina criada so pra rodar ads. Zero credibilidade institucional.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>RAXO e promessa vazia</strong> — o site raxo.com.br retorna 404 (NOT_FOUND), o Instagram @raxo.io tem 0 posts e 123 seguidores. A marca "by RAXO" na landing nao tem substancia por tras.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Publico universalista</strong> — "medico, advogado, empresario, dono de agencia" — tenta atingir todo mundo. Quem fala pra todo mundo nao fala pra ninguem. Sem ICP definido.</span>
+          </li>
+          <li>
+            <span class="insight-icon icon-red">!</span>
+            <span><strong>Tom casual demais</strong> — "rapaziada", "tu", "isso vai salvar tua pele". Funciona pra publico jovem/iniciante. Nao entra em sala de board. Limita o ticket maximo que ele pode cobrar.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- DIFERENCAS DE POSICIONAMENTO -->
+      <div class="profile-card" style="margin-top: 16px; border-color: rgba(74,144,255,0.3);">
+        <h3 style="margin-top: 0; color: #4A90FF;">Ele vs REIS [IA] — Diferencas de Posicionamento</h3>
+        <table>
+          <tr><th>Dimensao</th><th>Rafael Grandi / Xquads</th><th>REIS [IA]</th></tr>
+          <tr>
+            <td><strong>O que vende</strong></td>
+            <td>Ferramenta (arquivos .md + videoaulas)</td>
+            <td>Transformacao de resultado (implementacao estrategica)</td>
+          </tr>
+          <tr>
+            <td><strong>Preco</strong></td>
+            <td>R$67 pagamento unico</td>
+            <td>High-ticket (R$3-5K mentoria, projetos customizados)</td>
+          </tr>
+          <tr>
+            <td><strong>Publico</strong></td>
+            <td>Empreendedores iniciantes, "rapaziada"</td>
+            <td>C-level, fundadores, decisores</td>
+          </tr>
+          <tr>
+            <td><strong>Promessa</strong></td>
+            <td>"120 funcionarios IA trabalhando 24h pra voce"</td>
+            <td>"AI como motor de receita, nao como brinquedo"</td>
+          </tr>
+          <tr>
+            <td><strong>Prova</strong></td>
+            <td>Nenhuma (zero cases, zero numeros)</td>
+            <td>Cases reais + numeros de receita atribuida</td>
+          </tr>
+          <tr>
+            <td><strong>Tom</strong></td>
+            <td>Casual gaucho, energia alta, urgencia</td>
+            <td>Consultivo premium, executivo, estrategico</td>
+          </tr>
+          <tr>
+            <td><strong>Modelo de entrega</strong></td>
+            <td>Self-serve: baixa, instala, usa sozinho</td>
+            <td>Done-with-you / done-for-you (Systems)</td>
+          </tr>
+          <tr>
+            <td><strong>Tecnologia</strong></td>
+            <td>Claude Code + prompts .md</td>
+            <td>Agentes + MCP + integracao em processos reais</td>
+          </tr>
+          <tr>
+            <td><strong>Moat / defensibilidade</strong></td>
+            <td>Baixo — qualquer um replica prompts</td>
+            <td>Alto — integracao customizada + know-how estrategico</td>
+          </tr>
+          <tr>
+            <td><strong>Funil</strong></td>
+            <td>Ad video → landing → Kiwify checkout</td>
+            <td>Conteudo organico → diagnostico → aplicacao → mentoria</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- O QUE APRENDER -->
+      <div class="profile-card" style="margin-top: 16px; border-color: rgba(234,179,8,0.3);">
+        <h3 style="margin-top: 0; color: #eab308;">O que Devemos Aprender / Replicar</h3>
+        <ul class="insight-list">
+          <li>
+            <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">1</span>
+            <span><strong>Velocidade de lancamento</strong> — ele nao esperou ficar perfeito. Lancou, testou, iterou. A landing do Xquads provavelmente nao e a primeira versao. Mas ele colocou no ar e comecou a coletar dados.</span>
+          </li>
+          <li>
+            <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">2</span>
+            <span><strong>Split test de criativo com copy fixo</strong> — 11 videos, mesma mensagem, criativos diferentes. Isso isola a variavel correta. Quando achar o winner visual, testa copy. Disciplina de teste.</span>
+          </li>
+          <li>
+            <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">3</span>
+            <span><strong>Ads longevos = nao muda o que funciona</strong> — SOW roda mesmos ads ha 4 meses. Se o CAC fecha, nao tem motivo pra parar. Muita gente troca criativo antes da hora por ansiedade.</span>
+          </li>
+          <li>
+            <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">4</span>
+            <span><strong>Low-ticket como porta de entrada</strong> — R$67 captura o lead, paga o trafego, e abre a porta pro upsell. A Reis IA poderia ter um tripwire antes do high-ticket.</span>
+          </li>
+          <li>
+            <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">5</span>
+            <span><strong>Produto com nome e marca</strong> — "Xquads" com logo, cor, identidade. Nao e "meu curso" ou "meus agentes". E um produto. A marca faz parecer maior do que e.</span>
+          </li>
+          <li>
+            <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">6</span>
+            <span><strong>CTA para WhatsApp no high-ticket</strong> — todos os ads do SOW mandam pro WhatsApp, nao pra formulario ou pagina. Venda consultiva via conversa. Mais humano, maior conversao.</span>
+          </li>
+          <li>
+            <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">7</span>
+            <span><strong>Video > imagem nos ads</strong> — 100% dos criativos dele sao video. Ele fala pra camera, mostra o produto, gera confianca. Nenhum ad estatico. Video converte mais que imagem em low-ticket.</span>
+          </li>
+          <li>
+            <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">8</span>
+            <span><strong>Clareza em 3 segundos</strong> — "120 agentes de IA por R$67" — voce entende a proposta inteira em uma frase. A Reis IA precisa dessa mesma clareza no seu low-ticket (quando tiver um).</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 7: VERDICT -->
+    <section>
+      <h2><span class="num">9</span> Implicacoes para REIS [IA]</h2>
+
+      <div class="verdict">
+        <h3>Veredicto: Concorrente Indireto</h3>
+        <p>
+          Rafael Brandao atua no mesmo cluster de "IA para negocios" mas com abordagem fundamentalmente diferente.
+          <strong>Ele vende ferramenta</strong> (120 agentes por R$67) + estudio de conteudo.
+          <strong>Reis IA vende transformacao</strong> de resultado financeiro via implementacao estrategica.
+        </p>
+        <p style="margin-top: 16px;">
+          O Brandaoo (R$67) e exatamente o tipo de produto que alimenta o <strong>Prototype Graveyard</strong> —
+          compra ferramenta, nao sabe usar, nao gera resultado. E o inimigo narrativo perfeito para a Reis IA:
+          "Voce ja comprou 120 agentes de IA por R$67 e quantos deles geraram receita?"
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="profile-card">
+          <h3 style="margin-top: 0; color: #4A90FF;">Oportunidades de Contra-Posicionamento</h3>
+          <ul class="insight-list">
+            <li>
+              <span class="insight-icon icon-blue">></span>
+              <span>Atacar a narrativa "quantidade de agentes" vs "resultado financeiro real"</span>
+            </li>
+            <li>
+              <span class="insight-icon icon-blue">></span>
+              <span>Usar o Prototype Graveyard como ponte: "Comprou 120 agentes? Quantos geraram receita?"</span>
+            </li>
+            <li>
+              <span class="insight-icon icon-blue">></span>
+              <span>Prova social com numeros reais (R$2.3M em receita atribuida a IA)</span>
+            </li>
+            <li>
+              <span class="insight-icon icon-blue">></span>
+              <span>Posicionar RAXO como promessa vazia vs Reis IA Systems como entrega real</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="profile-card">
+          <h3 style="margin-top: 0; color: #eab308;">O que Aprender com Ele</h3>
+          <ul class="insight-list">
+            <li>
+              <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">~</span>
+              <span>Split test de criativo com copy fixo — abordagem inteligente para escalar ads</span>
+            </li>
+            <li>
+              <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">~</span>
+              <span>Ads longevos (4+ meses) — se funciona, mantem. Nao troca sem necessidade.</span>
+            </li>
+            <li>
+              <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">~</span>
+              <span>Low-ticket como porta de entrada para high-ticket — funil classico que funciona</span>
+            </li>
+            <li>
+              <span class="insight-icon" style="background: rgba(234,179,8,0.2); color: #eab308;">~</span>
+              <span>Toda CTA do SOW vai pra WhatsApp — venda consultiva, nao checkout frio</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         XQUADS LP DEEP DIVE — Added 2026-04-25
+         ================================================================ -->
+    <section id="xquads-lp">
+      <h2><span class="num">5</span> Xquads LP — Deep Dive Completo</h2>
+      <p style="color:#888;margin-bottom:24px;">Análise do código-fonte completo da LP em raxo.com.br/xquads (extraído 2026-04-24)</p>
+
+      <!-- LP Structure -->
+      <div class="profile-card">
+        <h3 style="margin-top:0;color:#4A90FF;">Estrutura da LP (ordem de scroll)</h3>
+        <table>
+          <thead><tr><th>#</th><th>Seção</th><th>Fundo</th><th>Elementos-chave</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Nav fixo</td><td>Blur dark</td><td>"xquads | by raxo" + CTA "Garantir Meu Acesso"</td></tr>
+            <tr><td>2</td><td>Hero</td><td>Dark + canvas grid + floating elements</td><td>Badge "11 Squads · 136 Agentes · R$67" + headline com rotating word + CTA</td></tr>
+            <tr><td>3</td><td>Proof bar (marquee)</td><td>Card dark</td><td>5 items em loop: agentes, referências, tasks, Claude Code, videoaulas</td></tr>
+            <tr><td>4</td><td>Vídeo</td><td>bg-2</td><td>Layout grid: texto + CTA esquerda, vídeo Vturb 9:16 direita</td></tr>
+            <tr><td>5</td><td>Problema → Solução</td><td>Dark</td><td>Grid 2 colunas: texto esquerda + terminal code card direita</td></tr>
+            <tr><td>6</td><td>11 Squads</td><td>bg-2</td><td>Grid 2 colunas, cards com emoji + número gigante + separator + bullets</td></tr>
+            <tr><td>7</td><td>Para Quem</td><td>bg-2</td><td>Grid 2 colunas: "É para você" (border-top green) vs "Não é"</td></tr>
+            <tr><td>8</td><td>Mentor</td><td>Dark</td><td>Grid: avatar 220px + bio + credenciais (foto real)</td></tr>
+            <tr><td>9</td><td>Entrega + Sticky Price</td><td>bg-2</td><td>Grid: lista de entregas esquerda + price card sticky direita (R$67)</td></tr>
+            <tr><td>10</td><td>Garantia</td><td>Dark</td><td>Shield emoji 72px + título + texto forte</td></tr>
+            <tr><td>11</td><td>FAQ</td><td>bg-2</td><td>6 perguntas accordion com + icon que rotaciona 45°</td></tr>
+            <tr><td>12</td><td>CTA Final</td><td>Dark + glow</td><td>Headline + CTA xl + security badges</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Hero Specifics -->
+      <div class="profile-card">
+        <h3 style="margin-top:0;color:#4A90FF;">Hero — Detalhes Técnicos</h3>
+        <p style="color:#aaa;font-size:14px;margin-bottom:12px;"><strong style="color:#fff">Headline:</strong> "As maiores mentes do <span style="background:#D1FF02;color:#000;padding:2px 8px;border-radius:4px;">marketing</span> trabalhando para você dentro do Claude Code"</p>
+        <p style="color:#aaa;font-size:14px;margin-bottom:12px;"><strong style="color:#fff">Rotating words:</strong> marketing, copy, tráfego, branding, vendas, estratégia, storytelling</p>
+        <p style="color:#aaa;font-size:14px;margin-bottom:12px;"><strong style="color:#fff">Typewriter:</strong> erase speed 45ms desktop / 25ms mobile, type speed 60ms / 35ms, pause 1800ms / 1000ms</p>
+        <p style="color:#aaa;font-size:14px;margin-bottom:12px;"><strong style="color:#fff">Background:</strong> Canvas grid 64px (rgba(209,255,2) verde neon) + 10 floating code elements (@agent, *task, </>, { }, =>, squad, AI, //, [ ], &&) com opacity 7%</p>
+        <p style="color:#aaa;font-size:14px;margin-bottom:12px;"><strong style="color:#fff">Glows:</strong> 2 radial-gradient blurs com pulse animation (8s e 10s)</p>
+        <p style="color:#aaa;font-size:14px;"><strong style="color:#fff">Cor accent:</strong> #D1FF02 (verde neon) — usado em headlines, badges, botões, section labels</p>
+      </div>
+
+      <!-- Video Analysis -->
+      <div class="profile-card">
+        <h3 style="margin-top:0;color:#ef4444;">Vídeo da LP — Análise</h3>
+        <p style="color:#aaa;font-size:14px;margin-bottom:12px;"><strong style="color:#fff">Player:</strong> Vturb (converteai.net) — smartplayer v4</p>
+        <p style="color:#aaa;font-size:14px;margin-bottom:12px;"><strong style="color:#fff">Formato:</strong> 9:16 portrait (vertical — formato Reels)</p>
+        <p style="color:#aaa;font-size:14px;margin-bottom:12px;"><strong style="color:#fff">ID:</strong> vid-69ca98b68a61a38ebe7256c6</p>
+        <p style="color:#aaa;font-size:14px;margin-bottom:12px;"><strong style="color:#fff">Thumbnail:</strong> images.converteai.net/437296aa.../thumbnail.jpg</p>
+        <p style="color:#aaa;font-size:14px;margin-bottom:12px;"><strong style="color:#fff">Pixel Facebook:</strong> 1290652196087643 (trackeia PageView + ViewContent com value: R$67)</p>
+        <p style="color:#aaa;font-size:14px;margin-bottom:16px;"><strong style="color:#fff">Transcrição:</strong> Não extraível automaticamente (Vturb protege o stream). Necessário assistir manualmente e transcrever.</p>
+        <div style="padding:16px;background:#0d0d0d;border-left:3px solid #ef4444;border-radius:0 8px 8px 0;">
+          <p style="font-size:13px;color:#888;"><strong style="color:#ef4444;">AÇÃO PENDENTE:</strong> Moroni assistir o vídeo da LP e transcrever os pontos-chave. O vídeo é provavelmente uma demo de Claude Code mostrando os agentes em ação (baseado no CTA "Veja o Xquads em ação dentro do Claude Code").</p>
+        </div>
+      </div>
+
+      <!-- Pricing/Offer -->
+      <div class="profile-card">
+        <h3 style="margin-top:0;color:#22C55E;">Estrutura de Oferta</h3>
+        <table>
+          <thead><tr><th>Elemento</th><th>Xquads (Concorrente)</th><th>AGENTES [IA] (Nós)</th></tr></thead>
+          <tbody>
+            <tr><td>Preço</td><td>R$67</td><td>R$47</td></tr>
+            <tr><td>Âncora</td><td>"Valor percebido: R$297"</td><td>"Valor percebido: R$297"</td></tr>
+            <tr><td>Agentes</td><td>136 em 11 squads</td><td>40+ em 7 squads</td></tr>
+            <tr><td>Tasks</td><td>94 tasks executáveis</td><td>Tasks embutidas</td></tr>
+            <tr><td>Workflows</td><td>21 workflows inteligentes</td><td>Pipelines completos</td></tr>
+            <tr><td>Videoaulas</td><td>"Videoaulas completas" (qtd não especificada)</td><td>4 videoaulas práticas</td></tr>
+            <tr><td>Garantia</td><td>7 dias</td><td>7 dias</td></tr>
+            <tr><td>Pagamento</td><td>Kiwify — cartão ou PIX</td><td>Kiwify — cartão ou PIX</td></tr>
+            <tr><td>Suporte</td><td>Email</td><td>WhatsApp 30 dias</td></tr>
+            <tr><td>Referências</td><td>Gary Halbert, Ogilvy, Hormozi, Sobral</td><td>Frameworks (Hormozi, AIDA, PAS)</td></tr>
+            <tr><td>Sticky price</td><td>Sim (ao lado de entregas)</td><td>Sim (ao lado de entregas)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 136 Agent List -->
+      <div class="profile-card">
+        <h3 style="margin-top:0;color:#4A90FF;">Lista Completa — 136 Agentes do Xquads</h3>
+        <p style="color:#888;font-size:13px;margin-bottom:16px;">Fonte: sowsales.com.br/xquads/agents (diretório público)</p>
+        <div class="grid-2" style="gap:12px;">
+          <div style="background:#0d0d0d;padding:16px;border-radius:8px;border:1px solid #1a1a1a;">
+            <p style="font-size:12px;color:#4A90FF;font-weight:600;margin-bottom:8px;">COPY SQUAD (23)</p>
+            <p style="font-size:12px;color:#888;line-height:1.8;">Cyrus (Chief), Gary Halbert, Eugene Schwartz, Claude Hopkins, Gary Bencivenga, Robert Collier, John Carlton, Jim Rutz, Dan Kennedy, Frank Kern, Russell Brunson, Todd Brown, Stefan Georgi, Jon Benson, Ry Schwartz, Ben Settle, Andre Chaperon, Dan Koe, Joe Sugarman, David Ogilvy, Clayton Makepeace, Parris Lampropoulos, David Deutsch</p>
+          </div>
+          <div style="background:#0d0d0d;padding:16px;border-radius:8px;border:1px solid #1a1a1a;">
+            <p style="font-size:12px;color:#4A90FF;font-weight:600;margin-bottom:8px;">HORMOZI SQUAD (16)</p>
+            <p style="font-size:12px;color:#888;line-height:1.8;">Chief, Advisor, Offers, Leads, Pricing, Copy, Ads, Content, Hooks, Launch, Closer, Workshop, Retention, Scale, Models, Audit</p>
+          </div>
+          <div style="background:#0d0d0d;padding:16px;border-radius:8px;border:1px solid #1a1a1a;">
+            <p style="font-size:12px;color:#4A90FF;font-weight:600;margin-bottom:8px;">TRAFFIC MASTERS (16)</p>
+            <p style="font-size:12px;color:#888;line-height:1.8;">Chief, Molly Pittman, Ralph Burns, Depesh Mandalia, Nicholas Kusmich, Tom Breeze, Kasim Aslam, Pedro Sobral, Ad Midas, Media Buyer, Performance Analyst, Creative Analyst, Scale Optimizer, Pixel Specialist, Ads Analyst, Fiscal</p>
+          </div>
+          <div style="background:#0d0d0d;padding:16px;border-radius:8px;border:1px solid #1a1a1a;">
+            <p style="font-size:12px;color:#4A90FF;font-weight:600;margin-bottom:8px;">BRAND SQUAD (15)</p>
+            <p style="font-size:12px;color:#888;line-height:1.8;">Chief, David Aaker, Kevin Lane Keller, Jean-Noël Kapferer, Al Ries, Byron Sharp, Marty Neumeier, Donald Miller, Denise Lee Yohn, Emily Heyward, Alina Wheeler, Archetype Consultant, Naming Strategist, Domain Scout, Miller Sticky Brand</p>
+          </div>
+          <div style="background:#0d0d0d;padding:16px;border-radius:8px;border:1px solid #1a1a1a;">
+            <p style="font-size:12px;color:#4A90FF;font-weight:600;margin-bottom:8px;">CYBERSECURITY (15)</p>
+            <p style="font-size:12px;color:#888;line-height:1.8;">Chief, Peter Kim, Georgia Weidman, Jim Manico, Chris Sanders, Omar Santos, Marcus Carey, Command Generator, Cartographer, Busterer, Dirber, Fuzzer, Ripper, Rogue, Shannon Runner</p>
+          </div>
+          <div style="background:#0d0d0d;padding:16px;border-radius:8px;border:1px solid #1a1a1a;">
+            <p style="font-size:12px;color:#4A90FF;font-weight:600;margin-bottom:8px;">STORYTELLING (12)</p>
+            <p style="font-size:12px;color:#888;line-height:1.8;">Chief, Joseph Campbell, Dan Harmon, Blake Snyder, Shawn Coyne, Matthew Dicks, Kindra Hall, Nancy Duarte, Park Howell, Keith Johnstone, Oren Klaff, Marshall Ganz</p>
+          </div>
+          <div style="background:#0d0d0d;padding:16px;border-radius:8px;border:1px solid #1a1a1a;">
+            <p style="font-size:12px;color:#4A90FF;font-weight:600;margin-bottom:8px;">ADVISORY BOARD (11)</p>
+            <p style="font-size:12px;color:#888;line-height:1.8;">Chair, Ray Dalio, Charlie Munger, Naval Ravikant, Peter Thiel, Reid Hoffman, Simon Sinek, Brené Brown, Patrick Lencioni, Derek Sivers, Yvon Chouinard</p>
+          </div>
+          <div style="background:#0d0d0d;padding:16px;border-radius:8px;border:1px solid #1a1a1a;">
+            <p style="font-size:12px;color:#4A90FF;font-weight:600;margin-bottom:8px;">DESIGN (8) + DATA (7) + MOVEMENT (7) + C-LEVEL (6)</p>
+            <p style="font-size:12px;color:#888;line-height:1.8;"><strong>Design:</strong> Chief, Brad Frost, Dan Mall, Dave Malouf, UX Designer, Design System Architect, Visual Generator, UI Engineer<br><strong>Data:</strong> Datum, Avinash Kaushik, Peter Fader, Sean Ellis, Wes Kao, Nick Mehta, David Spinks<br><strong>Movement:</strong> Chief, Architect, Fenomenólogo, Identitário, Estrategista de Ciclo, Manifestador, Analista de Impacto<br><strong>C-Level:</strong> Vision Chief, COO, CMO, CTO, CIO, CAIO</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ad Creative Patterns -->
+      <div class="profile-card">
+        <h3 style="margin-top:0;color:#eab308;">Padrões de Criativos (Ads)</h3>
+        <p style="color:#888;font-size:13px;margin-bottom:16px;">Observados via Instagram, Ad Library e LP</p>
+        <table>
+          <thead><tr><th>Padrão</th><th>Detalhes</th></tr></thead>
+          <tbody>
+            <tr><td>Hook principal</td><td>"As maiores mentes do [X] trabalhando para você" — rotating word no vídeo</td></tr>
+            <tr><td>Formato preferido</td><td>Vídeo 9:16 (vertical/Reels) — demo em Claude Code</td></tr>
+            <tr><td>Ângulo 1: Quantidade</td><td>"136 agentes, 11 squads, 94 tasks" — numeros grandes</td></tr>
+            <tr><td>Ângulo 2: Autoridade</td><td>"Clonados das maiores referências" — Gary Halbert, Ogilvy, Hormozi</td></tr>
+            <tr><td>Ângulo 3: Preço</td><td>"R$67 pagamento único" — compra por impulso vs time real (R$21K/mês)</td></tr>
+            <tr><td>Ângulo 4: Demo</td><td>Tela do terminal com agentes executando — "veja em ação"</td></tr>
+            <tr><td>CTA</td><td>"Quero Acesso ao Xquads" / "QUERO MEU ACESSO AGORA"</td></tr>
+            <tr><td>Trust</td><td>Garantia 7 dias + Pagamento seguro + Acesso imediato</td></tr>
+            <tr><td>UTM tracking</td><td>utm_source=ig, utm_medium=paid, passthrough pra checkout</td></tr>
+            <tr><td>Pixel</td><td>FB Pixel 1290652196087643 — PageView + ViewContent (value: R$67)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         ROTEIROS DE CRIATIVOS — AGENTES [IA]
+         ================================================================ -->
+    <section id="roteiros">
+      <h2><span class="num">6</span> Roteiros de Criativos — AGENTES [IA]</h2>
+      <p style="color:#888;margin-bottom:24px;">Variações de ad scripts baseados na análise competitiva. Formato: Reels/Stories 9:16 (15-60s).</p>
+
+      <!-- ROTEIRO 1 -->
+      <div class="profile-card" style="border-left:3px solid #4A90FF;">
+        <h3 style="margin-top:0;color:#4A90FF;">Roteiro 1 — "Time Inteiro por R$47" (30s) — Ângulo: Preço vs Valor</h3>
+        <table>
+          <thead><tr><th>Tempo</th><th>Visual</th><th>Texto/Fala</th><th>Overlay</th></tr></thead>
+          <tbody>
+            <tr><td>0-3s</td><td>Moroni olhando pra câmera, fundo escuro</td><td>"Quanto custa montar um time de marketing completo?"</td><td>QUANTO CUSTA?</td></tr>
+            <tr><td>3-8s</td><td>Números aparecendo na tela</td><td>"Copywriter: 5 mil. Estrategista: 8 mil. Designer: 5 mil. Gestor de tráfego: 3 mil. Total: 21 mil por mês."</td><td>R$21K/MÊS</td></tr>
+            <tr><td>8-13s</td><td>Corte seco — Moroni mais perto</td><td>"E se eu te falar que eu montei esse time inteiro com agentes de IA — e você pode ter acesso por R$47?"</td><td>R$47 — PAGAMENTO ÚNICO</td></tr>
+            <tr><td>13-20s</td><td>Tela do Claude Code — terminal com agentes rodando</td><td>"São 40+ agentes especializados. Copy, design, tráfego, branding, estratégia. Não é prompt genérico. Cada um tem framework, metodologia e personalidade própria."</td><td>40+ AGENTES · 7 SQUADS</td></tr>
+            <tr><td>20-27s</td><td>Volta pra Moroni</td><td>"Eu uso esses agentes todo dia no meu negócio. R$300 mil em contratos de IA. Agora abri o acesso por um preço que qualquer pessoa pode pagar."</td><td>TESTADOS EM R$300K+ DE PROJETOS</td></tr>
+            <tr><td>27-30s</td><td>Tela com CTA</td><td>"Link na bio. R$47. Garantia de 7 dias."</td><td>LINK NA BIO &rarr; R$47</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ROTEIRO 2 -->
+      <div class="profile-card" style="border-left:3px solid #22C55E;">
+        <h3 style="margin-top:0;color:#22C55E;">Roteiro 2 — "ChatGPT vs Agentes" (25s) — Ângulo: Diferenciação</h3>
+        <table>
+          <thead><tr><th>Tempo</th><th>Visual</th><th>Texto/Fala</th><th>Overlay</th></tr></thead>
+          <tbody>
+            <tr><td>0-3s</td><td>Moroni falando direto</td><td>"Você ainda tá pedindo pro ChatGPT escrever sua copy?"</td><td>PARA DE USAR CHATGPT</td></tr>
+            <tr><td>3-8s</td><td>Tela split: ChatGPT genérico vs terminal com agente</td><td>"O ChatGPT te dá a mesma resposta que dá pra todo mundo. Sem método. Sem framework. Genérico."</td><td>GENÉRICO vs ESPECIALISTA</td></tr>
+            <tr><td>8-15s</td><td>Tela do Claude Code com agente Copy Squad rodando</td><td>"Agora imagina ter um copywriter com framework Hormozi embutido. Um estrategista que analisa mercado de verdade. Um designer que entrega specs nível Apple."</td><td>FRAMEWORK HORMOZI · AIDA · PAS</td></tr>
+            <tr><td>15-22s</td><td>Volta pra Moroni</td><td>"São 40+ agentes organizados em 7 squads. Cada um é um profissional virtual com experiência embutida. Não é prompt — é um time."</td><td>7 SQUADS ESPECIALIZADOS</td></tr>
+            <tr><td>22-25s</td><td>CTA na tela</td><td>"R$47. Link na bio. Videoaulas pra instalar em 30 minutos."</td><td>R$47 &rarr; LINK NA BIO</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ROTEIRO 3 -->
+      <div class="profile-card" style="border-left:3px solid #ef4444;">
+        <h3 style="margin-top:0;color:#ef4444;">Roteiro 3 — "Demo Ao Vivo" (45s) — Ângulo: Prova / Demonstração</h3>
+        <table>
+          <thead><tr><th>Tempo</th><th>Visual</th><th>Texto/Fala</th><th>Overlay</th></tr></thead>
+          <tbody>
+            <tr><td>0-3s</td><td>Tela do terminal — cursor piscando</td><td>"Deixa eu te mostrar o que acontece quando você pede pro time de IA criar uma página de vendas."</td><td>DEMO AO VIVO</td></tr>
+            <tr><td>3-10s</td><td>Digitando no terminal: claude "crie uma página de vendas para produto de R$497 usando framework Hormozi"</td><td>"Eu abro o Claude Code. Peço uma página de vendas com framework Hormozi. Olha o que acontece."</td><td>—</td></tr>
+            <tr><td>10-20s</td><td>Terminal mostrando output: ativando Copy Squad, framework Grand Slam Offer, pesquisa concluída, copy gerada</td><td>"O Copy Squad ativa automaticamente. Usa o framework Grand Slam Offer. Faz pesquisa de mercado. Gera a copy. Humaniza. Revisa. Tudo sozinho."</td><td>PIPELINE AUTOMÁTICO</td></tr>
+            <tr><td>20-30s</td><td>Resultado: página pronta no browser</td><td>"Em 12 minutos: página completa. Copy profissional. Design. Código. Pronta pra publicar."</td><td>12 MINUTOS &rarr; PÁGINA PRONTA</td></tr>
+            <tr><td>30-40s</td><td>Moroni na câmera</td><td>"Isso não é teoria. Eu uso todo dia. R$300 mil em projetos entregues com esses agentes. Agora você pode ter o mesmo time por R$47."</td><td>R$300K+ EM PROJETOS</td></tr>
+            <tr><td>40-45s</td><td>CTA</td><td>"Link na bio. Garantia de 7 dias. Se não valer, devolvo 100%."</td><td>GARANTIA 7 DIAS &rarr; LINK NA BIO</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ROTEIRO 4 -->
+      <div class="profile-card" style="border-left:3px solid #eab308;">
+        <h3 style="margin-top:0;color:#eab308;">Roteiro 4 — "Horas vs Minutos" (20s) — Ângulo: Economia de Tempo</h3>
+        <table>
+          <thead><tr><th>Tempo</th><th>Visual</th><th>Texto/Fala</th><th>Overlay</th></tr></thead>
+          <tbody>
+            <tr><td>0-3s</td><td>Moroni frustrado olhando tela</td><td>"Quanto tempo você gasta por semana fazendo copy, pesquisa, design, estratégia?"</td><td>QUANTO TEMPO?</td></tr>
+            <tr><td>3-8s</td><td>Timer acelerando na tela</td><td>"10 horas? 20? 30? E se um time de IA fizesse tudo isso em minutos?"</td><td>HORAS &rarr; MINUTOS</td></tr>
+            <tr><td>8-15s</td><td>Tela rápida mostrando vários outputs dos agentes</td><td>"Página de vendas: 12 minutos. Pesquisa de mercado: 8 minutos. Identidade de marca: 15 minutos. Copy de email: 5 minutos."</td><td>12min · 8min · 15min · 5min</td></tr>
+            <tr><td>15-20s</td><td>Moroni sorrindo + CTA</td><td>"40+ agentes. R$47. Link na bio."</td><td>40+ AGENTES &rarr; R$47</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ROTEIRO 5 -->
+      <div class="profile-card" style="border-left:3px solid #a855f7;">
+        <h3 style="margin-top:0;color:#a855f7;">Roteiro 5 — "Não É Prompt" (15s) — Ângulo: Formato Rápido / Hook Forte</h3>
+        <table>
+          <thead><tr><th>Tempo</th><th>Visual</th><th>Texto/Fala</th><th>Overlay</th></tr></thead>
+          <tbody>
+            <tr><td>0-2s</td><td>Close no rosto, energia alta</td><td>"Isso aqui NÃO é prompt."</td><td>NÃO É PROMPT.</td></tr>
+            <tr><td>2-6s</td><td>Tela do terminal com squads</td><td>"É um time de 40 profissionais de IA. Copywriter. Designer. Estrategista. Gestor de tráfego."</td><td>40+ PROFISSIONAIS DE IA</td></tr>
+            <tr><td>6-10s</td><td>Output rápido aparecendo</td><td>"Cada um com framework próprio. Trabalhando 24 horas por dia. Pelo preço de um jantar."</td><td>24H POR DIA · R$47</td></tr>
+            <tr><td>10-15s</td><td>CTA direto</td><td>"Link na bio. R$47. Instala em 30 minutos."</td><td>&rarr; LINK NA BIO</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ROTEIRO 6 -->
+      <div class="profile-card" style="border-left:3px solid #06b6d4;">
+        <h3 style="margin-top:0;color:#06b6d4;">Roteiro 6 — "Antes vs Depois" (30s) — Ângulo: Transformação</h3>
+        <table>
+          <thead><tr><th>Tempo</th><th>Visual</th><th>Texto/Fala</th><th>Overlay</th></tr></thead>
+          <tbody>
+            <tr><td>0-5s</td><td>Split screen: esquerda "ANTES" cinza, direita "DEPOIS" azul</td><td>"Antes: 3 horas pra escrever uma copy mediana no ChatGPT."</td><td>ANTES: 3 HORAS</td></tr>
+            <tr><td>5-10s</td><td>Lado "DEPOIS" ganha destaque</td><td>"Depois: 12 minutos. Copy profissional com framework Hormozi. Humanizada. Revisada."</td><td>DEPOIS: 12 MINUTOS</td></tr>
+            <tr><td>10-15s</td><td>Antes: "pesquisar mercado no Google por 2 dias"</td><td>"Antes: 2 dias pesquisando mercado no Google."</td><td>ANTES: 2 DIAS</td></tr>
+            <tr><td>15-20s</td><td>Depois: relatório pronto na tela</td><td>"Depois: relatório completo com gaps, oportunidades e posicionamento em 8 minutos."</td><td>DEPOIS: 8 MINUTOS</td></tr>
+            <tr><td>20-25s</td><td>Moroni na câmera</td><td>"A diferença? Um time de 40+ agentes de IA especializados. Trabalhando pra você."</td><td>40+ AGENTES ESPECIALIZADOS</td></tr>
+            <tr><td>25-30s</td><td>CTA</td><td>"R$47. Pagamento único. Link na bio."</td><td>R$47 &rarr; LINK NA BIO</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- VARIAÇÕES DE HOOKS -->
+      <div class="profile-card" style="border-left:3px solid #fff;">
+        <h3 style="margin-top:0;color:#fff;">10 Hooks para Testar (primeiros 3 segundos)</h3>
+        <ol style="list-style:decimal;padding-left:20px;color:#aaa;font-size:14px;line-height:2.2;">
+          <li><strong style="color:#fff">"Quanto custa montar um time de marketing completo?"</strong> — ângulo preço</li>
+          <li><strong style="color:#fff">"Você ainda tá pedindo pro ChatGPT escrever sua copy?"</strong> — ângulo diferenciação</li>
+          <li><strong style="color:#fff">"Isso aqui NÃO é prompt."</strong> — ângulo choque</li>
+          <li><strong style="color:#fff">"Eu montei um time de 40 profissionais por R$47."</strong> — ângulo curiosidade</li>
+          <li><strong style="color:#fff">"3 horas pra escrever uma copy? Eu faço em 12 minutos."</strong> — ângulo tempo</li>
+          <li><strong style="color:#fff">"Seu concorrente já tá usando agentes de IA. Você ainda tá no ChatGPT."</strong> — ângulo FOMO</li>
+          <li><strong style="color:#fff">"Deixa eu te mostrar o que acontece quando eu peço pro meu time de IA..."</strong> — ângulo demo</li>
+          <li><strong style="color:#fff">"Copywriter de R$5 mil por mês? Eu tenho um que trabalha 24h por R$47."</strong> — ângulo comparação</li>
+          <li><strong style="color:#fff">"Esse time faturou R$300 mil em projetos. E agora custa R$47."</strong> — ângulo prova</li>
+          <li><strong style="color:#fff">"Para tudo. Eu preciso te mostrar uma coisa."</strong> — ângulo pattern interrupt</li>
+        </ol>
+      </div>
+
+      <!-- FORMATOS RECOMENDADOS -->
+      <div class="profile-card">
+        <h3 style="margin-top:0;color:#4A90FF;">Matriz de Testes — Formatos x Ângulos</h3>
+        <table>
+          <thead><tr><th>Formato</th><th>Duração</th><th>Melhor Ângulo</th><th>Prioridade</th></tr></thead>
+          <tbody>
+            <tr><td>Talking head + screen recording</td><td>30-45s</td><td>Demo ao vivo (Roteiro 3)</td><td style="color:#22C55E;font-weight:600;">ALTA — testar primeiro</td></tr>
+            <tr><td>Talking head direto</td><td>15-25s</td><td>Preço vs Valor (Roteiro 1)</td><td style="color:#22C55E;font-weight:600;">ALTA</td></tr>
+            <tr><td>Screen recording puro</td><td>30-60s</td><td>Demo completa (variação do 3)</td><td style="color:#eab308;font-weight:600;">MÉDIA</td></tr>
+            <tr><td>Hook rápido</td><td>15s</td><td>"Não É Prompt" (Roteiro 5)</td><td style="color:#22C55E;font-weight:600;">ALTA — volume</td></tr>
+            <tr><td>Before/After split</td><td>30s</td><td>Transformação (Roteiro 6)</td><td style="color:#eab308;font-weight:600;">MÉDIA</td></tr>
+            <tr><td>Carrossel estático</td><td>—</td><td>7 Squads (1 por slide)</td><td style="color:#888;">BAIXA</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="padding: 32px 0; text-align: center; color: #333; font-size: 13px;">
+      REIS [IA] — Competitive Intelligence | Atualizado: 2026-04-25 | Fonte: Playwright + Meta Ad Library + WebFetch
+    </footer>
+
+  </div>
+</body>
+</html>

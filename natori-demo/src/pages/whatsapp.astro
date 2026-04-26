@@ -1,0 +1,362 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+---
+
+<AppLayout title="Alertas WhatsApp" activePage="whatsapp">
+
+  <!-- Header -->
+  <div style="margin-bottom:28px;">
+    <h1 style="font-size:20px; font-weight:700; color:var(--text-primary); letter-spacing:-0.03em; margin-bottom:4px;">
+      Alertas via WhatsApp
+    </h1>
+    <p style="font-size:13px; color:var(--text-muted);">
+      Notificações inteligentes direto no seu WhatsApp — sem precisar abrir o painel.
+    </p>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start;">
+
+    <!-- LEFT: Config panel -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+
+      <!-- Connection status -->
+      <div class="card" style="padding:22px;">
+        <div style="font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:16px;">Número conectado</div>
+        <div style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--green-dim); border:1px solid rgba(34,197,94,0.2); border-radius:10px;">
+          <div class="dot-green"></div>
+          <div>
+            <div style="font-size:14px; font-weight:600; color:var(--text-primary);">+55 11 9XXXX-XXXX</div>
+            <div style="font-size:12px; color:var(--text-muted);">Kaio · conectado há 3h41min</div>
+          </div>
+          <span class="badge badge-green" style="margin-left:auto;">Ativo</span>
+        </div>
+      </div>
+
+      <!-- Alert toggles -->
+      <div class="card" style="padding:22px;">
+        <div style="font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">Tipos de alerta</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:18px;">Configure quais eventos geram notificação</div>
+
+        {[
+          { label: 'Buy Box perdido', desc: 'Alerta imediato ao perder posição', active: true, severity: 'red' },
+          { label: 'Preço de concorrente', desc: 'Quando concorrente muda preço ±R$0,50', active: true, severity: 'yellow' },
+          { label: 'Estoque baixo', desc: 'Quando estoque cai abaixo de 20 unidades', active: true, severity: 'yellow' },
+          { label: 'Vendas anômalas', desc: 'Queda ou pico acima de 30% em 2h', active: true, severity: 'red' },
+          { label: 'Relatório diário', desc: 'Resumo às 08:00 todo dia útil', active: true, severity: 'green' },
+          { label: 'Novo concorrente', desc: 'Novo seller detectado nos seus SKUs', active: false, severity: 'yellow' },
+        ].map((item, i) => (
+          <div style={`
+            display:flex; align-items:center; justify-content:space-between;
+            padding:14px 0;
+            border-bottom:${i < 5 ? '1px solid var(--border)' : 'none'};
+          `}>
+            <div style="flex:1;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px;">
+                <div style={`width:6px; height:6px; border-radius:50%; background:var(--${item.severity});`}></div>
+                <span style="font-size:13px; font-weight:500; color:var(--text-primary);">{item.label}</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-muted); padding-left:14px;">{item.desc}</div>
+            </div>
+            <!-- Toggle -->
+            <div
+              class="toggle"
+              data-active={item.active ? 'true' : 'false'}
+              onclick="toggleAlert(this)"
+              style={`
+                width:40px; height:22px; border-radius:11px; cursor:pointer;
+                position:relative; transition:background 0.2s; flex-shrink:0;
+                background:${item.active ? 'var(--red)' : 'var(--border-accent)'};
+              `}
+            >
+              <div style={`
+                position:absolute; top:3px;
+                left:${item.active ? '21px' : '3px'};
+                width:16px; height:16px; border-radius:50%;
+                background:white; transition:left 0.2s;
+              `} class="toggle-knob"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Test alert button -->
+      <div class="card" style="padding:20px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <div style="font-size:13px; font-weight:500; color:var(--text-primary);">Testar notificação</div>
+          <div style="font-size:12px; color:var(--text-muted);">Envia mensagem de teste para +55 11 9XXXX-XXXX</div>
+        </div>
+        <button id="test-alert-btn" class="btn btn-ghost" onclick="sendTestAlert()" style="flex-shrink:0;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 2l10 5-10 5V8.5l7-1.5-7-1.5V2z" fill="currentColor"/>
+          </svg>
+          Enviar alerta de teste
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT: iPhone mockup -->
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:14px; text-align:center;">
+        Preview — mensagens reais enviadas
+      </div>
+
+      <!-- Phone frame -->
+      <div style="
+        width:300px;
+        background:#1c1c1e;
+        border-radius:44px;
+        padding:12px;
+        box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08);
+        position:relative;
+      ">
+        <!-- Notch -->
+        <div style="
+          position:absolute; top:12px; left:50%; transform:translateX(-50%);
+          width:110px; height:28px; background:#000; border-radius:0 0 18px 18px;
+          z-index:10;
+        "></div>
+
+        <!-- Screen -->
+        <div style="
+          background:#ece5dd;
+          border-radius:34px;
+          overflow:hidden;
+          height:580px;
+          display:flex; flex-direction:column;
+        ">
+          <!-- WhatsApp header -->
+          <div style="
+            background:#075e54;
+            padding:44px 14px 12px;
+            display:flex; align-items:center; gap:10px;
+          ">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 9l-5 3V6l5 3z" fill="white"/></svg>
+            <div style="
+              width:32px; height:32px; border-radius:50%;
+              background:linear-gradient(135deg,#25d366,#128c7e);
+              display:flex; align-items:center; justify-content:center;
+              font-size:11px; font-weight:700; color:white;
+            ">NI</div>
+            <div>
+              <div style="font-size:12px; font-weight:600; color:white;">Natori IA</div>
+              <div style="font-size:10px; color:rgba(255,255,255,0.7);">online</div>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          <div id="wa-messages" style="flex:1; overflow-y:auto; padding:12px 10px; display:flex; flex-direction:column; gap:8px; background:#ece5dd;">
+
+            <!-- Message 1 — red alert -->
+            <div style="
+              background:white; border-radius:8px 8px 8px 2px;
+              padding:10px 12px; max-width:85%; align-self:flex-start;
+              box-shadow:0 1px 2px rgba(0,0,0,0.12);
+            ">
+              <div style="font-size:11px; color:#111; line-height:1.5;">
+                🔴 Kaio, perdemos Buy Box do Tarê Sakura 1L há 12min. Concorrente: R$24,90. Sugestão: R$24,80. Confirmar ajuste?
+              </div>
+              <div style="display:flex; gap:6px; margin-top:8px;">
+                <button onclick="waMsgAction(this,'sim')" style="
+                  background:#25d366; color:white; border:none;
+                  border-radius:5px; padding:5px 12px; font-size:10px;
+                  font-weight:600; cursor:pointer;
+                ">Sim</button>
+                <button onclick="waMsgAction(this,'nao')" style="
+                  background:#e0e0e0; color:#333; border:none;
+                  border-radius:5px; padding:5px 12px; font-size:10px;
+                  font-weight:600; cursor:pointer;
+                ">Não</button>
+              </div>
+              <div style="font-size:9px; color:#999; text-align:right; margin-top:4px;">09:43</div>
+            </div>
+
+            <!-- Message 2 -->
+            <div style="
+              background:white; border-radius:8px 8px 8px 2px;
+              padding:10px 12px; max-width:85%; align-self:flex-start;
+              box-shadow:0 1px 2px rgba(0,0,0,0.12);
+            ">
+              <div style="font-size:11px; color:#111; line-height:1.5;">
+                📊 Resumo de hoje: R$2.847 em vendas Curva A. 3 Buy Box recuperados. 1 alerta pendente.
+              </div>
+              <div style="font-size:9px; color:#999; text-align:right; margin-top:4px;">08:00</div>
+            </div>
+
+            <!-- Message 3 -->
+            <div style="
+              background:white; border-radius:8px 8px 8px 2px;
+              padding:10px 12px; max-width:85%; align-self:flex-start;
+              box-shadow:0 1px 2px rgba(0,0,0,0.12);
+            ">
+              <div style="font-size:11px; color:#111; line-height:1.5;">
+                ⚠️ Concorrente novo no Shoyu Daimaru. Quer diagnóstico completo?
+              </div>
+              <div style="display:flex; gap:6px; margin-top:8px;">
+                <button onclick="waMsgAction(this,'sim')" style="
+                  background:#25d366; color:white; border:none;
+                  border-radius:5px; padding:5px 12px; font-size:10px;
+                  font-weight:600; cursor:pointer;
+                ">Sim</button>
+                <button onclick="waMsgAction(this,'nao')" style="
+                  background:#e0e0e0; color:#333; border:none;
+                  border-radius:5px; padding:5px 12px; font-size:10px;
+                  font-weight:600; cursor:pointer;
+                ">Não</button>
+              </div>
+              <div style="font-size:9px; color:#999; text-align:right; margin-top:4px;">Ontem, 17:22</div>
+            </div>
+
+            <!-- Typing indicator (appears before message) -->
+            <div id="typing-indicator" style="display:none;
+              background:white; border-radius:8px 8px 8px 2px;
+              padding:10px 14px; align-self:flex-start;
+              box-shadow:0 1px 2px rgba(0,0,0,0.12);
+              animation:fade-in 0.3s ease;
+            ">
+              <div style="display:flex; align-items:center; gap:3px;">
+                <span style="width:6px;height:6px;border-radius:50%;background:#999;display:inline-block;animation:typing-dot 1.2s ease-in-out infinite;animation-delay:0s;"></span>
+                <span style="width:6px;height:6px;border-radius:50%;background:#999;display:inline-block;animation:typing-dot 1.2s ease-in-out infinite;animation-delay:0.2s;"></span>
+                <span style="width:6px;height:6px;border-radius:50%;background:#999;display:inline-block;animation:typing-dot 1.2s ease-in-out infinite;animation-delay:0.4s;"></span>
+              </div>
+            </div>
+
+            <!-- Live new message (appears after test) -->
+            <div id="live-msg" style="display:none;
+              background:white; border-radius:8px 8px 8px 2px;
+              padding:10px 12px; max-width:85%; align-self:flex-start;
+              box-shadow:0 1px 2px rgba(0,0,0,0.12);
+              animation:fade-in 0.4s ease;
+            ">
+              <div style="font-size:11px; color:#111; line-height:1.5;" id="live-msg-text">
+                🔴 TESTE — Buy Box perdido agora no Alga Nori Hanaro. Concorrente: R$13,80 (você: R$14,50). Confirmar ajuste para R$13,70?
+              </div>
+              <div style="display:flex; gap:6px; margin-top:8px;" id="live-msg-actions">
+                <button onclick="waMsgAction(this,'sim')" style="
+                  background:#25d366; color:white; border:none;
+                  border-radius:5px; padding:5px 12px; font-size:10px;
+                  font-weight:600; cursor:pointer;
+                ">Sim</button>
+                <button onclick="waMsgAction(this,'nao')" style="
+                  background:#e0e0e0; color:#333; border:none;
+                  border-radius:5px; padding:5px 12px; font-size:10px;
+                  font-weight:600; cursor:pointer;
+                ">Não</button>
+              </div>
+              <div style="font-size:9px; color:#999; text-align:right; margin-top:4px;" id="live-msg-time">agora</div>
+            </div>
+
+          </div>
+
+          <!-- WhatsApp input bar -->
+          <div style="
+            background:#f0f0f0; padding:8px 10px;
+            display:flex; align-items:center; gap:8px;
+          ">
+            <div style="
+              flex:1; background:white; border-radius:20px;
+              padding:8px 14px; font-size:10px; color:#999;
+            ">Mensagem</div>
+            <div style="
+              width:32px; height:32px; border-radius:50%;
+              background:#25d366;
+              display:flex; align-items:center; justify-content:center;
+            ">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 2l10 5-10 5V8.5l7-1.5-7-1.5V2z" fill="white"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:11px; color:var(--text-muted); margin-top:12px; text-align:center;">
+        Preview do fluxo de mensagens
+      </div>
+    </div>
+  </div>
+
+</AppLayout>
+
+<!-- Toast -->
+<div id="wa-toast" class="toast" style="display:none;">
+  <div style="display:flex; align-items:center; gap:8px;">
+    <div class="dot-green"></div>
+    <span style="color:var(--text-primary);">Alerta enviado para o seu número.</span>
+  </div>
+</div>
+
+<script>
+  function toggleAlert(el: HTMLElement) {
+    const active = el.getAttribute('data-active') === 'true';
+    el.setAttribute('data-active', active ? 'false' : 'true');
+    el.style.background = active ? 'var(--border-accent)' : 'var(--red)';
+    const knob = el.querySelector('.toggle-knob') as HTMLElement;
+    if (knob) knob.style.left = active ? '3px' : '21px';
+  }
+
+  function sendTestAlert() {
+    const testBtn = document.getElementById('test-alert-btn') as HTMLButtonElement;
+    if (testBtn.disabled) return;
+
+    // Disable button for 5s
+    testBtn.disabled = true;
+    testBtn.style.opacity = '0.5';
+    testBtn.style.cursor = 'not-allowed';
+
+    const messagesEl = document.getElementById('wa-messages')!;
+    const typingEl = document.getElementById('typing-indicator')!;
+    const liveMsgEl = document.getElementById('live-msg')!;
+    const liveTimeEl = document.getElementById('live-msg-time')!;
+
+    // Step 1: show typing indicator
+    typingEl.style.display = 'block';
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+
+    // Step 2: after 1.5s — hide typing, show message
+    setTimeout(() => {
+      typingEl.style.display = 'none';
+
+      const now = new Date();
+      liveTimeEl.textContent = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      liveMsgEl.style.display = 'block';
+      // reset animation
+      liveMsgEl.style.animation = 'none';
+      void (liveMsgEl as HTMLElement).offsetHeight; // reflow
+      liveMsgEl.style.animation = 'fade-in 0.4s ease';
+
+      // Auto-scroll to newest message
+      setTimeout(() => { messagesEl.scrollTop = messagesEl.scrollHeight; }, 50);
+
+      // Show toast
+      const toast = document.getElementById('wa-toast')!;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }, 1500);
+
+    // Re-enable button after 5s
+    setTimeout(() => {
+      testBtn.disabled = false;
+      testBtn.style.opacity = '1';
+      testBtn.style.cursor = 'pointer';
+    }, 5000);
+  }
+
+  function waMsgAction(btn: HTMLElement, action: string) {
+    btn.style.opacity = '0.5';
+    btn.textContent = action === 'sim' ? 'Enviando...' : 'Ok';
+    setTimeout(() => {
+      btn.textContent = action === 'sim' ? 'Enviado' : 'Ok';
+      (btn as HTMLButtonElement).disabled = true;
+      // Also disable sibling buttons
+      const siblings = btn.parentElement?.querySelectorAll('button');
+      siblings?.forEach(s => {
+        (s as HTMLButtonElement).disabled = true;
+        (s as HTMLElement).style.opacity = '0.5';
+      });
+    }, 600);
+  }
+
+  (window as any).toggleAlert = toggleAlert;
+  (window as any).sendTestAlert = sendTestAlert;
+  (window as any).waMsgAction = waMsgAction;
+</script>

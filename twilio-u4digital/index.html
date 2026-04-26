@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório Interno | Disparos WhatsApp - u4digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #060a06;
+    --bg-secondary: #0a100a;
+    --bg-card: #0f160f;
+    --bg-card-hover: #141c14;
+    --border: #1a261a;
+    --border-accent: #243024;
+    --text-primary: #e8ede8;
+    --text-secondary: #7a8a7a;
+    --text-muted: #4a5a4a;
+    --accent: #2d8a4e;
+    --accent-light: #3da564;
+    --accent-dim: rgba(45, 138, 78, 0.15);
+    --accent-glow: rgba(45, 138, 78, 0.08);
+    --green: #2d8a4e;
+    --green-dim: rgba(45, 138, 78, 0.12);
+    --red: #c44040;
+    --red-dim: rgba(196, 64, 64, 0.12);
+    --amber: #c49a30;
+    --amber-dim: rgba(196, 154, 48, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    padding: 16px 40px; display: flex; align-items: center; justify-content: space-between;
+    background: rgba(6, 10, 6, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
+  }
+  nav .logo-area { display: flex; align-items: center; gap: 12px; }
+  nav .logo-area img { height: 32px; opacity: 0.9; }
+  nav .logo-text { font-weight: 600; font-size: 16px; color: var(--text-primary); letter-spacing: -0.02em; }
+  nav .nav-tag { font-size: 11px; color: var(--accent); background: var(--accent-dim); padding: 4px 10px; border-radius: 100px; font-weight: 500; letter-spacing: 0.03em; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px 40px 80px; }
+
+  .page-header { margin-bottom: 48px; }
+  .page-header .section-number { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .page-header .section-number::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent); }
+  .page-header h1 { font-size: 36px; font-weight: 700; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 8px; }
+  .page-header .subtitle { font-size: 15px; color: var(--text-secondary); }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+  .kpi {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;
+    transition: all 0.3s ease;
+  }
+  .kpi:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+  .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
+  .kpi-value { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; }
+  .kpi-sub { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+  .kpi-value.green { color: var(--green); }
+  .kpi-value.red { color: var(--red); }
+  .kpi-value.accent { color: var(--accent); }
+  .kpi-value.amber { color: var(--amber); }
+
+  .section-title { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .section-title::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent); }
+
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+  .chart-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;
+    transition: all 0.3s ease;
+  }
+  .chart-card:hover { border-color: var(--border-accent); }
+  .chart-card h3 { font-size: 13px; font-weight: 500; margin-bottom: 16px; color: var(--text-secondary); }
+  .chart-card.full { grid-column: 1 / -1; }
+
+  /* Alert boxes */
+  .alert-grid { display: grid; gap: 12px; margin-bottom: 40px; }
+  .alert {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px;
+    display: flex; align-items: flex-start; gap: 16px;
+  }
+  .alert.critical { border-left: 3px solid var(--red); }
+  .alert.warning { border-left: 3px solid var(--amber); }
+  .alert.info { border-left: 3px solid var(--accent); }
+  .alert-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .alert.critical .alert-icon { background: var(--red-dim); color: var(--red); }
+  .alert.warning .alert-icon { background: var(--amber-dim); color: var(--amber); }
+  .alert.info .alert-icon { background: var(--green-dim); color: var(--accent); }
+  .alert-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .alert-content p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  /* Error table */
+  .error-table { width: 100%; border-collapse: collapse; }
+  .error-table th, .error-table td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .error-table th { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; font-weight: 600; }
+  .error-table td.code { color: var(--red); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
+  .error-table td.count { color: var(--text-primary); font-weight: 600; }
+  .error-table tr:hover { background: var(--bg-card-hover); }
+
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 10px; font-weight: 600; letter-spacing: 0.03em; }
+  .badge.critical { background: var(--red-dim); color: var(--red); }
+  .badge.warning { background: var(--amber-dim); color: var(--amber); }
+  .badge.info { background: var(--green-dim); color: var(--accent); }
+
+  /* Action items */
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 40px; }
+  .action-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;
+    transition: all 0.3s ease;
+  }
+  .action-card:hover { border-color: var(--accent); background: var(--bg-card-hover); }
+  .action-card .priority { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+  .action-card .priority.p1 { color: var(--red); }
+  .action-card .priority.p2 { color: var(--amber); }
+  .action-card .priority.p3 { color: var(--accent); }
+  .action-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .action-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  @media (max-width: 768px) {
+    nav { padding: 12px 20px; }
+    .container { padding: 24px 20px 60px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+    .action-grid { grid-template-columns: 1fr; }
+    .page-header h1 { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo-area">
+    <img src="assets/u4digital-logo.webp" alt="u4digital">
+    <span class="logo-text">u4digital</span>
+  </div>
+  <span class="nav-tag">RELATÓRIO INTERNO</span>
+</nav>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="section-number">Análise de Disparos</div>
+    <h1>Relatório WhatsApp <span style="color: var(--accent)">Twilio</span></h1>
+    <p class="subtitle">Período: 21 Mar – 09 Abr 2026 · Conta: AC32b47...87e5 · Remetente: +55 55 9136-5478</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="section-title">Métricas Gerais</div>
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Total Disparados</div>
+      <div class="kpi-value accent">6.129</div>
+      <div class="kpi-sub">mensagens outbound</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Entregues + Lidos</div>
+      <div class="kpi-value green">2.216</div>
+      <div class="kpi-sub">36,2% do total</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Não Entregues</div>
+      <div class="kpi-value red">3.864</div>
+      <div class="kpi-sub">63,0% — maioria por rate limit</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Falhas Permanentes</div>
+      <div class="kpi-value red">32</div>
+      <div class="kpi-sub">0,5% do total</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Taxa de Leitura</div>
+      <div class="kpi-value green">46,5%</div>
+      <div class="kpi-sub">dos entregues (1.031 lidos)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Respostas Recebidas</div>
+      <div class="kpi-value amber">343</div>
+      <div class="kpi-sub">15,5% dos entregues</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Custo Total</div>
+      <div class="kpi-value">$138,40</div>
+      <div class="kpi-sub">USD (~R$780)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Custo por Entrega Efetiva</div>
+      <div class="kpi-value">$0,062</div>
+      <div class="kpi-sub">USD por msg que chegou</div>
+    </div>
+  </div>
+
+  <!-- ALERTAS CRÍTICOS -->
+  <div class="section-title">Alertas Críticos</div>
+  <div class="alert-grid">
+    <div class="alert critical">
+      <div class="alert-icon">!</div>
+      <div class="alert-content">
+        <h4>63% dos disparos não foram entregues</h4>
+        <p>O erro 63018 (rate limit / template não aprovado pela Meta) afetou 3.061 mensagens — metade de tudo que foi enviado. Causa provável: volume concentrado (4.255 msgs entre 00:00–01:00 do dia 07/Abr) estourou o limite de envio da conta WhatsApp Business.</p>
+      </div>
+    </div>
+    <div class="alert critical">
+      <div class="alert-icon">!</div>
+      <div class="alert-content">
+        <h4>Blast de madrugada sem throttling</h4>
+        <p>No dia 07/Abr, 5.587 mensagens foram disparadas, sendo 4.255 concentradas na hora 00:00 e 1.327 na hora 01:00. Sem controle de velocidade (throttling), o WhatsApp aplicou rate limit massivo. Antes desse dia, a taxa de sucesso estava entre 83% e 100%.</p>
+      </div>
+    </div>
+    <div class="alert warning">
+      <div class="alert-icon">⚠</div>
+      <div class="alert-content">
+        <h4>529 números inválidos na lista</h4>
+        <p>Erro 63049 indica números que não existem no WhatsApp ou estão formatados incorretamente. Esses contatos precisam ser limpos da base para evitar desperdício de crédito e possível penalização da conta.</p>
+      </div>
+    </div>
+    <div class="alert warning">
+      <div class="alert-icon">⚠</div>
+      <div class="alert-content">
+        <h4>59 opt-outs registrados</h4>
+        <p>Erro 63032 — usuários que bloquearam o número ou optaram por não receber mensagens. Devem ser removidos permanentemente da lista. Continuar enviando para opt-outs pode resultar em banimento da conta.</p>
+      </div>
+    </div>
+    <div class="alert info">
+      <div class="alert-icon">✓</div>
+      <div class="alert-content">
+        <h4>Verificar no Meta Business Manager</h4>
+        <p>Confirmar: (1) se o template "Jornada Creator" está com status "approved", (2) qual o tier de messaging da conta (limite de msgs/dia), (3) se a conta recebeu algum warning ou flag de qualidade.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="section-title">Visualizações</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Status dos Disparos</h3>
+      <canvas id="statusChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Erros por Código</h3>
+      <canvas id="errorChart"></canvas>
+    </div>
+    <div class="chart-card full">
+      <h3>Volume Diário — Outbound vs Respostas</h3>
+      <canvas id="dailyChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>07/Abr — Distribuição por Hora</h3>
+      <canvas id="hourlyChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Taxa de Sucesso por Dia</h3>
+      <canvas id="successRateChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Error Table -->
+  <div class="section-title">Detalhamento de Erros</div>
+  <div class="chart-card" style="margin-bottom: 40px;">
+    <table class="error-table">
+      <thead>
+        <tr><th>Código</th><th>Descrição</th><th>Quantidade</th><th>% do Total</th><th>Severidade</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="code">63018</td><td>Rate limit / Template não aprovado</td><td class="count">3.061</td><td>49,9%</td><td><span class="badge critical">CRÍTICO</span></td></tr>
+        <tr><td class="code">63049</td><td>Número do destinatário inválido</td><td class="count">529</td><td>8,6%</td><td><span class="badge warning">ALTO</span></td></tr>
+        <tr><td class="code">12300</td><td>Content-Type inválido</td><td class="count">337</td><td>5,5%</td><td><span class="badge warning">MÉDIO</span></td></tr>
+        <tr><td class="code">63024</td><td>Falha no download de mídia</td><td class="count">201</td><td>3,3%</td><td><span class="badge warning">MÉDIO</span></td></tr>
+        <tr><td class="code">63032</td><td>Usuário fez opt-out (bloqueou)</td><td class="count">59</td><td>1,0%</td><td><span class="badge info">BAIXO</span></td></tr>
+        <tr><td class="code">21211</td><td>Número 'To' inválido</td><td class="count">22</td><td>0,4%</td><td><span class="badge info">BAIXO</span></td></tr>
+        <tr><td class="code">63016</td><td>Fora da janela de 24h</td><td class="count">14</td><td>0,2%</td><td><span class="badge info">BAIXO</span></td></tr>
+        <tr><td class="code">Outros</td><td>21656, 21910, 63031, 21212</td><td class="count">10</td><td>0,2%</td><td><span class="badge info">BAIXO</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ACTION ITEMS -->
+  <div class="section-title">Plano de Ação</div>
+  <div class="action-grid">
+    <div class="action-card">
+      <div class="priority p1">P1 — URGENTE</div>
+      <h4>Implementar Throttling</h4>
+      <p>Distribuir os disparos ao longo do dia (máximo 100–200 msgs/minuto). Nunca enviar mais de 1.000 mensagens na mesma hora. Priorizar horário comercial (08h–20h) para melhor taxa de leitura.</p>
+    </div>
+    <div class="action-card">
+      <div class="priority p1">P1 — URGENTE</div>
+      <h4>Verificar Template na Meta</h4>
+      <p>Acessar o Meta Business Manager e confirmar que o template "Jornada Creator" está aprovado. Se estiver pendente ou rejeitado, submeter novamente. Templates não aprovados geram erro 63018 mesmo sem rate limit.</p>
+    </div>
+    <div class="action-card">
+      <div class="priority p2">P2 — IMPORTANTE</div>
+      <h4>Limpar Base de Contatos</h4>
+      <p>Remover 529 números inválidos (erro 63049) e 59 opt-outs (erro 63032) da lista de disparos. Validar números restantes antes do próximo envio. Considerar serviço de verificação de WhatsApp.</p>
+    </div>
+    <div class="action-card">
+      <div class="priority p2">P2 — IMPORTANTE</div>
+      <h4>Corrigir Content-Type</h4>
+      <p>337 mensagens falharam com erro 12300 (Content-Type inválido). Revisar o formato do body/mídia enviado via API. Garantir que o formato está de acordo com a especificação do Twilio WhatsApp.</p>
+    </div>
+    <div class="action-card">
+      <div class="priority p2">P2 — IMPORTANTE</div>
+      <h4>Hospedar Mídia Corretamente</h4>
+      <p>201 falhas por download de mídia (erro 63024). Se o disparo inclui imagem/vídeo, garantir que a URL da mídia é pública, acessível e com HTTPS. Considerar hospedar no próprio Twilio Assets.</p>
+    </div>
+    <div class="action-card">
+      <div class="priority p3">P3 — MELHORIA</div>
+      <h4>Solicitar Aumento de Tier</h4>
+      <p>No Meta Business Manager, solicitar aumento do messaging tier da conta. Para enviar 5.000+ msgs/dia é necessário estar no Tier 3 ou 4. Demonstrar histórico de qualidade para acelerar aprovação.</p>
+    </div>
+  </div>
+
+  <!-- Comparativo -->
+  <div class="section-title">Comparativo: Antes vs Depois do Blast</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Antes do blast (21/Mar – 06/Abr)</h3>
+      <div style="padding: 20px 0;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+          <span style="color: var(--text-secondary); font-size: 13px;">Mensagens enviadas</span>
+          <span style="font-weight: 600;">542</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+          <span style="color: var(--text-secondary); font-size: 13px;">Taxa de sucesso média</span>
+          <span style="font-weight: 600; color: var(--green);">85,6%</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+          <span style="color: var(--text-secondary); font-size: 13px;">Não entregues</span>
+          <span style="font-weight: 600;">98</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-secondary); font-size: 13px;">Custo</span>
+          <span style="font-weight: 600;">~$10,85</span>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>Dia do blast (07/Abr)</h3>
+      <div style="padding: 20px 0;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+          <span style="color: var(--text-secondary); font-size: 13px;">Mensagens enviadas</span>
+          <span style="font-weight: 600;">5.587</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+          <span style="color: var(--text-secondary); font-size: 13px;">Taxa de sucesso</span>
+          <span style="font-weight: 600; color: var(--red);">32,0%</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+          <span style="color: var(--text-secondary); font-size: 13px;">Não entregues</span>
+          <span style="font-weight: 600; color: var(--red);">3.766</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-secondary); font-size: 13px;">Custo</span>
+          <span style="font-weight: 600;">~$127,55</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+Chart.defaults.color = '#7a8a7a';
+Chart.defaults.borderColor = '#1a261a';
+const green = '#2d8a4e';
+const greenLight = '#3da564';
+const red = '#c44040';
+const amber = '#c49a30';
+
+// Status Donut
+new Chart(document.getElementById('statusChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Não Entregue (3.864)', 'Entregue (1.185)', 'Lido (1.031)', 'Falhou (32)', 'Enviado (17)'],
+    datasets: [{
+      data: [3864, 1185, 1031, 32, 17],
+      backgroundColor: [red, green, '#4A90FF', '#7a2020', amber],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, font: { size: 11 } } } },
+    cutout: '65%'
+  }
+});
+
+// Error chart
+new Chart(document.getElementById('errorChart'), {
+  type: 'bar',
+  data: {
+    labels: ['63018\nRate Limit', '63049\nNúm. Inválido', '12300\nContent-Type', '63024\nMídia', '63032\nOpt-out', 'Outros'],
+    datasets: [{
+      data: [3061, 529, 337, 201, 59, 47],
+      backgroundColor: [red, '#e06040', amber, '#c4a030', green, '#4a5a4a'],
+      borderWidth: 0,
+      borderRadius: 6
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: '#0f160f' }, ticks: { font: { size: 11 } } },
+      y: { grid: { display: false }, ticks: { font: { size: 10 } } }
+    }
+  }
+});
+
+// Daily
+new Chart(document.getElementById('dailyChart'), {
+  type: 'bar',
+  data: {
+    labels: ['21/Mar','22','23','25','27','28','29','30','31','01/Abr','02','03','04','05','06','07','08','09'],
+    datasets: [
+      { label: 'Outbound', data: [25,1,2,1,6,32,13,43,6,69,27,28,54,12,188,5587,14,21], backgroundColor: green, borderRadius: 4 },
+      { label: 'Respostas', data: [0,0,0,0,4,12,2,12,2,1,3,4,5,0,24,268,0,0], backgroundColor: greenLight, borderRadius: 4 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { size: 11 } } } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+      y: { grid: { color: '#0f160f' } }
+    }
+  }
+});
+
+// Hourly April 7
+new Chart(document.getElementById('hourlyChart'), {
+  type: 'bar',
+  data: {
+    labels: ['00h','01h','02h','03h','04h','05h','06h','07h','08h','09h','10h','11h','12h','13h','14h'],
+    datasets: [{
+      data: [4255,1327,0,0,0,0,0,3,0,0,0,0,1,0,1],
+      backgroundColor: red,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+      y: { grid: { color: '#0f160f' } }
+    }
+  }
+});
+
+// Success rate by day
+new Chart(document.getElementById('successRateChart'), {
+  type: 'line',
+  data: {
+    labels: ['21/Mar','22','23','25','27','28','29','30','31','01/Abr','02','03','04','05','06','07','08','09'],
+    datasets: [{
+      label: 'Taxa de Sucesso',
+      data: [0,100,100,100,83,88,85,91,83,32,89,89,93,100,90,32,100,90],
+      borderColor: green,
+      backgroundColor: 'rgba(45,138,78,0.1)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 4,
+      pointBackgroundColor: green
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+      y: { grid: { color: '#0f160f' }, min: 0, max: 100, ticks: { callback: v => v + '%' } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>

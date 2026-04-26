@@ -1,0 +1,766 @@
+---
+/**
+ * REIS [IA] MARKETING — Landing Page v2
+ * Enhanced: animations, rich mockups, premium UI/UX
+ * All CTAs → #agendar | Blue #4A90FF | Dark mode | Inter
+ */
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Badge from '../components/Badge.astro';
+import Button from '../components/Button.astro';
+import SectionLabel from '../components/SectionLabel.astro';
+import HeroGrid from '../components/HeroGrid.tsx';
+import FaqAccordion from '../components/FaqAccordion.tsx';
+import CountUp from '../components/CountUp.tsx';
+import IconTarget from '../components/icons/IconTarget.astro';
+import IconTrendingUp from '../components/icons/IconTrendingUp.astro';
+import IconZap from '../components/icons/IconZap.astro';
+import IconBarChart from '../components/icons/IconBarChart.astro';
+import IconCheckCircle from '../components/icons/IconCheckCircle.astro';
+import IconWorkflow from '../components/icons/IconWorkflow.astro';
+import IconFilter from '../components/icons/IconFilter.astro';
+import IconBrain from '../components/icons/IconBrain.astro';
+import IconClock from '../components/icons/IconClock.astro';
+
+/* ---- Data ---- */
+
+const faqItems = [
+  {
+    question: 'Quanto tempo até eu ver contrato fechando?',
+    answer: 'Os primeiros leads qualificados aparecem nas primeiras semanas. Contratos fechados dependem do seu ciclo de venda — mas nossos clientes reportam aumento médio de 3 a 5 novos contratos por mês nos primeiros 90 dias. O sistema não para. Quanto mais roda, mais previsível fica.',
+  },
+  {
+    question: 'Meu negócio ainda não tem processo de marketing. Consigo começar do zero?',
+    answer: 'Sim. Na prática, começar do zero é mais rápido — não tem estrutura velha pra desconstruir. Montamos tudo: site que converte, Instagram estratégico, funil de captação, automação de follow-up. Muitos clientes saíram de zero para pipeline previsível em 60 dias.',
+  },
+  {
+    question: 'O que vocês entregam de concreto?',
+    answer: 'Site profissional, identidade visual, estratégia de conteúdo pro Instagram, funil de aquisição com landing pages, automação de email e WhatsApp, dashboard de acompanhamento. Tudo integrado num sistema que gera lead, qualifica e entrega pro seu time fechar.',
+  },
+  {
+    question: 'Preciso de um time de marketing pra isso funcionar?',
+    answer: 'Não. A IA opera as tarefas que normalmente exigiriam 2 a 3 pessoas — conteúdo, qualificação, sequências, análise. Um time mínimo (ou só você) consegue operar. O objetivo é você fechar mais contratos com menos gente e menos custo.',
+  },
+  {
+    question: 'Qual a diferença entre contratar uma agência e trabalhar com a REIS [IA]?',
+    answer: 'Agência cobra mensalidade e terceiriza execução genérica. Nós construímos o sistema de receita do seu negócio — site, visual, funil, automação, conteúdo — e esse sistema fica com você. Sem dependência. Você paga pela estrutura, não pela execução infinita.',
+  },
+  {
+    question: 'Funciona pra qualquer tipo de negócio?',
+    answer: 'Se você vende serviço ou produto de ticket médio acima de R$500 e precisa de mais contratos, funciona. Consultores, agências, SaaS, prestadores de serviço, infoprodutores. Se seu gargalo é gerar demanda qualificada, a conversa faz sentido.',
+  },
+];
+
+const services = [
+  {
+    icon: 'target',
+    title: 'Site que Converte',
+    label: 'Landing Pages e Sites Profissionais',
+    description: 'Não é site bonito. É site que gera contrato. Landing pages com copy de conversão, design premium e funil integrado. Cada página construída pra transformar visitante em lead qualificado.',
+  },
+  {
+    icon: 'brain',
+    title: 'Instagram Estratégico',
+    label: 'Conteúdo que Gera Demanda',
+    description: 'Seu perfil vira uma máquina de atração. Estratégia de conteúdo com IA, calendário editorial, copy que posiciona e gera DM de gente pronta pra comprar. Não é curtida — é contrato.',
+  },
+  {
+    icon: 'filter',
+    title: 'Identidade Visual Premium',
+    label: 'Marca, Design e Posicionamento',
+    description: 'Logotipo, paleta, tipografia, templates — tudo alinhado pra transmitir autoridade. Quem chega no seu perfil ou site precisa sentir em 3 segundos: essa empresa é séria.',
+  },
+  {
+    icon: 'workflow',
+    title: 'Funil de Vendas com IA',
+    label: 'Automação, Follow-up, Pipeline',
+    description: 'Lead entrou? IA qualifica, dispara sequência de email e WhatsApp, nutre e entrega pro seu time só quem tá pronto pra fechar. Seu pipeline nunca mais para.',
+  },
+  {
+    icon: 'barchart',
+    title: 'Estratégia de Aquisição',
+    label: 'Google, Meta, LinkedIn, Orgânico',
+    description: 'Mapeamos onde seu cliente ideal está e montamos a operação de aquisição. Tráfego pago, SEO, social selling — cada real investido rastreado até o contrato fechado.',
+  },
+  {
+    icon: 'zap',
+    title: 'Dashboard de Receita',
+    label: 'Dados, Atribuição e ROI',
+    description: 'Sabe exatamente quantos leads, quantas reuniões e quantos contratos cada canal gerou. Sem achismo. Você toma decisão de alocação olhando pra receita, não pra métricas de vaidade.',
+  },
+];
+
+const iconMap: Record<string, any> = {
+  filter: IconFilter,
+  brain: IconBrain,
+  workflow: IconWorkflow,
+  barchart: IconBarChart,
+  target: IconTarget,
+  zap: IconZap,
+};
+
+const processSteps = [
+  { phase: '01', name: 'Diagnóstico de Receita', description: 'Mapeamos seu ICP, seu ciclo de venda e onde você tá perdendo contrato. Quanto custa cada lead hoje? Quantos viram reunião? Quantos fecham? Sem esses números, qualquer ação é aposta.' },
+  { phase: '02', name: 'Estratégia + Visual + Posicionamento', description: 'Montamos a estratégia de aquisição, criamos (ou refazemos) sua identidade visual, site e presença no Instagram. Tudo alinhado pra uma coisa: gerar demanda qualificada que vira contrato.' },
+  { phase: '03', name: 'Implementação do Sistema', description: 'Site no ar, funil rodando, automação de follow-up ativa, conteúdo sendo produzido com IA, tráfego direcionado. Em 30 dias você tem uma máquina de geração de demanda operando.' },
+  { phase: '04', name: 'Escala e Otimização', description: 'Pipeline ativo. Analisamos qual canal tá gerando mais contratos, cortamos o que não funciona e dobramos o que funciona. O sistema melhora a cada ciclo — e seus contratos crescem junto.' },
+];
+
+const painPoints = [
+  { icon: 'clock', title: 'Contratos que você tá perdendo', description: 'Cada mês sem funil estruturado são 5, 10, 15 contratos que foram pro seu concorrente. Não é que o mercado tá ruim — é que você não tá na frente do cliente certo na hora certa.' },
+  { icon: 'target', title: 'Site e perfil que não vendem', description: 'Seu site é um cartão de visita digital que ninguém visita. Seu Instagram tem post bonito e zero DM de cliente. Presença digital sem estratégia é custo, não investimento.' },
+  { icon: 'zap', title: 'Dinheiro gasto sem saber o retorno', description: 'Já investiu em agência, em tráfego, em freelancer de conteúdo. Quanto voltou em contrato fechado? Se não sabe a resposta, tá queimando dinheiro no escuro.' },
+  { icon: 'trending', title: 'Crescimento que depende de você', description: 'Todo novo cliente depende de indicação, de networking, do seu esforço pessoal. Quando você para, o fluxo para junto. Isso não é negócio — é autônomo com CNPJ.' },
+];
+
+const painIconMap: Record<string, any> = { clock: IconClock, target: IconTarget, zap: IconZap, trending: IconTrendingUp };
+
+const testimonials = [
+  { name: 'Carlos M.', role: 'CEO', company: 'Consultoria de Gestão', quote: 'Em 60 dias saímos de zero para 8 contratos novos por mês. Site novo, funil rodando, Instagram gerando DM de decisor. Meu time só faz o que sabe: fechar.', initials: 'CM' },
+  { name: 'Renata S.', role: 'Diretora Comercial', company: 'Empresa de Tecnologia', quote: 'No terceiro mês já tínhamos 12 reuniões qualificadas por semana. O sistema fica com a gente — não é agência que cobra pra sempre. Isso mudou nosso jogo.', initials: 'RS' },
+  { name: 'André L.', role: 'Fundador', company: 'SaaS B2B', quote: 'Fechamos R$180K em contratos novos nos primeiros 90 dias. O CAC caiu 40% e eu sei exatamente de onde vem cada real. Parei de adivinhar.', initials: 'AL' },
+];
+
+const logoCompanies = ['Cloudfy', 'TechBridge', 'Nexus Digital', 'Apex Solutions', 'DataCore', 'Innova Group', 'Quantum Labs', 'Strattera'];
+
+const sparklineHeights = [35, 45, 30, 55, 65, 50, 70, 60, 75, 85, 80, 90];
+---
+
+<Layout
+  title="REIS [IA] MARKETING — Mais Contratos Fechados com IA"
+  description="Site, visual, Instagram, funil de vendas e automação — tudo construído com IA pra colocar cliente qualificado na sua frente toda semana. Feche mais contratos."
+>
+
+  <Nav />
+
+  <!-- ============================================================
+       S1. HERO — Full viewport, enhanced animations
+       ============================================================ -->
+  <section
+    class="relative overflow-hidden flex items-center justify-center"
+    style="background: var(--surface-0); min-height: 100vh; padding: var(--space-2xl) 0; padding-top: 96px;"
+    aria-labelledby="hero-heading"
+  >
+    <HeroGrid client:load />
+
+    <!-- Decorative accent lines -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" aria-hidden="true" style="width:500px;height:1px;background:linear-gradient(90deg,transparent,rgba(74,144,255,0.18) 50%,transparent);"></div>
+
+    <!-- Dual radial glow -->
+    <div class="absolute pointer-events-none" aria-hidden="true" style="top: 40%; left: 50%; transform: translate(-50%, -50%); width: 900px; height: 900px; background: radial-gradient(circle, rgba(74,144,255,0.07) 0%, rgba(74,144,255,0.02) 40%, transparent 65%); filter: blur(40px);"></div>
+    <div class="absolute pointer-events-none" aria-hidden="true" style="top: 60%; left: 30%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(74,144,255,0.04) 0%, transparent 60%); filter: blur(60px);"></div>
+
+    <div class="container-standard relative z-10">
+      <div class="max-w-[900px] mx-auto text-center">
+
+        <div class="hero-animate hero-animate-1 flex justify-center mb-6">
+          <Badge>REIS [IA] MARKETING</Badge>
+        </div>
+
+        <h1 id="hero-heading" class="hero-animate hero-animate-2" style="color: var(--text-primary);">
+          Marketing que Gera Demanda.
+          <br />
+          <span style="color: var(--accent-blue);">IA que Fecha Vendas.</span>
+        </h1>
+
+        <p class="hero-animate hero-animate-3 mt-6" style="font-size: var(--text-body-lg); line-height: 1.65; color: var(--text-secondary); max-width: 680px; margin-left: auto; margin-right: auto; letter-spacing: 0.01em;">
+          Estruture seus processos de marketing e vendas com IA. Gere demanda previsível, automatize seu funil e transforme leads em receita — sem depender de achismo.
+        </p>
+
+        <div class="hero-animate hero-animate-4 mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button variant="hero" href="#agendar">
+            Quero fechar mais contratos &rarr;
+          </Button>
+          <Button variant="ghost" href="#processo">
+            Como funciona
+          </Button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       S2. SOCIAL PROOF — Infinite marquee
+       ============================================================ -->
+  <section style="background: var(--surface-0); padding: 40px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); overflow: hidden;">
+    <p class="text-center mb-6" style="font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-quaternary);">
+      Empresas que estruturaram marketing com IA
+    </p>
+    <div style="overflow: hidden; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+      <div class="marquee-track">
+        {[...logoCompanies, ...logoCompanies].map((company) => (
+          <span class="marquee-item">{company}</span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       S3. RESULTADOS — Animated counter stats
+       ============================================================ -->
+  <section class="relative overflow-hidden" style="background: var(--surface-0); padding: var(--space-3xl) 0;" aria-labelledby="stats-heading">
+
+    <!-- Decorative glow -->
+    <div class="glow-orb" aria-hidden="true" style="top: 30%; left: 50%; transform: translateX(-50%); width: 600px; height: 300px; background: rgba(74,144,255,0.04);"></div>
+
+    <div class="container-standard relative z-10">
+      <SectionLabel>Resultados</SectionLabel>
+
+      <h2 id="stats-heading" class="mt-6 animate-on-scroll" style="max-width: 680px;">
+        Resultados médios dos nossos clientes nos primeiros 90 dias.
+      </h2>
+
+      <p class="mt-6 animate-on-scroll" style="font-size: var(--text-body-lg); line-height: 1.70; color: var(--text-secondary); max-width: var(--container-text); letter-spacing: 0.01em;">
+        Não são projeções. São números de quem parou de depender de indicação e montou um sistema de receita com site, funil, conteúdo e IA.
+      </p>
+
+      <div class="mt-14 animate-on-scroll">
+        <div class="flex flex-wrap justify-center gap-8 sm:gap-12 lg:gap-16">
+          <div class="stat-item">
+            <p class="stat-value" style="color: var(--accent-blue);">
+              <CountUp client:visible end={8} prefix="+" suffix="x" />
+            </p>
+            <p class="stat-label">mais contratos fechados</p>
+          </div>
+          <div class="stat-item">
+            <p class="stat-value" style="color: var(--text-primary);">
+              <CountUp client:visible end={180} prefix="R$" suffix="K" />
+            </p>
+            <p class="stat-label">receita média gerada</p>
+          </div>
+          <div class="stat-item">
+            <p class="stat-value" style="color: var(--text-primary);">
+              <CountUp client:visible end={40} prefix="-" suffix="%" />
+            </p>
+            <p class="stat-label">custo por contrato</p>
+          </div>
+          <div class="stat-item">
+            <p class="stat-value" style="color: var(--text-primary);">
+              <CountUp client:visible end={30} suffix=" dias" />
+            </p>
+            <p class="stat-label">até primeiro lead qualificado</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-12 animate-on-scroll text-center">
+        <Button variant="primary" href="#agendar" size="lg">Quero esses resultados pro meu negócio &rarr;</Button>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="section-divider"></div>
+
+
+  <!-- ============================================================
+       S4. O PROBLEMA — Pain amplification
+       ============================================================ -->
+  <section class="relative overflow-hidden" style="background: var(--surface-1); padding: var(--space-3xl) 0;" aria-labelledby="problem-heading">
+    <div class="container-standard relative z-10">
+      <SectionLabel>O Problema</SectionLabel>
+
+      <h2 id="problem-heading" class="mt-6 animate-on-scroll" style="max-width: 720px;">
+        Enquanto você lê isso, seus concorrentes estão fechando contratos que poderiam ser seus.
+      </h2>
+
+      <p class="mt-6 animate-on-scroll" style="font-size: var(--text-body-lg); line-height: 1.70; color: var(--text-secondary); max-width: var(--container-text); letter-spacing: 0.01em;">
+        Você tem um bom serviço. Seus clientes ficam satisfeitos. Mas toda receita nova depende de indicação, de você aparecer em evento, de alguém lembrar do seu nome. E quando isso para? O faturamento para junto. Esse é o problema de não ter um sistema de aquisição.
+      </p>
+
+      <div
+        class="mt-12 grid-stagger"
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1px; background: var(--border-default); border: 1px solid var(--border-default); border-radius: var(--radius-xl); overflow: hidden;"
+      >
+        {painPoints.map((point) => {
+          const PainIcon = painIconMap[point.icon];
+          return (
+            <div class="card-interactive" style="background: var(--surface-1); padding: 28px 24px; cursor: default;">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; background: rgba(255,100,100,0.06); border: 1px solid rgba(255,100,100,0.12); flex-shrink: 0;">
+                  <PainIcon size={16} class="text-[rgba(255,100,100,0.7)]" />
+                </div>
+                <h3 style="font-size: var(--text-h5); font-weight: 600; color: var(--text-primary); margin: 0;">{point.title}</h3>
+              </div>
+              <p style="font-size: var(--text-body-sm); line-height: 1.65; color: var(--text-secondary); margin: 0;">{point.description}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       S5. A SOLUÇÃO — Rich dashboard mockup + automation mockup
+       ============================================================ -->
+  <section class="relative overflow-hidden" style="background: var(--surface-0); padding: var(--space-3xl) 0;" aria-labelledby="solution-heading">
+    <div class="container-standard relative z-10">
+      <SectionLabel>A Solução</SectionLabel>
+
+      <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+
+        <!-- Left: copy -->
+        <div class="animate-from-left">
+          <h2 id="solution-heading">
+            Montamos toda a operação de marketing do seu negócio. Do zero ao contrato fechado.
+          </h2>
+
+          <p class="mt-6" style="font-size: var(--text-body-lg); line-height: 1.70; color: var(--text-secondary); letter-spacing: 0.01em;">
+            Site profissional, identidade visual, Instagram estratégico, funil de aquisição, automação de follow-up, dashboard de receita. Cada peça conectada à próxima — com IA operando o que não precisa de você. O resultado? Cliente qualificado batendo na sua porta toda semana.
+          </p>
+
+          <!-- Automation flow mockup -->
+          <div class="mt-8 auto-mockup">
+            <p style="font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-quaternary); margin-bottom: 12px;">Automação ativa</p>
+            <div class="auto-flow">
+              <div class="auto-step">
+                <div class="auto-node trigger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <div>
+                  <p class="auto-label">Lead entra no funil</p>
+                  <p class="auto-sublabel">Formulário, LP ou anúncio</p>
+                </div>
+              </div>
+              <div class="auto-connector"></div>
+              <div class="auto-step">
+                <div class="auto-node action">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div>
+                  <p class="auto-label">IA qualifica automaticamente</p>
+                  <p class="auto-sublabel">Score + perfil ICP</p>
+                </div>
+              </div>
+              <div class="auto-connector"></div>
+              <div class="auto-step">
+                <div class="auto-node wait">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div>
+                  <p class="auto-label">Sequência de nurturing</p>
+                  <p class="auto-sublabel">Email + WhatsApp em 48h</p>
+                </div>
+              </div>
+              <div class="auto-connector"></div>
+              <div class="auto-step">
+                <div class="auto-node action">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </div>
+                <div>
+                  <p class="auto-label">Entrega ao time de vendas</p>
+                  <p class="auto-sublabel">Só leads quentes e qualificados</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8">
+            <Button variant="primary" href="#agendar">Quero montar meu sistema de receita &rarr;</Button>
+          </div>
+        </div>
+
+        <!-- Right: Rich dashboard mockup -->
+        <div class="animate-from-right">
+          <div class="mockup-window">
+            <div class="mockup-chrome">
+              <div class="mockup-dots"><span></span><span></span><span></span></div>
+              <span class="mockup-title">REIS [IA] Hub — Marketing Dashboard</span>
+            </div>
+            <div class="mockup-body">
+              <!-- KPI row -->
+              <div class="kpi-row">
+                <div class="kpi-item">
+                  <p class="kpi-label">Contratos / mês</p>
+                  <p class="kpi-value">8</p>
+                  <p class="kpi-change positive">+3 vs anterior</p>
+                </div>
+                <div class="kpi-item">
+                  <p class="kpi-label">Receita gerada</p>
+                  <p class="kpi-value">R$ 96K</p>
+                  <p class="kpi-change positive">+38% vs anterior</p>
+                </div>
+                <div class="kpi-item">
+                  <p class="kpi-label">Custo / contrato</p>
+                  <p class="kpi-value">R$ 340</p>
+                  <p class="kpi-change positive">-22% vs anterior</p>
+                </div>
+              </div>
+
+              <!-- Funnel -->
+              <p class="funnel-label">Funil de Vendas — últimos 30 dias</p>
+              <div class="funnel-container">
+                <div class="funnel-row">
+                  <span class="funnel-stage">Visitantes</span>
+                  <div class="funnel-bar-wrap">
+                    <div class="funnel-bar" style="--bar-width: 100%; background: rgba(74,144,255,0.18); border-color: rgba(74,144,255,0.3);">
+                      <span class="funnel-value">4.200</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="funnel-row">
+                  <span class="funnel-stage">Leads</span>
+                  <div class="funnel-bar-wrap">
+                    <div class="funnel-bar" style="--bar-width: 62%; background: rgba(74,144,255,0.22); border-color: rgba(74,144,255,0.35);">
+                      <span class="funnel-value">380</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="funnel-row">
+                  <span class="funnel-stage">Reuniões</span>
+                  <div class="funnel-bar-wrap">
+                    <div class="funnel-bar" style="--bar-width: 36%; background: rgba(74,144,255,0.28); border-color: rgba(74,144,255,0.4);">
+                      <span class="funnel-value">42</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="funnel-row">
+                  <span class="funnel-stage">Contratos</span>
+                  <div class="funnel-bar-wrap">
+                    <div class="funnel-bar" style="--bar-width: 18%; background: rgba(52,211,153,0.18); border-color: rgba(52,211,153,0.35);">
+                      <span class="funnel-value" style="color: #34d399;">8</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sparkline chart -->
+              <div class="sparkline-chart">
+                {sparklineHeights.map((h) => (
+                  <div class="sparkline-bar" style={`height: ${h}%`}></div>
+                ))}
+              </div>
+              <p style="font-size: 10px; color: var(--text-quaternary); margin-top: 4px;">Contratos fechados — últimas 12 semanas</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Service cards grid -->
+      <div
+        class="mt-16 grid-stagger"
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--border-default); border: 1px solid var(--border-default); border-radius: var(--radius-xl); overflow: hidden;"
+      >
+        {services.map((service) => {
+          const ServiceIcon = iconMap[service.icon];
+          return (
+            <div class="card-interactive" style="background: var(--surface-0); padding: 32px 28px; cursor: default;">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(74,144,255,0.12), rgba(74,144,255,0.04)); border: 1px solid rgba(74,144,255,0.2); flex-shrink: 0;">
+                  <ServiceIcon size={18} class="text-[var(--accent-blue)]" />
+                </div>
+              </div>
+              <p style="font-size: var(--text-label); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent-blue); margin: 0 0 8px;">{service.label}</p>
+              <h3 style="font-weight: 600; color: var(--text-primary); margin: 0 0 12px;">{service.title}</h3>
+              <p style="font-size: var(--text-body-sm); line-height: 1.65; color: var(--text-secondary); margin: 0;">{service.description}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+
+  <div class="section-divider"></div>
+
+
+  <!-- ============================================================
+       S6. COMO FUNCIONA — Process with timeline connector
+       ============================================================ -->
+  <section id="processo" class="relative overflow-hidden" style="background: var(--surface-1); padding: var(--space-3xl) 0;" aria-labelledby="process-heading">
+    <div class="container-standard relative z-10">
+      <SectionLabel>Como Funciona</SectionLabel>
+
+      <h2 id="process-heading" class="mt-6 animate-on-scroll" style="max-width: 700px;">
+        De zero a máquina de contratos. Em quatro etapas.
+      </h2>
+
+      <p class="mt-6 animate-on-scroll" style="font-size: var(--text-body-lg); line-height: 1.70; color: var(--text-secondary); max-width: var(--container-text); letter-spacing: 0.01em;">
+        Diagnóstico sem execução é plano de gaveta. Execução sem estratégia é dinheiro jogado fora. Por isso entregamos tudo — da análise ao contrato fechado.
+      </p>
+
+      <div class="mt-14 grid-stagger" style="display: flex; flex-direction: column; gap: 1px; background: var(--border-default); border: 1px solid var(--border-default); border-radius: var(--radius-xl); overflow: hidden;">
+        {processSteps.map((step, i) => (
+          <div class="process-card">
+            <div class={`step-number ${i === 0 ? 'active' : 'inactive'}`}>
+              {step.phase}
+            </div>
+            <div>
+              <h3 style="font-weight: 600; color: var(--text-primary); margin: 0 0 10px;">
+                {step.name}
+              </h3>
+              <p style="font-size: var(--text-body-sm); line-height: 1.65; color: var(--text-secondary); margin: 0;">
+                {step.description}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-10 animate-on-scroll">
+        <Button variant="primary" href="#agendar" size="lg">Agendar diagnóstico gratuito &rarr;</Button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       S7. CASE STUDY — Enhanced with gradient top border
+       ============================================================ -->
+  <section class="relative overflow-hidden" style="background: var(--surface-0); padding: var(--space-3xl) 0;" aria-labelledby="case-heading">
+
+    <div class="glow-orb" aria-hidden="true" style="top: 50%; left: 20%; width: 400px; height: 400px; background: rgba(74,144,255,0.03);"></div>
+
+    <div class="container-standard relative z-10">
+      <SectionLabel>Case de Sucesso</SectionLabel>
+
+      <h2 id="case-heading" class="mt-6 animate-on-scroll" style="max-width: 700px;">
+        De zero contratos digitais a 8 por mês. Em 60 dias.
+      </h2>
+
+      <div class="mt-12 animate-scale case-card" style="max-width: 900px;">
+        <div class="grid grid-cols-1 lg:grid-cols-5">
+          <div class="lg:col-span-3 p-8 lg:p-10">
+            <p style="font-size: var(--text-label); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-blue); margin: 0 0 16px;">Consultoria de Gestão — 15 colaboradores</p>
+
+            <p style="font-size: var(--text-body-lg); line-height: 1.65; color: var(--text-secondary); margin: 0 0 20px;">
+              8 anos de mercado, faturamento sólido — mas 100% dependente de indicação. Zero presença digital. Nenhum contrato vinha da internet.
+            </p>
+
+            <p style="font-size: var(--text-body); line-height: 1.65; color: var(--text-secondary); margin: 0 0 16px;">
+              <strong style="color: var(--text-primary);">O que entregamos:</strong> site profissional com funil, identidade visual reformulada, Instagram com estratégia de conteúdo, automação de qualificação e follow-up, dashboard de receita.
+            </p>
+
+            <p style="font-size: var(--text-body); line-height: 1.65; color: var(--text-secondary); margin: 0 0 24px;">
+              <strong style="color: var(--text-primary);">Resultado:</strong> 8 contratos novos por mês vindos do digital. Pipeline previsível pela primeira vez na história da empresa.
+            </p>
+
+            <blockquote style="border-left: 2px solid var(--accent-blue); padding-left: 16px; margin: 0;">
+              <p style="font-size: var(--text-body); font-style: italic; line-height: 1.65; color: var(--text-secondary);">
+                "Antes eu dependia de indicação. Hoje meu time recebe leads qualificados toda semana — e a gente só precisa fechar. O marketing virou uma máquina."
+              </p>
+              <footer style="margin-top: 8px; font-size: var(--text-body-sm); color: var(--text-tertiary);">
+                — Carlos M., CEO
+              </footer>
+            </blockquote>
+          </div>
+
+          <div class="lg:col-span-2 p-8 lg:p-10 flex flex-col justify-center gap-8" style="background: rgba(74,144,255,0.03); border-left: 1px solid rgba(74,144,255,0.08);">
+            <div>
+              <p class="font-bold tabular-nums" style="font-size: 2.8rem; color: var(--accent-blue); letter-spacing: -0.02em; line-height: 1; margin: 0;">8</p>
+              <p style="font-size: var(--text-body-sm); color: var(--text-tertiary); margin-top: 4px;">contratos novos/mês</p>
+            </div>
+            <div>
+              <p class="font-bold tabular-nums" style="font-size: 2.8rem; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1; margin: 0;">R$96K</p>
+              <p style="font-size: var(--text-body-sm); color: var(--text-tertiary); margin-top: 4px;">receita mensal adicionada</p>
+            </div>
+            <div>
+              <p class="font-bold tabular-nums" style="font-size: 2.8rem; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1; margin: 0;">60 dias</p>
+              <p style="font-size: var(--text-body-sm); color: var(--text-tertiary); margin-top: 4px;">do zero ao pipeline ativo</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       S8. DEPOIMENTOS — Enhanced with quote marks + hover
+       ============================================================ -->
+  <section class="relative overflow-hidden" style="background: var(--surface-1); padding: var(--space-3xl) 0;" aria-labelledby="testimonials-heading">
+    <div class="container-standard relative z-10">
+      <SectionLabel>Depoimentos</SectionLabel>
+
+      <h2 id="testimonials-heading" class="mt-6 animate-on-scroll" style="max-width: 600px;">
+        Quem estruturou, não volta atrás.
+      </h2>
+
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 grid-stagger">
+        {testimonials.map((t) => (
+          <div class="testimonial-card">
+            <span class="testimonial-quote-mark" aria-hidden="true">"</span>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(74,144,255,0.15), rgba(74,144,255,0.05)); border: 1px solid rgba(74,144,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <span style="font-size: 14px; font-weight: 700; color: var(--accent-blue);">{t.initials}</span>
+              </div>
+              <div>
+                <p style="font-size: var(--text-body-sm); font-weight: 600; color: var(--text-primary); margin: 0;">{t.name}</p>
+                <p style="font-size: 12px; color: var(--text-tertiary); margin: 0;">{t.role} — {t.company}</p>
+              </div>
+            </div>
+            <p style="font-size: var(--text-body-sm); line-height: 1.75; color: var(--text-secondary); margin: 0; position: relative; z-index: 1;">
+              "{t.quote}"
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       S9. CTA CARD — Mid-page conversion
+       ============================================================ -->
+  <section class="relative overflow-hidden" style="background: var(--surface-0); padding: var(--space-3xl) 0;">
+
+    <div class="glow-orb" aria-hidden="true" style="top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 300px; background: rgba(74,144,255,0.04);"></div>
+
+    <div class="container-standard relative z-10">
+      <div class="animate-scale case-card" style="max-width: 900px; margin: 0 auto;">
+        <div class="grid grid-cols-1 lg:grid-cols-5">
+          <div class="lg:col-span-3 p-8 lg:p-10">
+            <p style="font-size: var(--text-label); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-blue); margin: 0 0 16px;">Comece agora</p>
+            <h2 style="font-size: var(--text-h3); font-weight: 600; line-height: 1.12; letter-spacing: -0.02em; margin: 0 0 16px;">
+              Quantos contratos você tá deixando na mesa por mês?
+            </h2>
+            <p style="font-size: var(--text-body); line-height: 1.60; color: var(--text-secondary); margin: 0 0 24px;">
+              Em 30 minutos mapeamos onde seu negócio tá perdendo receita — e mostramos exatamente o que construir pra mudar isso.
+            </p>
+            <Button variant="primary" href="#agendar">
+              Descobrir agora &rarr;
+            </Button>
+          </div>
+          <div class="lg:col-span-2 p-8 lg:p-10 flex flex-col justify-center gap-5" style="background: rgba(74,144,255,0.03); border-left: 1px solid rgba(74,144,255,0.08);">
+            {['Site profissional que converte', 'Visual e marca premium', 'Instagram que gera demanda', 'Funil com automação de IA', 'Dashboard de contratos e receita'].map((item) => (
+              <div class="flex items-start gap-3">
+                <svg class="flex-shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="section-divider"></div>
+
+
+  <!-- ============================================================
+       S10. PARA QUEM É / NÃO É
+       ============================================================ -->
+  <section class="relative overflow-hidden" style="background: var(--surface-1); padding: var(--space-3xl) 0;" aria-labelledby="qualification-heading">
+    <div class="container-standard relative z-10">
+      <SectionLabel>Qualificação</SectionLabel>
+
+      <h2 id="qualification-heading" class="mt-6 animate-on-scroll" style="max-width: 640px;">
+        Não trabalhamos com todo mundo. Só com quem quer fechar contrato.
+      </h2>
+
+      <p class="mt-6 animate-on-scroll" style="font-size: var(--text-body-lg); line-height: 1.70; color: var(--text-secondary); max-width: var(--container-text); letter-spacing: 0.01em;">
+        Nosso sistema é pra quem tem um serviço bom e quer transformar isso em receita previsível. Se o perfil abaixo não é o seu, sem problema — sem perda de tempo pra ninguém.
+      </p>
+
+      <div class="mt-12 grid-stagger qual-grid" style="display: grid; gap: 1px; background: var(--border-default); border: 1px solid var(--border-default); border-radius: var(--radius-xl); overflow: hidden;">
+        <div style="background: var(--surface-1); padding: 36px 32px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 24px;">
+            <div style="width: 10px; height: 10px; border-radius: 50%; background: #34d399; flex-shrink: 0; box-shadow: 0 0 8px rgba(52,211,153,0.4);"></div>
+            <h3 style="font-size: var(--text-h5); font-weight: 600; color: var(--text-primary); margin: 0;">Para quem é</h3>
+          </div>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px;">
+            {[
+              'Dono de negócio que quer mais contratos por mês de forma previsível',
+              'Empresa com serviço validado que precisa de site, visual e funil pra escalar',
+              'Negócio que gasta com marketing mas não sabe quantos contratos isso gera',
+              'Fundador cansado de depender de indicação e networking pessoal',
+              'Ticket médio acima de R$500 e disposição pra investir em estrutura',
+            ].map((item) => (
+              <li style="display: flex; align-items: flex-start; gap: 10px;">
+                <IconCheckCircle size={16} class="text-[#34d399] flex-shrink-0 mt-0.5" />
+                <span style="font-size: var(--text-body-sm); line-height: 1.60; color: var(--text-secondary);">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div style="background: var(--surface-1); padding: 36px 32px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 24px;">
+            <div style="width: 10px; height: 10px; border-radius: 50%; background: rgba(255,100,100,0.7); flex-shrink: 0; box-shadow: 0 0 8px rgba(255,100,100,0.3);"></div>
+            <h3 style="font-size: var(--text-h5); font-weight: 600; color: var(--text-primary); margin: 0;">Para quem não é</h3>
+          </div>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px;">
+            {[
+              'Quem ainda não tem serviço ou produto validado pra vender',
+              'Quem quer resultado sem investir na estrutura que gera resultado',
+              'Quem busca "viralizar" em vez de fechar contrato',
+              'Quem não tem disposição pra medir e otimizar com dados',
+              'Quem acha que post bonito no Instagram substitui processo de venda',
+            ].map((item) => (
+              <li style="display: flex; align-items: flex-start; gap: 10px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,100,100,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="flex-shrink-0 mt-0.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <span style="font-size: var(--text-body-sm); line-height: 1.60; color: var(--text-secondary);">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       S11. FAQ
+       ============================================================ -->
+  <section class="relative overflow-hidden" style="background: var(--surface-1); padding: var(--space-3xl) 0;" aria-labelledby="faq-heading">
+    <div class="container-text relative z-10">
+      <SectionLabel>Perguntas Frequentes</SectionLabel>
+
+      <h2 id="faq-heading" class="mt-6 animate-on-scroll" style="max-width: 640px;">
+        Dúvidas que aparecem antes de começar.
+      </h2>
+
+      <div class="mt-12 animate-on-scroll">
+        <FaqAccordion items={faqItems} client:visible />
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       S12. CTA FINAL — Strong close with enhanced glow
+       ============================================================ -->
+  <section id="agendar" class="relative overflow-hidden" style="background: var(--surface-0); padding: var(--space-4xl) 0;" aria-labelledby="cta-heading">
+
+    <!-- Multi-layer glow -->
+    <div class="absolute pointer-events-none" aria-hidden="true" style="top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(74,144,255,0.08) 0%, rgba(74,144,255,0.03) 35%, transparent 60%); filter: blur(60px);"></div>
+    <div class="absolute pointer-events-none" aria-hidden="true" style="top: 40%; left: 40%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(74,144,255,0.05) 0%, transparent 60%); filter: blur(40px);"></div>
+
+    <!-- Top accent line -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none" aria-hidden="true" style="width:300px;height:1px;background:linear-gradient(90deg,transparent,rgba(74,144,255,0.2) 50%,transparent);"></div>
+
+    <div class="container-text relative z-10 text-center">
+
+      <h2 id="cta-heading" class="animate-on-scroll" style="max-width: 700px; margin: 0 auto;">
+        Cada mês sem sistema é receita que vai pro seu concorrente.
+      </h2>
+
+      <p class="mt-6 animate-on-scroll" style="font-size: var(--text-body-lg); line-height: 1.65; color: var(--text-secondary); max-width: 560px; margin: 0 auto; letter-spacing: 0.01em;">
+        30 minutos. Sem pitch de ferramenta. Você sai sabendo exatamente quantos contratos tá perdendo por mês, por quê, e o que fazer pra começar a fechar agora.
+      </p>
+
+      <div class="mt-10 animate-on-scroll flex flex-col sm:flex-row items-center justify-center gap-4">
+        <Button variant="hero" href="https://cal.com/moronireis/diagnostico">
+          Agendar diagnóstico de receita
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+        </Button>
+      </div>
+
+      <p class="mt-6 animate-on-scroll" style="font-size: 13px; color: var(--text-quaternary);">
+        Atendemos no máximo 5 novos clientes por mês. Vagas limitadas.
+      </p>
+
+    </div>
+  </section>
+
+
+  <Footer />
+
+</Layout>

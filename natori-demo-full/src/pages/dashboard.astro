@@ -1,0 +1,274 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import activity from '../data/activity.json';
+import report from '../data/report.json';
+---
+
+<AppLayout title="Dashboard" activePage="dashboard">
+
+  <!-- Greeting bar -->
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <h1 style="font-size:22px; font-weight:700; color:var(--text-primary); letter-spacing:-0.03em; margin-bottom:4px;">
+        Bem-vindo, Kaio
+      </h1>
+      <div style="font-size:13px; color:var(--text-muted);" id="datetime-display">—</div>
+    </div>
+    <div id="update-badge" style="display:flex; align-items:center; gap:8px; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:8px 14px;">
+      <div class="dot-green"></div>
+      <span style="font-size:12px; color:var(--text-secondary);">Última atualização: há <span id="update-counter">12</span>s</span>
+    </div>
+  </div>
+
+  <!-- Hero metric -->
+  <div style="
+    background: linear-gradient(135deg, rgba(200,16,46,0.08) 0%, rgba(212,175,55,0.04) 100%);
+    border:1px solid rgba(200,16,46,0.2);
+    border-radius:16px;
+    padding:32px 36px;
+    margin-bottom:24px;
+    position:relative; overflow:hidden;
+  ">
+    <div style="position:absolute; right:-20px; top:-20px; width:200px; height:200px; background:radial-gradient(circle, rgba(200,16,46,0.08) 0%, transparent 70%);"></div>
+    <div style="font-size:11px; font-weight:600; color:var(--red); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px;">Curva A — Monitoramento Ativo</div>
+    <div style="font-size:42px; font-weight:700; color:var(--text-primary); letter-spacing:-0.04em; line-height:1;">
+      R$ 815.000
+    </div>
+    <div style="font-size:14px; color:var(--text-muted); margin-top:8px;">sob monitoramento agora · 55 produtos · 3 marketplaces</div>
+  </div>
+
+  <!-- Marketplace cards -->
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
+
+    <!-- Mercado Livre -->
+    <div class="card" style="padding:20px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+        <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Mercado Livre</div>
+        <div class="dot-green"></div>
+      </div>
+      <div style="font-size:28px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">47</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">SKUs monitorados</div>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span class="badge badge-red">4 alertas hoje</span>
+        <span style="font-size:11px; color:var(--green);">Buy Box 97%</span>
+      </div>
+    </div>
+
+    <!-- Shopee -->
+    <div class="card" style="padding:20px; border-color:rgba(234,179,8,0.2);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+        <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Shopee</div>
+        <div class="dot-yellow"></div>
+      </div>
+      <div style="font-size:28px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">52</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">SKUs monitorados</div>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span class="badge badge-yellow">7 alertas hoje</span>
+        <span style="font-size:11px; color:var(--yellow);">Buy Box 91%</span>
+      </div>
+    </div>
+
+    <!-- Amazon -->
+    <div class="card" style="padding:20px; border-color:rgba(200,16,46,0.2);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+        <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Amazon</div>
+        <div class="dot-red"></div>
+      </div>
+      <div style="font-size:28px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">38</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">SKUs monitorados</div>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span class="badge badge-red">12 alertas hoje</span>
+        <span style="font-size:11px; color:var(--red);">Buy Box perdido em 3</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI strip -->
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px;">
+    {[
+      { label: 'Alertas hoje', value: '12', color: 'var(--red)', id: 'kpi-alerts' },
+      { label: 'Buy Box perdidos', value: '3', color: 'var(--red)', id: 'kpi-lost' },
+      { label: 'R$ em risco (4h)', value: 'R$ 2.847', color: 'var(--yellow)', id: 'kpi-risk' },
+      { label: 'Buy Box win rate (7d)', value: '94%', color: 'var(--green)', id: 'kpi-winrate' },
+    ].map(k => (
+      <div class="card kpi-card" style="padding:18px 20px;">
+        <div style={`font-size:22px; font-weight:700; color:${k.color}; letter-spacing:-0.03em; margin-bottom:4px;`} id={k.id}>{k.value}</div>
+        <div style="font-size:12px; color:var(--text-muted);">{k.label}</div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Chart + Activity -->
+  <div style="display:grid; grid-template-columns:1fr 380px; gap:20px;">
+
+    <!-- Mini chart -->
+    <div class="card" style="padding:24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <div>
+          <div style="font-size:14px; font-weight:600; color:var(--text-primary);">Receita Curva A</div>
+          <div style="font-size:12px; color:var(--text-muted);">Hoje vs ontem vs média 7d</div>
+        </div>
+        <div style="display:flex; gap:16px; font-size:11px;">
+          <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:2px;background:var(--red);display:inline-block;border-radius:1px;"></span><span style="color:var(--text-muted);">Hoje</span></span>
+          <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:2px;background:var(--text-muted);display:inline-block;border-radius:1px; opacity:0.5;"></span><span style="color:var(--text-muted);">Ontem</span></span>
+          <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:2px;background:var(--gold);display:inline-block;border-radius:1px; opacity:0.6;"></span><span style="color:var(--text-muted);">Média 7d</span></span>
+        </div>
+      </div>
+      <!-- SVG Chart -->
+      <div id="revenue-chart" style="width:100%; height:160px;"></div>
+    </div>
+
+    <!-- Activity feed -->
+    <div class="card" style="padding:20px;">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:16px;">Atividade Recente</div>
+      <div style="display:flex; flex-direction:column; gap:0;">
+        {activity.map((item, i) => (
+          <div style={`
+            padding:10px 0;
+            border-bottom:${i < activity.length - 1 ? '1px solid var(--border)' : 'none'};
+            animation: slide-in ${0.1 + i * 0.07}s ease both;
+          `}>
+            <div style="display:flex; align-items:flex-start; gap:8px;">
+              <div style={`
+                width:6px; height:6px; border-radius:50%; margin-top:5px; flex-shrink:0;
+                background:${item.severity === 'red' ? 'var(--red)' : item.severity === 'green' ? 'var(--green)' : 'var(--yellow)'};
+              `}></div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:12px; color:var(--text-primary); line-height:1.4;">{item.message}</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">{item.time}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+</AppLayout>
+
+<script>
+  // Datetime display
+  function updateDatetime() {
+    const el = document.getElementById('datetime-display');
+    if (!el) return;
+    const now = new Date();
+    el.textContent = now.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) + ' · ' + now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+  }
+  updateDatetime();
+
+  // "Última atualização" live counter — flash at 30s then reset
+  let updateSecs = 12;
+  const counterEl = document.getElementById('update-counter');
+  const updateBadge = document.getElementById('update-badge');
+
+  function flashAndReset() {
+    // Flash the badge red/bright
+    if (updateBadge) {
+      updateBadge.style.transition = 'background 0.2s, border-color 0.2s';
+      updateBadge.style.background = 'rgba(200,16,46,0.18)';
+      updateBadge.style.borderColor = 'rgba(200,16,46,0.4)';
+    }
+
+    // Pulse all KPI metric cards
+    const kpiCards = document.querySelectorAll('.kpi-card');
+    kpiCards.forEach(card => {
+      (card as HTMLElement).style.transition = 'box-shadow 0.25s, border-color 0.25s';
+      (card as HTMLElement).style.boxShadow = '0 0 0 1px rgba(200,16,46,0.3), 0 4px 20px rgba(200,16,46,0.1)';
+      (card as HTMLElement).style.borderColor = 'rgba(200,16,46,0.3)';
+    });
+
+    // After 400ms — fade back and reset counter
+    setTimeout(() => {
+      updateSecs = 1;
+      if (counterEl) counterEl.textContent = '1';
+      if (updateBadge) {
+        updateBadge.style.background = '';
+        updateBadge.style.borderColor = '';
+      }
+      kpiCards.forEach(card => {
+        (card as HTMLElement).style.boxShadow = '';
+        (card as HTMLElement).style.borderColor = '';
+      });
+    }, 400);
+  }
+
+  setInterval(() => {
+    updateSecs++;
+    if (updateSecs >= 30) {
+      flashAndReset();
+      return;
+    }
+    if (counterEl) counterEl.textContent = String(updateSecs);
+  }, 1000);
+
+  // SVG Revenue Chart
+  function drawChart() {
+    const container = document.getElementById('revenue-chart');
+    if (!container) return;
+
+    const data = [
+      { day: 'Seg', today: 24100, yesterday: 21800, avg: 22400 },
+      { day: 'Ter', today: 26800, yesterday: 23100, avg: 24200 },
+      { day: 'Qua', today: 25300, yesterday: 22900, avg: 23700 },
+      { day: 'Qui', today: 28400, yesterday: 25600, avg: 26100 },
+      { day: 'Sex', today: 31200, yesterday: 27400, avg: 28900 },
+      { day: 'Sáb', today: 29700, yesterday: 26100, avg: 27300 },
+      { day: 'Dom', today: 21920, yesterday: 20439, avg: 21200 },
+    ];
+
+    const W = container.clientWidth || 500;
+    const H = 160;
+    const padL = 8, padR = 8, padT = 10, padB = 28;
+    const chartW = W - padL - padR;
+    const chartH = H - padT - padB;
+
+    const allVals = data.flatMap(d => [d.today, d.yesterday, d.avg]);
+    const minV = Math.min(...allVals) * 0.95;
+    const maxV = Math.max(...allVals) * 1.05;
+
+    const xStep = chartW / (data.length - 1);
+    const scaleY = (v: number) => padT + chartH - ((v - minV) / (maxV - minV)) * chartH;
+
+    const pointsToPath = (key: 'today' | 'yesterday' | 'avg') =>
+      data.map((d, i) => `${i === 0 ? 'M' : 'L'}${padL + i * xStep},${scaleY(d[key])}`).join(' ');
+
+    const todayPts = data.map((d, i) => [padL + i * xStep, scaleY(d.today)]);
+    const fillPath = todayPts.map(([x,y], i) => `${i===0?'M':'L'}${x},${y}`).join(' ')
+      + ` L${padL + (data.length-1)*xStep},${padT+chartH} L${padL},${padT+chartH} Z`;
+
+    const svg = `
+      <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="todayGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#C8102E" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#C8102E" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- Grid lines -->
+        ${[0, 0.25, 0.5, 0.75, 1].map(t =>
+          `<line x1="${padL}" y1="${padT + t * chartH}" x2="${W - padR}" y2="${padT + t * chartH}" stroke="#1e1e1e" stroke-width="1"/>`
+        ).join('')}
+        <!-- Fill area today -->
+        <path d="${fillPath}" fill="url(#todayGrad)"/>
+        <!-- Yesterday line -->
+        <path d="${pointsToPath('yesterday')}" stroke="#4a4a4a" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <!-- Avg line -->
+        <path d="${pointsToPath('avg')}" stroke="#D4AF37" stroke-width="1.5" stroke-opacity="0.5" stroke-dasharray="3 4"/>
+        <!-- Today line -->
+        <path d="${pointsToPath('today')}" stroke="#C8102E" stroke-width="2"/>
+        <!-- Today dots -->
+        ${todayPts.map(([x,y]) =>
+          `<circle cx="${x}" cy="${y}" r="3" fill="#C8102E" stroke="#080808" stroke-width="1.5"/>`
+        ).join('')}
+        <!-- Day labels -->
+        ${data.map((d, i) =>
+          `<text x="${padL + i * xStep}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#4a4a4a" font-family="Inter, sans-serif">${d.day}</text>`
+        ).join('')}
+      </svg>`;
+
+    container.innerHTML = svg;
+  }
+
+  drawChart();
+  window.addEventListener('resize', drawChart);
+</script>

@@ -18,20 +18,35 @@ let openDeals = 0;
 let dealsValue = 0;
 let activeProjects = 0;
 let pendingTasks = 0;
+let inProgressTasks = 0;
+let doneTasks = 0;
+let totalTasks = 0;
+let overdueTasks = 0;
+let tasksPct = 0;
 let activeStudents = 0;
 
 if (isAdmin) {
   const [dealsRes, projectsRes, tasksRes, studentsRes] = await Promise.all([
     supabase.from('deals').select('value, stage').not('stage', 'in', '("won","lost")'),
     supabase.from('projects').select('id', { count: 'exact', head: true }).neq('status', 'concluido').neq('status', 'cancelado'),
-    supabase.from('tasks').select('id', { count: 'exact', head: true }).neq('status', 'done'),
+    supabase.from('tasks').select('status, due_date'),
     supabase.from('student_journeys').select('id', { count: 'exact', head: true }).eq('status', 'active'),
   ]);
   openDeals = dealsRes.data?.length || 0;
   dealsValue = dealsRes.data?.reduce((s: number, d: any) => s + (d.value || 0), 0) || 0;
   activeProjects = projectsRes.count || 0;
-  pendingTasks = tasksRes.count || 0;
   activeStudents = studentsRes.count || 0;
+
+  const allTasks = tasksRes.data || [];
+  totalTasks = allTasks.length;
+  pendingTasks = allTasks.filter((t: any) => t.status !== 'done').length;
+  inProgressTasks = allTasks.filter((t: any) => t.status === 'in_progress').length;
+  doneTasks = allTasks.filter((t: any) => t.status === 'done').length;
+  const today = new Date(new Date().toDateString());
+  overdueTasks = allTasks.filter((t: any) =>
+    t.status !== 'done' && t.due_date && new Date(t.due_date + 'T00:00:00') < today
+  ).length;
+  tasksPct = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
 }
 
 // ── Student data ──
@@ -101,8 +116,21 @@ const profileIncomplete = !profile?.company || !profile?.phone;
           <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 2px;">Projetos ativos</div>
         </a>
         <a href="/admin/tasks" class="metric-card rounded-xl p-5" style="background: var(--surface-1); border: 1px solid var(--border-subtle);">
-          <div style="font-size: 24px; font-weight: 700; color: #F59E0B;">{pendingTasks}</div>
-          <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 2px;">Tasks pendentes</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div>
+              <div style="font-size: 24px; font-weight: 700; color: #F59E0B;">{pendingTasks}</div>
+              <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 2px;">Tasks pendentes</div>
+            </div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--accent-blue);">{tasksPct}%</div>
+          </div>
+          <div style="height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin-bottom: 6px;">
+            <div style={`height: 100%; width: ${tasksPct}%; background: var(--accent-blue); border-radius: 2px;`}></div>
+          </div>
+          <div style="display: flex; gap: 10px; font-size: 11px;">
+            <span style="color: var(--accent-blue);">{inProgressTasks} em progresso</span>
+            <span style="color: #22C55E;">{doneTasks} concluidas</span>
+            {overdueTasks > 0 && <span style="color: #EF4444;">{overdueTasks} atrasadas</span>}
+          </div>
         </a>
         <a href="/admin/journeys" class="metric-card rounded-xl p-5" style="background: var(--surface-1); border: 1px solid var(--border-subtle);">
           <div style="font-size: 24px; font-weight: 700; color: #8B5CF6;">{activeStudents}</div>

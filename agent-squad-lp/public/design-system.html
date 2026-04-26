@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGENTES [IA] — Design System v2.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== TOKENS ===== */
+    :root {
+      --black: #000000; --white: #FFFFFF;
+      --s1: #0A0A0A; --s2: #111111; --s3: #161616; --s4: #1A1A1A;
+      --l1: #FAFAFA; --l2: #F5F5F5; --l3: #EEEEEE; --l4: #E0E0E0;
+      --blue: #4A90FF; --blue-hover: #6AADFF; --blue-muted: #3570CC;
+      --blue-bright: #8DC4FF; --blue-glow: rgba(74,144,255,0.15);
+      --green: #22C55E; --red: #EF4444; --yellow: #EAB308;
+      --text-1: #FFFFFF; --text-2: rgba(255,255,255,0.7); --text-3: rgba(255,255,255,0.45);
+      --border: rgba(255,255,255,0.07); --border-v: rgba(255,255,255,0.12);
+      --radius: 8px; --radius-lg: 12px;
+      --ease-base: cubic-bezier(0.25,0.1,0.25,1);
+      --ease-out: cubic-bezier(0.16,1,0.3,1);
+      --ease-dramatic: cubic-bezier(0.65,0,0.35,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: 'Inter', sans-serif; background: var(--black); color: var(--text-1); scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { min-height: 100vh; overflow-x: hidden; position: relative; }
+
+    /* Film grain overlay */
+    body::after {
+      content: ""; position: fixed; inset: 0; pointer-events: none; opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      z-index: 9999;
+    }
+
+    ::selection { background: rgba(74,144,255,0.3); color: white; }
+
+    /* ===== CANVAS BG ===== */
+    #ambient-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.25; }
+
+    /* ===== LAYOUT ===== */
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+    section { padding: 96px 0; border-bottom: 1px solid var(--border); }
+
+    /* ===== TYPE ===== */
+    h1 { font-size: clamp(2rem,1.5rem + 2vw,3.2rem); font-weight: 700; letter-spacing: -0.035em; line-height: 1.08; }
+    h2 { font-size: clamp(1.5rem,1rem + 1.5vw,2.25rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 48px; }
+    h2 .num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--blue); color: var(--black); border-radius: 8px; font-size: 14px; font-weight: 800; margin-right: 12px; }
+    h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; margin: 40px 0 16px; color: var(--text-1); text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--text-3); }
+    p { font-size: 1rem; line-height: 1.65; color: var(--text-2); }
+    a { color: var(--blue); text-decoration: none; }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.82em; background: var(--s2); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border-v); color: var(--blue); }
+
+    /* ===== SECTION LABEL ORNAMENT ===== */
+    .section-label {
+      display: flex; align-items: center; gap: 12px;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.18em; color: var(--blue);
+      margin-bottom: 20px;
+    }
+    .section-label::before, .section-label::after {
+      content: ""; flex: 1; max-width: 60px; height: 1px; background: var(--border-v);
+    }
+    .section-label.full::before, .section-label.full::after { max-width: none; }
+
+    /* Classified footer per section */
+    .classified-footer {
+      margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3);
+      opacity: 0.5; text-align: center;
+    }
+
+    /* ===== GRIDS ===== */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 16px; }
+    @media (max-width: 768px) { .grid-2,.grid-3,.grid-4,.grid-5 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .grid-2,.grid-3,.grid-4,.grid-5 { grid-template-columns: 1fr; } }
+
+    /* 1px GAP GRID */
+    .gap-grid {
+      display: grid; gap: 1px;
+      background: var(--border-v);
+      border: 1px solid var(--border-v);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .gap-grid.cols-3 { grid-template-columns: repeat(3,1fr); }
+    .gap-grid.cols-2 { grid-template-columns: repeat(2,1fr); }
+    .gap-grid-cell {
+      background: var(--s2); padding: 28px 24px;
+      transition: background 0.2s;
+      cursor: default;
+    }
+    .gap-grid-cell:hover { background: var(--s3); }
+
+    /* ===== SWATCHES ===== */
+    .swatch { border-radius: 12px; overflow: hidden; cursor: pointer; }
+    .swatch-color { height: 80px; display: flex; align-items: flex-end; padding: 8px 12px; position: relative; }
+    .swatch-copy { position: absolute; top: 8px; right: 8px; font-size: 0.65rem; font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.5); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+    .swatch:hover .swatch-copy { opacity: 1; }
+    .swatch-info { padding: 10px 12px; background: var(--s2); border: 1px solid var(--border); border-top: none; border-radius: 0 0 12px 12px; }
+    .swatch-name { font-size: 0.8rem; font-weight: 600; color: var(--text-1); }
+    .swatch-hex { font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); }
+
+    /* ===== CARDS ===== */
+    .ds-card { background: var(--s2); border: 1px solid var(--border-v); border-radius: 12px; padding: 24px; transition: border-color 0.2s, transform 0.2s var(--ease-out); }
+    .ds-card:hover { border-color: rgba(74,144,255,0.25); transform: translateY(-2px); }
+    .ds-card-white { background: var(--white); border: 1px solid var(--l3); border-radius: 12px; padding: 24px; color: var(--black); transition: box-shadow 0.2s; }
+    .ds-card-white:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+    .ds-card-glass { background: rgba(255,255,255,0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 24px; transition: border-color 0.2s; }
+    .ds-card-glass:hover { border-color: rgba(74,144,255,0.2); }
+
+    /* Card with top-line reveal */
+    .card-topline {
+      background: var(--s2); border: 1px solid var(--border-v); border-radius: 12px; padding: 24px;
+      position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.25s var(--ease-out);
+    }
+    .card-topline::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--blue); transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s var(--ease-out);
+    }
+    .card-topline:hover::before { transform: scaleX(1); }
+    .card-topline:hover { border-color: rgba(74,144,255,0.2); transform: translateY(-3px); }
+
+    /* ===== TYPE SPECIMEN ===== */
+    .type-row { display: flex; align-items: baseline; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--border); }
+    .type-label { width: 100px; flex-shrink: 0; font-size: 0.72rem; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; font-family: 'JetBrains Mono', monospace; }
+    .type-sample { flex: 1; }
+    .type-meta { width: 200px; flex-shrink: 0; font-size: 0.72rem; color: var(--text-3); font-family: 'JetBrains Mono', monospace; text-align: right; line-height: 1.6; }
+
+    /* ===== SPACING ===== */
+    .space-row { display: flex; align-items: center; gap: 16px; padding: 6px 0; }
+    .space-bar { height: 20px; background: linear-gradient(90deg, var(--blue), rgba(74,144,255,0.3)); border-radius: 3px; }
+    .space-label { font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); width: 40px; flex-shrink: 0; }
+    .space-val { font-size: 0.72rem; color: var(--text-3); width: 80px; font-family: 'JetBrains Mono', monospace; }
+
+    /* ===== DEMO WRAPPERS ===== */
+    .demo-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin: 16px 0; }
+    .demo-dark { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin: 12px 0; }
+    .demo-light { background: var(--white); border: 1px solid var(--l3); border-radius: 12px; padding: 32px; margin: 12px 0; }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 28px; font-size: 0.9rem; font-weight: 600;
+      border-radius: 999px; border: none; cursor: pointer;
+      transition: all 0.25s; font-family: inherit; position: relative; overflow: hidden;
+    }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(74,144,255,0.35); }
+
+    /* SHIMMER BUTTON */
+    .btn-shimmer {
+      background: var(--blue); color: #fff;
+      position: relative; overflow: hidden;
+    }
+    .btn-shimmer::after {
+      content: ''; position: absolute;
+      top: -50%; left: -60%;
+      width: 40%; height: 200%;
+      background: rgba(255,255,255,0.15);
+      transform: skewX(-20deg);
+      transition: left 0.5s ease;
+    }
+    .btn-shimmer:hover::after { left: 120%; }
+    .btn-shimmer:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(74,144,255,0.4); }
+
+    .btn-secondary { background: transparent; color: var(--blue); border: 1px solid var(--border-v); }
+    .btn-secondary:hover { border-color: var(--blue); background: rgba(74,144,255,0.05); transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--border-v); color: var(--text-1); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn-shimmer::after { display: none; }
+      .btn:hover { transform: none; }
+    }
+
+    /* ===== BADGES ===== */
+    .badge { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; background: rgba(74,144,255,0.1); border: 1px solid rgba(74,144,255,0.2); color: var(--blue); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em; }
+    .badge-outline { background: transparent; border-color: var(--border-v); color: var(--text-2); }
+    .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+    /* ===== TERMINAL ===== */
+    .terminal { background: var(--s1); border: 1px solid var(--border-v); border-radius: 12px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+    .terminal-bar { display: flex; align-items: center; gap: 8px; padding: 11px 16px; background: var(--s2); border-bottom: 1px solid var(--border); }
+    .terminal-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .terminal-title { font-size: 0.72rem; color: var(--text-3); margin-left: 8px; }
+    .terminal-body { padding: 20px; line-height: 1.85; color: var(--text-2); min-height: 200px; }
+    .terminal-body .cmd { color: var(--blue); }
+    .terminal-body .ok { color: var(--green); }
+    .terminal-body .comment { color: var(--text-3); }
+    .terminal-body .line { display: block; }
+    .terminal-body .line.hidden { display: none; }
+    .terminal-cursor { display: inline-block; width: 8px; height: 15px; background: var(--blue); animation: blink-cur 1s step-end infinite; vertical-align: text-bottom; margin-left: 2px; }
+    @keyframes blink-cur { 50% { opacity: 0; } }
+
+    /* ===== MARQUEE ===== */
+    .marquee-wrap { overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 18px 0; background: var(--s1); }
+    .marquee-track { display: flex; gap: 64px; width: max-content; animation: marquee 28s linear infinite; }
+    .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+    .marquee-item { display: flex; align-items: center; gap: 12px; white-space: nowrap; font-size: 0.82rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); letter-spacing: 0.06em; text-transform: uppercase; }
+    .marquee-item .dot-accent { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+
+    /* ===== SCROLL REVEAL ===== */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); }
+    .reveal-left.visible { opacity: 1; transform: none; }
+    .reveal-right { opacity: 0; transform: translateX(32px); transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); }
+    .reveal-right.visible { opacity: 1; transform: none; }
+    .reveal-scale { opacity: 0; transform: scale(0.92); transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); }
+    .reveal-scale.visible { opacity: 1; transform: scale(1); }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal,.reveal-left,.reveal-right,.reveal-scale { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ===== HOVER GALLERY ===== */
+    .hover-card {
+      background: var(--s2); border: 1px solid var(--border-v); border-radius: 12px;
+      padding: 28px 20px; text-align: center; cursor: default;
+      position: relative; overflow: hidden;
+    }
+    .hover-card .hc-label { font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 12px; }
+    .hover-lift { transition: transform 0.25s var(--ease-out), box-shadow 0.25s; }
+    .hover-lift:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+    .hover-glow { transition: box-shadow 0.3s; }
+    .hover-glow:hover { box-shadow: 0 0 40px rgba(74,144,255,0.25); border-color: rgba(74,144,255,0.3); }
+    .hover-border { transition: border-color 0.25s; }
+    .hover-border:hover { border-color: var(--blue); }
+    .hover-scale { transition: transform 0.25s var(--ease-out); }
+    .hover-scale:hover { transform: scale(1.04); }
+    .hover-topline { position: relative; overflow: hidden; transition: transform 0.25s var(--ease-out); }
+    .hover-topline::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--blue); transform: scaleX(0); transform-origin: left; transition: transform 0.3s var(--ease-out); }
+    .hover-topline:hover::before { transform: scaleX(1); }
+    .hover-topline:hover { transform: translateY(-3px); }
+    @media (prefers-reduced-motion: reduce) {
+      .hover-lift:hover,.hover-scale:hover,.hover-topline:hover { transform: none; }
+    }
+
+    /* ===== COUNTERS ===== */
+    .counter-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border-v); border: 1px solid var(--border-v); border-radius: var(--radius-lg); overflow: hidden; }
+    .counter-cell { background: var(--s2); padding: 32px 20px; text-align: center; }
+    .counter-num { font-size: clamp(2rem,4vw,3.5rem); font-weight: 800; letter-spacing: -0.04em; color: var(--text-1); line-height: 1; }
+    .counter-num span { color: var(--blue); }
+    .counter-label { font-size: 0.78rem; color: var(--text-3); margin-top: 8px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; }
+    @media (max-width: 640px) { .counter-grid { grid-template-columns: repeat(2,1fr); } }
+
+    /* ===== EASING VIS ===== */
+    .ease-row { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .ease-label { width: 140px; flex-shrink: 0; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); }
+    .ease-track { flex: 1; height: 4px; background: var(--border-v); border-radius: 2px; position: relative; overflow: hidden; cursor: pointer; }
+    .ease-dot { position: absolute; top: 50%; width: 10px; height: 10px; border-radius: 50%; background: var(--blue); transform: translateY(-50%) translateX(-5px); left: 0; transition: none; }
+    .ease-track:hover .ease-dot { left: calc(100% - 5px); }
+    .ease-val { width: 280px; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); flex-shrink: 0; }
+
+    /* ===== DO/DONT ===== */
+    .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .do-card,.dont-card { border-radius: 12px; padding: 24px; }
+    .do-card { background: rgba(34,197,94,0.04); border: 1px solid rgba(34,197,94,0.15); }
+    .dont-card { background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.15); }
+    .do-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; font-family: 'JetBrains Mono', monospace; }
+    .do-label.green { color: var(--green); } .do-label.red { color: var(--red); }
+    .do-item { font-size: 0.875rem; color: var(--text-2); padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 10px; }
+    .do-item:last-child { border-bottom: none; }
+    .do-item::before { content: "—"; color: var(--text-3); flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+    @media (max-width: 640px) { .do-dont { grid-template-columns: 1fr; } }
+
+    /* ===== PATTERNS TABLE ===== */
+    .patterns-table { width: 100%; border-collapse: collapse; }
+    .patterns-table th { padding: 10px 16px; text-align: left; font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); border-bottom: 1px solid var(--border-v); }
+    .patterns-table td { padding: 14px 16px; font-size: 0.875rem; border-bottom: 1px solid var(--border); color: var(--text-2); }
+    .patterns-table tr:last-child td { border-bottom: none; }
+    .patterns-table td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--blue); font-size: 0.8rem; }
+
+    /* ===== FLOW DIAGRAM ===== */
+    .flow { display: flex; gap: 4px; align-items: stretch; margin: 20px 0; flex-wrap: wrap; }
+    .flow-block { flex: 1; min-width: 70px; padding: 14px 10px; border-radius: 8px; text-align: center; font-size: 0.72rem; font-weight: 600; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+    .flow-block.dark { background: var(--s2); color: var(--text-1); border: 1px solid var(--border-v); }
+    .flow-block.light { background: var(--l1); color: var(--black); border: 1px solid var(--l3); }
+    .flow-block.accent { background: var(--blue); color: var(--white); }
+    .flow-arrow { display: flex; align-items: center; color: var(--text-3); font-size: 11px; }
+
+    /* ===== ICON GRID ===== */
+    .icon-demo { display: flex; gap: 24px; flex-wrap: wrap; }
+    .icon-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; background: var(--s2); border: 1px solid var(--border); border-radius: 10px; min-width: 72px; transition: border-color 0.2s; cursor: default; }
+    .icon-item:hover { border-color: var(--border-v); }
+    .icon-item svg { width: 22px; height: 22px; stroke: var(--text-2); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-item span { font-size: 0.65rem; color: var(--text-3); font-family: 'JetBrains Mono', monospace; }
+
+    /* ===== STICKY DEMO ===== */
+    .sticky-demo-container { display: grid; grid-template-columns: 1fr 280px; gap: 32px; max-height: 400px; overflow-y: auto; border: 1px solid var(--border-v); border-radius: 12px; padding: 24px; background: var(--s1); scrollbar-width: thin; scrollbar-color: var(--border-v) transparent; }
+    .sticky-demo-items { display: flex; flex-direction: column; gap: 16px; }
+    .sticky-demo-item { background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+    .sticky-demo-sidebar { position: sticky; top: 0; height: fit-content; }
+    .sticky-price-card { background: var(--s2); border: 1px solid rgba(74,144,255,0.3); border-radius: 12px; padding: 24px; }
+    @media (max-width: 640px) { .sticky-demo-container { grid-template-columns: 1fr; } .sticky-demo-sidebar { position: static; } }
+
+    /* ===== REVEAL DEMO BOXES ===== */
+    .reveal-demo-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin: 24px 0; }
+    .reveal-demo-box {
+      background: var(--s2); border: 1px solid var(--border-v); border-radius: 10px;
+      padding: 24px 16px; text-align: center; font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    @media (max-width: 640px) { .reveal-demo-grid { grid-template-columns: 1fr 1fr; } }
+
+    /* ===== SCROLL PROGRESS ===== */
+    #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--blue); z-index: 10000; width: 0%; transition: width 0.1s linear; }
+
+    /* ===== NAV ===== */
+    .ds-nav { position: sticky; top: 0; z-index: 100; background: rgba(0,0,0,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 14px 0; }
+    .ds-nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; gap: 24px; overflow-x: auto; scrollbar-width: none; }
+    .ds-nav-inner::-webkit-scrollbar { display: none; }
+    .ds-nav-brand { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text-1); white-space: nowrap; margin-right: 8px; }
+    .ds-nav-brand span { color: var(--blue); }
+    .ds-nav-link { font-size: 0.75rem; color: var(--text-3); white-space: nowrap; transition: color 0.2s; text-decoration: none; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em; }
+    .ds-nav-link:hover { color: var(--text-1); }
+    .ds-nav-sep { color: var(--border-v); flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<!-- AMBIENT CANVAS GRID -->
+<canvas id="ambient-canvas"></canvas>
+
+<!-- SCROLL PROGRESS -->
+<div id="scroll-progress"></div>
+
+<!-- STICKY NAV -->
+<nav class="ds-nav">
+  <div class="ds-nav-inner">
+    <span class="ds-nav-brand">AGENTES <span>[IA]</span> — DS v2.0</span>
+    <span class="ds-nav-sep">·</span>
+    <a class="ds-nav-link" href="#identidade">Identidade</a>
+    <a class="ds-nav-link" href="#cores">Cores</a>
+    <a class="ds-nav-link" href="#tipografia">Tipografia</a>
+    <a class="ds-nav-link" href="#espacamento">Espaçamento</a>
+    <a class="ds-nav-link" href="#layout">Layout</a>
+    <a class="ds-nav-link" href="#componentes">Componentes</a>
+    <a class="ds-nav-link" href="#motion">Motion</a>
+    <a class="ds-nav-link" href="#iconografia">Iconografia</a>
+    <a class="ds-nav-link" href="#diretrizes">Diretrizes</a>
+    <a class="ds-nav-link" href="#voz">Voz</a>
+    <a class="ds-nav-link" href="#padroes">Padrões</a>
+  </div>
+</nav>
+
+<!-- ============================================================ -->
+<!-- HEADER -->
+<!-- ============================================================ -->
+<div class="wrap">
+  <section style="padding-top: 80px;" id="topo">
+    <div class="section-label">Design System</div>
+    <h1 style="margin-bottom: 16px;">
+      AGENTES <span style="color: var(--blue); font-weight: 300;">[IA]</span>
+      <br>
+      <span style="color: var(--text-3); font-weight: 300;">Design System v2.0</span>
+      <br>
+      <span style="font-size: clamp(0.875rem, 0.7rem + 0.5vw, 1rem); font-weight: 500; color: var(--blue); letter-spacing: 0.08em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace;">Dark Suit Edition</span>
+    </h1>
+    <p style="max-width: 580px; margin-top: 20px;">Sistema visual vivo do produto AGENTES [IA]. Cada seção contém demos interativos — não é documentação estática, é o próprio sistema em ação. Inspirado na estética dos Agentes de Matrix: terno preto, camisa branca, gravata azul.</p>
+    <p style="margin-top: 10px; font-size: 0.78rem; color: var(--text-3); font-family: 'JetBrains Mono', monospace;">v2.0 — Abril 2026 · Produto do ecossistema REIS [IA] · Classificação: Restrito</p>
+    <div class="demo-row" style="margin-top: 28px;">
+      <span class="badge"><span class="dot"></span> Sistema vivo</span>
+      <span class="badge badge-outline">13 seções numeradas</span>
+      <span class="badge badge-outline">Inter + JetBrains Mono</span>
+      <span class="badge badge-outline">Dark Suit Edition</span>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 1. BRAND IDENTITY -->
+  <!-- ============================================================ -->
+  <section id="identidade">
+    <div class="section-label">01</div>
+    <h2><span class="num">01</span> Identidade da Marca</h2>
+
+    <h3>Wordmark</h3>
+    <div class="grid-2 reveal" style="margin-bottom: 24px;">
+      <div class="demo-dark" style="text-align: center;">
+        <span style="font-size: 2.5rem; font-weight: 700; letter-spacing: -0.03em;">AGENTES <span style="color: var(--blue); font-weight: 300;">[IA]</span></span>
+        <p style="margin-top: 12px; font-size: 0.75rem; color: var(--text-3);">Fundo escuro — AGENTES branco, [IA] azul</p>
+      </div>
+      <div class="demo-light" style="text-align: center;">
+        <span style="font-size: 2.5rem; font-weight: 700; letter-spacing: -0.03em; color: #000;">AGENTES <span style="color: var(--blue); font-weight: 300;">[IA]</span></span>
+        <p style="margin-top: 12px; font-size: 0.75rem; color: #888;">Fundo claro — AGENTES preto, [IA] azul</p>
+      </div>
+    </div>
+
+    <h3>Relação com a Marca-Mãe</h3>
+    <div class="demo-dark reveal" style="display: flex; align-items: center; gap: 28px; flex-wrap: wrap;">
+      <div>
+        <p style="font-size: 0.68rem; color: var(--text-3); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Marca-mãe</p>
+        <span style="font-size: 1.4rem; font-weight: 300; letter-spacing: -0.02em;">REIS <span style="color: var(--blue);">[IA]</span></span>
+      </div>
+      <span style="color: var(--text-3); font-size: 1.5rem;">→</span>
+      <div>
+        <p style="font-size: 0.68rem; color: var(--text-3); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Produto low-ticket</p>
+        <span style="font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em;">AGENTES <span style="color: var(--blue); font-weight: 300;">[IA]</span></span>
+      </div>
+    </div>
+    <p style="margin-top: 12px; font-size: 0.85rem; color: var(--text-3);">O produto herda o padrão: nome em bold, [IA] em azul accent peso 300. Mantém coerência visual com o ecossistema.</p>
+
+    <h3>Conceito Visual</h3>
+    <div class="ds-card reveal" style="border-left: 3px solid var(--blue);">
+      <p style="color: var(--text-1); font-weight: 500; margin-bottom: 8px;">Inspiração: Agentes de Matrix</p>
+      <p>Terno preto, camisa branca, gravata azul. Profissionalismo intimidador. Inteligência implacável. Força silenciosa trabalhando para você. <strong style="color: var(--red);">Não</strong> o clichê do código verde caindo — a estética dos <em>agentes</em>, não da Matrix.</p>
+    </div>
+
+    <h3>Padrão de Rótulo de Seção</h3>
+    <p style="margin-bottom: 20px; font-size: 0.875rem;">O padrão de rótulo com linhas ornamentais usa pseudoelementos <code>::before</code> e <code>::after</code>. Três variações:</p>
+    <div style="display: flex; flex-direction: column; gap: 20px;" class="reveal">
+      <div class="section-label">Versão centrada com linhas laterais</div>
+      <div class="section-label full">Versão com linhas completas expandidas</div>
+      <div class="section-label" style="color: var(--text-2);">Versão em tom neutro</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 2. COLORS -->
+  <!-- ============================================================ -->
+  <section id="cores">
+    <div class="section-label">02</div>
+    <h2><span class="num">02</span> Paleta de Cores</h2>
+    <p style="margin-bottom: 32px; font-size: 0.875rem; color: var(--text-3);">Clique em qualquer swatch para copiar o valor hex.</p>
+
+    <h3>Primárias — "O Terno do Agente"</h3>
+    <div class="grid-3 reveal">
+      <div class="swatch" onclick="copyHex('#000000', this)">
+        <div class="swatch-color" style="background:#000;border:1px solid var(--border-v);border-bottom:none;border-radius:12px 12px 0 0;">
+          <span style="color:#fff;font-size:0.65rem;">Terno</span>
+          <span class="swatch-copy">Copiar</span>
+        </div>
+        <div class="swatch-info"><div class="swatch-name">Pure Black</div><div class="swatch-hex">#000000</div></div>
+      </div>
+      <div class="swatch" onclick="copyHex('#FFFFFF', this)">
+        <div class="swatch-color" style="background:#fff;border:1px solid #ddd;border-bottom:none;border-radius:12px 12px 0 0;">
+          <span style="color:#000;font-size:0.65rem;">Camisa</span>
+          <span class="swatch-copy" style="color:rgba(0,0,0,0.4);">Copiar</span>
+        </div>
+        <div class="swatch-info"><div class="swatch-name">Pure White</div><div class="swatch-hex">#FFFFFF</div></div>
+      </div>
+      <div class="swatch" onclick="copyHex('#4A90FF', this)">
+        <div class="swatch-color" style="background:#4A90FF;border-radius:12px 12px 0 0;">
+          <span style="color:#fff;font-size:0.65rem;">Gravata</span>
+          <span class="swatch-copy">Copiar</span>
+        </div>
+        <div class="swatch-info"><div class="swatch-name">Accent Blue</div><div class="swatch-hex">#4A90FF</div></div>
+      </div>
+    </div>
+
+    <h3>Superfícies — Dark Mode</h3>
+    <div class="grid-5 reveal">
+      <div class="swatch" onclick="copyHex('#000000', this)"><div class="swatch-color" style="background:#000;border:1px solid var(--border-v);border-bottom:none;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Surface 0</div><div class="swatch-hex">#000000</div></div></div>
+      <div class="swatch" onclick="copyHex('#0A0A0A', this)"><div class="swatch-color" style="background:#0A0A0A;border:1px solid var(--border-v);border-bottom:none;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Surface 1</div><div class="swatch-hex">#0A0A0A</div></div></div>
+      <div class="swatch" onclick="copyHex('#111111', this)"><div class="swatch-color" style="background:#111;border:1px solid var(--border-v);border-bottom:none;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Surface 2</div><div class="swatch-hex">#111111</div></div></div>
+      <div class="swatch" onclick="copyHex('#161616', this)"><div class="swatch-color" style="background:#161616;border:1px solid var(--border-v);border-bottom:none;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Surface 3</div><div class="swatch-hex">#161616</div></div></div>
+      <div class="swatch" onclick="copyHex('#1A1A1A', this)"><div class="swatch-color" style="background:#1A1A1A;border:1px solid var(--border-v);border-bottom:none;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Surface 4</div><div class="swatch-hex">#1A1A1A</div></div></div>
+    </div>
+
+    <h3>Escala de Azul</h3>
+    <div class="grid-5 reveal">
+      <div class="swatch" onclick="copyHex('#3570CC', this)"><div class="swatch-color" style="background:#3570CC;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Blue Muted</div><div class="swatch-hex">#3570CC</div></div></div>
+      <div class="swatch" onclick="copyHex('#4A90FF', this)"><div class="swatch-color" style="background:#4A90FF;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Blue Primary</div><div class="swatch-hex">#4A90FF</div></div></div>
+      <div class="swatch" onclick="copyHex('#6AADFF', this)"><div class="swatch-color" style="background:#6AADFF;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Blue Hover</div><div class="swatch-hex">#6AADFF</div></div></div>
+      <div class="swatch" onclick="copyHex('#8DC4FF', this)"><div class="swatch-color" style="background:#8DC4FF;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Blue Bright</div><div class="swatch-hex">#8DC4FF</div></div></div>
+      <div class="swatch" onclick="copyHex('rgba(74,144,255,0.15)', this)"><div class="swatch-color" style="background:rgba(74,144,255,0.15);border:1px solid rgba(74,144,255,0.3);border-bottom:none;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Blue Glow</div><div class="swatch-hex">rgba(74,144,255,0.15)</div></div></div>
+    </div>
+
+    <h3>Semânticas</h3>
+    <div class="grid-3 reveal">
+      <div class="swatch" onclick="copyHex('#22C55E', this)"><div class="swatch-color" style="background:#22C55E;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Success</div><div class="swatch-hex">#22C55E</div></div></div>
+      <div class="swatch" onclick="copyHex('#EF4444', this)"><div class="swatch-color" style="background:#EF4444;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Error</div><div class="swatch-hex">#EF4444</div></div></div>
+      <div class="swatch" onclick="copyHex('#EAB308', this)"><div class="swatch-color" style="background:#EAB308;border-radius:12px 12px 0 0;"><span class="swatch-copy">Copiar</span></div><div class="swatch-info"><div class="swatch-name">Warning</div><div class="swatch-hex">#EAB308</div></div></div>
+    </div>
+
+    <h3>Cores Proibidas</h3>
+    <div class="grid-3 reveal">
+      <div class="swatch"><div class="swatch-color" style="background:#00FF00;border-radius:12px 12px 0 0;position:relative;"><span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#000;font-size:1.5rem;font-weight:800;font-family:'JetBrains Mono',monospace;">X</span></div><div class="swatch-info"><div class="swatch-name" style="color:var(--red);">Matrix Green</div><div class="swatch-hex">#00FF00 — clichê</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#D4A373;border-radius:12px 12px 0 0;position:relative;"><span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#000;font-size:1.5rem;font-weight:800;font-family:'JetBrains Mono',monospace;">X</span></div><div class="swatch-info"><div class="swatch-name" style="color:var(--red);">Gold / Âmbar</div><div class="swatch-hex">Fora da paleta</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:linear-gradient(135deg,#ff0000,#ff7700,#ffff00,#00ff00,#0000ff,#8b00ff);border-radius:12px 12px 0 0;position:relative;"><span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:1.5rem;font-weight:800;font-family:'JetBrains Mono',monospace;text-shadow:0 0 4px #000;">X</span></div><div class="swatch-info"><div class="swatch-name" style="color:var(--red);">Gradiente Rainbow</div><div class="swatch-hex">Nunca</div></div></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 3. TYPOGRAPHY -->
+  <!-- ============================================================ -->
+  <section id="tipografia">
+    <div class="section-label">03</div>
+    <h2><span class="num">03</span> Tipografia</h2>
+    <p style="margin-bottom: 32px;">Fonte primária: <code>Inter</code> — pesos 100 a 900. Monospace: <code>JetBrains Mono</code> para terminais, rótulos e código.</p>
+
+    <div class="reveal">
+      <div class="type-row">
+        <div class="type-label">Display</div>
+        <div class="type-sample" style="font-size:clamp(2.5rem,1.5rem + 3.5vw,4.5rem);font-weight:700;letter-spacing:-0.035em;line-height:1.05;">AGENTES [IA]</div>
+        <div class="type-meta">clamp(2.5rem, 4.5rem)<br>weight: 700</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">H1</div>
+        <div class="type-sample" style="font-size:clamp(2.25rem,1.5rem + 2.75vw,3.5rem);font-weight:700;letter-spacing:-0.03em;line-height:1.08;">Seu Time de Agentes</div>
+        <div class="type-meta">clamp(2.25rem, 3.5rem)<br>weight: 700</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">H2</div>
+        <div class="type-sample" style="font-size:clamp(1.875rem,1.25rem + 2.25vw,3rem);font-weight:600;letter-spacing:-0.025em;line-height:1.1;">7 Squads Especializados</div>
+        <div class="type-meta">clamp(1.875rem, 3rem)<br>weight: 600</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">H3</div>
+        <div class="type-sample" style="font-size:clamp(1.625rem,1.25rem + 1.25vw,2.25rem);font-weight:600;letter-spacing:-0.015em;">Squad de Copy</div>
+        <div class="type-meta">clamp(1.625rem, 2.25rem)<br>weight: 600</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">Body LG</div>
+        <div class="type-sample" style="font-size:1.125rem;color:var(--text-2);">Agentes especializados com frameworks reais, metodologia definida e personalidade própria.</div>
+        <div class="type-meta">1.125rem<br>weight: 400</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">Body</div>
+        <div class="type-sample" style="font-size:1rem;color:var(--text-2);">Testados em produção real, não em laboratório. Prontos para usar no Claude Code.</div>
+        <div class="type-meta">1rem<br>weight: 400</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">Small</div>
+        <div class="type-sample" style="font-size:0.875rem;color:var(--text-3);">Cartão ou PIX · Garantia 7 dias · Acesso imediato</div>
+        <div class="type-meta">0.875rem<br>weight: 400</div>
+      </div>
+      <div class="type-row">
+        <div class="type-label">Label</div>
+        <div class="type-sample" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--blue);font-family:'JetBrains Mono',monospace;">COMPRA SEGURA</div>
+        <div class="type-meta">0.75rem mono<br>uppercase · 0.12em</div>
+      </div>
+    </div>
+
+    <h3>Pesos em Uso</h3>
+    <div class="reveal" style="margin: 16px 0;">
+      <p style="font-weight:300;font-size:1.4rem;margin:10px 0;letter-spacing:-0.02em;">Light 300 — [IA] suffix, taglines suaves</p>
+      <p style="font-weight:400;font-size:1.4rem;margin:10px 0;letter-spacing:-0.02em;">Regular 400 — Texto corrido, parágrafos</p>
+      <p style="font-weight:500;font-size:1.4rem;margin:10px 0;letter-spacing:-0.02em;">Medium 500 — Destaques inline</p>
+      <p style="font-weight:600;font-size:1.4rem;margin:10px 0;letter-spacing:-0.02em;">Semibold 600 — Subtítulos, botões</p>
+      <p style="font-weight:700;font-size:1.4rem;margin:10px 0;letter-spacing:-0.02em;">Bold 700 — Headlines, wordmark</p>
+      <p style="font-weight:800;font-size:1.4rem;margin:10px 0;letter-spacing:-0.025em;">Extrabold 800 — Display, números métricas</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 4. SPACING -->
+  <!-- ============================================================ -->
+  <section id="espacamento">
+    <div class="section-label">04</div>
+    <h2><span class="num">04</span> Espaçamento</h2>
+
+    <div class="reveal">
+      <div class="space-row"><div class="space-label">2xs</div><div class="space-bar" style="width:4px;"></div><div class="space-val">4px</div></div>
+      <div class="space-row"><div class="space-label">xs</div><div class="space-bar" style="width:8px;"></div><div class="space-val">8px</div></div>
+      <div class="space-row"><div class="space-label">sm</div><div class="space-bar" style="width:16px;"></div><div class="space-val">16px</div></div>
+      <div class="space-row"><div class="space-label">md</div><div class="space-bar" style="width:24px;"></div><div class="space-val">24px</div></div>
+      <div class="space-row"><div class="space-label">lg</div><div class="space-bar" style="width:32px;"></div><div class="space-val">32px</div></div>
+      <div class="space-row"><div class="space-label">xl</div><div class="space-bar" style="width:48px;"></div><div class="space-val">48px</div></div>
+      <div class="space-row"><div class="space-label">2xl</div><div class="space-bar" style="width:64px;"></div><div class="space-val">64px</div></div>
+      <div class="space-row"><div class="space-label">3xl</div><div class="space-bar" style="width:96px;"></div><div class="space-val">96px</div></div>
+      <div class="space-row"><div class="space-label">4xl</div><div class="space-bar" style="width:128px;"></div><div class="space-val">128px</div></div>
+    </div>
+    <p style="margin-top: 20px; font-size: 0.85rem; color: var(--text-3);">Todos aplicados via <code>clamp()</code> para responsividade fluida. Container: 1200px. Narrow: 800px. Text: 680px.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 5. LAYOUT PATTERNS -->
+  <!-- ============================================================ -->
+  <section id="layout">
+    <div class="section-label">05</div>
+    <h2><span class="num">05</span> Padrões de Layout</h2>
+
+    <h3>Alternância de Seções Preto/Branco</h3>
+    <p style="margin-bottom: 20px; font-size: 0.875rem;">O produto AGENTES [IA] alterna seções pretas e brancas para criar contraste dramático e ritmo visual.</p>
+    <div class="flow reveal">
+      <div class="flow-block dark">Hero<br><span style="font-size:0.6rem;color:var(--text-3);">PRETO</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-block accent">Ticker<br><span style="font-size:0.6rem;">AZUL</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-block light">Problema<br><span style="font-size:0.6rem;color:#888;">BRANCO</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-block dark">Vídeo<br><span style="font-size:0.6rem;color:var(--text-3);">PRETO</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-block light">Squads<br><span style="font-size:0.6rem;color:#888;">BRANCO</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-block dark">Pricing<br><span style="font-size:0.6rem;color:var(--text-3);">PRETO</span></div>
+    </div>
+
+    <h3>Demo ao Vivo — Grade com Gap de 1px</h3>
+    <p style="margin-bottom: 16px; font-size: 0.875rem;">Técnica: <code>gap: 1px; background: var(--border-v); overflow: hidden</code> no container. Nenhum <code>border</code> individual nos cards.</p>
+    <div class="gap-grid cols-3 reveal">
+      <div class="gap-grid-cell">
+        <p style="font-size: 0.7rem; color: var(--blue); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Squad de Copy</p>
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-1); margin-bottom: 6px;">23 agentes de copy</p>
+        <p style="font-size: 0.8rem; color: var(--text-3);">Hormozi, VSL, email, ads</p>
+      </div>
+      <div class="gap-grid-cell">
+        <p style="font-size: 0.7rem; color: var(--blue); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Squad de Design</p>
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-1); margin-bottom: 6px;">18 agentes visuais</p>
+        <p style="font-size: 0.8rem; color: var(--text-3);">UI, brand, motion, assets</p>
+      </div>
+      <div class="gap-grid-cell">
+        <p style="font-size: 0.7rem; color: var(--blue); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Squad Dev</p>
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-1); margin-bottom: 6px;">15 agentes técnicos</p>
+        <p style="font-size: 0.8rem; color: var(--text-3);">Astro, React, APIs, DB</p>
+      </div>
+      <div class="gap-grid-cell">
+        <p style="font-size: 0.7rem; color: var(--blue); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Squad de Tráfego</p>
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-1); margin-bottom: 6px;">9 agentes de mídia</p>
+        <p style="font-size: 0.8rem; color: var(--text-3);">Meta, Google, análise</p>
+      </div>
+      <div class="gap-grid-cell">
+        <p style="font-size: 0.7rem; color: var(--blue); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Squad Edu</p>
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-1); margin-bottom: 6px;">11 agentes educacionais</p>
+        <p style="font-size: 0.8rem; color: var(--text-3);">Curriculum, scripts, slides</p>
+      </div>
+      <div class="gap-grid-cell">
+        <p style="font-size: 0.7rem; color: var(--blue); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Estratégia</p>
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-1); margin-bottom: 6px;">6 agentes estratégicos</p>
+        <p style="font-size: 0.8rem; color: var(--text-3);">ICP, offers, funnels</p>
+      </div>
+    </div>
+
+    <h3>Demo ao Vivo — Sidebar Sticky</h3>
+    <p style="margin-bottom: 16px; font-size: 0.875rem;">Role dentro do container abaixo. O card de preço fica fixo enquanto os itens de entrega passam.</p>
+    <div class="sticky-demo-container reveal">
+      <div class="sticky-demo-items">
+        <div class="sticky-demo-item">
+          <p style="font-size: 0.7rem; color: var(--blue); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 6px;">Entrega 01</p>
+          <p style="font-weight: 600; margin-bottom: 6px;">40+ agentes prontos</p>
+          <p style="font-size: 0.85rem; color: var(--text-3);">Testados em produção real, não em sandbox. Cada agente tem metodologia definida e personalidade própria.</p>
+        </div>
+        <div class="sticky-demo-item">
+          <p style="font-size: 0.7rem; color: var(--blue); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 6px;">Entrega 02</p>
+          <p style="font-weight: 600; margin-bottom: 6px;">7 squads especializados</p>
+          <p style="font-size: 0.85rem; color: var(--text-3);">Copy, Design, Dev, Tráfego, Educação, Estratégia e Vídeo. Cada squad opera em conjunto.</p>
+        </div>
+        <div class="sticky-demo-item">
+          <p style="font-size: 0.7rem; color: var(--blue); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 6px;">Entrega 03</p>
+          <p style="font-weight: 600; margin-bottom: 6px;">Regras e frameworks</p>
+          <p style="font-size: 0.85rem; color: var(--text-3);">Hormozi, humanização, voz de marca, ads safety. Cada agente sabe as regras do negócio.</p>
+        </div>
+        <div class="sticky-demo-item">
+          <p style="font-size: 0.7rem; color: var(--blue); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 6px;">Entrega 04</p>
+          <p style="font-weight: 600; margin-bottom: 6px;">Atualizações inclusas</p>
+          <p style="font-size: 0.85rem; color: var(--text-3);">Novos agentes adicionados ao mesmo arquivo. Pague uma vez, receba todas as versões futuras.</p>
+        </div>
+      </div>
+      <div class="sticky-demo-sidebar">
+        <div class="sticky-price-card">
+          <p style="font-size: 0.68rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Acesso completo</p>
+          <p style="font-size: 2.5rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin-bottom: 4px;">R$47</p>
+          <p style="font-size: 0.75rem; color: var(--text-3); margin-bottom: 20px;">pagamento único</p>
+          <button class="btn btn-shimmer" style="width: 100%; border-radius: 8px; padding: 14px;">Garantir acesso</button>
+          <p style="font-size: 0.7rem; color: var(--text-3); text-align: center; margin-top: 12px;">Garantia de 7 dias</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 6. COMPONENTS -->
+  <!-- ============================================================ -->
+  <section id="componentes">
+    <div class="section-label">06</div>
+    <h2><span class="num">06</span> Componentes</h2>
+
+    <h3>Botões — com Shimmer ao Vivo</h3>
+    <div class="demo-dark reveal">
+      <p style="font-size: 0.72rem; color: var(--text-3); font-family: 'JetBrains Mono', monospace; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.08em;">Fundo escuro — passe o mouse para ver o shimmer</p>
+      <div class="demo-row">
+        <button class="btn btn-primary">Primário</button>
+        <button class="btn btn-shimmer">CTA com Shimmer</button>
+        <button class="btn btn-secondary">Secundário</button>
+        <button class="btn btn-ghost">Ghost</button>
+      </div>
+    </div>
+    <div class="demo-light reveal">
+      <p style="font-size: 0.72rem; color: #888; font-family: 'JetBrains Mono', monospace; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.08em;">Fundo claro</p>
+      <div class="demo-row">
+        <button class="btn btn-shimmer" style="background: #000; color: #fff;">Primário claro</button>
+        <button class="btn" style="background:transparent;color:#000;border:1px solid #ddd;border-radius:999px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;padding:12px 28px;transition:all 0.2s;">Secundário claro</button>
+      </div>
+    </div>
+
+    <h3>Badges</h3>
+    <div class="demo-dark reveal">
+      <div class="demo-row">
+        <span class="badge">40+ AGENTES</span>
+        <span class="badge"><span class="dot"></span> AO VIVO</span>
+        <span class="badge badge-outline">SQUAD DE COPY</span>
+        <span class="badge" style="background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.2);color:var(--green);">ATIVO</span>
+        <span class="badge" style="background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.2);color:var(--red);">BLOQUEADO</span>
+      </div>
+    </div>
+
+    <h3>Cards — com Hover ao Vivo</h3>
+    <div class="grid-3 reveal">
+      <div class="ds-card">
+        <p style="font-size:0.7rem;color:var(--blue);margin-bottom:8px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;">Dark Card</p>
+        <p style="font-size:0.9rem;color:var(--text-1);font-weight:500;margin-bottom:6px;">Surface 2 com borda sutil</p>
+        <p style="font-size:0.8rem;">Usado em seções com fundo preto. Hover: translateY(-2px) + borda azul.</p>
+      </div>
+      <div class="ds-card-white">
+        <p style="font-size:0.7rem;color:var(--blue);margin-bottom:8px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;">Light Card</p>
+        <p style="font-size:0.9rem;color:#000;font-weight:500;margin-bottom:6px;">Branco com sombra sutil</p>
+        <p style="font-size:0.8rem;color:#666;">Usado em seções com fundo branco. Hover: box-shadow elevado.</p>
+      </div>
+      <div class="ds-card-glass">
+        <p style="font-size:0.7rem;color:var(--blue);margin-bottom:8px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;">Glass Card</p>
+        <p style="font-size:0.9rem;color:var(--text-1);font-weight:500;margin-bottom:6px;">Frosted glass com blur</p>
+        <p style="font-size:0.8rem;"><code>backdrop-filter: blur(20px)</code></p>
+      </div>
+    </div>
+
+    <h3>Terminal com Efeito de Digitação</h3>
+    <p style="margin-bottom: 16px; font-size: 0.875rem;">Role até aqui e o terminal anima automaticamente via <code>IntersectionObserver</code>.</p>
+    <div class="terminal reveal" style="max-width: 640px;" id="terminal-demo">
+      <div class="terminal-bar">
+        <div class="terminal-dot" style="background:#ff5f57;"></div>
+        <div class="terminal-dot" style="background:#ffbd2e;"></div>
+        <div class="terminal-dot" style="background:#28c840;"></div>
+        <span class="terminal-title">terminal — agentes [ia]</span>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <span class="terminal-cursor" id="terminal-cursor"></span>
+      </div>
+    </div>
+
+    <h3>Ticker / Marquee — Role sobre ele para pausar</h3>
+    <div class="reveal" style="margin: 16px -32px;">
+      <div class="marquee-wrap">
+        <div class="marquee-track" id="marquee-track">
+          <span class="marquee-item"><span class="dot-accent"></span> 40+ agentes prontos</span>
+          <span class="marquee-item"><span class="dot-accent"></span> 7 squads especializados</span>
+          <span class="marquee-item"><span class="dot-accent"></span> Testados em produção real</span>
+          <span class="marquee-item"><span class="dot-accent"></span> Squad de Copy — 23 agentes</span>
+          <span class="marquee-item"><span class="dot-accent"></span> Framework Hormozi integrado</span>
+          <span class="marquee-item"><span class="dot-accent"></span> Acesso imediato</span>
+          <span class="marquee-item"><span class="dot-accent"></span> Garantia de 7 dias</span>
+          <span class="marquee-item"><span class="dot-accent"></span> R$47 · Pagamento único</span>
+          <!-- duplicado para loop contínuo -->
+          <span class="marquee-item"><span class="dot-accent"></span> 40+ agentes prontos</span>
+          <span class="marquee-item"><span class="dot-accent"></span> 7 squads especializados</span>
+          <span class="marquee-item"><span class="dot-accent"></span> Testados em produção real</span>
+          <span class="marquee-item"><span class="dot-accent"></span> Squad de Copy — 23 agentes</span>
+          <span class="marquee-item"><span class="dot-accent"></span> Framework Hormozi integrado</span>
+          <span class="marquee-item"><span class="dot-accent"></span> Acesso imediato</span>
+          <span class="marquee-item"><span class="dot-accent"></span> Garantia de 7 dias</span>
+          <span class="marquee-item"><span class="dot-accent"></span> R$47 · Pagamento único</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Trust Badges — Sem Emojis</h3>
+    <div class="demo-dark reveal">
+      <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap; justify-content: center;">
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-2);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Cartão ou PIX
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-2);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Garantia 7 dias
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-2);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Acesso imediato
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 7. MOTION & VFX -->
+  <!-- ============================================================ -->
+  <section id="motion">
+    <div class="section-label">07</div>
+    <h2><span class="num">07</span> Motion &amp; VFX</h2>
+
+    <div class="ds-card reveal" style="border-left: 3px solid var(--blue); margin-bottom: 40px;">
+      <p style="color: var(--text-1); font-weight: 500; margin-bottom: 8px;">Princípio: Motion no AGENTES [IA] é profissional e contido.</p>
+      <p>Como um agente: movimento preciso, sem exagero, sempre com propósito. Zero animação decorativa. Stack inteiro: CSS + Vanilla JS. Sem GSAP, sem Framer, sem Three.js.</p>
+    </div>
+
+    <h3>Canvas Ambient Grid — Configuração</h3>
+    <div class="terminal reveal" style="max-width: 720px;">
+      <div class="terminal-bar">
+        <div class="terminal-dot" style="background:#ff5f57;"></div>
+        <div class="terminal-dot" style="background:#ffbd2e;"></div>
+        <div class="terminal-dot" style="background:#28c840;"></div>
+        <span class="terminal-title">canvas-grid-config.js</span>
+      </div>
+      <div class="terminal-body" style="min-height: auto;">
+        <span class="comment">// Adaptado de xquads — cor alterada para #4A90FF</span><br>
+        <span class="comment">// Adicionado: prefers-reduced-motion (competidor não tinha)</span><br><br>
+        <span class="cmd">const</span> CELL = 64;     <span class="comment">// tamanho da célula em px</span><br>
+        <span class="cmd">const</span> COLOR = <span class="ok">'rgba(74,144,255,'</span>;<br>
+        <span class="cmd">const</span> MAX_OPACITY = <span class="ok">0.04</span>; <span class="comment">// máximo por célula</span><br><br>
+        <span class="comment">// cell.v oscila entre 0 e 1</span><br>
+        <span class="comment">// cell.s = velocidade = rand(0.001, 0.003)</span><br>
+        <span class="comment">// stroke: rgba(74,144,255, v * 0.04)</span><br>
+        <span class="comment">// line-width: 0.5 · canvas opacity CSS: 0.25</span>
+      </div>
+    </div>
+
+    <h3>Scroll Reveal — 4 Variações ao Vivo</h3>
+    <p style="margin-bottom: 16px; font-size: 0.875rem;">Role para ver cada caixa animar. IntersectionObserver com threshold de 0.08.</p>
+    <div class="reveal-demo-grid">
+      <div class="reveal-demo-box reveal">Fade Up</div>
+      <div class="reveal-demo-box reveal-left">Slide Left</div>
+      <div class="reveal-demo-box reveal-right">Slide Right</div>
+      <div class="reveal-demo-box reveal-scale">Scale Up</div>
+    </div>
+    <div class="reveal-demo-grid" style="margin-top: 0;">
+      <div class="reveal-demo-box reveal" style="transition-delay: 0.1s;">Delay 100ms</div>
+      <div class="reveal-demo-box reveal" style="transition-delay: 0.2s;">Delay 200ms</div>
+      <div class="reveal-demo-box reveal" style="transition-delay: 0.3s;">Delay 300ms</div>
+      <div class="reveal-demo-box reveal" style="transition-delay: 0.4s;">Delay 400ms</div>
+    </div>
+
+    <h3>Galeria de Hover — 5 Efeitos ao Vivo</h3>
+    <div class="grid-5 reveal" style="margin: 16px 0;">
+      <div class="hover-card hover-lift">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <div class="hc-label">Lift</div>
+      </div>
+      <div class="hover-card hover-glow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <div class="hc-label">Glow</div>
+      </div>
+      <div class="hover-card hover-border">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <div class="hc-label">Border</div>
+      </div>
+      <div class="hover-card hover-topline">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <div class="hc-label">Top Line</div>
+      </div>
+      <div class="hover-card hover-scale">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        <div class="hc-label">Scale</div>
+      </div>
+    </div>
+
+    <h3>Contadores Animados — Rolam quando visíveis</h3>
+    <div class="counter-grid reveal" id="counter-section">
+      <div class="counter-cell">
+        <div class="counter-num" data-target="40" data-suffix="+"><span id="c1">0</span><span>+</span></div>
+        <div class="counter-label">Agentes</div>
+      </div>
+      <div class="counter-cell">
+        <div class="counter-num" data-target="7" data-suffix=""><span id="c2">0</span></div>
+        <div class="counter-label">Squads</div>
+      </div>
+      <div class="counter-cell">
+        <div class="counter-num" data-target="136" data-suffix=""><span id="c3">0</span></div>
+        <div class="counter-label">Agentes na prática</div>
+      </div>
+      <div class="counter-cell">
+        <div class="counter-num" data-target="47" data-suffix=""><span style="font-size:0.6em;color:var(--text-3);font-weight:400;">R$</span><span id="c4">0</span></div>
+        <div class="counter-label">Acesso completo</div>
+      </div>
+    </div>
+
+    <h3>Visualizador de Easing — Passe o mouse para animar</h3>
+    <div class="reveal">
+      <div class="ease-row">
+        <div class="ease-label">--ease-base</div>
+        <div class="ease-track" style="--dur: 0.4s; --ease: cubic-bezier(0.25,0.1,0.25,1);">
+          <div class="ease-dot" style="transition: left 0.4s cubic-bezier(0.25,0.1,0.25,1);"></div>
+        </div>
+        <div class="ease-val">cubic-bezier(0.25, 0.1, 0.25, 1)</div>
+      </div>
+      <div class="ease-row">
+        <div class="ease-label">--ease-out</div>
+        <div class="ease-track">
+          <div class="ease-dot" style="transition: left 0.5s cubic-bezier(0.16,1,0.3,1);"></div>
+        </div>
+        <div class="ease-val">cubic-bezier(0.16, 1, 0.3, 1)</div>
+      </div>
+      <div class="ease-row">
+        <div class="ease-label">--ease-dramatic</div>
+        <div class="ease-track">
+          <div class="ease-dot" style="transition: left 0.6s cubic-bezier(0.65,0,0.35,1);"></div>
+        </div>
+        <div class="ease-val">cubic-bezier(0.65, 0, 0.35, 1)</div>
+      </div>
+    </div>
+
+    <h3>Tabela de Timing</h3>
+    <div class="reveal">
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr style="border-bottom:1px solid var(--border-v);">
+          <th style="padding:10px 0;text-align:left;font-size:0.72rem;font-family:'JetBrains Mono',monospace;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Token</th>
+          <th style="padding:10px 0;text-align:left;font-size:0.72rem;font-family:'JetBrains Mono',monospace;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Valor</th>
+          <th style="padding:10px 0;text-align:left;font-size:0.72rem;font-family:'JetBrains Mono',monospace;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Uso</th>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:12px 0;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--blue);">--duration-fast</td><td style="padding:12px 0;color:var(--text-2);font-size:0.875rem;">200ms</td><td style="padding:12px 0;color:var(--text-3);font-size:0.85rem;">Hovers, toggles</td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:12px 0;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--blue);">--duration-normal</td><td style="padding:12px 0;color:var(--text-2);font-size:0.875rem;">300ms</td><td style="padding:12px 0;color:var(--text-3);font-size:0.85rem;">Transições padrão</td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:12px 0;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--blue);">--duration-slow</td><td style="padding:12px 0;color:var(--text-2);font-size:0.875rem;">600ms</td><td style="padding:12px 0;color:var(--text-3);font-size:0.85rem;">Scroll reveals</td></tr>
+        <tr><td style="padding:12px 0;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--blue);">--duration-dramatic</td><td style="padding:12px 0;color:var(--text-2);font-size:0.875rem;">800ms</td><td style="padding:12px 0;color:var(--text-3);font-size:0.85rem;">Hero, pricing</td></tr>
+      </table>
+    </div>
+    <p style="font-size:0.85rem;color:var(--text-3);">Regra permanente: sempre respeitar <code>prefers-reduced-motion: reduce</code>. Sem animação = sem barreira de acesso.</p>
+
+    <h3>Curva de Easing Assinatura</h3>
+    <div class="ds-card reveal" style="border-left: 3px solid var(--blue);">
+      <p style="color: var(--text-1); font-weight: 600; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace;">cubic-bezier(.22, 1, .36, 1)</p>
+      <p style="font-size: 0.9rem;">Uma única curva de easing usada em <strong>todas</strong> as interações do sistema. Início preciso, desaceleração suave — como um agente: ação rápida, pouso controlado. Adaptado do AIOX, que provou que motion coerente cria identidade subconsciente.</p>
+      <div style="margin-top: 16px; display: flex; gap: 16px; align-items: center;">
+        <div style="width: 120px; height: 120px; background: var(--s2); border: 1px solid var(--border-v); border-radius: 8px; position: relative; overflow: hidden;">
+          <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+            <path d="M 0 100 C 22 0, 36 0, 100 0" fill="none" stroke="#4A90FF" stroke-width="2.5"/>
+            <circle cx="0" cy="100" r="3" fill="#4A90FF"/>
+            <circle cx="100" cy="0" r="3" fill="#4A90FF"/>
+            <line x1="0" y1="100" x2="22" y2="0" stroke="rgba(74,144,255,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+            <line x1="100" y1="0" x2="36" y2="0" stroke="rgba(74,144,255,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+          </svg>
+        </div>
+        <div>
+          <p style="font-size: 0.8rem; color: var(--text-3);">Início preciso (0.22) → aceleração rápida → desaceleração longa (0.36, 1)</p>
+          <p style="font-size: 0.8rem; color: var(--text-3); margin-top: 4px;">Usada em: hover, focus, active, open/close, scroll-reveal</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Film Grain — 4 Níveis como Tokens</h3>
+    <p style="font-size: 0.9rem; color: var(--text-2); margin-bottom: 16px;">Grain não é efeito ad-hoc — é token formal com 4 níveis de opacidade. Adaptado do AIOX Film Grain System.</p>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+      <div class="ds-card reveal" style="text-align: center; position: relative; overflow: hidden; min-height: 120px;">
+        <div style="position:absolute;inset:0;opacity:0.05;background-image:url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.5%22/%3E%3C/svg%3E');pointer-events:none;"></div>
+        <p style="font-weight: 700; color: var(--text-1); position: relative;">Subtle</p>
+        <p style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); position: relative;">opacity: 0.05</p>
+        <p style="font-size: 0.7rem; color: var(--text-3); margin-top: 8px; position: relative;">Fundos, seções largas</p>
+      </div>
+      <div class="ds-card reveal" style="text-align: center; position: relative; overflow: hidden; min-height: 120px;">
+        <div style="position:absolute;inset:0;opacity:0.10;background-image:url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.5%22/%3E%3C/svg%3E');pointer-events:none;"></div>
+        <p style="font-weight: 700; color: var(--text-1); position: relative;">Light</p>
+        <p style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); position: relative;">opacity: 0.10</p>
+        <p style="font-size: 0.7rem; color: var(--text-3); margin-top: 8px; position: relative;">Cards, painéis</p>
+      </div>
+      <div class="ds-card reveal" style="text-align: center; position: relative; overflow: hidden; min-height: 120px;">
+        <div style="position:absolute;inset:0;opacity:0.15;background-image:url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.5%22/%3E%3C/svg%3E');pointer-events:none;"></div>
+        <p style="font-weight: 700; color: var(--text-1); position: relative;">Medium</p>
+        <p style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); position: relative;">opacity: 0.15</p>
+        <p style="font-size: 0.7rem; color: var(--text-3); margin-top: 8px; position: relative;">Ênfase editorial</p>
+      </div>
+      <div class="ds-card reveal" style="text-align: center; position: relative; overflow: hidden; min-height: 120px;">
+        <div style="position:absolute;inset:0;opacity:0.25;background-image:url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.5%22/%3E%3C/svg%3E');pointer-events:none;"></div>
+        <p style="font-weight: 700; color: var(--text-1); position: relative;">Heavy</p>
+        <p style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); position: relative;">opacity: 0.25</p>
+        <p style="font-size: 0.7rem; color: var(--text-3); margin-top: 8px; position: relative;">Textura dramática</p>
+      </div>
+    </div>
+    <div class="classified-footer">AGENTES [IA] // Design System v2.0 // Dark Suit Edition</div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 8. HUD FRAME KIT -->
+  <!-- ============================================================ -->
+  <section id="hud">
+    <div class="section-label">08</div>
+    <h2><span class="num">08</span> HUD Frame Kit</h2>
+    <p style="margin-bottom: 24px;">Frames técnicos para reforçar a estética "documento classificado". Bracket frames, dot grids, crosshair grids e divisores técnicos — adaptados do AIOX HUD Pattern Library.</p>
+
+    <h3>Bracket Frame — Cantos</h3>
+    <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+      <div style="position: relative; padding: 40px; min-height: 160px; display: flex; align-items: center; justify-content: center;">
+        <div style="position:absolute;top:0;left:0;width:32px;height:32px;border-top:2px solid var(--blue);border-left:2px solid var(--blue);"></div>
+        <div style="position:absolute;top:0;right:0;width:32px;height:32px;border-top:2px solid var(--blue);border-right:2px solid var(--blue);"></div>
+        <div style="position:absolute;bottom:0;left:0;width:32px;height:32px;border-bottom:2px solid var(--blue);border-left:2px solid var(--blue);"></div>
+        <div style="position:absolute;bottom:0;right:0;width:32px;height:32px;border-bottom:2px solid var(--blue);border-right:2px solid var(--blue);"></div>
+        <div style="text-align: center;">
+          <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase;">Classificado</p>
+          <p style="font-size: 1.5rem; font-weight: 700; margin-top: 8px;">Bracket Frame</p>
+          <p style="font-size: 0.8rem; color: var(--text-3);">Apenas cantos — sem bordas completas</p>
+        </div>
+      </div>
+      <div style="position: relative; padding: 40px; min-height: 160px; display: flex; align-items: center; justify-content: center; background: var(--s2); border-radius: var(--radius-lg);">
+        <div style="position:absolute;top:8px;left:8px;width:24px;height:24px;border-top:1px solid rgba(74,144,255,0.4);border-left:1px solid rgba(74,144,255,0.4);"></div>
+        <div style="position:absolute;top:8px;right:8px;width:24px;height:24px;border-top:1px solid rgba(74,144,255,0.4);border-right:1px solid rgba(74,144,255,0.4);"></div>
+        <div style="position:absolute;bottom:8px;left:8px;width:24px;height:24px;border-bottom:1px solid rgba(74,144,255,0.4);border-left:1px solid rgba(74,144,255,0.4);"></div>
+        <div style="position:absolute;bottom:8px;right:8px;width:24px;height:24px;border-bottom:1px solid rgba(74,144,255,0.4);border-right:1px solid rgba(74,144,255,0.4);"></div>
+        <div style="text-align: center;">
+          <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase;">Variante sutil</p>
+          <p style="font-size: 1.125rem; font-weight: 600; margin-top: 8px;">Sobre card</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Dot Grid Background</h3>
+    <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+      <div style="height: 140px; border-radius: var(--radius-lg); background: radial-gradient(circle, rgba(74,144,255,0.15) 1px, transparent 1px); background-size: 16px 16px; border: 1px solid var(--border-v); display: flex; align-items: flex-end; padding: 12px;">
+        <p style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3);">16px spacing</p>
+      </div>
+      <div style="height: 140px; border-radius: var(--radius-lg); background: radial-gradient(circle, rgba(74,144,255,0.12) 1px, transparent 1px); background-size: 24px 24px; border: 1px solid var(--border-v); display: flex; align-items: flex-end; padding: 12px;">
+        <p style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3);">24px spacing</p>
+      </div>
+      <div style="height: 140px; border-radius: var(--radius-lg); background: radial-gradient(circle, rgba(74,144,255,0.10) 1px, transparent 1px); background-size: 40px 40px; border: 1px solid var(--border-v); display: flex; align-items: flex-end; padding: 12px;">
+        <p style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3);">40px spacing</p>
+      </div>
+    </div>
+
+    <h3>Crosshair Grid</h3>
+    <div class="reveal" style="height: 160px; border-radius: var(--radius-lg); border: 1px solid var(--border-v); margin-bottom: 24px; background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(74,144,255,0.06) 39px, rgba(74,144,255,0.06) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(74,144,255,0.06) 39px, rgba(74,144,255,0.06) 40px); display: flex; align-items: center; justify-content: center;">
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-3);">Crosshair Grid — 40px cells — rgba(74,144,255, 0.06)</p>
+    </div>
+
+    <h3>Divisor Técnico com Glow</h3>
+    <div class="reveal" style="margin: 24px 0;">
+      <div style="height: 1px; background: linear-gradient(90deg, transparent, var(--blue), transparent); opacity: 0.5;"></div>
+      <p style="text-align: center; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); margin-top: 8px; letter-spacing: 0.15em; text-transform: uppercase;">Divisor com gradiente azul — opacity 0.5</p>
+    </div>
+    <div style="margin: 24px 0;">
+      <div style="height: 1px; background: linear-gradient(90deg, transparent 0%, var(--border-v) 20%, var(--blue) 50%, var(--border-v) 80%, transparent 100%);"></div>
+      <p style="text-align: center; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: var(--text-3); margin-top: 8px; letter-spacing: 0.15em; text-transform: uppercase;">Divisor com blue accent centralizado</p>
+    </div>
+    <div class="classified-footer">AGENTES [IA] // Design System v2.0 // Dark Suit Edition</div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 9. ICONOGRAPHY -->
+  <!-- ============================================================ -->
+  <section id="iconografia">
+    <div class="section-label">09</div>
+    <h2><span class="num">09</span> Iconografia</h2>
+    <p style="margin-bottom: 24px;">Regra permanente: sem emojis na UI. Apenas ícones SVG geométricos, stroke-based, <code>stroke-width: 1.5</code>.</p>
+
+    <div class="icon-demo reveal">
+      <div class="icon-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg><span>check</span></div>
+      <div class="icon-item"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg><span>chevron</span></div>
+      <div class="icon-item"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span>play</span></div>
+      <div class="icon-item"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg><span>arrow</span></div>
+      <div class="icon-item"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg><span>add</span></div>
+      <div class="icon-item"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg><span>close</span></div>
+      <div class="icon-item"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0110 0v4"></path></svg><span>lock</span></div>
+      <div class="icon-item"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg><span>bolt</span></div>
+      <div class="icon-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span>clock</span></div>
+      <div class="icon-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg><span>squad</span></div>
+      <div class="icon-item"><svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg><span>edit</span></div>
+      <div class="icon-item"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg><span>metrics</span></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 9. DO'S AND DON'TS -->
+  <!-- ============================================================ -->
+  <section id="diretrizes">
+    <div class="section-label">10</div>
+    <h2><span class="num">10</span> Faça e Não Faça</h2>
+
+    <div class="do-dont reveal">
+      <div class="do-card">
+        <div class="do-label green">Faça</div>
+        <div class="do-item">Alto contraste — preto no branco, branco no preto</div>
+        <div class="do-item">Azul accent com moderação — para ênfase pontual</div>
+        <div class="do-item">Espaço negativo generoso — elementos respiram</div>
+        <div class="do-item">AGENTES <span style="color:var(--blue);font-weight:300;">[IA]</span> com brackets, [IA] em azul peso 300</div>
+        <div class="do-item">Tom profissional, preciso, confiante — como sócio estratégico</div>
+        <div class="do-item">Tipografia bold e justa nos headlines — kerning negativo</div>
+        <div class="do-item">Cards com hover lift sutil e borda azul no hover</div>
+        <div class="do-item">Ícones SVG stroke-based, geométricos, 1.5px</div>
+        <div class="do-item">Respeitar prefers-reduced-motion em toda animação</div>
+      </div>
+      <div class="dont-card">
+        <div class="do-label red">Não Faça</div>
+        <div class="do-item">Cinza sobre cinza — contraste insuficiente</div>
+        <div class="do-item">Azul em tudo — overuse mata o destaque</div>
+        <div class="do-item">Layout apertado, cluttered, sem respiro</div>
+        <div class="do-item">"Agentes IA" sem brackets ou com peso errado</div>
+        <div class="do-item">Tom casual, hype, emojis no conteúdo de UI</div>
+        <div class="do-item">Estética hacker, neon verde, código Matrix caindo</div>
+        <div class="do-item">Animações excessivas ou puramente decorativas</div>
+        <div class="do-item">Gold, âmbar, terracota — fora da paleta</div>
+        <div class="do-item">Gradiente de texto colorido — proibido pelo brand</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 10. BRAND VOICE -->
+  <!-- ============================================================ -->
+  <section id="voz">
+    <div class="section-label">11</div>
+    <h2><span class="num">11</span> Voz da Marca</h2>
+
+    <div class="ds-card reveal" style="border-left: 3px solid var(--blue); margin-bottom: 32px;">
+      <p style="color: var(--text-1); font-weight: 500; font-size: 1.1rem; margin-bottom: 10px;">Consultivo premium. Direto. Confiante.</p>
+      <p>"Falamos como sócio estratégico, não como vendedor de curso."</p>
+    </div>
+
+    <h3>Palavras-Chave</h3>
+    <div class="demo-row reveal" style="margin: 16px 0; flex-wrap: wrap;">
+      <span class="badge">Preciso</span>
+      <span class="badge">Eficiente</span>
+      <span class="badge">Resultado</span>
+      <span class="badge">Time</span>
+      <span class="badge">Missão</span>
+      <span class="badge">Premium</span>
+      <span class="badge">Produção Real</span>
+      <span class="badge">Especificidade</span>
+    </div>
+
+    <h3>Proibido</h3>
+    <div class="demo-row reveal" style="margin: 16px 0; flex-wrap: wrap;">
+      <span class="badge" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red);">"Revolucionário"</span>
+      <span class="badge" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red);">Hype de IA</span>
+      <span class="badge" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red);">Promessas vagas</span>
+      <span class="badge" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red);">"Inovador"</span>
+      <span class="badge" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red);">"Potencializar"</span>
+      <span class="badge" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red);">"Alavancar"</span>
+      <span class="badge" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red);">"Ecossistema" (excesso)</span>
+    </div>
+
+    <h3>Tom por Canal</h3>
+    <div class="gap-grid cols-3 reveal" style="margin-top: 16px;">
+      <div class="gap-grid-cell">
+        <p style="font-size:0.7rem;color:var(--blue);font-family:'JetBrains Mono',monospace;text-transform:uppercase;margin-bottom:8px;">Página de Vendas</p>
+        <p style="font-size:0.875rem;font-weight:500;margin-bottom:6px;">Hormozi direto</p>
+        <p style="font-size:0.8rem;color:var(--text-3);">Resultado antes de mecanismo. Números específicos. Sem hype.</p>
+      </div>
+      <div class="gap-grid-cell">
+        <p style="font-size:0.7rem;color:var(--blue);font-family:'JetBrains Mono',monospace;text-transform:uppercase;margin-bottom:8px;">LinkedIn</p>
+        <p style="font-size:0.875rem;font-weight:500;margin-bottom:6px;">Executivo reflexivo</p>
+        <p style="font-size:0.8rem;color:var(--text-3);">Insights de negócio. Observações precisas. Sem KKKK ou emojis.</p>
+      </div>
+      <div class="gap-grid-cell">
+        <p style="font-size:0.7rem;color:var(--blue);font-family:'JetBrains Mono',monospace;text-transform:uppercase;margin-bottom:8px;">Email</p>
+        <p style="font-size:0.875rem;font-weight:500;margin-bottom:6px;">1:1 informal premium</p>
+        <p style="font-size:0.8rem;color:var(--text-3);">Como escreve para um sócio. Ritmo variado, fragmentos, real.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 11. PATTERNS REFERENCE -->
+  <!-- ============================================================ -->
+  <section id="padroes">
+    <div class="section-label">11</div>
+    <h2><span class="num">12</span> Referência de Padrões</h2>
+    <p style="margin-bottom: 24px; font-size: 0.875rem;">Padrões adaptados de <code>raxo.com.br/xquads</code> com melhorias específicas. Originais extraídos em 22/04/2026.</p>
+
+    <div class="reveal">
+      <table class="patterns-table">
+        <thead>
+          <tr>
+            <th>Padrão</th>
+            <th>Descrição</th>
+            <th>Nossa Melhoria</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>canvas-ambient-grid</td>
+            <td>Canvas 2D com células pulsantes em animação randômica. Background fixo atrás de todo conteúdo.</td>
+            <td>Cor alterada de #D1FF02 para #4A90FF. Adicionado <code>prefers-reduced-motion</code> — competidor não tinha.</td>
+          </tr>
+          <tr>
+            <td>1px-gap-grid</td>
+            <td><code>gap: 1px; background: border-color; overflow: hidden</code> no container. Cria separadores sem border por card.</td>
+            <td>Aplicado em squads, features, FAQ e seções de módulos. Mais versátil que o original.</td>
+          </tr>
+          <tr>
+            <td>terminal-code-card</td>
+            <td>Mockup macOS com dots coloridos, monospace, syntax highlight e efeito de digitação.</td>
+            <td>Azul #4A90FF para comandos (competidor usava verde). Animação por IntersectionObserver, não timeout fixo.</td>
+          </tr>
+          <tr>
+            <td>button-shimmer</td>
+            <td>Pseudo-elemento <code>::after</code> skewed desliza da esquerda para direita no hover. Pure CSS.</td>
+            <td>Desativado via <code>prefers-reduced-motion</code>. Aplicado em todos os CTAs primários.</td>
+          </tr>
+          <tr>
+            <td>section-label-ornament</td>
+            <td>Rótulo monospace uppercase flanqueado por linhas via <code>::before</code> / <code>::after flex: 1</code>.</td>
+            <td>Três variações: centrada, full-width, tom neutro. Usada em todas as seções deste sistema.</td>
+          </tr>
+          <tr>
+            <td>marquee-proof-bar</td>
+            <td>CSS-only infinite scroll com conteúdo duplicado. <code>translateX(-50%)</code> cria loop perfeito.</td>
+            <td>Hover pausa a animação (<code>animation-play-state: paused</code>). Competidor não tinha essa UX.</td>
+          </tr>
+          <tr>
+            <td>sticky-price-sidebar</td>
+            <td><code>position: sticky; top: 100px</code> no card de preço. Mantém CTA visível durante scroll.</td>
+            <td><code>position: static</code> em mobile (abaixo de 640px). Mesmo comportamento do original.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="padding: 48px 0; text-align: center; border-top: 1px solid var(--border);">
+    <p style="font-size: 0.75rem; color: var(--text-3); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.06em;">AGENTES <span style="color: var(--blue);">[IA]</span> Design System v2.0 &nbsp;·&nbsp; Produto do ecossistema REIS [IA] &nbsp;·&nbsp; Abril 2026</p>
+  </footer>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- SCRIPTS -->
+<!-- ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ===== CANVAS AMBIENT GRID =====
+  const canvas = document.getElementById('ambient-canvas');
+  const ctx = canvas.getContext('2d');
+  const CELL = 64;
+  const COLOR = '74,144,255';
+  const MAX_OP = 0.04;
+  let cells = [];
+  let rafId;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function initCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const cols = Math.ceil(canvas.width / CELL) + 1;
+    const rows = Math.ceil(canvas.height / CELL) + 1;
+    cells = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        cells.push({ v: Math.random(), s: 0.001 + Math.random() * 0.002, c, r });
+      }
+    }
+  }
+
+  function drawGrid() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 0.5;
+    for (const cell of cells) {
+      cell.v += cell.s;
+      if (cell.v > 1 || cell.v < 0) cell.s *= -1;
+      ctx.strokeStyle = 'rgba(' + COLOR + ',' + (cell.v * MAX_OP) + ')';
+      ctx.strokeRect(cell.c * CELL, cell.r * CELL, CELL, CELL);
+    }
+  }
+
+  function loop() {
+    drawGrid();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  if (!prefersReduced) {
+    initCanvas();
+    loop();
+    window.addEventListener('resize', () => {
+      cancelAnimationFrame(rafId);
+      initCanvas();
+      loop();
+    }, { passive: true });
+  } else {
+    // Static grid for reduced motion
+    canvas.style.display = 'none';
+  }
+
+  // ===== SCROLL PROGRESS =====
+  const progressBar = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+    progressBar.style.width = (scrolled / total * 100) + '%';
+  }, { passive: true });
+
+  // ===== INTERSECTION OBSERVER — SCROLL REVEALS =====
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach((el, i) => {
+    revealObs.observe(el);
+  });
+
+  // ===== TERMINAL TYPING EFFECT =====
+  const lines = [
+    { cls: 'comment', text: '# Ative o Squad de Copy:' },
+    { cls: '', text: '' },
+    { cls: 'cmd', text: '$ claude "crie uma página de vendas" \\' },
+    { cls: '', text: '         "--produto Curso R$497"' },
+    { cls: '', text: '' },
+    { cls: '', text: '> Ativando Squad de Copy...' },
+    { cls: '', text: '> Framework: Grand Slam Offer (Hormozi)' },
+    { cls: '', text: '> Pesquisa de ICP: concluída' },
+    { cls: '', text: '> Humanizador: eliminando padrões de IA' },
+    { cls: '', text: '> Revisor: APROVADO' },
+    { cls: '', text: '' },
+    { cls: 'ok', text: '✓ Página pronta em 8 minutos' },
+  ];
+
+  let terminalStarted = false;
+  const terminalEl = document.getElementById('terminal-demo');
+  const terminalBody = document.getElementById('terminal-body');
+
+  function runTerminal() {
+    if (terminalStarted) return;
+    terminalStarted = true;
+    terminalBody.innerHTML = '<span class="terminal-cursor" id="terminal-cursor"></span>';
+    let delay = 0;
+    lines.forEach((line, i) => {
+      delay += i === 0 ? 300 : 180;
+      setTimeout(() => {
+        const cursor = document.getElementById('terminal-cursor');
+        const span = document.createElement('div');
+        span.className = 'line' + (line.cls ? ' ' + line.cls : '');
+        span.textContent = line.text;
+        if (cursor) terminalBody.insertBefore(span, cursor);
+      }, delay);
+    });
+  }
+
+  if (!prefersReduced) {
+    const termObs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { runTerminal(); termObs.unobserve(e.target); }
+      });
+    }, { threshold: 0.2 });
+    if (terminalEl) termObs.observe(terminalEl);
+  } else {
+    // Show all lines at once for reduced motion
+    if (terminalBody) {
+      terminalBody.innerHTML = '';
+      lines.forEach(line => {
+        const span = document.createElement('div');
+        span.className = 'line' + (line.cls ? ' ' + line.cls : '');
+        span.textContent = line.text;
+        terminalBody.appendChild(span);
+      });
+    }
+  }
+
+  // ===== COUNTER ANIMATION =====
+  let countersStarted = false;
+  const counterSection = document.getElementById('counter-section');
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function animateCounter(el, target, duration) {
+    const start = performance.now();
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const value = Math.round(easeOutCubic(progress) * target);
+      el.textContent = value;
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = target;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function startCounters() {
+    if (countersStarted) return;
+    countersStarted = true;
+    const targets = [
+      { id: 'c1', val: 40 },
+      { id: 'c2', val: 7 },
+      { id: 'c3', val: 136 },
+      { id: 'c4', val: 47 },
+    ];
+    targets.forEach(({ id, val }, i) => {
+      const el = document.getElementById(id);
+      if (el) setTimeout(() => animateCounter(el, val, 1200), i * 150);
+    });
+  }
+
+  if (!prefersReduced && counterSection) {
+    const cntObs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { startCounters(); cntObs.unobserve(e.target); }
+      });
+    }, { threshold: 0.3 });
+    cntObs.observe(counterSection);
+  } else if (counterSection) {
+    // Set final values immediately
+    [['c1',40],['c2',7],['c3',136],['c4',47]].forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    });
+  }
+
+  // ===== COPY HEX ON SWATCH CLICK =====
+  window.copyHex = function(hex, el) {
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(hex).then(() => {
+      const name = el.querySelector('.swatch-name');
+      if (!name) return;
+      const orig = name.textContent;
+      name.textContent = 'Copiado!';
+      name.style.color = 'var(--green)';
+      setTimeout(() => { name.textContent = orig; name.style.color = ''; }, 1200);
+    });
+  };
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carrossel — R$80K Onde Não Gastar | Noiva S.A.</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose: #DBA99F;
+    --blush: #FFCBC1;
+    --cream: #F4F3EE;
+    --eucalyptus: #4A6741;
+    --taupe: #9C958F;
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: rgba(219,169,159,0.15);
+  }
+
+  body {
+    background: #1c1c1c;
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 32px 16px 48px;
+    gap: 24px;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    text-align: center;
+    color: var(--taupe);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  /* ── Viewer ── */
+  .viewer {
+    position: relative;
+    width: 100%;
+    max-width: 540px;
+  }
+
+  .slides-wrap {
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+  }
+
+  .slides-track {
+    display: flex;
+    transition: transform 0.45s cubic-bezier(0.77,0,0.175,1);
+  }
+
+  /* ── Slide base: 1:1 square ── */
+  .slide {
+    flex: 0 0 100%;
+    aspect-ratio: 1/1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 44px;
+    background: var(--bg);
+  }
+
+  /* Shared grain overlay */
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .slide > * { position: relative; z-index: 2; }
+
+  /* ── Brand mark (all slides) ── */
+  .brand-mark {
+    position: absolute;
+    bottom: 22px;
+    right: 24px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: rgba(219,169,159,0.35);
+    text-transform: uppercase;
+    z-index: 10;
+  }
+
+  /* ── Slide counter ── */
+  .slide-counter {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    color: rgba(219,169,159,0.4);
+    z-index: 10;
+  }
+
+  /* ── Decorative ring ── */
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(219,169,159,0.08);
+  }
+
+  /* ════════════════════════════════════
+     SLIDE 1 — CAPA / HOOK
+  ════════════════════════════════════ */
+  .s1 { background: var(--bg); }
+
+  .s1 .ring-1 { width: 420px; height: 420px; top: -120px; right: -120px; }
+  .s1 .ring-2 { width: 280px; height: 280px; top: -60px; right: -60px; border-color: rgba(219,169,159,0.05); }
+
+  .s1 .tag {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 20px;
+  }
+
+  .s1 .valor {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 72px;
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  .s1 .seta {
+    font-size: 22px;
+    color: var(--rose);
+    margin: 10px 0;
+    opacity: 0.7;
+  }
+
+  .s1 .onde {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--blush);
+    margin-bottom: 28px;
+  }
+
+  .s1 .subtitulo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--taupe);
+    text-align: center;
+    line-height: 1.5;
+    max-width: 340px;
+  }
+
+  /* ════════════════════════════════════
+     SLIDE 2 — CONTEXTO
+  ════════════════════════════════════ */
+  .s2 { background: var(--surface); }
+
+  .s2 .eyebrow {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 28px;
+  }
+
+  .s2 .quote-mark {
+    font-family: 'Great Vibes', cursive;
+    font-size: 80px;
+    color: rgba(219,169,159,0.12);
+    line-height: 0.5;
+    margin-bottom: 20px;
+    align-self: flex-start;
+    margin-left: -4px;
+  }
+
+  .s2 .texto {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--cream);
+    line-height: 1.55;
+    text-align: left;
+    max-width: 100%;
+  }
+
+  .s2 .texto em {
+    font-style: italic;
+    color: var(--blush);
+  }
+
+  .s2 .divider {
+    width: 36px;
+    height: 1px;
+    background: rgba(219,169,159,0.3);
+    margin: 24px 0;
+    align-self: flex-start;
+  }
+
+  .s2 .range {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--taupe);
+    text-transform: uppercase;
+    align-self: flex-start;
+  }
+
+  /* ════════════════════════════════════
+     SLIDES 3–6 — ERROS
+  ════════════════════════════════════ */
+  .s-erro { background: var(--bg); flex-direction: column; align-items: flex-start; }
+
+  .erro-numero {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 120px;
+    font-weight: 300;
+    color: rgba(219,169,159,0.06);
+    position: absolute;
+    top: -20px;
+    right: 28px;
+    line-height: 1;
+    z-index: 1;
+  }
+
+  .erro-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .erro-badge .num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(219,169,159,0.12);
+    border: 1px solid rgba(219,169,159,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--rose);
+  }
+
+  .erro-badge .label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--taupe);
+  }
+
+  .erro-titulo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--cream);
+    line-height: 1.2;
+    margin-bottom: 20px;
+    max-width: 380px;
+  }
+
+  .erro-titulo em {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  .erro-linha {
+    width: 36px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--rose), transparent);
+    margin-bottom: 20px;
+  }
+
+  .erro-texto {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--taupe);
+    line-height: 1.7;
+    max-width: 400px;
+  }
+
+  .erro-overlay {
+    position: absolute;
+    bottom: 40px;
+    left: 44px;
+    right: 44px;
+    background: rgba(219,169,159,0.06);
+    border: 1px solid rgba(219,169,159,0.12);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(219,169,159,0.5);
+  }
+
+  /* Erro 2 destaque */
+  .erro-strike {
+    display: inline;
+    text-decoration: line-through;
+    color: var(--taupe);
+    opacity: 0.5;
+  }
+
+  .erro-destaque {
+    color: var(--blush);
+    font-weight: 600;
+  }
+
+  /* ════════════════════════════════════
+     SLIDE 7 — PAYOFF
+  ════════════════════════════════════ */
+  .s7 { background: var(--surface); }
+
+  .s7 .decorativo {
+    font-family: 'Great Vibes', cursive;
+    font-size: 44px;
+    color: rgba(219,169,159,0.18);
+    margin-bottom: 16px;
+    align-self: flex-start;
+  }
+
+  .s7 .linha1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--taupe);
+    margin-bottom: 16px;
+    text-align: left;
+    width: 100%;
+  }
+
+  .s7 .linha2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 500;
+    color: var(--cream);
+    line-height: 1.2;
+    text-align: left;
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .s7 .linha2 em {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  .s7 .divider {
+    width: 48px;
+    height: 1px;
+    background: rgba(219,169,159,0.25);
+    margin-bottom: 20px;
+  }
+
+  .s7 .linha3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--taupe);
+    line-height: 1.6;
+    text-align: left;
+    width: 100%;
+  }
+
+  .s7 .tag-final {
+    position: absolute;
+    bottom: 40px;
+    left: 44px;
+    right: 44px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rose);
+    border-top: 1px solid rgba(219,169,159,0.15);
+    padding-top: 14px;
+  }
+
+  /* ════════════════════════════════════
+     SLIDE 8 — CTA
+  ════════════════════════════════════ */
+  .s8 { background: var(--bg); justify-content: center; }
+
+  .s8 .ring-bg {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    border: 1px solid rgba(219,169,159,0.05);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .s8 .ring-bg2 {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    border: 1px solid rgba(219,169,159,0.08);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .s8 .cta-eyebrow {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--taupe);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .s8 .cta-word {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 80px;
+    font-weight: 300;
+    color: var(--rose);
+    letter-spacing: 0.05em;
+    text-align: center;
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+
+  .s8 .cta-instrucao {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--cream);
+    text-align: center;
+    line-height: 1.6;
+    max-width: 300px;
+    margin-bottom: 32px;
+  }
+
+  .s8 .cta-instrucao strong {
+    color: var(--blush);
+    font-weight: 600;
+  }
+
+  .s8 .cta-pill {
+    background: rgba(219,169,159,0.1);
+    border: 1px solid rgba(219,169,159,0.25);
+    border-radius: 40px;
+    padding: 12px 32px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--blush);
+  }
+
+  /* ── Navigation ── */
+  .nav-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(219,169,159,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .dot.active {
+    background: var(--rose);
+    width: 20px;
+    border-radius: 3px;
+  }
+
+  .nav-arrows {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .arrow-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(219,169,159,0.08);
+    border: 1px solid rgba(219,169,159,0.15);
+    color: var(--rose);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .arrow-btn:hover { background: rgba(219,169,159,0.14); }
+  .arrow-btn:disabled { opacity: 0.25; cursor: default; }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  /* ── Slide label ── */
+  .slide-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--taupe);
+    text-transform: uppercase;
+    text-align: center;
+    min-height: 14px;
+  }
+
+  /* ── Download hint ── */
+  .hint {
+    font-size: 10px;
+    color: rgba(156,149,143,0.4);
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<p class="page-header">Noiva S.A. — Carrossel Instagram · R$80K Onde Não Gastar</p>
+
+<div class="viewer">
+  <div class="slides-wrap">
+    <div class="slides-track" id="track">
+
+      <!-- SLIDE 1 — CAPA -->
+      <div class="slide s1">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <p class="tag">Noiva S.A. · Planejamento</p>
+        <p class="valor">R$80K</p>
+        <p class="seta">↓</p>
+        <p class="onde">Onde Não Gastar</p>
+        <p class="subtitulo">"R$80 mil parece muito até você descobrir que flores, buffet e foto já comem metade."</p>
+        <span class="brand-mark">Noiva S.A.</span>
+        <span class="slide-counter">1 / 8</span>
+      </div>
+
+      <!-- SLIDE 2 — CONTEXTO -->
+      <div class="slide s2" style="align-items:flex-start;">
+        <p class="eyebrow">A verdade que ninguém conta</p>
+        <p class="quote-mark">"</p>
+        <p class="texto">Já planejei casamentos de<br><em>R$50K a R$500K.</em><br><br>O que muda é o tamanho,<br>não o erro.</p>
+        <div class="divider"></div>
+        <p class="range">O erro mais comum: gastar no que aparece na foto e cortar no que faz o dia funcionar.</p>
+        <span class="brand-mark">Noiva S.A.</span>
+        <span class="slide-counter">2 / 8</span>
+      </div>
+
+      <!-- SLIDE 3 — ERRO 1 -->
+      <div class="slide s-erro">
+        <span class="erro-numero">1</span>
+        <div class="erro-badge">
+          <span class="num">1</span>
+          <span class="label">Primeiro Erro</span>
+        </div>
+        <p class="erro-titulo">Decoração demais<br><em>na mesa</em></p>
+        <div class="erro-linha"></div>
+        <p class="erro-texto">Ninguém senta ali pra olhar a flor. Sentam pra comer, conversar e dançar.<br><br>Corta metade do arranjo. Investe no que fica mais tempo na mesa: <strong style="color:var(--blush)">a comida.</strong></p>
+        <div class="erro-overlay">ERRO 1: DECORAÇÃO DEMAIS NA MESA</div>
+        <span class="brand-mark">Noiva S.A.</span>
+        <span class="slide-counter">3 / 8</span>
+      </div>
+
+      <!-- SLIDE 4 — ERRO 2 -->
+      <div class="slide s-erro">
+        <span class="erro-numero">2</span>
+        <div class="erro-badge">
+          <span class="num">2</span>
+          <span class="label">Segundo Erro</span>
+        </div>
+        <p class="erro-titulo"><em>Convite impresso</em><br>caro</p>
+        <div class="erro-linha"></div>
+        <p class="erro-texto">
+          <span class="erro-destaque">Vai pro lixo. Sempre.</span><br><br>
+          Digital bem feito resolve — e você economiza<br>
+          <strong style="color:var(--blush)">R$3K a R$8K</strong> dependendo da lista.
+        </p>
+        <div class="erro-overlay">ERRO 2: CONVITE IMPRESSO CARO → VAI PRO LIXO. SEMPRE.</div>
+        <span class="brand-mark">Noiva S.A.</span>
+        <span class="slide-counter">4 / 8</span>
+      </div>
+
+      <!-- SLIDE 5 — ERRO 3 -->
+      <div class="slide s-erro">
+        <span class="erro-numero">3</span>
+        <div class="erro-badge">
+          <span class="num">3</span>
+          <span class="label">Terceiro Erro</span>
+        </div>
+        <p class="erro-titulo">DJ genérico<br><em>barato</em></p>
+        <div class="erro-linha"></div>
+        <p class="erro-texto">Música ruim esvazia a pista.<br><br>Quando a pista esvazia, o casamento esvaziou. É o <strong style="color:var(--blush)">sentimento que fica.</strong><br><br>Investe num DJ que conheça o casal de verdade.</p>
+        <div class="erro-overlay">ERRO 3: DJ GENÉRICO BARATO</div>
+        <span class="brand-mark">Noiva S.A.</span>
+        <span class="slide-counter">5 / 8</span>
+      </div>
+
+      <!-- SLIDE 6 — ERRO 4 -->
+      <div class="slide s-erro">
+        <span class="erro-numero">4</span>
+        <div class="erro-badge">
+          <span class="num">4</span>
+          <span class="label">Quarto Erro — esse dói</span>
+        </div>
+        <p class="erro-titulo">Cortar<br><em>a assessoria</em></p>
+        <div class="erro-linha"></div>
+        <p class="erro-texto">Você vai pagar o dobro resolvendo erros que a assessora pagaria <strong style="color:var(--blush)">metade pra evitar.</strong><br><br>Economizar aqui é a decisão mais cara do planejamento.</p>
+        <div class="erro-overlay">ERRO 4: CORTAR A ASSESSORIA</div>
+        <span class="brand-mark">Noiva S.A.</span>
+        <span class="slide-counter">6 / 8</span>
+      </div>
+
+      <!-- SLIDE 7 — PAYOFF -->
+      <div class="slide s7" style="align-items:flex-start;">
+        <p class="s7 decorativo" style="font-family:'Great Vibes',cursive;font-size:44px;color:rgba(219,169,159,0.18);margin-bottom:16px;">Noiva S.A.</p>
+        <p class="s7 linha1">Casamento bom não é o mais caro.</p>
+        <p class="s7 linha2">É o mais bem<br><em>planejado.</em></p>
+        <div class="s7 divider"></div>
+        <p class="s7 linha3">Onde você gasta importa tanto quanto quanto você gasta.</p>
+        <p class="s7 tag-final">ONDE VOCÊ GASTA IMPORTA.</p>
+        <span class="brand-mark">Noiva S.A.</span>
+        <span class="slide-counter">7 / 8</span>
+      </div>
+
+      <!-- SLIDE 8 — CTA -->
+      <div class="slide s8">
+        <div class="s8 ring-bg"></div>
+        <div class="s8 ring-bg2"></div>
+        <p class="s8 cta-eyebrow">Quer o guia completo?</p>
+        <p class="s8 cta-word">ORÇAMENTO</p>
+        <p class="s8 cta-instrucao">Comente <strong>ORÇAMENTO</strong> para receber um guia completo no seu direct</p>
+        <div class="s8 cta-pill">Comente Aqui Embaixo</div>
+        <span class="brand-mark">Noiva S.A.</span>
+        <span class="slide-counter">8 / 8</span>
+      </div>
+
+    </div><!-- /track -->
+  </div><!-- /slides-wrap -->
+</div><!-- /viewer -->
+
+<div class="controls">
+  <button class="arrow-btn" id="prev" onclick="navigate(-1)" disabled>←</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="arrow-btn" id="next" onclick="navigate(1)">→</button>
+</div>
+
+<p class="slide-label" id="label"></p>
+<p class="hint">Use as setas ou clique nos pontos para navegar · Capture cada slide com Print Screen</p>
+
+<script>
+  const TOTAL = 8;
+  const LABELS = [
+    'Capa — Hook',
+    'Contexto',
+    'Erro 1 — Decoração demais na mesa',
+    'Erro 2 — Convite impresso caro',
+    'Erro 3 — DJ genérico barato',
+    'Erro 4 — Cortar a assessoria',
+    'Payoff',
+    'CTA — Comente ORÇAMENTO',
+  ];
+
+  let current = 0;
+  const track = document.getElementById('track');
+  const dotsEl = document.getElementById('dots');
+  const labelEl = document.getElementById('label');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+
+  // Build dots
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    current = Math.max(0, Math.min(TOTAL - 1, n));
+    track.style.transform = `translateX(-${current * 100}%)`;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    labelEl.textContent = LABELS[current];
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === TOTAL - 1;
+  }
+
+  function navigate(dir) { goTo(current + dir); }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') navigate(1);
+    if (e.key === 'ArrowLeft') navigate(-1);
+  });
+
+  // Touch / swipe
+  let startX = 0;
+  track.parentElement.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+  track.parentElement.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 40) navigate(dx < 0 ? 1 : -1);
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>

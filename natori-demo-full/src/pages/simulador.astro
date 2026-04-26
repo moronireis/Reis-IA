@@ -1,0 +1,293 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import history from '../data/history.json';
+---
+
+<AppLayout title="Simulador de Impacto" activePage="simulador">
+
+  <!-- Header -->
+  <div style="margin-bottom:28px;">
+    <h1 style="font-size:22px; font-weight:700; color:var(--text-primary); letter-spacing:-0.03em; margin-bottom:4px;">Simulador de Impacto</h1>
+    <div style="font-size:13px; color:var(--text-muted);">Ajuste o preço e veja o impacto projetado em tempo real</div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:380px 1fr; gap:24px; align-items:start;">
+
+    <!-- Left panel: controls -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+
+      <!-- Product selector -->
+      <div class="card" style="padding:20px;">
+        <label style="font-size:12px; color:var(--text-muted); margin-bottom:8px; display:block; text-transform:uppercase; letter-spacing:0.08em;">Produto</label>
+        <select id="sim-product" class="input-field" style="cursor:pointer;" onchange="onProductChange()">
+          {history.products.map((p, i) => (
+            <option value={i}>{p.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <!-- Price slider -->
+      <div class="card" style="padding:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px;">
+          <label style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em;">Preço simulado</label>
+          <span id="price-display" style="font-size:22px; font-weight:700; color:var(--text-primary); letter-spacing:-0.03em;">R$24,99</span>
+        </div>
+
+        <input
+          type="range"
+          id="price-slider"
+          min="2200" max="2700" value="2499" step="10"
+          oninput="onSliderChange()"
+          style="width:100%; accent-color:var(--red); cursor:pointer; margin-bottom:12px;"
+        />
+
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-bottom:16px;">
+          <span id="slider-min">R$22,00</span>
+          <span id="slider-max">R$27,00</span>
+        </div>
+
+        <!-- Reference points -->
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-secondary); border:1px solid var(--border); border-radius:7px; padding:8px 12px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div style="width:8px; height:8px; border-radius:50%; background:var(--green);"></div>
+              <span style="font-size:12px; color:var(--text-secondary);">Preço atual</span>
+            </div>
+            <span id="current-price-ref" style="font-size:13px; font-weight:600; color:var(--green);">R$24,99</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-secondary); border:1px solid rgba(74,144,255,0.2); border-radius:7px; padding:8px 12px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div style="width:8px; height:8px; border-radius:50%; background:#4A90FF;"></div>
+              <span style="font-size:12px; color:var(--text-secondary);">IA sugere</span>
+            </div>
+            <span id="suggested-price-ref" style="font-size:13px; font-weight:600; color:#4A90FF;">R$24,80</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Apply button -->
+      <button class="btn btn-red" style="width:100%; justify-content:center; padding:12px;" onclick="applyPrice()">
+        Aplicar preço sugerido pela IA
+      </button>
+    </div>
+
+    <!-- Right panel: metrics + chart -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+
+      <!-- 4 KPI metrics -->
+      <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:16px;">
+
+        <!-- Buy Box probability -->
+        <div class="card" style="padding:20px;">
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Prob. Buy Box</div>
+          <div id="buybox-pct" style="font-size:28px; font-weight:700; color:var(--green); margin-bottom:8px;">87%</div>
+          <div style="height:6px; background:var(--bg-secondary); border-radius:3px; overflow:hidden;">
+            <div id="buybox-bar" style="height:100%; background:var(--green); border-radius:3px; transition:width 0.3s; width:87%;"></div>
+          </div>
+        </div>
+
+        <!-- Volume projetado -->
+        <div class="card" style="padding:20px;">
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Volume projetado</div>
+          <div id="volume-proj" style="font-size:28px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">284</div>
+          <div style="font-size:12px; color:var(--text-muted);">unidades / mês</div>
+        </div>
+
+        <!-- Receita projetada -->
+        <div class="card" style="padding:20px;">
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Receita projetada</div>
+          <div id="revenue-proj" style="font-size:28px; font-weight:700; color:var(--gold); margin-bottom:4px;">R$7.097</div>
+          <div style="font-size:12px; color:var(--text-muted);">/ mês</div>
+        </div>
+
+        <!-- Margem projetada -->
+        <div class="card" style="padding:20px;">
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Margem projetada</div>
+          <div id="margin-proj" style="font-size:28px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">R$2.838</div>
+          <div style="font-size:12px; color:var(--text-muted);">/ mês (custo fixo deduzido)</div>
+        </div>
+      </div>
+
+      <!-- Revenue curve chart -->
+      <div class="card" style="padding:24px;">
+        <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">Curva de Receita vs Preço</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Ponto ótimo de maximização de receita</div>
+        <div id="curve-chart" style="width:100%; height:160px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" style="display:none;"></div>
+
+</AppLayout>
+
+<script define:vars={{ products: history.products }}>
+
+let currentProductIdx = 0;
+let currentPrice = 24.99;
+
+function getProduct() {
+  return products[currentProductIdx];
+}
+
+function onProductChange() {
+  const sel = document.getElementById('sim-product');
+  currentProductIdx = parseInt(sel.value);
+  const p = getProduct();
+  currentPrice = p.current_price;
+
+  const slider = document.getElementById('price-slider');
+  slider.min = String(Math.round(p.min_price * 100));
+  slider.max = String(Math.round(p.max_price * 100));
+  slider.value = String(Math.round(p.current_price * 100));
+
+  document.getElementById('slider-min').textContent = `R$${p.min_price.toFixed(2)}`;
+  document.getElementById('slider-max').textContent = `R$${p.max_price.toFixed(2)}`;
+  document.getElementById('current-price-ref').textContent = `R$${p.current_price.toFixed(2)}`;
+  document.getElementById('suggested-price-ref').textContent = `R$${p.suggested_price.toFixed(2)}`;
+
+  updateMetrics();
+  drawCurve();
+}
+
+function onSliderChange() {
+  const slider = document.getElementById('price-slider');
+  currentPrice = parseInt(slider.value) / 100;
+  document.getElementById('price-display').textContent = `R$${currentPrice.toFixed(2).replace('.',',')}`;
+  updateMetrics();
+  drawCurve();
+}
+
+function updateMetrics() {
+  const p = getProduct();
+  const minP = p.min_price;
+  const maxP = p.max_price;
+  const mid = (minP + maxP) / 2;
+  const range = maxP - minP;
+
+  // Buy Box: peaks at lower prices, falls off at high prices
+  const tBB = (currentPrice - minP) / range;
+  const buyboxPct = Math.round(Math.max(5, Math.min(98, 95 - tBB * 75)));
+
+  // Volume: inverse curve, peaks near min, falls at max
+  const baseVol = 300;
+  const t = (currentPrice - minP) / range;
+  const volume = Math.round(baseVol * Math.pow(1 - t * 0.8, 1.5));
+
+  const revenue = Math.round(volume * currentPrice);
+  const margin = Math.round(volume * (currentPrice - p.cost));
+
+  const buyboxEl = document.getElementById('buybox-pct');
+  const buyboxBar = document.getElementById('buybox-bar');
+  const volEl = document.getElementById('volume-proj');
+  const revEl = document.getElementById('revenue-proj');
+  const marEl = document.getElementById('margin-proj');
+
+  if (buyboxEl) buyboxEl.textContent = `${buyboxPct}%`;
+  if (buyboxBar) {
+    buyboxBar.style.width = `${buyboxPct}%`;
+    buyboxBar.style.background = buyboxPct >= 70 ? 'var(--green)' : buyboxPct >= 40 ? 'var(--yellow)' : 'var(--red)';
+  }
+  if (buyboxEl) buyboxEl.style.color = buyboxPct >= 70 ? 'var(--green)' : buyboxPct >= 40 ? 'var(--yellow)' : 'var(--red)';
+  if (volEl) volEl.textContent = volume.toLocaleString('pt-BR');
+  if (revEl) revEl.textContent = `R$${revenue.toLocaleString('pt-BR')}`;
+  if (marEl) marEl.textContent = `R$${margin.toLocaleString('pt-BR')}`;
+}
+
+function drawCurve() {
+  const container = document.getElementById('curve-chart');
+  if (!container) return;
+  const p = getProduct();
+  const W = container.clientWidth || 600;
+  const H = 160;
+  const padL = 36, padR = 20, padT = 12, padB = 28;
+  const cW = W - padL - padR;
+  const cH = H - padT - padB;
+
+  const steps = 40;
+  const minP = p.min_price;
+  const maxP = p.max_price;
+  const range = maxP - minP;
+  const baseVol = 300;
+
+  const points = Array.from({ length: steps + 1 }, (_, i) => {
+    const price = minP + (i / steps) * range;
+    const t = i / steps;
+    const vol = baseVol * Math.pow(1 - t * 0.8, 1.5);
+    const rev = price * vol;
+    return { price, rev };
+  });
+
+  const maxRev = Math.max(...points.map(pt => pt.rev));
+  const minRev = Math.min(...points.map(pt => pt.rev));
+  const xScale = price => padL + ((price - minP) / range) * cW;
+  const yScale = rev => padT + cH - ((rev - minRev) / (maxRev - minRev)) * cH;
+
+  const pathD = points.map((pt, i) => `${i === 0 ? 'M' : 'L'}${xScale(pt.price)},${yScale(pt.rev)}`).join(' ');
+  const fillD = pathD + ` L${xScale(maxP)},${padT + cH} L${xScale(minP)},${padT + cH} Z`;
+
+  // Current price marker
+  const cx = xScale(currentPrice);
+  const curRev = points.reduce((prev, cur) => Math.abs(cur.price - currentPrice) < Math.abs(prev.price - currentPrice) ? cur : prev).rev;
+  const cy = yScale(curRev);
+
+  // Suggested price marker
+  const sx = xScale(p.suggested_price);
+  const sugRev = points.reduce((prev, cur) => Math.abs(cur.price - p.suggested_price) < Math.abs(prev.price - p.suggested_price) ? cur : prev).rev;
+  const sy = yScale(sugRev);
+
+  const gridY = [0, 0.5, 1].map(t => {
+    const y = padT + t * cH;
+    const val = ((1 - t) * (maxRev - minRev) + minRev);
+    return `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--border)" stroke-width="1"/>
+            <text x="${padL - 4}" y="${y + 4}" text-anchor="end" font-size="9" fill="var(--text-muted)" font-family="Inter">R$${Math.round(val / 100) * 100}</text>`;
+  }).join('');
+
+  const xLabels = [minP, (minP + maxP) / 2, maxP].map(v =>
+    `<text x="${xScale(v)}" y="${H - 6}" text-anchor="middle" font-size="9" fill="var(--text-muted)" font-family="Inter">R$${v.toFixed(0)}</text>`
+  ).join('');
+
+  container.innerHTML = `
+    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none" style="overflow:visible;">
+      <defs>
+        <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="var(--gold)" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      ${gridY}
+      <path d="${fillD}" fill="url(#curveGrad)"/>
+      <path d="${pathD}" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Current price dot (green) -->
+      <line x1="${cx}" y1="${padT}" x2="${cx}" y2="${padT + cH}" stroke="var(--green)" stroke-width="1" stroke-dasharray="3 3"/>
+      <circle cx="${cx}" cy="${cy}" r="5" fill="var(--green)" stroke="var(--bg-primary)" stroke-width="1.5"/>
+      <text x="${cx}" y="${padT - 2}" text-anchor="middle" font-size="9" fill="var(--green)" font-family="Inter">Atual</text>
+      <!-- Suggested price dot (blue) -->
+      <line x1="${sx}" y1="${padT}" x2="${sx}" y2="${padT + cH}" stroke="#4A90FF" stroke-width="1" stroke-dasharray="3 3"/>
+      <circle cx="${sx}" cy="${sy}" r="5" fill="#4A90FF" stroke="var(--bg-primary)" stroke-width="1.5"/>
+      <text x="${sx}" y="${padT - 2}" text-anchor="middle" font-size="9" fill="#4A90FF" font-family="Inter">IA</text>
+      ${xLabels}
+    </svg>`;
+}
+
+function applyPrice() {
+  const p = getProduct();
+  showToast(`Preço R$${p.suggested_price.toFixed(2)} aplicado no Mercado Livre`);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+window.onProductChange = onProductChange;
+window.onSliderChange = onSliderChange;
+window.applyPrice = applyPrice;
+
+onProductChange();
+window.addEventListener('resize', drawCurve);
+</script>

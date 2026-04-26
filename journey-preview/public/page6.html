@@ -1,0 +1,3408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journey Visualization — Page 6</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000000;
+      --dark: #020208;
+      --surface: #0A0A0C;
+      --surface-2: #0E0E14;
+      --blue: #4A90FF;
+      --blue-dim: rgba(74,144,255,0.15);
+      --blue-glow: rgba(74,144,255,0.35);
+      --green: #22C55E;
+      --green-dim: rgba(34,197,94,0.15);
+      --amber: #F59E0B;
+      --red: #EF4444;
+      --purple: #A855F7;
+      --cyan: #06B6D4;
+      --text: #FFFFFF;
+      --text-dim: rgba(255,255,255,0.28);
+      --text-mid: rgba(255,255,255,0.55);
+      --border: rgba(255,255,255,0.06);
+      --border-bright: rgba(255,255,255,0.12);
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #000;
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── TOP NAV (TWO ROWS) ─── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Row 1: Page links */
+    .nav-pages {
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      height: 36px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      overflow-x: auto;
+      scrollbar-width: none;
+      gap: 0;
+    }
+    .nav-pages::-webkit-scrollbar { display: none; }
+
+    .page-link {
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      height: 100%;
+      color: var(--text-dim);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      white-space: nowrap;
+      border-right: 1px solid var(--border);
+      transition: color 0.2s;
+    }
+    .page-link:first-child { border-left: 1px solid var(--border); }
+    .page-link:hover { color: var(--text-mid); }
+    .page-link.current {
+      color: var(--blue);
+      background: rgba(74,144,255,0.06);
+    }
+
+    /* Row 2: Concept tabs */
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      height: 44px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 0 18px;
+      height: 100%;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-dim);
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      white-space: nowrap;
+      position: relative;
+    }
+    .nav-tab::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--blue);
+      transition: width 0.25s ease;
+    }
+    .nav-tab.active { color: var(--text); }
+    .nav-tab.active::after { width: 80%; }
+    .nav-tab:hover { color: var(--text-mid); }
+    .nav-tab .tab-num {
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    /* ─── PANELS ─── */
+    .concept-panel { display: none; }
+    .concept-panel.active { display: block; }
+
+    /* ─── SHARED FOOTER ─── */
+    .concept-footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: rgba(0,0,0,0.6);
+    }
+    .concept-footer .cf-name {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+    .concept-footer .cf-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      max-width: 480px;
+      line-height: 1.6;
+    }
+    .concept-footer .cf-family {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.08);
+      text-transform: uppercase;
+      text-align: right;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 26 — CIRCUIT BOARD (PCB Layout)
+    ══════════════════════════════════════════════════════════════ */
+
+    #c26 {
+      background: #020504;
+      min-height: calc(100vh - 80px);
+      position: relative;
+      overflow: hidden;
+    }
+    #c26.active { display: block; }
+
+    .pcb-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .pcb-header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      border-bottom: 1px solid rgba(34,197,94,0.1);
+    }
+    .pcb-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .pcb-power-led {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22C55E;
+      box-shadow: 0 0 8px rgba(34,197,94,0.8), 0 0 16px rgba(34,197,94,0.4);
+      animation: ledPulse 2s ease-in-out infinite;
+    }
+    @keyframes ledPulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(34,197,94,0.8), 0 0 16px rgba(34,197,94,0.4); }
+      50% { opacity: 0.6; box-shadow: 0 0 4px rgba(34,197,94,0.4); }
+    }
+    .pcb-logo {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      color: rgba(34,197,94,0.8);
+      text-transform: uppercase;
+      font-family: var(--mono);
+    }
+    .pcb-header-right {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: rgba(34,197,94,0.5);
+      letter-spacing: 0.1em;
+    }
+
+    .pcb-canvas {
+      position: relative;
+      z-index: 10;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* IC Chip */
+    .ic-chip {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto 0;
+      position: relative;
+    }
+
+    .ic-body {
+      background: #070D07;
+      border: 1px solid rgba(34,197,94,0.2);
+      border-radius: 4px;
+      padding: 16px 24px;
+      position: relative;
+      margin: 28px 0;
+    }
+    .ic-body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 12px;
+      height: 12px;
+      border-top: 1px solid rgba(34,197,94,0.5);
+      border-left: 1px solid rgba(34,197,94,0.5);
+      border-radius: 2px 0 0 0;
+    }
+
+    /* Phase power states */
+    .ic-body.powered {
+      border-color: rgba(34,197,94,0.4);
+      background: #060C06;
+    }
+    .ic-body.active-phase {
+      border-color: rgba(74,144,255,0.5);
+      background: #050810;
+      box-shadow: 0 0 24px rgba(74,144,255,0.08);
+    }
+    .ic-body.locked-phase {
+      border-color: rgba(34,197,94,0.06);
+      opacity: 0.5;
+    }
+
+    .ic-marking {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .ic-part-number {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 600;
+      color: rgba(34,197,94,0.2);
+      letter-spacing: 0.04em;
+    }
+    .ic-phase-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+    .ic-body.active-phase .ic-phase-title { color: rgba(74,144,255,0.9); }
+    .ic-body.locked-phase .ic-phase-title { color: rgba(255,255,255,0.2); }
+
+    /* Components (nodes) row */
+    .ic-components {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .component {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .component:hover { opacity: 0.9; }
+
+    /* Resistor shape */
+    .resistor-body {
+      position: relative;
+      width: 80px;
+      height: 28px;
+      background: #0A1A0A;
+      border: 1px solid rgba(34,197,94,0.25);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .resistor-body.comp-done {
+      border-color: rgba(34,197,94,0.6);
+      background: rgba(34,197,94,0.05);
+    }
+    .resistor-body.comp-available {
+      border-color: rgba(74,144,255,0.4);
+      background: rgba(74,144,255,0.04);
+    }
+    .resistor-body.comp-locked {
+      border-color: rgba(34,197,94,0.08);
+      opacity: 0.35;
+    }
+    .resistor-body.comp-active {
+      border-color: rgba(74,144,255,0.7);
+      background: rgba(74,144,255,0.08);
+      animation: compBlink 2s ease-in-out infinite;
+    }
+    @keyframes compBlink {
+      0%,100% { box-shadow: 0 0 6px rgba(74,144,255,0.4); }
+      50% { box-shadow: 0 0 2px rgba(74,144,255,0.1); }
+    }
+
+    /* Color bands on resistor */
+    .resistor-bands {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      pointer-events: none;
+    }
+    .band {
+      width: 4px;
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+    .band-spacer { flex: 1; }
+
+    .resistor-label {
+      font-family: var(--mono);
+      font-size: 7px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      position: relative;
+      z-index: 1;
+    }
+    .resistor-body.comp-done .resistor-label { color: rgba(34,197,94,0.8); }
+    .resistor-body.comp-available .resistor-label { color: rgba(74,144,255,0.8); }
+
+    /* Lead wires */
+    .comp-lead {
+      width: 14px;
+      height: 1px;
+      background: rgba(34,197,94,0.25);
+    }
+    .comp-lead.powered { background: rgba(34,197,94,0.5); }
+    .comp-lead.active-lead {
+      background: rgba(74,144,255,0.5);
+    }
+
+    /* PCB traces between chips */
+    .pcb-trace {
+      position: relative;
+      height: 28px;
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+    }
+    .pcb-trace svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Capacitor (checkpoint) */
+    .capacitor {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cap-body {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(34,197,94,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(34,197,94,0.7);
+      background: #060D06;
+    }
+    .cap-body.cap-done {
+      border-color: rgba(34,197,94,0.7);
+      color: #22C55E;
+      box-shadow: 0 0 8px rgba(34,197,94,0.3);
+    }
+    .cap-body.cap-locked {
+      border-color: rgba(34,197,94,0.08);
+      opacity: 0.3;
+    }
+
+    /* Phase LED indicator strip at right of chip */
+    .ic-status-strip {
+      position: absolute;
+      right: -1px;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      border-radius: 2px;
+      background: rgba(34,197,94,0.1);
+    }
+    .ic-status-strip.strip-powered { background: rgba(34,197,94,0.6); }
+    .ic-status-strip.strip-active { background: rgba(74,144,255,0.7); animation: stripPulse 1.5s ease-in-out infinite; }
+    @keyframes stripPulse {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 27 — SUBWAY MAP
+    ══════════════════════════════════════════════════════════════ */
+
+    #c27 {
+      background: #060608;
+      min-height: calc(100vh - 80px);
+      position: relative;
+    }
+    #c27.active { display: block; }
+
+    .subway-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .subway-header-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.9);
+    }
+    .subway-header-sub {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.3);
+      margin-top: 3px;
+    }
+    .subway-header-status {
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.06em;
+      text-align: right;
+    }
+
+    .subway-canvas {
+      position: relative;
+      padding: 48px 32px 32px;
+      overflow-x: auto;
+    }
+
+    .subway-map-inner {
+      position: relative;
+      min-width: 860px;
+      height: 520px;
+      margin: 0 auto;
+    }
+
+    /* Water feature (diagonal Thames-like) */
+    .subway-river {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* Zone labels */
+    .subway-zone {
+      position: absolute;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.04);
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    /* Line segments (SVG rendered via JS) */
+    .subway-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Station dot */
+    .station {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+    }
+    .station-dot {
+      border-radius: 50%;
+      border: 2px solid;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      z-index: 5;
+    }
+    .station:hover .station-dot { transform: scale(1.4); }
+
+    .station-label {
+      position: absolute;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      color: rgba(255,255,255,0.75);
+      pointer-events: none;
+    }
+    .station-label.above { bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); text-align: center; }
+    .station-label.below { top: calc(100% + 6px); left: 50%; transform: translateX(-50%); text-align: center; }
+    .station-label.left-of { right: calc(100% + 8px); top: 50%; transform: translateY(-50%); text-align: right; }
+    .station-label.right-of { left: calc(100% + 8px); top: 50%; transform: translateY(-50%); }
+
+    /* Transfer station (larger) */
+    .transfer-station {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid #222;
+      transform: translate(-50%,-50%);
+      z-index: 10;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    .transfer-station:hover { box-shadow: 0 0 16px rgba(255,255,255,0.4); }
+
+    /* "You are here" */
+    .you-are-here {
+      position: absolute;
+      transform: translate(-50%,-50%);
+      z-index: 20;
+    }
+    .yah-pulse {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(74,144,255,0.4);
+      animation: yahPulse 2s ease-out infinite;
+    }
+    .yah-pulse:nth-child(2) { animation-delay: 0.7s; }
+    @keyframes yahPulse {
+      0% { transform: translate(-50%,-50%) scale(0.5); opacity: 1; }
+      100% { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
+    }
+    .yah-center {
+      position: relative;
+      z-index: 2;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #4A90FF;
+      border: 2px solid #fff;
+      box-shadow: 0 0 12px rgba(74,144,255,0.7);
+    }
+
+    /* Train indicator */
+    .train-indicator {
+      position: absolute;
+      width: 22px;
+      height: 9px;
+      background: #4A90FF;
+      border-radius: 3px;
+      z-index: 15;
+      transition: left 1s ease, top 1s ease;
+      box-shadow: 0 0 10px rgba(74,144,255,0.6);
+    }
+
+    /* Subway legend */
+    .subway-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 20px 32px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .legend-line {
+      width: 24px;
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 28 — DNA HELIX
+    ══════════════════════════════════════════════════════════════ */
+
+    #c28 {
+      background: #000;
+      min-height: calc(100vh - 80px);
+    }
+    #c28.active { display: block; }
+
+    .dna-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      border-bottom: 1px solid rgba(74,144,255,0.08);
+    }
+    .dna-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.9);
+      text-transform: uppercase;
+    }
+    .dna-stats {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: rgba(74,144,255,0.6);
+      letter-spacing: 0.06em;
+    }
+
+    .dna-canvas {
+      display: flex;
+      justify-content: center;
+      padding: 40px 32px;
+      overflow-x: auto;
+    }
+
+    .dna-wrap {
+      position: relative;
+      width: 860px;
+    }
+
+    /* Phase labels along the helix */
+    .dna-phase-label {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    /* Rung labels (node labels hanging off rungs) */
+    .rung-label {
+      position: absolute;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    /* Reading frame cursor */
+    .reading-frame {
+      position: absolute;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 29 — RADAR SWEEP
+    ══════════════════════════════════════════════════════════════ */
+
+    #c29 {
+      background: #010402;
+      min-height: calc(100vh - 80px);
+      display: none;
+      flex-direction: column;
+    }
+    #c29.active { display: flex; }
+
+    .radar-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid rgba(34,197,94,0.08);
+      flex-shrink: 0;
+    }
+    .radar-title-group { display: flex; flex-direction: column; gap: 4px; }
+    .radar-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: rgba(34,197,94,0.9);
+      text-transform: uppercase;
+    }
+    .radar-subtitle {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: rgba(34,197,94,0.35);
+      letter-spacing: 0.1em;
+    }
+    .radar-readout {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: rgba(34,197,94,0.5);
+      letter-spacing: 0.08em;
+      text-align: right;
+      line-height: 1.7;
+    }
+
+    .radar-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    .radar-display {
+      position: relative;
+      width: 560px;
+      height: 560px;
+      flex-shrink: 0;
+    }
+
+    .radar-screen {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #020A02 0%, #010501 60%, #010301 100%);
+      border: 2px solid rgba(34,197,94,0.2);
+      overflow: hidden;
+    }
+
+    .radar-grid {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+    }
+
+    .radar-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(34,197,94,0.12);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+    }
+    .radar-ring.active-ring { border-color: rgba(74,144,255,0.25); }
+
+    .radar-crosshair {
+      position: absolute;
+      inset: 0;
+    }
+    .radar-crosshair::before, .radar-crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(34,197,94,0.08);
+    }
+    .radar-crosshair::before {
+      top: 50%; left: 0; right: 0; height: 1px; transform: translateY(-50%);
+    }
+    .radar-crosshair::after {
+      left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-50%);
+    }
+
+    /* Sweep line */
+    .radar-sweep {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform-origin: 0 0;
+      width: 50%;
+      height: 1px;
+      background: linear-gradient(to right, rgba(34,197,94,0), rgba(34,197,94,0.9));
+      transform: rotate(0deg);
+      animation: radarRotate 6s linear infinite;
+      z-index: 10;
+    }
+    .radar-sweep-trail {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform-origin: 0 0;
+      width: 50%;
+      height: 50%;
+      z-index: 9;
+      animation: radarTrailRotate 6s linear infinite;
+      overflow: hidden;
+      border-radius: 0;
+    }
+    /* Trail is a conic gradient sector */
+    .radar-sweep-sector {
+      position: absolute;
+      inset: -100%;
+      background: conic-gradient(from 0deg, rgba(34,197,94,0) 0%, rgba(34,197,94,0.07) 30deg, rgba(34,197,94,0) 31deg);
+      animation: radarRotate 6s linear infinite;
+    }
+
+    @keyframes radarRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes radarTrailRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Blip */
+    .radar-blip {
+      position: absolute;
+      border-radius: 50%;
+      transform: translate(-50%,-50%);
+      cursor: pointer;
+      z-index: 15;
+      transition: r 0.3s;
+    }
+    .blip-dot {
+      border-radius: 50%;
+      transition: box-shadow 0.3s;
+    }
+    .radar-blip.blip-done .blip-dot {
+      background: #22C55E;
+      box-shadow: 0 0 6px rgba(34,197,94,0.6);
+    }
+    .radar-blip.blip-active .blip-dot {
+      background: #4A90FF;
+      animation: blipPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes blipPulse {
+      0%,100% { box-shadow: 0 0 8px rgba(74,144,255,0.8); }
+      50% { box-shadow: 0 0 3px rgba(74,144,255,0.2); }
+    }
+    .radar-blip.blip-locked .blip-dot {
+      background: rgba(34,197,94,0.12);
+    }
+
+    /* Blip echo (flash when sweep passes) */
+    .blip-echo {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      border-radius: 50%;
+      border: 1px solid rgba(34,197,94,0.6);
+      animation: echoExpand 6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes echoExpand {
+      0% { width: 4px; height: 4px; opacity: 1; }
+      100% { width: 20px; height: 20px; opacity: 0; }
+    }
+
+    /* Compass labels */
+    .compass-label {
+      position: absolute;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 600;
+      color: rgba(34,197,94,0.35);
+      letter-spacing: 0.1em;
+    }
+
+    /* Phase range labels (along rings) */
+    .phase-range-label {
+      position: absolute;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: rgba(34,197,94,0.4);
+      letter-spacing: 0.06em;
+      transform: translate(-50%, -50%);
+    }
+
+    .radar-bottom-bar {
+      display: flex;
+      border-top: 1px solid rgba(34,197,94,0.08);
+      padding: 12px 32px;
+      gap: 0;
+      flex-shrink: 0;
+    }
+    .radar-cell {
+      flex: 1;
+      border-right: 1px solid rgba(34,197,94,0.08);
+      padding: 0 16px;
+      font-family: var(--mono);
+    }
+    .radar-cell:first-child { padding-left: 0; }
+    .radar-cell:last-child { border-right: none; }
+    .radar-cell-label {
+      font-size: 8px;
+      letter-spacing: 0.12em;
+      color: rgba(34,197,94,0.3);
+      text-transform: uppercase;
+    }
+    .radar-cell-value {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(34,197,94,0.8);
+      margin-top: 3px;
+      letter-spacing: 0.06em;
+    }
+
+    /* Hover tooltip */
+    .radar-tooltip {
+      position: absolute;
+      background: #050D05;
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: rgba(34,197,94,0.9);
+      pointer-events: none;
+      z-index: 50;
+      white-space: nowrap;
+      display: none;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 30 — TERMINAL / CLI
+    ══════════════════════════════════════════════════════════════ */
+
+    #c30 {
+      background: #0A0A0A;
+      min-height: calc(100vh - 80px);
+      display: none;
+      flex-direction: column;
+      position: relative;
+    }
+    #c30.active { display: flex; }
+
+    /* Scanlines overlay */
+    #c30::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.04) 3px,
+        rgba(0,0,0,0.04) 4px
+      );
+    }
+
+    .term-window {
+      flex: 1;
+      position: relative;
+      z-index: 2;
+      padding: 0 0 80px;
+    }
+
+    /* Terminal top bar */
+    .term-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: #111;
+      border-bottom: 1px solid #1A1A1A;
+      position: sticky;
+      top: 80px;
+      z-index: 10;
+    }
+    .term-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .term-dot {
+      width: 11px; height: 11px; border-radius: 50%;
+    }
+    .term-dot-red { background: #FF5F57; }
+    .term-dot-yellow { background: #FFBD2E; }
+    .term-dot-green { background: #28C840; }
+    .term-titlebar {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.04em;
+    }
+
+    .term-body {
+      padding: 24px 28px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .term-prompt {
+      color: rgba(255,255,255,0.25);
+      user-select: none;
+    }
+    .term-prompt .prompt-user { color: #22C55E; }
+    .term-prompt .prompt-at { color: rgba(255,255,255,0.2); }
+    .term-prompt .prompt-host { color: #4A90FF; }
+    .term-prompt .prompt-path { color: rgba(255,255,255,0.35); }
+    .term-prompt .prompt-cmd { color: rgba(255,255,255,0.85); }
+
+    /* Output lines */
+    .term-line { display: block; }
+    .t-border { color: rgba(255,255,255,0.15); }
+    .t-title { color: rgba(255,255,255,0.9); }
+    .t-meta { color: rgba(255,255,255,0.4); }
+    .t-check { color: #22C55E; }
+    .t-active { color: #4A90FF; }
+    .t-available { color: rgba(255,255,255,0.75); }
+    .t-locked { color: rgba(255,255,255,0.12); }
+    .t-tree { color: #333; }
+    .t-xp { color: #F59E0B; }
+    .t-phase-done .t-phase-header { color: rgba(34,197,94,0.6); }
+    .t-phase-active .t-phase-header { color: rgba(74,144,255,0.9); }
+    .t-phase-locked .t-phase-header { color: rgba(255,255,255,0.12); }
+
+    .term-node-row {
+      cursor: pointer;
+      display: block;
+      border-radius: 2px;
+      transition: background 0.15s;
+      padding: 0 4px;
+      margin: 0 -4px;
+    }
+    .term-node-row:hover { background: rgba(255,255,255,0.04); }
+    .term-node-row.selected { background: rgba(74,144,255,0.08); }
+
+    /* Blinking cursor */
+    .term-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: rgba(255,255,255,0.8);
+      vertical-align: text-bottom;
+      animation: cursorBlink 1s step-end infinite;
+      margin-left: 1px;
+    }
+    @keyframes cursorBlink {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Active arrow blink */
+    .blink-arrow {
+      animation: arrowBlink 1.2s ease-in-out infinite;
+    }
+    @keyframes arrowBlink {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.1; }
+    }
+
+    /* Detail panel */
+    .term-detail {
+      margin: 16px 0 0;
+      border-top: 1px solid #222;
+      padding-top: 16px;
+    }
+    .term-detail-inner {
+      background: #0E0E0E;
+      border: 1px solid #222;
+      border-radius: 4px;
+      padding: 16px 20px;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+    .term-detail-header {
+      color: rgba(255,255,255,0.5);
+      border-bottom: 1px solid #1A1A1A;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+    }
+    .term-detail-row {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .term-detail-kv { display: flex; gap: 8px; }
+    .term-detail-k { color: rgba(255,255,255,0.25); }
+    .term-detail-v { color: rgba(255,255,255,0.75); }
+    .term-detail-v.done { color: #22C55E; }
+    .term-detail-v.xp { color: #F59E0B; }
+    .term-detail-desc {
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      margin-top: 10px;
+      line-height: 1.6;
+      border-top: 1px solid #1A1A1A;
+      padding-top: 10px;
+    }
+
+    /* Fixed bottom prompt */
+    .term-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0A0A0A;
+      border-top: 1px solid #1A1A1A;
+      padding: 12px 28px;
+      font-family: var(--mono);
+      font-size: 13px;
+      z-index: 100;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT 31 — MISSION CONTROL ULTRA
+    ══════════════════════════════════════════════════════════════ */
+
+    #c31 {
+      background: #020206;
+      min-height: calc(100vh - 80px);
+      display: none;
+      flex-direction: column;
+    }
+    #c31.active { display: flex; }
+
+    /* ── MCU: Top Bar ── */
+    .mcu-topbar {
+      height: 52px;
+      background: #040409;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 80px;
+      z-index: 100;
+    }
+    .mcu-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mcu-live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #EF4444;
+      box-shadow: 0 0 6px rgba(239,68,68,0.7);
+      animation: mcuRedBlink 1s ease-in-out infinite;
+    }
+    @keyframes mcuRedBlink {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    .mcu-live-badge {
+      padding: 2px 6px;
+      background: #22C55E;
+      color: #000;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .mcu-topbar-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+    .mcu-topbar-center {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.02em;
+    }
+    .mcu-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .mcu-clock {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.08em;
+    }
+    .mcu-session {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── MCU: Body ── */
+    .mcu-body {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+
+    /* ── MCU: Left Panel ── */
+    .mcu-left {
+      width: 220px;
+      flex-shrink: 0;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      background: #030307;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .mcu-panel-title {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* Mini radar */
+    .mcu-mini-radar {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 20px auto 16px;
+      flex-shrink: 0;
+    }
+    .mcu-mini-radar canvas {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+    }
+
+    /* Phase nav list */
+    .mcu-phase-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+    .mcu-phase-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-left: 2px solid transparent;
+    }
+    .mcu-phase-item:hover { background: rgba(255,255,255,0.03); }
+    .mcu-phase-item.active-phase {
+      background: rgba(74,144,255,0.06);
+      border-left-color: #4A90FF;
+    }
+    .mcu-phase-led {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    }
+    .led-done { background: #22C55E; box-shadow: 0 0 5px rgba(34,197,94,0.5); }
+    .led-active { background: #4A90FF; box-shadow: 0 0 5px rgba(74,144,255,0.6); animation: ledActivePulse 2s ease-in-out infinite; }
+    @keyframes ledActivePulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .led-locked { background: rgba(255,255,255,0.1); }
+    .mcu-phase-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.5);
+      flex: 1;
+    }
+    .mcu-phase-item.active-phase .mcu-phase-name { color: rgba(255,255,255,0.9); }
+    .mcu-phase-fraction {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: rgba(255,255,255,0.2);
+    }
+    .mcu-phase-item.active-phase .mcu-phase-fraction { color: rgba(74,144,255,0.7); }
+
+    /* ── MCU: Center Panel ── */
+    .mcu-center {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Phase header card */
+    .mcu-phase-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: #040409;
+      flex-shrink: 0;
+    }
+    .mcu-phase-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .phase-num-active {
+      background: rgba(74,144,255,0.12);
+      border: 2px solid rgba(74,144,255,0.5);
+      color: #4A90FF;
+    }
+    .mcu-phase-info { flex: 1; min-width: 0; }
+    .mcu-phase-name-lg {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.95);
+      letter-spacing: -0.01em;
+    }
+    .mcu-phase-desc {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      margin-top: 4px;
+    }
+    .mcu-phase-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 8px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .pill-active {
+      background: rgba(74,144,255,0.15);
+      color: #4A90FF;
+      border: 1px solid rgba(74,144,255,0.3);
+    }
+    .pill-done {
+      background: rgba(34,197,94,0.1);
+      color: #22C55E;
+      border: 1px solid rgba(34,197,94,0.25);
+    }
+    .pill-locked {
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.25);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .mcu-phase-ring-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .mcu-phase-ring-text {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* Node cards */
+    .mcu-nodes-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.08) transparent;
+    }
+
+    .mcu-node-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #0A0A0E 0%, #0E0E14 100%);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: cardEntrance 0.4s ease forwards;
+    }
+    .mcu-node-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    @keyframes cardEntrance {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .mcu-node-card.card-done {
+      border-left: 3px solid #22C55E;
+    }
+    .mcu-node-card.card-active {
+      border-left: 3px solid #4A90FF;
+      background: linear-gradient(135deg, #08081A 0%, #0C0C18 100%);
+      box-shadow: 0 0 20px rgba(74,144,255,0.06);
+    }
+    .mcu-node-card.card-available {
+      border-left: 3px solid rgba(255,255,255,0.15);
+    }
+    .mcu-node-card.card-locked {
+      opacity: 0.25;
+      cursor: default;
+    }
+    .mcu-node-card.card-locked:hover { transform: none; box-shadow: none; }
+
+    .node-led {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .node-led-done { background: #22C55E; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+    .node-led-active { background: #4A90FF; box-shadow: 0 0 8px rgba(74,144,255,0.6); animation: ledActivePulse 2s ease-in-out infinite; }
+    .node-led-avail { background: rgba(255,255,255,0.3); }
+    .node-led-locked { background: rgba(255,255,255,0.08); }
+
+    .node-type-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .icon-material { background: rgba(34,197,94,0.1); }
+    .icon-task { background: rgba(74,144,255,0.1); }
+    .icon-presentation { background: rgba(168,85,247,0.1); }
+    .icon-checkpoint { background: rgba(245,158,11,0.1); }
+
+    .node-info { flex: 1; min-width: 0; }
+    .node-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .node-meta {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .node-meta-dot {
+      width: 3px; height: 3px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+    }
+
+    .node-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .node-xp-badge {
+      padding: 3px 9px;
+      background: rgba(245,158,11,0.1);
+      color: #F59E0B;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid rgba(245,158,11,0.2);
+    }
+    .node-chevron {
+      color: rgba(255,255,255,0.15);
+      font-size: 12px;
+    }
+
+    /* ── MCU: Right Panel (Telemetry) ── */
+    .mcu-right {
+      width: 240px;
+      flex-shrink: 0;
+      border-left: 1px solid rgba(255,255,255,0.06);
+      background: #030307;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .mcu-stat-block {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .mcu-stat-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      margin-bottom: 8px;
+    }
+    .mcu-stat-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mcu-stat-value {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: -0.02em;
+    }
+    .mcu-stat-unit {
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.06em;
+    }
+    .mcu-stat-value.xp-val { color: #F59E0B; }
+    .mcu-stat-value.xp-val span {
+      font-size: 11px;
+      color: rgba(245,158,11,0.5);
+    }
+
+    /* Circular progress ring */
+    .mcu-ring-wrap {
+      position: relative;
+      width: 64px; height: 64px; flex-shrink: 0;
+    }
+    .mcu-ring-wrap svg {
+      position: absolute; inset: 0;
+      transform: rotate(-90deg);
+    }
+    .mcu-ring-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 4; }
+    .mcu-ring-fill { fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 1.2s ease; }
+    .ring-blue { stroke: #4A90FF; }
+    .ring-green { stroke: #22C55E; }
+    .mcu-ring-center {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 12px; font-weight: 700;
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* Activity log */
+    .mcu-activity {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.06) transparent;
+    }
+    .mcu-activity-title {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      padding: 10px 16px 6px;
+    }
+    .mcu-log-entry {
+      padding: 8px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      transition: background 0.15s;
+    }
+    .mcu-log-entry:first-of-type { background: rgba(74,144,255,0.04); }
+    .mcu-log-entry:hover { background: rgba(255,255,255,0.02); }
+    .mcu-log-time {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.04em;
+    }
+    .mcu-log-text {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+    .mcu-log-xp {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: rgba(74,144,255,0.7);
+      margin-top: 2px;
+    }
+
+    /* Scanning line */
+    .mcu-scan-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(74,144,255,0.3), transparent);
+      animation: scanDescend 12s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanDescend {
+      0% { top: 0; opacity: 1; }
+      90% { opacity: 0.5; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* ── MCU: Bottom Telemetry Bar ── */
+    .mcu-bottombar {
+      height: 36px;
+      background: #020205;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: stretch;
+      flex-shrink: 0;
+    }
+    .mcu-bc {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 16px;
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+    .mcu-bc:last-child { border-right: none; }
+    .mcu-bc-label {
+      font-family: var(--mono);
+      font-size: 7px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.18);
+      text-transform: uppercase;
+    }
+    .mcu-bc-value {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .bc-dot-green {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #22C55E;
+      box-shadow: 0 0 4px rgba(34,197,94,0.6);
+    }
+    .bc-dot-blue {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #4A90FF;
+    }
+
+    /* Background subtle grid for MCU */
+    .mcu-bg-grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .mcu-left { display: none; }
+      .mcu-right { display: none; }
+      .mcu-body { flex-direction: column; }
+
+      .subway-map-inner { height: 400px; }
+
+      .radar-display { width: 340px; height: 340px; }
+      .radar-main { padding: 16px; }
+    }
+
+    @media (max-width: 640px) {
+      .pcb-canvas { padding: 16px; }
+      .ic-components { gap: 8px; }
+      .resistor-body { width: 64px; }
+      .term-body { font-size: 11px; padding: 16px; }
+      .dna-wrap { width: 100%; }
+      .radar-display { width: 280px; height: 280px; }
+      .mcu-topbar-center { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── TWO-ROW NAV ─── -->
+<nav class="top-nav">
+  <!-- Row 1: Page links -->
+  <div class="nav-pages">
+    <a href="index.html" class="page-link">Pag 1</a>
+    <a href="page2.html" class="page-link">Pag 2</a>
+    <a href="page3.html" class="page-link">Pag 3</a>
+    <a href="page4.html" class="page-link">Pag 4</a>
+    <a href="page5.html" class="page-link">Pag 5</a>
+    <span class="page-link current">Pag 6 ★ New</span>
+  </div>
+  <!-- Row 2: Concept tabs -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('c26', this)">
+      <span>Circuit Board</span>
+      <span class="tab-num">26</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('c27', this)">
+      <span>Subway Map</span>
+      <span class="tab-num">27</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('c28', this)">
+      <span>DNA Helix</span>
+      <span class="tab-num">28</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('c29', this)">
+      <span>Radar Sweep</span>
+      <span class="tab-num">29</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('c30', this)">
+      <span>Terminal</span>
+      <span class="tab-num">30</span>
+    </button>
+    <button class="nav-tab" onclick="switchTab('c31', this)">
+      <span>MC Ultra</span>
+      <span class="tab-num">31</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 26 — CIRCUIT BOARD
+══════════════════════════════════════════════════════════════ -->
+<section id="c26" class="concept-panel active">
+  <!-- PCB dot grid background -->
+  <canvas class="pcb-bg" id="pcbCanvas"></canvas>
+
+  <!-- Header -->
+  <div class="pcb-header">
+    <div class="pcb-header-left">
+      <div class="pcb-power-led"></div>
+      <div class="pcb-logo">REIS-IA-PCB-REV2 // VCC: +3.3V</div>
+    </div>
+    <div class="pcb-header-right">TEMP: 42°C | CLK: 240MHz | PODER: 78%</div>
+  </div>
+
+  <!-- PCB Canvas -->
+  <div class="pcb-canvas">
+    <!-- SVG traces background -->
+    <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;" id="pcbTraces"></svg>
+
+    <!-- PHASE 1: Powered IC -->
+    <div class="ic-chip">
+      <div class="ic-body powered" style="position:relative;">
+        <div class="ic-status-strip strip-powered"></div>
+        <div class="ic-marking">
+          <span class="ic-part-number">IC-01</span>
+          <span class="ic-phase-title">Fundamentos de IA</span>
+          <span style="margin-left:auto;font-family:var(--mono);font-size:9px;color:rgba(34,197,94,0.5);letter-spacing:0.1em;">5/5 NODES ✓</span>
+        </div>
+        <div class="ic-components">
+          <!-- Material nodes as resistors -->
+          <div class="component">
+            <div class="comp-lead powered"></div>
+            <div class="resistor-body comp-done">
+              <div class="resistor-bands">
+                <div class="band-spacer"></div>
+                <div class="band" style="background:#22C55E"></div>
+                <div class="band" style="background:#F59E0B"></div>
+                <div class="band" style="background:#22C55E"></div>
+                <div class="band-spacer"></div>
+              </div>
+              <span class="resistor-label">MATERIAL</span>
+            </div>
+            <div class="comp-lead powered"></div>
+          </div>
+          <div class="component">
+            <div class="comp-lead powered"></div>
+            <div class="resistor-body comp-done">
+              <div class="resistor-bands">
+                <div class="band-spacer"></div>
+                <div class="band" style="background:#22C55E"></div>
+                <div class="band" style="background:#4A90FF"></div>
+                <div class="band" style="background:#22C55E"></div>
+                <div class="band-spacer"></div>
+              </div>
+              <span class="resistor-label">MATERIAL</span>
+            </div>
+            <div class="comp-lead powered"></div>
+          </div>
+          <div class="component">
+            <div class="comp-lead powered"></div>
+            <div class="resistor-body comp-done">
+              <div class="resistor-bands">
+                <div class="band-spacer"></div>
+                <div class="band" style="background:#A855F7"></div>
+                <div class="band" style="background:#F59E0B"></div>
+                <div class="band" style="background:#A855F7"></div>
+                <div class="band-spacer"></div>
+              </div>
+              <span class="resistor-label">SLIDES</span>
+            </div>
+            <div class="comp-lead powered"></div>
+          </div>
+          <div class="component">
+            <div class="comp-lead powered"></div>
+            <div class="resistor-body comp-done">
+              <div class="resistor-bands">
+                <div class="band-spacer"></div>
+                <div class="band" style="background:#4A90FF"></div>
+                <div class="band" style="background:#22C55E"></div>
+                <div class="band" style="background:#4A90FF"></div>
+                <div class="band-spacer"></div>
+              </div>
+              <span class="resistor-label">TASK</span>
+            </div>
+            <div class="comp-lead powered"></div>
+          </div>
+          <!-- Checkpoint as capacitor -->
+          <div class="capacitor">
+            <div class="comp-lead powered"></div>
+            <div class="cap-body cap-done">+</div>
+            <div class="comp-lead powered"></div>
+            <span style="font-family:var(--mono);font-size:8px;color:rgba(34,197,94,0.5);letter-spacing:0.06em;margin-left:4px;">CKPT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trace segment -->
+    <div style="max-width:900px;margin:0 auto;height:28px;position:relative;">
+      <svg width="100%" height="100%" style="overflow:visible;">
+        <line x1="40" y1="4" x2="40" y2="24" stroke="rgba(74,144,255,0.4)" stroke-width="1.5"/>
+        <line x1="40" y1="24" x2="160" y2="24" stroke="rgba(74,144,255,0.4)" stroke-width="1.5"/>
+        <line x1="160" y1="24" x2="160" y2="4" stroke="rgba(74,144,255,0.4)" stroke-width="1.5"/>
+        <!-- Signal flow arrow -->
+        <polygon points="156,18 160,24 164,18" fill="rgba(74,144,255,0.5)"/>
+        <!-- Flow animation dashes -->
+        <line x1="40" y1="24" x2="160" y2="24" stroke="rgba(74,144,255,0.7)" stroke-width="1.5"
+          stroke-dasharray="6,6" style="animation: traceFlow 1.2s linear infinite;">
+        </line>
+      </svg>
+    </div>
+
+    <!-- PHASE 2: Active IC -->
+    <div class="ic-chip">
+      <div class="ic-body active-phase" style="position:relative;">
+        <div class="ic-status-strip strip-active"></div>
+        <div class="ic-marking">
+          <span class="ic-part-number" style="color:rgba(74,144,255,0.2)">IC-02</span>
+          <span class="ic-phase-title">Prompts e Comunicação</span>
+          <span style="margin-left:auto;font-family:var(--mono);font-size:9px;color:rgba(74,144,255,0.5);letter-spacing:0.1em;">2/5 ACTIVE</span>
+        </div>
+        <div class="ic-components">
+          <div class="component">
+            <div class="comp-lead active-lead"></div>
+            <div class="resistor-body comp-done">
+              <div class="resistor-bands">
+                <div class="band-spacer"></div>
+                <div class="band" style="background:#22C55E"></div>
+                <div class="band" style="background:#4A90FF"></div>
+                <div class="band" style="background:#22C55E"></div>
+                <div class="band-spacer"></div>
+              </div>
+              <span class="resistor-label">MATERIAL</span>
+            </div>
+            <div class="comp-lead active-lead"></div>
+          </div>
+          <div class="component">
+            <div class="comp-lead active-lead"></div>
+            <div class="resistor-body comp-done">
+              <div class="resistor-bands">
+                <div class="band-spacer"></div>
+                <div class="band" style="background:#4A90FF"></div>
+                <div class="band" style="background:#22C55E"></div>
+                <div class="band" style="background:#4A90FF"></div>
+                <div class="band-spacer"></div>
+              </div>
+              <span class="resistor-label">TASK</span>
+            </div>
+            <div class="comp-lead active-lead"></div>
+          </div>
+          <div class="component">
+            <div class="comp-lead" style="background:rgba(74,144,255,0.2)"></div>
+            <div class="resistor-body comp-active">
+              <div class="resistor-bands">
+                <div class="band-spacer"></div>
+                <div class="band" style="background:#22C55E"></div>
+                <div class="band" style="background:#4A90FF"></div>
+                <div class="band" style="background:#22C55E"></div>
+                <div class="band-spacer"></div>
+              </div>
+              <span class="resistor-label" style="color:rgba(74,144,255,0.9)">MATERIAL</span>
+            </div>
+            <div class="comp-lead" style="background:rgba(74,144,255,0.2)"></div>
+          </div>
+          <div class="component">
+            <div class="comp-lead" style="background:rgba(74,144,255,0.12)"></div>
+            <div class="resistor-body comp-available">
+              <div class="resistor-bands">
+                <div class="band-spacer"></div>
+                <div class="band" style="background:#4A90FF;opacity:0.4"></div>
+                <div class="band" style="background:#22C55E;opacity:0.4"></div>
+                <div class="band" style="background:#4A90FF;opacity:0.4"></div>
+                <div class="band-spacer"></div>
+              </div>
+              <span class="resistor-label">TASK</span>
+            </div>
+            <div class="comp-lead" style="background:rgba(74,144,255,0.12)"></div>
+          </div>
+          <div class="capacitor">
+            <div class="comp-lead" style="width:14px;height:1px;background:rgba(74,144,255,0.1)"></div>
+            <div class="cap-body cap-locked" style="border-color:rgba(74,144,255,0.12)">+</div>
+            <div class="comp-lead" style="width:14px;height:1px;background:rgba(74,144,255,0.1)"></div>
+            <span style="font-family:var(--mono);font-size:8px;color:rgba(74,144,255,0.2);letter-spacing:0.06em;margin-left:4px;">CKPT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASES 3-5: Locked ICs -->
+    <div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:0;">
+      <!-- Phase 3 -->
+      <div class="ic-chip" style="margin-bottom:0">
+        <div class="ic-body locked-phase" style="position:relative;padding:12px 24px;">
+          <div class="ic-status-strip"></div>
+          <div class="ic-marking">
+            <span class="ic-part-number" style="font-size:16px">IC-03</span>
+            <span class="ic-phase-title">Claude Code — Primeiros Passos</span>
+            <span style="margin-left:auto;font-family:var(--mono);font-size:9px;color:rgba(34,197,94,0.15);letter-spacing:0.1em;">POWER-OFF</span>
+          </div>
+          <div class="ic-components">
+            <div class="component" style="opacity:0.15" title="Locked">
+              <div class="comp-lead" style="background:rgba(34,197,94,0.1)"></div>
+              <div class="resistor-body comp-locked"><span class="resistor-label" style="color:rgba(255,255,255,0.15)">NODE</span></div>
+              <div class="comp-lead" style="background:rgba(34,197,94,0.1)"></div>
+            </div>
+            <div class="component" style="opacity:0.15">
+              <div class="comp-lead" style="background:rgba(34,197,94,0.1)"></div>
+              <div class="resistor-body comp-locked"><span class="resistor-label" style="color:rgba(255,255,255,0.15)">NODE</span></div>
+              <div class="comp-lead" style="background:rgba(34,197,94,0.1)"></div>
+            </div>
+            <div class="component" style="opacity:0.15">
+              <div class="comp-lead" style="background:rgba(34,197,94,0.1)"></div>
+              <div class="resistor-body comp-locked"><span class="resistor-label" style="color:rgba(255,255,255,0.15)">NODE</span></div>
+              <div class="comp-lead" style="background:rgba(34,197,94,0.1)"></div>
+            </div>
+            <div class="component" style="opacity:0.15">
+              <div class="comp-lead" style="background:rgba(34,197,94,0.1)"></div>
+              <div class="resistor-body comp-locked"><span class="resistor-label" style="color:rgba(255,255,255,0.15)">NODE</span></div>
+              <div class="comp-lead" style="background:rgba(34,197,94,0.1)"></div>
+            </div>
+            <div class="capacitor" style="opacity:0.15">
+              <div class="comp-lead" style="background:rgba(34,197,94,0.06)"></div>
+              <div class="cap-body cap-locked">+</div>
+              <div class="comp-lead" style="background:rgba(34,197,94,0.06)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phases 4-5 compact locked row -->
+    <div style="max-width:900px;margin:0 auto;display:flex;gap:12px;margin-top:0;">
+      <div class="ic-body locked-phase" style="flex:1;padding:10px 16px;position:relative;">
+        <div class="ic-status-strip"></div>
+        <div class="ic-marking" style="margin-bottom:0">
+          <span class="ic-part-number" style="font-size:14px">IC-04</span>
+          <span class="ic-phase-title" style="font-size:11px">Claude Code no Trabalho</span>
+          <span style="margin-left:auto;font-family:var(--mono);font-size:8px;color:rgba(34,197,94,0.12)">LOCKED</span>
+        </div>
+      </div>
+      <div class="ic-body locked-phase" style="flex:1;padding:10px 16px;position:relative;">
+        <div class="ic-status-strip"></div>
+        <div class="ic-marking" style="margin-bottom:0">
+          <span class="ic-part-number" style="font-size:14px">IC-05</span>
+          <span class="ic-phase-title" style="font-size:11px">Autonomia</span>
+          <span style="margin-left:auto;font-family:var(--mono);font-size:8px;color:rgba(34,197,94,0.12)">LOCKED</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-footer">
+    <div>
+      <div class="cf-name">Concept 26 — Circuit Board</div>
+      <div class="cf-desc">Journey phases as PCB IC chips. Nodes are electronic components (resistors, capacitors) with color bands. Traces carry "current" between powered phases. Power flow as metaphor for progress.</div>
+    </div>
+    <div class="cf-family">Page 6 / Journey Visualization</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 27 — SUBWAY MAP
+══════════════════════════════════════════════════════════════ -->
+<section id="c27" class="concept-panel">
+  <div class="subway-header">
+    <div>
+      <div class="subway-header-title">Mapa do Metro — Linha Ativa: 02</div>
+      <div class="subway-header-sub">Rede Jornada IA — Servico em Operacao</div>
+    </div>
+    <div class="subway-header-status">
+      Progresso: 35% | XP: 320<br>
+      Ultima Atualizacao: Hoje
+    </div>
+  </div>
+
+  <div class="subway-canvas">
+    <div class="subway-map-inner" id="subwayMap">
+      <!-- Rendered via JS -->
+    </div>
+  </div>
+
+  <div class="subway-legend">
+    <div class="legend-item"><div class="legend-line" style="background:#3B82F6"></div>L1 — Fundamentos</div>
+    <div class="legend-item"><div class="legend-line" style="background:#22C55E"></div>L2 — Prompts</div>
+    <div class="legend-item"><div class="legend-line" style="background:#A855F7"></div>L3 — Claude Code Intro</div>
+    <div class="legend-item"><div class="legend-line" style="background:#F59E0B"></div>L4 — Claude Trabalho</div>
+    <div class="legend-item"><div class="legend-line" style="background:#EC4899"></div>L5 — Autonomia</div>
+    <div class="legend-item" style="margin-left:auto">
+      <svg width="20" height="20"><circle cx="10" cy="10" r="8" fill="white" stroke="#222" stroke-width="3"/></svg>
+      Transferencia
+    </div>
+    <div class="legend-item">
+      <svg width="20" height="20"><circle cx="10" cy="10" r="7" fill="#4A90FF" stroke="white" stroke-width="2"/></svg>
+      Posicao Atual
+    </div>
+    <div style="margin-left:auto;font-size:10px;color:rgba(255,255,255,0.15);letter-spacing:0.06em;text-transform:uppercase">Zona 1 — 2 Ativas</div>
+  </div>
+
+  <div class="concept-footer">
+    <div>
+      <div class="cf-name">Concept 27 — Subway Map</div>
+      <div class="cf-desc">Transit network metaphor. Each phase is a metro line. Stations are nodes. Transfer points connect phases. A live train moves along the active route. Classic underground map aesthetic in dark mode.</div>
+    </div>
+    <div class="cf-family">Page 6 / Journey Visualization</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 28 — DNA HELIX
+══════════════════════════════════════════════════════════════ -->
+<section id="c28" class="concept-panel">
+  <div class="dna-header">
+    <div>
+      <div class="dna-title">Sequencia Genomica — Jornada IA</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:0.04em;margin-top:4px;">Helice dupla em analise — fita ativa: 02</div>
+    </div>
+    <div class="dna-stats">SEQUENCIAMENTO: 35% | XP: 320 | GENES ATIVOS: 2/5</div>
+  </div>
+  <div class="dna-canvas">
+    <div class="dna-wrap" id="dnaWrap">
+      <canvas id="dnaCanvas" width="860" height="620" style="display:block;max-width:100%;"></canvas>
+    </div>
+  </div>
+  <div class="concept-footer">
+    <div>
+      <div class="cf-name">Concept 28 — DNA Helix</div>
+      <div class="cf-desc">The journey as a double helix. Nodes are base pairs (horizontal rungs connecting the two strands). Phase boundaries are promoter regions. The helix slowly rotates by animating strand phase offsets.</div>
+    </div>
+    <div class="cf-family">Page 6 / Journey Visualization</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 29 — RADAR SWEEP
+══════════════════════════════════════════════════════════════ -->
+<section id="c29" class="concept-panel">
+  <div class="radar-topbar">
+    <div class="radar-title-group">
+      <div class="radar-title">ATC RADAR — ALCANCE: 2/5</div>
+      <div class="radar-subtitle">ALVOS: 7/25 IDENTIFICADOS | FREQUENCIA: 2.4GHz</div>
+    </div>
+    <div class="radar-readout">
+      BRG: 127° | RNG: 2<br>
+      ALT: 320 XP | SPD: 2.1/d
+    </div>
+  </div>
+
+  <div class="radar-main">
+    <div class="radar-display" id="radarDisplay">
+      <div class="radar-screen">
+        <div class="radar-grid" id="radarGrid">
+          <!-- Rings rendered by JS -->
+        </div>
+        <div class="radar-crosshair"></div>
+        <!-- Sweep conic gradient sector -->
+        <div class="radar-sweep-sector"></div>
+        <!-- Sweep line -->
+        <div class="radar-sweep"></div>
+      </div>
+      <!-- Compass labels -->
+      <div class="compass-label" style="top:-22px;left:50%;transform:translateX(-50%);">N</div>
+      <div class="compass-label" style="bottom:-22px;left:50%;transform:translateX(-50%);">S</div>
+      <div class="compass-label" style="left:-18px;top:50%;transform:translateY(-50%);">W</div>
+      <div class="compass-label" style="right:-18px;top:50%;transform:translateY(-50%);">E</div>
+
+      <!-- Hover tooltip -->
+      <div class="radar-tooltip" id="radarTooltip"></div>
+    </div>
+  </div>
+
+  <div class="radar-bottom-bar">
+    <div class="radar-cell">
+      <div class="radar-cell-label">Fase</div>
+      <div class="radar-cell-value">02 / 05</div>
+    </div>
+    <div class="radar-cell">
+      <div class="radar-cell-label">Missao</div>
+      <div class="radar-cell-value" style="color:#22C55E">ATIVA</div>
+    </div>
+    <div class="radar-cell">
+      <div class="radar-cell-label">Uptime</div>
+      <div class="radar-cell-value" id="radarUptime">12d 04h 33m</div>
+    </div>
+    <div class="radar-cell">
+      <div class="radar-cell-label">XP Rate</div>
+      <div class="radar-cell-value">+45/dia</div>
+    </div>
+    <div class="radar-cell">
+      <div class="radar-cell-label">Conexao</div>
+      <div class="radar-cell-value" style="color:#22C55E">ESTAVEL</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 30 — TERMINAL / CLI
+══════════════════════════════════════════════════════════════ -->
+<section id="c30" class="concept-panel">
+  <div class="term-window">
+    <!-- Terminal chrome -->
+    <div class="term-topbar">
+      <div class="term-dots">
+        <div class="term-dot term-dot-red"></div>
+        <div class="term-dot term-dot-yellow"></div>
+        <div class="term-dot term-dot-green"></div>
+      </div>
+      <div class="term-titlebar">reis@journey — bash — 120x40</div>
+      <div style="width:52px"></div>
+    </div>
+
+    <!-- Terminal body (rendered by JS typewriter) -->
+    <div class="term-body" id="termBody">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+
+  <!-- Fixed bottom prompt -->
+  <div class="term-bottom">
+    <span class="term-prompt">
+      <span class="prompt-user">reis</span><span class="prompt-at">@</span><span class="prompt-host">journey</span><span class="prompt-path">:~$</span> <span class="prompt-cmd">_</span>
+    </span>
+    <span class="term-cursor"></span>
+  </div>
+
+  <div class="concept-footer" style="margin-top:0;padding-bottom:56px;">
+    <div>
+      <div class="cf-name">Concept 30 — Terminal CLI</div>
+      <div class="cf-desc">Journey as CLI output. Box-drawing characters, color-coded status brackets, tree structure. Typewriter entrance animation. Click any node row for an inline detail panel. Pure text — maximum density, zero decoration.</div>
+    </div>
+    <div class="cf-family">Page 6 / Journey Visualization</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONCEPT 31 — MISSION CONTROL ULTRA
+══════════════════════════════════════════════════════════════ -->
+<section id="c31" class="concept-panel">
+  <!-- BG grid -->
+  <div class="mcu-bg-grid"></div>
+
+  <!-- Top Bar -->
+  <div class="mcu-topbar">
+    <div class="mcu-topbar-left">
+      <div class="mcu-live-dot"></div>
+      <span class="mcu-live-badge">Live</span>
+      <span class="mcu-topbar-label">Reis IA Mission Control</span>
+    </div>
+    <div class="mcu-topbar-center">Jornada IA do Zero ao Claude Code</div>
+    <div class="mcu-topbar-right">
+      <div class="mcu-session" id="mcuSession">SESSION: 00m 00s</div>
+      <div class="mcu-clock" id="mcuClock">00:00:00</div>
+    </div>
+  </div>
+
+  <!-- Body: 3 panels -->
+  <div class="mcu-body" style="position:relative;flex:1;">
+
+    <!-- LEFT: Navigation + Mini Radar -->
+    <div class="mcu-left">
+      <div class="mcu-panel-title">Navegacao</div>
+      <!-- Mini radar canvas -->
+      <div class="mcu-mini-radar">
+        <canvas id="miniRadarCanvas" width="160" height="160"></canvas>
+      </div>
+      <!-- Phase list -->
+      <div class="mcu-phase-list">
+        <div class="mcu-phase-item active-phase" onclick="mcuSelectPhase(1)">
+          <div class="mcu-phase-led led-done"></div>
+          <span class="mcu-phase-name">Fundamentos de IA</span>
+          <span class="mcu-phase-fraction">5/5</span>
+        </div>
+        <div class="mcu-phase-item active-phase" id="mcuPhase2" onclick="mcuSelectPhase(2)">
+          <div class="mcu-phase-led led-active"></div>
+          <span class="mcu-phase-name">Prompts e Comunicacao</span>
+          <span class="mcu-phase-fraction">2/5</span>
+        </div>
+        <div class="mcu-phase-item" onclick="mcuSelectPhase(3)">
+          <div class="mcu-phase-led led-locked"></div>
+          <span class="mcu-phase-name">Claude Code Intro</span>
+          <span class="mcu-phase-fraction">0/5</span>
+        </div>
+        <div class="mcu-phase-item" onclick="mcuSelectPhase(4)">
+          <div class="mcu-phase-led led-locked"></div>
+          <span class="mcu-phase-name">Claude Code Trabalho</span>
+          <span class="mcu-phase-fraction">0/5</span>
+        </div>
+        <div class="mcu-phase-item" onclick="mcuSelectPhase(5)">
+          <div class="mcu-phase-led led-locked"></div>
+          <span class="mcu-phase-name">Autonomia</span>
+          <span class="mcu-phase-fraction">0/5</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER: Phase Detail + Node Cards -->
+    <div class="mcu-center">
+      <!-- Phase header card -->
+      <div class="mcu-phase-header" id="mcuPhaseHeader">
+        <!-- Rendered by JS -->
+      </div>
+      <!-- Node cards -->
+      <div class="mcu-nodes-list" id="mcuNodesList">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- RIGHT: Telemetry -->
+    <div class="mcu-right" style="position:relative;overflow:hidden;">
+      <div class="mcu-scan-line"></div>
+      <div class="mcu-panel-title">Telemetria</div>
+
+      <!-- Progress ring -->
+      <div class="mcu-stat-block">
+        <div class="mcu-stat-label">Progresso</div>
+        <div class="mcu-stat-row">
+          <div class="mcu-ring-wrap" id="mcuProgressRing">
+            <svg viewBox="0 0 64 64" width="64" height="64">
+              <circle class="mcu-ring-bg" cx="32" cy="32" r="28"/>
+              <circle class="mcu-ring-fill ring-blue" cx="32" cy="32" r="28"
+                id="mcuRingFill"
+                stroke-dasharray="175.9"
+                stroke-dashoffset="175.9"/>
+            </svg>
+            <div class="mcu-ring-center" id="mcuProgressPct">0%</div>
+          </div>
+          <div>
+            <div class="mcu-stat-value" style="font-size:18px" id="mcuProgressVal">35%</div>
+            <div class="mcu-stat-unit">7 / 25 nodes</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- XP -->
+      <div class="mcu-stat-block">
+        <div class="mcu-stat-label">XP Total</div>
+        <div class="mcu-stat-row">
+          <div class="mcu-stat-value xp-val"><span id="mcuXpVal">0</span> <span style="font-size:14px">XP</span></div>
+        </div>
+      </div>
+
+      <!-- Streak -->
+      <div class="mcu-stat-block">
+        <div class="mcu-stat-label">Streak</div>
+        <div class="mcu-stat-row" style="gap:8px">
+          <svg width="18" height="20" viewBox="0 0 18 20" fill="none" style="flex-shrink:0">
+            <path d="M9 1C9 1 4 6 4 11a5 5 0 0010 0c0-3-2-6-2-6s-1 2-2 2c0 0 1-4-1-6z" fill="rgba(245,158,11,0.5)" stroke="rgba(245,158,11,0.8)" stroke-width="1"/>
+            <circle cx="9" cy="12" r="2" fill="rgba(245,158,11,0.9)"/>
+          </svg>
+          <div class="mcu-stat-value" style="font-size:18px">3 dias</div>
+        </div>
+      </div>
+
+      <!-- Speed -->
+      <div class="mcu-stat-block">
+        <div class="mcu-stat-label">Velocidade</div>
+        <div class="mcu-stat-value" style="font-size:16px">2.1 <span style="font-size:10px;color:rgba(255,255,255,0.25)">nodes/dia</span></div>
+      </div>
+
+      <!-- Forecast -->
+      <div class="mcu-stat-block">
+        <div class="mcu-stat-label">Previsao</div>
+        <div class="mcu-stat-value" style="font-size:16px">~4 <span style="font-size:10px;color:rgba(255,255,255,0.25)">semanas</span></div>
+      </div>
+
+      <!-- Activity log -->
+      <div class="mcu-activity">
+        <div class="mcu-activity-title">Atividade Recente</div>
+        <div class="mcu-log-entry">
+          <div class="mcu-log-time">Hoje, 14:32</div>
+          <div class="mcu-log-text">Task: Praticar 5 prompts concluida</div>
+          <div class="mcu-log-xp">+25 XP ganhos</div>
+        </div>
+        <div class="mcu-log-entry">
+          <div class="mcu-log-time">Hoje, 11:15</div>
+          <div class="mcu-log-text">Material: Anatomia do prompt lido</div>
+          <div class="mcu-log-xp">+20 XP ganhos</div>
+        </div>
+        <div class="mcu-log-entry">
+          <div class="mcu-log-time">Ontem, 16:40</div>
+          <div class="mcu-log-text">Checkpoint: Alinhamento aprovado</div>
+          <div class="mcu-log-xp">+25 XP ganhos</div>
+        </div>
+        <div class="mcu-log-entry">
+          <div class="mcu-log-time">Ontem, 10:05</div>
+          <div class="mcu-log-text">Task: Primeira conversa com IA</div>
+          <div class="mcu-log-xp">+20 XP ganhos</div>
+        </div>
+        <div class="mcu-log-entry">
+          <div class="mcu-log-time">3 dias atras</div>
+          <div class="mcu-log-text">Slides: Como um LLM funciona</div>
+          <div class="mcu-log-xp">+15 XP ganhos</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /mcu-body -->
+
+  <!-- Bottom telemetry bar -->
+  <div class="mcu-bottombar">
+    <div class="mcu-bc">
+      <div class="mcu-bc-label">Fase</div>
+      <div class="mcu-bc-value">02 / 05</div>
+    </div>
+    <div class="mcu-bc">
+      <div class="mcu-bc-label">Missao</div>
+      <div class="mcu-bc-value"><div class="bc-dot-green"></div> ATIVA</div>
+    </div>
+    <div class="mcu-bc">
+      <div class="mcu-bc-label">Uptime</div>
+      <div class="mcu-bc-value" id="mcuUptime">12d 04h 33m</div>
+    </div>
+    <div class="mcu-bc">
+      <div class="mcu-bc-label">XP Rate</div>
+      <div class="mcu-bc-value"><div class="bc-dot-blue"></div> +45/dia</div>
+    </div>
+    <div class="mcu-bc">
+      <div class="mcu-bc-label">Conexao</div>
+      <div class="mcu-bc-value" style="color:#22C55E">ESTAVEL</div>
+    </div>
+  </div>
+
+  <div class="concept-footer">
+    <div>
+      <div class="cf-name">Concept 31 — Mission Control Ultra</div>
+      <div class="cf-desc">The definitive 3-panel mission control. Left: mini radar + phase nav. Center: phase header with progress ring + premium node cards with stagger animation. Right: full telemetry dashboard with live clock, scan line, and activity log. Every detail polished.</div>
+    </div>
+    <div class="cf-family">Page 6 / Journey Visualization</div>
+  </div>
+</section>
+
+<style>
+@keyframes traceFlow {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -24; }
+}
+</style>
+
+<script>
+/* ─── Tab Switching ─── */
+function switchTab(id, btn) {
+  document.querySelectorAll('.concept-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+
+  // Initialize concept on first show
+  if (id === 'c27' && !window._c27Init) { initSubway(); window._c27Init = true; }
+  if (id === 'c28' && !window._c28Init) { initDNA(); window._c28Init = true; }
+  if (id === 'c29' && !window._c29Init) { initRadar(); window._c29Init = true; }
+  if (id === 'c30' && !window._c30Init) { initTerminal(); window._c30Init = true; }
+  if (id === 'c31' && !window._c31Init) { initMCU(); window._c31Init = true; }
+  if (id === 'c26' && !window._c26Init) { initPCB(); window._c26Init = true; }
+}
+
+/* ─── PCB background canvas ─── */
+function initPCB() {
+  const canvas = document.getElementById('pcbCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    drawPCBGrid(ctx, canvas.width, canvas.height);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+}
+function drawPCBGrid(ctx, w, h) {
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = 'rgba(20,60,20,0.18)';
+  const step = 20;
+  for (let x = 0; x < w; x += step) {
+    for (let y = 0; y < h; y += step) {
+      ctx.beginPath();
+      ctx.arc(x, y, 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+// Auto-init PCB since it starts active
+window.addEventListener('DOMContentLoaded', () => { initPCB(); window._c26Init = true; });
+
+/* ─── SUBWAY MAP ─── */
+function initSubway() {
+  const map = document.getElementById('subwayMap');
+  if (!map) return;
+  const W = map.offsetWidth || 860;
+  const H = 520;
+
+  const lines = [
+    { id: 1, color: '#3B82F6', label: 'L1', done: true },
+    { id: 2, color: '#22C55E', label: 'L2', done: false, active: true },
+    { id: 3, color: '#A855F7', label: 'L3', done: false },
+    { id: 4, color: '#F59E0B', label: 'L4', done: false },
+    { id: 5, color: '#EC4899', label: 'L5', done: false },
+  ];
+
+  // Define the transit network path with stations
+  // We'll draw a connected route with horizontal and angled segments
+  const stationsData = [
+    // L1 (top horizontal, left to right)
+    { phase: 1, x: 60,  y: 80,  type: 'material',     label: 'O que e IA',       labelPos: 'above', done: true },
+    { phase: 1, x: 180, y: 80,  type: 'material',     label: 'Vocabulario',      labelPos: 'above', done: true },
+    { phase: 1, x: 300, y: 80,  type: 'presentation', label: 'Como LLM funciona',labelPos: 'above', done: true },
+    { phase: 1, x: 420, y: 80,  type: 'task',         label: 'Primeira conversa',labelPos: 'above', done: true },
+    { phase: 1, x: 540, y: 80,  type: 'checkpoint',   label: 'Alinhamento',      labelPos: 'above', done: true },
+
+    // L2 (goes down from transfer, then horizontal right)
+    { phase: 2, x: 540, y: 180, type: 'material',     label: 'Anatomia do prompt',labelPos: 'below', done: true },
+    { phase: 2, x: 420, y: 180, type: 'task',         label: 'Praticar 5 prompts',labelPos: 'below', done: true, active: true },
+    { phase: 2, x: 300, y: 180, type: 'material',     label: 'Contexto avancado', labelPos: 'above', avail: true },
+    { phase: 2, x: 180, y: 180, type: 'task',         label: 'Template reutilizavel',labelPos: 'above', avail: true },
+    { phase: 2, x: 60,  y: 180, type: 'checkpoint',   label: 'Revisao',           labelPos: 'below', locked: true },
+
+    // L3 (goes down from transfer, right again)
+    { phase: 3, x: 60,  y: 280, type: 'material',     label: 'Instalacao Claude', labelPos: 'below', locked: true },
+    { phase: 3, x: 180, y: 280, type: 'task',         label: 'Primeiro comando',  labelPos: 'below', locked: true },
+    { phase: 3, x: 300, y: 280, type: 'material',     label: 'Estrutura projeto', labelPos: 'above', locked: true },
+    { phase: 3, x: 420, y: 280, type: 'task',         label: 'Refatorar codigo',  labelPos: 'above', locked: true },
+    { phase: 3, x: 540, y: 280, type: 'checkpoint',   label: 'Review',            labelPos: 'below', locked: true },
+
+    // L4
+    { phase: 4, x: 540, y: 380, type: 'material',     label: 'Workflow avancado', labelPos: 'below', locked: true },
+    { phase: 4, x: 420, y: 380, type: 'task',         label: 'Automacao',         labelPos: 'below', locked: true },
+    { phase: 4, x: 300, y: 380, type: 'material',     label: 'Agentes',           labelPos: 'above', locked: true },
+    { phase: 4, x: 180, y: 380, type: 'task',         label: 'Pipeline real',     labelPos: 'above', locked: true },
+    { phase: 4, x: 60,  y: 380, type: 'checkpoint',   label: 'Producao',          labelPos: 'below', locked: true },
+
+    // L5
+    { phase: 5, x: 60,  y: 480, type: 'material',     label: 'Estrategia IA',     labelPos: 'below', locked: true },
+    { phase: 5, x: 200, y: 480, type: 'task',         label: 'Projeto autonomo',  labelPos: 'below', locked: true },
+    { phase: 5, x: 340, y: 480, type: 'material',     label: 'Otimizacao',        labelPos: 'above', locked: true },
+    { phase: 5, x: 480, y: 480, type: 'task',         label: 'Portfolio',         labelPos: 'above', locked: true },
+    { phase: 5, x: 620, y: 480, type: 'checkpoint',   label: 'Certificado',       labelPos: 'below', locked: true },
+  ];
+
+  // Transfer points
+  const transfers = [
+    { x: 540, y: 80,  label: 'Transfer 1→2' },
+    { x: 60,  y: 180, label: 'Transfer 2→3' },
+    { x: 540, y: 280, label: 'Transfer 3→4' },
+    { x: 60,  y: 380, label: 'Transfer 4→5' },
+  ];
+
+  // Build SVG
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+  svg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
+  map.appendChild(svg);
+
+  // River (diagonal decorative)
+  const river = document.createElementNS('http://www.w3.org/2000/svg','path');
+  river.setAttribute('d', `M${W*0.75},0 Q${W*0.65},${H*0.5} ${W*0.85},${H}`);
+  river.setAttribute('stroke', 'rgba(74,144,255,0.05)');
+  river.setAttribute('stroke-width', '18');
+  river.setAttribute('fill', 'none');
+  river.setAttribute('stroke-linecap', 'round');
+  svg.appendChild(river);
+
+  // Zone boxes
+  const z1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  z1.setAttribute('x', '20'); z1.setAttribute('y', '140');
+  z1.setAttribute('fill', 'rgba(255,255,255,0.04)'); z1.setAttribute('font-size', '60');
+  z1.setAttribute('font-weight', '700'); z1.setAttribute('letter-spacing', '4');
+  z1.textContent = 'ZONA 1';
+  svg.appendChild(z1);
+  const z2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  z2.setAttribute('x', '20'); z2.setAttribute('y', '450');
+  z2.setAttribute('fill', 'rgba(255,255,255,0.03)'); z2.setAttribute('font-size', '60');
+  z2.setAttribute('font-weight', '700'); z2.setAttribute('letter-spacing', '4');
+  z2.textContent = 'ZONA 2';
+  svg.appendChild(z2);
+
+  function getLineColor(phase) { return lines[phase-1].color; }
+  function getLineDim(phase) {
+    const c = lines[phase-1];
+    return c.done ? getLineColor(phase) : (c.active ? getLineColor(phase) : 'rgba(255,255,255,0.08)');
+  }
+
+  // Draw lines
+  // L1: horizontal top
+  [
+    { points: [[60,80],[540,80]], phase: 1 },
+    // vertical down from 540,80 to 540,180
+    { points: [[540,80],[540,180]], phase: 2, vert: true },
+    // L2: horizontal from 540 to 60
+    { points: [[540,180],[60,180]], phase: 2 },
+    // vertical down from 60,180 to 60,280
+    { points: [[60,180],[60,280]], phase: 3, vert: true },
+    // L3: horizontal 60 to 540
+    { points: [[60,280],[540,280]], phase: 3 },
+    { points: [[540,280],[540,380]], phase: 4, vert: true },
+    { points: [[540,380],[60,380]], phase: 4 },
+    { points: [[60,380],[60,480]], phase: 5, vert: true },
+    { points: [[60,480],[620,480]], phase: 5 },
+  ].forEach(seg => {
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    const [[x1,y1],[x2,y2]] = seg.points;
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    const ph = lines[seg.phase - 1];
+    const opacity = ph.done ? '0.7' : (ph.active ? '0.65' : '0.12');
+    line.setAttribute('stroke', getLineColor(seg.phase));
+    line.setAttribute('stroke-width', '3.5');
+    line.setAttribute('stroke-opacity', opacity);
+    line.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(line);
+  });
+
+  // Stations
+  stationsData.forEach(s => {
+    const ph = lines[s.phase-1];
+    const color = getLineColor(s.phase);
+    const opacity = s.locked && !ph.active ? 0.18 : 1;
+    const r = s.type === 'checkpoint' ? 9 : 7;
+
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('transform', `translate(${s.x},${s.y})`);
+    g.style.cursor = 'pointer';
+    g.style.opacity = opacity;
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('r', r);
+    if (s.done) {
+      circle.setAttribute('fill', color);
+      circle.setAttribute('stroke', '#000');
+      circle.setAttribute('stroke-width', '1.5');
+    } else if (s.avail) {
+      circle.setAttribute('fill', 'none');
+      circle.setAttribute('stroke', color);
+      circle.setAttribute('stroke-width', '2');
+    } else if (s.active) {
+      circle.setAttribute('fill', color);
+      circle.setAttribute('stroke', '#fff');
+      circle.setAttribute('stroke-width', '2');
+    } else {
+      circle.setAttribute('fill', 'rgba(255,255,255,0.04)');
+      circle.setAttribute('stroke', 'rgba(255,255,255,0.1)');
+      circle.setAttribute('stroke-width', '1');
+    }
+    g.appendChild(circle);
+
+    const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+    lbl.setAttribute('font-size', '9');
+    lbl.setAttribute('font-family', 'Inter, sans-serif');
+    lbl.setAttribute('font-weight', '500');
+    lbl.setAttribute('fill', s.done || s.active ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.25)');
+    lbl.setAttribute('text-anchor', 'middle');
+    lbl.setAttribute('y', s.labelPos === 'above' ? -14 : 20);
+    lbl.textContent = s.label;
+    g.appendChild(lbl);
+
+    svg.appendChild(g);
+  });
+
+  // Transfer stations
+  transfers.forEach(t => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('transform', `translate(${t.x},${t.y})`);
+    const outer = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    outer.setAttribute('r', '10');
+    outer.setAttribute('fill', '#fff');
+    outer.setAttribute('stroke', '#111');
+    outer.setAttribute('stroke-width', '3');
+    g.appendChild(outer);
+    svg.appendChild(g);
+  });
+
+  // "You are here" marker
+  const yah = document.createElementNS('http://www.w3.org/2000/svg','g');
+  yah.setAttribute('transform', 'translate(420,180)');
+  const pulse1 = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  pulse1.setAttribute('r', '14'); pulse1.setAttribute('fill', 'none');
+  pulse1.setAttribute('stroke', 'rgba(74,144,255,0.4)'); pulse1.setAttribute('stroke-width', '1');
+  pulse1.innerHTML = '<animate attributeName="r" from="8" to="20" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" from="1" to="0" dur="2s" repeatCount="indefinite"/>';
+  yah.appendChild(pulse1);
+  const yahDot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  yahDot.setAttribute('r', '7'); yahDot.setAttribute('fill', '#4A90FF');
+  yahDot.setAttribute('stroke', '#fff'); yahDot.setAttribute('stroke-width', '2');
+  yah.appendChild(yahDot);
+  const yahText = document.createElementNS('http://www.w3.org/2000/svg','text');
+  yahText.setAttribute('y', '-16'); yahText.setAttribute('text-anchor', 'middle');
+  yahText.setAttribute('font-size', '8'); yahText.setAttribute('font-weight', '700');
+  yahText.setAttribute('fill', '#4A90FF'); yahText.setAttribute('letter-spacing', '0.06em');
+  yahText.textContent = 'VOCE ESTA AQUI';
+  yah.appendChild(yahText);
+  svg.appendChild(yah);
+
+  // Train indicator (simple rectangle moving)
+  const train = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  train.setAttribute('x', '60'); train.setAttribute('y', '75');
+  train.setAttribute('width', '22'); train.setAttribute('height', '9');
+  train.setAttribute('rx', '3'); train.setAttribute('fill', '#4A90FF');
+  train.setAttribute('opacity', '0.9');
+  train.style.filter = 'drop-shadow(0 0 5px rgba(74,144,255,0.7))';
+  svg.appendChild(train);
+
+  // Animate train along L1
+  let trainPos = 0;
+  const trainPath = [
+    [60,80],[180,80],[300,80],[420,80],[540,80],
+    [540,180],[420,180]
+  ];
+  let tIdx = 0;
+  let progress = 0;
+  function animateTrain() {
+    if (tIdx >= trainPath.length - 1) tIdx = 0;
+    const [x1,y1] = trainPath[tIdx];
+    const [x2,y2] = trainPath[tIdx+1];
+    progress += 0.005;
+    if (progress >= 1) { progress = 0; tIdx = (tIdx+1) % (trainPath.length-1); }
+    const tx = x1 + (x2-x1)*progress - 11;
+    const ty = y1 + (y2-y1)*progress - 4;
+    train.setAttribute('x', tx);
+    train.setAttribute('y', ty);
+    requestAnimationFrame(animateTrain);
+  }
+  animateTrain();
+}
+
+/* ─── DNA HELIX ─── */
+function initDNA() {
+  const canvas = document.getElementById('dnaCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  let phase = 0;
+
+  const phases = [
+    { name: 'FASE 01 — Fundamentos', color: '#3B82F6', state: 'done', nodes: 5, done: 5 },
+    { name: 'FASE 02 — Prompts', color: '#22C55E', state: 'active', nodes: 5, done: 2 },
+    { name: 'FASE 03 — Claude Code Intro', color: '#A855F7', state: 'locked', nodes: 5, done: 0 },
+    { name: 'FASE 04 — Claude Trabalho', color: '#F59E0B', state: 'locked', nodes: 5, done: 0 },
+    { name: 'FASE 05 — Autonomia', color: '#EC4899', state: 'locked', nodes: 5, done: 0 },
+  ];
+
+  const types = ['material','material','presentation','task','checkpoint'];
+
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+
+    const cx = W / 2;
+    const amplitude = 80;
+    const wavelength = H / 5.5;
+    const strandSpacing = 60;
+
+    // Draw each phase section
+    let yOff = 40;
+
+    phases.forEach((ph, phIdx) => {
+      const sectionH = wavelength;
+      const numNodes = ph.nodes;
+      const isDone = ph.state === 'done';
+      const isActive = ph.state === 'active';
+      const isLocked = ph.state === 'locked';
+
+      // Phase separator label
+      ctx.save();
+      ctx.globalAlpha = isLocked ? 0.2 : 0.8;
+      ctx.font = `600 10px Inter, sans-serif`;
+      ctx.letterSpacing = '0.12em';
+      ctx.fillStyle = ph.color;
+      ctx.textAlign = 'center';
+      ctx.fillText(ph.name.toUpperCase(), cx, yOff - 8);
+      ctx.restore();
+
+      // Draw the helix strands for this phase
+      const steps = 60;
+      const segH = sectionH / steps;
+
+      for (let i = 0; i <= steps; i++) {
+        const y = yOff + i * segH;
+        const angle = (i / steps) * Math.PI * 2 + t * 0.5;
+
+        const x1 = cx - strandSpacing/2 + Math.sin(angle) * amplitude;
+        const x2 = cx + strandSpacing/2 + Math.sin(angle + Math.PI) * amplitude;
+
+        if (i > 0) {
+          const py = yOff + (i-1) * segH;
+          const pAngle = ((i-1) / steps) * Math.PI * 2 + t * 0.5;
+          const px1 = cx - strandSpacing/2 + Math.sin(pAngle) * amplitude;
+          const px2 = cx + strandSpacing/2 + Math.sin(pAngle + Math.PI) * amplitude;
+
+          // Left strand
+          ctx.beginPath();
+          ctx.moveTo(px1, py); ctx.lineTo(x1, y);
+          ctx.strokeStyle = isLocked ? 'rgba(255,255,255,0.06)' : (isDone ? `rgba(74,144,255,0.5)` : `rgba(74,144,255,0.4)`);
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          // Right strand
+          ctx.beginPath();
+          ctx.moveTo(px2, py); ctx.lineTo(x2, y);
+          ctx.strokeStyle = isLocked ? 'rgba(255,255,255,0.06)' : (isDone ? `rgba(34,197,94,0.5)` : `rgba(34,197,94,0.4)`);
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+      }
+
+      // Draw base pair rungs (nodes)
+      for (let n = 0; n < numNodes; n++) {
+        const nodeY = yOff + (sectionH / (numNodes + 1)) * (n + 1);
+        const frac = (nodeY - yOff) / sectionH;
+        const angle = frac * Math.PI * 2 + t * 0.5;
+
+        const rx1 = cx - strandSpacing/2 + Math.sin(angle) * amplitude;
+        const rx2 = cx + strandSpacing/2 + Math.sin(angle + Math.PI) * amplitude;
+
+        const isDoneNode = n < ph.done;
+        const isAvailNode = !isDone && n === ph.done && isActive;
+        const isLockedNode = !isDoneNode && !isAvailNode;
+
+        // Rung width based on type
+        const nodeType = types[n % types.length];
+        const rungW = nodeType === 'checkpoint' ? 6 : (nodeType === 'task' ? 5 : 4);
+
+        // Rung color
+        let rungColor = 'rgba(255,255,255,0.05)';
+        if (isLocked) rungColor = 'rgba(255,255,255,0.04)';
+        else if (isDoneNode) rungColor = '#22C55E';
+        else if (isAvailNode) rungColor = '#4A90FF';
+        else rungColor = 'rgba(255,255,255,0.12)';
+
+        // Draw rung
+        ctx.save();
+        ctx.globalAlpha = isLocked ? 0.15 : 1;
+        ctx.beginPath();
+        ctx.moveTo(rx1, nodeY);
+        ctx.lineTo(rx2, nodeY);
+        ctx.strokeStyle = rungColor;
+        ctx.lineWidth = rungW;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        // End dots on rung
+        const dotR = 3;
+        ctx.fillStyle = rungColor;
+        ctx.beginPath(); ctx.arc(rx1, nodeY, dotR, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(rx2, nodeY, dotR, 0, Math.PI*2); ctx.fill();
+
+        // Node label (right side)
+        if (!isLocked || phIdx < 2) {
+          const nodeNames = [
+            ['O que e IA','Vocabulario','Como LLM Funciona','Primeira Conversa','Alinhamento'],
+            ['Anatomia do prompt','Praticar 5 prompts','Contexto avancado','Template reutilizavel','Revisao'],
+            ['Instalacao','Primeiro cmd','Estrutura','Refatorar','Code Review'],
+            ['Workflow','Automacao','Agentes','Pipeline','Producao'],
+            ['Estrategia IA','Projeto auto','Otimizacao','Portfolio','Certificado'],
+          ];
+          const label = nodeNames[phIdx] && nodeNames[phIdx][n] ? nodeNames[phIdx][n] : `Node ${n+1}`;
+          const labelX = Math.max(rx1, rx2) + 10;
+          const labelRight = Math.min(rx1, rx2) - 10;
+          const useRight = labelX > W * 0.75;
+
+          ctx.font = '500 9px Inter, sans-serif';
+          ctx.fillStyle = isLocked ? 'rgba(255,255,255,0.12)' :
+                          isDoneNode ? 'rgba(34,197,94,0.7)' :
+                          isAvailNode ? 'rgba(74,144,255,0.9)' :
+                          'rgba(255,255,255,0.45)';
+          ctx.textAlign = useRight ? 'right' : 'left';
+          ctx.fillText(label, useRight ? labelRight : labelX, nodeY + 3);
+        }
+
+        ctx.restore();
+      }
+
+      yOff += sectionH + 10;
+    });
+
+    // Reading frame cursor (active position)
+    const readY = 40 + wavelength * 1.5 + 10 * 1;
+    ctx.save();
+    ctx.globalAlpha = 0.7;
+    ctx.strokeStyle = '#4A90FF';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath();
+    ctx.moveTo(0, readY);
+    ctx.lineTo(W, readY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = '600 9px Inter, sans-serif';
+    ctx.fillStyle = '#4A90FF';
+    ctx.textAlign = 'left';
+    ctx.fillText('◀ LEITURA ATIVA', 8, readY - 4);
+    ctx.restore();
+  }
+
+  function animate() {
+    phase += 0.008;
+    draw(phase);
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* ─── RADAR ─── */
+function initRadar() {
+  const display = document.getElementById('radarDisplay');
+  const grid = document.getElementById('radarGrid');
+  const tooltip = document.getElementById('radarTooltip');
+  if (!display || !grid) return;
+
+  const R = display.offsetWidth / 2;
+  const rings = 5;
+
+  // Draw range rings
+  for (let i = 1; i <= rings; i++) {
+    const ring = document.createElement('div');
+    ring.className = 'radar-ring' + (i === 2 ? ' active-ring' : '');
+    const pct = (i / rings) * 100;
+    ring.style.cssText = `width:${pct}%;height:${pct}%;`;
+    grid.appendChild(ring);
+  }
+
+  // Phase labels on rings
+  const phaseLabels = ['F1', 'F2', 'F3', 'F4', 'F5'];
+  for (let i = 1; i <= rings; i++) {
+    const lbl = document.createElement('div');
+    lbl.className = 'phase-range-label';
+    const r = (i / rings) * R;
+    lbl.style.cssText = `left:${R + r * Math.cos(-0.3) - 14}px;top:${R + r * Math.sin(-0.3) - 6}px;`;
+    lbl.textContent = phaseLabels[i-1];
+    lbl.style.color = i <= 2 ? 'rgba(34,197,94,0.5)' : 'rgba(34,197,94,0.2)';
+    display.querySelector('.radar-screen').appendChild(lbl);
+  }
+
+  // Node data: [phase, angleDeg, status]
+  const nodes = [
+    // Phase 1 (ring 1, innermost — phase 1 is done)
+    { phase: 1, angle: 30, status: 'done', label: 'O que e IA' },
+    { phase: 1, angle: 90, status: 'done', label: 'Vocabulario' },
+    { phase: 1, angle: 150, status: 'done', label: 'LLM Funciona' },
+    { phase: 1, angle: 210, status: 'done', label: '1a Conversa' },
+    { phase: 1, angle: 270, status: 'done', label: 'Alinhamento' },
+    // Phase 2 (ring 2, active)
+    { phase: 2, angle: 0, status: 'done', label: 'Anatomia Prompt' },
+    { phase: 2, angle: 72, status: 'done', label: 'Praticar Prompts' },
+    { phase: 2, angle: 144, status: 'active', label: 'Contexto Avanc.' },
+    { phase: 2, angle: 216, status: 'active', label: 'Template' },
+    { phase: 2, angle: 288, status: 'locked', label: 'Revisao' },
+    // Phases 3-5 (locked)
+    { phase: 3, angle: 45, status: 'locked', label: 'Instalacao' },
+    { phase: 3, angle: 117, status: 'locked', label: '1o Comando' },
+    { phase: 3, angle: 189, status: 'locked', label: 'Estrutura' },
+    { phase: 3, angle: 261, status: 'locked', label: 'Refatorar' },
+    { phase: 3, angle: 333, status: 'locked', label: 'Code Review' },
+    { phase: 4, angle: 15, status: 'locked', label: 'Workflow' },
+    { phase: 4, angle: 87, status: 'locked', label: 'Automacao' },
+    { phase: 4, angle: 159, status: 'locked', label: 'Agentes' },
+    { phase: 4, angle: 231, status: 'locked', label: 'Pipeline' },
+    { phase: 4, angle: 303, status: 'locked', label: 'Producao' },
+    { phase: 5, angle: 60, status: 'locked', label: 'Estrategia' },
+    { phase: 5, angle: 132, status: 'locked', label: 'Proj. Auto' },
+    { phase: 5, angle: 204, status: 'locked', label: 'Otimizacao' },
+    { phase: 5, angle: 276, status: 'locked', label: 'Portfolio' },
+    { phase: 5, angle: 348, status: 'locked', label: 'Certificado' },
+  ];
+
+  const screen = display.querySelector('.radar-screen');
+
+  nodes.forEach((node, i) => {
+    const r = (node.phase / rings) * R * 0.92;
+    const rad = (node.angle - 90) * Math.PI / 180;
+    const x = R + r * Math.cos(rad);
+    const y = R + r * Math.sin(rad);
+
+    const size = node.status === 'done' ? 6 : node.status === 'active' ? 7 : 3;
+
+    const blip = document.createElement('div');
+    blip.className = `radar-blip blip-${node.status}`;
+    blip.style.cssText = `left:${x}px;top:${y}px;`;
+
+    const dot = document.createElement('div');
+    dot.className = 'blip-dot';
+    dot.style.cssText = `width:${size}px;height:${size}px;`;
+    blip.appendChild(dot);
+
+    // Echo ring for done/active
+    if (node.status === 'done' || node.status === 'active') {
+      const echo = document.createElement('div');
+      echo.className = 'blip-echo';
+      echo.style.animationDelay = `${(i * 0.24) % 6}s`;
+      blip.appendChild(echo);
+    }
+
+    // Hover
+    blip.addEventListener('mouseenter', (e) => {
+      tooltip.textContent = `${node.label} | ${node.status.toUpperCase()}`;
+      tooltip.style.display = 'block';
+      tooltip.style.left = `${x + 12}px`;
+      tooltip.style.top = `${y - 20}px`;
+    });
+    blip.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+    });
+
+    screen.appendChild(blip);
+  });
+
+  // Uptime counter
+  let uptimeSeconds = 12 * 86400 + 4 * 3600 + 33 * 60;
+  function updateUptime() {
+    uptimeSeconds += 60;
+    const d = Math.floor(uptimeSeconds / 86400);
+    const h = Math.floor((uptimeSeconds % 86400) / 3600);
+    const m = Math.floor((uptimeSeconds % 3600) / 60);
+    const el = document.getElementById('radarUptime');
+    if (el) el.textContent = `${d}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m`;
+  }
+  setInterval(updateUptime, 60000);
+}
+
+/* ─── TERMINAL ─── */
+function initTerminal() {
+  const body = document.getElementById('termBody');
+  if (!body) return;
+
+  const nodeData = {
+    p1: [
+      { id:'p1n1', st:'done', type:'Material', title:'O que e IA', xp:15, time:'15 min', desc:'Introducao aos conceitos fundamentais de inteligencia artificial.' },
+      { id:'p1n2', st:'done', type:'Material', title:'Vocabulario Essencial', xp:15, time:'20 min', desc:'Glossario completo dos termos usados no dia a dia com IA.' },
+      { id:'p1n3', st:'done', type:'Presentation', title:'Como um LLM funciona', xp:15, time:'18 min', desc:'Entenda os mecanismos por tras dos modelos de linguagem.' },
+      { id:'p1n4', st:'done', type:'Task', title:'Primeira conversa com IA', xp:20, time:'25 min', desc:'Realize sua primeira interacao pratica com um LLM.' },
+      { id:'p1n5', st:'done', type:'Checkpoint', title:'Checkpoint de Alinhamento', xp:25, time:'10 min', desc:'Revisao dos conceitos aprendidos na fase 1.' },
+    ],
+    p2: [
+      { id:'p2n1', st:'done', type:'Material', title:'Anatomia do prompt', xp:20, time:'20 min', desc:'Desmontando os componentes de um prompt efetivo.' },
+      { id:'p2n2', st:'done', type:'Task', title:'Praticar 5 prompts', xp:25, time:'30 min', desc:'Escolha 5 tarefas reais do seu trabalho e transforme em prompts.' },
+      { id:'p2n3', st:'avail', type:'Material', title:'Contexto avancado', xp:15, time:'15 min', desc:'Como fornecer contexto rico para melhorar os resultados.' },
+      { id:'p2n4', st:'avail', type:'Task', title:'Template reutilizavel', xp:25, time:'35 min', desc:'Crie um template de prompt que voce pode usar todo dia.' },
+      { id:'p2n5', st:'locked', type:'Checkpoint', title:'Revisao: Prompts', xp:25, time:'10 min', desc:'Avaliacao das habilidades de prompt engineering.' },
+    ],
+    p3: [{ id:'p3n1', st:'locked', type:'...', title:'Fase bloqueada', xp:0 }],
+    p4: [{ id:'p4n1', st:'locked', type:'...', title:'Fase bloqueada', xp:0 }],
+    p5: [{ id:'p5n1', st:'locked', type:'...', title:'Fase bloqueada', xp:0 }],
+  };
+
+  function icon(st) {
+    if (st==='done') return '<span class="t-check">[✓]</span>';
+    if (st==='avail') return '<span class="t-available">[ ]</span>';
+    if (st==='locked') return '<span style="color:#333">[~]</span>';
+    return '[ ]';
+  }
+
+  const lines = [
+    `<span class="t-border">╔══════════════════════════════════════════════════════════════╗</span>`,
+    `<span class="t-border">║</span>  <span class="t-title">REIS [IA] JOURNEY — IA do Zero ao Claude Code</span>           <span class="t-border">║</span>`,
+    `<span class="t-border">║</span>  <span class="t-meta">STATUS: ATIVO | XP: <span class="t-xp">320</span> | PROGRESSO: <span class="t-active">35%</span></span>                 <span class="t-border">║</span>`,
+    `<span class="t-border">╚══════════════════════════════════════════════════════════════╝</span>`,
+    ``,
+    `<span class="t-check t-phase-header">[✓] FASE 01 — Fundamentos de IA ─────────────── <span class="t-check">5/5</span></span>`,
+    ...nodeData.p1.map((n, i) => {
+      const connector = i < nodeData.p1.length - 1 ? '├──' : '└──';
+      return `<span class="term-node-row" data-nid="${n.id}" onclick="termSelectNode('${n.id}')"><span class="t-tree">${connector}</span> ${icon(n.st)} <span class="t-meta">${n.type}:</span> <span class="t-check">${n.title}</span>   <span class="t-xp">+${n.xp} XP</span></span>`;
+    }),
+    ``,
+    `<span class="t-active t-phase-header"><span class="blink-arrow">[▸]</span> FASE 02 — Prompts e Comunicacao ─────────── <span class="t-active">2/5</span></span>`,
+    ...nodeData.p2.map((n, i) => {
+      const connector = i < nodeData.p2.length - 1 ? '├──' : '└──';
+      const titleCls = n.st === 'done' ? 't-check' : n.st === 'avail' ? 't-available' : 'style="color:#444"';
+      const isClass = titleCls.startsWith('style') ? '' : titleCls;
+      const isStyle = titleCls.startsWith('style') ? titleCls : '';
+      return `<span class="term-node-row" data-nid="${n.id}" onclick="termSelectNode('${n.id}')"><span class="t-tree">${connector}</span> ${icon(n.st)} <span class="t-meta">${n.type}:</span> <span class="${isClass}" ${isStyle}>${n.title}</span>   <span class="t-xp">+${n.xp} XP</span></span>`;
+    }),
+    ``,
+    `<span style="color:#2A0A0A">[✗] FASE 03 — Claude Code Primeiros Passos ───── 0/5</span>`,
+    `<span class="t-tree">    └── </span><span style="color:#222">(bloqueado — complete a fase anterior)</span>`,
+    ``,
+    `<span style="color:#1A0808">[✗] FASE 04 — Claude Code no Trabalho ────────── 0/5</span>`,
+    `<span class="t-tree">    └── </span><span style="color:#1A1A1A">(bloqueado)</span>`,
+    ``,
+    `<span style="color:#180808">[✗] FASE 05 — Autonomia ────────────────────── 0/5</span>`,
+    `<span class="t-tree">    └── </span><span style="color:#181818">(bloqueado)</span>`,
+    ``,
+  ];
+
+  // Store node data globally for detail panel
+  window._termNodes = {};
+  Object.values(nodeData).flat().forEach(n => { window._termNodes[n.id] = n; });
+
+  // Prompt line
+  body.innerHTML = `<div class="term-line"><span class="term-prompt"><span class="prompt-user">reis</span><span class="prompt-at">@</span><span class="prompt-host">journey</span><span class="prompt-path">:~$</span> <span class="prompt-cmd">status --verbose --phase=all</span></span></div><br>`;
+
+  let i = 0;
+  function typeLine() {
+    if (i >= lines.length) {
+      // Detail placeholder
+      body.insertAdjacentHTML('beforeend', '<div id="termDetail"></div>');
+      return;
+    }
+    const lineEl = document.createElement('span');
+    lineEl.className = 'term-line';
+    lineEl.innerHTML = lines[i];
+    body.appendChild(lineEl);
+    i++;
+    setTimeout(typeLine, 28);
+  }
+  typeLine();
+}
+
+window.termSelectNode = function(nid) {
+  const detail = document.getElementById('termDetail');
+  if (!detail) return;
+  const n = window._termNodes[nid];
+  if (!n) return;
+
+  // Toggle selection
+  document.querySelectorAll('.term-node-row').forEach(r => r.classList.remove('selected'));
+  const row = document.querySelector(`[data-nid="${nid}"]`);
+  if (row) row.classList.add('selected');
+
+  const statusLabel = n.st === 'done' ? 'Concluido' : n.st === 'avail' ? 'Disponivel' : 'Bloqueado';
+  const statusCls = n.st === 'done' ? 'done' : '';
+
+  detail.innerHTML = `
+    <div class="term-detail">
+      <div class="term-detail-inner">
+        <div class="term-detail-header">═══ DETALHES: ${n.type} — ${n.title} ═══</div>
+        <div class="term-detail-row">
+          <div class="term-detail-kv"><span class="term-detail-k">Status:</span><span class="term-detail-v ${statusCls}">${statusLabel}</span></div>
+          <div class="term-detail-kv"><span class="term-detail-k">XP:</span><span class="term-detail-v xp">+${n.xp}</span></div>
+          ${n.time ? `<div class="term-detail-kv"><span class="term-detail-k">Tempo est.:</span><span class="term-detail-v">${n.time}</span></div>` : ''}
+        </div>
+        ${n.desc ? `<div class="term-detail-desc">${n.desc}</div>` : ''}
+      </div>
+    </div>`;
+};
+
+/* ─── MISSION CONTROL ULTRA ─── */
+function initMCU() {
+  // Clock
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    const el = document.getElementById('mcuClock');
+    if (el) el.textContent = `${h}:${m}:${s}`;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Session timer
+  const startTime = Date.now();
+  function updateSession() {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const mm = String(Math.floor(elapsed / 60)).padStart(2,'0');
+    const ss = String(elapsed % 60).padStart(2,'0');
+    const el = document.getElementById('mcuSession');
+    if (el) el.textContent = `SESSION: ${mm}m ${ss}s`;
+  }
+  setInterval(updateSession, 1000);
+
+  // Uptime
+  let uptimeSecs = 12 * 86400 + 4 * 3600 + 33 * 60;
+  function updateUptime() {
+    uptimeSecs += 60;
+    const d = Math.floor(uptimeSecs / 86400);
+    const h = Math.floor((uptimeSecs % 86400) / 3600);
+    const m = Math.floor((uptimeSecs % 3600) / 60);
+    const el = document.getElementById('mcuUptime');
+    if (el) el.textContent = `${d}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m`;
+  }
+  setInterval(updateUptime, 60000);
+
+  // Animate XP counter
+  const xpTarget = 320;
+  let xpCurrent = 0;
+  const xpEl = document.getElementById('mcuXpVal');
+  function animateXP() {
+    if (xpCurrent < xpTarget) {
+      xpCurrent = Math.min(xpCurrent + 8, xpTarget);
+      if (xpEl) xpEl.textContent = xpCurrent;
+      requestAnimationFrame(animateXP);
+    }
+  }
+  setTimeout(animateXP, 300);
+
+  // Animate progress ring
+  setTimeout(() => {
+    const fill = document.getElementById('mcuRingFill');
+    const pct = document.getElementById('mcuProgressPct');
+    if (fill) {
+      const circumference = 175.9;
+      const offset = circumference * (1 - 0.35);
+      fill.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1)';
+      fill.style.strokeDashoffset = offset;
+    }
+    if (pct) {
+      let p = 0;
+      const interval = setInterval(() => {
+        p += 2;
+        if (p >= 35) { pct.textContent = '35%'; clearInterval(interval); }
+        else pct.textContent = p + '%';
+      }, 40);
+    }
+  }, 500);
+
+  // Render phase 2 by default
+  mcuSelectPhase(2);
+
+  // Mini radar
+  drawMiniRadar();
+}
+
+window.mcuSelectPhase = function(phaseNum) {
+  const phaseData = [
+    { num: 1, title: 'Fundamentos de IA', desc: 'Conceitos base de IA, vocabulario e primeiros contatos com LLMs', done: 5, total: 5, state: 'done' },
+    { num: 2, title: 'Prompts e Comunicacao', desc: 'Anatomia do prompt, contexto, templates e pratica intensiva', done: 2, total: 5, state: 'active' },
+    { num: 3, title: 'Claude Code — Primeiros Passos', desc: 'Instalacao, primeiros comandos e estrutura de projetos', done: 0, total: 5, state: 'locked' },
+    { num: 4, title: 'Claude Code no Trabalho', desc: 'Workflows avancados, automacao e agentes autonomos', done: 0, total: 5, state: 'locked' },
+    { num: 5, title: 'Autonomia', desc: 'Estrategia de IA, projetos independentes e portfolio', done: 0, total: 5, state: 'locked' },
+  ];
+
+  const nodesData = {
+    1: [
+      { title: 'O que e IA', type: 'Material', st: 'done', xp: 15, time: '15 min', icon: 'material' },
+      { title: 'Vocabulario Essencial', type: 'Material', st: 'done', xp: 15, time: '20 min', icon: 'material' },
+      { title: 'Como um LLM funciona', type: 'Presentation', st: 'done', xp: 15, time: '18 min', icon: 'presentation' },
+      { title: 'Primeira conversa com IA', type: 'Task', st: 'done', xp: 20, time: '25 min', icon: 'task' },
+      { title: 'Checkpoint de Alinhamento', type: 'Checkpoint', st: 'done', xp: 25, time: '10 min', icon: 'checkpoint' },
+    ],
+    2: [
+      { title: 'Anatomia do prompt', type: 'Material', st: 'done', xp: 20, time: '20 min', icon: 'material' },
+      { title: 'Praticar 5 prompts', type: 'Task', st: 'done', xp: 25, time: '30 min', icon: 'task' },
+      { title: 'Contexto avancado', type: 'Material', st: 'avail', xp: 15, time: '15 min', icon: 'material' },
+      { title: 'Template reutilizavel', type: 'Task', st: 'avail', xp: 25, time: '35 min', icon: 'task' },
+      { title: 'Checkpoint: Revisao de Prompts', type: 'Checkpoint', st: 'locked', xp: 25, time: '10 min', icon: 'checkpoint' },
+    ],
+    3: [
+      { title: 'Instalacao do Claude Code', type: 'Material', st: 'locked', xp: 15, time: '10 min', icon: 'material' },
+      { title: 'Primeiro comando real', type: 'Task', st: 'locked', xp: 25, time: '20 min', icon: 'task' },
+      { title: 'Estrutura de projeto', type: 'Material', st: 'locked', xp: 15, time: '18 min', icon: 'material' },
+      { title: 'Refatorar um codigo', type: 'Task', st: 'locked', xp: 30, time: '40 min', icon: 'task' },
+      { title: 'Code Review com IA', type: 'Checkpoint', st: 'locked', xp: 25, time: '15 min', icon: 'checkpoint' },
+    ],
+    4: [
+      { title: 'Workflow avancado', type: 'Material', st: 'locked', xp: 20, time: '25 min', icon: 'material' },
+      { title: 'Automacao de tarefas', type: 'Task', st: 'locked', xp: 35, time: '45 min', icon: 'task' },
+      { title: 'Agentes autonomos', type: 'Material', st: 'locked', xp: 20, time: '20 min', icon: 'material' },
+      { title: 'Pipeline real de trabalho', type: 'Task', st: 'locked', xp: 40, time: '60 min', icon: 'task' },
+      { title: 'Deploy em producao', type: 'Checkpoint', st: 'locked', xp: 30, time: '20 min', icon: 'checkpoint' },
+    ],
+    5: [
+      { title: 'Estrategia de IA', type: 'Material', st: 'locked', xp: 20, time: '30 min', icon: 'material' },
+      { title: 'Projeto autonomo', type: 'Task', st: 'locked', xp: 50, time: '90 min', icon: 'task' },
+      { title: 'Otimizacao e feedback', type: 'Material', st: 'locked', xp: 20, time: '20 min', icon: 'material' },
+      { title: 'Portfolio final', type: 'Task', st: 'locked', xp: 50, time: '120 min', icon: 'task' },
+      { title: 'Certificado de Conclusao', type: 'Checkpoint', st: 'locked', xp: 40, time: '15 min', icon: 'checkpoint' },
+    ],
+  };
+
+  const ph = phaseData[phaseNum - 1];
+  const nodes = nodesData[phaseNum] || [];
+
+  // Update left panel active state
+  document.querySelectorAll('.mcu-phase-item').forEach((item, i) => {
+    item.classList.toggle('active-phase', i + 1 === phaseNum);
+  });
+
+  // Render phase header
+  const header = document.getElementById('mcuPhaseHeader');
+  if (header) {
+    const pct = ph.total > 0 ? Math.round((ph.done / ph.total) * 100) : 0;
+    const circumference = 2 * Math.PI * 22;
+    const offset = circumference * (1 - pct / 100);
+    const pillClass = ph.state === 'done' ? 'pill-done' : ph.state === 'active' ? 'pill-active' : 'pill-locked';
+    const pillLabel = ph.state === 'done' ? 'Concluido' : ph.state === 'active' ? 'Em Progresso' : 'Bloqueado';
+    const dotColor = ph.state === 'done' ? '#22C55E' : ph.state === 'active' ? '#4A90FF' : 'rgba(255,255,255,0.2)';
+
+    header.innerHTML = `
+      <div class="mcu-phase-num phase-num-active" style="${ph.state === 'done' ? 'border-color:rgba(34,197,94,0.5);color:#22C55E;background:rgba(34,197,94,0.08)' : ph.state === 'locked' ? 'border-color:rgba(255,255,255,0.08);color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.03)' : ''}">0${ph.num}</div>
+      <div class="mcu-phase-info">
+        <div class="mcu-phase-name-lg">${ph.title}</div>
+        <div class="mcu-phase-desc">${ph.desc}</div>
+        <span class="mcu-phase-status-pill ${pillClass}"><span style="width:5px;height:5px;border-radius:50%;background:${dotColor};display:inline-block"></span> ${pillLabel}</span>
+      </div>
+      <div class="mcu-phase-ring-wrap">
+        <div class="mcu-ring-wrap" style="width:56px;height:56px">
+          <svg viewBox="0 0 56 56" width="56" height="56" style="transform:rotate(-90deg)">
+            <circle class="mcu-ring-bg" cx="28" cy="28" r="22" stroke-width="3"/>
+            <circle class="mcu-ring-fill ${ph.state === 'done' ? 'ring-green' : 'ring-blue'}" cx="28" cy="28" r="22"
+              stroke-dasharray="${circumference.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}" stroke-width="3"/>
+          </svg>
+          <div class="mcu-ring-center" style="font-size:10px">${ph.done}/${ph.total}</div>
+        </div>
+        <div class="mcu-phase-ring-text">${pct}%</div>
+      </div>`;
+  }
+
+  // Render node cards
+  const list = document.getElementById('mcuNodesList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  function typeIcon(type) {
+    const icons = {
+      material: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="rgba(34,197,94,0.7)" stroke-width="1.5"/><line x1="3.5" y1="4.5" x2="10.5" y2="4.5" stroke="rgba(34,197,94,0.7)" stroke-width="1.2"/><line x1="3.5" y1="7" x2="10.5" y2="7" stroke="rgba(34,197,94,0.7)" stroke-width="1.2"/><line x1="3.5" y1="9.5" x2="7" y2="9.5" stroke="rgba(34,197,94,0.7)" stroke-width="1.2"/></svg>`,
+      task: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="rgba(74,144,255,0.7)" stroke-width="1.5"/><polyline points="4,7 6.5,9.5 10,5" stroke="rgba(74,144,255,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`,
+      presentation: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1.5" width="12" height="8" rx="1.5" stroke="rgba(168,85,247,0.7)" stroke-width="1.5"/><line x1="7" y1="9.5" x2="7" y2="12.5" stroke="rgba(168,85,247,0.7)" stroke-width="1.5"/><line x1="4" y1="12.5" x2="10" y2="12.5" stroke="rgba(168,85,247,0.7)" stroke-width="1.5"/></svg>`,
+      checkpoint: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polygon points="7,1 13,4.5 13,9.5 7,13 1,9.5 1,4.5" stroke="rgba(245,158,11,0.7)" stroke-width="1.5" fill="none"/><circle cx="7" cy="7" r="2" fill="rgba(245,158,11,0.7)"/></svg>`,
+    };
+    return icons[type] || icons.material;
+  }
+
+  nodes.forEach((node, idx) => {
+    const card = document.createElement('div');
+    const stateClass = node.st === 'done' ? 'card-done' : node.st === 'avail' ? 'card-available' : node.st === 'locked' ? 'card-locked' : 'card-available';
+    card.className = `mcu-node-card ${stateClass}`;
+    card.style.animationDelay = `${idx * 70}ms`;
+
+    const ledClass = node.st === 'done' ? 'node-led-done' : node.st === 'avail' ? 'node-led-avail' : 'node-led-locked';
+
+    card.innerHTML = `
+      <div class="node-led ${ledClass}"></div>
+      <div class="node-type-icon icon-${node.icon}">${typeIcon(node.icon)}</div>
+      <div class="node-info">
+        <div class="node-title">${node.title}</div>
+        <div class="node-meta">
+          <span>${node.type}</span>
+          <div class="node-meta-dot"></div>
+          <span>${node.time}</span>
+        </div>
+      </div>
+      <div class="node-right">
+        <div class="node-xp-badge">+${node.xp} XP</div>
+        <div class="node-chevron">›</div>
+      </div>`;
+
+    list.appendChild(card);
+  });
+};
+
+/* ─── Mini Radar (MCU left panel) ─── */
+function drawMiniRadar() {
+  const canvas = document.getElementById('miniRadarCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 160, H = 160, cx = 80, cy = 80, maxR = 72;
+  let sweepAngle = 0;
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    ctx.fillStyle = '#030309';
+    ctx.beginPath(); ctx.arc(cx, cy, maxR + 4, 0, Math.PI*2); ctx.fill();
+
+    // Rings
+    for (let i = 1; i <= 5; i++) {
+      const r = (i / 5) * maxR;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+      ctx.strokeStyle = i === 2 ? 'rgba(74,144,255,0.2)' : 'rgba(34,197,94,0.1)';
+      ctx.lineWidth = 1; ctx.stroke();
+    }
+
+    // Crosshairs
+    ctx.strokeStyle = 'rgba(34,197,94,0.08)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cx - maxR, cy); ctx.lineTo(cx + maxR, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, cy - maxR); ctx.lineTo(cx, cy + maxR); ctx.stroke();
+
+    // Sweep sector
+    ctx.save();
+    const gradient = ctx.createConicalGradient ? null : null;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, maxR, sweepAngle - 0.4, sweepAngle, false);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(34,197,94,0.08)';
+    ctx.fill();
+    ctx.restore();
+
+    // Sweep line
+    ctx.save();
+    ctx.strokeStyle = 'rgba(34,197,94,0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(sweepAngle) * maxR, cy + Math.sin(sweepAngle) * maxR);
+    ctx.stroke();
+    ctx.restore();
+
+    // Blips (simplified version of full radar)
+    const blips = [
+      { phase: 1, angle: 30, st: 'done' }, { phase: 1, angle: 90, st: 'done' },
+      { phase: 1, angle: 150, st: 'done' }, { phase: 1, angle: 210, st: 'done' },
+      { phase: 1, angle: 270, st: 'done' },
+      { phase: 2, angle: 0, st: 'done' }, { phase: 2, angle: 72, st: 'done' },
+      { phase: 2, angle: 144, st: 'active' }, { phase: 2, angle: 216, st: 'active' },
+      { phase: 2, angle: 288, st: 'locked' },
+      { phase: 3, angle: 45, st: 'locked' }, { phase: 4, angle: 15, st: 'locked' },
+      { phase: 5, angle: 60, st: 'locked' },
+    ];
+
+    blips.forEach(b => {
+      const r = (b.phase / 5) * maxR * 0.9;
+      const rad = (b.angle - 90) * Math.PI / 180;
+      const x = cx + r * Math.cos(rad);
+      const y = cy + r * Math.sin(rad);
+      const color = b.st === 'done' ? '#22C55E' : b.st === 'active' ? '#4A90FF' : 'rgba(34,197,94,0.15)';
+      const size = b.st === 'locked' ? 2 : 4;
+      ctx.beginPath(); ctx.arc(x, y, size, 0, Math.PI*2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    });
+
+    // Border
+    ctx.beginPath(); ctx.arc(cx, cy, maxR + 2, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(34,197,94,0.18)'; ctx.lineWidth = 2; ctx.stroke();
+
+    sweepAngle += 0.012;
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// Canvas conical gradient polyfill — not available natively, so we just skip it and use simple arc above
+
+</script>
+</body>
+</html>

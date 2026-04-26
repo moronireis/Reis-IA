@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estratégia de Funil — Noiva S.A.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Tokens ─── */
+    :root {
+      --rose: #DBA99F;
+      --blush: #FFCBC1;
+      --cream: #F4F3EE;
+      --eucalyptus: #4A6741;
+      --eucalyptus-light: rgba(74,103,65,0.25);
+      --taupe: #9C958F;
+      --red: #E74C3C;
+      --bg: #0A0A0A;
+      --bg2: #111111;
+      --bg3: #1A1A1A;
+      --card: #141414;
+      --card2: #1e1e1e;
+      --border: rgba(219,169,159,0.15);
+      --rose-alpha: rgba(219,169,159,0.12);
+      --blush-alpha: rgba(255,203,193,0.10);
+      --euclyptus-alpha: rgba(74,103,65,0.15);
+      --taupe-alpha: rgba(156,149,143,0.12);
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Montserrat', sans-serif;
+      --font-body: 'Source Sans 3', sans-serif;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 32px rgba(0,0,0,0.5);
+      --shadow-rose: 0 4px 24px rgba(219,169,159,0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--cream);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Progress Bar ─── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--rose);
+      z-index: 100;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 8px rgba(219,169,159,0.5);
+    }
+
+    /* ─── Slide Container ─── */
+    #deck {
+      width: 100%; height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ─── Individual Slides ─── */
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 40px 80px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(60px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateX(0);
+    }
+
+    .slide.prev {
+      opacity: 0;
+      transform: translateX(-60px);
+    }
+
+    .slide-content {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* ─── Slide Entrance Animations ─── */
+    .slide.active .anim-item {
+      animation: slideUp 0.5s ease forwards;
+      opacity: 0;
+    }
+    .slide.active .anim-item:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .anim-item:nth-child(2) { animation-delay: 0.15s; }
+    .slide.active .anim-item:nth-child(3) { animation-delay: 0.25s; }
+    .slide.active .anim-item:nth-child(4) { animation-delay: 0.35s; }
+    .slide.active .anim-item:nth-child(5) { animation-delay: 0.45s; }
+    .slide.active .anim-item:nth-child(6) { animation-delay: 0.55s; }
+    .slide.active .anim-item:nth-child(7) { animation-delay: 0.65s; }
+    .slide.active .anim-item:nth-child(8) { animation-delay: 0.75s; }
+    .slide.active .anim-item:nth-child(9) { animation-delay: 0.85s; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Navigation Arrows ─── */
+    .nav-arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px; height: 48px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 50;
+      opacity: 0;
+      transition: opacity 0.3s ease, background 0.2s ease;
+    }
+    body:hover .nav-arrow { opacity: 1; }
+    .nav-arrow:hover { background: rgba(219,169,159,0.15); border-color: var(--rose); }
+    .nav-arrow svg { width: 20px; height: 20px; stroke: var(--cream); fill: none; stroke-width: 1.5; }
+    #nav-prev { left: 20px; }
+    #nav-next { right: 20px; }
+
+    /* ─── Slide Counter ─── */
+    #slide-counter {
+      position: fixed;
+      bottom: 24px; right: 28px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: var(--taupe);
+      z-index: 50;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    #slide-counter:hover { color: var(--rose); }
+
+    /* ─── Overview Modal ─── */
+    #overview {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      overflow-y: auto;
+    }
+    #overview.open { display: flex; }
+    #overview-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 1100px;
+    }
+    .overview-thumb {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s;
+      aspect-ratio: 16/9;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .overview-thumb:hover { border-color: var(--rose); transform: scale(1.03); }
+    .overview-thumb.current { border-color: var(--rose); }
+    .ot-num {
+      font-family: var(--font-sans);
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--taupe);
+      letter-spacing: 0.1em;
+    }
+    .ot-title {
+      font-family: var(--font-serif);
+      font-size: 12px;
+      color: var(--cream);
+      line-height: 1.3;
+    }
+    #overview-close {
+      position: fixed;
+      top: 24px; right: 28px;
+      background: none; border: none;
+      color: var(--taupe);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      z-index: 201;
+    }
+    #overview-close:hover { color: var(--cream); }
+
+    /* ─── Typography ─── */
+    .section-label {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      color: var(--rose);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .slide-title {
+      font-family: var(--font-serif);
+      font-size: clamp(42px, 6vw, 72px);
+      font-weight: 400;
+      line-height: 1.05;
+      color: var(--cream);
+      margin-bottom: 20px;
+    }
+    .slide-subtitle {
+      font-family: var(--font-body);
+      font-size: clamp(17px, 2vw, 20px);
+      font-weight: 300;
+      color: var(--taupe);
+      line-height: 1.6;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ─── Cards ─── */
+    .glass-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color 0.2s;
+    }
+    .glass-card:hover { border-color: rgba(219,169,159,0.28); }
+
+    /* ─── Divider ─── */
+    .divider {
+      width: 48px; height: 1px;
+      background: var(--rose);
+      margin: 28px auto;
+      opacity: 0.5;
+    }
+
+    /* ── SLIDE 1: Cover ── */
+    #slide-1 {
+      background: var(--bg);
+      background-image: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(219,169,159,0.12) 0%, transparent 70%);
+      text-align: center;
+    }
+    #slide-1 .cover-title {
+      font-family: var(--font-serif);
+      font-size: clamp(52px, 8vw, 96px);
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      color: var(--cream);
+      margin-bottom: 16px;
+    }
+    #slide-1 .cover-brand {
+      font-family: var(--font-serif);
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--rose);
+      margin-bottom: 16px;
+    }
+    #slide-1 .cover-tagline {
+      font-family: var(--font-body);
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 300;
+      color: var(--taupe);
+      margin-bottom: 48px;
+    }
+    #slide-1 .cover-meta {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: rgba(156,149,143,0.6);
+      text-transform: uppercase;
+    }
+
+    /* ── SLIDE 2: Agenda ── */
+    #slide-2 .agenda-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 40px;
+    }
+    #slide-2 .agenda-list li {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      font-family: var(--font-body);
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 300;
+      color: var(--cream);
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    #slide-2 .agenda-list li:last-child { border-bottom: none; }
+    #slide-2 .agenda-num {
+      font-family: var(--font-serif);
+      font-size: clamp(22px, 2.5vw, 28px);
+      font-weight: 400;
+      color: var(--rose);
+      min-width: 36px;
+    }
+
+    /* ── SLIDE 3: Diagnostico Title ── */
+    #slide-3 { text-align: center; }
+
+    /* ── SLIDE 4: Broken Funnel ── */
+    #slide-4 .funnel-flow {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0;
+      margin: 36px 0 24px;
+      flex-wrap: nowrap;
+    }
+    .funnel-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+    .funnel-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 8px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--cream);
+      text-align: center;
+      width: 100%;
+    }
+    .funnel-loss {
+      margin-top: 8px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--red);
+    }
+    .funnel-arrow {
+      display: flex;
+      align-items: center;
+      padding-top: 14px;
+      color: var(--taupe);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .waterfall {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 28px;
+      height: 80px;
+    }
+    .wf-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .wf-fill {
+      width: 48px;
+      border-radius: 4px 4px 0 0;
+      background: var(--taupe);
+      transition: height 0.8s ease;
+    }
+    .wf-fill.last { background: var(--red); }
+    .wf-num {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      color: var(--taupe);
+    }
+
+    /* ── SLIDE 5: 5 Problemas ── */
+    #slide-5 .prob-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 36px;
+    }
+    #slide-5 .prob-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+    }
+    .prob-num {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--rose);
+      min-width: 36px;
+      line-height: 1;
+    }
+    .prob-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .prob-title {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: 0.03em;
+    }
+    .prob-desc {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--taupe);
+    }
+
+    /* ── SLIDE 6: Novo Funil Title ── */
+    #slide-6 { text-align: center; }
+
+    /* ── SLIDE 7: Funnel Diagram ── */
+    #slide-7 .slide-content { text-align: center; }
+    #slide-7 .funnel-diagram {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 32px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .funnel-tier {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    .funnel-tier-shape {
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18px 32px;
+      min-height: 68px;
+    }
+    .ft-topo .funnel-tier-shape {
+      background: rgba(219,169,159,0.14);
+      border: 1px solid rgba(219,169,159,0.28);
+      width: 100%;
+    }
+    .ft-meio .funnel-tier-shape {
+      background: rgba(255,203,193,0.09);
+      border: 1px solid rgba(255,203,193,0.2);
+      width: 82%;
+    }
+    .ft-fundo .funnel-tier-shape {
+      background: rgba(74,103,65,0.14);
+      border: 1px solid rgba(74,103,65,0.3);
+      width: 64%;
+    }
+    .ft-pos .funnel-tier-shape {
+      background: rgba(156,149,143,0.10);
+      border: 1px solid rgba(156,149,143,0.22);
+      width: 48%;
+    }
+
+    .funnel-tier-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      width: 100%;
+      text-align: center;
+    }
+    .funnel-tier-name {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .ft-topo .funnel-tier-name { color: var(--rose); }
+    .ft-meio .funnel-tier-name { color: var(--blush); }
+    .ft-fundo .funnel-tier-name { color: #7aab70; }
+    .ft-pos .funnel-tier-name { color: var(--taupe); }
+    .funnel-tier-sub {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: rgba(244,243,238,0.65);
+      letter-spacing: 0.01em;
+      line-height: 1.4;
+    }
+
+    /* ── SLIDE 8: Mudanca Central ── */
+    #slide-8 .before-after {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 24px;
+      margin-top: 40px;
+      align-items: center;
+    }
+    .ba-col {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .ba-col.before { border-color: rgba(231,76,60,0.25); }
+    .ba-col.after { border-color: rgba(74,103,65,0.4); }
+    .ba-label {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .ba-col.before .ba-label { color: var(--red); }
+    .ba-col.after .ba-label { color: #7aab70; }
+    .ba-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .ba-list li {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--cream);
+      padding-left: 16px;
+      position: relative;
+    }
+    .ba-col.before .ba-list li::before { content: '—'; position: absolute; left: 0; color: var(--red); }
+    .ba-col.after .ba-list li::before { content: '+'; position: absolute; left: 0; color: #7aab70; }
+    .ba-arrow {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      color: var(--rose);
+      text-align: center;
+    }
+
+    /* ── SLIDE 9: Lead Magnets Title ── */
+    #slide-9 { text-align: center; }
+
+    /* ── SLIDE 10: Lead Magnets Grid ── */
+    #slide-10 .lm-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 36px;
+    }
+    .lm-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .lm-icon {
+      width: 40px; height: 40px;
+      color: var(--rose);
+    }
+    .lm-tag {
+      display: inline-block;
+      background: var(--rose-alpha);
+      color: var(--rose);
+      font-family: var(--font-sans);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 100px;
+      width: fit-content;
+    }
+    .lm-title {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--cream);
+      line-height: 1.2;
+    }
+    .lm-desc {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--taupe);
+    }
+
+    /* ── SLIDE 11: Conteudo Title ── */
+    #slide-11 { text-align: center; }
+
+    /* ── SLIDE 12: 4 Pilares ── */
+    #slide-12 .pilares-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .pilar-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .pilar-pct-label {
+      font-family: var(--font-serif);
+      font-size: 42px;
+      font-weight: 300;
+      line-height: 1;
+    }
+    .pilar-bar-track {
+      height: 4px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .pilar-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 1s ease 0.3s;
+    }
+    .pilar-name {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cream);
+    }
+    .pilar-quote {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--taupe);
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    /* ── SLIDE 13: Calendario ── */
+    #slide-13 .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      margin-top: 36px;
+    }
+    .cal-day {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      text-align: center;
+    }
+    .cal-day.rest {
+      border-color: rgba(255,255,255,0.04);
+      opacity: 0.4;
+    }
+    .cal-day-name {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--taupe);
+    }
+    .cal-day-content {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--cream);
+      font-weight: 500;
+    }
+    .cal-note {
+      margin-top: 28px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--taupe);
+      text-align: center;
+    }
+
+    /* ── SLIDE 14: Vendas Title ── */
+    #slide-14 { text-align: center; }
+
+    /* ── SLIDE 15: Sales Flow ── */
+    #slide-15 .flow-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 36px;
+    }
+    .flow-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      padding: 16px 0;
+      position: relative;
+    }
+    .flow-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px; top: 52px;
+      width: 1px; height: calc(100% - 16px);
+      background: rgba(219,169,159,0.2);
+    }
+    .flow-dot {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--rose-alpha);
+      border: 1px solid var(--rose);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-family: var(--font-serif);
+      font-size: 16px;
+      color: var(--rose);
+    }
+    .flow-text {
+      padding-top: 8px;
+    }
+    .flow-step-title {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 3px;
+    }
+    .flow-step-desc {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--taupe);
+    }
+
+    /* ── SLIDE 16: Reuniao ── */
+    #slide-16 .reuniao-flow {
+      display: flex;
+      gap: 4px;
+      margin-top: 40px;
+      align-items: stretch;
+    }
+    .reuniao-step {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+    .reuniao-step::after {
+      content: '';
+      position: absolute;
+      right: -5px; top: 50%;
+      transform: translateY(-50%);
+      width: 10px; height: 10px;
+      border-top: 1px solid var(--rose);
+      border-right: 1px solid var(--rose);
+      transform: translateY(-50%) rotate(45deg);
+      z-index: 1;
+    }
+    .reuniao-step:last-child::after { display: none; }
+    .reuniao-step-time {
+      font-family: var(--font-sans);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rose);
+    }
+    .reuniao-step-name {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--cream);
+    }
+
+    /* ── SLIDE 17: Objecoes ── */
+    #slide-17 .obj-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .obj-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .obj-q {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-style: italic;
+      color: var(--rose);
+      margin-bottom: 10px;
+    }
+    .obj-a {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--taupe);
+      line-height: 1.6;
+    }
+
+    /* ── SLIDE 18: 5 Mudancas Title ── */
+    #slide-18 { text-align: center; }
+
+    /* ── SLIDE 19: 5 Mudancas List ── */
+    #slide-19 .mudancas-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 36px;
+    }
+    .mudanca-item {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      padding: 20px 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: border-color 0.2s;
+    }
+    .mudanca-item:hover { border-color: rgba(219,169,159,0.3); }
+    .mudanca-num {
+      font-family: var(--font-serif);
+      font-size: 36px;
+      font-weight: 300;
+      color: var(--rose);
+      min-width: 44px;
+      line-height: 1;
+    }
+    .mudanca-body { flex: 1; }
+    .mudanca-title {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--cream);
+      margin-bottom: 4px;
+    }
+    .mudanca-desc {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--taupe);
+    }
+
+    /* ── SLIDE 20: Metricas Title ── */
+    #slide-20 { text-align: center; }
+
+    /* ── SLIDE 21: Metricas Dashboard ── */
+    #slide-21 .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .metric-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .metric-section {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--rose);
+      margin-bottom: 16px;
+    }
+    .metric-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .metric-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .metric-label {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      color: var(--taupe);
+    }
+    .metric-bars {
+      display: flex;
+      gap: 4px;
+      height: 6px;
+    }
+    .m-bar-before {
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(156,149,143,0.35);
+    }
+    .m-bar-after {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--eucalyptus);
+    }
+    .metric-values {
+      display: flex;
+      gap: 12px;
+      font-family: var(--font-body);
+      font-size: 12px;
+    }
+    .mv-before { color: var(--taupe); }
+    .mv-after { color: #7aab70; font-weight: 600; }
+    .mv-arrow { color: rgba(255,255,255,0.2); }
+
+    /* ── SLIDE 22: Projecao ── */
+    #slide-22 .proj-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .proj-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .proj-card.highlight {
+      border-color: var(--rose);
+      background: rgba(219,169,159,0.05);
+    }
+    .proj-label {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--taupe);
+    }
+    .proj-card.highlight .proj-label { color: var(--rose); }
+    .proj-value {
+      font-family: var(--font-serif);
+      font-size: clamp(28px, 3vw, 38px);
+      font-weight: 400;
+      color: var(--cream);
+      line-height: 1;
+    }
+    .proj-sub {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--taupe);
+    }
+    .proj-roi {
+      margin-top: 32px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+    .roi-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .roi-label {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--taupe);
+    }
+    .roi-value {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 400;
+      color: var(--cream);
+    }
+    .roi-value.highlight { color: #7aab70; }
+    .roi-divider {
+      font-family: var(--font-body);
+      font-size: 24px;
+      color: rgba(255,255,255,0.15);
+    }
+
+    /* ── SLIDE 23: Plano 90 Dias ── */
+    #slide-23 .plano-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .plano-col {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .plano-col:nth-child(1) { border-top: 2px solid var(--rose); }
+    .plano-col:nth-child(2) { border-top: 2px solid var(--blush); }
+    .plano-col:nth-child(3) { border-top: 2px solid #7aab70; }
+    .plano-phase {
+      font-family: var(--font-sans);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .plano-col:nth-child(1) .plano-phase { color: var(--rose); }
+    .plano-col:nth-child(2) .plano-phase { color: var(--blush); }
+    .plano-col:nth-child(3) .plano-phase { color: #7aab70; }
+    .plano-title {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--cream);
+      line-height: 1.2;
+    }
+    .plano-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .plano-items li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--taupe);
+      line-height: 1.4;
+    }
+    .plano-items li::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--rose);
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    /* ── SLIDE 24: Closing ── */
+    #slide-24 {
+      background: var(--bg);
+      background-image: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(219,169,159,0.10) 0%, transparent 70%);
+      text-align: center;
+    }
+    #slide-24 .close-brand {
+      font-family: var(--font-serif);
+      font-size: clamp(48px, 7vw, 80px);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--rose);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    #slide-24 .close-sub {
+      font-family: var(--font-body);
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 300;
+      color: var(--taupe);
+      margin-bottom: 36px;
+    }
+    #slide-24 .close-line {
+      width: 60px; height: 1px;
+      background: rgba(219,169,159,0.3);
+      margin: 0 auto 36px;
+    }
+    #slide-24 .close-meta {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(156,149,143,0.5);
+      line-height: 2;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 768px) {
+      .slide { padding: 70px 20px 70px; overflow-y: auto; align-items: flex-start; }
+      #slide-10 .lm-grid { grid-template-columns: 1fr; }
+      #slide-12 .pilares-grid { grid-template-columns: 1fr 1fr; }
+      #slide-13 .cal-grid { grid-template-columns: repeat(4, 1fr); }
+      #slide-16 .reuniao-flow { flex-direction: column; }
+      #slide-17 .obj-grid { grid-template-columns: 1fr; }
+      #slide-21 .metrics-grid { grid-template-columns: 1fr; }
+      #slide-22 .proj-cards { grid-template-columns: 1fr; }
+      #slide-23 .plano-grid { grid-template-columns: 1fr; }
+      #slide-8 .before-after { grid-template-columns: 1fr; }
+      #slide-8 .before-after .ba-arrow { display: none; }
+      #overview-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Progress Bar -->
+  <div id="progress-bar"></div>
+
+  <!-- Navigation Arrows -->
+  <button class="nav-arrow" id="nav-prev" aria-label="Slide anterior">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <button class="nav-arrow" id="nav-next" aria-label="Próximo slide">
+    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+
+  <!-- Slide Counter -->
+  <div id="slide-counter" title="Clique para visão geral">01 / 24</div>
+
+  <!-- Overview Modal -->
+  <div id="overview">
+    <button id="overview-close">FECHAR &times;</button>
+    <div id="overview-grid"></div>
+  </div>
+
+  <!-- Deck -->
+  <div id="deck">
+
+    <!-- SLIDE 1: Cover -->
+    <div class="slide active" id="slide-1">
+      <div class="slide-content">
+        <div class="cover-title anim-item">Estratégia de Funil</div>
+        <div class="cover-brand anim-item">Noiva S.A.</div>
+        <div class="cover-tagline anim-item">De lead frio a noiva apaixonada</div>
+        <div class="divider anim-item" style="margin: 0 auto 28px;"></div>
+        <div class="cover-meta anim-item">Reis [IA] Marketing &nbsp;&middot;&nbsp; Abril 2026</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Agenda -->
+    <div class="slide" id="slide-2">
+      <div class="slide-content">
+        <div class="section-label anim-item">Índice</div>
+        <div class="slide-title anim-item">O que vamos ver</div>
+        <ul class="agenda-list">
+          <li class="anim-item"><span class="agenda-num">01</span> Diagnóstico do funil atual</li>
+          <li class="anim-item"><span class="agenda-num">02</span> O novo funil</li>
+          <li class="anim-item"><span class="agenda-num">03</span> Lead magnets</li>
+          <li class="anim-item"><span class="agenda-num">04</span> Funil de conteúdo</li>
+          <li class="anim-item"><span class="agenda-num">05</span> Processo de vendas</li>
+          <li class="anim-item"><span class="agenda-num">06</span> As 5 mudanças</li>
+          <li class="anim-item"><span class="agenda-num">07</span> Métricas e KPIs</li>
+          <li class="anim-item"><span class="agenda-num">08</span> Projeção financeira</li>
+          <li class="anim-item"><span class="agenda-num">09</span> Plano 90 dias</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Diagnostico Title -->
+    <div class="slide" id="slide-3">
+      <div class="slide-content">
+        <div class="section-label anim-item">01 — Diagnóstico</div>
+        <div class="slide-title anim-item">O Funil Quebrado</div>
+        <div class="divider anim-item"></div>
+        <div class="slide-subtitle anim-item">O caminho atual do lead até o fechamento tem perdas estruturais em cada etapa.</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Broken Funnel Visual -->
+    <div class="slide" id="slide-4">
+      <div class="slide-content">
+        <div class="section-label anim-item">01 — Diagnóstico</div>
+        <div class="slide-title anim-item" style="font-size: clamp(28px,4vw,44px); margin-bottom:8px;">Funil Atual: Perdas em Cada Etapa</div>
+        <div class="funnel-flow anim-item">
+          <div class="funnel-step">
+            <div class="funnel-box">Anúncio</div>
+            <div class="funnel-loss" style="visibility:hidden;">x</div>
+          </div>
+          <div class="funnel-arrow">›</div>
+          <div class="funnel-step">
+            <div class="funnel-box">WhatsApp</div>
+            <div class="funnel-loss">-40%</div>
+          </div>
+          <div class="funnel-arrow">›</div>
+          <div class="funnel-step">
+            <div class="funnel-box">PDF Preços</div>
+            <div class="funnel-loss">-30%</div>
+          </div>
+          <div class="funnel-arrow">›</div>
+          <div class="funnel-step">
+            <div class="funnel-box">Reunião 1h30</div>
+            <div class="funnel-loss">-50%</div>
+          </div>
+          <div class="funnel-arrow">›</div>
+          <div class="funnel-step">
+            <div class="funnel-box">Follow-up</div>
+            <div class="funnel-loss">-25%</div>
+          </div>
+          <div class="funnel-arrow">›</div>
+          <div class="funnel-step">
+            <div class="funnel-box" style="border-color: rgba(231,76,60,0.4);">Fechamento</div>
+            <div class="funnel-loss">-20%</div>
+          </div>
+        </div>
+        <div class="waterfall anim-item">
+          <div class="wf-bar">
+            <div class="wf-fill" style="height:80px; background: rgba(244,243,238,0.3);"></div>
+            <div class="wf-num" style="color: var(--cream);">100</div>
+          </div>
+          <div class="wf-bar">
+            <div class="wf-fill" style="height:60px;"></div>
+            <div class="wf-num">60</div>
+          </div>
+          <div class="wf-bar">
+            <div class="wf-fill" style="height:42px;"></div>
+            <div class="wf-num">42</div>
+          </div>
+          <div class="wf-bar">
+            <div class="wf-fill" style="height:21px;"></div>
+            <div class="wf-num">21</div>
+          </div>
+          <div class="wf-bar">
+            <div class="wf-fill" style="height:16px;"></div>
+            <div class="wf-num">16</div>
+          </div>
+          <div class="wf-bar">
+            <div class="wf-fill last" style="height:9px;"></div>
+            <div class="wf-num" style="color: var(--red);">8-10</div>
+          </div>
+        </div>
+        <p style="text-align:center; font-family:var(--font-sans); font-size:11px; color:var(--taupe); margin-top:12px; letter-spacing:0.08em;">Leads convertidos por 100 que entram no funil</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: 5 Problemas -->
+    <div class="slide" id="slide-5">
+      <div class="slide-content">
+        <div class="section-label anim-item">01 — Diagnóstico</div>
+        <div class="slide-title anim-item" style="font-size:clamp(32px,4vw,48px);">5 Problemas Estruturais</div>
+        <ul class="prob-list">
+          <li class="prob-item anim-item">
+            <span class="prob-num">01</span>
+            <div class="prob-text">
+              <span class="prob-title">Preço antes de valor</span>
+              <span class="prob-desc">PDF com preços é o primeiro contato da noiva com a marca</span>
+            </div>
+          </li>
+          <li class="prob-item anim-item">
+            <span class="prob-num">02</span>
+            <div class="prob-text">
+              <span class="prob-title">Giovanna é o funil inteiro</span>
+              <span class="prob-desc">Vendedora, marca e entregadora — tudo concentrado em uma pessoa</span>
+            </div>
+          </li>
+          <li class="prob-item anim-item">
+            <span class="prob-num">03</span>
+            <div class="prob-text">
+              <span class="prob-title">Zero posicionamento pré-conversa</span>
+              <span class="prob-desc">Noiva chega fria, sem aquecimento, sem contexto de autoridade</span>
+            </div>
+          </li>
+          <li class="prob-item anim-item">
+            <span class="prob-num">04</span>
+            <div class="prob-text">
+              <span class="prob-title">Expectativa de quem entrega</span>
+              <span class="prob-desc">Noiva compra a Giovanna, não a empresa — o negócio não escala</span>
+            </div>
+          </li>
+          <li class="prob-item anim-item">
+            <span class="prob-num">05</span>
+            <div class="prob-text">
+              <span class="prob-title">Sem pós-venda estruturado</span>
+              <span class="prob-desc">Indicações dormindo, depoimentos perdidos, oportunidades ignoradas</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Novo Funil Title -->
+    <div class="slide" id="slide-6">
+      <div class="slide-content">
+        <div class="section-label anim-item">02 — Arquitetura</div>
+        <div class="slide-title anim-item">O Novo Funil</div>
+        <div class="divider anim-item"></div>
+        <div class="slide-subtitle anim-item">Quatro estágios conectados. Cada um aquece o próximo.</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Funnel Diagram -->
+    <div class="slide" id="slide-7">
+      <div class="slide-content">
+        <div class="section-label anim-item">02 — Arquitetura</div>
+        <div class="slide-title anim-item" style="font-size:clamp(28px,3.5vw,42px); margin-bottom: 8px;">Arquitetura de Quatro Estágios</div>
+        <div class="funnel-diagram anim-item">
+
+          <div class="funnel-tier ft-topo">
+            <div class="funnel-tier-shape">
+              <div class="funnel-tier-inner">
+                <div class="funnel-tier-name">TOPO — Awareness</div>
+                <div class="funnel-tier-sub">Instagram &nbsp;·&nbsp; TikTok &nbsp;·&nbsp; Reels &nbsp;·&nbsp; Stories &nbsp;·&nbsp; Lives</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="funnel-tier ft-meio">
+            <div class="funnel-tier-shape">
+              <div class="funnel-tier-inner">
+                <div class="funnel-tier-name">MEIO — Consideration</div>
+                <div class="funnel-tier-sub">Quiz &nbsp;·&nbsp; Checklist &nbsp;·&nbsp; Mini-curso &nbsp;·&nbsp; Evento Online</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="funnel-tier ft-fundo">
+            <div class="funnel-tier-shape">
+              <div class="funnel-tier-inner">
+                <div class="funnel-tier-name">FUNDO — Decision</div>
+                <div class="funnel-tier-sub">Vendedora &nbsp;·&nbsp; Reunião 45min &nbsp;·&nbsp; Proposta &nbsp;·&nbsp; Follow-up</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="funnel-tier ft-pos">
+            <div class="funnel-tier-shape">
+              <div class="funnel-tier-inner">
+                <div class="funnel-tier-name">PÓS-VENDA — Retention</div>
+                <div class="funnel-tier-sub">Grupo VIP &nbsp;·&nbsp; Indicação &nbsp;·&nbsp; Depoimentos &nbsp;·&nbsp; Clube</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Mudanca Central -->
+    <div class="slide" id="slide-8">
+      <div class="slide-content">
+        <div class="section-label anim-item">02 — Arquitetura</div>
+        <div class="slide-title anim-item" style="font-size:clamp(32px,4vw,52px);">A Mudança Central</div>
+        <div class="before-after anim-item">
+          <div class="ba-col before">
+            <div class="ba-label">Antes</div>
+            <ul class="ba-list">
+              <li>Giovanna = vendedora</li>
+              <li>Giovanna = marca</li>
+              <li>Giovanna = entregadora</li>
+              <li>Giovanna = follow-up</li>
+              <li>Giovanna = esgotamento</li>
+            </ul>
+          </div>
+          <div class="ba-arrow">→</div>
+          <div class="ba-col after">
+            <div class="ba-label">Depois</div>
+            <ul class="ba-list">
+              <li>Giovanna = conteúdo + autoridade</li>
+              <li>Vendedora = processo de vendas</li>
+              <li>Equipe = entrega com padrão</li>
+              <li>Automação = follow-up</li>
+              <li>Giovanna = energia + crescimento</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Lead Magnets Title -->
+    <div class="slide" id="slide-9">
+      <div class="slide-content">
+        <div class="section-label anim-item">03 — Captura</div>
+        <div class="slide-title anim-item">Lead Magnets</div>
+        <div class="divider anim-item"></div>
+        <div class="slide-subtitle anim-item">Quatro iscas de alto valor que capturam leads qualificados.</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Lead Magnets Grid -->
+    <div class="slide" id="slide-10">
+      <div class="slide-content">
+        <div class="section-label anim-item">03 — Captura</div>
+        <div class="lm-grid">
+          <div class="lm-card anim-item">
+            <svg class="lm-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2">
+              <circle cx="20" cy="20" r="14"/>
+              <path d="M14 20h12M20 14v12"/>
+              <circle cx="20" cy="20" r="3" fill="currentColor" stroke="none"/>
+            </svg>
+            <span class="lm-tag">Interativo</span>
+            <div class="lm-title">Quiz "Qual Assessoria Combina com Você?"</div>
+            <div class="lm-desc">8-10 perguntas, auto-segmenta o lead por perfil e orçamento antes da conversa.</div>
+          </div>
+          <div class="lm-card anim-item">
+            <svg class="lm-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2">
+              <rect x="10" y="8" width="20" height="24" rx="2"/>
+              <line x1="15" y1="16" x2="25" y2="16"/>
+              <line x1="15" y1="21" x2="25" y2="21"/>
+              <line x1="15" y1="26" x2="20" y2="26"/>
+            </svg>
+            <span class="lm-tag">PDF Premium</span>
+            <div class="lm-title">Checklist "50 Coisas que Toda Noiva Esquece"</div>
+            <div class="lm-desc">Guia fase por fase, posiciona a Noiva S.A. como referência antes da reunião.</div>
+          </div>
+          <div class="lm-card anim-item">
+            <svg class="lm-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2">
+              <polygon points="16,12 28,20 16,28"/>
+              <circle cx="20" cy="20" r="14"/>
+            </svg>
+            <span class="lm-tag">Video + WhatsApp</span>
+            <div class="lm-title">Mini-Curso "Casamento sem Drama"</div>
+            <div class="lm-desc">3 vídeos em 3 dias entregues via WhatsApp. Constrói autoridade enquanto nutre.</div>
+          </div>
+          <div class="lm-card anim-item">
+            <svg class="lm-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2">
+              <rect x="10" y="14" width="20" height="16" rx="2"/>
+              <line x1="10" y1="20" x2="30" y2="20"/>
+              <line x1="16" y1="10" x2="16" y2="16"/>
+              <line x1="24" y1="10" x2="24" y2="16"/>
+            </svg>
+            <span class="lm-tag">Live Mensal</span>
+            <div class="lm-title">Evento "Noiva S.A. ao Vivo"</div>
+            <div class="lm-desc">Live mensal com fornecedores parceiros. Posiciona o ecossistema, gera comunidade.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: Conteudo Title -->
+    <div class="slide" id="slide-11">
+      <div class="slide-content">
+        <div class="section-label anim-item">04 — Conteúdo</div>
+        <div class="slide-title anim-item">Funil de Conteúdo</div>
+        <div class="divider anim-item"></div>
+        <div class="slide-subtitle anim-item">Quatro pilares que constroem autoridade e preparam a noiva para a conversa.</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: 4 Pilares -->
+    <div class="slide" id="slide-12">
+      <div class="slide-content">
+        <div class="section-label anim-item">04 — Conteúdo</div>
+        <div class="slide-title anim-item" style="font-size:clamp(28px,3.5vw,42px);">Os 4 Pilares do Conteúdo</div>
+        <div class="pilares-grid">
+          <div class="pilar-card anim-item">
+            <div class="pilar-pct-label" style="color: var(--rose);">30%</div>
+            <div class="pilar-bar-track"><div class="pilar-bar-fill" style="width:30%; background:var(--rose);"></div></div>
+            <div class="pilar-name">Método</div>
+            <div class="pilar-quote">"Aqui não é feeling. É método."</div>
+          </div>
+          <div class="pilar-card anim-item">
+            <div class="pilar-pct-label" style="color: var(--blush);">25%</div>
+            <div class="pilar-bar-track"><div class="pilar-bar-fill" style="width:25%; background:var(--blush);"></div></div>
+            <div class="pilar-name">Bastidor</div>
+            <div class="pilar-quote">"Você vê o casamento. A gente vê tudo antes."</div>
+          </div>
+          <div class="pilar-card anim-item">
+            <div class="pilar-pct-label" style="color: #7aab70;">25%</div>
+            <div class="pilar-bar-track"><div class="pilar-bar-fill" style="width:25%; background:#7aab70;"></div></div>
+            <div class="pilar-name">Educação</div>
+            <div class="pilar-quote">"Aprende com quem já fez."</div>
+          </div>
+          <div class="pilar-card anim-item">
+            <div class="pilar-pct-label" style="color: var(--taupe);">20%</div>
+            <div class="pilar-bar-track"><div class="pilar-bar-fill" style="width:20%; background:var(--taupe);"></div></div>
+            <div class="pilar-name">Prova Social</div>
+            <div class="pilar-quote">"Não acredita em mim? Ouve quem já passou."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 13: Calendario -->
+    <div class="slide" id="slide-13">
+      <div class="slide-content">
+        <div class="section-label anim-item">04 — Conteúdo</div>
+        <div class="slide-title anim-item" style="font-size:clamp(28px,3.5vw,42px);">Calendario Semanal</div>
+        <div class="cal-grid anim-item">
+          <div class="cal-day">
+            <div class="cal-day-name">Seg</div>
+            <div class="cal-day-content" style="color:var(--rose);">Metodo</div>
+          </div>
+          <div class="cal-day">
+            <div class="cal-day-name">Ter</div>
+            <div class="cal-day-content" style="color:#7aab70;">Educacao</div>
+          </div>
+          <div class="cal-day">
+            <div class="cal-day-name">Qua</div>
+            <div class="cal-day-content" style="color:var(--blush);">Bastidor</div>
+          </div>
+          <div class="cal-day">
+            <div class="cal-day-name">Qui</div>
+            <div class="cal-day-content" style="color:var(--taupe);">Prova Social</div>
+          </div>
+          <div class="cal-day">
+            <div class="cal-day-name">Sex</div>
+            <div class="cal-day-content" style="color:var(--rose);">Metodo</div>
+          </div>
+          <div class="cal-day">
+            <div class="cal-day-name">Sab</div>
+            <div class="cal-day-content" style="color:var(--blush);">Bastidor</div>
+          </div>
+          <div class="cal-day rest">
+            <div class="cal-day-name">Dom</div>
+            <div class="cal-day-content">Descanso</div>
+          </div>
+        </div>
+        <p class="cal-note anim-item">4 posts por semana no feed &nbsp;&middot;&nbsp; Stories diarios &nbsp;&middot;&nbsp; 1-2 Lives por mes</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 14: Vendas Title -->
+    <div class="slide" id="slide-14">
+      <div class="slide-content">
+        <div class="section-label anim-item">05 — Vendas</div>
+        <div class="slide-title anim-item">Novo Processo de Vendas</div>
+        <div class="divider anim-item"></div>
+        <div class="slide-subtitle anim-item">Da chegada do lead ao fechamento: cada etapa documentada e replicável.</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 15: Sales Flow -->
+    <div class="slide" id="slide-15">
+      <div class="slide-content">
+        <div class="section-label anim-item">05 — Vendas</div>
+        <div class="slide-title anim-item" style="font-size:clamp(26px,3.5vw,40px); margin-bottom:4px;">Jornada do Lead — 7 Etapas</div>
+        <ul class="flow-list">
+          <li class="flow-item anim-item">
+            <div class="flow-dot">1</div>
+            <div class="flow-text">
+              <div class="flow-step-title">Lead chega</div>
+              <div class="flow-step-desc">Via quiz, DM ou anúncio pago</div>
+            </div>
+          </li>
+          <li class="flow-item anim-item">
+            <div class="flow-dot">2</div>
+            <div class="flow-text">
+              <div class="flow-step-title">Bot WhatsApp</div>
+              <div class="flow-step-desc">Boas-vindas automático + qualificação (3 perguntas)</div>
+            </div>
+          </li>
+          <li class="flow-item anim-item">
+            <div class="flow-dot">3</div>
+            <div class="flow-text">
+              <div class="flow-step-title">Sequência de nurture — 7 dias</div>
+              <div class="flow-step-desc">D0 boas-vindas, D2 valor, D5 prova social, D7 convite</div>
+            </div>
+          </li>
+          <li class="flow-item anim-item">
+            <div class="flow-dot">4</div>
+            <div class="flow-text">
+              <div class="flow-step-title">Convite para reunião</div>
+              <div class="flow-step-desc">Agendamento automatico, slot de 45 minutos</div>
+            </div>
+          </li>
+          <li class="flow-item anim-item">
+            <div class="flow-dot">5</div>
+            <div class="flow-text">
+              <div class="flow-step-title">Reunião com VENDEDORA — 45min</div>
+              <div class="flow-step-desc">Script fixo: conexão, diagnóstico, método, pacotes, fechamento</div>
+            </div>
+          </li>
+          <li class="flow-item anim-item">
+            <div class="flow-dot">6</div>
+            <div class="flow-text">
+              <div class="flow-step-title">Proposta personalizada</div>
+              <div class="flow-step-desc">Enviada em até 24h após a reunião</div>
+            </div>
+          </li>
+          <li class="flow-item anim-item">
+            <div class="flow-dot">7</div>
+            <div class="flow-text">
+              <div class="flow-step-title">Follow-up estruturado</div>
+              <div class="flow-step-desc">D+1, D+3, D+7, D+14, D+30 — com mensagem especifica para cada toque</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SLIDE 16: Reuniao -->
+    <div class="slide" id="slide-16">
+      <div class="slide-content">
+        <div class="section-label anim-item">05 — Vendas</div>
+        <div class="slide-title anim-item" style="font-size:clamp(28px,4vw,52px);">Estrutura da Reunião — 45 minutos</div>
+        <div class="reuniao-flow anim-item">
+          <div class="reuniao-step">
+            <div class="reuniao-step-time">05 min</div>
+            <div class="reuniao-step-name">Conexão</div>
+          </div>
+          <div class="reuniao-step">
+            <div class="reuniao-step-time">10 min</div>
+            <div class="reuniao-step-name">Diagnóstico</div>
+          </div>
+          <div class="reuniao-step">
+            <div class="reuniao-step-time">10 min</div>
+            <div class="reuniao-step-name">Método</div>
+          </div>
+          <div class="reuniao-step">
+            <div class="reuniao-step-time">10 min</div>
+            <div class="reuniao-step-name">Pacotes</div>
+          </div>
+          <div class="reuniao-step">
+            <div class="reuniao-step-time">10 min</div>
+            <div class="reuniao-step-name">Fechamento</div>
+          </div>
+        </div>
+        <p style="margin-top:24px; font-family:var(--font-body); font-size:15px; color:var(--taupe);" class="anim-item">Script documentado. Toda vendedora contratada segue o mesmo processo. A qualidade não depende da pessoa, depende do sistema.</p>
+      </div>
+    </div>
+
+    <!-- SLIDE 17: Objecoes -->
+    <div class="slide" id="slide-17">
+      <div class="slide-content">
+        <div class="section-label anim-item">05 — Vendas</div>
+        <div class="slide-title anim-item" style="font-size:clamp(28px,4vw,48px);">4 Objeções Críticas</div>
+        <div class="obj-grid">
+          <div class="obj-card anim-item">
+            <div class="obj-q">"E caro"</div>
+            <div class="obj-a">A assessoria representa 3 a 5% do orçamento total. Ela protege os outros 95%.</div>
+          </div>
+          <div class="obj-card anim-item">
+            <div class="obj-q">"O noivo acha caro"</div>
+            <div class="obj-a">Video de 2 minutos feito especificamente para noivos. Ele ve, entende, fecha.</div>
+          </div>
+          <div class="obj-card anim-item">
+            <div class="obj-q">"A assessoria do buffet já faz"</div>
+            <div class="obj-a">A do buffet cuida do buffet. A nossa cuida de você — do primeiro detalhe ao último abraço.</div>
+          </div>
+          <div class="obj-card anim-item">
+            <div class="obj-q">"Preciso pensar"</div>
+            <div class="obj-a">O que falta: orçamento, timing ou alguma dúvida? Posso ajudar agora mesmo.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 18: 5 Mudancas Title -->
+    <div class="slide" id="slide-18">
+      <div class="slide-content">
+        <div class="section-label anim-item">06 — Mudanças</div>
+        <div class="slide-title anim-item">As 5 Mudanças</div>
+        <div class="divider anim-item"></div>
+        <div class="slide-subtitle anim-item">Cinco decisões concretas que resolvem os 5 problemas estruturais.</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 19: 5 Mudancas List -->
+    <div class="slide" id="slide-19">
+      <div class="slide-content">
+        <div class="section-label anim-item">06 — Mudanças</div>
+        <ul class="mudancas-list">
+          <li class="mudanca-item anim-item">
+            <span class="mudanca-num">01</span>
+            <div class="mudanca-body">
+              <div class="mudanca-title">Preço só depois de valor</div>
+              <div class="mudanca-desc">Matar o PDF. Sequência de 7 dias de nurture antes de qualquer preço aparecer.</div>
+            </div>
+          </li>
+          <li class="mudanca-item anim-item">
+            <span class="mudanca-num">02</span>
+            <div class="mudanca-body">
+              <div class="mudanca-title">Giovanna sai das vendas</div>
+              <div class="mudanca-desc">Conteúdo escala. Reunião não. Giovanna foca em autoridade e entrega.</div>
+            </div>
+          </li>
+          <li class="mudanca-item anim-item">
+            <span class="mudanca-num">03</span>
+            <div class="mudanca-body">
+              <div class="mudanca-title">Vendedora dedicada</div>
+              <div class="mudanca-desc">45 minutos com script fixo. Processo replicável. Não depende de talento individual.</div>
+            </div>
+          </li>
+          <li class="mudanca-item anim-item">
+            <span class="mudanca-num">04</span>
+            <div class="mudanca-body">
+              <div class="mudanca-title">Aquecimento pré-conversa</div>
+              <div class="mudanca-desc">Quiz + 7 dias de nurture antes de qualquer reunião. Noiva chega quente.</div>
+            </div>
+          </li>
+          <li class="mudanca-item anim-item">
+            <span class="mudanca-num">05</span>
+            <div class="mudanca-body">
+              <div class="mudanca-title">Pós-venda como motor</div>
+              <div class="mudanca-desc">Cada noiva indica 2-3. Programa de indicação estruturado com recompensa e acompanhamento.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SLIDE 20: Metricas Title -->
+    <div class="slide" id="slide-20">
+      <div class="slide-content">
+        <div class="section-label anim-item">07 — Métricas</div>
+        <div class="slide-title anim-item">Métricas e KPIs</div>
+        <div class="divider anim-item"></div>
+        <div class="slide-subtitle anim-item">O que medir e qual é o novo patamar esperado com o funil reestruturado.</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 21: Metricas Dashboard -->
+    <div class="slide" id="slide-21">
+      <div class="slide-content">
+        <div class="section-label anim-item">07 — Métricas</div>
+        <div class="slide-title anim-item" style="font-size:clamp(26px,3.5vw,40px);">Dashboard de KPIs</div>
+        <div class="metrics-grid">
+          <div class="metric-card anim-item">
+            <div class="metric-section">Awareness</div>
+            <div class="metric-row">
+              <div class="metric-item">
+                <div class="metric-label">Alcance mensal</div>
+                <div class="metric-bars">
+                  <div class="m-bar-before" style="width:40%;"></div>
+                  <div class="m-bar-after" style="width:60%;"></div>
+                </div>
+                <div class="metric-values"><span class="mv-before">30K</span><span class="mv-arrow">→</span><span class="mv-after">60K</span></div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label">Novos seguidores/mes</div>
+                <div class="metric-bars">
+                  <div class="m-bar-before" style="width:33%;"></div>
+                  <div class="m-bar-after" style="width:67%;"></div>
+                </div>
+                <div class="metric-values"><span class="mv-before">300</span><span class="mv-arrow">→</span><span class="mv-after">600</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="metric-card anim-item">
+            <div class="metric-section">Captura</div>
+            <div class="metric-row">
+              <div class="metric-item">
+                <div class="metric-label">Leads por mes</div>
+                <div class="metric-bars">
+                  <div class="m-bar-before" style="width:35%;"></div>
+                  <div class="m-bar-after" style="width:65%;"></div>
+                </div>
+                <div class="metric-values"><span class="mv-before">30-40</span><span class="mv-arrow">→</span><span class="mv-after">60-80</span></div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label">CPL</div>
+                <div class="metric-bars">
+                  <div class="m-bar-before" style="width:50%;"></div>
+                  <div class="m-bar-after" style="width:50%;"></div>
+                </div>
+                <div class="metric-values"><span class="mv-before">R$ 35</span><span class="mv-arrow">→</span><span class="mv-after">R$ 18</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="metric-card anim-item">
+            <div class="metric-section">Vendas</div>
+            <div class="metric-row">
+              <div class="metric-item">
+                <div class="metric-label">Reunioes por mes</div>
+                <div class="metric-bars">
+                  <div class="m-bar-before" style="width:40%;"></div>
+                  <div class="m-bar-after" style="width:60%;"></div>
+                </div>
+                <div class="metric-values"><span class="mv-before">8-12</span><span class="mv-arrow">→</span><span class="mv-after">16-20</span></div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label">Taxa de conversao</div>
+                <div class="metric-bars">
+                  <div class="m-bar-before" style="width:38%;"></div>
+                  <div class="m-bar-after" style="width:62%;"></div>
+                </div>
+                <div class="metric-values"><span class="mv-before">35%</span><span class="mv-arrow">→</span><span class="mv-after">55%</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="metric-card anim-item">
+            <div class="metric-section">Receita</div>
+            <div class="metric-row">
+              <div class="metric-item">
+                <div class="metric-label">Receita mensal</div>
+                <div class="metric-bars">
+                  <div class="m-bar-before" style="width:36%;"></div>
+                  <div class="m-bar-after" style="width:64%;"></div>
+                </div>
+                <div class="metric-values"><span class="mv-before">R$ 19.6K</span><span class="mv-arrow">→</span><span class="mv-after">R$ 34.7K</span></div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label">Ticket medio</div>
+                <div class="metric-bars">
+                  <div class="m-bar-before" style="width:46%;"></div>
+                  <div class="m-bar-after" style="width:54%;"></div>
+                </div>
+                <div class="metric-values"><span class="mv-before">R$ 3.9K</span><span class="mv-arrow">→</span><span class="mv-after">R$ 4.5K</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 22: Projecao -->
+    <div class="slide" id="slide-22">
+      <div class="slide-content">
+        <div class="section-label anim-item">08 — Projeção Financeira</div>
+        <div class="slide-title anim-item" style="font-size:clamp(28px,4vw,52px);">Projeção Financeira</div>
+        <div class="proj-cards">
+          <div class="proj-card anim-item">
+            <div class="proj-label">Conservador</div>
+            <div class="proj-value">R$ 19.6K<br><span style="font-size:0.5em; color:var(--taupe);">por mes</span></div>
+            <div class="proj-sub">4 clientes fechados</div>
+          </div>
+          <div class="proj-card highlight anim-item">
+            <div class="proj-label">Realista</div>
+            <div class="proj-value">R$ 34.7K<br><span style="font-size:0.5em; color:var(--taupe);">por mes</span></div>
+            <div class="proj-sub">7 clientes fechados</div>
+          </div>
+          <div class="proj-card anim-item">
+            <div class="proj-label">Otimista</div>
+            <div class="proj-value">R$ 51.2K<br><span style="font-size:0.5em; color:var(--taupe);">por mes</span></div>
+            <div class="proj-sub">10 clientes fechados</div>
+          </div>
+        </div>
+        <div class="proj-roi anim-item">
+          <div class="roi-item">
+            <div class="roi-label">CAC medio</div>
+            <div class="roi-value">R$ 250</div>
+          </div>
+          <div class="roi-divider">vs</div>
+          <div class="roi-item">
+            <div class="roi-label">Ticket medio</div>
+            <div class="roi-value">R$ 4.500</div>
+          </div>
+          <div class="roi-divider">=</div>
+          <div class="roi-item">
+            <div class="roi-label">ROI por cliente</div>
+            <div class="roi-value highlight">18x</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 23: Plano 90 Dias -->
+    <div class="slide" id="slide-23">
+      <div class="slide-content">
+        <div class="section-label anim-item">09 — Implementacao</div>
+        <div class="slide-title anim-item" style="font-size:clamp(26px,3.5vw,42px);">Plano de Implementacao — 90 Dias</div>
+        <div class="plano-grid">
+          <div class="plano-col anim-item">
+            <div class="plano-phase">Fase 1</div>
+            <div class="plano-title">Dias 1-30<br>Quick Wins</div>
+            <ul class="plano-items">
+              <li>Parar o envio do PDF de preços</li>
+              <li>Treinar vendedora com script de 45 minutos</li>
+              <li>Coletar 5 depoimentos de clientes recentes</li>
+              <li>Produção de 8 peças de conteúdo pilar</li>
+              <li>Criar sequência de boas-vindas no WhatsApp</li>
+            </ul>
+          </div>
+          <div class="plano-col anim-item">
+            <div class="plano-phase">Fase 2</div>
+            <div class="plano-title">Dias 31-60<br>Infraestrutura</div>
+            <ul class="plano-items">
+              <li>Criar e publicar quiz de auto-segmentacao</li>
+              <li>Producao do checklist 50 coisas</li>
+              <li>Automacao de nurture (7 dias no WhatsApp)</li>
+              <li>CRM basico em planilha para acompanhamento</li>
+              <li>Calendario editorial fixo semana a semana</li>
+            </ul>
+          </div>
+          <div class="plano-col anim-item">
+            <div class="plano-phase">Fase 3</div>
+            <div class="plano-title">Dias 61-90<br>Escala</div>
+            <ul class="plano-items">
+              <li>Otimizar campanhas de anúncio com dados reais</li>
+              <li>Lançar programa formal de indicação</li>
+              <li>Primeira live "Noiva S.A. ao Vivo"</li>
+              <li>Revisao de metricas e ajuste de metas</li>
+              <li>Planejamento do trimestre seguinte</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 24: Closing -->
+    <div class="slide" id="slide-24">
+      <div class="slide-content">
+        <div class="close-brand anim-item">Noiva S.A.</div>
+        <div class="close-sub anim-item">Sociedade do Amor</div>
+        <div class="close-line anim-item"></div>
+        <div class="close-meta anim-item">
+          Estrategia produzida por Reis [IA] Marketing<br>
+          Abril 2026
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /deck -->
+
+  <script>
+    (function () {
+      const TOTAL = 24;
+      let current = 0;
+      let isAnimating = false;
+
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const progress = document.getElementById('progress-bar');
+      const counter = document.getElementById('slide-counter');
+      const overview = document.getElementById('overview');
+      const overviewGrid = document.getElementById('overview-grid');
+      const overviewClose = document.getElementById('overview-close');
+      const navPrev = document.getElementById('nav-prev');
+      const navNext = document.getElementById('nav-next');
+
+      // ── Overview thumbnails ──
+      const thumbTitles = [
+        'Cover',
+        'Índice',
+        'Diagnóstico: Título',
+        'Funil Atual: Perdas',
+        '5 Problemas Estruturais',
+        'Novo Funil: Título',
+        'Arquitetura 4 Estágios',
+        'A Mudança Central',
+        'Lead Magnets: Título',
+        'Lead Magnets: Grid',
+        'Conteúdo: Título',
+        'Os 4 Pilares',
+        'Calendário Semanal',
+        'Vendas: Título',
+        'Jornada do Lead',
+        'Estrutura da Reunião',
+        '4 Objeções Críticas',
+        '5 Mudanças: Título',
+        '5 Mudanças: Lista',
+        'Métricas: Título',
+        'Dashboard de KPIs',
+        'Projeção Financeira',
+        'Plano 90 Dias',
+        'Encerramento'
+      ];
+
+      thumbTitles.forEach((t, i) => {
+        const th = document.createElement('div');
+        th.className = 'overview-thumb' + (i === 0 ? ' current' : '');
+        th.innerHTML = '<div class="ot-num">0' + (i < 9 ? '' : '') + String(i + 1).padStart(2, '0') + '</div><div class="ot-title">' + t + '</div>';
+        th.addEventListener('click', () => {
+          goTo(i);
+          closeOverview();
+        });
+        overviewGrid.appendChild(th);
+      });
+
+      function updateUI() {
+        const pct = ((current + 1) / TOTAL) * 100;
+        progress.style.width = pct + '%';
+        counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(TOTAL).padStart(2, '0');
+        // Update overview thumbs
+        document.querySelectorAll('.overview-thumb').forEach((th, i) => {
+          th.classList.toggle('current', i === current);
+        });
+      }
+
+      function goTo(idx) {
+        if (idx === current || idx < 0 || idx >= TOTAL) return;
+        if (isAnimating) return;
+        isAnimating = true;
+
+        const prev = slides[current];
+        const next = slides[idx];
+
+        const direction = idx > current ? 1 : -1;
+        prev.classList.remove('active');
+        prev.classList.add('prev');
+        next.style.transform = `translateX(${direction * 60}px)`;
+        next.style.opacity = '0';
+        next.classList.add('active');
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            next.style.transform = '';
+            next.style.opacity = '';
+            setTimeout(() => {
+              prev.classList.remove('prev');
+              prev.style.transform = '';
+              isAnimating = false;
+            }, 520);
+          });
+        });
+
+        current = idx;
+        updateUI();
+      }
+
+      function next() { goTo(current + 1); }
+      function prev() { goTo(current - 1); }
+
+      // ── Keyboard ──
+      document.addEventListener('keydown', (e) => {
+        if (overview.classList.contains('open')) {
+          if (e.key === 'Escape') closeOverview();
+          return;
+        }
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'Backspace') { e.preventDefault(); prev(); }
+      });
+
+      // ── Buttons ──
+      navPrev.addEventListener('click', prev);
+      navNext.addEventListener('click', next);
+
+      // ── Counter click = overview ──
+      counter.addEventListener('click', openOverview);
+
+      function openOverview() { overview.classList.add('open'); }
+      function closeOverview() { overview.classList.remove('open'); }
+
+      overviewClose.addEventListener('click', closeOverview);
+      overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+      // ── Touch / Swipe ──
+      let touchStartX = 0;
+      let touchStartY = 0;
+      document.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+          if (dx < 0) next(); else prev();
+        }
+      }, { passive: true });
+
+      // ── Init ──
+      updateUI();
+      slides[0].classList.add('active');
+
+    })();
+  </script>
+
+</body>
+</html>

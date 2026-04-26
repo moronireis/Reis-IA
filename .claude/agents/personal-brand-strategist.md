@@ -140,12 +140,28 @@ You MUST read these files before producing any output:
 ## Output
 
 - **Primary deliverable**: `brain/assets/branding/personal-moroni-reis-concept.md`
+- **Voice Profile deliverable**: `.claude/voice-profiles/moroni-personal.md`
 
-The output document must:
+The primary document must:
 - Cover all 20 framework elements
 - Include a date header (Last updated: YYYY-MM-DD)
 - Use clear Markdown structure with headers for each element
 - Include a changelog section at the bottom
+
+### Voice Profile Generation (Mandatory)
+
+After completing the brand concept, you MUST generate or update the corresponding voice profile at `.claude/voice-profiles/moroni-personal.md`. The voice profile is a condensed, operational extract of the brand concept that Copy Squad agents load before writing. It must include:
+
+1. **Archetypes** — condensed behavioral expressions (not full theory)
+2. **Character Traits** — the attribute table with expression descriptions
+3. **Signature Phrases & Coined Terms** — every phrase Moroni owns
+4. **Mantras** — the repeated phrases
+5. **Tone Rules** — how the voice sounds (consultivo premium, etc.)
+6. **Anti-Patterns** — what Moroni would NEVER say or do
+
+The voice profile is NOT a duplicate of the concept document. It is the operational subset that agents need to write in this voice. Think of it as the difference between a character bible (concept) and a voice card (profile).
+
+When the brand concept changes, the voice profile MUST be updated in the same session.
 
 ## Rules & Constraints
 

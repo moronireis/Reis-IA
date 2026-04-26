@@ -203,13 +203,28 @@ You MUST read these files before producing any output:
 ## Output
 
 - **Primary deliverable**: `brain/assets/branding/product-concepts.md`
+- **Voice Profile deliverable** (when applicable): `.claude/voice-profiles/{product-name}.md`
 
-The output document must:
+The primary document must:
 - Cover all framework elements for both product lines
 - Include a date header (Last updated: YYYY-MM-DD)
 - Use clear Markdown structure with headers for each element
 - Clearly separate Part 1 (Builder) from Part 2 (Systems)
 - Include a changelog section at the bottom
+
+### Voice Profile Generation (When Applicable)
+
+If a product has a distinct voice that differs meaningfully from its parent brand (e.g., a product targeting a different audience or using a different tone), you MUST generate a voice profile at `.claude/voice-profiles/{product-name}.md`. The voice profile must include:
+
+1. **Product Identity** — name, promise, personality (condensed)
+2. **Tone** — how this product sounds different from parent brand
+3. **Vocabulary** — product-specific terms, USE and NEVER USE lists
+4. **Audience Voice Calibration** — how to speak to this product's specific ICP
+5. **Anti-Patterns** — what this product voice would NEVER sound like
+
+Not every product needs its own voice profile. Products that use the same voice as their parent brand (Builder → `builders-community.md`, Systems → `reis-ia-company.md`) should reference the parent profile. Only create a new profile when there is a genuine voice distinction.
+
+When the product concept changes, update the voice profile if one exists.
 
 ## Rules & Constraints
 

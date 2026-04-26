@@ -17,6 +17,7 @@ interface Task {
   assignee_name?: string;
   project_name?: string;
   due_date?: string;
+  due_time?: string;
   tags?: string[];
   notes?: string;
   completed_at?: string;
@@ -134,15 +135,49 @@ function StatusIcon({ status }: { status: TaskStatus }) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
-function formatDate(d?: string): string {
+/** Parse due_date safely — handles both "YYYY-MM-DD" and "YYYY-MM-DDT00:00:00" */
+function parseDate(d: string): Date {
+  const dateOnly = d.includes('T') ? d.split('T')[0] : d;
+  return new Date(dateOnly + 'T00:00:00');
+}
+
+/** Extract YYYY-MM-DD from a date string (strips time if present) */
+function toDateOnly(d: string): string {
+  return d.includes('T') ? d.split('T')[0] : d;
+}
+
+function formatDate(d?: string, time?: string): string {
   if (!d) return '';
-  const date = new Date(d + 'T00:00:00');
-  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+  const dateStr = parseDate(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+  if (time) return `${dateStr} ${time}`;
+  return dateStr;
 }
 
 function isOverdue(d?: string): boolean {
   if (!d) return false;
-  return new Date(d + 'T00:00:00') < new Date(new Date().toDateString());
+  return parseDate(d) < new Date(new Date().toDateString());
+}
+
+function getTaskUrgencyColor(task: Task): { bg: string; color: string } {
+  if (task.status === 'done') {
+    return { bg: 'rgba(74,144,255,0.12)', color: '#4A90FF' };
+  }
+  if (task.priority === 'urgent') {
+    return { bg: 'rgba(239,68,68,0.12)', color: '#EF4444' };
+  }
+  if (!task.due_date) {
+    return { bg: 'rgba(34,197,94,0.12)', color: '#22C55E' };
+  }
+  const today = new Date(new Date().toDateString());
+  const due = parseDate(task.due_date);
+  const daysUntil = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  if (daysUntil < 0) {
+    return { bg: 'rgba(239,68,68,0.12)', color: '#EF4444' };
+  }
+  if (daysUntil <= 3) {
+    return { bg: 'rgba(245,158,11,0.12)', color: '#F59E0B' };
+  }
+  return { bg: 'rgba(34,197,94,0.12)', color: '#22C55E' };
 }
 
 function emptyForm(): Partial<Task> {
@@ -155,6 +190,7 @@ function emptyForm(): Partial<Task> {
     assignee_name: '',
     project_name: '',
     due_date: '',
+    due_time: '',
     tags: [],
     notes: '',
   };
@@ -278,8 +314,8 @@ function TaskModal({ mode, formData, onChange, onSave, onDelete, onClose, loadin
             </div>
           </div>
 
-          {/* Row: Status + Due date */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          {/* Row: Status + Due date + Time */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
             <div>
               <label style={labelStyle}>Status</label>
               <select value={formData.status || 'todo'} onChange={e => onChange('status', e.target.value)} style={selectStyle}>
@@ -289,13 +325,28 @@ function TaskModal({ mode, formData, onChange, onSave, onDelete, onClose, loadin
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Data de vencimento</label>
+              <label style={labelStyle}>Data</label>
               <input
                 type="date"
                 value={formData.due_date || ''}
                 onChange={e => onChange('due_date', e.target.value)}
                 style={{ ...inputStyle, colorScheme: 'dark' as const }}
               />
+            </div>
+            <div>
+              <label style={labelStyle}>Horario</label>
+              <select
+                value={formData.due_time || ''}
+                onChange={e => onChange('due_time', e.target.value)}
+                style={{ ...selectStyle, colorScheme: 'dark' as const }}
+              >
+                <option value="">--</option>
+                {Array.from({ length: 48 }, (_, i) => {
+                  const h = String(Math.floor(i / 2)).padStart(2, '0');
+                  const m = i % 2 === 0 ? '00' : '30';
+                  return <option key={i} value={`${h}:${m}`}>{h}:{m}</option>;
+                })}
+              </select>
             </div>
           </div>
 
@@ -527,7 +578,7 @@ function BoardView({ tasks, onEditTask, onDrop, onDragStart, onDragEnd, draggedT
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                     {task.due_date && (
                       <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: isOverdue(task.due_date) ? '#EF4444' : 'rgba(255,255,255,0.35)' }}>
-                        <IconCalendar /> {formatDate(task.due_date)}
+                        <IconCalendar /> {formatDate(task.due_date, task.due_time)}
                       </span>
                     )}
                     {task.assignee_name && (
@@ -706,7 +757,7 @@ function ListView({ tasks, onEditTask, onStatusCycle }: ListViewProps) {
                 )}
               </td>
               <td style={{ ...tdStyle, color: task.due_date && isOverdue(task.due_date) ? '#EF4444' : 'rgba(255,255,255,0.5)' }}>
-                {task.due_date ? formatDate(task.due_date) : <span style={{ color: 'rgba(255,255,255,0.2)' }}>—</span>}
+                {task.due_date ? formatDate(task.due_date, task.due_time) : <span style={{ color: 'rgba(255,255,255,0.2)' }}>—</span>}
               </td>
               <td style={tdStyle}>
                 {task.project_name || <span style={{ color: 'rgba(255,255,255,0.2)' }}>—</span>}
@@ -734,121 +785,228 @@ function ListView({ tasks, onEditTask, onStatusCycle }: ListViewProps) {
 interface CalendarViewProps {
   tasks: Task[];
   onEditTask: (task: Task) => void;
+  onReschedule: (taskId: string, newDate: string, newTime?: string) => void;
 }
 
-function CalendarView({ tasks, onEditTask }: CalendarViewProps) {
+function CalendarView({ tasks, onEditTask, onReschedule }: CalendarViewProps) {
+  const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
-  const [viewMonth, setViewMonth] = useState(today.getMonth()); // 0-indexed
+  const [viewMonth, setViewMonth] = useState(today.getMonth());
+  const [selectedDay, setSelectedDay] = useState<number | null>(today.getDate());
 
   const prevMonth = () => {
+    setSelectedDay(null);
     if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
     else { setViewMonth(m => m - 1); }
   };
 
   const nextMonth = () => {
+    setSelectedDay(null);
     if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
     else { setViewMonth(m => m + 1); }
   };
 
-  const firstDay = new Date(viewYear, viewMonth, 1).getDay(); // 0=Sun
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay();
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
 
-  // map day-of-month to tasks
   const tasksByDay = useMemo(() => {
     const map: Record<number, Task[]> = {};
     tasks.forEach(t => {
       if (!t.due_date) return;
-      const d = new Date(t.due_date + 'T00:00:00');
+      const d = parseDate(t.due_date);
       if (d.getFullYear() === viewYear && d.getMonth() === viewMonth) {
         const day = d.getDate();
         if (!map[day]) map[day] = [];
         map[day].push(t);
       }
     });
+    // Sort tasks within each day by time
+    for (const day in map) {
+      map[day].sort((a, b) => (a.due_time || '99:99').localeCompare(b.due_time || '99:99'));
+    }
     return map;
   }, [tasks, viewYear, viewMonth]);
 
-  const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-  const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+  const MONTHS = ['Janeiro', 'Fevereiro', 'Marco', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
   const isToday = (day: number) =>
     today.getDate() === day && today.getMonth() === viewMonth && today.getFullYear() === viewYear;
 
-  // Build grid cells: leading empty + day cells
   const cells: (number | null)[] = [
     ...Array(firstDay).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
 
+  // Tasks without any date — available for scheduling
+  const undatedTasks = useMemo(() => tasks.filter(t => !t.due_date), [tasks]);
+
+  // Day detail panel data
+  const selectedDayTasks = selectedDay ? (tasksByDay[selectedDay] || []) : [];
+  const withTime = selectedDayTasks.filter(t => t.due_time);
+  const withoutTime = selectedDayTasks.filter(t => !t.due_time);
+
+  // Time slots for day view (08:00 - 20:00 in 30min increments)
+  const timeSlots = useMemo(() => {
+    const slots: string[] = [];
+    for (let h = 8; h <= 20; h++) {
+      slots.push(`${String(h).padStart(2, '0')}:00`);
+      if (h < 20) slots.push(`${String(h).padStart(2, '0')}:30`);
+    }
+    return slots;
+  }, []);
+
+  const selectedDateStr = selectedDay
+    ? `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`
+    : '';
+
+  const selectedDateLabel = selectedDay
+    ? `${selectedDay} de ${MONTHS[viewMonth]}`
+    : '';
+
   return (
     <div>
-      {/* Calendar nav */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <button onClick={prevMonth} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '6px', display: 'flex', borderRadius: '6px' }}>
-          <IconChevron dir="left" />
-        </button>
-        <span style={{ fontSize: '15px', fontWeight: 500, color: '#fff' }}>
-          {MONTHS[viewMonth]} {viewYear}
-        </span>
-        <button onClick={nextMonth} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '6px', display: 'flex', borderRadius: '6px' }}>
-          <IconChevron dir="right" />
-        </button>
-      </div>
+      {/* Month grid — always full width */}
+      <div>
+        {/* Nav */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+          <button onClick={prevMonth} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '8px', display: 'flex', borderRadius: '6px' }}>
+            <IconChevron dir="left" />
+          </button>
+          <span style={{ fontSize: '15px', fontWeight: 600, color: '#fff' }}>
+            {MONTHS[viewMonth]} {viewYear}
+          </span>
+          <button onClick={nextMonth} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '8px', display: 'flex', borderRadius: '6px' }}>
+            <IconChevron dir="right" />
+          </button>
+        </div>
 
-      {/* Weekday headers */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: '4px' }}>
-        {WEEKDAYS.map(day => (
-          <div key={day} style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(255,255,255,0.3)', padding: '6px 0', fontWeight: 500 }}>
-            {day}
+        {/* Weekday headers */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: '2px' }}>
+          {WEEKDAYS.map(d => (
+            <div key={d} style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(255,255,255,0.35)', padding: '6px 0', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              {d}
+            </div>
+          ))}
+        </div>
+
+        {/* Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+          {cells.map((day, idx) => {
+            if (day === null) return <div key={`e-${idx}`} style={{ minHeight: '64px' }} />;
+            const dayTasks = tasksByDay[day] || [];
+            const count = dayTasks.length;
+            const isSelected = selectedDay === day;
+            const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const hasDone = dayTasks.some(t => t.status === 'done');
+            const hasOverdue = dayTasks.some(t => t.status !== 'done' && isOverdue(t.due_date));
+            const hasUrgent = dayTasks.some(t => t.priority === 'urgent' && t.status !== 'done');
+            // Dot color: worst status wins
+            const dotColor = hasOverdue || hasUrgent ? '#EF4444' : hasDone && count === dayTasks.filter(t => t.status === 'done').length ? '#4A90FF' : count > 0 ? '#22C55E' : 'transparent';
+
+            return (
+              <div
+                key={day}
+                onClick={() => setSelectedDay(isSelected ? null : day)}
+                onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'rgba(74,144,255,0.5)'; }}
+                onDragLeave={e => { e.currentTarget.style.borderColor = isSelected ? 'rgba(74,144,255,0.4)' : isToday(day) ? 'rgba(74,144,255,0.2)' : 'rgba(255,255,255,0.04)'; }}
+                onDrop={e => { e.preventDefault(); e.currentTarget.style.borderColor = isSelected ? 'rgba(74,144,255,0.4)' : 'rgba(255,255,255,0.04)'; if (draggedTaskId) { onReschedule(draggedTaskId, dateStr); setDraggedTaskId(null); } }}
+                style={{
+                  minHeight: '64px',
+                  padding: '6px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  background: isSelected ? 'rgba(74,144,255,0.08)' : isToday(day) ? 'rgba(74,144,255,0.04)' : 'rgba(255,255,255,0.015)',
+                  border: isSelected ? '1px solid rgba(74,144,255,0.4)' : isToday(day) ? '1px solid rgba(74,144,255,0.2)' : '1px solid rgba(255,255,255,0.04)',
+                  transition: 'all 120ms ease',
+                }}
+              >
+                {/* Day number + dot */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                  <span style={{
+                    fontSize: '12px',
+                    fontWeight: isToday(day) || isSelected ? 600 : 400,
+                    color: isSelected ? '#4A90FF' : isToday(day) ? '#4A90FF' : 'rgba(255,255,255,0.5)',
+                  }}>
+                    {day}
+                  </span>
+                  {count > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: dotColor }} />
+                      <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>{count}</span>
+                    </div>
+                  )}
+                </div>
+                {/* Mini task previews */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                  {dayTasks.slice(0, 3).map(task => {
+                    const uc = getTaskUrgencyColor(task);
+                    return (
+                      <div
+                        key={task.id}
+                        draggable
+                        onDragStart={e => { e.stopPropagation(); setDraggedTaskId(task.id); }}
+                        onDragEnd={() => setDraggedTaskId(null)}
+                        onClick={e => { e.stopPropagation(); setSelectedDay(day); }}
+                        style={{
+                          padding: '1px 4px',
+                          borderRadius: '3px',
+                          background: uc.bg,
+                          fontSize: '9px',
+                          color: uc.color,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          cursor: 'grab',
+                          opacity: draggedTaskId === task.id ? 0.3 : 1,
+                        }}
+                      >
+                        {task.due_time ? `${task.due_time} ` : ''}{task.title}
+                      </div>
+                    );
+                  })}
+                  {count > 3 && (
+                    <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.25)', paddingLeft: '4px' }}>+{count - 3}</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Undated tasks — drag to schedule, or drop here to remove date */}
+        <div
+          style={{ marginTop: '12px', padding: '10px 12px', borderRadius: '10px', background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', transition: 'border-color 100ms' }}
+          onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'rgba(74,144,255,0.4)'; }}
+          onDragLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; }}
+          onDrop={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; if (draggedTaskId) { onReschedule(draggedTaskId, '', ''); setDraggedTaskId(null); } }}
+        >
+          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: undatedTasks.length > 0 ? '8px' : '0' }}>
+            Sem data{undatedTasks.length > 0 ? ` (${undatedTasks.length})` : ' — arraste para remover data'}
           </div>
-        ))}
-      </div>
-
-      {/* Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
-        {cells.map((day, idx) => {
-          if (day === null) {
-            return <div key={`empty-${idx}`} style={{ minHeight: '90px' }} />;
-          }
-          const dayTasks = tasksByDay[day] || [];
-          const visible = dayTasks.slice(0, 3);
-          const extra = dayTasks.length - visible.length;
-          return (
-            <div
-              key={day}
-              style={{
-                minHeight: '90px',
-                padding: '8px',
-                borderRadius: '8px',
-                background: isToday(day) ? 'rgba(74,144,255,0.06)' : 'rgba(255,255,255,0.02)',
-                border: isToday(day) ? '1px solid rgba(74,144,255,0.3)' : '1px solid rgba(255,255,255,0.04)',
-              }}
-            >
-              <span style={{
-                fontSize: '12px',
-                fontWeight: isToday(day) ? 600 : 400,
-                color: isToday(day) ? '#4A90FF' : 'rgba(255,255,255,0.5)',
-                display: 'block',
-                marginBottom: '4px',
-              }}>
-                {day}
-              </span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                {visible.map(task => (
-                  <button
+          {undatedTasks.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+              {undatedTasks.map(task => {
+                const uc = getTaskUrgencyColor(task);
+                return (
+                  <div
                     key={task.id}
+                    draggable
+                    onDragStart={() => setDraggedTaskId(task.id)}
+                    onDragEnd={() => setDraggedTaskId(null)}
                     onClick={() => onEditTask(task)}
                     style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      padding: '2px 5px',
-                      borderRadius: '3px',
-                      background: categoryStyles[task.category].bg,
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: '10px',
-                      color: categoryStyles[task.category].color,
+                      padding: '4px 10px',
+                      borderRadius: '5px',
+                      background: uc.bg,
+                      border: `1px solid ${uc.color}22`,
+                      fontSize: '11px',
+                      color: uc.color,
+                      cursor: 'grab',
+                      opacity: draggedTaskId === task.id ? 0.3 : 1,
+                      transition: 'opacity 100ms',
+                      maxWidth: '220px',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
@@ -856,18 +1014,179 @@ function CalendarView({ tasks, onEditTask }: CalendarViewProps) {
                     title={task.title}
                   >
                     {task.title}
-                  </button>
-                ))}
-                {extra > 0 && (
-                  <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', paddingLeft: '4px' }}>
-                    +{extra} mais
-                  </span>
-                )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Day detail — overlay modal */}
+      {selectedDay && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 9998, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+          onClick={e => { if (e.target === e.currentTarget) setSelectedDay(null); }}
+        >
+        <div style={{
+          width: '100%',
+          maxWidth: '360px',
+          background: '#0F0F0F',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: '14px',
+          padding: '16px',
+          overflowY: 'auto',
+          maxHeight: '70vh',
+        }}>
+          {/* Day header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#fff' }}>{selectedDateLabel}</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '2px' }}>
+                {selectedDayTasks.length} tarefa{selectedDayTasks.length !== 1 ? 's' : ''}
               </div>
             </div>
-          );
-        })}
-      </div>
+            <button
+              onClick={() => setSelectedDay(null)}
+              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', padding: '4px', display: 'flex' }}
+            >
+              <IconClose />
+            </button>
+          </div>
+
+          {/* Tasks without time — also a drop zone to clear time */}
+          <div
+            style={{ marginBottom: '16px', minHeight: '32px', borderRadius: '6px', transition: 'background 80ms' }}
+            onDragOver={e => { e.preventDefault(); e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+            onDragLeave={e => { e.currentTarget.style.background = ''; }}
+            onDrop={e => { e.preventDefault(); e.currentTarget.style.background = ''; if (draggedTaskId) { onReschedule(draggedTaskId, selectedDateStr, ''); setDraggedTaskId(null); } }}
+          >
+            <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+              Sem horario
+            </div>
+              {withoutTime.map(task => {
+                const uc = getTaskUrgencyColor(task);
+                return (
+                  <button
+                    key={task.id}
+                    draggable
+                    onDragStart={() => setDraggedTaskId(task.id)}
+                    onDragEnd={() => setDraggedTaskId(null)}
+                    onClick={() => onEditTask(task)}
+                    style={{
+                      width: '100%',
+                      textAlign: 'left',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 10px',
+                      marginBottom: '4px',
+                      borderRadius: '6px',
+                      background: uc.bg,
+                      border: `1px solid ${uc.color}22`,
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      color: uc.color,
+                    }}
+                  >
+                    <StatusIcon status={task.status} />
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{task.title}</span>
+                  </button>
+                );
+              })}
+            {withoutTime.length === 0 && (
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.15)', padding: '6px 0', fontStyle: 'italic' }}>
+                Arraste aqui para remover horario
+              </div>
+            )}
+          </div>
+
+          {/* Timeline */}
+          <div style={{ position: 'relative' }}>
+            {timeSlots.map((slot, i) => {
+              const isHour = slot.endsWith(':00');
+              const slotTasks = withTime.filter(t => t.due_time === slot);
+              return (
+                <div
+                  key={slot}
+                  onDragOver={e => {
+                    e.preventDefault();
+                    e.currentTarget.style.background = 'rgba(74,144,255,0.08)';
+                  }}
+                  onDragLeave={e => {
+                    e.currentTarget.style.background = '';
+                  }}
+                  onDrop={e => {
+                    e.preventDefault();
+                    e.currentTarget.style.background = '';
+                    if (draggedTaskId) {
+                      onReschedule(draggedTaskId, selectedDateStr, slot);
+                      setDraggedTaskId(null);
+                    }
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '8px',
+                    minHeight: slotTasks.length > 0 ? '36px' : isHour ? '28px' : '20px',
+                    borderTop: isHour ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(255,255,255,0.02)',
+                    paddingTop: '3px',
+                    borderRadius: '4px',
+                    transition: 'background 80ms',
+                  }}
+                >
+                  <span style={{
+                    fontSize: '10px',
+                    color: isHour ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)',
+                    minWidth: '36px',
+                    textAlign: 'right',
+                    paddingTop: '1px',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}>
+                    {slot}
+                  </span>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    {slotTasks.map(task => {
+                      const uc = getTaskUrgencyColor(task);
+                      return (
+                        <button
+                          key={task.id}
+                          draggable
+                          onDragStart={e => { e.stopPropagation(); setDraggedTaskId(task.id); }}
+                          onDragEnd={() => setDraggedTaskId(null)}
+                          onClick={() => onEditTask(task)}
+                          data-task-id={task.id}
+                          style={{
+                            width: '100%',
+                            textAlign: 'left',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '5px 8px',
+                            borderRadius: '5px',
+                            background: uc.bg,
+                            border: `1px solid ${uc.color}22`,
+                            cursor: 'grab',
+                            fontSize: '11px',
+                            color: uc.color,
+                            opacity: draggedTaskId === task.id ? 0.3 : 1,
+                            transition: 'opacity 100ms',
+                          }}
+                        >
+                          <StatusIcon status={task.status} />
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{task.title}</span>
+                          <span style={{ fontSize: '10px', opacity: 0.6 }}>{priorityStyles[task.priority].label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -939,7 +1258,11 @@ export default function TaskBoard({ initialTasks }: TaskBoardProps) {
   }, []);
 
   const openEditModal = useCallback((task: Task) => {
-    setFormData({ ...task });
+    setFormData({
+      ...task,
+      due_date: task.due_date ? toDateOnly(task.due_date) : '',
+      due_time: task.due_time || '',
+    });
     setEditingTask(task);
     setModalMode('edit');
     setModalOpen(true);
@@ -975,6 +1298,7 @@ export default function TaskBoard({ initialTasks }: TaskBoardProps) {
           assignee_name: formData.assignee_name || null,
           project_name: formData.project_name || null,
           due_date: formData.due_date || null,
+          due_time: formData.due_time || null,
           tags: formData.tags || [],
           notes: formData.notes || '',
         }),
@@ -1000,22 +1324,27 @@ export default function TaskBoard({ initialTasks }: TaskBoardProps) {
     setModalLoading(true);
     setError(null);
     try {
-      const patch: Partial<Task> = {
-        title: formData.title.trim(),
-        description: formData.description || '',
-        status: formData.status,
-        priority: formData.priority,
-        category: formData.category,
-        assignee_name: formData.assignee_name || undefined,
-        project_name: formData.project_name || undefined,
-        due_date: formData.due_date || undefined,
-        tags: formData.tags || [],
-        notes: formData.notes || '',
-      };
+      // Only send fields that actually changed
+      const diff: Record<string, unknown> = {};
+      if (formData.title?.trim() !== editingTask.title) diff.title = formData.title!.trim();
+      if ((formData.description || '') !== (editingTask.description || '')) diff.description = formData.description || '';
+      if (formData.status !== editingTask.status) diff.status = formData.status;
+      if (formData.priority !== editingTask.priority) diff.priority = formData.priority;
+      if (formData.category !== editingTask.category) diff.category = formData.category;
+      if ((formData.assignee_name || '') !== (editingTask.assignee_name || '')) diff.assignee_name = formData.assignee_name || null;
+      if ((formData.project_name || '') !== (editingTask.project_name || '')) diff.project_name = formData.project_name || null;
+      if ((formData.due_date || '') !== (toDateOnly(editingTask.due_date || ''))) diff.due_date = formData.due_date || null;
+      if ((formData.due_time || '') !== (editingTask.due_time || '')) diff.due_time = formData.due_time || null;
+      if (JSON.stringify(formData.tags || []) !== JSON.stringify(editingTask.tags || [])) diff.tags = formData.tags || [];
+      if ((formData.notes || '') !== (editingTask.notes || '')) diff.notes = formData.notes || '';
+
+      // Nothing changed
+      if (Object.keys(diff).length === 0) { closeModal(); return; }
+
       const res = await fetch(`/api/tasks/${editingTask.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(patch),
+        body: JSON.stringify(diff),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -1077,6 +1406,35 @@ export default function TaskBoard({ initialTasks }: TaskBoardProps) {
     }
   }, [draggedTask, tasks]);
 
+  // ── Calendar reschedule (drag to day) ──
+
+  const handleReschedule = useCallback(async (taskId: string, newDate: string, newTime?: string) => {
+    const prev = tasks;
+    setTasks(ts => ts.map(t => {
+      if (t.id !== taskId) return t;
+      const updated = { ...t, due_date: newDate || undefined };
+      if (newTime !== undefined) updated.due_time = newTime || undefined;
+      return updated;
+    }));
+    try {
+      const patch: Record<string, unknown> = { due_date: newDate || null };
+      if (newTime !== undefined) patch.due_time = newTime || null;
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+      if (!res.ok) {
+        setTasks(prev);
+        const err = await res.json();
+        setError(err.error || 'Erro ao reagendar tarefa');
+      }
+    } catch {
+      setTasks(prev);
+      setError('Erro de conexão');
+    }
+  }, [tasks]);
+
   // ── Status cycle (list view) ──
 
   const handleStatusCycle = useCallback(async (task: Task) => {
@@ -1125,11 +1483,56 @@ export default function TaskBoard({ initialTasks }: TaskBoardProps) {
     transition: 'all 150ms ease',
   });
 
-  const inProgress = tasks.filter(t => t.status === 'in_progress').length;
-  const done = tasks.filter(t => t.status === 'done').length;
+  const stats = useMemo(() => {
+    const today = new Date(new Date().toDateString());
+    const total = tasks.length;
+    const todo = tasks.filter(t => t.status === 'todo').length;
+    const inProgress = tasks.filter(t => t.status === 'in_progress').length;
+    const done = tasks.filter(t => t.status === 'done').length;
+    const overdue = tasks.filter(t =>
+      t.status !== 'done' && t.due_date && new Date(t.due_date + 'T00:00:00') < today
+    ).length;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    return { total, todo, inProgress, done, overdue, pct };
+  }, [tasks]);
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif' }}>
+
+      {/* Mini Dashboard */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '24px',
+        padding: '14px 20px', marginBottom: '16px', borderRadius: '12px',
+        background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)',
+      }}>
+        <div style={{ textAlign: 'center', minWidth: '56px' }}>
+          <div style={{ fontSize: '20px', fontWeight: 700, color: '#fff' }}>{stats.total}</div>
+          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>Total</div>
+        </div>
+        <div style={{ width: '1px', height: '32px', background: 'rgba(255,255,255,0.06)' }} />
+        <div style={{ textAlign: 'center', minWidth: '56px' }}>
+          <div style={{ fontSize: '20px', fontWeight: 700, color: '#4A90FF' }}>{stats.inProgress}</div>
+          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>Em progresso</div>
+        </div>
+        <div style={{ textAlign: 'center', minWidth: '56px' }}>
+          <div style={{ fontSize: '20px', fontWeight: 700, color: '#22C55E' }}>{stats.done}</div>
+          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>Concluidas</div>
+        </div>
+        {stats.overdue > 0 && (
+          <div style={{ textAlign: 'center', minWidth: '56px' }}>
+            <div style={{ fontSize: '20px', fontWeight: 700, color: '#EF4444' }}>{stats.overdue}</div>
+            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>Atrasadas</div>
+          </div>
+        )}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto' }}>
+          <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${stats.pct}%`, background: '#4A90FF', borderRadius: '2px', transition: 'width 300ms ease' }} />
+          </div>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', minWidth: '36px', textAlign: 'right' }}>
+            {stats.pct}%
+          </span>
+        </div>
+      </div>
 
       {/* Error banner */}
       {error && (
@@ -1267,7 +1670,7 @@ export default function TaskBoard({ initialTasks }: TaskBoardProps) {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>
-              {tasks.length} tarefas · {inProgress} em progresso · {done} concluídas
+              {stats.total} tarefas · {stats.inProgress} em progresso · {stats.done} concluidas
             </span>
             <button
               onClick={() => openCreateModal('todo')}
@@ -1306,6 +1709,7 @@ export default function TaskBoard({ initialTasks }: TaskBoardProps) {
         <CalendarView
           tasks={filteredTasks}
           onEditTask={openEditModal}
+          onReschedule={handleReschedule}
         />
       )}
 

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Autossuficiência — Trabalhar, Prover, Prosperar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#08090C;
+  --surface:#12141A;
+  --surface-warm:#16140F;
+  --gold:#C8A44E;
+  --gold-soft:#D4B96A;
+  --gold-bright:#E8C95A;
+  --gold-dim:rgba(200,164,78,0.12);
+  --gold-glow:rgba(200,164,78,0.25);
+  --red-soft:rgba(200,100,80,0.6);
+  --white:#F0EDE6;
+  --white-dim:rgba(240,237,230,0.5);
+  --text:#E0DCD4;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --ease-out:cubic-bezier(0.22,1,0.36,1);
+  --ease-dramatic:cubic-bezier(0.16,1,0.3,1);
+}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:var(--bg);color:var(--text);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ═══════════════════ PARTICLES CANVAS ═══════════════════ */
+#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ═══════════════════ SLIDE SYSTEM ═══════════════════ */
+.deck{position:relative;width:100%;height:100%;z-index:1}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  padding:clamp(24px,6vw,80px);
+  text-align:center;
+  opacity:0;visibility:hidden;
+  transition:opacity .6s var(--ease-out),visibility .6s var(--ease-out),transform .6s var(--ease-out);
+  transform:scale(0.97) translateY(8px);
+  will-change:opacity,transform;
+  z-index:1;
+}
+.slide.active{
+  opacity:1;visibility:visible;
+  transform:scale(1) translateY(0);
+}
+
+/* ═══════════════════ ANIMATED ELEMENTS ═══════════════════ */
+.slide .anim{
+  opacity:0;transform:translateY(24px);
+  transition:opacity .6s var(--ease-dramatic),transform .6s var(--ease-dramatic);
+}
+.slide.active .anim{opacity:1;transform:translateY(0)}
+.slide.active .anim:nth-child(1){transition-delay:.1s}
+.slide.active .anim:nth-child(2){transition-delay:.25s}
+.slide.active .anim:nth-child(3){transition-delay:.4s}
+.slide.active .anim:nth-child(4){transition-delay:.55s}
+.slide.active .anim:nth-child(5){transition-delay:.7s}
+.slide.active .anim:nth-child(6){transition-delay:.85s}
+.slide.active .anim:nth-child(7){transition-delay:1s}
+
+/* ═══════════════════ TYPOGRAPHY ═══════════════════ */
+.slide h1{
+  font-family:var(--serif);font-weight:600;
+  font-size:clamp(2.4rem,6vw,5rem);
+  line-height:1.08;letter-spacing:-0.02em;
+  color:var(--white);margin-bottom:0.3em;
+}
+.slide h2{
+  font-family:var(--serif);font-weight:600;
+  font-size:clamp(1.6rem,4vw,3rem);
+  line-height:1.2;letter-spacing:-0.01em;
+  color:var(--white);margin-bottom:0.5em;
+}
+.slide h3{
+  font-family:var(--sans);font-weight:600;
+  font-size:clamp(1rem,2.2vw,1.4rem);
+  color:var(--gold);
+  text-transform:uppercase;letter-spacing:0.15em;
+  margin-bottom:0.8em;
+}
+.slide p{
+  font-family:var(--sans);font-weight:300;
+  font-size:clamp(1rem,2.2vw,1.4rem);
+  line-height:1.65;color:var(--text);
+  max-width:700px;
+}
+.slide p+p{margin-top:0.7em}
+.slide .subtitle{
+  font-family:var(--sans);font-weight:300;
+  font-size:clamp(0.95rem,1.8vw,1.25rem);
+  letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--gold-soft);margin-top:0.4em;
+}
+.slide .meta{
+  font-size:clamp(0.8rem,1.4vw,0.95rem);
+  color:var(--white-dim);margin-top:1.5em;
+  font-weight:400;letter-spacing:0.08em;
+}
+
+/* ═══════════════════ SVG ICONS ═══════════════════ */
+.slide-icon{
+  width:clamp(56px,10vw,88px);height:clamp(56px,10vw,88px);
+  margin-bottom:1.2em;
+  opacity:0;transform:scale(0.6);
+  transition:opacity .8s var(--ease-dramatic),transform .8s var(--ease-dramatic);
+}
+.slide.active .slide-icon{opacity:1;transform:scale(1);transition-delay:.05s}
+.slide-icon svg{width:100%;height:100%}
+
+/* ═══════════════════ SCRIPTURE CARDS ═══════════════════ */
+.scripture-card{
+  position:relative;
+  background:linear-gradient(135deg,rgba(200,164,78,0.06) 0%,rgba(200,164,78,0.02) 100%);
+  border:1px solid rgba(200,164,78,0.15);
+  border-radius:16px;
+  padding:clamp(20px,3vw,36px) clamp(24px,4vw,44px);
+  max-width:680px;width:100%;
+  margin:0.6em auto;
+  backdrop-filter:blur(8px);
+}
+.scripture-card::before{
+  content:'';position:absolute;inset:-1px;
+  border-radius:17px;
+  background:linear-gradient(135deg,rgba(200,164,78,0.2),transparent 60%);
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask-composite:exclude;-webkit-mask-composite:xor;
+  padding:1px;pointer-events:none;
+}
+.scripture-card .scripture-text{
+  font-family:var(--serif);font-style:italic;
+  font-size:clamp(1.1rem,2.5vw,1.65rem);
+  line-height:1.55;color:var(--white);
+}
+.scripture-card .scripture-ref{
+  display:block;margin-top:0.7em;
+  font-family:var(--sans);font-style:normal;
+  font-size:clamp(0.75rem,1.4vw,0.95rem);
+  font-weight:600;color:var(--gold);
+  letter-spacing:0.06em;
+}
+.scripture-card .quote-mark{
+  position:absolute;top:-8px;left:16px;
+  font-family:var(--serif);font-size:clamp(3rem,6vw,5rem);
+  color:var(--gold);opacity:0.15;line-height:1;
+  user-select:none;
+}
+
+/* ═══════════════════ QUESTION SLIDES ═══════════════════ */
+.question{
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(1.4rem,3.5vw,2.6rem);
+  line-height:1.35;color:var(--white);
+  max-width:760px;font-style:italic;
+}
+.question-icon{
+  width:40px;height:40px;margin-bottom:1em;opacity:0.4;
+}
+
+/* ═══════════════════ SECTION DIVIDERS ═══════════════════ */
+.slide.section-divider{overflow:hidden}
+.section-divider .section-label{
+  font-family:var(--sans);font-weight:700;
+  font-size:clamp(0.7rem,1.2vw,0.85rem);
+  letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1em;
+}
+.section-divider h1{
+  font-size:clamp(3rem,8vw,6.5rem);
+  background:linear-gradient(135deg,var(--white) 20%,var(--gold-bright) 80%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.section-divider .bg-glyph{
+  position:absolute;
+  opacity:0;transform:scale(0.5);
+  transition:opacity 1.2s ease,transform 1.2s var(--ease-dramatic);
+}
+.section-divider.active .bg-glyph{
+  opacity:0.04;transform:scale(1);
+}
+
+/* ═══════════════════ MYTH SLIDES ═══════════════════ */
+.myth-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 18px;border-radius:100px;
+  background:rgba(200,100,80,0.1);
+  border:1px solid rgba(200,100,80,0.2);
+  margin-bottom:1.2em;
+}
+.myth-badge span{
+  font-family:var(--sans);font-weight:700;
+  font-size:clamp(0.65rem,1.1vw,0.8rem);
+  letter-spacing:0.2em;text-transform:uppercase;
+  color:rgba(200,100,80,0.8);
+}
+.myth-x{
+  width:14px;height:14px;
+  stroke:rgba(200,100,80,0.8);stroke-width:2.5;
+  stroke-linecap:round;
+}
+.myth-text{
+  font-family:var(--serif);font-weight:600;
+  font-size:clamp(1.3rem,3vw,2.2rem);
+  color:var(--white);position:relative;
+  margin-bottom:1.2em;
+}
+.myth-text .strike{
+  position:absolute;left:50%;top:55%;
+  width:0;height:2px;
+  background:var(--red-soft);
+  transform:translateX(-50%);
+  transition:width .6s var(--ease-out);
+  transition-delay:.6s;
+}
+.slide.active .myth-text .strike{width:105%}
+
+/* ═══════════════════ LISTS ═══════════════════ */
+.lessons-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+  max-width:680px;width:100%;margin:0.8em auto;
+}
+@media(max-width:600px){.lessons-grid{grid-template-columns:1fr}}
+.lesson-card{
+  text-align:left;padding:clamp(14px,2vw,22px);
+  border-radius:12px;
+  background:rgba(200,164,78,0.04);
+  border:1px solid rgba(200,164,78,0.1);
+  transition:border-color .3s ease;
+}
+.lesson-card:hover{border-color:rgba(200,164,78,0.25)}
+.lesson-num{
+  font-family:var(--serif);font-weight:700;
+  font-size:clamp(1.4rem,2.5vw,1.8rem);
+  color:var(--gold);line-height:1;margin-bottom:0.3em;
+}
+.lesson-title{
+  font-family:var(--sans);font-weight:600;
+  font-size:clamp(0.85rem,1.5vw,1.05rem);
+  color:var(--white);margin-bottom:0.2em;
+}
+.lesson-desc{
+  font-family:var(--sans);font-weight:300;
+  font-size:clamp(0.8rem,1.3vw,0.95rem);
+  color:var(--white-dim);line-height:1.45;
+}
+.lesson-card.alert{
+  border-color:rgba(200,100,80,0.2);
+  background:rgba(200,100,80,0.04);
+}
+.lesson-card.alert .lesson-num{color:rgba(200,100,80,0.7)}
+
+/* ═══════════════════ PURPOSE DIAGRAM (concentric) ═══════════════════ */
+.purpose-rings{
+  position:relative;
+  width:clamp(260px,50vw,400px);
+  height:clamp(260px,50vw,400px);
+  margin:1em auto;
+}
+.purpose-ring{
+  position:absolute;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;
+  border:1px solid rgba(200,164,78,0.15);
+  opacity:0;transform:scale(0.5);
+  transition:opacity .7s var(--ease-dramatic),transform .7s var(--ease-dramatic);
+}
+.slide.active .purpose-ring{opacity:1;transform:scale(1)}
+.purpose-ring.outer{
+  inset:0;
+  background:rgba(200,164,78,0.03);
+  transition-delay:.2s;
+}
+.purpose-ring.middle{
+  inset:18%;
+  background:rgba(200,164,78,0.06);
+  border-color:rgba(200,164,78,0.2);
+  transition-delay:.45s;
+}
+.purpose-ring.inner{
+  inset:38%;
+  background:rgba(200,164,78,0.1);
+  border-color:rgba(200,164,78,0.3);
+  transition-delay:.7s;
+}
+.ring-label{
+  font-family:var(--sans);font-weight:600;
+  font-size:clamp(0.6rem,1.2vw,0.8rem);
+  letter-spacing:0.1em;text-transform:uppercase;
+  position:absolute;
+}
+.ring-label.top{top:clamp(4px,1.5vw,12px);color:var(--gold-soft);opacity:0.6}
+.ring-label.mid{color:var(--gold)}
+.ring-label.center{color:var(--gold-bright);font-size:clamp(0.7rem,1.4vw,0.95rem)}
+
+/* ═══════════════════ EQUATION VISUAL ═══════════════════ */
+.equation{
+  display:flex;align-items:center;gap:clamp(12px,3vw,28px);
+  margin:1em auto;flex-wrap:wrap;justify-content:center;
+}
+.eq-block{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:clamp(16px,2.5vw,28px);
+  border-radius:16px;
+  background:rgba(200,164,78,0.05);
+  border:1px solid rgba(200,164,78,0.12);
+  min-width:clamp(100px,18vw,160px);
+}
+.eq-block svg{width:clamp(32px,5vw,48px);height:clamp(32px,5vw,48px)}
+.eq-label{
+  font-family:var(--sans);font-weight:600;
+  font-size:clamp(0.8rem,1.5vw,1.05rem);
+  color:var(--white);letter-spacing:0.02em;
+}
+.eq-plus{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(2rem,4vw,3.5rem);
+  color:var(--gold);opacity:0.5;
+}
+.eq-equals{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(2rem,4vw,3.5rem);
+  color:var(--gold);
+}
+.eq-result{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:clamp(16px,2.5vw,28px) clamp(20px,3vw,36px);
+  border-radius:16px;
+  background:linear-gradient(135deg,rgba(200,164,78,0.12),rgba(200,164,78,0.04));
+  border:1px solid rgba(200,164,78,0.3);
+}
+.eq-result .eq-label{color:var(--gold-bright);font-size:clamp(0.9rem,1.8vw,1.2rem)}
+
+/* ═══════════════════ CONVITE ═══════════════════ */
+.convite-list{
+  display:flex;flex-direction:column;gap:clamp(12px,2vw,20px);
+  max-width:620px;width:100%;margin:1em auto;
+}
+.convite-item{
+  display:flex;align-items:flex-start;gap:clamp(12px,2vw,20px);
+  text-align:left;padding:clamp(14px,2vw,22px);
+  border-radius:14px;
+  background:rgba(200,164,78,0.04);
+  border:1px solid rgba(200,164,78,0.1);
+  opacity:0;transform:translateX(-20px);
+  transition:opacity .5s var(--ease-out),transform .5s var(--ease-out);
+}
+.slide.active .convite-item:nth-child(1){opacity:1;transform:translateX(0);transition-delay:.3s}
+.slide.active .convite-item:nth-child(2){opacity:1;transform:translateX(0);transition-delay:.5s}
+.slide.active .convite-item:nth-child(3){opacity:1;transform:translateX(0);transition-delay:.7s}
+.convite-num{
+  font-family:var(--serif);font-weight:700;
+  font-size:clamp(1.6rem,3vw,2.2rem);
+  color:var(--gold);line-height:1;flex-shrink:0;
+  min-width:1.2em;
+}
+.convite-text{
+  font-family:var(--sans);font-weight:300;
+  font-size:clamp(0.9rem,1.8vw,1.1rem);
+  line-height:1.55;color:var(--text);
+}
+.convite-text strong{color:var(--white);font-weight:600}
+
+/* ═══════════════════ PRINCIPLE HIGHLIGHT ═══════════════════ */
+.principle{
+  font-family:var(--serif);
+  font-size:clamp(1.2rem,2.8vw,2rem);
+  line-height:1.45;color:var(--white);max-width:660px;
+}
+.principle em{
+  color:var(--gold-soft);font-style:normal;font-weight:600;
+  text-shadow:0 0 30px rgba(200,164,78,0.2);
+}
+
+/* ═══════════════════ GOLD LINE ═══════════════════ */
+.gold-line{
+  width:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:1em auto;
+  transition:width .8s var(--ease-out);
+  transition-delay:.4s;
+}
+.slide.active .gold-line{width:80px}
+
+/* ═══════════════════ CLOSING GLOW ═══════════════════ */
+.slide.closing{position:relative}
+.closing-glow{
+  position:absolute;
+  width:clamp(300px,60vw,600px);height:clamp(300px,60vw,600px);
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(200,164,78,0.08) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  opacity:0;transition:opacity 1.5s ease;
+  pointer-events:none;
+}
+.slide.closing.active .closing-glow{opacity:1}
+
+/* ═══════════════════ PROGRESS & COUNTER ═══════════════════ */
+.progress-track{
+  position:fixed;bottom:0;left:0;right:0;
+  height:3px;background:rgba(200,164,78,0.08);z-index:100;
+}
+.progress-bar{
+  height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-bright));
+  transition:width .5s var(--ease-out);
+  box-shadow:0 0 12px rgba(200,164,78,0.3);
+}
+.slide-counter{
+  position:fixed;bottom:14px;right:20px;
+  font-family:var(--sans);font-weight:400;
+  font-size:0.75rem;color:var(--white-dim);
+  z-index:100;letter-spacing:0.06em;
+}
+.section-indicator{
+  position:fixed;bottom:14px;left:20px;
+  font-family:var(--sans);font-weight:600;
+  font-size:0.7rem;color:var(--gold);
+  z-index:100;letter-spacing:0.15em;
+  text-transform:uppercase;
+  opacity:0.5;
+}
+
+/* ═══════════════════ GRAIN OVERLAY ═══════════════════ */
+.grain{
+  position:fixed;inset:0;pointer-events:none;z-index:90;
+  opacity:0.35;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════════ MOBILE ═══════════════════ */
+@media(max-width:600px){
+  .slide{padding:20px 16px}
+  .equation{gap:8px}
+  .eq-block{min-width:80px;padding:12px}
+  .lessons-grid{gap:10px}
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div class="grain"></div>
+
+<div class="deck" id="deck">
+
+  <!-- ══════ SLIDE 1 — TITLE ══════ -->
+  <div class="slide active" data-slide="0" data-section="">
+    <div class="slide-icon anim">
+      <svg viewBox="0 0 80 80" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="40" cy="40" r="34" stroke="rgba(200,164,78,0.2)" stroke-width="1"/>
+        <path d="M40 16 L40 64" stroke="rgba(200,164,78,0.3)" stroke-width="1"/>
+        <path d="M28 22 L40 40 L52 22" stroke="var(--gold)" stroke-width="1.5" fill="rgba(200,164,78,0.05)"/>
+        <path d="M28 58 L40 40 L52 58" stroke="var(--gold)" stroke-width="1.5" fill="rgba(200,164,78,0.05)"/>
+        <circle cx="40" cy="40" r="3" fill="var(--gold)" opacity="0.6"/>
+      </svg>
+    </div>
+    <h1 class="anim">Autossuficiência</h1>
+    <p class="subtitle anim">Trabalhar. Prover. Prosperar.</p>
+    <p class="meta anim">Quórum de Élderes</p>
+  </div>
+
+  <!-- ══════ SLIDE 2 — OPENING QUESTION ══════ -->
+  <div class="slide" data-slide="1" data-section="ABERTURA">
+    <div class="question-icon anim">
+      <svg viewBox="0 0 40 40" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity="0.5">
+        <circle cx="20" cy="20" r="16"/>
+        <path d="M16 15c0-3 2.5-5 5-5s4 2 4 4c0 3-3 3-3 6" stroke-linecap="round"/>
+        <circle cx="22" cy="28" r="1" fill="var(--gold)"/>
+      </svg>
+    </div>
+    <p class="question anim">"Qual a diferença entre alguém que trabalha muito e alguém que é verdadeiramente autossuficiente?"</p>
+  </div>
+
+  <!-- ══════ SLIDE 3 — DEFINITION ══════ -->
+  <div class="slide" data-slide="2" data-section="ABERTURA">
+    <h3 class="anim">Manual Geral 22.1.1</h3>
+    <div class="scripture-card anim">
+      <span class="quote-mark">"</span>
+      <p class="scripture-text">Autossuficiência é a capacidade, o compromisso e o esforço de prover as necessidades espirituais e temporais da vida para si e para a família.</p>
+    </div>
+    <div class="gold-line anim"></div>
+    <p class="anim">Não é independência de Deus — é depender Dele enquanto fazemos a nossa parte.</p>
+    <p class="anim">Trabalhar muito não basta. Muitos irmãos trabalham 12h por dia e continuam aflitos.</p>
+  </div>
+
+  <!-- ══════ SLIDE 4 — THESIS ══════ -->
+  <div class="slide" data-slide="3" data-section="ABERTURA">
+    <h2 class="anim">A Tese</h2>
+    <p class="principle anim">Autossuficiência é o alinhamento entre <em>oração</em>, <em>trabalho inteligente</em>, <em>dons</em> e <em>propósito</em> — e o tempo é o recurso onde tudo isso se prova.</p>
+    <div class="gold-line anim"></div>
+    <div class="scripture-card anim">
+      <span class="quote-mark">"</span>
+      <p class="scripture-text">Ensina-nos a contar os nossos dias, de tal maneira que alcancemos corações sábios.</p>
+      <span class="scripture-ref">Salmo 90:12</span>
+    </div>
+  </div>
+
+  <!-- ══════ SLIDE 5 — SECTION: TRABALHAR ══════ -->
+  <div class="slide section-divider" data-slide="4" data-section="TRABALHAR">
+    <svg class="bg-glyph" viewBox="0 0 400 400" width="400" style="right:-60px;bottom:-60px" fill="none" stroke="var(--gold)" stroke-width="0.5">
+      <rect x="50" y="180" width="20" height="160" rx="3"/>
+      <path d="M20 180 L60 120 L100 180Z"/>
+    </svg>
+    <p class="section-label anim">Bloco 1</p>
+    <h1 class="anim">Trabalhar</h1>
+    <p class="subtitle anim">Esforço + Inteligência + Oração</p>
+  </div>
+
+  <!-- ══════ SLIDE 6 — DISCUSSION ══════ -->
+  <div class="slide" data-slide="5" data-section="TRABALHAR">
+    <div class="question-icon anim">
+      <svg viewBox="0 0 40 40" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity="0.5">
+        <circle cx="20" cy="20" r="16"/>
+        <path d="M14 20h12M20 14v12" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="question anim">"Quem aqui já trabalhou MUITO e viu pouco resultado?"</p>
+    <div class="gold-line anim"></div>
+    <p class="anim" style="font-size:clamp(1.2rem,2.5vw,1.6rem);color:var(--white-dim)">Por quê?</p>
+  </div>
+
+  <!-- ══════ SLIDE 7 — TRABALHO DURO X INTELIGENTE ══════ -->
+  <div class="slide" data-slide="6" data-section="TRABALHAR">
+    <h3 class="anim">Trabalho Duro x Trabalho Inteligente</h3>
+    <div class="scripture-card anim">
+      <span class="quote-mark">"</span>
+      <p class="scripture-text">Se estiver embotado o ferro... então é preciso pôr mais força; mas a sabedoria é excelente para dirigir.</p>
+      <span class="scripture-ref">Eclesiastes 10:10</span>
+    </div>
+    <div class="gold-line anim"></div>
+    <p class="anim"><strong style="color:var(--white)">O lenhador sábio</strong> para de cortar pra afiar o machado.</p>
+    <p class="anim">Ferramenta cega = exaustão sem fruto.<br>Trabalho inteligente = afiar antes, escolher a árvore certa, cortar no ponto.</p>
+  </div>
+
+  <!-- ══════ SLIDE 8 — EQUAÇÃO VISUAL ══════ -->
+  <div class="slide" data-slide="7" data-section="TRABALHAR">
+    <h2 class="anim">A Equação que Supera Tudo</h2>
+    <div class="equation anim">
+      <div class="eq-block">
+        <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round">
+          <path d="M24 6v4M24 38v4M6 24h4M38 24h4M11 11l3 3M34 34l3 3M11 37l3-3M34 14l3-3"/>
+          <circle cx="24" cy="24" r="8" fill="rgba(200,164,78,0.1)"/>
+        </svg>
+        <span class="eq-label">Oração</span>
+      </div>
+      <span class="eq-plus">+</span>
+      <div class="eq-block">
+        <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="24" cy="16" r="6" fill="rgba(200,164,78,0.1)"/>
+          <path d="M14 42V36c0-5.5 4.5-10 10-10s10 4.5 10 10v6"/>
+          <path d="M30 16l4-4M34 12l-2 6"/>
+        </svg>
+        <span class="eq-label">Trabalho Inteligente</span>
+      </div>
+      <span class="eq-equals">=</span>
+      <div class="eq-result">
+        <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-bright)" stroke-width="1.5" stroke-linecap="round">
+          <path d="M12 38L24 10l12 28" fill="rgba(200,164,78,0.08)"/>
+          <path d="M16 30h16"/>
+          <circle cx="24" cy="10" r="3" fill="var(--gold)"/>
+        </svg>
+        <span class="eq-label">Imbatível</span>
+      </div>
+    </div>
+    <div class="scripture-card anim" style="margin-top:1em">
+      <span class="quote-mark">"</span>
+      <p class="scripture-text">Aconselha-te com o Senhor em tudo o que fizeres...</p>
+      <span class="scripture-ref">Alma 37:36-37</span>
+    </div>
+  </div>
+
+  <!-- ══════ SLIDE 9 — PRINCÍPIO ══════ -->
+  <div class="slide" data-slide="8" data-section="TRABALHAR">
+    <p class="principle anim">Oração sem trabalho é <em>preguiça espiritualizada</em>.</p>
+    <p class="principle anim" style="margin-top:0.6em">Trabalho sem oração é <em>orgulho disfarçado</em>.</p>
+    <div class="gold-line anim"></div>
+    <p class="principle anim" style="margin-top:0.4em">Os dois juntos <em>não têm rival</em>.</p>
+  </div>
+
+  <!-- ══════ SLIDE 10 — TEMPO ══════ -->
+  <div class="slide" data-slide="9" data-section="TRABALHAR">
+    <div class="slide-icon anim">
+      <svg viewBox="0 0 80 80" fill="none" stroke-linecap="round">
+        <circle cx="40" cy="40" r="28" stroke="rgba(200,164,78,0.2)" stroke-width="1"/>
+        <path d="M40 18v22l14 10" stroke="var(--gold)" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="2.5" fill="var(--gold)" opacity="0.6"/>
+      </svg>
+    </div>
+    <p class="question anim">"Se Deus auditasse sua agenda da última semana, Ele veria um homem alinhado com o propósito Dele — ou só ocupado?"</p>
+    <div class="gold-line anim"></div>
+    <p class="anim">Todos temos 24 horas. A diferença está em onde elas vão.</p>
+  </div>
+
+  <!-- ══════ SLIDE 11 — SECTION: PROVER ══════ -->
+  <div class="slide section-divider" data-slide="10" data-section="PROVER">
+    <svg class="bg-glyph" viewBox="0 0 400 400" width="380" style="left:-80px;bottom:-80px" fill="none" stroke="var(--gold)" stroke-width="0.5">
+      <path d="M120 280 L200 120 L280 280Z"/>
+      <circle cx="200" cy="200" r="80"/>
+    </svg>
+    <p class="section-label anim">Bloco 2</p>
+    <h1 class="anim">Prover</h1>
+    <p class="subtitle anim">Desmontando Crenças Limitantes</p>
+  </div>
+
+  <!-- ══════ SLIDE 12 — DISCUSSION ══════ -->
+  <div class="slide" data-slide="11" data-section="PROVER">
+    <div class="question-icon anim">
+      <svg viewBox="0 0 40 40" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity="0.5">
+        <path d="M8 30l6-20h12l6 20" stroke-linecap="round"/>
+        <circle cx="20" cy="22" r="6"/>
+      </svg>
+    </div>
+    <p class="question anim">"Quais frases sobre dinheiro você ouviu crescendo?"</p>
+    <div class="gold-line anim"></div>
+    <p class="anim" style="font-size:clamp(1rem,2.2vw,1.4rem);color:var(--white-dim)">
+      'Dinheiro é sujo'&ensp;&bull;&ensp;'Rico não entra no céu'&ensp;&bull;&ensp;'A gente não nasceu pra isso'
+    </p>
+  </div>
+
+  <!-- ══════ SLIDE 13 — MITO 1 ══════ -->
+  <div class="slide" data-slide="12" data-section="PROVER">
+    <div class="myth-badge anim">
+      <svg class="myth-x" viewBox="0 0 14 14"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></svg>
+      <span>Mito 1</span>
+    </div>
+    <p class="myth-text anim">"Dinheiro é a raiz de todos os males."<span class="strike"></span></p>
+    <div class="scripture-card anim">
+      <span class="quote-mark">"</span>
+      <p class="scripture-text">O <strong style="color:var(--gold-soft)">amor</strong> ao dinheiro é a raiz de toda espécie de males.</p>
+      <span class="scripture-ref">1 Timóteo 6:10</span>
+    </div>
+    <div class="gold-line anim"></div>
+    <p class="anim">O dinheiro é neutro. O coração é que se corrompe.</p>
+  </div>
+
+  <!-- ══════ SLIDE 14 — MITO 2 ══════ -->
+  <div class="slide" data-slide="13" data-section="PROVER">
+    <div class="myth-badge anim">
+      <svg class="myth-x" viewBox="0 0 14 14"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></svg>
+      <span>Mito 2</span>
+    </div>
+    <p class="myth-text anim">"Ser pobre é mais espiritual."<span class="strike"></span></p>
+    <div class="scripture-card anim">
+      <span class="quote-mark">"</span>
+      <p class="scripture-text">Antes de buscardes riquezas, buscai o reino de Deus. E depois de haverdes obtido esperança em Cristo, obtereis riquezas, se as buscardes; e as buscareis com o intuito de fazer o bem.</p>
+      <span class="scripture-ref">Jacó 2:18-19</span>
+    </div>
+  </div>
+
+  <!-- ══════ SLIDE 15 — MITO 3 ══════ -->
+  <div class="slide" data-slide="14" data-section="PROVER">
+    <div class="myth-badge anim">
+      <svg class="myth-x" viewBox="0 0 14 14"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></svg>
+      <span>Mito 3</span>
+    </div>
+    <p class="myth-text anim">"Não nasci com esse dom."<span class="strike"></span></p>
+    <div class="scripture-card anim">
+      <span class="quote-mark">"</span>
+      <p class="scripture-text">Lembrar-te-ás do Senhor teu Deus, porque ele é o que te dá força para adquirires riquezas.</p>
+      <span class="scripture-ref">Deuteronômio 8:18</span>
+    </div>
+    <div class="gold-line anim"></div>
+    <p class="anim">A força é dada. Você precisa exercitá-la.</p>
+  </div>
+
+  <!-- ══════ SLIDE 16 — CONVITE RÁPIDO ══════ -->
+  <div class="slide" data-slide="15" data-section="PROVER">
+    <div class="slide-icon anim">
+      <svg viewBox="0 0 80 80" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round">
+        <rect x="18" y="14" width="44" height="52" rx="4" fill="rgba(200,164,78,0.05)"/>
+        <path d="M28 30h24M28 40h18M28 50h22"/>
+        <path d="M52 58l8 8" stroke-width="2"/>
+      </svg>
+    </div>
+    <h2 class="anim">Convite</h2>
+    <div class="gold-line anim"></div>
+    <p class="principle anim">Escreva <em>uma crença limitante</em> que você carrega.</p>
+    <p class="principle anim" style="margin-top:0.8em">Substitua por <em>uma das escrituras</em>.</p>
+  </div>
+
+  <!-- ══════ SLIDE 17 — SECTION: PROSPERAR ══════ -->
+  <div class="slide section-divider" data-slide="16" data-section="PROSPERAR">
+    <svg class="bg-glyph" viewBox="0 0 400 400" width="350" style="right:-60px;top:-40px" fill="none" stroke="var(--gold)" stroke-width="0.5">
+      <path d="M140 300 L200 100 L260 300"/>
+      <path d="M160 260 L200 140 L240 260"/>
+      <circle cx="200" cy="100" r="20"/>
+    </svg>
+    <p class="section-label anim">Bloco 3</p>
+    <h1 class="anim">Prosperar</h1>
+    <p class="subtitle anim">Salomão, Dons e Propósito</p>
+  </div>
+
+  <!-- ══════ SLIDE 18 — SALOMÃO ══════ -->
+  <div class="slide" data-slide="17" data-section="PROSPERAR">
+    <div class="slide-icon anim">
+      <svg viewBox="0 0 80 80" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round">
+        <path d="M24 50h32" stroke-width="2"/>
+        <path d="M20 50l8-20 12 14 12-14 8 20" fill="rgba(200,164,78,0.08)"/>
+        <circle cx="40" cy="22" r="4" fill="rgba(200,164,78,0.15)" stroke="var(--gold)"/>
+        <path d="M28 56h24v4H28z" fill="rgba(200,164,78,0.1)" stroke="var(--gold)" stroke-width="1"/>
+      </svg>
+    </div>
+    <p class="question anim">"Por que Salomão prosperou tanto?"</p>
+    <p class="anim" style="color:var(--white-dim);margin-top:0.4em;font-size:clamp(1rem,2vw,1.3rem)">Sorte? Herança? Ou outra coisa?</p>
+    <div class="gold-line anim"></div>
+    <p class="anim">Pediu <strong style="color:var(--gold)">sabedoria para servir</strong>, não riqueza.</p>
+    <p class="anim">Deus deu sabedoria + riqueza + honra — porque o pedido estava alinhado com o propósito.</p>
+    <p class="anim"><span class="scripture-ref" style="display:inline">1 Reis 3:7-13</span></p>
+  </div>
+
+  <!-- ══════ SLIDE 19 — 4 LIÇÕES ══════ -->
+  <div class="slide" data-slide="18" data-section="PROSPERAR">
+    <h3 class="anim">4 Lições de Salomão</h3>
+    <div class="lessons-grid anim">
+      <div class="lesson-card">
+        <div class="lesson-num">1</div>
+        <div class="lesson-title">Pediu o Necessário</div>
+        <div class="lesson-desc">Para cumprir seu chamado, não para inflar o ego</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">2</div>
+        <div class="lesson-title">Reconheceu Pequenez</div>
+        <div class="lesson-desc">Humildade abre céu</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">3</div>
+        <div class="lesson-title">Reino Primeiro</div>
+        <div class="lesson-desc">Riquezas vieram como consequência</div>
+      </div>
+      <div class="lesson-card alert">
+        <div class="lesson-num">4</div>
+        <div class="lesson-title">Alerta</div>
+        <div class="lesson-desc">Mesmo Salomão caiu quando prazeres tomaram o lugar de Deus (1 Reis 11)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ SLIDE 20 — DONS ══════ -->
+  <div class="slide" data-slide="19" data-section="PROSPERAR">
+    <h3 class="anim">Seu Dom é Parte do Plano</h3>
+    <div class="scripture-card anim">
+      <span class="quote-mark">"</span>
+      <p class="scripture-text">A todo homem é dado um dom pelo Espírito de Deus... a todos seja dado proveito.</p>
+      <span class="scripture-ref">D&C 46:11-12</span>
+    </div>
+    <div class="gold-line anim"></div>
+    <p class="anim">Parábola dos talentos — o servo que enterrou o talento foi chamado <strong style="color:var(--gold)">"mau e negligente"</strong>.</p>
+    <p class="anim">Não usar o dom não é neutralidade — é <em style="color:var(--gold-soft);font-style:normal">desobediência</em>.</p>
+    <p class="anim" style="color:var(--white-dim);font-size:0.85em">Mateus 25</p>
+  </div>
+
+  <!-- ══════ SLIDE 21 — TRÊS NÍVEIS (CONCENTRIC) ══════ -->
+  <div class="slide" data-slide="20" data-section="PROSPERAR">
+    <h3 class="anim">Três Níveis de Propósito</h3>
+    <div class="purpose-rings anim">
+      <div class="purpose-ring outer">
+        <span class="ring-label top">Eterno</span>
+      </div>
+      <div class="purpose-ring middle">
+        <span class="ring-label mid">Coletivo</span>
+      </div>
+      <div class="purpose-ring inner">
+        <span class="ring-label center">Eu</span>
+      </div>
+    </div>
+    <p class="anim" style="max-width:500px"><strong style="color:var(--gold)">Eu</strong> — dons, talentos, paixões&ensp;|&ensp;<strong style="color:var(--gold)">Coletivo</strong> — família, quórum, comunidade&ensp;|&ensp;<strong style="color:var(--gold)">Eterno</strong> — o Reino de Deus</p>
+    <div class="gold-line anim"></div>
+    <p class="principle anim">Quando os três se alinham, o trabalho vira <em>missão</em>.</p>
+  </div>
+
+  <!-- ══════ SLIDE 22 — CONVITE TRÍPLICE ══════ -->
+  <div class="slide" data-slide="21" data-section="ENCERRAMENTO">
+    <h2 class="anim">Convite para a Semana</h2>
+    <div class="convite-list">
+      <div class="convite-item">
+        <span class="convite-num">1</span>
+        <span class="convite-text"><strong>Orar especificamente sobre seu trabalho</strong> — não "abençoa o dia", mas "Senhor, onde devo investir minhas horas?"</span>
+      </div>
+      <div class="convite-item">
+        <span class="convite-num">2</span>
+        <span class="convite-text"><strong>Afiar uma machadinha</strong> — escolher 1 habilidade pra desenvolver nos próximos 90 dias</span>
+      </div>
+      <div class="convite-item">
+        <span class="convite-num">3</span>
+        <span class="convite-text"><strong>Identificar 1 dom enterrado</strong> — e plantar uma semente esta semana</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ SLIDE 23 — CLOSING ══════ -->
+  <div class="slide closing" data-slide="22" data-section="ENCERRAMENTO">
+    <div class="closing-glow"></div>
+    <div class="scripture-card anim" style="font-style:normal;border-color:rgba(200,164,78,0.25);background:linear-gradient(135deg,rgba(200,164,78,0.08),rgba(200,164,78,0.02))">
+      <p class="scripture-text" style="font-style:normal">Tempo é o recurso mais democrático e mais sagrado. Todos têm 24h. A diferença entre quem prospera e quem só sobrevive não é esforço bruto — é o alinhamento entre oração, sabedoria e propósito.</p>
+    </div>
+    <div class="gold-line anim"></div>
+    <p class="principle anim" style="margin-top:0.6em;font-size:clamp(1.4rem,3.2vw,2.4rem)"><em>Cristo é o Mestre que ensina os três.</em></p>
+  </div>
+
+</div>
+
+<!-- UI -->
+<div class="progress-track"><div class="progress-bar" id="progress"></div></div>
+<div class="slide-counter" id="counter">1 / 23</div>
+<div class="section-indicator" id="section"></div>
+
+<script>
+(function(){
+  /* ── Particles ── */
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const PARTICLE_COUNT = Math.min(50, Math.floor(window.innerWidth / 20));
+  for(let i = 0; i < PARTICLE_COUNT; i++){
+    particles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.5 + 0.3,
+      dx: (Math.random() - 0.5) * 0.15,
+      dy: (Math.random() - 0.5) * 0.15,
+      o: Math.random() * 0.15 + 0.03,
+      pulse: Math.random() * Math.PI * 2
+    });
+  }
+
+  function drawParticles(){
+    ctx.clearRect(0, 0, W, H);
+    const time = Date.now() * 0.001;
+    for(const p of particles){
+      p.x += p.dx;
+      p.y += p.dy;
+      if(p.x < 0) p.x = W;
+      if(p.x > W) p.x = 0;
+      if(p.y < 0) p.y = H;
+      if(p.y > H) p.y = 0;
+      const alpha = p.o + Math.sin(time + p.pulse) * 0.04;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,164,78,${alpha})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+
+  /* ── Slides ── */
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const progressBar = document.getElementById('progress');
+  const counterEl = document.getElementById('counter');
+  const sectionEl = document.getElementById('section');
+  let current = 0;
+  let transitioning = false;
+
+  function go(n){
+    if(n < 0 || n >= total || n === current || transitioning) return;
+    transitioning = true;
+    const prev = slides[current];
+    prev.classList.remove('active');
+    // Reset animations on previous
+    prev.querySelectorAll('.anim').forEach(el => {
+      el.style.transitionDelay = '0s';
+    });
+
+    current = n;
+    const next = slides[current];
+
+    // Reset anim children delays
+    const anims = next.querySelectorAll('.anim');
+    anims.forEach((el, i) => {
+      el.style.transitionDelay = (0.1 + i * 0.12) + 's';
+    });
+
+    next.classList.add('active');
+    progressBar.style.width = ((current + 1) / total * 100) + '%';
+    counterEl.textContent = (current + 1) + ' / ' + total;
+    sectionEl.textContent = next.dataset.section || '';
+
+    setTimeout(() => { transitioning = false }, 400);
+  }
+
+  function next(){ go(current + 1) }
+  function prev(){ go(current - 1) }
+
+  // Keyboard
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' '){
+      e.preventDefault(); next();
+    } else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+      e.preventDefault(); prev();
+    } else if(e.key === 'Home'){
+      e.preventDefault(); go(0);
+    } else if(e.key === 'End'){
+      e.preventDefault(); go(total - 1);
+    }
+  });
+
+  // Touch / Swipe
+  let tx = 0, ty = 0;
+  document.addEventListener('touchstart', function(e){
+    tx = e.changedTouches[0].screenX;
+    ty = e.changedTouches[0].screenY;
+  }, {passive: true});
+  document.addEventListener('touchend', function(e){
+    const dx = e.changedTouches[0].screenX - tx;
+    const dy = e.changedTouches[0].screenY - ty;
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40){
+      dx < 0 ? next() : prev();
+    }
+  }, {passive: true});
+
+  // Click sides
+  document.addEventListener('click', function(e){
+    if(e.target.closest('.convite-list, .purpose-rings, .lessons-grid, .equation, a, button')) return;
+    const x = e.clientX / window.innerWidth;
+    if(x > 0.6) next(); else if(x < 0.4) prev();
+  });
+
+  // Init
+  progressBar.style.width = (1 / total * 100) + '%';
+  sectionEl.textContent = slides[0].dataset.section || '';
+})();
+</script>
+
+</body>
+</html>

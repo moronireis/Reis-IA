@@ -37,6 +37,20 @@
 - Business-first language, technology as supporting evidence
 - Reference models: Hormozi directness + Chris Do positioning + Lenny accessibility
 
+### Low-Ticket Funnel (April 2026 — NEW)
+- Product: "REIS [IA] Agent Squad" — 25 productized agents in 7 squads + 12 video lessons (~3h)
+- Price: R$67 (testing R$49-67 range)
+- Funnel: Low-ticket R$67 → Content activation → Hub R$497 → Mentorship R$3-5K
+- Competitor benchmark: Xquads/Raxo (R$67, 136 agents, hacker aesthetic, Kiwify)
+- Differentiation: production-tested agents (not lab demos), premium brand, ecosystem upsell
+- Traffic: Meta Ads R$50/day start, scale to R$300-500/day by week 9
+- 90-day target: 500-1K low-ticket sales + 50-100 Hub conversions + 3-5 mentorships = R$67K-142K
+- Strategy doc: `brain/strategy/funnel-low-ticket-strategy.md`
+- Status: Strategy complete, pending Moroni validation. Execution not started.
+
+## Client Projects
+- [project_noiva_sa_funnel.md](project_noiva_sa_funnel.md) — Noiva S.A. funnel strategy: sales process redesign, content pillars, lead magnets, 90-day plan. April 2026.
+
 ## Reviews
 - [project_phase1_review.md](project_phase1_review.md) — Phase 1 funnel review completed 2026-03-12. Critical: zero conversion mechanisms on PT-BR site. All CTAs are dead-end anchors.
 

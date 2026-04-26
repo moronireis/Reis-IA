@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Copy v2 + 3 decisões · Castelo dos Lagos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#C9A96E;--bronze:#8A6A3E;
+  --cream:#F4EFE6;--surface:#FAFAF7;
+  --charcoal:#1A1A1A;
+  --forest:#1E2E24;--forest-mid:#2F4A3A;--near-black:#0E0E0C;
+  --text-muted:#6B6B6B;--text-light:#999;
+  --border:rgba(201,169,110,.2);
+  --border-strong:rgba(201,169,110,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--surface);color:var(--near-black);line-height:1.75;-webkit-font-smoothing:antialiased}
+.container{max-width:1200px;margin:0 auto;padding:0 2rem}
+.narrow{max-width:840px;margin:0 auto;padding:0 2rem}
+
+.bar{background:var(--charcoal);color:var(--gold);font-size:.6rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:.6rem 0;text-align:center}
+
+nav{position:fixed;top:28px;left:0;right:0;z-index:50;padding:1.2rem 0;transition:all .4s cubic-bezier(.16,1,.3,1)}
+nav.scrolled{background:rgba(250,250,247,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:.8rem 0}
+nav .container{display:flex;justify-content:space-between;align-items:center}
+.brand{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;letter-spacing:.05em;color:var(--charcoal)}
+.brand em{font-style:italic;color:var(--gold)}
+.nav-meta{font-family:'Inter';font-size:.7rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+
+.hero{padding:9rem 0 4rem;background:var(--surface);position:relative}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 60%,rgba(201,169,110,.08) 0%,transparent 60%);pointer-events:none}
+.hero-meta{display:flex;gap:2.5rem;margin-bottom:2.2rem;font-family:'Inter';font-size:.68rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);position:relative;flex-wrap:wrap}
+.hero-meta span strong{display:block;color:var(--charcoal);font-weight:600;margin-top:.3rem;font-size:.72rem}
+h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2.2rem,5vw,3.8rem);line-height:1.08;letter-spacing:-.025em;color:var(--charcoal);margin-bottom:1.6rem;position:relative}
+h1 em{font-style:italic;font-weight:400;color:var(--gold)}
+.hero p{font-family:'Inter';font-weight:300;font-size:.98rem;line-height:1.8;color:var(--text-muted);max-width:700px;position:relative}
+
+section{padding:5rem 0;border-top:1px solid var(--border)}
+section.cream{background:var(--cream)}
+section.dark{background:var(--charcoal);color:#fff;border-color:rgba(255,255,255,.06)}
+section.forest{background:var(--forest);color:var(--cream);border-color:rgba(244,239,230,.08)}
+.section-head{margin-bottom:3rem;display:grid;grid-template-columns:auto 1fr;gap:3rem;align-items:baseline}
+.section-num{font-family:'Cormorant Garamond',serif;font-size:.8rem;font-weight:400;letter-spacing:.15em;color:var(--gold)}
+.section-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.8rem,3.5vw,2.6rem);line-height:1.15;letter-spacing:-.02em}
+.section-title em{font-style:italic;color:var(--gold)}
+section.dark .section-title,section.forest .section-title{color:#fff}
+.section-lead{font-family:'Inter';font-weight:300;font-size:.92rem;line-height:1.8;color:var(--text-muted);max-width:720px;margin-top:1.1rem}
+section.dark .section-lead,section.forest .section-lead{color:rgba(244,239,230,.55)}
+
+/* structure table */
+.structure-table{width:100%;border-collapse:collapse;margin-top:1rem;font-family:'Inter';font-size:.85rem}
+.structure-table th{text-align:left;padding:.9rem .5rem;border-bottom:1px solid var(--border-strong);font-family:'Cormorant Garamond',serif;font-size:.7rem;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.structure-table td{padding:1rem .5rem;border-bottom:1px solid var(--border);vertical-align:top;color:var(--charcoal)}
+.structure-table td:first-child{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold);width:60px}
+.structure-table td:nth-child(2){font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:400;color:var(--charcoal);width:160px}
+.structure-table .removed{color:var(--text-light);text-decoration:line-through}
+.structure-table tr.new td:first-child{color:var(--gold)}
+.structure-table tr.new td:nth-child(2)::after{content:' · novo';font-family:'Inter';font-size:.6rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-left:.4rem}
+
+.change-list{margin-top:2.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+@media(max-width:900px){.change-list{grid-template-columns:1fr}}
+.change{background:var(--surface);padding:2rem 1.8rem;display:flex;flex-direction:column;gap:.8rem}
+.change-label{font-family:'Inter';font-size:.58rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gold)}
+.change-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;line-height:1.3;color:var(--charcoal)}
+.change-body{font-family:'Inter';font-size:.8rem;font-weight:300;line-height:1.7;color:var(--text-muted)}
+.change-body del{color:var(--text-light);text-decoration:line-through}
+.change-body strong{color:var(--charcoal);font-weight:500}
+
+/* decision A/B */
+.decision{margin-top:3rem;padding-top:3rem;border-top:1px solid var(--border)}
+.decision:first-of-type{border-top:none;padding-top:0;margin-top:0}
+.decision-num{font-family:'Cormorant Garamond',serif;font-size:.75rem;font-weight:400;letter-spacing:.15em;color:var(--gold);margin-bottom:.6rem}
+.decision-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;line-height:1.2;letter-spacing:-.01em;margin-bottom:.5rem;color:var(--charcoal)}
+.decision-title em{font-style:italic;color:var(--gold)}
+.decision-desc{font-family:'Inter';font-size:.85rem;font-weight:300;line-height:1.7;color:var(--text-muted);max-width:740px}
+
+.ab{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:1.5rem}
+.ab.triple{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:900px){.ab,.ab.triple{grid-template-columns:1fr}}
+.opt{background:var(--surface);padding:2.2rem 1.8rem;display:flex;flex-direction:column;gap:1rem}
+.opt-label{font-family:'Inter';font-size:.58rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted)}
+.opt-label.rec{color:var(--gold)}
+.opt-label.rec::after{content:' · recomendado';font-weight:400}
+
+/* copy mockup card — renders real copy */
+.copy-mock{background:var(--forest);color:var(--cream);padding:2.2rem 2rem;border:1px solid var(--border);min-height:220px;display:flex;flex-direction:column;gap:.8rem;position:relative;overflow:hidden}
+.copy-mock.cream-surface{background:var(--cream);color:var(--near-black);border-color:var(--border-strong)}
+.copy-mock::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 100%,rgba(201,169,110,.06) 0%,transparent 60%);pointer-events:none}
+.mock-kicker{font-family:'Inter';font-size:.58rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);position:relative}
+.mock-headline{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:300;line-height:1.2;letter-spacing:-.015em;position:relative}
+.mock-headline em{font-style:italic;font-weight:400;color:var(--gold)}
+.mock-body{font-family:'Inter';font-size:.78rem;font-weight:300;line-height:1.75;opacity:.75;position:relative;margin-top:.4rem}
+.mock-hairline{height:1px;background:var(--gold);width:40px;opacity:.6;position:relative;margin:.2rem 0}
+
+/* infrastructure table mockup (A) */
+.infra-table{width:100%;border-collapse:collapse;font-size:.78rem;position:relative}
+.infra-table tr{border-bottom:1px solid rgba(244,239,230,.08)}
+.infra-table td{padding:.7rem 0;vertical-align:top}
+.infra-table td:first-child{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.85rem;color:var(--gold);width:45%;padding-right:1rem}
+.infra-table td:last-child{color:var(--cream);opacity:.85}
+.copy-mock.cream-surface .infra-table tr{border-bottom-color:rgba(0,0,0,.08)}
+.copy-mock.cream-surface .infra-table td:last-child{color:var(--near-black);opacity:.8}
+
+/* infrastructure list mockup (B) */
+.infra-list{list-style:none;padding:0;margin:0;position:relative}
+.infra-list li{padding:.55rem 0;border-bottom:1px solid rgba(244,239,230,.08);display:flex;justify-content:space-between;gap:1rem;font-size:.78rem}
+.infra-list li:last-child{border-bottom:none}
+.infra-list li strong{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:.88rem;color:var(--gold)}
+.infra-list li span{color:var(--cream);opacity:.78;text-align:right}
+
+/* parceiros mockup */
+.partners-mock{font-size:.85rem;position:relative}
+.partner-row{padding:.5rem 0;border-bottom:1px solid rgba(244,239,230,.08);display:flex;gap:.6rem;align-items:baseline;font-size:.82rem}
+.partner-row:last-child{border-bottom:none}
+.partner-row strong{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.02rem}
+.partner-row em{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.76rem;color:var(--gold);opacity:.75}
+.partner-row span.role{font-family:'Inter';font-size:.6rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);opacity:.65}
+
+.opt-note{font-family:'Inter';font-size:.76rem;font-weight:300;line-height:1.65;color:var(--text-muted);padding-top:.5rem;border-top:1px solid var(--border)}
+.opt-note strong{color:var(--charcoal);font-weight:500}
+
+/* gaps list */
+.gaps{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(244,239,230,.1);margin-top:2rem}
+@media(max-width:900px){.gaps{grid-template-columns:1fr}}
+.gap{background:var(--forest-mid);padding:1.5rem 1.4rem;display:flex;gap:1rem;align-items:baseline}
+.gap-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--gold);line-height:1;min-width:32px}
+.gap-body{flex:1}
+.gap-section{font-family:'Inter';font-size:.55rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:.35rem;display:block}
+.gap-desc{font-family:'Inter';font-size:.82rem;font-weight:400;line-height:1.6;color:var(--cream)}
+
+.gap-tier{margin-top:3rem;padding-top:1.5rem}
+.gap-tier-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:400;font-style:italic;color:var(--gold);margin-bottom:1rem}
+.gap-tier-lead{font-family:'Inter';font-size:.78rem;font-weight:300;color:rgba(244,239,230,.6);margin-bottom:1.5rem;max-width:680px;line-height:1.7}
+
+/* footer */
+.final{background:var(--charcoal);color:#fff;padding:5rem 0;text-align:center;border-top:1px solid rgba(201,169,110,.2)}
+.final h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.7rem,3.2vw,2.4rem);line-height:1.15;max-width:680px;margin:0 auto 1.3rem}
+.final h2 em{font-style:italic;color:var(--gold)}
+.final p{color:rgba(255,255,255,.55);max-width:580px;margin:0 auto;font-size:.9rem;line-height:1.8;font-weight:300}
+
+footer{background:var(--charcoal);padding:2.5rem 0;text-align:center;border-top:1px solid rgba(255,255,255,.06)}
+footer p{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:500}
+footer em{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);text-transform:none;letter-spacing:0}
+
+@media(max-width:768px){
+  .container,.narrow{padding:0 1.25rem}
+  section{padding:3rem 0}
+  .hero{padding:6.5rem 0 2.5rem}
+  .section-head{grid-template-columns:1fr;gap:.8rem}
+  .hero-meta{flex-wrap:wrap;gap:1.2rem}
+  .structure-table{font-size:.76rem}
+  .structure-table td{padding:.7rem .3rem}
+  .copy-mock{padding:1.5rem 1.25rem}
+}
+</style>
+</head>
+<body>
+
+<div class="bar">Confidencial · Copy v2 · Reviewer PASS 92/100 · Aguardando aprovação</div>
+
+<nav id="nav">
+  <div class="container">
+    <div class="brand">Castelo dos <em>Lagos</em></div>
+    <div class="nav-meta">COPY V2 · 15 abr 2026</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="narrow">
+    <div class="hero-meta">
+      <span>Pipeline<strong>CMO → Copywriter → Humanizer → Reviewer</strong></span>
+      <span>Verdict<strong>PASS · 92/100</strong></span>
+      <span>Gaps<strong>7 críticos · 8 importantes</strong></span>
+    </div>
+    <h1>Nova estrutura, nova <em>voz</em>, zero invenções.</h1>
+    <p>O Copy Squad reconstruiu a home do Castelo dos Lagos depois que Moroni identificou seções fabricadas (Suítes que não existem, "4 lagos" sem verificação, "1890" sem base) e copy poética demais sem informação útil. O que segue: a nova estrutura de 6 capítulos, as 3 decisões de copy que precisam do teu olhar, e os gaps factuais que só tu consegue preencher.</p>
+  </div>
+</section>
+
+<!-- I. NOVA ESTRUTURA -->
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-num">I.</div>
+      <div>
+        <div class="section-title">Nova estrutura — <em>6 capítulos</em>, um menu de 5.</div>
+        <p class="section-lead">Mantém o sistema editorial (numerais romanos, Cormorant serif, section-as-chapter, zero pacotes). Grafta nele a camada funcional que o site atual do cliente tem e a nossa primeira versão não tinha: infraestrutura, tipos de evento, parceiros, contato real.</p>
+      </div>
+    </div>
+
+    <table class="structure-table">
+      <thead>
+        <tr><th>#</th><th>Capítulo</th><th>Objetivo</th><th>Mudança</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Hero</td><td>Identidade</td><td>Frase única serif sobre foto</td><td>Mantido</td></tr>
+        <tr><td>I.</td><td>Chegada</td><td>Posicionamento + âncora local</td><td>Reescrito · "Ribeirão Pires" no hero</td></tr>
+        <tr><td>II.</td><td>A Casa</td><td>Arquitetura, jardim, lagos (factual)</td><td>Funde as antigas II. Os Lagos + III. Arquitetura</td></tr>
+        <tr class="new"><td>III.</td><td>O Espaço</td><td>Infraestrutura: salão, cozinha, estacionamento, plano B</td><td>Seção nova — cobre o gap funcional</td></tr>
+        <tr class="new"><td>IV.</td><td>Celebrações</td><td>Tipos de evento que a casa recebe</td><td>Seção nova — qualifica lead cedo</td></tr>
+        <tr class="new"><td>V.</td><td>Parceiros</td><td>Fornecedores curados + Di Matoso</td><td>Seção nova — credibilidade + branded house</td></tr>
+        <tr><td>VI.</td><td>Visita</td><td>Endereço, telefone, form editorial</td><td>Renomeada (era VII. Convite) · dados reais</td></tr>
+      </tbody>
+    </table>
+
+    <div class="change-list">
+      <div class="change">
+        <div class="change-label">Removido</div>
+        <div class="change-title">Suítes</div>
+        <div class="change-body"><del>VI. Suítes — 4 suítes, cama centenária, vista para o lago</del> <strong>Invenção deletada.</strong> O Castelo é espaço de eventos, não tem hospedagem. O site atual do cliente não menciona quartos.</div>
+      </div>
+      <div class="change">
+        <div class="change-label">Removido</div>
+        <div class="change-title">Os Lagos (como capítulo)</div>
+        <div class="change-body"><del>II. Os Lagos — 4 lagos naturais, mudam duas vezes por dia, névoa ao amanhecer</del> <strong>Número não verificado.</strong> Merged em II. A Casa com placeholder "[A VERIFICAR] lagos". Sem inventar quantidade.</div>
+      </div>
+      <div class="change">
+        <div class="change-label">Removido</div>
+        <div class="change-title">1890 · 4 gerações</div>
+        <div class="change-body"><del>Fundada em 1890 · Quatro gerações da mesma família</del> <strong>Claims sem base.</strong> Meta do hero ficou "RIBEIRÃO PIRES · SÃO PAULO" até confirmação histórica real.</div>
+      </div>
+      <div class="change">
+        <div class="change-label">Adicionado</div>
+        <div class="change-title">Ribeirão Pires no hero</div>
+        <div class="change-body">SEO local honesto. A cidade aparece na meta do hero, no título do capítulo I, e no bloco de contato. O site atual do cliente ranqueia parcialmente nessa frase — não faz sentido doar tráfego.</div>
+      </div>
+      <div class="change">
+        <div class="change-label">Adicionado</div>
+        <div class="change-title">Di Matoso como cozinha-irmã</div>
+        <div class="change-body">A branded house do grupo ganha payoff concreto no capítulo III e reforço no V. Cross-pollenização entre os dois sites sem fazer venda explícita.</div>
+      </div>
+      <div class="change">
+        <div class="change-label">Adicionado</div>
+        <div class="change-title">Posicionamento editorial proativo</div>
+        <div class="change-body">"Não nos chamamos de espaço de eventos." / "Não somos um centro de convenções." / "Um PDF genérico seria uma mentira." Três refusals que qualificam o lead antes da visita.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- II. 3 DECISÕES A/B -->
+<section class="cream">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-num">II.</div>
+      <div>
+        <div class="section-title">Três decisões que o CMO <em>prefere ver</em> antes de travar.</div>
+        <p class="section-lead">Cada uma tem 2-3 variantes renderizadas na real — Cormorant + Inter, mesmo sistema visual do site. Todas já passaram pelo reviewer. Escolhe a que soa certa pra voz da casa.</p>
+      </div>
+    </div>
+
+    <!-- D1 — Refusal sentence -->
+    <div class="decision">
+      <div class="decision-num">Decisão II.1 · Capítulo I. Chegada</div>
+      <div class="decision-title">Como a casa <em>se recusa</em> pela primeira vez?</div>
+      <p class="decision-desc">A frase de posicionamento no meio do body do capítulo I. A versão confrontacional é mais memorável mas pode soar arrogante no primeiro contato. A suave é mais cordial mas perde o momento editorial.</p>
+
+      <div class="ab">
+        <div class="opt">
+          <div class="opt-label rec">Opção A · confrontacional</div>
+          <div class="copy-mock">
+            <div class="mock-kicker">I. Chegada</div>
+            <div class="mock-headline">A casa fica em <em>Ribeirão Pires</em>, e isso importa.</div>
+            <div class="mock-hairline"></div>
+            <div class="mock-body">Recebemos há anos nesse endereço. <strong style="color:var(--gold);font-weight:400;">Não nos chamamos de "espaço de eventos" porque não é exatamente o que fazemos.</strong> Um espaço de eventos é alugado. Uma casa é recebida. A diferença pesa na quinta-feira antes do sábado, quando alguém precisa atender o telefone e tomar uma decisão pela noiva.</div>
+          </div>
+          <div class="opt-note"><strong>A favor:</strong> declaração de posicionamento explícita. Vira frase memorável de site — compartilhável, quotable. Filtra lead que queria "alugar um espaço" nos primeiros dez segundos.</div>
+        </div>
+
+        <div class="opt">
+          <div class="opt-label">Opção B · suave</div>
+          <div class="copy-mock">
+            <div class="mock-kicker">I. Chegada</div>
+            <div class="mock-headline">A casa fica em <em>Ribeirão Pires</em>, e isso importa.</div>
+            <div class="mock-hairline"></div>
+            <div class="mock-body">Recebemos há anos nesse endereço. <strong style="color:var(--gold);font-weight:400;">Preferimos a palavra casa à palavra espaço.</strong> Um espaço é alugado. Uma casa é recebida. A diferença pesa na quinta-feira antes do sábado, quando alguém precisa atender o telefone e tomar uma decisão pela noiva.</div>
+          </div>
+          <div class="opt-note"><strong>A favor:</strong> mais cordial, primeiro contato mais acolhedor. Perde a frase quotable mas ganha suavidade. Risco: menos filtro de lead — quem queria "alugar" não sente o corte.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D2 — Infrastructure shape -->
+    <div class="decision">
+      <div class="decision-num">Decisão II.2 · Capítulo III. O Espaço</div>
+      <div class="decision-title">Como mostrar a <em>infraestrutura</em>?</div>
+      <p class="decision-desc">A parte utilitária que decide se a noiva marca visita. Tabela tipográfica é mais arquitetônica; lista chave-valor é mais editorial essayística. Os dois formatos preservam "zero SaaS pricing" — não há números comparativos, não há pacotes.</p>
+
+      <div class="ab">
+        <div class="opt">
+          <div class="opt-label rec">Opção A · tabela tipográfica</div>
+          <div class="copy-mock">
+            <div class="mock-kicker">III. O Espaço</div>
+            <div class="mock-headline">Salão, cerimônia, <em>e o que está por trás da porta da cozinha.</em></div>
+            <div class="mock-hairline"></div>
+            <table class="infra-table">
+              <tr><td>Salão coberto</td><td>[m²] · [sentados] / [em pé]</td></tr>
+              <tr><td>Jardim da cerimônia</td><td>Ao ar livre · plano B coberto</td></tr>
+              <tr><td>Cozinha industrial</td><td>Operada com Di Matoso</td></tr>
+              <tr><td>Estacionamento</td><td>[vagas] · manobrista</td></tr>
+              <tr><td>Suporte técnico</td><td>Gerador · som · luz</td></tr>
+              <tr><td>Acessibilidade</td><td>Rampas · banheiro PNE</td></tr>
+            </table>
+          </div>
+          <div class="opt-note"><strong>A favor:</strong> arquitetônico, cada item tem peso igual. Italic labels + sans values cria o binário editorial do brief. Escala bem para 10-15 linhas sem perder elegância.</div>
+        </div>
+
+        <div class="opt">
+          <div class="opt-label">Opção B · lista editorial</div>
+          <div class="copy-mock">
+            <div class="mock-kicker">III. O Espaço</div>
+            <div class="mock-headline">Salão, cerimônia, <em>e o que está por trás da porta da cozinha.</em></div>
+            <div class="mock-hairline"></div>
+            <ul class="infra-list">
+              <li><strong>Salão coberto</strong> <span>[m²] para [capacidade]</span></li>
+              <li><strong>Cerimônia</strong> <span>jardim aberto + plano B</span></li>
+              <li><strong>Cozinha</strong> <span>operada com Di Matoso</span></li>
+              <li><strong>Estacionamento</strong> <span>[vagas] próprias</span></li>
+              <li><strong>Suporte</strong> <span>gerador + som + luz</span></li>
+              <li><strong>Acessibilidade</strong> <span>rampas + PNE</span></li>
+            </ul>
+          </div>
+          <div class="opt-note"><strong>A favor:</strong> mais essayístico, respira mais. Cada linha vira uma declaração curta. Risco: se a lista passar de 8 itens vira monótona. Tem menos "peso" que a tabela em tela grande.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D3 — Di Matoso framing -->
+    <div class="decision">
+      <div class="decision-num">Decisão II.3 · Capítulo V. Parceiros</div>
+      <div class="decision-title">Como apresentar o <em>Di Matoso</em> na lista?</div>
+      <p class="decision-desc">A branded house é real — os dois brands são da mesma família. A escolha aqui é entre sugerir (poético), explicitar (SEO + honestidade comercial), ou silenciar (minimalismo máximo). Cada opção muda a agressividade da cross-pollenização entre os dois sites.</p>
+
+      <div class="ab triple">
+        <div class="opt">
+          <div class="opt-label rec">Opção A · cozinha-irmã</div>
+          <div class="copy-mock">
+            <div class="mock-kicker">V. Parceiros</div>
+            <div class="mock-hairline"></div>
+            <div class="partners-mock">
+              <div class="partner-row"><strong>Buffet Di Matoso</strong> <em>— cozinha-irmã da casa</em></div>
+              <div class="partner-row"><strong>[Parceiro 2]</strong> <em>— decoração</em></div>
+              <div class="partner-row"><strong>[Parceiro 3]</strong> <em>— assessoria</em></div>
+            </div>
+          </div>
+          <div class="opt-note"><strong>A favor:</strong> poético, implícito. Quem entender entende; quem não, vê só um parceiro. Mantém a casa refinada sem gritar "mesmo grupo".</div>
+        </div>
+
+        <div class="opt">
+          <div class="opt-label">Opção B · explícito</div>
+          <div class="copy-mock">
+            <div class="mock-kicker">V. Parceiros</div>
+            <div class="mock-hairline"></div>
+            <div class="partners-mock">
+              <div class="partner-row"><strong>Buffet Di Matoso</strong> <em>— gastronomia · da mesma família</em></div>
+              <div class="partner-row"><strong>[Parceiro 2]</strong> <em>— decoração</em></div>
+              <div class="partner-row"><strong>[Parceiro 3]</strong> <em>— assessoria</em></div>
+            </div>
+          </div>
+          <div class="opt-note"><strong>A favor:</strong> SEO honesto, cross-link natural. Força a leitura "ah, tem mais de uma casa nesse grupo" e gera curiosidade sobre o Di Matoso. Risco: parece upsell.</div>
+        </div>
+
+        <div class="opt">
+          <div class="opt-label">Opção C · silencioso</div>
+          <div class="copy-mock">
+            <div class="mock-kicker">V. Parceiros</div>
+            <div class="mock-hairline"></div>
+            <div class="partners-mock">
+              <div class="partner-row"><strong>Buffet Di Matoso</strong> <span class="role">Gastronomia</span></div>
+              <div class="partner-row"><strong>[Parceiro 2]</strong> <span class="role">Decoração</span></div>
+              <div class="partner-row"><strong>[Parceiro 3]</strong> <span class="role">Assessoria</span></div>
+            </div>
+          </div>
+          <div class="opt-note"><strong>A favor:</strong> minimalismo máximo. Zero comentário editorial, só os nomes. Risco: perde a oportunidade narrativa da branded house completamente — vira só "mais um fornecedor".</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- III. GAPS -->
+<section class="forest">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-num">III.</div>
+      <div>
+        <div class="section-title">Gaps <em>factuais</em> que só tu podes preencher.</div>
+        <p class="section-lead">O reviewer aceitou placeholders honestos em vez de invenção. São dados do cliente real — dimensões, capacidades, parceiros, distâncias. Enquanto não chegarem, o site pode subir em v2.0 com os gaps suavizados; v2.1 completa depois.</p>
+      </div>
+    </div>
+
+    <div class="gap-tier">
+      <div class="gap-tier-title">Críticos · bloqueiam deploy</div>
+      <div class="gap-tier-lead">Sem estes dados, o capítulo III. O Espaço fica vazio — e é o capítulo que converte o decisor racional. São as perguntas que toda noiva séria faz na primeira ligação.</div>
+      <div class="gaps">
+        <div class="gap"><div class="gap-num">01</div><div class="gap-body"><span class="gap-section">III. O Espaço</span><div class="gap-desc">Salão coberto — m², capacidade sentados, capacidade em pé</div></div></div>
+        <div class="gap"><div class="gap-num">02</div><div class="gap-body"><span class="gap-section">III. O Espaço</span><div class="gap-desc">Estacionamento — nº de vagas próprias, manobrista interno?</div></div></div>
+        <div class="gap"><div class="gap-num">03</div><div class="gap-body"><span class="gap-section">III. O Espaço</span><div class="gap-desc">Cozinha — operação própria, exclusiva Di Matoso, ou buffet livre?</div></div></div>
+        <div class="gap"><div class="gap-num">04</div><div class="gap-body"><span class="gap-section">III. O Espaço</span><div class="gap-desc">Plano B chuva — existe área coberta alternativa para cerimônia?</div></div></div>
+        <div class="gap"><div class="gap-num">05</div><div class="gap-body"><span class="gap-section">III. O Espaço</span><div class="gap-desc">Gerador próprio? Sonorização e iluminação são da casa ou vendor?</div></div></div>
+        <div class="gap"><div class="gap-num">06</div><div class="gap-body"><span class="gap-section">III. O Espaço</span><div class="gap-desc">Acessibilidade — rampas, banheiro PNE, piso nivelado?</div></div></div>
+        <div class="gap"><div class="gap-num">07</div><div class="gap-body"><span class="gap-section">V. Parceiros</span><div class="gap-desc">Lista real — 5 a 8 nomes com função (decoração, foto, música, assessoria, celebrante)</div></div></div>
+      </div>
+    </div>
+
+    <div class="gap-tier">
+      <div class="gap-tier-title">Importantes · melhoram deploy, não bloqueiam</div>
+      <div class="gap-tier-lead">Com estes dados o site fica mais factual, sem eles vai ao ar com placeholders discretos ou fragmentos genéricos. Preenchimento melhora conversão mas não impede subir.</div>
+      <div class="gaps">
+        <div class="gap"><div class="gap-num">08</div><div class="gap-body"><span class="gap-section">I. Chegada</span><div class="gap-desc">Distância em km e minutos do centro de SP pela Rodovia Índio Tibiriçá</div></div></div>
+        <div class="gap"><div class="gap-num">09</div><div class="gap-body"><span class="gap-section">II. A Casa</span><div class="gap-desc">Número real de lagos na propriedade (o nome sugere mais de um)</div></div></div>
+        <div class="gap"><div class="gap-num">10</div><div class="gap-body"><span class="gap-section">II. A Casa</span><div class="gap-desc">Área total do terreno (m² ou alqueires)</div></div></div>
+        <div class="gap"><div class="gap-num">11</div><div class="gap-body"><span class="gap-section">II. A Casa</span><div class="gap-desc">Área coberta total (salão + pátio + cozinha)</div></div></div>
+        <div class="gap"><div class="gap-num">12</div><div class="gap-body"><span class="gap-section">IV. Celebrações</span><div class="gap-desc">Confirmação dos tipos de evento — corporate retreat? Debutantes? Formaturas?</div></div></div>
+        <div class="gap"><div class="gap-num">13</div><div class="gap-body"><span class="gap-section">IV. Celebrações</span><div class="gap-desc">Volume de eventos/ano OU anos em operação (para substituir o "four generations" removido)</div></div></div>
+        <div class="gap"><div class="gap-num">14</div><div class="gap-body"><span class="gap-section">VI. Visita</span><div class="gap-desc">Dois números de WhatsApp reais (o site atual tem dois)</div></div></div>
+        <div class="gap"><div class="gap-num">15</div><div class="gap-body"><span class="gap-section">VI. Visita</span><div class="gap-desc">Confirmar se o site atual tem form de orçamento e como ele se comporta</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="final">
+  <div class="container">
+    <h2>Aprova as 3 decisões e me conta os gaps que <em>souber de cabeça</em>.</h2>
+    <p>Não precisa preencher tudo de uma vez. Diz "A, A, A" (recomendados) ou troca individual, responde os gaps que já sabe, e o resto sobe como v2.0 com placeholders discretos — v2.1 completa quando os dados chegarem.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>Reis [IA] · Copy Squad v2 · 15 abril 2026 · <em>O tempo é rei</em></p>
+  </div>
+</footer>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>40)},{passive:true});
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity=1;e.target.style.transform='translateY(0)';io.unobserve(e.target)}})},{threshold:.1});
+document.querySelectorAll('section > .container > *, .hero .narrow > *').forEach((el,i)=>{el.style.opacity=0;el.style.transform='translateY(24px)';el.style.transition='opacity .9s cubic-bezier(.16,1,.3,1) '+(i%3*.06)+'s, transform .9s cubic-bezier(.16,1,.3,1) '+(i%3*.06)+'s';io.observe(el)});
+</script>
+</body>
+</html>

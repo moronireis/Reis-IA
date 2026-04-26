@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZNITH — Plano Estrategico V3</title>
+<meta name="description" content="Plano Estrategico Pos-Reuniao 14/Abril — ZNITH / Leilaine Campioto">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #091022;
+  --navy-950: #050B17;
+  --navy-800: #0D1828;
+  --navy-700: #14203A;
+  --navy-600: #1C2A4A;
+  --gold: #DF9F3E;
+  --gold-light: #FFD161;
+  --gold-dim: rgba(223,159,62,0.15);
+  --white: #FFFFFF;
+  --neutral-300: #BBBBBB;
+  --neutral-400: #999999;
+  --neutral-500: #7A7A7A;
+  --font-display: 'Cinzel', Georgia, serif;
+  --font-body: 'Montserrat', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; background: var(--navy-950); }
+body {
+  font-family: var(--font-body);
+  color: var(--white);
+  background: var(--navy-950);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.7;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+/* NAV */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(5,11,23,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(223,159,62,0.12);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 32px;
+}
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.nav-links {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--neutral-400);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: color 0.2s, background 0.2s;
+}
+.nav-links a:hover, .nav-links a.active {
+  color: var(--gold);
+  background: var(--gold-dim);
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 120px 32px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(223,159,62,0.06) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s both;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--white);
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s both;
+}
+.hero h1 span { color: var(--gold); }
+.hero-sub {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--neutral-300);
+  max-width: 580px;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s both;
+}
+.hero-meta {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s both;
+}
+.hero-meta-item {
+  text-align: center;
+}
+.hero-meta-item .label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--neutral-500);
+  margin-bottom: 4px;
+}
+.hero-meta-item .value {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--gold);
+}
+
+/* SECTIONS */
+.section {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 80px 32px;
+}
+.section + .section {
+  border-top: 1px solid rgba(223,159,62,0.08);
+}
+.section-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+.section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 32px;
+  line-height: 1.2;
+}
+.section h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--white);
+  margin-top: 40px;
+  margin-bottom: 16px;
+}
+.section p {
+  color: var(--neutral-300);
+  margin-bottom: 16px;
+  font-weight: 400;
+}
+.section strong { color: var(--white); font-weight: 600; }
+.section em { color: var(--gold); font-style: normal; font-weight: 500; }
+
+/* CARDS */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.card {
+  background: var(--navy-800);
+  border: 1px solid rgba(223,159,62,0.08);
+  border-radius: 8px;
+  padding: 24px;
+  transition: border-color 0.3s;
+}
+.card:hover { border-color: rgba(223,159,62,0.25); }
+.card-number {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.card-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--neutral-500);
+  margin-bottom: 8px;
+}
+.card-text {
+  font-size: 14px;
+  color: var(--neutral-300);
+  line-height: 1.6;
+}
+
+/* STAT ROW */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.stat {
+  text-align: center;
+  padding: 20px 12px;
+  background: var(--navy-800);
+  border-radius: 8px;
+  border: 1px solid rgba(223,159,62,0.06);
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--neutral-500);
+  margin-top: 4px;
+  letter-spacing: 0.06em;
+}
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 13px;
+}
+thead th {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(223,159,62,0.2);
+}
+tbody td {
+  padding: 12px 16px;
+  color: var(--neutral-300);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  vertical-align: top;
+}
+tbody tr:hover td { background: rgba(223,159,62,0.03); }
+
+/* FUNNEL DIAGRAM */
+.funnel-diagram {
+  background: var(--navy-800);
+  border: 1px solid rgba(223,159,62,0.1);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 24px 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 2;
+  color: var(--neutral-300);
+  overflow-x: auto;
+  white-space: pre;
+}
+.funnel-diagram .highlight { color: var(--gold); font-weight: 700; }
+.funnel-diagram .dim { color: var(--neutral-500); }
+
+/* OBJECTION BLOCK */
+.objection {
+  background: var(--navy-800);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: 20px 24px;
+  margin: 16px 0;
+}
+.objection-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.objection-text {
+  font-size: 14px;
+  color: var(--white);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.objection-response {
+  font-size: 14px;
+  color: var(--neutral-300);
+  font-style: italic;
+}
+
+/* TIMELINE */
+.timeline {
+  position: relative;
+  padding-left: 28px;
+  margin: 24px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: rgba(223,159,62,0.2);
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 24px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 6px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--navy-950);
+}
+.timeline-item .period {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.timeline-item .desc {
+  font-size: 14px;
+  color: var(--neutral-300);
+}
+
+/* CHECKLIST */
+.checklist {
+  list-style: none;
+  margin: 16px 0;
+}
+.checklist li {
+  position: relative;
+  padding: 8px 0 8px 28px;
+  font-size: 14px;
+  color: var(--neutral-300);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.checklist li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--gold);
+  border-radius: 3px;
+}
+.checklist li.done::before {
+  background: var(--gold);
+}
+.checklist li.done::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 14px;
+  width: 8px;
+  height: 5px;
+  border-left: 2px solid var(--navy-950);
+  border-bottom: 2px solid var(--navy-950);
+  transform: rotate(-45deg);
+}
+
+/* BADGE */
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+.badge-gold { background: var(--gold-dim); color: var(--gold); }
+.badge-red { background: rgba(255,80,80,0.12); color: #FF6B6B; }
+.badge-green { background: rgba(80,200,120,0.12); color: #50C878; }
+
+/* FOOTER */
+.page-footer {
+  text-align: center;
+  padding: 48px 32px;
+  border-top: 1px solid rgba(223,159,62,0.08);
+}
+.page-footer p {
+  font-size: 12px;
+  color: var(--neutral-500);
+}
+.page-footer .brand {
+  font-family: var(--font-display);
+  color: var(--gold);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .nav { padding: 0 16px; gap: 16px; }
+  .nav-links a { font-size: 10px; padding: 4px 8px; }
+  .section { padding: 60px 20px; }
+  .hero { padding: 100px 20px 60px; }
+  .funnel-diagram { font-size: 10px; padding: 20px; }
+  .card-grid { grid-template-columns: 1fr; }
+  .stat-row { grid-template-columns: 1fr 1fr; }
+  table { font-size: 12px; }
+  thead th, tbody td { padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#top" class="nav-brand">ZNITH</a>
+  <div class="nav-links">
+    <a href="#resumo">Resumo</a>
+    <a href="#retrato">Retrato</a>
+    <a href="#decisoes">Decisoes</a>
+    <a href="#funil-b">Funil IA</a>
+    <a href="#execucao">Execucao</a>
+    <a href="#linkedin">LinkedIn</a>
+    <a href="#objecoes">Objecoes</a>
+    <a href="#kpis">KPIs</a>
+    <a href="#cronograma">Cronograma</a>
+    <a href="#proximos">Proximos</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="top">
+  <div class="hero-eyebrow">Plano Estrategico V3</div>
+  <h1>Pos-Reuniao <span>14 Abril</span></h1>
+  <p class="hero-sub">Incorpora decisoes da reuniao de alinhamento: nicho validado, funil duplo e eventos presenciais H2 2026.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <div class="label">Cliente</div>
+      <div class="value">Leilaine Campioto</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="label">Versao</div>
+      <div class="value">V3.0</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="label">Data</div>
+      <div class="value">18 Abril 2026</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="label">Status</div>
+      <div class="value">Aprovacao Pendente</div>
+    </div>
+  </div>
+</div>
+
+<!-- RESUMO EXECUTIVO -->
+<div class="section" id="resumo">
+  <div class="section-eyebrow">Secao 01</div>
+  <h2>Resumo Executivo</h2>
+  <p>A reuniao de 14/abr validou a tese do Funil V2 (Consulting Expansao como protagonista) e trouxe dados operacionais reais que permitem refinar a execucao. <strong>Tres decisoes novas</strong> saem dessa reuniao:</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-number">01</div>
+      <div class="card-label">Nicho Validado</div>
+      <div class="card-text">Construcao civil (vidracarias, serralherias, envidracamento de sacada) como vertical prioritaria do funil.</div>
+    </div>
+    <div class="card">
+      <div class="card-number">02</div>
+      <div class="card-label">Funil Duplo</div>
+      <div class="card-text">Um funil-mestre de consultoria + um funil de entrada por IA (hype-driven) que qualifica e redireciona.</div>
+    </div>
+    <div class="card">
+      <div class="card-number">03</div>
+      <div class="card-label">Eventos H2</div>
+      <div class="card-text">2-3 eventos presenciais no segundo semestre como aceleradores de autoridade e aquisicao.</div>
+    </div>
+  </div>
+</div>
+
+<!-- RETRATO ATUAL -->
+<div class="section" id="retrato">
+  <div class="section-eyebrow">Secao 02</div>
+  <h2>Retrato Atual da Operacao</h2>
+
+  <h3>Clientes Ativos</h3>
+  <div class="stat-row">
+    <div class="stat">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Consultorias Ativas</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">~10</div>
+      <div class="stat-label">ZNITH AI (Agentes)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Funis Ativos</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Trafego Pago</div>
+    </div>
+  </div>
+
+  <h3>Como Chegam os Clientes</h3>
+  <p><strong>100% organico</strong> — indicacao e networking. Zero trafego pago, zero funil ativo. Leads de IA chegam querendo "colocar IA" mas nao tem playbook de vendas nem processo estruturado.</p>
+
+  <h3>Conteudo Atual</h3>
+  <p>Opus Clip para distribuicao automatica em todas as redes. Posts diarios ate dia 20 do mes. YouTube com videos semanais. <strong>Volume bom, mas sem estrategia de funil por tras</strong> — e broadcasting, nao nutricao.</p>
+
+  <h3>Objecao Principal</h3>
+  <div class="objection">
+    <div class="objection-label">Objecao #1 — Mais Frequente</div>
+    <div class="objection-text">"Nao tenho tempo agora."</div>
+    <div class="objection-response">O decisor fatura alto, sabe que precisa estruturar, mas esta na correria e empurra a decisao. Leilaine trabalha com implicacao temporal: "Daqui a 3 meses sem fazer nada, quanto voce vai ter perdido?"</div>
+  </div>
+
+  <h3>Materiais Pendentes</h3>
+  <ul class="checklist">
+    <li>Acesso ao Notion (atas de reunioes, historico de clientes, processos)</li>
+    <li>Gravacoes de reunioes comerciais (para mineracao de objecoes)</li>
+    <li>PDFs de propostas atuais (para padronizar template)</li>
+  </ul>
+</div>
+
+<!-- DECISOES ESTRATEGICAS -->
+<div class="section" id="decisoes">
+  <div class="section-eyebrow">Secao 03</div>
+  <h2>Decisoes Estrategicas</h2>
+
+  <h3>Nicho: Construcao Civil</h3>
+  <p><em>Por que faz sentido:</em></p>
+  <table>
+    <thead>
+      <tr><th>Fator</th><th>Detalhe</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Know-how</strong></td><td>Leilaine vem desse mercado — tem linguagem e experiencia do setor</td></tr>
+      <tr><td><strong>Clientes ativos</strong></td><td>Ja atende vidracarias e serralherias. Conversa ativa com construtora</td></tr>
+      <tr><td><strong>Pipeline</strong></td><td>Distribuidoras de vidro (BH), envidracamento de sacada (Caxias, Porto Alegre, SP)</td></tr>
+      <tr><td><strong>Dor do setor</strong></td><td>Faturam alto mas nao tem NADA estruturado. CRM inexistente, playbook inexistente</td></tr>
+      <tr><td><strong>Concorrencia</strong></td><td>Baixa — ninguem faz consultoria de arquitetura comercial especializada em construcao civil</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Implicacao para o funil:</strong> toda comunicacao de TOF ganha camada vertical. Nao e mais "empresas com venda complexa" generico — e <em>"empresas de construcao civil que faturam e nao tem processo"</em>.</p>
+
+  <h3>Eventos Presenciais — H2 2026</h3>
+  <table>
+    <thead>
+      <tr><th>Periodo</th><th>Acao</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Abr–Jun</strong></td><td>Construcao de autoridade via conteudo (ja em andamento)</td></tr>
+      <tr><td><strong>Junho</strong></td><td>Inicio do planejamento de eventos</td></tr>
+      <tr><td><strong>Jul+</strong></td><td>Execucao: 2-3 eventos presenciais</td></tr>
+    </tbody>
+  </table>
+  <p>Modelo de financiamento: clientes ativos como cotas/patrocinadores. Espaco disponivel em Alfaville. Meta pessoal da Leilaine: ser chamada para palestrar em eventos de terceiros.</p>
+</div>
+
+<!-- FUNIL B -->
+<div class="section" id="funil-b">
+  <div class="section-eyebrow">Secao 04</div>
+  <h2>Arquitetura de Funil Duplo</h2>
+
+  <p>O Funil V2 desenhava um unico funil-mestre. A reuniao revelou uma oportunidade de <strong>entrada dupla</strong>:</p>
+
+  <div class="funnel-diagram"><span class="highlight">FUNIL A — MASTER (Consultoria)</span>          <span class="highlight">FUNIL B — IA (Hype-driven)</span>
+Descoberta -> Raio-X -> Leitura            Descoberta -> Qualificacao IA
+      |                                             |
+Proposta Expansao                    Tem processo? ---> <span class="highlight">SIM</span> -> ZNITH AI (agentes)
+      |                                             |
+Contrato -> OS/RCaaS                 <span class="highlight">NAO</span> -> Redireciona pro FUNIL A
+                                     <span class="dim">(precisa de consultoria primeiro)</span></div>
+
+  <h3>Funil A (Master)</h3>
+  <p>Exatamente o funil V2 ja desenhado. Sem alteracoes estruturais. Agora com <em>linguagem vertical de construcao civil</em>.</p>
+
+  <h3>Funil B (IA) — Novo</h3>
+  <p>Captura leads que querem "implementar IA" (hype do mercado). Qualifica se o lead ja tem processos comerciais suficientes.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-number">01</div>
+      <div class="card-label">Captura</div>
+      <div class="card-text">Pagina/conteudo "Como implementar IA na sua operacao comercial" — alto volume de busca</div>
+    </div>
+    <div class="card">
+      <div class="card-number">02</div>
+      <div class="card-label">Qualificacao</div>
+      <div class="card-text">5-7 perguntas: tem playbook? CRM ativo? Processo com etapas? Faturamento? Time?</div>
+    </div>
+    <div class="card">
+      <div class="card-number">03</div>
+      <div class="card-label">Roteamento</div>
+      <div class="card-text"><strong>Score alto:</strong> ZNITH AI.<br><strong>Score baixo:</strong> "Antes de IA, voce precisa de arquitetura." -> Funil A</div>
+    </div>
+  </div>
+
+  <p style="margin-top:24px"><em>Vantagem competitiva:</em> enquanto todo mundo vende IA diretamente, a ZNITH e a unica que fala "primeiro processo, depois tecnologia". Isso constroi confianca e diferencia radicalmente.</p>
+</div>
+
+<!-- EXECUCAO -->
+<div class="section" id="execucao">
+  <div class="section-eyebrow">Secao 05</div>
+  <h2>Plano de Execucao — 4 Blocos</h2>
+
+  <h3>Bloco 1: Fundacao <span class="badge badge-gold">Semanas 1-2</span></h3>
+  <table>
+    <thead><tr><th>#</th><th>Entrega</th><th>Descricao</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><strong>Pesquisa de mercado</strong></td><td>Construcao civil — ICP refinado, dores, linguagem, concorrentes, tamanho de mercado</td></tr>
+      <tr><td>2</td><td><strong>Analise do Notion</strong></td><td>Minerar atas de reunioes, objecoes, padroes de fechamento, linguagem dos leads</td></tr>
+      <tr><td>3</td><td><strong>Analise de calls</strong></td><td>Gravacoes comerciais — objecoes reais, gatilhos de decisao, pontos de virada</td></tr>
+      <tr><td>4</td><td><strong>LinkedIn audit</strong></td><td>Auditar perfil, definir 3 posts/semana, banco de temas para 30 dias</td></tr>
+      <tr><td>5</td><td><strong>Squads ZNITH</strong></td><td>Agentes Claude Code treinados com contexto completo ZNITH</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Bloco 2: Paginas + Funis <span class="badge badge-gold">Semanas 3-4</span></h3>
+  <table>
+    <thead><tr><th>#</th><th>Entrega</th><th>Descricao</th></tr></thead>
+    <tbody>
+      <tr><td>6</td><td><strong>Pagina Consulting Expansao</strong></td><td>Landing com linguagem vertical (construcao civil como exemplo principal)</td></tr>
+      <tr><td>7</td><td><strong>Raio-X Comercial</strong></td><td>Quiz de qualificacao com scoring (4 perfis) + perguntas de construcao civil</td></tr>
+      <tr><td>8</td><td><strong>Pagina Funil B (IA)</strong></td><td>Landing "Implementar IA" com qualificacao que filtra para ZNITH AI ou consultoria</td></tr>
+      <tr><td>9</td><td><strong>Template proposta</strong></td><td>Template visual premium no design system ZNITH</td></tr>
+      <tr><td>10</td><td><strong>Script Leitura</strong></td><td>Atualizado para fechar Expansao + variacao construcao civil</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Bloco 3: Nutricao + Conteudo <span class="badge badge-gold">Semanas 3-6</span></h3>
+  <table>
+    <thead><tr><th>#</th><th>Entrega</th><th>Descricao</th></tr></thead>
+    <tbody>
+      <tr><td>11</td><td><strong>Emails "Arquitetura Invisivel"</strong></td><td>7 emails de nutricao adaptados para construcao civil</td></tr>
+      <tr><td>12</td><td><strong>Banco LinkedIn</strong></td><td>12 posts (1 mes) com formatos rotativos: texto, carrossel, artigo</td></tr>
+      <tr><td>13</td><td><strong>Roteiros de video</strong></td><td>4 roteiros YouTube/Reels: dores construcao civil + "IA sem processo nao funciona"</td></tr>
+      <tr><td>14</td><td><strong>Estudos de caso</strong></td><td>2-3 cases anonimizados (vidracaria, serralheria)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Bloco 4: Trafego + Validacao <span class="badge badge-gold">Semanas 5-8</span></h3>
+  <table>
+    <thead><tr><th>#</th><th>Entrega</th><th>Descricao</th></tr></thead>
+    <tbody>
+      <tr><td>15</td><td><strong>Campanha Meta/Google</strong></td><td>Funil B (IA) direcionada a construcao civil. Budget inicial de teste</td></tr>
+      <tr><td>16</td><td><strong>LinkedIn Ads</strong></td><td>Segmentacao de decisores de construcao civil. Funil A</td></tr>
+      <tr><td>17</td><td><strong>Teste prospects quentes</strong></td><td>Leitura Estrategica com 3-5 prospects ja identificados</td></tr>
+      <tr><td>18</td><td><strong>Review 30 dias</strong></td><td>Analisar taxas, ajustar script, proposta e paginas</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- LINKEDIN -->
+<div class="section" id="linkedin">
+  <div class="section-eyebrow">Secao 06</div>
+  <h2>Estrategia LinkedIn — 3 Posts/Semana</h2>
+
+  <h3>Formato Rotativo</h3>
+  <table>
+    <thead><tr><th>Dia</th><th>Formato</th><th>Exemplo</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Terca</strong></td><td>Texto longo</td><td>"Sua vidracaria fatura R$500K/mes e nao tem playbook. Voce nao tem um problema de vendas. Tem um problema de arquitetura."</td></tr>
+      <tr><td><strong>Quinta</strong></td><td>Carrossel</td><td>"5 sinais de que sua operacao comercial esta no improviso (e voce nao percebeu)"</td></tr>
+      <tr><td><strong>Sabado</strong></td><td>Storytelling</td><td>"Uma serralheria de SP me procurou para 'colocar IA'. Em 15 minutos de conversa, descobri que o problema era outro."</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Pilares de Conteudo</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-number">01</div>
+      <div class="card-label">Arquitetura > Ferramenta</div>
+      <div class="card-text">Desconstruir o mito de que CRM/IA resolve tudo</div>
+    </div>
+    <div class="card">
+      <div class="card-number">02</div>
+      <div class="card-label">Construcao Civil</div>
+      <div class="card-text">Dores especificas: orcamento no WhatsApp, follow-up inexistente, depender do dono</div>
+    </div>
+    <div class="card">
+      <div class="card-number">03</div>
+      <div class="card-label">IA Honesta</div>
+      <div class="card-text">Quando IA faz sentido e quando nao faz. Voz racional no hype</div>
+    </div>
+    <div class="card">
+      <div class="card-number">04</div>
+      <div class="card-label">Bastidores</div>
+      <div class="card-text">Processo de consultoria sem revelar o metodo completo</div>
+    </div>
+    <div class="card">
+      <div class="card-number">05</div>
+      <div class="card-label">Autoridade</div>
+      <div class="card-text">Trajetoria, 20+ anos, resultados concretos</div>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECOES -->
+<div class="section" id="objecoes">
+  <div class="section-eyebrow">Secao 07</div>
+  <h2>Mapa de Objecoes</h2>
+
+  <div class="objection">
+    <div class="objection-label">Principal — "Nao tenho tempo agora"</div>
+    <div class="objection-text">Frequencia: muito alta</div>
+    <div class="objection-response">"Voce nao tem tempo PORQUE nao tem estrutura. Cada mes sem arquitetura e mais tempo perdido apagando incendio. Em 8 semanas, 2h/semana suas, eu desenho a arquitetura que vai devolver tempo pra voce."</div>
+  </div>
+
+  <div class="objection">
+    <div class="objection-label">"Ja temos CRM / ja tentamos"</div>
+    <div class="objection-text">Frequencia: alta</div>
+    <div class="objection-response">"Exatamente por isso. A gente nao vai jogar fora nada. Vai arquitetar o que voce ja tem pra funcionar de verdade."</div>
+  </div>
+
+  <div class="objection">
+    <div class="objection-label">"Nao sei se funciona pro meu negocio"</div>
+    <div class="objection-text">Frequencia: media</div>
+    <div class="objection-response">"Por isso a Leitura Estrategica e gratuita. Em 45 minutos voce ve a profundidade. Se nao fizer sentido, a gente nao segue."</div>
+  </div>
+
+  <div class="objection">
+    <div class="objection-label">"Esta caro"</div>
+    <div class="objection-text">Frequencia: media</div>
+    <div class="objection-response">"Quanto voce perde por mes em lead que nao tem follow-up? Em orcamento que ninguem acompanha? R$35K e menos do que a maioria perde em 30 dias de processo desorganizado."</div>
+  </div>
+
+  <div class="objection">
+    <div class="objection-label">"Agora nao e o momento"</div>
+    <div class="objection-text">Frequencia: media</div>
+    <div class="objection-response">"E daqui a 3 meses? O que muda se voce nao agir? Quanto a mais voce vai ter deixado na mesa?"</div>
+  </div>
+</div>
+
+<!-- KPIS -->
+<div class="section" id="kpis">
+  <div class="section-eyebrow">Secao 08</div>
+  <h2>KPIs — Funil Duplo</h2>
+
+  <h3>Funil A — Master (Consultoria)</h3>
+  <p>Mantem KPIs do Funil V2 sem alteracao. Metrica-mae: <em>contratos Consulting Expansao fechados/mes</em>.</p>
+
+  <h3>Funil B — IA (Novo)</h3>
+  <table>
+    <thead><tr><th>Metrica</th><th>Mes 1-3</th><th>Mes 4-6</th></tr></thead>
+    <tbody>
+      <tr><td>Leads capturados (IA)</td><td>100/mes</td><td>250/mes</td></tr>
+      <tr><td>Qualificados para ZNITH AI</td><td>20%</td><td>25%</td></tr>
+      <tr><td>Redirecionados para Funil A</td><td>50%</td><td>45%</td></tr>
+      <tr><td>Descartados (nao e ICP)</td><td>30%</td><td>30%</td></tr>
+      <tr><td>Conversao ZNITH AI</td><td>15%</td><td>25%</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Metrica-Mae Combinada</h3>
+  <div class="funnel-diagram"><span class="highlight">Receita Mensal Previsivel</span> = Contratos Expansao + Contratos ZNITH AI + MRR RCaaS</div>
+</div>
+
+<!-- CRONOGRAMA -->
+<div class="section" id="cronograma">
+  <div class="section-eyebrow">Secao 09</div>
+  <h2>Cronograma</h2>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="period">Semana 1-2 (18-30 Abr)</div>
+      <div class="desc">Pesquisa de mercado + analise Notion/calls + LinkedIn audit + treinamento squads</div>
+    </div>
+    <div class="timeline-item">
+      <div class="period">Semana 3-4 (01-14 Mai)</div>
+      <div class="desc">Paginas + Raio-X + template proposta + script Leitura Estrategica</div>
+    </div>
+    <div class="timeline-item">
+      <div class="period">Semana 3-6 (01-28 Mai)</div>
+      <div class="desc">Nutricao + banco de conteudo + roteiros de video + estudos de caso</div>
+    </div>
+    <div class="timeline-item">
+      <div class="period">Semana 5-8 (15 Mai - Jun)</div>
+      <div class="desc">Trafego pago teste + validacao com prospects + review 30 dias</div>
+    </div>
+    <div class="timeline-item">
+      <div class="period">Junho</div>
+      <div class="desc">Inicio do planejamento de eventos H2</div>
+    </div>
+    <div class="timeline-item">
+      <div class="period">Julho+</div>
+      <div class="desc">Execucao dos eventos presenciais + escala seletiva</div>
+    </div>
+  </div>
+</div>
+
+<!-- DEPENDENCIAS + PROXIMOS PASSOS -->
+<div class="section" id="proximos">
+  <div class="section-eyebrow">Secao 10</div>
+  <h2>Dependencias e Proximos Passos</h2>
+
+  <h3>Dependencias Criticas</h3>
+  <table>
+    <thead><tr><th>Dependencia</th><th>Status</th><th>Bloqueio</th></tr></thead>
+    <tbody>
+      <tr><td>Acesso ao Notion</td><td><span class="badge badge-red">Pendente</span></td><td>Bloqueia analise de objecoes e treinamento squads</td></tr>
+      <tr><td>Gravacoes de calls</td><td><span class="badge badge-red">Pendente</span></td><td>Bloqueia mineracao de objecoes e campanhas</td></tr>
+      <tr><td>PDFs de propostas</td><td><span class="badge badge-red">Pendente</span></td><td>Bloqueia padronizacao de template</td></tr>
+      <tr><td>Pesquisa construcao civil</td><td><span class="badge badge-gold">Nao iniciada</span></td><td>Bloqueia linguagem de paginas e campanhas</td></tr>
+      <tr><td>Aprovacao da Leilaine</td><td><span class="badge badge-red">Pendente</span></td><td>Bloqueia execucao Bloco 2+</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Esta Semana</h3>
+  <ul class="checklist">
+    <li><strong>Moroni:</strong> cobrar acesso Notion + gravacoes da Leilaine</li>
+    <li><strong>Moroni:</strong> iniciar pesquisa de mercado construcao civil</li>
+    <li><strong>Moroni:</strong> auditar LinkedIn da Leilaine e entregar estrategia de conteudo</li>
+    <li><strong>Moroni:</strong> enviar este documento para Leilaine validar</li>
+    <li><strong>Leilaine:</strong> liberar Notion + enviar gravacoes + validar plano</li>
+    <li><strong>Leilaine:</strong> continuar ritmo de conteudo atual (nao mudar nada ate nova estrategia)</li>
+  </ul>
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <p class="brand">ZNITH</p>
+  <p>Plano Estrategico V3 — Pos-Reuniao 14 Abril 2026</p>
+  <p>Documento interno — Reis IA Agency</p>
+</div>
+
+<script>
+// Nav active state on scroll
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const id = entry.target.id;
+      const activeLink = document.querySelector(`.nav-links a[href="#${id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(section => observer.observe(section));
+</script>
+</body>
+</html>

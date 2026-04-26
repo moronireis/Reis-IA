@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planejamento de Funil — REIS [IA] Low-Ticket → Journey</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: #0a0a0a; color: #e5e5e5; line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    header { padding: 48px 0 32px; border-bottom: 1px solid #1a1a1a; }
+    .badge { display: inline-block; padding: 4px 12px; background: rgba(74,144,255,0.15); color: #4A90FF; border-radius: 4px; font-size: 12px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 16px; }
+    header h1 { font-size: 32px; font-weight: 300; color: #fff; margin-bottom: 8px; }
+    header h1 strong { font-weight: 600; }
+    header p { color: #888; font-size: 15px; }
+    .date { color: #555; font-size: 13px; margin-top: 8px; }
+    section { padding: 48px 0; border-bottom: 1px solid #1a1a1a; }
+    section:last-child { border-bottom: none; }
+    h2 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+    h2 .num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #4A90FF; color: #000; border-radius: 6px; font-size: 14px; font-weight: 700; }
+    h3 { font-size: 16px; font-weight: 500; color: #ccc; margin: 24px 0 12px; }
+    .card { background: #111; border: 1px solid #222; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #1a1a1a; font-size: 14px; }
+    th { color: #666; font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    td { color: #ccc; }
+    .tag { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+    .tag-green { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .tag-red { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .tag-blue { background: rgba(74,144,255,0.15); color: #4A90FF; }
+    .tag-yellow { background: rgba(234,179,8,0.15); color: #eab308; }
+    .tag-gray { background: rgba(150,150,150,0.15); color: #999; }
+    .tag-purple { background: rgba(168,85,247,0.15); color: #a855f7; }
+    .insight-list { list-style: none; }
+    .insight-list li { padding: 12px 16px; border-bottom: 1px solid #1a1a1a; font-size: 14px; color: #ccc; display: flex; align-items: flex-start; gap: 10px; }
+    .insight-list li:last-child { border-bottom: none; }
+    .icon { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 2px; }
+    .icon-green { background: rgba(34,197,94,0.2); color: #22c55e; }
+    .icon-red { background: rgba(239,68,68,0.2); color: #ef4444; }
+    .icon-blue { background: rgba(74,144,255,0.2); color: #4A90FF; }
+    .icon-yellow { background: rgba(234,179,8,0.2); color: #eab308; }
+    .icon-purple { background: rgba(168,85,247,0.2); color: #a855f7; }
+    .verdict { background: linear-gradient(135deg, rgba(74,144,255,0.08), rgba(74,144,255,0.02)); border: 1px solid rgba(74,144,255,0.2); border-radius: 12px; padding: 32px; margin: 24px 0; }
+    .verdict h3 { color: #4A90FF; font-size: 18px; margin: 0 0 16px 0; }
+    .funnel-step { background: #111; border: 1px solid #222; border-radius: 12px; padding: 24px; margin: 8px 0; position: relative; }
+    .funnel-step.active { border-color: #4A90FF; background: rgba(74,144,255,0.05); }
+    .funnel-step.low { border-color: #22c55e; background: rgba(34,197,94,0.05); }
+    .funnel-step.high { border-color: #eab308; background: rgba(234,179,8,0.05); }
+    .funnel-step.bridge { border-color: #a855f7; background: rgba(168,85,247,0.05); }
+    .funnel-step h4 { font-size: 15px; color: #fff; margin-bottom: 4px; }
+    .funnel-step p { font-size: 13px; color: #888; }
+    .arrow { text-align: center; color: #333; font-size: 24px; padding: 4px 0; }
+    .metric-row { display: flex; gap: 16px; margin: 16px 0; flex-wrap: wrap; }
+    .metric { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 8px; padding: 16px 20px; flex: 1; min-width: 140px; }
+    .metric .num { font-size: 24px; font-weight: 700; color: #fff; }
+    .metric .label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+    .timeline { position: relative; padding-left: 32px; }
+    .timeline::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: #222; }
+    .timeline-item { position: relative; padding: 16px 0; }
+    .timeline-item::before { content: ''; position: absolute; left: -24px; top: 20px; width: 12px; height: 12px; border-radius: 50%; background: #4A90FF; border: 2px solid #0a0a0a; }
+    .timeline-item.done::before { background: #22c55e; }
+    .timeline-item.pending::before { background: #333; }
+    .copy-block { background: #0d0d0d; border-left: 3px solid #4A90FF; padding: 16px 20px; margin: 12px 0; font-size: 14px; color: #aaa; border-radius: 0 8px 8px 0; }
+    .copy-block.green { border-color: #22c55e; }
+    .copy-block.yellow { border-color: #eab308; }
+    .copy-block.red { border-color: #ef4444; }
+    .copy-block.purple { border-color: #a855f7; }
+    .phase-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .phase-num { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="badge">Planejamento de Funil</div>
+    <h1><strong>Low-Ticket → Journey</strong> — Funil de Aquisicao REIS [IA]</h1>
+    <p>Estrategia completa: produto low-ticket que paga o trafego, entrega resultado rapido, e eleva o lead para a comunidade Journey (R$497 ou 12x R$51)</p>
+    <div class="date">22 de abril de 2026 | Baseado na analise competitiva @rafa.grandi + criativos gravados</div>
+  </header>
+
+  <!-- S1: CONTEXTO ESTRATEGICO -->
+  <section>
+    <h2><span class="num">1</span> Contexto Estrategico</h2>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="margin-top: 0; color: #ef4444;">O que o concorrente faz</h3>
+        <ul class="insight-list">
+          <li><span class="icon icon-red">X</span><span>Vende 136 prompts empacotados por R$67</span></li>
+          <li><span class="icon icon-red">X</span><span>Zero resultado concreto nos criativos</span></li>
+          <li><span class="icon icon-red">X</span><span>Urgencia fabricada ("nao vou trabalhar remarketing")</span></li>
+          <li><span class="icon icon-red">X</span><span>Produto commodity sem moat — qualquer um replica</span></li>
+          <li><span class="icon icon-red">X</span><span>Sem upsell estruturado — vende e abandona</span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top: 0; color: #22c55e;">O que nos vamos fazer diferente</h3>
+        <ul class="insight-list">
+          <li><span class="icon icon-green">+</span><span>Low-ticket que <strong>entrega resultado rapido</strong> (nao so ferramenta)</span></li>
+          <li><span class="icon icon-green">+</span><span>Aulas que <strong>elevam consciencia</strong> sobre o que IA pode fazer no negocio</span></li>
+          <li><span class="icon icon-green">+</span><span><strong>Bridge natural</strong> para a comunidade Journey (R$497)</span></li>
+          <li><span class="icon icon-green">+</span><span>Prova social real — cases, numeros, resultados</span></li>
+          <li><span class="icon icon-green">+</span><span>Posicionamento premium — "resultado financeiro, nao brinquedo"</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="verdict">
+      <h3>A Tese Central</h3>
+      <p>O low-ticket (R$47) <strong>paga o trafego</strong> e gera leads qualificados. As aulas entregam resultado rapido E mostram que existe um nivel acima. O lead percebe sozinho: "se com R$47 eu consegui X, imagina com acompanhamento". A venda do Journey (R$497) acontece por <strong>consciencia elevada</strong>, nao por pressao.</p>
+    </div>
+  </section>
+
+  <!-- S2: SEUS CRIATIVOS ATUAIS -->
+  <section>
+    <h2><span class="num">2</span> Analise dos Seus 14 Criativos (Transcritos)</h2>
+
+    <p style="color: #888; margin-bottom: 24px; font-size: 15px;">
+      14 videos MOV (43-60s, vertical 1080x1920) transcritos com Whisper. Todos seguem a mesma estrutura.
+    </p>
+
+    <div class="card">
+      <h3 style="margin-top: 0; color: #4A90FF;">Anatomia do Seu Script Atual</h3>
+      <table>
+        <tr><th>Tempo</th><th>Elemento</th><th>O que voce fala</th></tr>
+        <tr>
+          <td><span class="tag tag-red">0-5s</span></td>
+          <td>Hook + Stack</td>
+          <td>"Mais de 40 agentes pra voce: design, copy, trafego, aplicativos..."</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-yellow">5-20s</span></td>
+          <td>Demonstracao visual</td>
+          <td>Mostra a tela com os squads/agentes no Claude Code</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-blue">20-35s</span></td>
+          <td>Diferencial</td>
+          <td>"Nada generico, premium, como os melhores funcionarios"</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-green">35-50s</span></td>
+          <td>Entrega + preco</td>
+          <td>"Menos de R$47, menos de R$1 por agente, 4 aulas exclusivas"</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-yellow">50-60s</span></td>
+          <td>CTA</td>
+          <td>"Clica em Saiba Mais, eu te espero do outro lado"</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="card" style="border-color: rgba(34,197,94,0.3);">
+        <h3 style="margin-top: 0; color: #22c55e;">Pontos Fortes dos Seus Criativos</h3>
+        <ul class="insight-list">
+          <li><span class="icon icon-green">+</span><span><strong>Tom consultivo</strong> — voce fala como dono, nao como vendedor. Mais credivel que o concorrente.</span></li>
+          <li><span class="icon icon-green">+</span><span><strong>"Nada generico, premium"</strong> — diferencial claro vs "IA generalista". Ataca o pain certo.</span></li>
+          <li><span class="icon icon-green">+</span><span><strong>Demonstracao visual na tela</strong> — mostra os agentes reais rodando. Prova que existe.</span></li>
+          <li><span class="icon icon-green">+</span><span><strong>Preco menor (R$47 vs R$67)</strong> — barreira mais baixa que o concorrente.</span></li>
+          <li><span class="icon icon-green">+</span><span><strong>"Menos de R$1 por agente"</strong> — ancoragem de valor eficaz.</span></li>
+          <li><span class="icon icon-green">+</span><span><strong>14 variacoes</strong> — material de sobra pra split test.</span></li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-color: rgba(239,68,68,0.3);">
+        <h3 style="margin-top: 0; color: #ef4444;">O que Melhorar nos Criativos</h3>
+        <ul class="insight-list">
+          <li><span class="icon icon-red">!</span><span><strong>Hook fraco</strong> — comeca listando features ("40 agentes de design, copy...") em vez de atacar um problema. O concorrente abre com "Ate quando tu vai usar IA como Google?" — mais forte.</span></li>
+          <li><span class="icon icon-red">!</span><span><strong>Zero resultado concreto</strong> — nenhum video menciona "com isso eu fiz X" ou "cliente Y conseguiu Z". So promessa de ferramenta.</span></li>
+          <li><span class="icon icon-red">!</span><span><strong>Sem urgencia real</strong> — "depois eu tiro do ar" e fraco. Melhor: "essa condicao so existe nessa campanha".</span></li>
+          <li><span class="icon icon-red">!</span><span><strong>CTA vago</strong> — "clica em Saiba Mais" nao diz o que acontece depois. Melhor: "clica, escolhe PIX ou cartao e em 2 minutos ta usando".</span></li>
+          <li><span class="icon icon-red">!</span><span><strong>Falta emocao / cenario</strong> — so features. Falta: "imagina voce abrindo o computador amanha e tendo uma equipe inteira pronta..."</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Suggested improved hooks -->
+    <div class="card" style="margin-top: 16px; border-color: rgba(234,179,8,0.3);">
+      <h3 style="margin-top: 0; color: #eab308;">10 Hooks Sugeridos (melhores que os atuais)</h3>
+      <ul class="insight-list">
+        <li><span class="icon icon-yellow">1</span><span>"Eu demiti minha equipe de marketing inteira e substituí por isso aqui" <span class="tag tag-gray">provocacao</span></span></li>
+        <li><span class="icon icon-yellow">2</span><span>"Isso aqui fez em 15 minutos o que minha equipe levava 3 dias" <span class="tag tag-gray">resultado</span></span></li>
+        <li><span class="icon icon-yellow">3</span><span>"Se voce ta pagando mais de R$5.000/mes em freelancer, para tudo" <span class="tag tag-gray">dor financeira</span></span></li>
+        <li><span class="icon icon-yellow">4</span><span>"Voce ta usando IA errado. Deixa eu te mostrar como eu uso." <span class="tag tag-gray">autoridade</span></span></li>
+        <li><span class="icon icon-yellow">5</span><span>"Esse time de 40 profissionais custa menos que um almoco" <span class="tag tag-gray">ancoragem</span></span></li>
+        <li><span class="icon icon-yellow">6</span><span>"O problema nao e a IA. E que voce ta conversando com ela como se fosse estagiario." <span class="tag tag-gray">insight</span></span></li>
+        <li><span class="icon icon-yellow">7</span><span>"Em 2026, quem nao tem um time de IA ta competindo com uma mao amarrada" <span class="tag tag-gray">FOMO</span></span></li>
+        <li><span class="icon icon-yellow">8</span><span>"Meu copywriter de IA escreve melhor que 90% dos humanos. E custa R$1." <span class="tag tag-gray">especificidade</span></span></li>
+        <li><span class="icon icon-yellow">9</span><span>"Se eu te desse um time de 40 especialistas por R$47, voce aceitaria? Pois e." <span class="tag tag-gray">oferta direta</span></span></li>
+        <li><span class="icon icon-yellow">10</span><span>"Todo mundo quer usar IA, ninguem sabe. Eu resolvi isso." <span class="tag tag-gray">problema/solucao</span></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- S3: MAPA DO FUNIL -->
+  <section>
+    <h2><span class="num">3</span> Mapa do Funil Completo</h2>
+
+    <div class="funnel-step active">
+      <div class="phase-header">
+        <div class="phase-num" style="background: rgba(239,68,68,0.2); color: #ef4444;">A</div>
+        <div>
+          <h4>Trafego Pago — Meta Ads</h4>
+          <p>14 criativos em video (vertical) | Publico frio + lookalike | Objetivo: conversao</p>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric"><div class="num">R$30-50</div><div class="label">Budget diario inicial</div></div>
+        <div class="metric"><div class="num">14</div><div class="label">Criativos para teste</div></div>
+        <div class="metric"><div class="num">3-5</div><div class="label">Audiences iniciais</div></div>
+        <div class="metric"><div class="num">FB+IG+AN</div><div class="label">Plataformas</div></div>
+      </div>
+    </div>
+
+    <div class="arrow">↓</div>
+
+    <div class="funnel-step low">
+      <div class="phase-header">
+        <div class="phase-num" style="background: rgba(34,197,94,0.2); color: #22c55e;">B</div>
+        <div>
+          <h4>Landing Page — Produto Low-Ticket</h4>
+          <p>raxo... ops. <strong>Dominio proprio</strong> | Dark mode premium | Video demo + stack de valor</p>
+        </div>
+      </div>
+      <div class="copy-block green">
+        <strong>Produto:</strong> 40+ Agentes IA Premium para Claude Code<br>
+        <strong>Preco:</strong> R$47 pagamento unico (ou 4x R$12,70)<br>
+        <strong>Entrega:</strong> Agentes .md + 4 videoaulas de instalacao + uso na pratica<br>
+        <strong>Diferencial vs concorrente:</strong> "Premium, nao generico" + resultado rapido nas aulas<br>
+        <strong>Garantia:</strong> 7 dias
+      </div>
+      <div class="metric-row">
+        <div class="metric"><div class="num">R$47</div><div class="label">Ticket</div></div>
+        <div class="metric"><div class="num">3-5%</div><div class="label">Conv. esperada</div></div>
+        <div class="metric"><div class="num">R$15-25</div><div class="label">CPA target</div></div>
+        <div class="metric"><div class="num">Kiwify</div><div class="label">Checkout</div></div>
+      </div>
+    </div>
+
+    <div class="arrow">↓</div>
+
+    <div class="funnel-step" style="border-color: #f97316; background: rgba(249,115,22,0.05);">
+      <div class="phase-header">
+        <div class="phase-num" style="background: rgba(249,115,22,0.2); color: #f97316;">C</div>
+        <div>
+          <h4>Order Bump + Upsell (checkout)</h4>
+          <p>Aumentar ticket medio no momento da compra</p>
+        </div>
+      </div>
+      <div class="copy-block" style="border-color: #f97316;">
+        <strong>Order Bump:</strong> "Atualizacoes vitalícias + novos agentes" — R$17 (4x R$4,50)<br>
+        <strong>Upsell pos-compra:</strong> "Pack de Workflows Avancados" ou "Sessao de Setup 1:1 com Moroni" — R$97-197
+      </div>
+    </div>
+
+    <div class="arrow">↓</div>
+
+    <div class="funnel-step bridge">
+      <div class="phase-header">
+        <div class="phase-num" style="background: rgba(168,85,247,0.2); color: #a855f7;">D</div>
+        <div>
+          <h4>Area de Membros — 4 Aulas Estrategicas</h4>
+          <p>AQUI ESTA O SEGREDO: as aulas entregam resultado E elevam consciencia</p>
+        </div>
+      </div>
+      <div class="copy-block purple">
+        <strong>Aula 1:</strong> Instalacao do Claude Code + seus primeiros agentes (resultado imediato: "funcionou!")<br>
+        <strong>Aula 2:</strong> Usando agentes para criar copy/design reais pro seu negocio (resultado: "uau, isso e profissional")<br>
+        <strong>Aula 3:</strong> Workflow completo: da ideia ao resultado em 15 minutos (resultado: "economizei horas")<br>
+        <strong>Aula 4:</strong> O proximo nivel — como empresarios usam IA para gerar receita real (BRIDGE para Journey)
+      </div>
+      <p style="margin-top: 12px; color: #a855f7; font-size: 14px;">
+        <strong>A Aula 4 e o bridge.</strong> Ela mostra: "voce aprendeu a usar a ferramenta. Agora, como transformar isso em receita real, com acompanhamento, comunidade e estrategia? Isso e o Journey."
+      </p>
+    </div>
+
+    <div class="arrow">↓</div>
+
+    <div class="funnel-step high">
+      <div class="phase-header">
+        <div class="phase-num" style="background: rgba(234,179,8,0.2); color: #eab308;">E</div>
+        <div>
+          <h4>Oferta Journey — Comunidade REIS [IA]</h4>
+          <p>R$497 ou 12x R$51 | Comunidade + acompanhamento + conteudo premium</p>
+        </div>
+      </div>
+      <div class="copy-block yellow">
+        <strong>Oferta:</strong> Comunidade Journey REIS [IA]<br>
+        <strong>Preco:</strong> R$497 (ou 12x R$51)<br>
+        <strong>Entrega:</strong> Comunidade ativa, aulas avancadas, acompanhamento, frameworks de receita, acesso a Moroni<br>
+        <strong>Promessa:</strong> "De ferramenta a resultado financeiro real com IA"<br>
+        <strong>Conv. esperada:</strong> 5-15% dos compradores do low-ticket
+      </div>
+    </div>
+
+    <div class="arrow">↓</div>
+
+    <div class="funnel-step" style="border-style: dashed; opacity: 0.7;">
+      <div class="phase-header">
+        <div class="phase-num" style="background: rgba(150,150,150,0.2); color: #999;">F</div>
+        <div>
+          <h4>Email Sequence (quem nao comprou Journey)</h4>
+          <p>5-7 emails de nurturing ao longo de 14 dias</p>
+        </div>
+      </div>
+      <div class="copy-block" style="border-color: #555;">
+        <strong>Email 1 (D+0):</strong> Bem-vindo + acesso + "comece por aqui"<br>
+        <strong>Email 2 (D+2):</strong> "Voce ja instalou? Aqui esta o resultado de quem usou"<br>
+        <strong>Email 3 (D+5):</strong> Case real: "Como [pessoa] usou os agentes para [resultado]"<br>
+        <strong>Email 4 (D+7):</strong> "Voce ta usando ferramenta ou gerando resultado?" — bridge para Journey<br>
+        <strong>Email 5 (D+10):</strong> Oferta Journey com condicao especial para quem comprou o low-ticket<br>
+        <strong>Email 6 (D+14):</strong> Ultimo lembrete — "a condicao expira"
+      </div>
+    </div>
+  </section>
+
+  <!-- S4: MATEMATICA DO FUNIL -->
+  <section>
+    <h2><span class="num">4</span> Matematica do Funil</h2>
+
+    <div class="card">
+      <h3 style="margin-top: 0; color: #4A90FF;">Cenario Conservador (R$50/dia)</h3>
+      <table>
+        <tr><th>Metrica</th><th>Valor</th><th>Calculo</th></tr>
+        <tr><td>Budget mensal</td><td><strong>R$1.500</strong></td><td>R$50/dia x 30 dias</td></tr>
+        <tr><td>CPM estimado</td><td>R$25</td><td>Media BR, interesse tech/negocios</td></tr>
+        <tr><td>Impressoes/mes</td><td>60.000</td><td>R$1.500 / R$25 x 1000</td></tr>
+        <tr><td>CTR estimado</td><td>1.5%</td><td>Video vertical, hook forte</td></tr>
+        <tr><td>Cliques/mes</td><td>900</td><td>60K x 1.5%</td></tr>
+        <tr><td>Conv. landing</td><td>4%</td><td>Landing otimizada, preco baixo</td></tr>
+        <tr><td><strong>Vendas low-ticket/mes</strong></td><td><strong>36</strong></td><td>900 x 4%</td></tr>
+        <tr><td>Receita low-ticket</td><td><strong>R$1.692</strong></td><td>36 x R$47</td></tr>
+        <tr><td>CPA low-ticket</td><td><strong>R$41,67</strong></td><td>R$1.500 / 36</td></tr>
+        <tr><td style="color: #22c55e;"><strong>ROAS low-ticket</strong></td><td style="color: #22c55e;"><strong>1.13x</strong></td><td style="color: #22c55e;">Trafego pago — quase breakeven</td></tr>
+        <tr><td>Order bump (30%)</td><td>+R$183</td><td>11 x R$17</td></tr>
+        <tr><td><strong>Receita total front-end</strong></td><td><strong>R$1.875</strong></td><td>Low-ticket + bumps</td></tr>
+        <tr><td style="color: #22c55e;"><strong>ROAS front-end</strong></td><td style="color: #22c55e;"><strong>1.25x</strong></td><td style="color: #22c55e;">Trafego pago + lucro pequeno</td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="border-color: rgba(234,179,8,0.3);">
+      <h3 style="margin-top: 0; color: #eab308;">Backend — Journey (onde esta o lucro real)</h3>
+      <table>
+        <tr><th>Metrica</th><th>Valor</th><th>Calculo</th></tr>
+        <tr><td>Compradores low-ticket/mes</td><td>36</td><td>Do calculo acima</td></tr>
+        <tr><td>Conv. para Journey</td><td>10%</td><td>Via aulas + emails + bridge</td></tr>
+        <tr><td><strong>Vendas Journey/mes</strong></td><td><strong>3-4</strong></td><td>36 x 10%</td></tr>
+        <tr><td><strong>Receita Journey/mes</strong></td><td><strong>R$1.491 a R$1.988</strong></td><td>3-4 x R$497</td></tr>
+        <tr><td style="color: #eab308;"><strong>Receita total/mes</strong></td><td style="color: #eab308;"><strong>R$3.366 a R$3.863</strong></td><td style="color: #eab308;">Front-end + backend</td></tr>
+        <tr><td style="color: #22c55e;"><strong>ROAS total</strong></td><td style="color: #22c55e;"><strong>2.24x a 2.58x</strong></td><td style="color: #22c55e;">Com R$1.500 de investimento</td></tr>
+        <tr><td style="color: #22c55e;"><strong>Lucro liquido/mes</strong></td><td style="color: #22c55e;"><strong>R$1.866 a R$2.363</strong></td><td style="color: #22c55e;">Receita total - budget ads</td></tr>
+      </table>
+    </div>
+
+    <div class="verdict">
+      <h3>O Low-Ticket Paga o Trafego. O Journey e Lucro Puro.</h3>
+      <p>Com ROAS 1.25x no front-end, o trafego se paga sozinho + margem. Cada venda Journey de R$497 e lucro liquido. A medida que a base cresce, o email sequence continua convertendo leads antigos. <strong>O funil se retroalimenta.</strong></p>
+    </div>
+  </section>
+
+  <!-- S5: ICP -->
+  <section>
+    <h2><span class="num">5</span> ICP — Quem Atacar nos Ads</h2>
+
+    <p style="color: #888; margin-bottom: 24px; font-size: 15px;">
+      O concorrente fala pra "medico, advogado, empresario, dono de agencia" — todo mundo e ninguem.
+      Nos vamos ser especificos.
+    </p>
+
+    <div class="grid-3">
+      <div class="card" style="border-color: rgba(74,144,255,0.3);">
+        <h3 style="margin-top: 0; color: #4A90FF;">ICP 1: Dono de Agencia</h3>
+        <p style="font-size: 13px; color: #888; margin-bottom: 12px;">Agencia de marketing/design com 2-15 funcionarios. Quer reduzir custo operacional e entregar mais rapido.</p>
+        <div class="copy-block">
+          <strong>Dor:</strong> Time caro, entregas lentas, margem apertada<br>
+          <strong>Desejo:</strong> Escalar sem contratar mais<br>
+          <strong>Hook:</strong> "Donos de agencia: voces estao pagando R$5K/mes em freelancer pra fazer o que esses agentes fazem em 15 minutos"
+        </div>
+        <div style="margin-top: 8px;">
+          <span class="tag tag-blue">Targeting Meta</span>
+          <p style="font-size: 12px; color: #666; margin-top: 4px;">Interesses: marketing digital, gestao de agencia, freelancer, Canva Pro, RD Station</p>
+        </div>
+      </div>
+
+      <div class="card" style="border-color: rgba(34,197,94,0.3);">
+        <h3 style="margin-top: 0; color: #22c55e;">ICP 2: Empreendedor Solo Digital</h3>
+        <p style="font-size: 13px; color: #888; margin-bottom: 12px;">Infoprodutor, consultor, coach. Faz tudo sozinho. Precisa de "equipe" mas nao pode contratar.</p>
+        <div class="copy-block green">
+          <strong>Dor:</strong> Faz tudo sozinho, sem tempo, sem equipe<br>
+          <strong>Desejo:</strong> Ter um "time" sem custo fixo<br>
+          <strong>Hook:</strong> "Se voce faz tudo sozinho — copy, design, trafego — por menos de R$47 voce tem um time inteiro"
+        </div>
+        <div style="margin-top: 8px;">
+          <span class="tag tag-green">Targeting Meta</span>
+          <p style="font-size: 12px; color: #666; margin-top: 4px;">Interesses: Hotmart, Kiwify, infoproduto, empreendedorismo digital, ChatGPT</p>
+        </div>
+      </div>
+
+      <div class="card" style="border-color: rgba(234,179,8,0.3);">
+        <h3 style="margin-top: 0; color: #eab308;">ICP 3: Gestor/Lider Tech-Curious</h3>
+        <p style="font-size: 13px; color: #888; margin-bottom: 12px;">Gerente, diretor, C-level de PME. Sabe que precisa de IA mas nao sabe por onde comecar.</p>
+        <div class="copy-block yellow">
+          <strong>Dor:</strong> Pressao pra "usar IA" sem saber como<br>
+          <strong>Desejo:</strong> Implementar IA de verdade, nao so ChatGPT<br>
+          <strong>Hook:</strong> "Seu board ta cobrando resultado com IA? Para de usar ChatGPT como Google e monta um time de verdade"
+        </div>
+        <div style="margin-top: 8px;">
+          <span class="tag tag-yellow">Targeting Meta</span>
+          <p style="font-size: 12px; color: #666; margin-top: 4px;">Interesses: gestao empresarial, lideranca, inovacao, transformacao digital, Harvard Business Review</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S6: LANDING PAGE STRUCTURE -->
+  <section>
+    <h2><span class="num">6</span> Estrutura da Landing Page</h2>
+
+    <p style="color: #888; margin-bottom: 24px; font-size: 15px;">
+      Baseado no que funciona na landing do concorrente (raxo.com.br/xquads) + o que falta nela.
+    </p>
+
+    <table>
+      <tr><th>#</th><th>Secao</th><th>Conteudo</th><th>Objetivo</th></tr>
+      <tr>
+        <td>1</td>
+        <td><span class="tag tag-red">Hero</span></td>
+        <td>Headline + sub + video hero + CTA + trust badges</td>
+        <td>Captar atencao, explicar oferta em 5 segundos</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><span class="tag tag-blue">Prova Social</span></td>
+        <td>3-5 depoimentos reais de quem ja usa os agentes</td>
+        <td>DIFERENCIAL vs concorrente (ele tem zero)</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><span class="tag tag-yellow">Problema/Solucao</span></td>
+        <td>"IA generica vs agentes premium" + terminal mockup</td>
+        <td>Elevar consciencia do problema</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><span class="tag tag-green">Demo em Video</span></td>
+        <td>Moroni usando os agentes em tempo real</td>
+        <td>Provar que funciona — ver e acreditar</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><span class="tag tag-blue">Stack de Valor</span></td>
+        <td>Os squads/agentes com bullets por area</td>
+        <td>Mostrar volume e profundidade</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><span class="tag tag-purple">As 4 Aulas</span></td>
+        <td>Curriculo das aulas — "o que voce vai aprender e FAZER"</td>
+        <td>Mostrar que nao e so ferramenta — tem ensino</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><span class="tag tag-yellow">Resultado Rapido</span></td>
+        <td>"Na primeira hora voce vai ter [resultado concreto]"</td>
+        <td>Diferencial #2 vs concorrente — resultado, nao promessa</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><span class="tag tag-green">Para Quem / Nao Para Quem</span></td>
+        <td>ICPs especificos com checkmarks</td>
+        <td>Filtrar e qualificar</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><span class="tag tag-blue">Quem e Moroni</span></td>
+        <td>Bio com credenciais reais + cases</td>
+        <td>Autoridade — ele tem, o concorrente nao</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><span class="tag tag-green">Pricing + CTA</span></td>
+        <td>R$47 + ancoragem + garantia 7 dias</td>
+        <td>Converter</td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td><span class="tag tag-gray">FAQ</span></td>
+        <td>6-8 perguntas + objecoes</td>
+        <td>Remover friccao</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td><span class="tag tag-red">CTA Final</span></td>
+        <td>Urgencia real + ultimo push</td>
+        <td>Pegar os indecisos</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- S7: BRIDGE STRATEGY -->
+  <section>
+    <h2><span class="num">7</span> Estrategia de Bridge: Low-Ticket → Journey</h2>
+
+    <p style="color: #888; margin-bottom: 24px; font-size: 15px;">
+      O segredo nao e vender o Journey. E fazer o lead perceber <strong>sozinho</strong> que precisa dele.
+    </p>
+
+    <div class="card" style="border-color: rgba(168,85,247,0.3);">
+      <h3 style="margin-top: 0; color: #a855f7;">A Escada de Consciencia (dentro das 4 aulas)</h3>
+      <table>
+        <tr><th>Aula</th><th>O que Entrega</th><th>O que o Lead Pensa</th><th>Nivel de Consciencia</th></tr>
+        <tr>
+          <td><strong>Aula 1</strong></td>
+          <td>Instala Cloud Code + agentes funcionando</td>
+          <td>"Caramba, funcionou! Isso e real."</td>
+          <td><span class="tag tag-green">Ferramenta funciona</span></td>
+        </tr>
+        <tr>
+          <td><strong>Aula 2</strong></td>
+          <td>Cria copy/design reais pro negocio dele</td>
+          <td>"Isso ta melhor do que meu freelancer faz."</td>
+          <td><span class="tag tag-blue">Resultado tangivel</span></td>
+        </tr>
+        <tr>
+          <td><strong>Aula 3</strong></td>
+          <td>Workflow completo: problema → solucao em 15min</td>
+          <td>"Economizei horas. Quanto tempo perdi sem isso?"</td>
+          <td><span class="tag tag-yellow">Percepcao de valor</span></td>
+        </tr>
+        <tr>
+          <td><strong>Aula 4</strong></td>
+          <td>Como empresarios geram RECEITA real com IA</td>
+          <td>"Eu to usando ferramenta. Eles tao gerando dinheiro. Preciso de acompanhamento."</td>
+          <td><span class="tag tag-purple">Pronto pro Journey</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="grid-2" style="margin-top: 16px;">
+      <div class="card">
+        <h3 style="margin-top: 0; color: #a855f7;">O que a Aula 4 Deve Conter</h3>
+        <ul class="insight-list">
+          <li><span class="icon icon-purple">1</span><span>Cases reais: "fulano entrou no Journey, implementou X, gerou Y de receita"</span></li>
+          <li><span class="icon icon-purple">2</span><span>A diferenca entre "usar ferramenta" e "gerar resultado" — framework visual</span></li>
+          <li><span class="icon icon-purple">3</span><span>"O que voce aprendeu aqui e 10% do que a comunidade Journey tem acesso"</span></li>
+          <li><span class="icon icon-purple">4</span><span>Tour pela comunidade — mostrar o que existe la dentro</span></li>
+          <li><span class="icon icon-purple">5</span><span>CTA natural: "se voce quer ir alem da ferramenta, o Journey ta aberto pra voce"</span></li>
+          <li><span class="icon icon-purple">6</span><span>Condicao especial: R$497 ou 12x R$51 (vs preco cheio futuro)</span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top: 0; color: #eab308;">Pontos de Contato para Upsell</h3>
+        <ul class="insight-list">
+          <li><span class="icon icon-yellow">A</span><span><strong>Final da Aula 4</strong> — CTA direto na aula, link abaixo do video</span></li>
+          <li><span class="icon icon-yellow">B</span><span><strong>Email D+7</strong> — "voce ta usando ferramenta ou gerando resultado?"</span></li>
+          <li><span class="icon icon-yellow">C</span><span><strong>Email D+10</strong> — Oferta Journey com condicao especial</span></li>
+          <li><span class="icon icon-yellow">D</span><span><strong>WhatsApp</strong> — Mensagem pessoal de Moroni (para compradores engajados)</span></li>
+          <li><span class="icon icon-yellow">E</span><span><strong>Pagina de obrigado pos-compra</strong> — "Parabens! Agora, quer acelerar?"</span></li>
+          <li><span class="icon icon-yellow">F</span><span><strong>Retargeting</strong> — Ad especifico para compradores do low-ticket</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- S8: EXECUCAO -->
+  <section>
+    <h2><span class="num">8</span> Plano de Execucao</h2>
+
+    <div class="card">
+      <h3 style="margin-top: 0; color: #4A90FF;">Fase 1 — Setup (Semana 1)</h3>
+      <div class="timeline">
+        <div class="timeline-item pending"><strong>Landing page</strong> — Construir no dominio proprio, dark mode, estrutura definida na secao 6</div>
+        <div class="timeline-item pending"><strong>Checkout Kiwify</strong> — Produto R$47, order bump R$17, configurar PIX + cartao</div>
+        <div class="timeline-item pending"><strong>Area de membros</strong> — 4 aulas filmadas/editadas, modulo bridge na Aula 4</div>
+        <div class="timeline-item pending"><strong>Email sequence</strong> — 6 emails configurados no Kiwify ou Resend</div>
+        <div class="timeline-item pending"><strong>Pixel + CAPI</strong> — Instalar no dominio, configurar eventos de compra</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top: 0; color: #22c55e;">Fase 2 — Lancamento (Semana 2-3)</h3>
+      <div class="timeline">
+        <div class="timeline-item pending"><strong>Subir 14 criativos</strong> — 3 campanhas CBO, 3-5 ad sets por campanha, 1 criativo por ad set</div>
+        <div class="timeline-item pending"><strong>Publicos iniciais</strong> — Interesses (3 audiences por ICP) + Lookalike base leads</div>
+        <div class="timeline-item pending"><strong>Budget R$30/dia</strong> — 7 dias de learning phase, sem mexer</div>
+        <div class="timeline-item pending"><strong>Monitorar</strong> — CTR, CPC, CPA. Matar criativos com CPA > R$60 apos 3 dias</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top: 0; color: #eab308;">Fase 3 — Otimizacao (Semana 4+)</h3>
+      <div class="timeline">
+        <div class="timeline-item pending"><strong>Identificar winners</strong> — Top 3 criativos por CPA</div>
+        <div class="timeline-item pending"><strong>Escalar budget</strong> — +20%/dia nos winners (max R$50/dia nessa fase)</div>
+        <div class="timeline-item pending"><strong>Novos criativos</strong> — Gravar variantes dos hooks que funcionaram</div>
+        <div class="timeline-item pending"><strong>Retargeting</strong> — Campanha especifica para compradores → Journey</div>
+        <div class="timeline-item pending"><strong>Medir conversao Journey</strong> — Quantos compradores do low-ticket viraram Journey?</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S9: VANTAGENS COMPETITIVAS -->
+  <section>
+    <h2><span class="num">9</span> Vantagens Competitivas vs Xquads</h2>
+
+    <table>
+      <tr><th>Dimensao</th><th>Xquads (concorrente)</th><th>REIS [IA] Low-Ticket</th><th>Vantagem</th></tr>
+      <tr>
+        <td>Resultado</td>
+        <td>Zero — so ferramenta</td>
+        <td>Resultado na primeira hora da Aula 1</td>
+        <td><span class="tag tag-green">REIS [IA]</span></td>
+      </tr>
+      <tr>
+        <td>Prova social</td>
+        <td>Nenhum depoimento</td>
+        <td>Cases reais na landing + Aula 4</td>
+        <td><span class="tag tag-green">REIS [IA]</span></td>
+      </tr>
+      <tr>
+        <td>Preco</td>
+        <td>R$67</td>
+        <td>R$47 (30% mais barato)</td>
+        <td><span class="tag tag-green">REIS [IA]</span></td>
+      </tr>
+      <tr>
+        <td>Backend / upsell</td>
+        <td>Nenhum (compra e fim)</td>
+        <td>Journey R$497 com bridge estruturado</td>
+        <td><span class="tag tag-green">REIS [IA]</span></td>
+      </tr>
+      <tr>
+        <td>Credibilidade</td>
+        <td>Pagina fantasma, 25 seguidores</td>
+        <td>Moroni Reis, cases reais, marca estabelecida</td>
+        <td><span class="tag tag-green">REIS [IA]</span></td>
+      </tr>
+      <tr>
+        <td>Tom</td>
+        <td>Casual gaucho, "rapaziada"</td>
+        <td>Consultivo premium, executivo</td>
+        <td><span class="tag tag-green">REIS [IA]</span></td>
+      </tr>
+      <tr>
+        <td>Agentes</td>
+        <td>136 agentes genéricos "clonados"</td>
+        <td>40+ agentes premium treinados de verdade</td>
+        <td><span class="tag tag-blue">Posicionamento</span></td>
+      </tr>
+      <tr>
+        <td>Urgencia</td>
+        <td>Fabricada ("nao trabalho remarketing")</td>
+        <td>A definir — precisa ser real</td>
+        <td><span class="tag tag-yellow">Empate</span></td>
+      </tr>
+      <tr>
+        <td>Landing page</td>
+        <td>Alta qualidade (dark, terminal mockup)</td>
+        <td>A construir — precisa igualar ou superar</td>
+        <td><span class="tag tag-red">Xquads por enquanto</span></td>
+      </tr>
+      <tr>
+        <td>Volume de ads</td>
+        <td>10 ativos ha 1 mes</td>
+        <td>14 gravados, 0 no ar ainda</td>
+        <td><span class="tag tag-red">Xquads por enquanto</span></td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="padding: 32px 0; text-align: center; color: #333; font-size: 13px;">
+    REIS [IA] — Funnel Planning | 22 de abril de 2026
+  </footer>
+
+</div>
+</body>
+</html>

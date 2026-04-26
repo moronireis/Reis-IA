@@ -1,5 +1,8 @@
 # Personal Brand Strategist — Memory
 
+## Client Projects
+- [ZNITH Client Brand](project_znith_client.md) — Leilaine Campioto 20-element framework complete (2026-04-08)
+
 ## Key Decisions (v1.0 — 2026-03-18)
 
 ### Archetypes

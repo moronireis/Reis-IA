@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Castelo dos Lagos — Degustacao Carousel Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0E0E0C;
+      color: #F4EFE6;
+      font-family: 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* --- HEADER --- */
+    .header {
+      text-align: center;
+      padding: 64px 24px 48px;
+      border-bottom: 1px solid rgba(201,169,110,0.12);
+    }
+    .header__label {
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #C9A96E;
+      margin-bottom: 16px;
+    }
+    .header__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(32px, 5vw, 52px);
+      color: #F4EFE6;
+      margin-bottom: 12px;
+    }
+    .header__sub {
+      font-weight: 300;
+      font-size: 16px;
+      color: rgba(244,239,230,0.50);
+    }
+
+    /* --- CAROUSEL VIEWER --- */
+    .carousel-section {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 48px 24px 32px;
+    }
+
+    .carousel-viewer {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1080 / 1350;
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+    }
+
+    .carousel-viewer .slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .carousel-viewer .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .carousel-viewer .slide img,
+    .carousel-viewer .slide video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    /* Text overlay on video slides */
+    .slide-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18% 10%;
+      gap: clamp(4px, 1.2vw, 12px);
+    }
+    .slide-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+    }
+    /* Overlay gradients — stronger for text readability */
+    .overlay-forest .slide-overlay::before {
+      background: linear-gradient(180deg,
+        rgba(30,46,36,0.75) 0%, rgba(30,46,36,0.55) 25%,
+        rgba(30,46,36,0.50) 50%, rgba(30,46,36,0.60) 75%,
+        rgba(30,46,36,0.85) 100%);
+    }
+    .overlay-heavy .slide-overlay::before {
+      background: linear-gradient(180deg,
+        rgba(14,14,12,0.80) 0%, rgba(14,14,12,0.60) 25%,
+        rgba(14,14,12,0.55) 50%, rgba(14,14,12,0.65) 75%,
+        rgba(14,14,12,0.88) 100%);
+    }
+    /* Hairline gold top */
+    .slide-overlay .hairline {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent 5%, #C9A96E 30%, #C9A96E 70%, transparent 95%);
+    }
+    /* Typography */
+    .slide-overlay .label {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(9px, 2vw, 18px);
+      color: #C9A96E;
+    }
+    .slide-overlay .divider {
+      width: clamp(40px, 12vw, 80px);
+      height: 1px;
+      background: #C9A96E;
+      margin: clamp(6px, 2vw, 20px) auto;
+    }
+    .slide-overlay .display-lg {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(36px, 10vw, 96px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: #C9A96E;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    }
+    .slide-overlay .display-md {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(26px, 7.5vw, 72px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: #F4EFE6;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    }
+    .slide-overlay .display-sm {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(22px, 6vw, 56px);
+      line-height: 1.1;
+      color: #F4EFE6;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+    }
+    .slide-overlay .body-text {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: clamp(11px, 2.6vw, 26px);
+      line-height: 1.7;
+      color: rgba(244,239,230,0.92);
+      max-width: 88%;
+      margin-top: clamp(6px, 2vw, 20px);
+      text-shadow: 0 1px 8px rgba(0,0,0,0.4);
+    }
+    .slide-overlay .body-muted {
+      color: rgba(244,239,230,0.60);
+    }
+    .slide-overlay .gold { color: #C9A96E; }
+    .slide-overlay .brand-mark {
+      position: absolute;
+      bottom: 5%;
+      left: 0; right: 0;
+      text-align: center;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(9px, 2.2vw, 22px);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(244,239,230,0.40);
+    }
+    .slide-overlay .counter {
+      position: absolute;
+      bottom: 5%;
+      right: 8%;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: clamp(7px, 1.5vw, 16px);
+      color: rgba(244,239,230,0.40);
+      letter-spacing: 0.1em;
+    }
+
+    /* --- CONTROLS --- */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .controls button {
+      background: none;
+      border: 1px solid rgba(201,169,110,0.25);
+      color: #C9A96E;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .controls button:hover {
+      background: rgba(201,169,110,0.1);
+      border-color: rgba(201,169,110,0.5);
+    }
+    .controls button:disabled {
+      opacity: 0.25;
+      cursor: default;
+    }
+    .slide-indicator {
+      font-size: 14px;
+      font-weight: 300;
+      color: rgba(244,239,230,0.45);
+      letter-spacing: 0.1em;
+      min-width: 60px;
+      text-align: center;
+    }
+    .slide-indicator strong {
+      color: #C9A96E;
+      font-weight: 500;
+    }
+
+    /* --- DOTS --- */
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(201,169,110,0.15);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .dot.active {
+      background: #C9A96E;
+      transform: scale(1.25);
+    }
+    .dot:hover:not(.active) {
+      background: rgba(201,169,110,0.35);
+    }
+
+    /* --- SLIDE GRID (all slides view) --- */
+    .grid-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      border-top: 1px solid rgba(201,169,110,0.08);
+    }
+    .grid-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .grid-header__title {
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: rgba(244,239,230,0.35);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .grid-item {
+      aspect-ratio: 1080 / 1350;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid rgba(201,169,110,0.08);
+    }
+    .grid-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      border-color: rgba(201,169,110,0.2);
+    }
+    .grid-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .grid-item__label {
+      font-size: 12px;
+      color: rgba(244,239,230,0.35);
+      text-align: center;
+      margin-top: 8px;
+      font-weight: 300;
+    }
+
+    /* --- FOOTER --- */
+    .footer {
+      text-align: center;
+      padding: 32px 24px;
+      border-top: 1px solid rgba(201,169,110,0.06);
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(244,239,230,0.25);
+      letter-spacing: 0.05em;
+    }
+
+    /* --- KEYBOARD HINT --- */
+    .hint {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+      color: rgba(244,239,230,0.2);
+    }
+    .hint kbd {
+      display: inline-block;
+      padding: 2px 8px;
+      border: 1px solid rgba(244,239,230,0.12);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 11px;
+      margin: 0 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <p class="header__label">Carousel Preview</p>
+    <h1 class="header__title">Degustacao Exclusiva</h1>
+    <p class="header__sub">Castelo dos Lagos — 10 slides (4 videos + 6 imagens), 1080 x 1350 px (4:5)</p>
+  </div>
+
+  <div class="carousel-section">
+    <div class="carousel-viewer" id="viewer">
+      <!-- 01 Cover — video + text -->
+      <div class="slide active overlay-forest" data-type="video">
+        <video src="video-churrasco-brasa.mp4" autoplay loop muted playsinline></video>
+        <div class="slide-overlay">
+          <div class="hairline"></div>
+          <span class="label">Convite Exclusivo</span>
+          <div class="divider"></div>
+          <span class="display-lg">Degusta&ccedil;&atilde;o</span>
+          <span class="display-sm">Churrasco &agrave; Ga&uacute;cha</span>
+          <div class="divider"></div>
+          <p class="body-text body-muted">Uma tarde para conhecer o Castelo, experimentar nosso carro-chefe e planejar o grande dia.</p>
+          <span class="brand-mark">Castelo dos Lagos</span>
+          <span class="counter">01 / 10</span>
+        </div>
+      </div>
+      <!-- 02 Context — video + text -->
+      <div class="slide overlay-heavy" data-type="video">
+        <video src="video-espetos-variados.mp4" loop muted playsinline></video>
+        <div class="slide-overlay">
+          <div class="hairline"></div>
+          <span class="label">O que esperar</span>
+          <div class="divider"></div>
+          <span class="display-md">Uma experi&ecirc;ncia,<br><span class="gold">n&atilde;o apenas uma visita</span></span>
+          <p class="body-text">Conhecer o espa&ccedil;o, experimentar a gastronomia e conversar com os melhores fornecedores — tudo em uma &uacute;nica tarde.</p>
+          <span class="brand-mark">Castelo dos Lagos</span>
+          <span class="counter">02 / 10</span>
+        </div>
+      </div>
+      <!-- 03 Highlight — video + text -->
+      <div class="slide overlay-heavy" data-type="video">
+        <video src="video-churrasco-brasa.mp4" loop muted playsinline></video>
+        <div class="slide-overlay">
+          <div class="hairline"></div>
+          <span class="label">Carro-Chefe</span>
+          <div class="divider"></div>
+          <span class="display-lg">Churrasco</span>
+          <span class="display-md gold" style="font-style:italic">&agrave; Ga&uacute;cha</span>
+          <div class="divider"></div>
+          <p class="body-text">Preparado pela equipe do Buffet Di Matoso — mais de 20 anos de tradi&ccedil;&atilde;o em gastronomia para eventos.</p>
+          <span class="brand-mark">Castelo dos Lagos</span>
+          <span class="counter">03 / 10</span>
+        </div>
+      </div>
+      <!-- 04-06 Static image slides -->
+      <div class="slide" data-type="image"><img src="slide-04-date.png" alt="Data"></div>
+      <div class="slide" data-type="image"><img src="slide-05-vendors-1.png" alt="Fornecedores I"></div>
+      <div class="slide" data-type="image"><img src="slide-06-vendors-2.png" alt="Fornecedores II"></div>
+      <!-- 07 Offer — video + text -->
+      <div class="slide overlay-heavy" data-type="video">
+        <video src="video-petiscos.mp4" loop muted playsinline></video>
+        <div class="slide-overlay">
+          <div class="hairline"></div>
+          <span class="label">Exclusivo para presentes</span>
+          <div class="divider"></div>
+          <span class="display-md">Condi&ccedil;&otilde;es especiais<br><span class="gold">para 2026</span></span>
+          <p class="body-text">Descontos e condi&ccedil;&otilde;es exclusivas para negocia&ccedil;&atilde;o presencial — v&aacute;lidas apenas no dia do evento.</p>
+          <span class="brand-mark">Castelo dos Lagos</span>
+          <span class="counter">07 / 10</span>
+        </div>
+      </div>
+      <!-- 08-10 Static image slides -->
+      <div class="slide" data-type="image"><img src="slide-08-space.png" alt="Espaco"></div>
+      <div class="slide" data-type="image"><img src="slide-09-payoff.png" alt="Payoff"></div>
+      <div class="slide" data-type="image"><img src="slide-10-cta.png" alt="CTA"></div>
+    </div>
+
+    <div class="controls">
+      <button id="prev" aria-label="Anterior">&larr;</button>
+      <span class="slide-indicator"><strong id="current">01</strong> / 10</span>
+      <button id="next" aria-label="Proximo">&rarr;</button>
+    </div>
+
+    <div class="dots" id="dots"></div>
+
+    <p class="hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> para navegar</p>
+  </div>
+
+  <div class="grid-section">
+    <div class="grid-header">
+      <p class="grid-header__title">Todos os slides</p>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="footer">
+    Carousel Engine — REIS [IA] Agent System
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('#viewer .slide');
+    const total = slides.length;
+    let idx = 0;
+
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const currentEl = document.getElementById('current');
+    const dotsEl = document.getElementById('dots');
+    const gridEl = document.getElementById('grid');
+
+    // Build dots
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', () => goTo(i));
+      dotsEl.appendChild(dot);
+    }
+
+    // Build grid — use rendered PNGs as thumbnails for all
+    const names = [
+      'Cover', 'Contexto', 'Carro-Chefe', 'Data',
+      'Fornecedores I', 'Fornecedores II', 'Oferta',
+      'Espaco', 'Payoff', 'CTA'
+    ];
+    const pngs = [
+      'slide-01-cover.png', 'slide-02-context.png', 'slide-03-highlight.png',
+      'slide-04-date.png', 'slide-05-vendors-1.png', 'slide-06-vendors-2.png',
+      'slide-07-offer.png', 'slide-08-space.png', 'slide-09-payoff.png', 'slide-10-cta.png'
+    ];
+    slides.forEach((el, i) => {
+      const wrapper = document.createElement('div');
+      const thumb = document.createElement('img');
+      thumb.src = pngs[i];
+      thumb.alt = names[i];
+      thumb.loading = 'lazy';
+      const item = document.createElement('div');
+      item.className = 'grid-item';
+      item.appendChild(thumb);
+      item.addEventListener('click', () => {
+        goTo(i);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      const label = document.createElement('p');
+      label.className = 'grid-item__label';
+      const typeTag = el.dataset.type === 'video' ? ' [video]' : '';
+      label.textContent = String(i + 1).padStart(2, '0') + ' — ' + names[i] + typeTag;
+      wrapper.appendChild(item);
+      wrapper.appendChild(label);
+      gridEl.appendChild(wrapper);
+    });
+
+    function goTo(n) {
+      const prevSlide = slides[idx];
+      prevSlide.classList.remove('active');
+      const prevVideo = prevSlide.querySelector('video');
+      if (prevVideo) { prevVideo.pause(); prevVideo.currentTime = 0; }
+      dotsEl.children[idx].classList.remove('active');
+
+      idx = n;
+      const curSlide = slides[idx];
+      curSlide.classList.add('active');
+      const curVideo = curSlide.querySelector('video');
+      if (curVideo) { curVideo.play(); }
+      dotsEl.children[idx].classList.add('active');
+      currentEl.textContent = String(idx + 1).padStart(2, '0');
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === total - 1;
+    }
+
+    prevBtn.addEventListener('click', () => { if (idx > 0) goTo(idx - 1); });
+    nextBtn.addEventListener('click', () => { if (idx < total - 1) goTo(idx + 1); });
+    prevBtn.disabled = true;
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && idx > 0) goTo(idx - 1);
+      if (e.key === 'ArrowRight' && idx < total - 1) goTo(idx + 1);
+    });
+
+    // Swipe support
+    let touchStartX = 0;
+    const viewer = document.getElementById('viewer');
+    viewer.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    viewer.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0 && idx < total - 1) goTo(idx + 1);
+        if (diff < 0 && idx > 0) goTo(idx - 1);
+      }
+    });
+  </script>
+</body>
+</html>

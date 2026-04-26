@@ -1,0 +1,210 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  activeRoute?: string;
+}
+
+const { title = 'ZNITH Design System', description = 'Sistema de Design oficial da ZNITH — Direção. Consciência. Legado.', activeRoute = '/' } = Astro.props;
+
+const navLinks = [
+  { href: '/cores', label: 'Cores' },
+  { href: '/tipografia', label: 'Tipografia' },
+  { href: '/logos', label: 'Logos' },
+  { href: '/componentes', label: 'Componentes' },
+  { href: '/voz', label: 'Voz' },
+  { href: '/marca', label: 'Marca' },
+  { href: '/movimento', label: 'Movimento' },
+];
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/png" href="/logos/Z.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body style="background-color: #00172B; color: #ffffff;">
+
+    <!-- Fixed Top Navigation -->
+    <nav id="topnav" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(0, 16, 30, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(38, 64, 96, 0.3);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+    ">
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1120px; margin: 0 auto;">
+
+        <!-- Logo + Brand -->
+        <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0;">
+          <img src="/logos/Z.png" alt="ZNITH" style="height: 28px; width: auto;" />
+          <span style="font-family: 'Cinzel', serif; font-size: 16px; color: #ffffff; letter-spacing: 0.12em; font-weight: 600;">ZNITH</span>
+        </a>
+
+        <!-- Nav Links (desktop) -->
+        <div id="nav-links" style="display: flex; align-items: center; gap: 8px;">
+          {navLinks.map(link => (
+            <a
+              href={link.href}
+              style={`
+                font-family: 'Montserrat', sans-serif;
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                text-decoration: none;
+                padding: 6px 14px;
+                border-radius: 6px;
+                transition: color 0.2s, background 0.2s;
+                position: relative;
+                color: ${activeRoute === link.href ? '#EDBA63' : '#8CA0B5'};
+                background: ${activeRoute === link.href ? 'rgba(237, 186, 99, 0.06)' : 'transparent'};
+              `}
+              onmouseover="this.style.color='#EDBA63'"
+              onmouseout={`this.style.color='${activeRoute === link.href ? '#EDBA63' : '#8CA0B5'}'`}
+            >
+              {link.label}
+              {activeRoute === link.href && (
+                <span style="position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: #EDBA63; border-radius: 50%;"></span>
+              )}
+            </a>
+          ))}
+        </div>
+
+        <!-- Version Badge -->
+        <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+          <span style="
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #00101E;
+            background: linear-gradient(135deg, #EDBA63, #C8883B);
+            padding: 3px 10px;
+            border-radius: 6px;
+          ">v3.0</span>
+
+          <!-- Mobile hamburger -->
+          <button id="hamburger" style="display: none; background: none; border: none; cursor: pointer; padding: 4px;" aria-label="Menu">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="0" y="4" width="20" height="1.5" rx="0.75" fill="#C0CDD8"/>
+              <rect x="0" y="9.25" width="20" height="1.5" rx="0.75" fill="#C0CDD8"/>
+              <rect x="0" y="14.5" width="20" height="1.5" rx="0.75" fill="#C0CDD8"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Mobile Nav Drawer -->
+    <div id="mobile-drawer" style="
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: rgba(0, 16, 30, 0.97);
+      backdrop-filter: blur(16px);
+      padding: 16px 24px;
+      z-index: 999;
+      border-bottom: 1px solid rgba(38, 64, 96, 0.4);
+    ">
+      {navLinks.map(link => (
+        <a href={link.href} style="
+          display: block;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 13px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #8CA0B5;
+          text-decoration: none;
+          padding: 12px 0;
+          border-bottom: 1px solid rgba(38, 64, 96, 0.3);
+        ">{link.label}</a>
+      ))}
+    </div>
+
+    <!-- Page Content -->
+    <main style="padding-top: 64px; min-height: 100vh;">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer style="
+      border-top: 1px solid rgba(38, 64, 96, 0.3);
+      padding: 32px;
+      text-align: center;
+    ">
+      <div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <p style="font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.3em; color: #5E7890; text-transform: uppercase;">Direção. Consciência. Legado.</p>
+        <p style="font-family: 'Montserrat', sans-serif; font-size: 11px; color: #3A5575;">ZNITH Design System v3.0 — Abril 2026</p>
+      </div>
+    </footer>
+
+    <script>
+      // Mobile menu
+      const hamburger = document.getElementById('hamburger');
+      const drawer = document.getElementById('mobile-drawer');
+      hamburger?.addEventListener('click', () => {
+        const isOpen = drawer?.style.display === 'block';
+        if (drawer) drawer.style.display = isOpen ? 'none' : 'block';
+      });
+
+      // Responsive hamburger
+      function checkResize() {
+        const ham = document.getElementById('hamburger');
+        const links = document.getElementById('nav-links');
+        if (window.innerWidth < 768) {
+          if (ham) ham.style.display = 'block';
+          if (links) links.style.display = 'none';
+        } else {
+          if (ham) ham.style.display = 'none';
+          if (links) links.style.display = 'flex';
+          const dr = document.getElementById('mobile-drawer');
+          if (dr) dr.style.display = 'none';
+        }
+      }
+      checkResize();
+      window.addEventListener('resize', checkResize);
+
+      // Scroll reveal
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      // Gold lines
+      const lineObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('.gold-line').forEach(el => lineObserver.observe(el));
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 ---
 name: brand-site-builder
 description: "Specialist agent for building the Reis IA Brand & Design System documentation website (reis-ia-brand/ project). Builds Astro pages with sidebar navigation, live interactive demos, token visualization, and component showcases following the AIOX structural blueprint adapted for the Reis IA design system.\n\nExamples:\n\n- User: \"Build the brand site index page with navigation\"\n  Assistant: \"I'll use the brand-site-builder to scaffold the project and build the index with header/footer navigation.\"\n  (Uses Agent tool to launch the brand-site-builder)\n\n- User: \"Build the buttons documentation page with interactive demos\"\n  Assistant: \"I'll use the brand-site-builder to create the buttons page with live variant demos and copy-to-clipboard code blocks.\"\n  (Uses Agent tool to launch the brand-site-builder)\n\n- User: \"Build the surfaces token page with visual examples\"\n  Assistant: \"I'll use the brand-site-builder to create the surfaces page showing the 5-tier system with live stacked cards.\"\n  (Uses Agent tool to launch the brand-site-builder)"
-model: opus
+model: sonnet
 color: blue
 memory: project
 ---

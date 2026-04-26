@@ -26,3 +26,7 @@
 ## Output File
 - Primary deliverable: `brain/assets/branding/company-reis-ia-concept.md`
 - v1.0 created 2026-03-18, all 17 elements complete
+
+## Client Projects
+
+- [ZNITH Brand Concept](project_znith_brand.md) — Leilaine Campioto, commercial growth architecture + AI, endorsed arch, navy+gold, v1.0 complete 2026-04-08

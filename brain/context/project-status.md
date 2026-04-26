@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-03-30
+Last updated: 2026-04-22
 
 ---
 
@@ -8,7 +8,7 @@ Last updated: 2026-03-30
 
 **Phase 6 — Final Website Build Ready**
 
-All strategy, messaging, copy, brand identity, design system, brandbook, and VFX assets are complete. Agent system expanded to 25 agents. Multiple sub-projects live or in development. Ready for Phase 6 final website build with full design system application.
+All strategy, messaging, copy, brand identity, design system, brandbook, and VFX assets are complete. Agent system expanded to 45 agents across 8 pipelines (Copy Squad, Content, Design, Education, Video, Technical, Brand, Ads). Multiple sub-projects live or in development. Ready for Phase 6 final website build with full design system application.
 
 ---
 
@@ -78,6 +78,51 @@ All strategy, messaging, copy, brand identity, design system, brandbook, and VFX
 - [x] Educational Designer agent created
 - [ ] Curriculum mapping in progress
 
+### Agency Technical Foundation (Phase A) -- COMPLETE (2026-04-14)
+- [x] 6 new agents: integration-engineer, qa-agent, devops-agent, data-engineer, offer-architect, funnel-architect
+- [x] social-media-team refactored → social-media-director
+- [x] chief-strategy-advisor activated as Board Advisor
+
+### Content Specialists (Phase B partial) -- COMPLETE (2026-04-14)
+- [x] 4 content specialists: hook-specialist, reels-scriptwriter, linkedin-strategist, carousel-designer-writer
+- [x] Stack 2 content pipeline connected to Copy Squad
+
+### Video Editing Pipeline (Stack 3) -- COMPLETE (2026-04-14)
+- [x] 3 agents: video-editor-director, clip-cutter, caption-broll-operator
+- [x] OSS recipe documented (Whisper + ffmpeg + Pexels/Pixabay)
+- [x] Scaffold scripts at scripts/video-pipeline/
+- [ ] Implementation pending (Moroni trigger: "implemente o Stack 3")
+
+### Design Team Restructure -- COMPLETE (2026-04-15)
+- [x] Merged creative-director + cinematic-art-director → art-director
+- [x] Added visual-research-scout (mood reports)
+- [x] Added visual-qa-agent (aesthetic judge)
+- [x] Upgraded design-system-extractor (Track B: html.html > 50KB)
+- [x] Upgraded vfx-motion-designer (2026 CSS primitives)
+
+### Meta Ads Squad (Stack 4) -- COMPLETE (2026-04-22)
+- [x] Meta App connected: Reis IA - Gestor (ID: 2160072261434114)
+- [x] User Access Token with 12 permissions (ads_management, ads_read, business_management, leads_retrieval, whatsapp_business_*)
+- [x] 4 ad accounts accessible: Moroni Reis, Noiva S/A, Agente Lucrativo, Leo Soares 3
+- [x] MCP Server: meta-ads (@getscaleforge/mcp-meta-ads) — 32 tools, Graph API v24.0
+- [x] Plugin: claude-ads (AgriciDaniel/claude-ads v1.5.1) — 250+ audit checks
+- [x] 3 agents: traffic-manager, ads-analyst, creative-strategist
+- [x] Safety rules: .claude/rules/ads-safety.md
+- [ ] System User token migration (non-expiring) — pending
+- [ ] Conversions API (CAPI) setup — pending
+- [ ] Webhook subscriptions (leadgen, ad_account) — pending
+
+### Competitive Intelligence (Stack 1) -- BLOCKED
+- [ ] Meta Ad Library API only returns political ads in 2026
+- [ ] Decision pending: Apify (recommended) vs Playwright scraping vs re-scope
+- [ ] Funnil Hacker v2 ad module depends on this decision
+
+### Funnil Hacker -- COMPLETE & DEPLOYED (2026-04-11)
+- [x] 29 source files, 8 DB tables, 8 API endpoints
+- [x] Live at https://funnil-hacker.vercel.app/
+- [x] 5 modes: discover competitors, scaled offers, hack top players, map funnel, full pipeline
+- [ ] Ad Library integration pending Stack 1 decision
+
 ## Active Sub-Projects
 
 | Project | Directory | Stack | Status | Deploy |
@@ -101,36 +146,23 @@ All strategy, messaging, copy, brand identity, design system, brandbook, and VFX
 | Email sending | Resend | Used for event/diagnostic emails |
 | Email platform | TBD | Sequence automation platform |
 | CRM | Custom (HUB) | Built into reis-ia-hub |
+| Meta Ads MCP | @getscaleforge/mcp-meta-ads | 32 tools, Graph API v24.0 |
+| Ads Audit Plugin | claude-ads v1.5.1 | 250+ checks, health scoring |
 
-## Agent System (25 Agents)
+## Agent System (45 Agents)
 
-| Agent | Role |
-|-------|------|
-| orchestrator | Coordination, planning, delegation |
-| market-research-analyst | Market analysis, ICP discovery |
-| cmo-strategist | Strategy, positioning, funnels, Copy Squad director |
-| direct-response-copywriter | Persuasive copy execution |
-| humanizer | AI pattern elimination, PT-BR voice |
-| reviewer | Quality gate for copy |
-| execution | File operations |
-| dev-agent | Web development (Astro/React/Tailwind) |
-| designer-agent | UI/UX, brand identity, visual design |
-| analysis-agent | Context summaries, research |
-| executor-agent | Platform config, deployment |
-| education-director | Curriculum, briefings, quality review |
-| roteirista-aulas | Lesson scriptwriting |
-| educational-designer | Lesson visuals (slides, diagrams) |
-| design-system-extractor | Reference site analysis |
-| logo-brand-mark-designer | Logo/symbol creation (SVG) |
-| chief-strategy-advisor | High-level strategic advisory |
-| social-media-team | Social media content |
-| creative-director | Creative direction |
-| brand-site-builder | Brand site development |
-| company-brand-strategist | Company brand strategy |
-| personal-brand-strategist | Personal brand strategy |
-| product-brand-strategist | Product brand strategy |
-| movement-brand-strategist | Movement brand strategy |
-| vfx-motion-designer | VFX and motion design |
+See `.claude/agents/` for full definitions and `CLAUDE.md` for canonical registry.
+
+**Pipelines:**
+- **Copy Squad (8):** cmo-strategist, chief-strategy-advisor, market-research-analyst, offer-architect, funnel-architect, direct-response-copywriter, humanizer, reviewer
+- **Content (5):** social-media-director, hook-specialist, reels-scriptwriter, linkedin-strategist, carousel-designer-writer
+- **Design (10):** art-director, visual-research-scout, visual-qa-agent, designer-agent, vfx-motion-designer, logo-brand-mark-designer, design-system-extractor, brand-site-builder, vector-illustrator, cartoon-character-designer
+- **Brand (4):** company-brand-strategist, personal-brand-strategist, movement-brand-strategist, product-brand-strategist
+- **Education (3):** education-director, roteirista-aulas, educational-designer
+- **Video (3):** video-editor-director, clip-cutter, caption-broll-operator
+- **Technical (7):** dev-agent, integration-engineer, qa-agent, devops-agent, data-engineer, execution, executor-agent
+- **Ads (3):** traffic-manager, ads-analyst, creative-strategist
+- **Support (2):** analysis-agent, task-router, orchestrator
 
 ## Next Phase — Phase 6: Final Website Build
 
@@ -155,3 +187,8 @@ Phase 6 deliverables:
 - WhatsApp Business API integration
 - Analytics/performance tracking
 - A/B testing infrastructure
+- Stack 1 decision: Apify vs re-scope for competitive ad intelligence
+- System User token migration (non-expiring Meta token)
+- Conversions API (CAPI) setup for server-side attribution
+- Stack 3 implementation (Whisper + ffmpeg scripts — awaiting Moroni trigger)
+- Webhook subscriptions (leadgen, ad_account alerts)

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Convidados — Moroni & Daphine</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #141414;
+    --border: #222;
+    --text: #f5f5f5;
+    --muted: #888;
+    --azul: #4A90FF;
+    --amarelo: #F5C518;
+    --verde: #2ECC71;
+    --vinho: #722F37;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: contain; }
+  body {
+    font-family: -apple-system, 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 16px;
+    padding-bottom: 80px;
+  }
+  header.top {
+    max-width: 1600px;
+    margin: 0 auto 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  h1 {
+    font-weight: 300;
+    font-size: 20px;
+    letter-spacing: 0.5px;
+  }
+  h1 span { color: var(--azul); }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; width: 100%; }
+  .toolbar input, .toolbar button, .toolbar select {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    min-height: 44px;
+  }
+  .toolbar input { flex: 1 1 160px; min-width: 140px; }
+  .toolbar select { flex: 1 1 140px; }
+  .toolbar button { cursor: pointer; transition: border-color .15s; flex: 0 0 auto; }
+  .toolbar button:active { border-color: var(--azul); }
+  .stats {
+    max-width: 1600px;
+    margin: 0 auto 14px;
+    display: flex;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .stats span { background: var(--panel); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); }
+  .stats span b { color: var(--text); font-weight: 600; }
+  .move-hint {
+    max-width: 1600px;
+    margin: 0 auto 12px;
+    display: none;
+    padding: 10px 14px;
+    background: rgba(74,144,255,0.1);
+    border: 1px solid var(--azul);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--azul);
+  }
+  .move-hint.visible { display: block; }
+  .board {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 1100px) { .board { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 700px) {
+    body { padding: 12px; }
+    h1 { font-size: 18px; }
+    .board { grid-template-columns: 1fr; gap: 12px; }
+    .column { min-height: auto; }
+  }
+  .column {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 200px;
+    transition: border-color .15s, background .15s;
+  }
+  .column.drop-target {
+    border-color: var(--azul);
+    background: rgba(74,144,255,0.06);
+  }
+  .column > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .col-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .col-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .col-count {
+    font-size: 12px;
+    color: var(--muted);
+    background: #0a0a0a;
+    padding: 3px 9px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .col-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 60px;
+  }
+  .card {
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    user-select: none;
+    transition: transform .1s, border-color .15s, background .15s;
+    position: relative;
+  }
+  .card:active { background: #151515; }
+  .card.selected {
+    border-color: var(--azul);
+    background: rgba(74,144,255,0.08);
+    box-shadow: 0 0 0 1px var(--azul);
+  }
+  .card-name { font-weight: 500; pointer-events: none; }
+  .card-group {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+    pointer-events: none;
+  }
+  .card[data-status="azul"] { border-left-color: var(--azul); }
+  .card[data-status="amarelo"] { border-left-color: var(--amarelo); }
+  .card[data-status="verde"] { border-left-color: var(--verde); }
+  .card[data-status="vinho"] { border-left-color: var(--vinho); }
+  .card-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .card-actions button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    min-height: 32px;
+    font-family: inherit;
+    font-weight: 500;
+  }
+  .card-actions button:active { color: var(--text); border-color: var(--azul); }
+  .card-actions .b-azul { border-color: var(--azul); color: var(--azul); }
+  .card-actions .b-amarelo { border-color: var(--amarelo); color: var(--amarelo); }
+  .card-actions .b-verde { border-color: var(--verde); color: var(--verde); }
+  .card-actions .b-vinho { border-color: var(--vinho); color: #c08;}
+  .del { color: #e55 !important; margin-left: auto; }
+  .save-btn {
+    background: var(--azul) !important;
+    color: #fff !important;
+    border-color: var(--azul) !important;
+    font-weight: 600;
+  }
+  .save-btn.saved {
+    background: var(--verde) !important;
+    border-color: var(--verde) !important;
+  }
+  .save-btn.dirty {
+    background: var(--amarelo) !important;
+    border-color: var(--amarelo) !important;
+    color: #000 !important;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--verde);
+    color: #000;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    opacity: 0;
+    transition: transform .25s, opacity .25s;
+    z-index: 1000;
+  }
+  .toast.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  .footer {
+    max-width: 1600px;
+    margin: 24px auto 0;
+    text-align: center;
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+  <header class="top">
+    <h1>Convidados <span>Moroni & Daphine</span></h1>
+    <div class="toolbar">
+      <input id="search" type="text" placeholder="Buscar..." />
+      <select id="filterGroup">
+        <option value="">Todos grupos</option>
+      </select>
+      <button id="saveBtn" class="save-btn">Sincronizar</button>
+      <button id="addBtn">+ Add</button>
+      <button id="exportBtn">CSV</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+  </header>
+
+  <div class="stats" id="stats"></div>
+  <div class="move-hint" id="moveHint">Toque em uma coluna para mover o card selecionado.</div>
+
+  <div class="board" id="board">
+    <div class="column" data-status="azul">
+      <header>
+        <div class="col-title"><span class="col-dot" style="background:var(--azul)"></span>Convidar</div>
+        <span class="col-count">0</span>
+      </header>
+      <div class="col-body" data-drop="azul"></div>
+    </div>
+    <div class="column" data-status="amarelo">
+      <header>
+        <div class="col-title"><span class="col-dot" style="background:var(--amarelo)"></span>Pensando</div>
+        <span class="col-count">0</span>
+      </header>
+      <div class="col-body" data-drop="amarelo"></div>
+    </div>
+    <div class="column" data-status="verde">
+      <header>
+        <div class="col-title"><span class="col-dot" style="background:var(--verde)"></span>Confirmados</div>
+        <span class="col-count">0</span>
+      </header>
+      <div class="col-body" data-drop="verde"></div>
+    </div>
+    <div class="column" data-status="vinho">
+      <header>
+        <div class="col-title"><span class="col-dot" style="background:var(--vinho)"></span>Padrinhos</div>
+        <span class="col-count">0</span>
+      </header>
+      <div class="col-body" data-drop="vinho"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Salvo ✓</div>
+  <div class="footer">O Tempo é Rei</div>
+
+<script>
+const SEED = [
+  // Família Daphine
+  ...['Márcia','José','Carol','Michele','Will','Murilo','Miguel','Mauricio','Aline','Nathaly','Sophie','Stella','Márcio','Mariana','Arthur','Marcelo','Claudio','Lilian','Julia','Lucas','Vovó Luzia','Nem','Henrique','Esposa do Henrique','Filho 1 do Henrique','Filho 2 do Henrique','Marquinho','Esposa do Marquinho','Filho do Marquinho','Rafael','Anthony','Fabrício','Delei','Filho do Delei'].map(n=>({n,g:'Família Daphine'})),
+  // Família Moroni
+  ...['Marcos','Luciana','Bruno','Sarah','Angelo','Rafa','Ana','Estela','Vô Roberto','Vó Marilene','Ryan','Tio Toninho','Esposa Tio Toninho','Fernando','Esposa Fernando','Tia Alice','Rafa (M)','Larissa','Adri'].map(n=>({n,g:'Família Moroni'})),
+  // Amigas
+  ...['Daniela Amorim','Letícya','Giovana','Bárbara','Laura Raiheda','Isabella Medeiros','Maria Júlia','Aila'].map(n=>({n,g:'Amigas'})),
+  // Amigos
+  ...['Arthur','Vinicius','Matheus','Will','Felipe (Domínio)','Doga','Cesar','Cristian','Gabriel'].map(n=>({n,g:'Amigos'})),
+  // Outros
+  ...['Rafael e Luisa','Cleo','Marcos','Pedro','Helena','Dany e Luma','Ana Sapa','Bispo Padilha','Wendy','Luciene','Ivan','Nathália','Danilo','Filho 1 Danilo','Filho 2 Danilo','Fortunato (cerimonialista)','Esposa Fortunato'].map(n=>({n,g:'Outros'})),
+  // Igreja
+  ...['Eliane','Analígia','Osmar','Joci','Vinicius (Joci)','Cristiano','Andreia','Luis Antur','Maria','Renan','Cris'].map(n=>({n,g:'Igreja'})),
+  // Chá de Cozinha
+  ...['Sil','Ricardo','Renata','Rodrigo','Ana (Chá)'].map(n=>({n,g:'Chá de Cozinha'})),
+];
+
+const STORAGE_KEY = 'convidados-md-v1';
+let state = load();
+let selectedId = null;
+let dirty = false;
+
+function markDirty() {
+  dirty = true;
+  const btn = document.getElementById('saveBtn');
+  if (btn) { btn.classList.add('dirty'); btn.classList.remove('saved'); btn.textContent = 'Sincronizar*'; }
+}
+function markSaved(msg) {
+  dirty = false;
+  const btn = document.getElementById('saveBtn');
+  if (btn) { btn.classList.remove('dirty'); btn.classList.add('saved'); btn.textContent = 'Sincronizado ✓'; }
+  showToast(msg || 'Sincronizado ✓');
+  setTimeout(() => {
+    if (!dirty && btn) { btn.classList.remove('saved'); btn.textContent = 'Sincronizar'; }
+  }, 2500);
+}
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), 1800);
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return SEED.map((x, i) => ({ id: 'g'+i, name: x.n, group: x.g, status: 'azul' }));
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  markDirty();
+}
+async function saveNow() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: state }),
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    markSaved('Sincronizado na nuvem ✓');
+  } catch (e) {
+    showToast('Erro ao sincronizar: ' + e.message);
+    btn.classList.add('dirty');
+    btn.textContent = 'Sincronizar*';
+  } finally {
+    btn.disabled = false;
+  }
+}
+async function loadFromCloud() {
+  try {
+    const r = await fetch('/api/sync', { cache: 'no-store' });
+    if (!r.ok) return;
+    const { data, updatedAt } = await r.json();
+    if (Array.isArray(data) && data.length) {
+      state = data;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      dirty = false;
+      render();
+      if (updatedAt) showToast('Carregado da nuvem ✓');
+    }
+  } catch (e) {
+    console.warn('Cloud load failed:', e);
+  }
+}
+
+function render() {
+  const query = document.getElementById('search').value.toLowerCase();
+  const gFilter = document.getElementById('filterGroup').value;
+
+  document.querySelectorAll('.col-body').forEach(b => b.innerHTML = '');
+
+  const filtered = state.filter(g => {
+    if (query && !g.name.toLowerCase().includes(query)) return false;
+    if (gFilter && g.group !== gFilter) return false;
+    return true;
+  });
+
+  filtered.forEach(g => {
+    const body = document.querySelector(`.col-body[data-drop="${g.status}"]`);
+    if (!body) return;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.draggable = true;
+    card.dataset.id = g.id;
+    card.dataset.status = g.status;
+    if (g.id === selectedId) card.classList.add('selected');
+    card.innerHTML = `
+      <div class="card-name">${escapeHtml(g.name)}</div>
+      <div class="card-group">${escapeHtml(g.group)}</div>
+      <div class="card-actions">
+        <button class="b-azul" data-move="azul">Convidar</button>
+        <button class="b-amarelo" data-move="amarelo">Pensando</button>
+        <button class="b-verde" data-move="verde">Confirmado</button>
+        <button class="b-vinho" data-move="vinho">Padrinho</button>
+        <button class="del" data-del="1">Excluir</button>
+      </div>
+    `;
+    bindCard(card);
+    body.appendChild(card);
+  });
+
+  // counts
+  ['azul','amarelo','verde','vinho'].forEach(s => {
+    const count = state.filter(g => g.status === s).length;
+    document.querySelector(`.column[data-status="${s}"] .col-count`).textContent = count;
+  });
+
+  renderStats();
+  renderGroupFilter();
+}
+
+function renderStats() {
+  const total = state.length;
+  const by = s => state.filter(g => g.status === s).length;
+  document.getElementById('stats').innerHTML = `
+    <span>Total: <b>${total}</b></span>
+    <span style="color:var(--azul)">Convidar: <b>${by('azul')}</b></span>
+    <span style="color:var(--amarelo)">Pensando: <b>${by('amarelo')}</b></span>
+    <span style="color:var(--verde)">Confirmados: <b>${by('verde')}</b></span>
+    <span style="color:#c08">Padrinhos: <b>${by('vinho')}</b></span>
+  `;
+}
+
+function renderGroupFilter() {
+  const sel = document.getElementById('filterGroup');
+  if (sel.options.length > 1) return;
+  const groups = [...new Set(state.map(g => g.group))];
+  groups.forEach(gr => {
+    const opt = document.createElement('option');
+    opt.value = gr; opt.textContent = gr;
+    sel.appendChild(opt);
+  });
+}
+
+function bindCard(card) {
+  card.addEventListener('click', e => {
+    if (e.target.closest('button')) return;
+    selectedId = (selectedId === card.dataset.id) ? null : card.dataset.id;
+    document.getElementById('moveHint').classList.toggle('visible', !!selectedId);
+    render();
+  });
+  card.querySelectorAll('[data-move]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      moveCard(card.dataset.id, btn.dataset.move);
+    });
+  });
+  const delBtn = card.querySelector('[data-del]');
+  if (delBtn) delBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (confirm('Remover ' + card.querySelector('.card-name').textContent + '?')) {
+      state = state.filter(g => g.id !== card.dataset.id);
+      if (selectedId === card.dataset.id) selectedId = null;
+      save(); render();
+    }
+  });
+}
+
+function moveCard(id, status) {
+  const g = state.find(x => x.id === id);
+  if (!g) return;
+  g.status = status;
+  selectedId = null;
+  document.getElementById('moveHint').classList.remove('visible');
+  save(); render();
+}
+
+document.querySelectorAll('.column').forEach(col => {
+  col.addEventListener('click', e => {
+    if (e.target.closest('.card') || e.target.closest('button')) return;
+    if (selectedId) moveCard(selectedId, col.dataset.status);
+  });
+});
+
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('filterGroup').addEventListener('change', render);
+
+document.getElementById('addBtn').addEventListener('click', () => {
+  const name = prompt('Nome do convidado:');
+  if (!name) return;
+  const group = prompt('Grupo (ex: Amigos, Família...):') || 'Outros';
+  state.push({ id: 'g'+Date.now(), name, group, status: 'azul' });
+  save(); render();
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const rows = [['Nome','Grupo','Status']];
+  state.forEach(g => rows.push([g.name, g.group, g.status]));
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'convidados.csv';
+  a.click();
+});
+
+document.getElementById('saveBtn').addEventListener('click', saveNow);
+
+window.addEventListener('beforeunload', e => {
+  if (dirty) { e.preventDefault(); e.returnValue = ''; }
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (confirm('Resetar toda a lista para o estado inicial? (perde alterações)')) {
+    localStorage.removeItem(STORAGE_KEY);
+    state = load();
+    save(); render();
+  }
+});
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+save();
+render();
+loadFromCloud();
+window.addEventListener('focus', loadFromCloud);
+</script>
+</body>
+</html>

@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Análise Competitiva — Castelo dos Lagos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest: #1E2E24;
+      --forest-light: #2A3E30;
+      --forest-dark: #151F19;
+      --gold: #C9A96E;
+      --gold-light: #D4B97A;
+      --gold-dark: #A68B5B;
+      --cream: #F5F0E8;
+      --cream-dark: #E8E0D0;
+      --charcoal: #1A1A1A;
+      --text-dark: #0D0D0D;
+      --text-muted: #6B6B6B;
+      --white: #FFFFFF;
+      --surface: #FAFAF7;
+      --border: rgba(201, 169, 110, 0.2);
+      --border-strong: rgba(201, 169, 110, 0.4);
+      --red: #DC2626;
+      --red-bg: rgba(220, 38, 38, 0.08);
+      --red-light: #FCA5A5;
+      --amber: #F59E0B;
+      --amber-bg: rgba(245, 158, 11, 0.08);
+      --amber-light: #FCD34D;
+      --green: #16A34A;
+      --green-bg: rgba(22, 163, 74, 0.08);
+      --green-light: #86EFAC;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--white);
+      color: var(--text-dark);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .font-display { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+    h1, h2, h3, h4 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    section { padding: 5rem 0; }
+
+    /* ── Confidential Bar ── */
+    .confidential-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: var(--forest);
+      color: var(--gold);
+      text-align: center;
+      padding: 0.4rem;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    /* ── Navigation ── */
+    .nav {
+      position: fixed;
+      top: 1.6rem;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 0.75rem 0;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--forest);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+
+    .nav-links a {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      background: var(--forest);
+      position: relative;
+      overflow: hidden;
+      padding-top: 5rem;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(201, 169, 110, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(201, 169, 110, 0.04) 0%, transparent 50%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      padding: 3rem 0;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid rgba(201, 169, 110, 0.3);
+      border-radius: 100px;
+      color: var(--gold);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      color: var(--white);
+      font-weight: 300;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
+      font-weight: 400;
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 300;
+      max-width: 600px;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat { text-align: left; }
+
+    .hero-stat .number {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .hero-stat .label {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-top: 0.25rem;
+    }
+
+    /* ── Section Headers ── */
+    .section-header { margin-bottom: 3rem; }
+
+    .section-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.875rem;
+      color: var(--gold);
+      letter-spacing: 0.15em;
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 300;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+      color: var(--charcoal);
+    }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 300;
+      max-width: 650px;
+      line-height: 1.8;
+    }
+
+    /* ── Competitor Cards ── */
+    .competitor-section { background: var(--surface); }
+
+    .competitor-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      margin-bottom: 3rem;
+      overflow: hidden;
+    }
+
+    .competitor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .competitor-name-group { display: flex; align-items: center; gap: 1.5rem; }
+
+    .threat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .threat-high { background: var(--red-bg); color: var(--red); border: 1px solid rgba(220,38,38,0.15); }
+    .threat-medium { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(245,158,11,0.15); }
+    .threat-low { background: var(--green-bg); color: var(--green); border: 1px solid rgba(22,163,74,0.15); }
+
+    .competitor-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: var(--charcoal);
+    }
+
+    .competitor-location {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .competitor-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .competitor-links a {
+      font-size: 0.7rem;
+      color: var(--gold-dark);
+      text-decoration: none;
+      padding: 0.4rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: all 0.3s;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .competitor-links a:hover {
+      background: var(--gold);
+      color: var(--white);
+      border-color: var(--gold);
+    }
+
+    .competitor-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+    }
+
+    .competitor-col {
+      padding: 2rem 2.5rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .competitor-col:last-child { border-right: none; }
+
+    .col-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+      display: block;
+      font-weight: 600;
+    }
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .data-row:last-child { border-bottom: none; }
+
+    .data-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .data-value {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--charcoal);
+    }
+
+    .data-value.gold { color: var(--gold-dark); font-weight: 600; }
+
+    /* Strengths/Weaknesses */
+    .sw-list { list-style: none; }
+
+    .sw-list li {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 0.45rem 0;
+      padding-left: 1.25rem;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .sw-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.75rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .sw-list.strengths li::before { background: var(--green); opacity: 0.6; }
+    .sw-list.weaknesses li::before { background: var(--red); opacity: 0.5; }
+
+    /* Competitor Insight Box */
+    .insight-box {
+      padding: 1.5rem 2.5rem;
+      background: rgba(201,169,110,0.04);
+      border-top: 1px solid var(--border);
+    }
+
+    .insight-box p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .insight-box strong { color: var(--forest); }
+
+    /* ── Comparison Table ── */
+    .comparison-section { background: var(--forest); color: var(--white); }
+    .comparison-section .section-title { color: var(--white); }
+    .comparison-section .section-subtitle { color: rgba(255,255,255,0.45); }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .comparison-table th {
+      text-align: left;
+      padding: 1rem 1.25rem;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      border-bottom: 1px solid rgba(201,169,110,0.2);
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .comparison-table td {
+      padding: 1rem 1.25rem;
+      font-size: 0.825rem;
+      color: rgba(255,255,255,0.7);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      vertical-align: top;
+    }
+
+    .comparison-table tr.highlight td {
+      color: var(--gold);
+      font-weight: 500;
+      background: rgba(201,169,110,0.05);
+    }
+
+    .comparison-table tr:hover td {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-high { background: rgba(220, 38, 38, 0.15); color: #FCA5A5; }
+    .badge-medium { background: rgba(245, 158, 11, 0.15); color: #FCD34D; }
+    .badge-advantage { background: rgba(201, 169, 110, 0.15); color: var(--gold); }
+    .badge-low { background: rgba(22, 163, 74, 0.15); color: #86EFAC; }
+
+    .check { color: var(--gold); }
+    .x-mark { color: rgba(255,255,255,0.2); }
+
+    /* ── Radar / Scoring Section ── */
+    .scoring-section { background: var(--surface); }
+
+    .scoring-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .score-card {
+      background: var(--white);
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .score-card.is-you {
+      background: var(--forest);
+      color: var(--white);
+    }
+
+    .score-card .venue-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 1.25rem;
+      color: var(--charcoal);
+    }
+
+    .score-card.is-you .venue-name { color: var(--gold); }
+
+    .score-ring {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .score-ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid rgba(0,0,0,0.06);
+    }
+
+    .score-card.is-you .score-ring::before {
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    .score-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: var(--charcoal);
+    }
+
+    .score-card.is-you .score-number { color: var(--gold); }
+
+    .score-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .score-card.is-you .score-label { color: rgba(255,255,255,0.4); }
+
+    .score-bars { text-align: left; }
+
+    .score-bar-item {
+      margin-bottom: 0.6rem;
+    }
+
+    .score-bar-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .score-card.is-you .score-bar-label { color: rgba(255,255,255,0.45); }
+
+    .score-bar-track {
+      height: 4px;
+      background: rgba(0,0,0,0.06);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .score-card.is-you .score-bar-track { background: rgba(255,255,255,0.1); }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--gold);
+      transition: width 1s ease;
+    }
+
+    .score-bar-fill.red { background: var(--red); opacity: 0.6; }
+    .score-bar-fill.amber { background: var(--amber); opacity: 0.7; }
+    .score-bar-fill.green { background: var(--green); opacity: 0.6; }
+
+    /* ── Strategic Gaps ── */
+    .gaps-section { background: var(--white); }
+
+    .gap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .gap-card {
+      padding: 2.5rem;
+      border: 1px solid var(--border);
+      transition: border-color 0.3s;
+    }
+
+    .gap-card:hover { border-color: var(--border-strong); }
+
+    .gap-icon {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 1.25rem;
+      color: var(--gold);
+    }
+
+    .gap-card h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--charcoal);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .gap-card p {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    /* ── SWOT Comparison ── */
+    .swot-section { background: var(--forest); color: var(--white); }
+    .swot-section .section-title { color: var(--white); }
+    .swot-section .section-subtitle { color: rgba(255,255,255,0.45); }
+
+    .swot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: rgba(201,169,110,0.15);
+      border: 1px solid rgba(201,169,110,0.15);
+    }
+
+    .swot-card {
+      background: var(--forest);
+      padding: 2.5rem;
+    }
+
+    .swot-card .swot-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+      display: block;
+      font-weight: 600;
+    }
+
+    .swot-card ul { list-style: none; }
+
+    .swot-card li {
+      font-size: 0.825rem;
+      color: rgba(255,255,255,0.6);
+      padding: 0.45rem 0;
+      padding-left: 1rem;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .swot-card li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.8rem;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+
+    /* ── Key Takeaways ── */
+    .takeaways-section { background: var(--surface); }
+
+    .takeaway-card {
+      padding: 3rem;
+      border: 1px solid var(--border);
+      background: var(--white);
+    }
+
+    .takeaway-card h3 {
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: var(--charcoal);
+      margin-bottom: 1.5rem;
+    }
+
+    .takeaway-card h3 em {
+      font-style: italic;
+      color: var(--gold-dark);
+    }
+
+    .takeaway-items {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .takeaway-item h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--forest);
+      margin-bottom: 0.5rem;
+    }
+
+    .takeaway-item p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      background: var(--forest-dark);
+      color: rgba(255,255,255,0.3);
+      padding: 2rem 0;
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .footer a {
+      color: var(--gold-dark);
+      text-decoration: none;
+    }
+
+    /* ── Animations ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .competitor-body { grid-template-columns: 1fr; }
+      .competitor-col { border-right: none; border-bottom: 1px solid var(--border); }
+      .competitor-col:last-child { border-bottom: none; }
+      .scoring-grid { grid-template-columns: 1fr 1fr; }
+      .gap-grid { grid-template-columns: 1fr; }
+      .takeaway-items { grid-template-columns: 1fr; }
+      .hero-stats { gap: 2rem; }
+      .comparison-table { font-size: 0.75rem; }
+      .comparison-table th, .comparison-table td { padding: 0.75rem 0.75rem; }
+      .nav-links { display: none; }
+      #instagram [style*="grid-template-columns: repeat(4"] { grid-template-columns: 1fr 1fr !important; }
+      #instagram [style*="grid-template-columns: repeat(3"] { grid-template-columns: 1fr !important; }
+      #ads [style*="grid-template-columns: 1fr 1fr 1fr"] { grid-template-columns: 1fr !important; }
+      #funnels [style*="grid-template-columns: repeat(5"] { grid-template-columns: 1fr !important; }
+      #sites [style*="grid-template-columns: 1fr 1fr 1fr"] { grid-template-columns: 1fr !important; }
+    }
+
+    @media (max-width: 600px) {
+      .scoring-grid { grid-template-columns: 1fr; }
+      .swot-grid { grid-template-columns: 1fr; }
+      .competitor-header { flex-direction: column; align-items: flex-start; }
+      section { padding: 3rem 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="confidential-bar">Documento Confidencial — Castelo dos Lagos — Abril 2026</div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-brand">Castelo dos Lagos <span style="color: var(--gold)">/ Concorrentes</span></a>
+      <ul class="nav-links">
+        <li><a href="#overview">Panorama</a></li>
+        <li><a href="#competitors">Perfis</a></li>
+        <li><a href="#instagram">Instagram</a></li>
+        <li><a href="#ads">Ads</a></li>
+        <li><a href="#funnels">Funis</a></li>
+        <li><a href="#sites">Sites</a></li>
+        <li><a href="#comparison">Comparativo</a></li>
+        <li><a href="#scoring">Scoring</a></li>
+        <li><a href="#gaps">Brechas</a></li>
+        <li><a href="#swot">SWOT</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ════════════════════════════════════════ HERO ════════════════════════════════════════ -->
+  <section class="hero" id="overview">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">Inteligencia Competitiva</div>
+        <h1>Conheça quem compete<br>pelo mesmo <em>altar</em></h1>
+        <p class="hero-sub">
+          Análise profunda de 3 concorrentes diretos na região de Ribeirão Pires e ABC Paulista.
+          Dados reais. Brechas mapeadas. Oportunidades prontas para capturar.
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="number">3</span>
+            <span class="label">Concorrentes Analisados</span>
+          </div>
+          <div class="hero-stat">
+            <span class="number">10</span>
+            <span class="label">Dimensões Comparadas</span>
+          </div>
+          <div class="hero-stat">
+            <span class="number">4</span>
+            <span class="label">Brechas Identificadas</span>
+          </div>
+          <div class="hero-stat">
+            <span class="number">1</span>
+            <span class="label">Moat Estrutural</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ COMPETITOR PROFILES ════════════════════════════════════════ -->
+  <section class="competitor-section" id="competitors">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">01</span>
+        <h2 class="section-title">Perfis Detalhados</h2>
+        <p class="section-subtitle">Cada concorrente mapeado em infraestrutura, presença digital e posicionamento estratégico.</p>
+      </div>
+
+      <!-- ── Sem Igual Eventos ── -->
+      <div class="competitor-card fade-in">
+        <div class="competitor-header">
+          <div class="competitor-name-group">
+            <h3 class="competitor-name">Sem Igual Eventos</h3>
+            <span class="threat-badge threat-high">Ameaça Alta</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+            <span class="competitor-location">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Av. Palmira, 90 — Ribeirão Pires, SP
+            </span>
+            <div class="competitor-links">
+              <a href="https://www.instagram.com/semigualeventos" target="_blank">Instagram</a>
+              <a href="https://semigualeventos.com.br/" target="_blank">Website</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="competitor-body">
+          <div class="competitor-col">
+            <span class="col-label">Infraestrutura</span>
+            <div class="data-row">
+              <span class="data-label">Capacidade</span>
+              <span class="data-value">50 — 400 pessoas</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Preço/pessoa</span>
+              <span class="data-value gold">R$156 — R$276</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Salões</span>
+              <span class="data-value">3 (Míro, Gaudi, Güel)</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Estilo</span>
+              <span class="data-value">Medieval europeu</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Nota Google</span>
+              <span class="data-value gold">4.9/5 (450+ avaliações)</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Casamentos.com</span>
+              <span class="data-value">99% recomendação</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Prêmios</span>
+              <span class="data-value">5x Casamentos Awards</span>
+            </div>
+          </div>
+
+          <div class="competitor-col">
+            <span class="col-label">Presença Digital</span>
+            <div class="data-row">
+              <span class="data-label">Instagram</span>
+              <span class="data-value gold">@semigualeventos</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Seguidores</span>
+              <span class="data-value">15.000+</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Posts</span>
+              <span class="data-value">1.178</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Website</span>
+              <span class="data-value">Profissional, moderno</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">YouTube</span>
+              <span class="data-value">Canal ativo</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Facebook</span>
+              <span class="data-value">Página ativa</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">SEO</span>
+              <span class="data-value">Forte (casamentos.com)</span>
+            </div>
+          </div>
+
+          <div class="competitor-col">
+            <span class="col-label">Forças & Fraquezas</span>
+            <ul class="sw-list strengths" style="margin-bottom: 1rem;">
+              <li>Maior volume de seguidores da região</li>
+              <li>Feed profissional com identidade visual forte</li>
+              <li>All-inclusive (som, luz, decoração, buffet)</li>
+              <li>Suíte noiva com 4 quartos e banheira</li>
+              <li>Acessibilidade (elevador, banheiro PCD)</li>
+              <li>Gerador de energia próprio</li>
+            </ul>
+            <ul class="sw-list weaknesses">
+              <li>Gastronomia genérica — sem chef assinatura</li>
+              <li>Arquitetura temática, não autêntica</li>
+              <li>Preço alto sem moat estrutural</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="insight-box">
+          <p><strong>Leitura estratégica:</strong> Sem Igual é o líder digital da região com 15K seguidores e feed impecável. O modelo all-inclusive simplifica a decisão da noiva. Porém, sua arquitetura é decoração temática — não um castelo real. O Castelo dos Lagos compete na autenticidade que Sem Igual não pode copiar. A ameaça é alta pela proximidade (5 min) e pela força da comunicação visual.</p>
+        </div>
+      </div>
+
+      <!-- ── Sítio Caetê ── -->
+      <div class="competitor-card fade-in">
+        <div class="competitor-header">
+          <div class="competitor-name-group">
+            <h3 class="competitor-name">Sítio Caetê</h3>
+            <span class="threat-badge threat-medium">Ameaça Média</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+            <span class="competitor-location">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Est. do Sapopemba, 2005 — Ribeirão Pires, SP
+            </span>
+            <div class="competitor-links">
+              <a href="https://www.instagram.com/caetesitio" target="_blank">Instagram</a>
+              <a href="https://sitiocaete.com.br/" target="_blank">Website</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="competitor-body">
+          <div class="competitor-col">
+            <span class="col-label">Infraestrutura</span>
+            <div class="data-row">
+              <span class="data-label">Capacidade</span>
+              <span class="data-value">100 — 230 pessoas</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Preço/pessoa</span>
+              <span class="data-value gold">R$100 — R$115</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Espaços</span>
+              <span class="data-value">Cerimônia + salão + capela</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Estilo</span>
+              <span class="data-value">Rústico ao ar livre</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Nota Google</span>
+              <span class="data-value gold">4.9/5</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Casamentos.com</span>
+              <span class="data-value">98% recomendação</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Estacionamento</span>
+              <span class="data-value">100 vagas</span>
+            </div>
+          </div>
+
+          <div class="competitor-col">
+            <span class="col-label">Presença Digital</span>
+            <div class="data-row">
+              <span class="data-label">Instagram</span>
+              <span class="data-value gold">@caetesitio</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Seguidores</span>
+              <span class="data-value">13.000+</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Feed</span>
+              <span class="data-value">Profissional, consistente</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Website</span>
+              <span class="data-value">WordPress (básico)</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Facebook</span>
+              <span class="data-value">Página ativa</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">SEO</span>
+              <span class="data-value">Moderado</span>
+            </div>
+          </div>
+
+          <div class="competitor-col">
+            <span class="col-label">Forças & Fraquezas</span>
+            <ul class="sw-list strengths" style="margin-bottom: 1rem;">
+              <li>Preço mais acessível da região</li>
+              <li>All-inclusive (assessoria, buffet, DJ, decoração, foto)</li>
+              <li>Livre escolha de fornecedores</li>
+              <li>Equipe elogiada pelo cuidado</li>
+              <li>Cerimônia ao ar livre + opção coberta</li>
+            </ul>
+            <ul class="sw-list weaknesses">
+              <li>Capacidade limitada (máx 230)</li>
+              <li>Website WordPress genérico — pouco profissional</li>
+              <li>Estilo rústico — sem diferencial arquitetônico</li>
+              <li>Posicionamento de preço baixo — difícil subir</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="insight-box">
+          <p><strong>Leitura estratégica:</strong> Sítio Caetê compete no segmento acessível e entrega bem nesse nível. Não é concorrente direto para a noiva que busca experiência premium — é alternativa para quem prioriza custo-benefício. A ameaça é média: captura volume, mas não compete no posicionamento aspiracional que o Castelo dos Lagos deve ocupar. Feed profissional no Instagram mostra consistência, mas o website é fraco.</p>
+        </div>
+      </div>
+
+      <!-- ── Monte Castelo Eventos ── -->
+      <div class="competitor-card fade-in">
+        <div class="competitor-header">
+          <div class="competitor-name-group">
+            <h3 class="competitor-name">Monte Castelo Eventos</h3>
+            <span class="threat-badge threat-high">Ameaça Alta</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+            <span class="competitor-location">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              R. João Francisco de Oliveira, 330 — Mauá, SP
+            </span>
+            <div class="competitor-links">
+              <a href="https://www.instagram.com/montecasteloeventosoficial" target="_blank">Instagram</a>
+              <a href="https://montecasteloeventos.com.br/" target="_blank">Website</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="competitor-body">
+          <div class="competitor-col">
+            <span class="col-label">Infraestrutura</span>
+            <div class="data-row">
+              <span class="data-label">Capacidade</span>
+              <span class="data-value">Até 800 pessoas</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Preço/pessoa</span>
+              <span class="data-value gold">R$169 — R$249</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Castelos</span>
+              <span class="data-value">3 (Avalon, Excalibur, Rei Arthur)</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Área total</span>
+              <span class="data-value">51.000 m²</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Nota Google</span>
+              <span class="data-value">4.5/5 (avaliações mistas)</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Casamentos.com</span>
+              <span class="data-value">93% recomendação</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Fundação</span>
+              <span class="data-value">2006 (19 anos)</span>
+            </div>
+          </div>
+
+          <div class="competitor-col">
+            <span class="col-label">Presença Digital</span>
+            <div class="data-row">
+              <span class="data-label">Instagram</span>
+              <span class="data-value gold">@montecasteloeventosoficial</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Seguidores</span>
+              <span class="data-value" style="color: var(--red); font-weight: 700;">98.000+</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Posts</span>
+              <span class="data-value">636</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Website</span>
+              <span class="data-value">Profissional, completo</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">YouTube</span>
+              <span class="data-value">6 vídeos ativos</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Facebook</span>
+              <span class="data-value">Duas páginas ativas</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Reclame Aqui</span>
+              <span class="data-value" style="color: var(--amber);">Reclamações registradas</span>
+            </div>
+          </div>
+
+          <div class="competitor-col">
+            <span class="col-label">Forças & Fraquezas</span>
+            <ul class="sw-list strengths" style="margin-bottom: 1rem;">
+              <li>98K seguidores — maior da categoria no ABC</li>
+              <li>3 castelos temáticos com naming forte</li>
+              <li>Capacidade massiva (até 800 convidados)</li>
+              <li>51.000 m² de natureza preservada</li>
+              <li>19 anos de operação</li>
+              <li>Eventos corporativos diversificam receita</li>
+            </ul>
+            <ul class="sw-list weaknesses">
+              <li>Nota 4.5 — significativamente inferior (vs 4.8-4.9)</li>
+              <li>Reclamações sobre atendimento pós-contratação</li>
+              <li>Inflexibilidade em políticas (ensaios, horários)</li>
+              <li>Ventilação inadequada relatada em avaliações</li>
+              <li>93% recomendação — a mais baixa dos 3</li>
+              <li>Temático/construído — não é castelo autêntico</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="insight-box">
+          <p><strong>Leitura estratégica:</strong> Monte Castelo é o gigante da região em seguidores (98K) e capacidade (800 pessoas). Porém, é o que tem a pior reputação: nota 4.5 no Google, 93% de recomendação e reclamações sobre atendimento. Compete diretamente no conceito "castelo" — mas os 3 castelos são construções temáticas, não autênticas. O Castelo dos Lagos vence na autenticidade, na gastronomia assinada (Di Matoso vs buffet genérico) e na experiência exclusiva (1 evento/dia vs múltiplos). Monte Castelo é ameaça alta pelo volume de audiência e pela associação "castelo" na mente da noiva.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ INSTAGRAM DEEP DIVE ════════════════════════════════════════ -->
+  <section class="instagram-section" id="instagram" style="background: var(--charcoal); color: var(--white);">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number" style="color: var(--gold);">02</span>
+        <h2 class="section-title" style="color: var(--white);">Instagram — Raio-X</h2>
+        <p class="section-subtitle" style="color: rgba(255,255,255,0.45);">
+          O Instagram decide 80% das contratações de espaço de evento. Aqui está o que cada concorrente faz — e o que o Castelo dos Lagos não faz.
+        </p>
+      </div>
+
+      <!-- Instagram comparison grid -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(201,169,110,0.15); border: 1px solid rgba(201,169,110,0.15); margin-bottom: 3rem;" class="fade-in">
+
+        <!-- Castelo dos Lagos -->
+        <div style="background: var(--charcoal); padding: 2rem; border-left: 3px solid var(--gold);">
+          <div style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 1rem; font-weight: 600;">Castelo dos Lagos</div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: rgba(255,255,255,0.3); font-weight: 300; line-height: 1;">~2.5K</div>
+          <div style="font-size: 0.65rem; color: rgba(255,255,255,0.25); margin-bottom: 1.5rem;">seguidores</div>
+          <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.4);">Posts</span><span style="color: rgba(255,255,255,0.3);">~50</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.4);">Reels</span><span style="color: #FCA5A5;">Quase zero</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.4);">Frequência</span><span style="color: #FCA5A5;">Irregular</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.4);">Identidade visual</span><span style="color: #FCA5A5;">Fraca</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.4);">Stories Highlights</span><span style="color: rgba(255,255,255,0.3);">Poucos</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.4);">Bio</span><span style="color: rgba(255,255,255,0.3);">Genérica</span></div>
+          </div>
+          <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(201,169,110,0.15);">
+            <div style="font-size: 0.7rem; color: rgba(255,255,255,0.25); font-style: italic;">O melhor produto com a pior vitrine</div>
+          </div>
+        </div>
+
+        <!-- Sem Igual -->
+        <div style="background: var(--charcoal); padding: 2rem;">
+          <div style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 1rem; font-weight: 600;">Sem Igual Eventos</div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--white); font-weight: 300; line-height: 1;">15K</div>
+          <div style="font-size: 0.65rem; color: rgba(255,255,255,0.4); margin-bottom: 1.5rem;">seguidores</div>
+          <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Posts</span><span style="color: var(--white);">1.178</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Reels</span><span style="color: #86EFAC;">Frequentes</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Frequência</span><span style="color: #86EFAC;">3-5x/semana</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Identidade visual</span><span style="color: #86EFAC;">Forte e consistente</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Stories Highlights</span><span style="color: var(--white);">Organizados</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Bio</span><span style="color: var(--white);">Completa + CTA</span></div>
+          </div>
+          <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(201,169,110,0.15);">
+            <div style="font-size: 0.7rem; color: rgba(255,255,255,0.4);">Conteúdo: Casamentos reais, decoração, bastidores, depoimentos</div>
+          </div>
+        </div>
+
+        <!-- Sítio Caetê -->
+        <div style="background: var(--charcoal); padding: 2rem;">
+          <div style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 1rem; font-weight: 600;">Sítio Caetê</div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--white); font-weight: 300; line-height: 1;">13K</div>
+          <div style="font-size: 0.65rem; color: rgba(255,255,255,0.4); margin-bottom: 1.5rem;">seguidores</div>
+          <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Posts</span><span style="color: var(--white);">382</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Reels</span><span style="color: #FCD34D;">Moderados</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Frequência</span><span style="color: #FCD34D;">2-3x/semana</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Identidade visual</span><span style="color: #FCD34D;">Razoável</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Stories Highlights</span><span style="color: var(--white);">Presentes</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Bio</span><span style="color: var(--white);">"Cenários autênticos e inesquecíveis"</span></div>
+          </div>
+          <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(201,169,110,0.15);">
+            <div style="font-size: 0.7rem; color: rgba(255,255,255,0.4);">Conteúdo: Casamentos ao ar livre, natureza, cenários rústicos</div>
+          </div>
+        </div>
+
+        <!-- Monte Castelo -->
+        <div style="background: var(--charcoal); padding: 2rem;">
+          <div style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 1rem; font-weight: 600;">Monte Castelo Eventos</div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: #FCA5A5; font-weight: 300; line-height: 1;">98K</div>
+          <div style="font-size: 0.65rem; color: rgba(255,255,255,0.4); margin-bottom: 1.5rem;">seguidores — 6x mais que todos</div>
+          <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Posts</span><span style="color: var(--white);">636</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Reels</span><span style="color: #86EFAC;">Frequentes + virais</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Frequência</span><span style="color: #86EFAC;">4-6x/semana</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Identidade visual</span><span style="color: #86EFAC;">Medieval temática forte</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Stories Highlights</span><span style="color: var(--white);">Completos e organizados</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;"><span style="color: rgba(255,255,255,0.5);">Bio</span><span style="color: var(--white);">CTA + WhatsApp + link</span></div>
+          </div>
+          <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(201,169,110,0.15);">
+            <div style="font-size: 0.7rem; color: rgba(255,255,255,0.4);">Conteúdo: Tours pelos castelos, eventos reais, workshops, behind-the-scenes</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instagram links diretos -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;" class="fade-in">
+        <a href="https://www.instagram.com/semigualeventos/" target="_blank" style="display: block; padding: 1.5rem; border: 1px solid rgba(201,169,110,0.2); text-decoration: none; transition: all 0.3s;">
+          <div style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.5rem; font-weight: 600;">Abrir Instagram</div>
+          <div style="font-size: 1.1rem; color: var(--white); font-family: 'Cormorant Garamond', serif;">@semigualeventos</div>
+          <div style="font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 0.25rem;">15K seguidores / 1.178 posts</div>
+        </a>
+        <a href="https://www.instagram.com/caetesitio/" target="_blank" style="display: block; padding: 1.5rem; border: 1px solid rgba(201,169,110,0.2); text-decoration: none; transition: all 0.3s;">
+          <div style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.5rem; font-weight: 600;">Abrir Instagram</div>
+          <div style="font-size: 1.1rem; color: var(--white); font-family: 'Cormorant Garamond', serif;">@caetesitio</div>
+          <div style="font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 0.25rem;">13K seguidores / 382 posts</div>
+        </a>
+        <a href="https://www.instagram.com/montecasteloeventosoficial/" target="_blank" style="display: block; padding: 1.5rem; border: 1px solid rgba(201,169,110,0.2); text-decoration: none; transition: all 0.3s;">
+          <div style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.5rem; font-weight: 600;">Abrir Instagram</div>
+          <div style="font-size: 1.1rem; color: var(--white); font-family: 'Cormorant Garamond', serif;">@montecasteloeventosoficial</div>
+          <div style="font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 0.25rem;">98K seguidores / 636 posts</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ ADS & TRÁFEGO PAGO ════════════════════════════════════════ -->
+  <section id="ads" style="background: var(--surface); padding: 5rem 0;">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Anúncios & Tráfego Pago</h2>
+        <p class="section-subtitle">
+          Pesquisa na Meta Ad Library e análise de sinais de tráfego pago de cada concorrente.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem;" class="fade-in">
+        <!-- Sem Igual Ads -->
+        <div style="background: var(--white); border: 1px solid var(--border); overflow: hidden;">
+          <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400;">Sem Igual Eventos</h4>
+            <span style="display: inline-block; padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.6rem; font-weight: 600; background: rgba(245,158,11,0.08); color: #B45309; border: 1px solid rgba(245,158,11,0.15);">Sem ads ativos</span>
+          </div>
+          <div style="padding: 2rem;">
+            <div style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 1rem; font-weight: 600;">Estratégia de aquisição</div>
+            <ul style="list-style: none; font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Sem anúncios ativos na Meta Ad Library</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Presença forte em casamentos.com.br (SEO)</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> 5 Casamentos Awards geram tráfego orgânico</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Instagram é o canal principal (15K org.)</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> YouTube com vídeos de eventos</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Google Business otimizado (4.9, 450+ reviews)</li>
+            </ul>
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.1);">
+              <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.6;"><strong style="color: var(--forest);">Leitura:</strong> Não gasta com ads porque não precisa. A reputação orgânica (5 prêmios + 15K seguidores + nota 4.9) gera demanda suficiente. Modelo 100% inbound.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sítio Caetê Ads -->
+        <div style="background: var(--white); border: 1px solid var(--border); overflow: hidden;">
+          <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400;">Sítio Caetê</h4>
+            <span style="display: inline-block; padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.6rem; font-weight: 600; background: rgba(245,158,11,0.08); color: #B45309; border: 1px solid rgba(245,158,11,0.15);">Sem ads ativos</span>
+          </div>
+          <div style="padding: 2rem;">
+            <div style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 1rem; font-weight: 600;">Estratégia de aquisição</div>
+            <ul style="list-style: none; font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Sem anúncios ativos na Meta Ad Library</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Listagem ativa em casamentos.com.br</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Instagram orgânico (13K seguidores)</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> PDF comercial no Scribd (30 páginas)</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Website WordPress básico/incompleto</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Google Business com boas avaliações</li>
+            </ul>
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.1);">
+              <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.6;"><strong style="color: var(--forest);">Leitura:</strong> Zero investimento em ads. Depende de indicação + orgânico. Site está em estado "Hello World" — provável redesign em andamento. Menor sofisticação digital dos 3.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monte Castelo Ads -->
+        <div style="background: var(--white); border: 1px solid var(--border); overflow: hidden;">
+          <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400;">Monte Castelo</h4>
+            <span style="display: inline-block; padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.6rem; font-weight: 600; background: rgba(220,38,38,0.08); color: #DC2626; border: 1px solid rgba(220,38,38,0.15);">Provável ads ativos</span>
+          </div>
+          <div style="padding: 2rem;">
+            <div style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 1rem; font-weight: 600;">Estratégia de aquisição</div>
+            <ul style="list-style: none; font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> 98K seguidores sugere tráfego pago consistente</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Duas páginas Facebook ativas (split de audiência)</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Workshop presencial como evento de conversão</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Vídeos virais no Facebook (castelos em destaque)</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Reclame Aqui: 1 reclamação, 100% respondida</li>
+              <li style="padding-left: 1rem; position: relative;"><span style="position: absolute; left: 0; color: var(--gold);">-</span> Google Business com volume alto de reviews</li>
+            </ul>
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(220,38,38,0.04); border: 1px solid rgba(220,38,38,0.1);">
+              <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.6;"><strong style="color: var(--forest);">Leitura:</strong> 98K seguidores com apenas 636 posts = crescimento impulsionado por tráfego pago. Workshop presencial funciona como funil bottom-of-funnel. O mais sofisticado em digital dos 3, mas com reputação comprometida (4.5 Google, reclamações de atendimento).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ad Library Link -->
+      <div style="margin-top: 2rem; padding: 1.5rem 2rem; border: 1px solid var(--border); background: var(--white);" class="fade-in">
+        <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.7;">
+          <strong style="color: var(--forest);">Como verificar ads em tempo real:</strong> Acesse <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&q=monte%20castelo%20eventos" target="_blank" style="color: var(--gold-dark);">Meta Ad Library > Monte Castelo</a> | <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&q=sem%20igual%20eventos" target="_blank" style="color: var(--gold-dark);">Sem Igual</a> | <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&q=sitio%20caete" target="_blank" style="color: var(--gold-dark);">Sítio Caetê</a> para verificar anúncios ativos no momento da consulta.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ FUNIS DE VENDA ════════════════════════════════════════ -->
+  <section id="funnels" style="background: var(--forest); color: var(--white); padding: 5rem 0;">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number" style="color: var(--gold);">04</span>
+        <h2 class="section-title" style="color: var(--white);">Funis de Venda</h2>
+        <p class="section-subtitle" style="color: rgba(255,255,255,0.45);">
+          Como cada concorrente captura, nutre e converte leads em contratos assinados.
+        </p>
+      </div>
+
+      <!-- Funnel diagrams -->
+      <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+
+        <!-- Sem Igual Funnel -->
+        <div style="border: 1px solid rgba(201,169,110,0.2); overflow: hidden;" class="fade-in">
+          <div style="padding: 1.5rem 2rem; border-bottom: 1px solid rgba(201,169,110,0.15); display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; color: var(--white);">Sem Igual Eventos — Funil Completo</h4>
+            <span style="font-size: 0.65rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Alta Sofisticação</span>
+          </div>
+          <div style="padding: 2rem;">
+            <!-- Funnel steps -->
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; position: relative;">
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.08); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Descoberta</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Instagram orgânico<br>Google (SEO 4.9)<br>Casamentos.com.br<br>5 Awards como selo</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.06); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Interesse</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Feed com casamentos reais<br>Reels de ambientes<br>YouTube com vídeos<br>Stories com depoimentos</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.04); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Captura</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;"><strong style="color: var(--gold);">WhatsApp (11) 91984-8282</strong><br>Formulário completo no site<br>Nome/data/tipo/convidados<br>"Como nos encontrou?"</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.03); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Conversão</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Visita presencial<br>Tour pelos 3 salões<br>Proposta personalizada<br>All-inclusive simplifica decisão</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.02);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Pós-venda</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Assessoria inclusa<br>Fotos p/ Instagram<br>Review em casamentos.com<br>Indicação orgânica</div>
+              </div>
+            </div>
+            <div style="margin-top: 1.25rem; padding: 1rem; border: 1px solid rgba(201,169,110,0.1);">
+              <p style="font-size: 0.75rem; color: rgba(255,255,255,0.5); line-height: 1.6;"><strong style="color: var(--gold);">Modelo:</strong> 100% inbound. WhatsApp como canal primário (3+ CTAs no site). Formulário captura fonte de tráfego (Google, IG, Facebook, indicação, assessor). Funil fechado: noiva descobre -> vê o feed -> envia WhatsApp -> visita -> contrata. Zero friction.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monte Castelo Funnel -->
+        <div style="border: 1px solid rgba(201,169,110,0.2); overflow: hidden;" class="fade-in">
+          <div style="padding: 1.5rem 2rem; border-bottom: 1px solid rgba(201,169,110,0.15); display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; color: var(--white);">Monte Castelo Eventos — Funil Completo</h4>
+            <span style="font-size: 0.65rem; color: #FCA5A5; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Mais Agressivo</span>
+          </div>
+          <div style="padding: 2rem;">
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; position: relative;">
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.08); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Descoberta</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Instagram 98K (pago)<br>Facebook 2 páginas<br>Vídeos virais castelos<br>Casamentos.com.br</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.06); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Interesse</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;">3 castelos temáticos<br>Naming forte (Avalon,<br>Excalibur, Rei Arthur)<br>Reels dos ambientes</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.04); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Captura</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;"><strong style="color: var(--gold);">Workshop presencial</strong><br>WhatsApp (11) 94171-6249<br>Form (nome/email/tel/data)<br>"Agendar visita" popup</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.03); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Conversão</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Workshop como experiência<br>Visita aos 3 castelos<br>Pacotes personalizados<br>All-in (decor+buffet+som)</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.02);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Pontos fracos</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;"><span style="color: #FCA5A5;">Nota 4.5 Google</span><br><span style="color: #FCA5A5;">93% recomendação</span><br><span style="color: #FCA5A5;">Reclamações Reclame Aqui</span><br><span style="color: #FCA5A5;">Atendimento pós-venda</span></div>
+              </div>
+            </div>
+            <div style="margin-top: 1.25rem; padding: 1rem; border: 1px solid rgba(201,169,110,0.1);">
+              <p style="font-size: 0.75rem; color: rgba(255,255,255,0.5); line-height: 1.6;"><strong style="color: var(--gold);">Modelo:</strong> Outbound + inbound híbrido. Workshop presencial ("Torna o seu sonho Real") é a principal ferramenta de conversão — traz noivas para dentro do espaço. Múltiplos canais WhatsApp. O volume é alto (98K), mas a conversão pós-venda é fraca: reclamações sobre inflexibilidade, ventilação, horários de ensaio. <strong style="color: #FCA5A5;">A experiência não entrega o que o marketing promete.</strong></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sítio Caetê Funnel -->
+        <div style="border: 1px solid rgba(201,169,110,0.2); overflow: hidden;" class="fade-in">
+          <div style="padding: 1.5rem 2rem; border-bottom: 1px solid rgba(201,169,110,0.15); display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; color: var(--white);">Sítio Caetê — Funil Completo</h4>
+            <span style="font-size: 0.65rem; color: #FCD34D; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Básico / Orgânico</span>
+          </div>
+          <div style="padding: 2rem;">
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; position: relative;">
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.08); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Descoberta</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Instagram 13K (orgânico)<br>Casamentos.com.br<br>Indicação boca a boca<br>Google Business</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.06); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Interesse</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Fotos ao ar livre<br>Cenário rústico/natural<br>Preço acessível (R$100-115)<br>Decoração com flores naturais</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.04); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Captura</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;"><span style="color: #FCD34D;">Sem WhatsApp visível</span><br>PDF comercial (30 pág)<br>Via casamentos.com.br<br>Site WordPress básico</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.03); border-right: 1px solid rgba(201,169,110,0.1);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Conversão</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Visita presencial<br>Pacotes completos<br>Preço baixo fecha rápido<br>All-inclusive simplificado</div>
+              </div>
+              <div style="padding: 1.25rem; text-align: center; background: rgba(201,169,110,0.02);">
+                <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 0.75rem; font-weight: 600;">Pós-venda</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Reviews positivas<br>Indicação orgânica<br>4.9 Google<br>98% recomendação</div>
+              </div>
+            </div>
+            <div style="margin-top: 1.25rem; padding: 1rem; border: 1px solid rgba(201,169,110,0.1);">
+              <p style="font-size: 0.75rem; color: rgba(255,255,255,0.5); line-height: 1.6;"><strong style="color: var(--gold);">Modelo:</strong> Funil mínimo viável. Instagram + casamentos.com.br fazem o topo. Preço acessível (R$100-115/pessoa) reduz fricção de decisão. Sem sofisticação digital — o site está em estado "Hello World" (WordPress default). Depende de indicação e do selo de qualidade do casamentos.com.br. Funciona para o segmento budget.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ SITES & PÁGINAS ════════════════════════════════════════ -->
+  <section id="sites" style="background: var(--white); padding: 5rem 0;">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Sites & Presença Web</h2>
+        <p class="section-subtitle">
+          Análise detalhada dos sites, SEO, marketplaces e canais digitais de cada concorrente.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+
+        <!-- Sem Igual Site -->
+        <div style="border: 1px solid var(--border); overflow: hidden;" class="fade-in">
+          <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400;">Sem Igual Eventos</h4>
+              <a href="https://semigualeventos.com.br/" target="_blank" style="font-size: 0.75rem; color: var(--gold-dark); text-decoration: none;">semigualeventos.com.br</a>
+            </div>
+            <span style="display: inline-block; padding: 0.3rem 0.8rem; border-radius: 100px; font-size: 0.6rem; font-weight: 600; background: rgba(22,163,74,0.08); color: #16A34A; border: 1px solid rgba(22,163,74,0.15);">Site Profissional</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0;">
+            <div style="padding: 1.5rem 2rem; border-right: 1px solid var(--border);">
+              <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 1rem; font-weight: 600;">Estrutura do site</span>
+              <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+                Home (hero + serviços + tour)<br>
+                Serviços (8 categorias)<br>
+                Mini-Wedding (página dedicada)<br>
+                Estrutura (3 salões detalhados)<br>
+                Tour Virtual<br>
+                Contato / Solicitar Proposta
+              </div>
+            </div>
+            <div style="padding: 1.5rem 2rem; border-right: 1px solid var(--border);">
+              <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 1rem; font-weight: 600;">Canais digitais</span>
+              <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+                <a href="https://semigualeventos.com.br/" target="_blank" style="color: var(--gold-dark); text-decoration: none;">Site oficial</a> (moderno, responsivo)<br>
+                <a href="https://www.instagram.com/semigualeventos/" target="_blank" style="color: var(--gold-dark); text-decoration: none;">Instagram @semigualeventos</a><br>
+                <a href="https://www.facebook.com/semigualeventos/" target="_blank" style="color: var(--gold-dark); text-decoration: none;">Facebook</a><br>
+                <a href="https://www.youtube.com/@semigualeventos1085" target="_blank" style="color: var(--gold-dark); text-decoration: none;">YouTube</a><br>
+                <a href="https://www.casamentos.com.br/sitio-casamento/sem-igual-eventos--e249395" target="_blank" style="color: var(--gold-dark); text-decoration: none;">Casamentos.com.br</a> (4.9, 99%)<br>
+                Pinterest
+              </div>
+            </div>
+            <div style="padding: 1.5rem 2rem;">
+              <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 1rem; font-weight: 600;">Lead Capture</span>
+              <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+                <strong style="color: var(--forest);">WhatsApp:</strong> (11) 91984-8282<br>
+                <strong style="color: var(--forest);">Form:</strong> Nome, telefone, data, tipo, convidados, fonte<br>
+                <strong style="color: var(--forest);">CTA:</strong> "Solicitar Proposta" (3x na página)<br>
+                <strong style="color: var(--forest);">Tracking:</strong> Pergunta "como nos encontrou" no form<br>
+                <strong style="color: var(--forest);">Privacy:</strong> Checkbox LGPD
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monte Castelo Site -->
+        <div style="border: 1px solid var(--border); overflow: hidden;" class="fade-in">
+          <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400;">Monte Castelo Eventos</h4>
+              <a href="https://montecasteloeventos.com.br/" target="_blank" style="font-size: 0.75rem; color: var(--gold-dark); text-decoration: none;">montecasteloeventos.com.br</a>
+            </div>
+            <span style="display: inline-block; padding: 0.3rem 0.8rem; border-radius: 100px; font-size: 0.6rem; font-weight: 600; background: rgba(22,163,74,0.08); color: #16A34A; border: 1px solid rgba(22,163,74,0.15);">Site Profissional</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0;">
+            <div style="padding: 1.5rem 2rem; border-right: 1px solid var(--border);">
+              <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 1rem; font-weight: 600;">Estrutura do site</span>
+              <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+                Home (hero + castelos + CTA)<br>
+                Castelos (Avalon, Excalibur, Rei Arthur)<br>
+                Quem Somos (história desde 2006)<br>
+                Casamentos (página dedicada)<br>
+                Formaturas / 15 Anos / Corporativo<br>
+                Serviços / Blog / Vídeos / Contato<br>
+                <strong style="color: var(--forest);">Workshop</strong> (landing page de evento)
+              </div>
+            </div>
+            <div style="padding: 1.5rem 2rem; border-right: 1px solid var(--border);">
+              <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 1rem; font-weight: 600;">Canais digitais</span>
+              <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+                <a href="https://montecasteloeventos.com.br/" target="_blank" style="color: var(--gold-dark); text-decoration: none;">Site oficial</a> (completo, WebP opt)<br>
+                <a href="https://www.instagram.com/montecasteloeventosoficial/" target="_blank" style="color: var(--gold-dark); text-decoration: none;">Instagram 98K</a><br>
+                <a href="https://www.facebook.com/montecasteloeventosoficial/" target="_blank" style="color: var(--gold-dark); text-decoration: none;">Facebook (2 páginas)</a><br>
+                <a href="https://www.youtube.com/@montecasteloevento" target="_blank" style="color: var(--gold-dark); text-decoration: none;">YouTube</a><br>
+                <a href="https://www.casamentos.com.br/sitio-casamento/monte-castelo-eventos--e109414" target="_blank" style="color: var(--gold-dark); text-decoration: none;">Casamentos.com.br</a> (4.5, 93%)<br>
+                <a href="https://www.reclameaqui.com.br/empresa/monte-castelo-promocoes-e-eventos/" target="_blank" style="color: #DC2626; text-decoration: none;">Reclame Aqui</a> (1 recl.)
+              </div>
+            </div>
+            <div style="padding: 1.5rem 2rem;">
+              <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 1rem; font-weight: 600;">Lead Capture</span>
+              <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+                <strong style="color: var(--forest);">WhatsApp 1:</strong> (11) 94171-6249<br>
+                <strong style="color: var(--forest);">WhatsApp 2:</strong> (11) 93032-7389<br>
+                <strong style="color: var(--forest);">Tel:</strong> (11) 3500-5101<br>
+                <strong style="color: var(--forest);">Form:</strong> Nome, email, tel, empresa, data, tipo<br>
+                <strong style="color: var(--forest);">CTA:</strong> "Solicitar Orçamento" + "Agendar Visita" popup<br>
+                <strong style="color: var(--forest);">Email:</strong> atendimento@montecasteloeventos.com.br
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sítio Caetê Site -->
+        <div style="border: 1px solid var(--border); overflow: hidden;" class="fade-in">
+          <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400;">Sítio Caetê</h4>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">sitiocaete.com.br / caetesitio.com.br / caetecasa.com.br</span>
+            </div>
+            <span style="display: inline-block; padding: 0.3rem 0.8rem; border-radius: 100px; font-size: 0.6rem; font-weight: 600; background: rgba(220,38,38,0.08); color: #DC2626; border: 1px solid rgba(220,38,38,0.15);">Site Problemático</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0;">
+            <div style="padding: 1.5rem 2rem; border-right: 1px solid var(--border);">
+              <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 1rem; font-weight: 600;">Estrutura do site</span>
+              <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+                <span style="color: #DC2626;">3 domínios diferentes (!)</span><br>
+                WordPress theme padrão "Twenty Twenty-Five"<br>
+                Blog com post "Hello World"<br>
+                Páginas placeholder<br>
+                Sem fotos do espaço<br>
+                Sem informações de serviços
+              </div>
+            </div>
+            <div style="padding: 1.5rem 2rem; border-right: 1px solid var(--border);">
+              <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 1rem; font-weight: 600;">Canais digitais</span>
+              <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+                <span style="color: #DC2626;">Site inoperante</span> (WordPress default)<br>
+                <a href="https://www.instagram.com/caetesitio/" target="_blank" style="color: var(--gold-dark); text-decoration: none;">Instagram @caetesitio</a> (13K)<br>
+                <a href="https://www.casamentos.com.br/sitio-casamento/sitio-caete--e216156" target="_blank" style="color: var(--gold-dark); text-decoration: none;">Casamentos.com.br</a> (98%)<br>
+                PDF comercial no Scribd (30 pág)<br>
+                Google Business ativo
+              </div>
+            </div>
+            <div style="padding: 1.5rem 2rem;">
+              <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold); display: block; margin-bottom: 1rem; font-weight: 600;">Lead Capture</span>
+              <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+                <span style="color: #DC2626;">Sem WhatsApp visível no site</span><br>
+                <span style="color: #DC2626;">Sem formulário de contato</span><br>
+                Captura via casamentos.com.br<br>
+                Endereço: Est. Sapopemba, 2005<br>
+                CEP: 09432-300<br>
+                <strong style="color: var(--forest);">Depende 100% do marketplace</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ COMPARISON TABLE ════════════════════════════════════════ -->
+  <section class="comparison-section" id="comparison">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number" style="color: var(--gold);">06</span>
+        <h2 class="section-title">Comparativo Direto</h2>
+        <p class="section-subtitle">
+          Todos os dados lado a lado. Cada linha é uma oportunidade ou uma vulnerabilidade.
+        </p>
+      </div>
+
+      <div class="fade-in" style="overflow-x: auto;">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Critério</th>
+              <th style="min-width:140px;">Castelo dos Lagos</th>
+              <th style="min-width:140px;">Sem Igual</th>
+              <th style="min-width:140px;">Sítio Caetê</th>
+              <th style="min-width:140px;">Monte Castelo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Capacidade</td>
+              <td class="highlight" style="color: var(--gold);">100 — 330</td>
+              <td>50 — 400</td>
+              <td>100 — 230</td>
+              <td>Até 800</td>
+            </tr>
+            <tr>
+              <td>Preço/pessoa</td>
+              <td class="highlight" style="color: var(--gold);">R$100 — R$290</td>
+              <td>R$156 — R$276</td>
+              <td>R$100 — R$115</td>
+              <td>R$169 — R$249</td>
+            </tr>
+            <tr>
+              <td>Instagram seguidores</td>
+              <td class="highlight" style="color: var(--gold);">~2.500</td>
+              <td>15.000</td>
+              <td>13.000</td>
+              <td style="color: #FCA5A5; font-weight: 500;">98.000</td>
+            </tr>
+            <tr>
+              <td>Nota Google</td>
+              <td class="highlight" style="color: var(--gold);">4.8 / 5</td>
+              <td>4.9 / 5</td>
+              <td>4.9 / 5</td>
+              <td style="color: #FCA5A5;">4.5 / 5</td>
+            </tr>
+            <tr>
+              <td>Recomendação</td>
+              <td class="highlight" style="color: var(--gold);">96%</td>
+              <td>99%</td>
+              <td>98%</td>
+              <td style="color: #FCA5A5;">93%</td>
+            </tr>
+            <tr>
+              <td>Exclusividade/dia</td>
+              <td class="highlight" style="color: var(--gold);">1 evento/dia</td>
+              <td>Não confirmado</td>
+              <td>Não confirmado</td>
+              <td>Múltiplos eventos</td>
+            </tr>
+            <tr>
+              <td>Área total</td>
+              <td class="highlight" style="color: var(--gold);">16.000 m²</td>
+              <td>Não divulgado</td>
+              <td>Não divulgado</td>
+              <td>51.000 m²</td>
+            </tr>
+            <tr>
+              <td>Gastronomia</td>
+              <td class="highlight" style="color: var(--gold);">Chef assinatura (Di Matoso, 29 anos)</td>
+              <td>Equipe interna</td>
+              <td>Buffet incluso + livre escolha</td>
+              <td>Equipe interna</td>
+            </tr>
+            <tr>
+              <td>Arquitetura</td>
+              <td class="highlight" style="color: var(--gold);">Castelo autêntico</td>
+              <td>Temático medieval (decoração)</td>
+              <td>Rústico/campo</td>
+              <td>3 castelos temáticos (construídos)</td>
+            </tr>
+            <tr>
+              <td>Website</td>
+              <td class="highlight" style="color: var(--gold);">Profissional</td>
+              <td>Profissional, moderno</td>
+              <td>WordPress genérico</td>
+              <td>Profissional, completo</td>
+            </tr>
+            <tr>
+              <td>Estacionamento</td>
+              <td class="highlight" style="color: var(--gold);">90 vagas demarcadas</td>
+              <td>Amplo (não especificado)</td>
+              <td>100 vagas</td>
+              <td>Valet disponível</td>
+            </tr>
+            <tr>
+              <td>Tipos de evento</td>
+              <td class="highlight" style="color: var(--gold);">Social + corporativo</td>
+              <td>Social + corporativo</td>
+              <td>Apenas social</td>
+              <td>Social + corporativo</td>
+            </tr>
+            <tr>
+              <td>Nível de ameaça</td>
+              <td><span class="badge badge-advantage">Você</span></td>
+              <td><span class="badge badge-high">Alta</span></td>
+              <td><span class="badge badge-medium">Média</span></td>
+              <td><span class="badge badge-high">Alta</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ SCORING ════════════════════════════════════════ -->
+  <section class="scoring-section" id="scoring">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Scoring Competitivo</h2>
+        <p class="section-subtitle">
+          Avaliação de 0 a 10 em 5 dimensões críticas. O score final revela onde investir para vencer.
+        </p>
+      </div>
+
+      <div class="scoring-grid fade-in">
+        <!-- Castelo dos Lagos -->
+        <div class="score-card is-you">
+          <h4 class="venue-name">Castelo dos Lagos</h4>
+          <div class="score-ring">
+            <span class="score-number">7.2</span>
+          </div>
+          <span class="score-label">Score Global</span>
+          <div class="score-bars">
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Infraestrutura</span><span>9/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width: 90%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Gastronomia</span><span>10/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width: 100%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Digital</span><span>3/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill red" style="width: 30%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Reputação</span><span>8/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width: 80%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Diferenciação</span><span>10/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width: 100%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sem Igual -->
+        <div class="score-card">
+          <h4 class="venue-name">Sem Igual Eventos</h4>
+          <div class="score-ring">
+            <span class="score-number">8.4</span>
+          </div>
+          <span class="score-label">Score Global</span>
+          <div class="score-bars">
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Infraestrutura</span><span>8/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width: 80%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Gastronomia</span><span>7/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill amber" style="width: 70%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Digital</span><span>9/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width: 90%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Reputação</span><span>10/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width: 100%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Diferenciação</span><span>6/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill amber" style="width: 60%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sítio Caetê -->
+        <div class="score-card">
+          <h4 class="venue-name">Sítio Caetê</h4>
+          <div class="score-ring">
+            <span class="score-number">6.8</span>
+          </div>
+          <span class="score-label">Score Global</span>
+          <div class="score-bars">
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Infraestrutura</span><span>6/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill amber" style="width: 60%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Gastronomia</span><span>6/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill amber" style="width: 60%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Digital</span><span>7/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill amber" style="width: 70%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Reputação</span><span>9/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width: 90%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Diferenciação</span><span>4/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill red" style="width: 40%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monte Castelo -->
+        <div class="score-card">
+          <h4 class="venue-name">Monte Castelo</h4>
+          <div class="score-ring">
+            <span class="score-number">7.0</span>
+          </div>
+          <span class="score-label">Score Global</span>
+          <div class="score-bars">
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Infraestrutura</span><span>9/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width: 90%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Gastronomia</span><span>6/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill amber" style="width: 60%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Digital</span><span>10/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width: 100%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Reputação</span><span>6/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill red" style="width: 60%;"></div></div>
+            </div>
+            <div class="score-bar-item">
+              <div class="score-bar-label"><span>Diferenciação</span><span>7/10</span></div>
+              <div class="score-bar-track"><div class="score-bar-fill amber" style="width: 70%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; padding: 1.5rem 2rem; border: 1px solid var(--border); background: var(--white);" class="fade-in">
+        <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.7;">
+          <strong style="color: var(--forest);">O gargalo é claro:</strong> O Castelo dos Lagos tem o melhor produto (infraestrutura 9, gastronomia 10, diferenciação 10) mas a pior comunicação digital (3/10). Sem Igual lidera porque comunica bem um produto bom. Monte Castelo tem 98K seguidores mas reputação fraca. A oportunidade é comunicar o produto excepcional que já existe — não melhorar o produto.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ STRATEGIC GAPS ════════════════════════════════════════ -->
+  <section class="gaps-section" id="gaps">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number">08</span>
+        <h2 class="section-title">Brechas Estratégicas</h2>
+        <p class="section-subtitle">
+          O que nenhum concorrente faz — e o Castelo dos Lagos pode fazer primeiro.
+        </p>
+      </div>
+
+      <div class="gap-grid">
+        <div class="gap-card fade-in">
+          <svg class="gap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <h3>Gastronomia como Protagonista</h3>
+          <p>Nenhum concorrente comunica gastronomia como diferencial competitivo. Sem Igual tem "equipe interna". Monte Castelo tem "serviço de gastronomia". Sítio Caetê tem "buffet incluso". Ninguém tem um chef com 29 anos de história. <strong>Di Matoso é o ativo invisível</strong> — precisa virar conteúdo, narrativa e ferramenta de venda.</p>
+        </div>
+
+        <div class="gap-card fade-in">
+          <svg class="gap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          <h3>Exclusividade Real</h3>
+          <p>Apenas 1 evento por dia vs Monte Castelo que roda múltiplos. A noiva que casa no Castelo dos Lagos tem o espaço inteiro para si. Nenhum concorrente comunica isso como benefício — é apenas uma política operacional. <strong>Transformar logística em luxo:</strong> "Seu dia. Seu castelo. Inteiro."</p>
+        </div>
+
+        <div class="gap-card fade-in">
+          <svg class="gap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <h3>Autenticidade vs Temático</h3>
+          <p>Sem Igual e Monte Castelo são <em>decoração medieval</em>. Salões com nomes europeus, louças, lustres. O Castelo dos Lagos é uma construção real. Quando a noiva pesquisa "casamento em castelo", ela quer a coisa real — não uma festa temática. <strong>Ninguém pode construir um castelo para competir.</strong> Isso é moat estrutural.</p>
+        </div>
+
+        <div class="gap-card fade-in">
+          <svg class="gap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          <h3>Gap Digital Massivo</h3>
+          <p>O Castelo dos Lagos tem ~2.500 seguidores. Sem Igual tem 15K. Monte Castelo tem 98K. A diferença não é de produto — é de comunicação. O espaço com o melhor produto tem a pior vitrine digital. <strong>Cada mês sem conteúdo profissional é uma noiva que escolhe o concorrente por Instagram.</strong></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ SWOT COMPETITIVO ════════════════════════════════════════ -->
+  <section class="swot-section" id="swot">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-number" style="color: var(--gold);">09</span>
+        <h2 class="section-title">SWOT Competitivo</h2>
+        <p class="section-subtitle">
+          Posição do Castelo dos Lagos frente ao cenário competitivo mapeado.
+        </p>
+      </div>
+
+      <div class="swot-grid fade-in">
+        <div class="swot-card">
+          <span class="swot-label">Forças (vs Concorrentes)</span>
+          <ul>
+            <li>Único castelo autêntico na região — moat estrutural incopiável</li>
+            <li>Gastronomia assinada por Di Matoso (29 anos) — nenhum concorrente tem chef com história</li>
+            <li>Exclusividade de 1 evento/dia — nenhum concorrente comunica isso</li>
+            <li>Nota 4.8/5 com 96% de recomendação — qualidade comprovada</li>
+            <li>Faixa de preço competitiva (R$100-290 cobre desde acessível até premium)</li>
+            <li>16.000 m² de cenário fotogênico medieval</li>
+          </ul>
+        </div>
+        <div class="swot-card">
+          <span class="swot-label">Fraquezas (vs Concorrentes)</span>
+          <ul>
+            <li>Instagram com ~2.500 seguidores vs 15K-98K dos concorrentes</li>
+            <li>Volume de conteúdo insignificante vs 636-1.178 posts dos rivais</li>
+            <li>Sem estratégia de Reels/vídeo — canal que mais converte noivas</li>
+            <li>Gastronomia invisível online — ninguém sabe antes de visitar</li>
+            <li>Capacidade máxima (330) menor que Sem Igual (400) e Monte Castelo (800)</li>
+            <li>Nota 4.8 vs 4.9 de Sem Igual e Sítio Caetê</li>
+          </ul>
+        </div>
+        <div class="swot-card">
+          <span class="swot-label">Oportunidades</span>
+          <ul>
+            <li>"Casamento em castelo São Paulo" — categoria de busca sem competição</li>
+            <li>Conteúdo gastronômico tem alto engajamento natural no Instagram</li>
+            <li>Reels indexados pelo Google desde 2025 — dobra a visibilidade</li>
+            <li>Monte Castelo tem reputação fraca (4.5, 93%) — noivas insatisfeitas buscam alternativa</li>
+            <li>Nenhum concorrente faz jantares temáticos ou eventos off-season</li>
+            <li>Parcerias com cerimonialistas = 5-10 casais/ano cada parceiro</li>
+            <li>Degustação como etapa do funil — experiência que fecha contrato</li>
+          </ul>
+        </div>
+        <div class="swot-card">
+          <span class="swot-label">Ameaças</span>
+          <ul>
+            <li>Sem Igual a 5 min com identidade visual forte e 15K seguidores</li>
+            <li>Monte Castelo com 98K seguidores domina busca por "castelo eventos"</li>
+            <li>Preço mais alto sem justificativa visual — noiva não percebe antes de provar</li>
+            <li>Dependência total de Instagram como canal de aquisição</li>
+            <li>Meses parados (inverno) geram pressão de caixa vs concorrentes maiores</li>
+            <li>Sem Igual tem 5 prêmios Casamentos Awards — selo de confiança</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ KEY TAKEAWAYS ════════════════════════════════════════ -->
+  <section class="takeaways-section">
+    <div class="container">
+      <div class="takeaway-card fade-in">
+        <h3>O produto é <em>superior</em>. A comunicação é <em>invisível</em>.</h3>
+        <div class="takeaway-items">
+          <div class="takeaway-item">
+            <h4>Prioridade #1 — Fechar o Gap Digital</h4>
+            <p>De ~2.500 para 10K seguidores em 6 meses. Feed profissional, Reels semanais, conteúdo gastronômico. A noiva decide pelo Instagram — se o Castelo não aparece, não existe.</p>
+          </div>
+          <div class="takeaway-item">
+            <h4>Prioridade #2 — Di Matoso como Personagem</h4>
+            <p>Série "29 Anos de Mesa". Menu autoral exclusivo. Degustação privativa como etapa de vendas. Trocar "buffet incluso" por "gastronomia assinada". Nenhum concorrente pode copiar.</p>
+          </div>
+          <div class="takeaway-item">
+            <h4>Prioridade #3 — Criar Categoria Própria</h4>
+            <p>Sair de "espaço para eventos em Ribeirão Pires" e criar "casamento em castelo em São Paulo". Quando a noiva pesquisa "castelo casamento SP", o Castelo dos Lagos aparece sozinho. Monte Castelo compete — mas com nota 4.5 e reputação fraca.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ FOOTER ════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="container">
+      <p>Análise competitiva preparada por <a href="https://moronireis.com.br" target="_blank">Reis IA</a> — Abril 2026</p>
+      <p style="margin-top: 0.5rem; opacity: 0.5;">Dados coletados de fontes públicas: Instagram, Google Reviews, Casamentos.com.br, websites oficiais</p>
+    </div>
+  </footer>
+
+  <script>
+    // ── Scroll animations ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ── Smooth scroll for nav links ──
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

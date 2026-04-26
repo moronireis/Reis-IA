@@ -1,7 +1,19 @@
 import { defineMiddleware } from 'astro:middleware';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createServerClient } from './lib/supabase-server';
 
 const publicPaths = ['/login', '/register', '/'];
+
+let _anonClient: SupabaseClient | null = null;
+function getAnonClient() {
+  if (!_anonClient) {
+    _anonClient = createClient(
+      import.meta.env.PUBLIC_SUPABASE_URL,
+      import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+    );
+  }
+  return _anonClient;
+}
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const { pathname } = context.url;
@@ -30,10 +42,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   // Verify session using anon client
-  const supabase = createClient(
-    import.meta.env.PUBLIC_SUPABASE_URL,
-    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
-  );
+  const supabase = getAnonClient();
 
   const { data: { user }, error } = await supabase.auth.getUser(accessToken);
 
@@ -95,10 +104,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   // Fetch profile with role using service role key
-  const serverClient = createClient(
-    import.meta.env.PUBLIC_SUPABASE_URL,
-    import.meta.env.SUPABASE_SERVICE_ROLE_KEY
-  );
+  const serverClient = createServerClient();
 
   // Check real admin profile first (needed for impersonation check)
   const { data: realProfile } = await serverClient

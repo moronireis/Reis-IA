@@ -1,0 +1,149 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "BATALION Defense AI — Inteligência que protege. Resposta que age",
+  description = "Monitoramento com IA, CFTV, alarme e portaria remota. Detecção inteligente de pessoas e ações suspeitas com machine learning. BATALION Defense AI.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#111827" />
+
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://bataliondefense.com.br" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:url" content="https://bataliondefense.com.br" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="icon" type="image/png" href="/images/batalion-simbolo.png" />
+    <title>{title}</title>
+
+    <style is:global>
+      @import "../styles/global.css";
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <!-- Page loading transition -->
+    <div id="page-loader" class="fixed inset-0 z-[100] bg-fort-darker flex items-center justify-center transition-opacity duration-700">
+      <div class="flex flex-col items-center gap-3">
+        <img src="/images/batalion-simbolo.png" alt="BATALION" class="h-14 w-auto" />
+        <div class="w-16 h-[2px] bg-fort-blue/30 rounded-full overflow-hidden">
+          <div class="w-full h-full bg-fort-blue rounded-full animate-shimmer"></div>
+        </div>
+      </div>
+    </div>
+
+    <slot />
+
+    <script>
+      // Page loader
+      window.addEventListener("load", () => {
+        const loader = document.getElementById("page-loader");
+        if (loader) {
+          setTimeout(() => {
+            loader.style.opacity = "0";
+            loader.style.pointerEvents = "none";
+            setTimeout(() => loader.remove(), 700);
+          }, 400);
+        }
+      });
+
+      // Scroll reveal observer
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: "0px 0px -60px 0px" }
+      );
+
+      document.querySelectorAll(".reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger-children, .text-blur-in, .text-slide-up, .text-underline-draw, .text-highlight-sweep, .counter-animate").forEach((el) => {
+        observer.observe(el);
+      });
+
+      // Split words animation — wrap each word in a span
+      document.querySelectorAll(".split-words").forEach((el) => {
+        const text = el.textContent || "";
+        el.innerHTML = text
+          .split(" ")
+          .map((word, i) => `<span class="word" style="transition-delay:${i * 70}ms">${word}</span>`)
+          .join(" ");
+        observer.observe(el);
+      });
+
+      // Animated counters
+      const counterObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const el = entry.target as HTMLElement;
+              const target = parseInt(el.dataset.countTo || "0");
+              const suffix = el.dataset.countSuffix || "";
+              const duration = 1500;
+              const start = performance.now();
+
+              const animate = (now: number) => {
+                const elapsed = now - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(eased * target);
+                el.textContent = current + suffix;
+                if (progress < 1) requestAnimationFrame(animate);
+              };
+              requestAnimationFrame(animate);
+              counterObserver.unobserve(el);
+            }
+          });
+        },
+        { threshold: 0.5 }
+      );
+      document.querySelectorAll("[data-count-to]").forEach((el) => counterObserver.observe(el));
+
+      // Smooth parallax on hero background orbs
+      let ticking = false;
+      window.addEventListener("scroll", () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            const scrollY = window.scrollY;
+            const orbs = document.querySelectorAll("[data-parallax]");
+            orbs.forEach((orb) => {
+              const speed = parseFloat((orb as HTMLElement).dataset.parallax || "0.3");
+              (orb as HTMLElement).style.transform = `translateY(${scrollY * speed}px)`;
+            });
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+    </script>
+  </body>
+</html>

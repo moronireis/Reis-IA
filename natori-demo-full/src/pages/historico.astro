@@ -1,0 +1,242 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import history from '../data/history.json';
+---
+
+<AppLayout title="Histórico de Preços e Vendas" activePage="historico">
+
+  <!-- Header -->
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <h1 style="font-size:22px; font-weight:700; color:var(--text-primary); letter-spacing:-0.03em; margin-bottom:4px;">Histórico de Preços e Vendas</h1>
+      <div style="font-size:13px; color:var(--text-muted);">Evolução de preço, Buy Box e eventos por produto</div>
+    </div>
+  </div>
+
+  <!-- Controls row -->
+  <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px; flex-wrap:wrap;">
+    <select id="product-select" class="input-field" style="width:280px; cursor:pointer;" onchange="updateChart()">
+      {history.products.map((p, i) => (
+        <option value={i}>{p.name}</option>
+      ))}
+    </select>
+    <div style="display:flex; gap:4px; background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:4px;">
+      {['7d','30d','90d','6m'].map(r => (
+        <button
+          class={`range-btn ${r === '30d' ? 'tab-active' : ''}`}
+          data-range={r}
+          onclick={`selectRange('${r}')`}
+          style="padding:6px 14px; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; background:transparent; border:none; color:var(--text-secondary); transition:all 0.15s;"
+        >{r}</button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Main chart -->
+  <div class="card" style="padding:24px; margin-bottom:20px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div style="font-size:14px; font-weight:600; color:var(--text-primary);">Evolução de Preço — 30 dias</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Seu preço vs concorrentes</div>
+      </div>
+      <div style="display:flex; gap:20px; font-size:11px;">
+        <span style="display:flex; align-items:center; gap:6px;">
+          <span style="width:20px; height:2px; background:var(--red); display:inline-block; border-radius:1px;"></span>
+          <span style="color:var(--text-muted);">Seu preço</span>
+        </span>
+        <span style="display:flex; align-items:center; gap:6px;">
+          <span style="width:20px; height:2px; background:var(--text-secondary); display:inline-block; border-radius:1px; opacity:0.6;"></span>
+          <span style="color:var(--text-muted);">Preço médio concorrentes</span>
+        </span>
+        <span style="display:flex; align-items:center; gap:6px;">
+          <span style="width:20px; height:2px; background:var(--gold); display:inline-block; border-radius:1px; opacity:0.7;"></span>
+          <span style="color:var(--text-muted);">Menor preço concorrente</span>
+        </span>
+      </div>
+    </div>
+    <div id="price-chart" style="width:100%; height:220px; position:relative;"></div>
+    <!-- Tooltip -->
+    <div id="chart-tooltip" style="
+      position:absolute; pointer-events:none; display:none;
+      background:var(--bg-card); border:1px solid var(--border-accent); border-radius:8px;
+      padding:10px 14px; font-size:12px; z-index:10; min-width:160px;
+    "></div>
+  </div>
+
+  <!-- Buy Box bar chart -->
+  <div class="card" style="padding:24px; margin-bottom:20px;">
+    <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:16px;">Buy Box Ownership % — últimos 30 dias</div>
+    <div id="buybox-chart" style="width:100%; height:80px;"></div>
+  </div>
+
+  <!-- Stats row -->
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px;">
+    <div class="card" style="padding:20px;">
+      <div style="font-size:24px; font-weight:700; color:var(--green); margin-bottom:4px;">24 / 30</div>
+      <div style="font-size:12px; color:var(--text-muted);">Dias com Buy Box</div>
+    </div>
+    <div class="card" style="padding:20px;">
+      <div style="font-size:24px; font-weight:700; color:var(--red); margin-bottom:4px;">-R$4,20</div>
+      <div style="font-size:12px; color:var(--text-muted);">Queda máxima de preço concorrente</div>
+    </div>
+    <div class="card" style="padding:20px;">
+      <div style="font-size:24px; font-weight:700; color:var(--yellow); margin-bottom:4px;">8</div>
+      <div style="font-size:12px; color:var(--text-muted);">Reversões de Buy Box no período</div>
+    </div>
+  </div>
+
+  <!-- Events timeline -->
+  <div class="card" style="padding:24px;">
+    <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:20px;">Linha do Tempo de Eventos</div>
+    <div style="display:flex; flex-direction:column; gap:0;">
+      {history.events.map((ev, i) => (
+        <div style={`display:flex; gap:16px; padding:14px 0; border-bottom:${i < history.events.length-1 ? '1px solid var(--border)' : 'none'};`}>
+          <div style="flex-shrink:0; width:48px; font-size:11px; font-weight:600; color:var(--text-muted); padding-top:2px;">{ev.date}</div>
+          <div style="display:flex; align-items:flex-start; gap:10px; flex:1;">
+            <div style={`
+              width:7px; height:7px; border-radius:50%; margin-top:4px; flex-shrink:0;
+              background:${ev.type === 'alert' ? 'var(--red)' : ev.type === 'recovery' ? 'var(--green)' : 'var(--yellow)'};
+              box-shadow:0 0 6px ${ev.type === 'alert' ? 'rgba(200,16,46,0.5)' : ev.type === 'recovery' ? 'rgba(34,197,94,0.5)' : 'rgba(234,179,8,0.4)'};
+            `}></div>
+            <div style="font-size:13px; color:var(--text-primary); line-height:1.5;">{ev.text}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</AppLayout>
+
+<style>
+.tab-active {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border) !important;
+}
+</style>
+
+<script define:vars={{ seriesData: history.timeseries_tare_30d, buyboxData: history.buybox_ownership_30d }}>
+
+function drawPriceChart() {
+  const container = document.getElementById('price-chart');
+  if (!container) return;
+  const data = seriesData;
+  const W = container.clientWidth || 700;
+  const H = 220;
+  const padL = 44, padR = 16, padT = 12, padB = 28;
+  const cW = W - padL - padR;
+  const cH = H - padT - padB;
+
+  const allPrices = data.flatMap(d => [d.our_price, d.avg_competitor, d.min_competitor]);
+  const minV = Math.min(...allPrices) * 0.97;
+  const maxV = Math.max(...allPrices) * 1.03;
+  const xStep = cW / (data.length - 1);
+  const sy = v => padT + cH - ((v - minV) / (maxV - minV)) * cH;
+
+  const makePath = (key, color, dash) =>
+    `<path d="${data.map((d,i) => `${i===0?'M':'L'}${padL+i*xStep},${sy(d[key])}`).join(' ')}" stroke="${color}" stroke-width="2" fill="none" stroke-dasharray="${dash}" stroke-linecap="round"/>`;
+
+  const makeDots = (key, color) =>
+    data.map((d, i) => `<circle cx="${padL+i*xStep}" cy="${sy(d[key])}" r="3.5" fill="${color}" stroke="var(--bg-primary)" stroke-width="1.5" class="chart-dot" data-idx="${i}" data-key="${key}"/>`).join('');
+
+  const gridY = [0, 0.25, 0.5, 0.75, 1].map(t => {
+    const y = padT + t * cH;
+    const val = (maxV - t * (maxV - minV)).toFixed(2);
+    return `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--border)" stroke-width="1"/>
+            <text x="${padL-6}" y="${y+4}" text-anchor="end" font-size="10" fill="var(--text-muted)" font-family="Inter">R$${val}</text>`;
+  }).join('');
+
+  const xLabels = data.filter((_, i) => i % 5 === 0 || i === data.length-1).map(d => {
+    const i = data.indexOf(d);
+    return `<text x="${padL+i*xStep}" y="${H-6}" text-anchor="middle" font-size="10" fill="var(--text-muted)" font-family="Inter">${d.date}</text>`;
+  }).join('');
+
+  const fillPath = data.map((d, i) => `${i===0?'M':'L'}${padL+i*xStep},${sy(d.our_price)}`).join(' ') +
+    ` L${padL+(data.length-1)*xStep},${padT+cH} L${padL},${padT+cH} Z`;
+
+  container.innerHTML = `
+    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none" style="overflow:visible;">
+      <defs>
+        <linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--red)" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="var(--red)" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      ${gridY}
+      <path d="${fillPath}" fill="url(#priceGrad)"/>
+      ${makePath('min_competitor', 'var(--gold)', '5 4')}
+      ${makePath('avg_competitor', '#555', '4 3')}
+      ${makePath('our_price', 'var(--red)', '0')}
+      ${makeDots('min_competitor', 'var(--gold)')}
+      ${makeDots('avg_competitor', '#666')}
+      ${makeDots('our_price', 'var(--red)')}
+      ${xLabels}
+    </svg>`;
+
+  const tooltip = document.getElementById('chart-tooltip');
+  container.querySelectorAll('.chart-dot').forEach(dot => {
+    dot.addEventListener('mouseenter', e => {
+      const idx = parseInt(dot.dataset.idx || '0');
+      const d = data[idx];
+      if (!tooltip || !d) return;
+      tooltip.innerHTML = `
+        <div style="font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">${d.date}</div>
+        <div style="display:flex; flex-direction:column; gap:3px;">
+          <div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--red);">Seu preço</span><span style="font-weight:600;">R$${d.our_price.toFixed(2)}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#888;">Média conc.</span><span style="font-weight:600;">R$${d.avg_competitor.toFixed(2)}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:var(--gold);">Menor conc.</span><span style="font-weight:600;">R$${d.min_competitor.toFixed(2)}</span></div>
+        </div>`;
+      const rect = e.target.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      tooltip.style.display = 'block';
+      tooltip.style.left = `${rect.left - containerRect.left + 10}px`;
+      tooltip.style.top = `${rect.top - containerRect.top - 90}px`;
+    });
+    dot.addEventListener('mouseleave', () => {
+      if (tooltip) tooltip.style.display = 'none';
+    });
+  });
+}
+
+function drawBuyboxChart() {
+  const container = document.getElementById('buybox-chart');
+  if (!container) return;
+  const data = buyboxData;
+  const W = container.clientWidth || 700;
+  const H = 80;
+  const padL = 0, padR = 0, padT = 4, padB = 20;
+  const cW = W - padL - padR;
+  const barW = Math.max(2, cW / data.length - 2);
+  const gap = (cW - barW * data.length) / (data.length - 1);
+
+  const bars = data.map((v, i) => {
+    const h = ((v / 100) * (H - padT - padB));
+    const x = padL + i * (barW + gap);
+    const y = padT + (H - padT - padB) - h;
+    const color = v >= 80 ? 'var(--green)' : v >= 60 ? 'var(--yellow)' : 'var(--red)';
+    return `<rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="2" fill="${color}" fill-opacity="0.7"/>`;
+  }).join('');
+
+  const labels = [0, 14, 29].map(i => {
+    const x = padL + i * (barW + gap) + barW/2;
+    return `<text x="${x}" y="${H-4}" text-anchor="middle" font-size="9" fill="var(--text-muted)" font-family="Inter">${data[i] != null ? data[i] : 0}%</text>`;
+  }).join('');
+
+  container.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none">${bars}${labels}</svg>`;
+}
+
+function updateChart() { drawPriceChart(); }
+
+function selectRange(r) {
+  document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('tab-active'));
+  const btn = document.querySelector(`[data-range="${r}"]`);
+  if (btn) btn.classList.add('tab-active');
+}
+
+window.updateChart = updateChart;
+window.selectRange = selectRange;
+
+drawPriceChart();
+drawBuyboxChart();
+window.addEventListener('resize', () => { drawPriceChart(); drawBuyboxChart(); });
+</script>
