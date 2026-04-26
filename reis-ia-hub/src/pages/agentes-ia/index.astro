@@ -1,0 +1,127 @@
+---
+/**
+ * /agentes-ia — Welcome / onboarding entry point.
+ *
+ * First-time landing for AGENTES [IA] buyers after they click the magic link
+ * from the welcome email. The middleware already verified the session before
+ * we got here. We only need to:
+ *   1. Confirm the user has the 'agentes_ia' entitlement.
+ *   2. If yes → render the welcome screen with a "Começar pela Aula 1" CTA.
+ *   3. If no → suggest they check the purchase email or contact support.
+ *
+ * Direct URL navigation pattern: area.agentesia.moronireis.com.br/agentes-ia
+ */
+import AppLayout from '../../layouts/AppLayout.astro';
+import { createServerClient } from '../../lib/supabase-server';
+
+export const prerender = false;
+
+const profile = Astro.locals.profile;
+const supabase = createServerClient();
+
+// Check entitlement
+const { data: entitlement } = profile?.id
+  ? await supabase
+      .from('entitlements')
+      .select('id, status, granted_at, product_code')
+      .eq('user_id', profile.id)
+      .eq('product_code', 'agentes_ia')
+      .eq('status', 'active')
+      .maybeSingle()
+  : { data: null };
+
+const hasAccess = !!entitlement || profile?.role === 'admin';
+
+// Resolve course slug for the deep link
+const { data: course } = await supabase
+  .from('courses')
+  .select('id, slug')
+  .eq('slug', 'agentes-ia')
+  .maybeSingle();
+
+const courseHref = course ? `/academy/${course.id}` : '/academy';
+const firstName = (profile?.full_name || '').split(' ')[0] || '';
+---
+
+<AppLayout title="AGENTES [IA] — Bem-vindo" activeSection="academy">
+  <div style="max-width: 880px; margin: 0 auto;">
+    {hasAccess ? (
+      <>
+        <!-- Hero card -->
+        <div style="position: relative; background: linear-gradient(135deg, #0A0A0A 0%, #111 60%, rgba(74,144,255,0.08) 100%); border: 1px solid rgba(74,144,255,0.20); border-radius: 20px; padding: 48px 40px; margin-bottom: 32px; overflow: hidden;">
+          <div style="position: absolute; top: -120px; right: -120px; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(74,144,255,0.18) 0%, transparent 70%); filter: blur(60px); pointer-events: none;"></div>
+
+          <div style="position: relative;">
+            <div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(74,144,255,0.10); border: 1px solid rgba(74,144,255,0.30); border-radius: 6px; padding: 8px 16px; font-size: 11px; color: #4A90FF; font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 24px;">
+              <span style="width: 6px; height: 6px; background: #4A90FF; border-radius: 50%; box-shadow: 0 0 12px #4A90FF;"></span>
+              Acesso liberado
+            </div>
+
+            <h1 style="font-size: 38px; font-weight: 800; color: #fff; margin: 0 0 14px 0; letter-spacing: -0.025em; line-height: 1.1;">
+              {firstName ? `${firstName}, ` : ''}seu time de IA está pronto.
+            </h1>
+            <p style="font-size: 17px; color: rgba(255,255,255,0.70); line-height: 1.65; margin: 0 0 28px 0; max-width: 620px;">
+              Você desbloqueou os <strong style="color: #fff;">7 squads completos</strong> — 40+ agentes especializados em copy, design, estratégia, branding e tráfego. Comece pela Aula 1 e em 30 minutos você está rodando seu primeiro agente.
+            </p>
+
+            <a
+              href={courseHref}
+              style="display: inline-flex; align-items: center; gap: 10px; background: #4A90FF; color: #000; font-size: 16px; font-weight: 700; padding: 16px 32px; border-radius: 10px; text-decoration: none; box-shadow: 0 12px 40px rgba(74,144,255,0.30); letter-spacing: 0.01em;"
+            >
+              Começar pela Aula 1 →
+            </a>
+
+            <p style="font-size: 12px; color: rgba(255,255,255,0.45); margin: 16px 0 0 0; font-family: 'JetBrains Mono', ui-monospace, monospace;">
+              ✓ 4 videoaulas · ✓ 40+ agentes · ✓ Garantia de 7 dias
+            </p>
+          </div>
+        </div>
+
+        <!-- Quick links grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+          <a href={courseHref} style="background: #0A0A0A; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 22px 24px; text-decoration: none; transition: all 0.2s; display: block;">
+            <div style="font-size: 12px; color: #4A90FF; font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;">01 · Aulas</div>
+            <div style="font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 6px;">Curso Completo</div>
+            <div style="font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.5;">4 aulas práticas pra instalar e dominar os agentes</div>
+          </a>
+
+          <a href="/community?space=agentes-ia" style="background: #0A0A0A; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 22px 24px; text-decoration: none; transition: all 0.2s; display: block;">
+            <div style="font-size: 12px; color: #4A90FF; font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;">02 · Comunidade</div>
+            <div style="font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 6px;">Espaço AGENTES [IA]</div>
+            <div style="font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.5;">Tire dúvidas, mostre seus agentes, troque ideias</div>
+          </a>
+
+          <a href="mailto:suporte@moronireis.com.br" style="background: #0A0A0A; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 22px 24px; text-decoration: none; transition: all 0.2s; display: block;">
+            <div style="font-size: 12px; color: #4A90FF; font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;">03 · Suporte</div>
+            <div style="font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 6px;">Falar com a Reis IA</div>
+            <div style="font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.5;">Resposta em até 24h em dias úteis</div>
+          </a>
+        </div>
+      </>
+    ) : (
+      <!-- No entitlement: orientation, not gate -->
+      <div style="background: #0A0A0A; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 40px; text-align: center;">
+        <div style="width: 56px; height: 56px; margin: 0 auto 18px; border-radius: 14px; background: rgba(74,144,255,0.08); display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+        </div>
+        <h2 style="font-size: 22px; font-weight: 700; color: #fff; margin: 0 0 8px 0;">
+          Acesso ao AGENTES [IA] não encontrado
+        </h2>
+        <p style="font-size: 14px; color: rgba(255,255,255,0.60); line-height: 1.65; margin: 0 0 22px 0; max-width: 460px; margin-left: auto; margin-right: auto;">
+          Sua conta está autenticada, mas não temos uma compra ativa do AGENTES [IA] vinculada a este email. Pode levar alguns minutos para a liberação após o pagamento.
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <a href="https://agentesia.moronireis.com.br" style="background: #4A90FF; color: #000; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none;">
+            Ver o produto
+          </a>
+          <a href="mailto:suporte@moronireis.com.br?subject=Acesso%20AGENTES%20%5BIA%5D" style="background: transparent; color: rgba(255,255,255,0.85); padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; border: 1px solid rgba(255,255,255,0.12);">
+            Falar com suporte
+          </a>
+        </div>
+      </div>
+    )}
+  </div>
+</AppLayout>

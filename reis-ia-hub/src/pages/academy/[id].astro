@@ -1,6 +1,7 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
 import CourseDetail from '../../components/CourseDetail.tsx';
+import AgentesIaUpsellCard from '../../components/AgentesIaUpsellCard.tsx';
 import { createServerClient } from '../../lib/supabase-server';
 
 export const prerender = false;
@@ -9,7 +10,10 @@ const { id } = Astro.params;
 const supabase = createServerClient();
 const profile = Astro.locals.profile;
 
-// Fetch course with lessons
+// Fetch course — RLS gates this:
+//   - access_level = 'all' → anyone signed in
+//   - product_code set     → only users with active matching entitlement
+//   - admin                → always
 const { data: course, error } = await supabase
   .from('courses')
   .select('*')
@@ -25,11 +29,31 @@ if (profile?.role !== 'admin' && course.status !== 'published') {
   return Astro.redirect('/academy');
 }
 
-// Role-based access check
-const ROLE_LEVEL: Record<string, number> = { starter: 1, builder: 2, mentoria: 3, admin: 4 };
-const userLevel = ROLE_LEVEL[profile?.role || 'starter'] || 1;
-const requiredLevel = ROLE_LEVEL[course.access_level || 'starter'] || 1;
-if (userLevel < requiredLevel) {
+// Defense-in-depth: explicit access check on top of RLS
+const isAdmin = profile?.role === 'admin';
+let hasAccess = isAdmin;
+
+if (!hasAccess) {
+  if (course.product_code) {
+    // Product-gated course → require active entitlement
+    const { data: ent } = await supabase
+      .from('entitlements')
+      .select('id')
+      .eq('user_id', profile?.id || '')
+      .eq('product_code', course.product_code)
+      .eq('status', 'active')
+      .maybeSingle();
+    hasAccess = !!ent;
+  } else {
+    // Legacy role-tier gating (starter < builder < mentoria < admin)
+    const ROLE_LEVEL: Record<string, number> = { starter: 1, builder: 2, mentoria: 3, admin: 4 };
+    const userLevel = ROLE_LEVEL[profile?.role || 'starter'] || 1;
+    const requiredLevel = ROLE_LEVEL[course.access_level || 'all'] || 0;
+    hasAccess = userLevel >= requiredLevel;
+  }
+}
+
+if (!hasAccess) {
   return Astro.redirect('/academy');
 }
 
@@ -40,13 +64,13 @@ let lessonsQuery = supabase
   .eq('course_id', id)
   .order('sort_order', { ascending: true });
 
-if (profile?.role !== 'admin') {
+if (!isAdmin) {
   lessonsQuery = lessonsQuery.eq('status', 'published');
 }
 
 const { data: lessons } = await lessonsQuery;
 
-// Fetch user progress for this course
+// Fetch user progress
 let userProgress: any[] = [];
 if (profile?.id) {
   const { data: progress } = await supabase
@@ -56,13 +80,29 @@ if (profile?.id) {
     .eq('course_id', id);
   userProgress = progress || [];
 }
+
+// Upsell — show Comunidade R$497 card iff this is the AGENTES [IA] course
+// AND the viewer does NOT yet hold a comunidade_497 entitlement.
+let showUpsell = false;
+if (course.product_code === 'agentes_ia' && profile?.id && !isAdmin) {
+  const { data: communityEnt } = await supabase
+    .from('entitlements')
+    .select('id')
+    .eq('user_id', profile.id)
+    .eq('product_code', 'comunidade_497')
+    .eq('status', 'active')
+    .maybeSingle();
+  showUpsell = !communityEnt;
+}
 ---
 
 <AppLayout title={course.title} activeSection="academy">
-    <CourseDetail client:load client:load
-      course={course}
-      lessons={lessons || []}
-      progress={userProgress}
-      userId={profile?.id || ''}
-    />
+  <CourseDetail
+    client:load
+    course={course}
+    lessons={lessons || []}
+    progress={userProgress}
+    userId={profile?.id || ''}
+  />
+  <AgentesIaUpsellCard client:load show={showUpsell} />
 </AppLayout>

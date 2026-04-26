@@ -8,21 +8,23 @@ const profile = Astro.locals.profile;
 const isAdmin = profile?.role === 'admin';
 const supabase = createServerClient();
 
+// RLS gates this query: members only see courses they are entitled to
+// (access_level = 'all' OR they hold an active entitlement matching product_code).
 let courses: any[] = [];
 try {
   const { data } = await supabase
     .from('courses')
-    .select('id, title, description, thumbnail_url, pillar, access_level, status')
+    .select('id, title, description, thumbnail_url, pillar, category, access_level, status, product_code, slug')
     .eq('status', 'published')
     .order('sort_order', { ascending: true });
   courses = data || [];
 } catch {}
 
-// For admin, also get drafts
+// Admin-only drafts
 if (isAdmin) {
   const { data: drafts } = await supabase
     .from('courses')
-    .select('id, title, description, thumbnail_url, pillar, access_level, status')
+    .select('id, title, description, thumbnail_url, pillar, category, access_level, status, product_code, slug')
     .neq('status', 'published')
     .order('sort_order', { ascending: true });
   if (drafts) courses = [...courses, ...drafts];
@@ -37,47 +39,33 @@ if (isAdmin) {
     </p>
   </div>
 
-  {!isAdmin && (
-    <div style="padding: 14px 16px; border-radius: 10px; background: rgba(74,144,255,0.04); border: 1px solid rgba(74,144,255,0.10); margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A90FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-      </svg>
-      <p style="font-size: 13px; color: var(--accent-blue); margin: 0;">
-        As trilhas da Academy estão sendo preparadas. Em breve você terá acesso a aulas gravadas e conteúdos complementares.
-      </p>
-    </div>
-  )}
-
   {courses.length > 0 ? (
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {courses.map(course => (
-        <div style={`border-radius: 12px; background: var(--surface-1); border: 1px solid var(--border-subtle); overflow: hidden; ${!isAdmin ? 'opacity: 0.5; pointer-events: none;' : ''}`}>
+        <a
+          href={`/academy/${course.id}`}
+          style="display: block; border-radius: 12px; background: var(--surface-1); border: 1px solid var(--border-subtle); overflow: hidden; text-decoration: none; transition: transform 0.18s ease, border-color 0.18s ease;"
+          onmouseover="this.style.transform='translateY(-2px)';this.style.borderColor='rgba(74,144,255,0.30)'"
+          onmouseout="this.style.transform='translateY(0)';this.style.borderColor='var(--border-subtle)'"
+        >
           {/* Thumbnail */}
-          <div style="height: 120px; background: linear-gradient(135deg, rgba(74,144,255,0.08) 0%, rgba(139,92,246,0.08) 100%); display: flex; align-items: center; justify-content: center; position: relative;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5">
-              <polygon points="5,3 19,12 5,21" />
-            </svg>
-            {!isAdmin && (
-              <div style="position: absolute; top: 10px; right: 10px; padding: 3px 8px; border-radius: 6px; background: rgba(0,0,0,0.6); display: flex; align-items: center; gap: 4px;">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-                <span style="font-size: 10px; color: rgba(255,255,255,0.5);">Em breve</span>
-              </div>
+          <div style={`height: 140px; background: ${course.thumbnail_url ? `url(${course.thumbnail_url}) center/cover` : 'linear-gradient(135deg, rgba(74,144,255,0.10) 0%, rgba(45,122,255,0.05) 100%)'}; display: flex; align-items: center; justify-content: center; position: relative;`}>
+            {!course.thumbnail_url && (
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.20)" stroke-width="1.5">
+                <polygon points="5,3 19,12 5,21" />
+              </svg>
             )}
             {course.status !== 'published' && isAdmin && (
-              <div style="position: absolute; top: 10px; right: 10px; padding: 3px 8px; border-radius: 6px; background: rgba(245,158,11,0.2); font-size: 10px; color: #F59E0B;">
+              <div style="position: absolute; top: 10px; right: 10px; padding: 3px 8px; border-radius: 6px; background: rgba(245,158,11,0.20); font-size: 10px; color: #F59E0B;">
                 Rascunho
               </div>
             )}
           </div>
           {/* Content */}
           <div style="padding: 16px;">
-            {course.pillar && (
+            {(course.pillar || course.category) && (
               <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-blue); background: var(--blue-10); padding: 2px 8px; border-radius: 9999px; display: inline-block; margin-bottom: 8px;">
-                {course.pillar}
+                {course.pillar || course.category}
               </span>
             )}
             <h3 style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 0 0 6px; line-height: 1.3;">
@@ -89,12 +77,17 @@ if (isAdmin) {
               </p>
             )}
           </div>
-        </div>
+        </a>
       ))}
     </div>
   ) : (
-    <div style="text-align: center; padding: 40px 0;">
-      <p style="color: var(--text-tertiary); font-size: 14px;">Nenhum curso disponível ainda.</p>
+    <div style="text-align: center; padding: 48px 0;">
+      <p style="color: var(--text-secondary); font-size: 15px; font-weight: 500; margin-bottom: 6px;">
+        Nenhum curso disponível ainda.
+      </p>
+      <p style="color: var(--text-quaternary); font-size: 13px;">
+        Quando você desbloquear conteúdos novos, eles aparecem aqui.
+      </p>
     </div>
   )}
 </AppLayout>

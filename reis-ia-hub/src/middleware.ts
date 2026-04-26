@@ -18,6 +18,14 @@ function getAnonClient() {
 export const onRequest = defineMiddleware(async (context, next) => {
   const { pathname } = context.url;
 
+  // Brand context — detect the AGENTES [IA] subdomain so layouts can render
+  // the leaner branded shell instead of the full HUB chrome.
+  const host = context.url.hostname.toLowerCase();
+  context.locals.brandContext =
+    host.startsWith('area.agentesia.') || host === 'area.agentesia.moronireis.com.br'
+      ? 'agentes-ia'
+      : 'hub';
+
   // Allow public paths
   if (publicPaths.includes(pathname)) {
     return next();
