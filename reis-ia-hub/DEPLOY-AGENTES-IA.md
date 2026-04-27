@@ -7,13 +7,27 @@
 
 ---
 
-## TL;DR (5 passos sequenciais)
+## ⚡ Atalho — bridge enquanto o subdomínio não tá pronto
+
+A Hub já está deployada em `https://reis-ia-hub.vercel.app` e `https://hub-reisia.vercel.app`. Você pode subir o produto na Ticto AGORA usando essa URL e trocar pra `area.agentesia.moronireis.com.br` depois que o DNS propagar — sem mexer em código.
+
+| Campo na Ticto | Valor antes do DNS | Valor depois do DNS |
+|---|---|---|
+| URL do webhook | `https://reis-ia-hub.vercel.app/api/webhook/ticto` | `https://area.agentesia.moronireis.com.br/api/webhook/ticto` |
+| URL de acesso (área de membros) | `https://reis-ia-hub.vercel.app/login` | `https://area.agentesia.moronireis.com.br/login` |
+
+> A migração de URL é não-disruptiva — ambos os hosts servem o mesmo deploy.
+
+---
+
+## TL;DR (6 passos sequenciais)
 
 1. Rodar a migration `supabase/migration-agentes-ia.sql` no Supabase
-2. Definir 5 env vars no Vercel
-3. Apontar DNS `area.agentesia.moronireis.com.br` → Vercel
+2. Definir 5 env vars no Vercel + redeploy
+3. (opcional) Apontar DNS `area.agentesia.moronireis.com.br` → Vercel
 4. Cadastrar o produto na Ticto + configurar webhook
-5. Smoke test com `curl` simulando compra
+5. Criar o usuário de compliance (via `/register`) + rodar `seed-compliance-ticto.sql`
+6. `npm run smoke-test:ticto` (5 testes automatizados)
 
 ---
 
@@ -159,14 +173,53 @@ Redeployar o projeto pra refletir a env var nova.
 
 ## 5. Smoke test (sem precisar de venda real)
 
-### Teste 1 — Webhook fake `purchase.approved`
+### 🚀 Forma rápida: runner automatizado
+
+Roda os 5 testes em sequência (healthcheck + auth 401 + approve + idempotência + refund) em ~3 segundos:
 
 ```bash
-curl -X POST https://area.agentesia.moronireis.com.br/api/webhook/ticto \
+cd reis-ia-hub
+HUB_URL=https://reis-ia-hub.vercel.app \
+TICTO_WEBHOOK_TOKEN=<seu-token-ticto> \
+TEST_EMAIL=moroni+smoke@moronireis.com.br \
+  npm run smoke-test:ticto
+```
+
+Saída esperada (✓ verde em cada linha):
+```
+✓ endpoint reachable    HTTP 200
+✓   supabase: ok
+✓   course_seeded: true
+✓   space_seeded: true
+✓   webhook_configured: true
+✓   resend_configured: true
+✓ returns 401 with bad token
+✓ 200 + ok=true                  event=purchase.approved
+✓ product_code resolved          code=agentes_ia
+✓ entitlement provisioned
+✓ replay returns deduplicated:true
+✓ 200 + entitlement revoked      revoked_count=1
+
+✓ All smoke tests passed.
+```
+
+Depois, rodar a SQL de cleanup que aparece no final do output.
+
+> **Healthcheck público** — também dá pra testar via browser:
+> `https://reis-ia-hub.vercel.app/api/health/agentes-ia` retorna JSON com o status de cada peça (Supabase, course seed, space seed, webhook config, Resend config). Esse é o endpoint que a equipe de compliance da Ticto pode usar pra confirmar a integração antes de aprovar o produto.
+
+---
+
+### 🔍 Forma manual (curls individuais)
+
+#### Teste 1 — Webhook fake `purchase.approved`
+
+```bash
+curl -X POST https://reis-ia-hub.vercel.app/api/webhook/ticto \
   -H "Content-Type: application/json" \
-  -H "X-Webhook-Token: <TICTO_WEBHOOK_TOKEN>" \
   -d '{
-    "event": "purchase.approved",
+    "token": "<TICTO_WEBHOOK_TOKEN>",
+    "status": "approved",
     "order_id": "test-001",
     "customer": { "name": "Teste Smoke", "email": "moroni+smoke@moronireis.com.br" },
     "items": [{ "product_id": "<ticto_product_id>", "product_name": "AGENTES [IA]" }],
@@ -228,6 +281,47 @@ Verificar entitlement → `status = 'refunded'`, `revoked_at` preenchido.
 delete from public.webhook_events where external_id = 'test-001';
 delete from public.entitlements where external_order_id = 'test-001';
 delete from auth.users where email = 'moroni+smoke@moronireis.com.br';
+```
+
+---
+
+## 5.5 Conta de teste para a Compliance Ticto
+
+A Ticto exige login + senha pra equipe de compliance verificar a área de membros antes de aprovar o produto.
+
+### Passo a passo
+
+**1. Registrar o usuário** (você, no browser):
+
+1. Abrir `https://reis-ia-hub.vercel.app/register` (ou `https://area.agentesia.moronireis.com.br/register` se DNS já tá pronto)
+2. Preencher:
+   - Nome: `Compliance Ticto`
+   - Email: `compliance-ticto@moronireis.com.br` (ou outro email seu — o importante é poder receber emails)
+   - Senha: gerar forte (anote)
+3. Submeter
+
+**2. Conceder o entitlement de acesso** — Supabase → SQL Editor → colar:
+
+```
+arquivo: reis-ia-hub/supabase/seed-compliance-ticto.sql
+```
+
+(idempotente — pode rodar várias vezes; faz `on conflict do update`)
+
+**3. Preencher o form da Ticto** ("Área de membros via webhook"):
+
+| Campo | Valor |
+|---|---|
+| Url de acesso | `https://reis-ia-hub.vercel.app/login` (ou subdomínio) |
+| Login | `compliance-ticto@moronireis.com.br` |
+| Senha | (a senha que você gerou) |
+
+**4. Após aprovação da Ticto** — revogar o acesso do usuário de teste:
+
+```sql
+update public.entitlements
+set status = 'expired', revoked_at = now()
+where external_order_id = 'compliance-ticto-test';
 ```
 
 ---

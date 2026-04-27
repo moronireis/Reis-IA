@@ -41,6 +41,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
+  // Allow public healthchecks (no PII, no secrets exposed)
+  if (pathname.startsWith('/api/health')) {
+    return next();
+  }
+
   // Get access token from cookie
   const accessToken = context.cookies.get('sb-access-token')?.value;
   const refreshToken = context.cookies.get('sb-refresh-token')?.value;
