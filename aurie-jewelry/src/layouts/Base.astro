@@ -1,0 +1,74 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CartDrawer from '../components/CartDrawer.tsx';
+
+const { title = 'Auriê — Joalheria autoral desde 1968', description = 'Joias autorais feitas à mão em Belo Horizonte. Ouro 18k, diamantes, esmeraldas e atendimento privado.', current = '' } = Astro.props as { title?: string; description?: string; current?: string };
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f6f1e7" />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="min-h-screen bg-[color:var(--color-ivory)] text-[color:var(--color-ink)] antialiased">
+    <Header current={current} />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+
+    <CartDrawer client:load />
+
+    <script is:inline>
+      const STORAGE_KEY = 'aurie-cart';
+      const readCart = () => {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+      };
+      const updateBadge = () => {
+        const lines = readCart();
+        const totalQty = lines.reduce((s, l) => s + (l.qty || 0), 0);
+        const el = document.getElementById('cart-count');
+        if (el) {
+          el.textContent = String(totalQty);
+          el.dataset.empty = totalQty === 0 ? 'true' : 'false';
+          el.style.opacity = totalQty === 0 ? '0' : '1';
+        }
+      };
+      updateBadge();
+      window.addEventListener('aurie:cart-changed', updateBadge);
+      window.addEventListener('storage', updateBadge);
+
+      const openBtn = document.getElementById('open-cart');
+      if (openBtn) {
+        openBtn.addEventListener('click', () => {
+          window.dispatchEvent(new CustomEvent('aurie:open-cart'));
+        });
+      }
+
+      // Fade-up on scroll
+      const els = document.querySelectorAll('.fade-up');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+        els.forEach((el) => io.observe(el));
+      } else {
+        els.forEach((el) => el.classList.add('in'));
+      }
+    </script>
+  </body>
+</html>

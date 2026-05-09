@@ -1,0 +1,155 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { products, collections } from '../data/products';
+
+const featured = products.slice(0, 4);
+---
+<Base current="home">
+  <!-- HERO -->
+  <section class="relative overflow-hidden">
+    <div class="grid lg:grid-cols-12 gap-0">
+      <div class="lg:col-span-6 relative px-6 lg:px-14 py-20 lg:py-32 flex flex-col justify-center bg-[color:var(--color-ivory)]">
+        <p class="eyebrow fade-up">Coleção primavera 2026</p>
+        <h1 class="font-display text-[56px] md:text-[88px] lg:text-[112px] leading-[0.95] mt-5 fade-up">
+          Joias que<br />
+          <em class="not-italic text-[color:var(--color-gold-deep)]">atravessam</em><br />
+          gerações.
+        </h1>
+        <p class="mt-8 max-w-md text-base leading-relaxed opacity-80 fade-up">
+          Em Belo Horizonte, há 58 anos, três gerações da família Auriê desenham, fundem e ajustam cada peça à mão. Você não compra uma joia — você herda uma.
+        </p>
+        <div class="mt-10 flex flex-wrap gap-4 fade-up">
+          <a href="/colecao" class="btn-primary">Ver coleção</a>
+          <a href="/atelier" class="btn-ghost">Curadoria privada</a>
+        </div>
+        <div class="mt-16 grid grid-cols-3 gap-6 max-w-md fade-up">
+          <div>
+            <p class="font-display text-3xl text-[color:var(--color-gold-deep)]">58</p>
+            <p class="eyebrow mt-1">Anos de atelier</p>
+          </div>
+          <div>
+            <p class="font-display text-3xl text-[color:var(--color-gold-deep)]">7400</p>
+            <p class="eyebrow mt-1">Peças entregues</p>
+          </div>
+          <div>
+            <p class="font-display text-3xl text-[color:var(--color-gold-deep)]">∞</p>
+            <p class="eyebrow mt-1">Garantia vitalícia</p>
+          </div>
+        </div>
+      </div>
+      <div class="lg:col-span-6 relative aspect-[4/5] lg:aspect-auto min-h-[520px]">
+        <img
+          src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1600&q=85"
+          alt="Anel solitário Vega"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+        <div class="absolute bottom-8 left-8 right-8 lg:left-12 lg:right-12 flex items-end justify-between gap-6">
+          <div class="bg-[color:var(--color-ivory)] py-4 px-5 max-w-xs">
+            <p class="eyebrow">Em destaque</p>
+            <p class="font-display text-2xl mt-1 leading-tight">Anel Solitário Vega</p>
+            <a href="/produto/anel-solitario-vega" class="text-[12px] tracking-[0.28em] uppercase border-b border-[color:var(--color-ink)] pb-0.5 mt-3 inline-block hover:text-[color:var(--color-gold-deep)] hover:border-[color:var(--color-gold-deep)] transition-colors">Conhecer</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <section class="py-10 border-y border-[color:rgba(12,10,8,0.1)] overflow-hidden">
+    <div class="scroll-marquee text-[color:var(--color-ink)] opacity-80">
+      {Array(2).fill(0).map(() => (
+        <div class="flex gap-16 items-center pr-16">
+          <span class="font-display text-3xl tracking-[0.18em]">OURO 18K CERTIFICADO</span>
+          <span class="text-[color:var(--color-gold-deep)]">◆</span>
+          <span class="font-display text-3xl tracking-[0.18em]">FEITO À MÃO EM MINAS GERAIS</span>
+          <span class="text-[color:var(--color-gold-deep)]">◆</span>
+          <span class="font-display text-3xl tracking-[0.18em]">GARANTIA VITALÍCIA</span>
+          <span class="text-[color:var(--color-gold-deep)]">◆</span>
+          <span class="font-display text-3xl tracking-[0.18em]">ATELIER PRIVADO</span>
+          <span class="text-[color:var(--color-gold-deep)]">◆</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- COLLECTIONS -->
+  <section class="max-w-[1280px] mx-auto px-6 lg:px-10 py-24 lg:py-32">
+    <div class="flex items-end justify-between gap-6 mb-14">
+      <div class="fade-up">
+        <p class="eyebrow">As coleções</p>
+        <h2 class="font-display text-5xl lg:text-6xl mt-3 leading-[1]">Três caminhos para a mesma luz.</h2>
+      </div>
+      <a href="/colecao" class="hidden md:inline-block text-[12px] tracking-[0.28em] uppercase border-b border-[color:var(--color-ink)] pb-0.5 hover:text-[color:var(--color-gold-deep)] hover:border-[color:var(--color-gold-deep)] transition-colors">Ver todas</a>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      {collections.map((c, i) => (
+        <a href={`/colecao?col=${c.slug}`} class="group block fade-up" style={`transition-delay:${i * 100}ms`}>
+          <div class="relative aspect-[3/4] overflow-hidden bg-[color:var(--color-cream)]">
+            <img src={c.cover} alt={c.name} class="w-full h-full object-cover transition-transform duration-[1400ms] group-hover:scale-105" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[rgba(12,10,8,0.55)] via-transparent to-transparent"></div>
+            <div class="absolute bottom-6 left-6 right-6 text-[color:var(--color-ivory)]">
+              <p class="text-[10px] tracking-[0.32em] uppercase opacity-80">Coleção</p>
+              <p class="font-display text-3xl mt-1">{c.name}</p>
+              <p class="text-sm opacity-90 mt-1">{c.tagline}</p>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section class="max-w-[1280px] mx-auto px-6 lg:px-10 pb-24 lg:pb-32">
+    <div class="flex items-end justify-between gap-6 mb-14">
+      <div class="fade-up">
+        <p class="eyebrow">Selecionadas pelo atelier</p>
+        <h2 class="font-display text-5xl lg:text-6xl mt-3 leading-[1]">Peças em destaque.</h2>
+      </div>
+      <a href="/colecao" class="hidden md:inline-block text-[12px] tracking-[0.28em] uppercase border-b border-[color:var(--color-ink)] pb-0.5 hover:text-[color:var(--color-gold-deep)] hover:border-[color:var(--color-gold-deep)] transition-colors">Ver coleção completa</a>
+    </div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-14">
+      {featured.map((p, i) => (
+        <div class="fade-up" style={`transition-delay:${i * 80}ms`}>
+          <ProductCard product={p} />
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <section class="bg-[color:var(--color-cream)]">
+    <div class="max-w-[1280px] mx-auto px-6 lg:px-10 py-24 lg:py-32 grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+      <div class="lg:col-span-5 relative aspect-[4/5] fade-up">
+        <img src="https://images.unsplash.com/photo-1581456495146-65a71b2c8e52?auto=format&fit=crop&w=1200&q=85" alt="Atelier Auriê" class="absolute inset-0 w-full h-full object-cover" />
+      </div>
+      <div class="lg:col-span-7 fade-up">
+        <p class="eyebrow">A casa Auriê</p>
+        <h2 class="font-display text-5xl lg:text-6xl mt-3 leading-[1.02]">Três gerações,<br />uma só assinatura.</h2>
+        <p class="mt-8 text-base leading-relaxed opacity-80 max-w-xl">
+          Quando Joaquim Auriê abriu a primeira oficina em 1968, fez uma promessa: nenhuma peça sai daqui sem ser merecedora do nome de quem a recebe. Sua filha Helena a manteve. Hoje, sua neta Camila a defende — junto com 14 ourives que crescemos juntos.
+        </p>
+        <p class="mt-4 text-base leading-relaxed opacity-80 max-w-xl">
+          Não temos coleção que troca toda estação. Temos um repertório que cresce com cuidado. Você não vai encontrar uma peça Auriê em qualquer outro lugar — porque, na maior parte das vezes, ela foi pensada para uma pessoa só.
+        </p>
+        <a href="/historia" class="btn-ghost mt-10">Conhecer a história</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATELIER CTA -->
+  <section class="max-w-[1280px] mx-auto px-6 lg:px-10 py-24 lg:py-32 text-center">
+    <div class="fade-up">
+      <p class="eyebrow">Atelier privado</p>
+      <h2 class="font-display text-5xl lg:text-7xl mt-4 leading-[1] max-w-3xl mx-auto">A peça que você procura<br />talvez ainda não exista.</h2>
+      <p class="mt-8 text-base leading-relaxed opacity-80 max-w-xl mx-auto">
+        Trabalhamos sob medida com clientes do Brasil inteiro. Marque uma conversa privada — presencial em BH ou por chamada — e desenhamos juntos a joia que faz sentido para você.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-4 justify-center">
+        <a href="/atelier" class="btn-primary">Agendar atendimento</a>
+        <a href="/colecao" class="btn-ghost">Ver coleção pronta</a>
+      </div>
+    </div>
+  </section>
+</Base>
