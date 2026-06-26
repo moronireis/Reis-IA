@@ -4,14 +4,7 @@ import { sendWhatsAppText } from '../../../lib/whatsapp/send';
 
 export const prerender = false;
 
-// POST /api/internal/check-installments
-// Secured by WEBHOOK_KEY header — called by cron or external scheduler
-export const POST: APIRoute = async ({ request }) => {
-  const key = request.headers.get('x-webhook-key');
-  if (key !== import.meta.env.WEBHOOK_KEY) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-  }
-
+async function runCheck(request: Request): Promise<Response> {
   const sb = createServerClient();
   const today = new Date().toISOString().split('T')[0];
   const in3Days = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
@@ -60,4 +53,31 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   return new Response(JSON.stringify({ ok: true, sent, total: installments.length, results }), { status: 200 });
+}
+
+// GET /api/internal/check-installments
+// Called by Vercel Cron — Vercel sends: Authorization: Bearer <CRON_SECRET>
+export const GET: APIRoute = async ({ request }) => {
+  const authHeader = request.headers.get('authorization') || '';
+  const webhookKey = request.headers.get('x-webhook-key') || '';
+
+  const cronSecret = import.meta.env.CRON_SECRET;
+  const validCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
+  const validWebhook = webhookKey === import.meta.env.WEBHOOK_KEY;
+
+  if (!validCron && !validWebhook) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+  }
+
+  return runCheck(request);
+};
+
+// POST /api/internal/check-installments
+// Secured by WEBHOOK_KEY header — called manually or by external scheduler
+export const POST: APIRoute = async ({ request }) => {
+  const key = request.headers.get('x-webhook-key');
+  if (key !== import.meta.env.WEBHOOK_KEY) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+  }
+  return runCheck(request);
 };

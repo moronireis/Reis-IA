@@ -12,15 +12,52 @@ export const GET: APIRoute = async ({ locals, params }) => {
   if (!id) return new Response(JSON.stringify({ error: 'id required' }), { status: 400 });
 
   const sb = createServerClient();
-  const { data, error } = await sb
+
+  // Fetch contact
+  const { data: contact, error } = await sb
     .from('marpe_contacts')
     .select('*')
     .eq('id', id)
     .single();
 
   if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
-  if (!data) return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
-  return new Response(JSON.stringify({ contact: data }), { status: 200 });
+  if (!contact) return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
+
+  // Fetch deals with stage and funnel names
+  const { data: deals } = await sb
+    .from('marpe_deals')
+    .select(`
+      id, title, ramo, seguradora, apolice, premio, comissao_pct, comissao_valor,
+      vigencia_inicio, vigencia_fim, veiculo, placa, deal_type,
+      next_action, next_action_date, status_custom, status_color,
+      stage_id, funnel_id, created_at, updated_at, loss_reason,
+      marpe_funnel_stages ( id, name, color, is_terminal, terminal_type ),
+      marpe_funnels ( id, name ),
+      marpe_deal_activities ( id, type, description, created_at )
+    `)
+    .eq('contact_id', id)
+    .order('created_at', { ascending: false });
+
+  // Fetch message stats
+  const { count: messageCount } = await sb
+    .from('marpe_messages')
+    .select('id', { count: 'exact', head: true })
+    .eq('contact_id', id);
+
+  const { data: lastMsgRow } = await sb
+    .from('marpe_messages')
+    .select('created_at')
+    .eq('contact_id', id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return new Response(JSON.stringify({
+    contact,
+    deals: deals || [],
+    message_count: messageCount || 0,
+    last_message_at: lastMsgRow?.created_at || null,
+  }), { status: 200 });
 };
 
 export const PATCH: APIRoute = async ({ locals, request, params }) => {

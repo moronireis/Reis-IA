@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
   const limit = parseInt(url.searchParams.get('limit') || '500');
 
   let query = sb.from('marpe_deals')
-    .select('*, marpe_contacts(id, name, phone, email, tags), marpe_funnel_stages(id, name, color, sort_order, is_terminal, terminal_type)')
+    .select('*, marpe_contacts(id, name, phone, email, tags), marpe_funnel_stages(id, name, color, sort_order, is_terminal, terminal_type), marpe_profiles!responsible_id(id, full_name)')
     .order('created_at', { ascending: false })
     .limit(limit);
 

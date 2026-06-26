@@ -1,5 +1,6 @@
 import { createServerClient } from '../supabase-server';
 import { sendWhatsAppText } from '../whatsapp/send';
+import { interpolateVariables } from '../variables';
 
 export interface TriggerEvent {
   type: 'deal_stage_change' | 'new_contact' | 'installment_due';
@@ -67,33 +68,109 @@ async function executeAction(automation: any, event: TriggerEvent): Promise<void
   switch (automation.action_type) {
     case 'send_whatsapp': {
       let contactId = event.contact_id;
+      let dealData: any = null;
 
-      if (!contactId && event.deal_id) {
+      if (event.deal_id) {
         const { data: deal } = await sb
           .from('marpe_deals')
-          .select('contact_id')
+          .select(`
+            veiculo, placa, apolice, seguradora, premio, comissao_valor,
+            ramo, produtor, vigencia_inicio, vigencia_fim, next_action,
+            contact_id
+          `)
           .eq('id', event.deal_id)
           .single();
-        contactId = deal?.contact_id;
+        dealData = deal;
+        if (!contactId) contactId = deal?.contact_id;
       }
 
       if (!contactId) throw new Error('No contact for event');
 
       const { data: contact } = await sb
         .from('marpe_contacts')
-        .select('id, phone, name')
+        .select('id, phone, name, email, city')
         .eq('id', contactId)
         .single();
 
       if (!contact?.phone) throw new Error('Contact has no phone number');
 
-      let message: string = actionConfig.message || '';
-      message = message.replace(/\{\{nome\}\}/gi, contact.name || '');
+      const message = interpolateVariables(actionConfig.message || '', {
+        contact,
+        deal: dealData ?? undefined,
+      });
 
       await sendWhatsAppText(contact.phone, message, contactId, {
         isAutomation: true,
         automationId: automation.id,
       });
+      break;
+    }
+
+    case 'send_survey': {
+      let contactId = event.contact_id;
+      let dealData: any = null;
+
+      if (event.deal_id) {
+        const { data: deal } = await sb
+          .from('marpe_deals')
+          .select(`
+            veiculo, placa, apolice, seguradora, premio, comissao_valor,
+            ramo, produtor, vigencia_inicio, vigencia_fim, next_action,
+            contact_id
+          `)
+          .eq('id', event.deal_id)
+          .single();
+        dealData = deal;
+        if (!contactId) contactId = deal?.contact_id;
+      }
+
+      if (!contactId) throw new Error('No contact for event');
+
+      const { data: contact } = await sb
+        .from('marpe_contacts')
+        .select('id, phone, name, email, city')
+        .eq('id', contactId)
+        .single();
+
+      if (!contact?.phone) throw new Error('Contact has no phone number');
+
+      const surveyQuestion =
+        actionConfig.message ||
+        '{{primeiro_nome}}, seu atendimento foi finalizado! De 1 a 5, como avalia nosso atendimento? Responda com o número.';
+
+      const message = interpolateVariables(surveyQuestion, {
+        contact,
+        deal: dealData ?? undefined,
+      });
+
+      // Insert pending survey record BEFORE sending so the webhook can find it
+      const { data: survey } = await sb
+        .from('marpe_surveys')
+        .insert({
+          contact_id: contactId,
+          deal_id: event.deal_id || null,
+          automation_id: automation.id,
+          question: surveyQuestion,
+          status: 'pending',
+        })
+        .select('id')
+        .single();
+
+      await sendWhatsAppText(contact.phone, message, contactId, {
+        isAutomation: true,
+        automationId: automation.id,
+      });
+
+      // Log survey_id in metadata so the automation log is traceable
+      if (survey?.id) {
+        await sb.from('marpe_automation_logs').insert({
+          automation_id: automation.id,
+          deal_id: event.deal_id || null,
+          contact_id: contactId,
+          status: 'success',
+          metadata: { event, survey_id: survey.id },
+        });
+      }
       break;
     }
 

@@ -15,7 +15,8 @@ export const GET: APIRoute = async ({ locals }) => {
   }
 
   try {
-    const res = await fetch(`${UAZAPI_URL}/instance/info?token=${UAZAPI_TOKEN}`, {
+    // UazapiGO uses /instance/status (not /instance/info)
+    const res = await fetch(`${UAZAPI_URL}/instance/status?token=${UAZAPI_TOKEN}`, {
       signal: AbortSignal.timeout(5000),
     });
 
@@ -24,15 +25,21 @@ export const GET: APIRoute = async ({ locals }) => {
     }
 
     const data = await res.json().catch(() => ({}));
-    const connected = data.status === 'connected' || data.connected === true ||
-      data.state === 'open' || data.instanceStatus === 'connected';
+
+    // UazapiGO response structure:
+    // { instance: { status, name, profileName, owner, ... }, status: { connected, jid, loggedIn } }
+    const instance = data.instance || {};
+    const statusObj = data.status || {};
+
+    const connected = statusObj.connected === true || statusObj.loggedIn === true || instance.status === 'connected';
 
     return new Response(JSON.stringify({
       connected,
-      status: data.status || data.state || data.instanceStatus || 'unknown',
-      phone: data.phone || data.wid || data.user?.id || null,
-      name: data.pushname || data.name || null,
-      raw: data,
+      status: instance.status || (connected ? 'connected' : 'disconnected'),
+      phone: instance.owner || statusObj.jid?.split(':')[0] || null,
+      name: instance.profileName || instance.name || null,
+      instanceName: instance.name || null,
+      isBusiness: instance.isBusiness || false,
     }), { status: 200 });
 
   } catch (e: any) {

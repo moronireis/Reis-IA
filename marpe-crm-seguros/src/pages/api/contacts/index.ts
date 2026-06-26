@@ -12,19 +12,22 @@ export const GET: APIRoute = async ({ locals, url }) => {
   const search = url.searchParams.get('search') || '';
   const limit = parseInt(url.searchParams.get('limit') || '100');
   const offset = parseInt(url.searchParams.get('offset') || '0');
+  const sourceFilter = url.searchParams.get('source') || '';       // e.g. ?source=whatsapp_group
+  const excludeSource = url.searchParams.get('exclude_source') || ''; // e.g. ?exclude_source=whatsapp_group
 
   // Inbox mode: contacts with at least one message, ordered by most recent message
   // This is the WhatsApp-style conversation list
   const { data: msgContacts, error: msgErr } = await sb
     .from('marpe_messages')
-    .select('contact_id, created_at, body, direction')
-    .order('created_at', { ascending: false });
+    .select('contact_id, created_at, body, direction, content_type')
+    .order('created_at', { ascending: false })
+    .limit(2000);
 
   if (msgErr) return new Response(JSON.stringify({ error: msgErr.message }), { status: 500 });
 
   // Deduplicate — keep only the most recent message per contact
   const seen = new Set<string>();
-  const latestByContact: { contact_id: string; body: string; direction: string; created_at: string }[] = [];
+  const latestByContact: { contact_id: string; body: string; direction: string; content_type: string; created_at: string }[] = [];
   for (const m of (msgContacts || [])) {
     if (!seen.has(m.contact_id)) {
       seen.add(m.contact_id);
@@ -41,11 +44,18 @@ export const GET: APIRoute = async ({ locals, url }) => {
 
   let query = sb
     .from('marpe_contacts')
-    .select('id, name, phone, email, city, corp_id, tags, source')
+    .select('id, name, phone, email, city, corp_id, tags, source, photo_url')
     .in('id', contactIds);
 
   if (search) {
     query = query.or(`name.ilike.%${search}%,phone.ilike.%${search}%,email.ilike.%${search}%`);
+  }
+
+  // Source filtering — backward compatible (no param = return all)
+  if (sourceFilter) {
+    query = query.eq('source', sourceFilter);
+  } else if (excludeSource) {
+    query = query.neq('source', excludeSource);
   }
 
   const { data: contacts, error: contactErr } = await query.range(0, 499);
@@ -61,6 +71,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
         ...contact,
         last_message: m.body,
         last_message_direction: m.direction,
+        last_content_type: m.content_type,
         last_message_at: m.created_at,
       };
     })

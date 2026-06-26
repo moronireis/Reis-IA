@@ -15,6 +15,7 @@ const TRIGGER_LABELS: Record<string, string> = {
 
 const ACTION_LABELS: Record<string, string> = {
   send_whatsapp: 'Enviar WhatsApp',
+  send_survey: 'Enviar pesquisa de satisfação',
   create_activity: 'Criar atividade',
 };
 
@@ -59,7 +60,8 @@ export default function AutomationsView() {
   }
 
   async function save() {
-    if (!form.name || !form.message) { setError('Nome e mensagem são obrigatórios'); return; }
+    const messageRequired = form.action_type !== 'send_survey';
+    if (!form.name || (messageRequired && !form.message)) { setError('Nome e mensagem são obrigatórios'); return; }
     setSaving(true); setError('');
     const res = await fetch('/api/automations', {
       method: 'POST',
@@ -85,7 +87,7 @@ export default function AutomationsView() {
     wrap: { display: 'flex', flexDirection: 'column', height: '100%' },
     header: { height: 56, borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 16, flexShrink: 0 },
     body: { flex: 1, overflowY: 'auto', padding: 24 },
-    card: { background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 10, padding: 16, marginBottom: 12, display: 'flex', alignItems: 'flex-start', gap: 14 },
+    card: { background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: '16px 18px', marginBottom: 12, display: 'flex', alignItems: 'flex-start', gap: 14, boxShadow: 'var(--shadow-xs)', transition: 'background 0.15s, border-color 0.15s, box-shadow 0.15s' },
     badge: (active: boolean) => ({ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 100, background: active ? 'rgba(34,197,94,0.1)' : 'rgba(107,114,128,0.1)', color: active ? 'var(--green)' : 'var(--text-muted)' }),
     pill: { fontSize: 10, padding: '2px 8px', borderRadius: 100, background: 'rgba(59,130,246,0.1)', color: 'var(--accent-light)', fontWeight: 500 },
     input: { width: '100%', padding: '9px 12px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 13, outline: 'none', fontFamily: 'inherit', marginBottom: 10 },
@@ -113,7 +115,16 @@ export default function AutomationsView() {
             <select style={s.select} value={form.action_type} onChange={e => setForm(f => ({ ...f, action_type: e.target.value }))}>
               {Object.entries(ACTION_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
             </select>
-            <textarea style={{ ...s.input, height: 80, resize: 'vertical' }} placeholder="Mensagem WhatsApp (use {{nome}} para o nome do contato)" value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} />
+            <textarea
+              style={{ ...s.input, height: 80, resize: 'vertical' }}
+              placeholder={
+                form.action_type === 'send_survey'
+                  ? '{{primeiro_nome}}, seu atendimento foi finalizado! De 1 a 5, como avalia nosso atendimento? Responda com o número.'
+                  : 'Mensagem WhatsApp (use {{nome}} para o nome do contato)'
+              }
+              value={form.message}
+              onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+            />
             {error && <div style={{ fontSize: 12, color: '#f87171', marginBottom: 8 }}>{error}</div>}
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={save} disabled={saving} style={s.btn(true)}>{saving ? 'Salvando...' : 'Salvar'}</button>

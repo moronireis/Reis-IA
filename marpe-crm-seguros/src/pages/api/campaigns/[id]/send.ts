@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro';
 import { requireAuth } from '../../../../lib/api-auth';
 import { createServerClient } from '../../../../lib/supabase-server';
 import { sendWhatsAppText } from '../../../../lib/whatsapp/send';
+import { interpolateVariables } from '../../../../lib/variables';
+import { resolveContactIds } from '../../../../lib/campaigns/resolve-contacts';
 
 export const prerender = false;
 
@@ -32,22 +34,27 @@ export const POST: APIRoute = async ({ locals, params }) => {
     return new Response(JSON.stringify({ error: 'Campaign has no template' }), { status: 400 });
   }
 
-  // Build contact query from segment_filter
+  // Resolve contacts from segment filter
   const filter = campaign.segment_filter || {};
-  let query = sb.from('marpe_contacts').select('id, name, phone').not('phone', 'is', null);
+  const { ids: contactIds, error: resolveErr } = await resolveContactIds(sb, filter);
 
-  if (filter.tags?.length) {
-    query = query.overlaps('tags', filter.tags);
-  }
-  if (filter.city) {
-    query = query.ilike('city', `%${filter.city}%`);
+  if (resolveErr) return new Response(JSON.stringify({ error: resolveErr }), { status: 500 });
+
+  if (!contactIds.length) {
+    return new Response(JSON.stringify({ error: 'Nenhum contato corresponde ao segmento' }), { status: 400 });
   }
 
-  const { data: contacts, error: contactErr } = await query.limit(500);
+  // Fetch full contact data for the resolved IDs
+  const { data: contacts, error: contactErr } = await sb
+    .from('marpe_contacts')
+    .select('id, name, phone, email, city')
+    .in('id', contactIds)
+    .not('phone', 'is', null)
+    .neq('phone', '');
+
   if (contactErr) return new Response(JSON.stringify({ error: contactErr.message }), { status: 500 });
-
   if (!contacts?.length) {
-    return new Response(JSON.stringify({ error: 'No contacts match the filter' }), { status: 400 });
+    return new Response(JSON.stringify({ error: 'Nenhum contato com telefone encontrado' }), { status: 400 });
   }
 
   // Mark campaign as sending
@@ -64,9 +71,7 @@ export const POST: APIRoute = async ({ locals, params }) => {
     for (const contact of contacts) {
       if (!contact.phone) continue;
 
-      let message: string = campaign.marpe_templates.body;
-      message = message.replace(/\{\{nome\}\}/gi, contact.name || '');
-
+      const message = interpolateVariables(campaign.marpe_templates.body, { contact });
       const result = await sendWhatsAppText(contact.phone, message, contact.id);
 
       await sb.from('marpe_campaign_recipients').insert({
