@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Castelo dos Lagos — Um evento por dia. Uma experiência por vida. Reserve sua data e conheça o espaço dos seus sonhos em Ribeirão Pires." />
+  <title>Castelo dos Lagos — Seu Evento dos Sonhos</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:title" content="Castelo dos Lagos — Um evento por dia. Uma experiência por vida." />
+  <meta property="og:description" content="16.000 m² de natureza, lagos e arquitetura. Apenas um evento por dia. O dia inteiro é seu." />
+  <meta property="og:image" content="assets/photos/castelo-aereo-drone.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Meta Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1001927746098306');
+    fbq('track', 'PageView');
+  </script>
+
+  <style>
+    /* ─── Design Tokens ─── */
+    :root {
+      --forest-deep: #1E2E24;
+      --forest-mid: #2F4A3A;
+      --forest-light: #3D5E4A;
+      --gold: #C9A96E;
+      --gold-muted: rgba(201, 169, 110, 0.35);
+      --gold-line: rgba(201, 169, 110, 0.15);
+      --cream: #F4EFE6;
+      --cream-dark: #EAE4D8;
+      --near-black: #0E0E0C;
+      --text-main: rgba(244, 239, 230, 0.92);
+      --text-muted: rgba(201, 169, 110, 0.55);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --motion: 900ms;
+      --motion-fast: 500ms;
+    }
+
+    /* ─── Reset ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--forest-deep);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    img { display: block; max-width: 100%; }
+
+    /* ─── Animations ─── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity var(--motion) var(--ease), transform var(--motion) var(--ease);
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .stagger-1 { transition-delay: 0ms; }
+    .stagger-2 { transition-delay: 120ms; }
+    .stagger-3 { transition-delay: 240ms; }
+    .stagger-4 { transition-delay: 360ms; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════
+       SECTION 1: HERO — VIDEO
+    ═══════════════════════════════════════ */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100svh;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero__video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0;
+      transition: opacity 1.2s var(--ease);
+    }
+    .hero__video--active { opacity: 1; }
+
+    .hero__poster {
+      position: absolute;
+      inset: 0;
+      background-image: url('assets/photos/hero-castelo.jpg');
+      background-size: cover;
+      background-position: center 30%;
+      transition: opacity 1.2s var(--ease);
+    }
+    .hero__poster.hidden { opacity: 0; }
+
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(14, 14, 12, 0.25) 0%,
+        rgba(14, 14, 12, 0.15) 30%,
+        rgba(14, 14, 12, 0.35) 60%,
+        rgba(30, 46, 36, 0.85) 100%
+      );
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      padding: 0 24px 72px;
+      max-width: 760px;
+    }
+
+    .hero__eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 24px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+      opacity: 0;
+      animation: fadeUp var(--motion) var(--ease) 0.3s forwards;
+    }
+
+    .hero__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(38px, 9vw, 88px);
+      font-weight: 300;
+      line-height: 0.95;
+      color: var(--cream);
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.5), 0 4px 40px rgba(0,0,0,0.3);
+      opacity: 0;
+      animation: fadeUp var(--motion) var(--ease) 0.5s forwards;
+    }
+
+    .hero__sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(17px, 2.8vw, 24px);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--cream);
+      letter-spacing: 0.02em;
+      margin-bottom: 40px;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.6);
+      opacity: 0;
+      animation: fadeUp var(--motion) var(--ease) 0.7s forwards;
+    }
+
+    .hero__cta {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cream);
+      border: 1px solid rgba(244, 239, 230, 0.5);
+      padding: 14px 40px;
+      text-decoration: none;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      transition: all var(--motion-fast) var(--ease);
+      opacity: 0;
+      animation: fadeUp var(--motion) var(--ease) 0.9s forwards;
+    }
+    .hero__cta:hover {
+      background: var(--gold);
+      color: var(--near-black);
+      border-color: var(--gold);
+    }
+
+    /* ─── Scroll indicator ─── */
+    .hero__scroll {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeUp var(--motion) var(--ease) 1.4s forwards;
+    }
+    .hero__scroll-line {
+      width: 1px;
+      height: 32px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
+      50% { opacity: 0.8; transform: scaleY(1); }
+    }
+
+    /* ═══════════════════════════════════════
+       SECTION 2: SOCIAL PROOF NUMBERS
+    ═══════════════════════════════════════ */
+    .proof {
+      padding: 72px 24px;
+      text-align: center;
+      border-top: 1px solid var(--gold-line);
+      border-bottom: 1px solid var(--gold-line);
+    }
+
+    .proof__grid {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      max-width: 800px;
+      margin: 0 auto 28px;
+    }
+
+    .proof__item { flex: 0 0 auto; }
+
+    .proof__number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 6vw, 56px);
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .proof__label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .proof__tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-style: italic;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ═══════════════════════════════════════
+       SECTION 3: GALLERY
+    ═══════════════════════════════════════ */
+    .gallery {
+      padding: 64px 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .gallery__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .gallery__img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      filter: brightness(0.88);
+      transition: filter var(--motion-fast) var(--ease);
+    }
+    .gallery__img:hover { filter: brightness(1); }
+
+    @media (max-width: 640px) {
+      .gallery { padding: 48px 12px; }
+      .gallery__grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+      }
+      .gallery__img:nth-child(3) {
+        grid-column: 1 / -1;
+        aspect-ratio: 16/9;
+      }
+    }
+
+    /* ═══════════════════════════════════════
+       SECTION 4: FORM
+    ═══════════════════════════════════════ */
+    .form-section {
+      padding: 88px 24px 120px;
+      max-width: 540px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .form__eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .form__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(26px, 5vw, 40px);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .form__subtitle {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 44px;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .form__group {
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .form__label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .form__input,
+    .form__select {
+      width: 100%;
+      padding: 14px 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--cream);
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--gold-line);
+      outline: none;
+      transition: border-color var(--motion-fast) var(--ease);
+      -webkit-appearance: none;
+      appearance: none;
+      border-radius: 0;
+    }
+    .form__input::placeholder { color: rgba(201, 169, 110, 0.25); }
+    .form__input:focus,
+    .form__select:focus { border-bottom-color: var(--gold); }
+
+    .form__select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%23C9A96E' stroke-width='1.2'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 4px center;
+      padding-right: 24px;
+    }
+    .form__select option {
+      background: var(--forest-deep);
+      color: var(--cream);
+    }
+
+    .form__textarea {
+      width: 100%;
+      padding: 14px 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--cream);
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--gold-line);
+      outline: none;
+      resize: none;
+      min-height: 80px;
+      transition: border-color var(--motion-fast) var(--ease);
+      border-radius: 0;
+    }
+    .form__textarea::placeholder { color: rgba(201, 169, 110, 0.25); font-style: italic; }
+    .form__textarea:focus { border-bottom-color: var(--gold); }
+
+    .form__submit {
+      display: block;
+      width: 100%;
+      margin-top: 40px;
+      padding: 18px 32px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--forest-deep);
+      background: var(--gold);
+      border: 1px solid var(--gold);
+      cursor: pointer;
+      transition: all var(--motion-fast) var(--ease);
+    }
+    .form__submit:hover {
+      background: #D4B87A;
+      border-color: #D4B87A;
+    }
+    .form__submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ─── Success State ─── */
+    .form__success {
+      display: none;
+      text-align: center;
+      padding: 60px 0;
+    }
+    .form__success.active { display: block; }
+
+    .form__success-icon {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      color: var(--gold);
+    }
+
+    .form__success-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--cream);
+      margin-bottom: 16px;
+    }
+
+    .form__success-text {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .form__success-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      text-decoration: none;
+      transition: opacity var(--motion-fast) var(--ease);
+    }
+    .form__success-link:hover { opacity: 0.7; }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    .footer {
+      padding: 48px 24px;
+      text-align: center;
+      border-top: 1px solid var(--gold-line);
+    }
+
+    .footer__brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 300;
+      color: var(--cream);
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+    }
+
+    .footer__address {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .footer__social {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      text-decoration: none;
+      transition: opacity var(--motion-fast) var(--ease);
+    }
+    .footer__social:hover { opacity: 0.7; }
+
+    /* ─── Mobile-first responsive ─── */
+    @media (max-width: 480px) {
+      .hero__content { padding: 0 20px 56px; }
+      .proof { padding: 56px 20px; }
+      .proof__grid { gap: 28px; }
+      .form-section { padding: 64px 20px 88px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ HERO — VIDEO LOOP ═══ -->
+  <section class="hero">
+    <video class="hero__video hero__video--active" src="assets/videos/hero-1.mp4" autoplay muted playsinline preload="auto" data-hero-idx="0"></video>
+    <video class="hero__video" src="assets/videos/hero-2.mp4" muted playsinline preload="auto" data-hero-idx="1"></video>
+    <video class="hero__video" src="assets/videos/hero-3.mp4" muted playsinline preload="auto" data-hero-idx="2"></video>
+    <div class="hero__poster" id="heroPoster"></div>
+    <div class="hero__overlay"></div>
+    <div class="hero__content">
+      <p class="hero__eyebrow">Castelo dos Lagos</p>
+      <h1 class="hero__title">O dia que você imagina existe.<br>E ele pode ser seu.</h1>
+      <p class="hero__sub">Um lugar inteiro, um dia inteiro — só pra vocês.</p>
+      <a href="#conversar" class="hero__cta">Quero conhecer</a>
+    </div>
+    <div class="hero__scroll">
+      <div class="hero__scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ═══ SOCIAL PROOF ═══ -->
+  <section class="proof">
+    <div class="proof__grid">
+      <div class="proof__item fade-up stagger-1">
+        <div class="proof__number">380+</div>
+        <div class="proof__label">Eventos realizados</div>
+      </div>
+      <div class="proof__item fade-up stagger-2">
+        <div class="proof__number">16.000</div>
+        <div class="proof__label">m² de área</div>
+      </div>
+      <div class="proof__item fade-up stagger-3">
+        <div class="proof__number">1</div>
+        <div class="proof__label">Evento por dia</div>
+      </div>
+    </div>
+    <p class="proof__tagline fade-up stagger-4">Natureza, lagos e arquitetura — exclusividade total para o seu evento</p>
+  </section>
+
+  <!-- ═══ GALLERY — 3 fotos distintas ═══ -->
+  <section class="gallery">
+    <div class="gallery__grid">
+      <img class="gallery__img fade-up stagger-1" src="assets/photos/castelo-aereo.jpg" alt="Vista aérea do Castelo dos Lagos e seus 16.000 m²" loading="lazy" />
+      <img class="gallery__img fade-up stagger-2" src="assets/photos/cerimonia-bancos-luzes.jpg" alt="Cerimônia iluminada no Castelo dos Lagos" loading="lazy" />
+      <img class="gallery__img fade-up stagger-3" src="assets/photos/casal-frente-castelo.jpg" alt="Casal em frente ao Castelo dos Lagos" loading="lazy" />
+    </div>
+  </section>
+
+  <!-- ═══ FORM ═══ -->
+  <section class="form-section" id="conversar">
+    <div id="formContainer">
+      <p class="form__eyebrow fade-up stagger-1">O primeiro passo</p>
+      <h2 class="form__title fade-up stagger-2">Nos conte o que importa pra vocês —<br>o resto a gente resolve.</h2>
+      <p class="form__subtitle fade-up stagger-3">Cada casal tem uma história, cada dia tem um jeito. Nossa equipe quer ouvir o seu para te atender da melhor maneira.</p>
+
+      <form id="leadForm" class="fade-up stagger-4">
+        <div class="form__group">
+          <label class="form__label" for="nome">Seu nome</label>
+          <input class="form__input" type="text" id="nome" name="nome" placeholder="Maria Silva" required />
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="whatsapp">Seu WhatsApp</label>
+          <input class="form__input" type="tel" id="whatsapp" name="whatsapp" placeholder="(11) 9.0000-0000" required />
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="tipo">Tipo de evento</label>
+          <select class="form__select" id="tipo" name="tipo" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="casamento">Casamento</option>
+            <option value="debutante">Festa de 15 Anos</option>
+            <option value="corporativo">Evento Corporativo</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="convidados">Convidados estimados</label>
+          <select class="form__select" id="convidados" name="convidados" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="ate-100">Até 100 pessoas</option>
+            <option value="100-200">100 a 200 pessoas</option>
+            <option value="200-350">200 a 350 pessoas</option>
+            <option value="350+">Mais de 350 pessoas</option>
+          </select>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="periodo">Quando pretende realizar?</label>
+          <select class="form__select" id="periodo" name="periodo" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="2026">Ainda este ano (2026)</option>
+            <option value="inicio-2027">Início de 2027</option>
+            <option value="meio-2027">Meio de 2027</option>
+            <option value="fim-2027">Final de 2027</option>
+            <option value="2028+">2028 em diante</option>
+            <option value="indefinido">Ainda não decidi</option>
+          </select>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="sonho">O que mais importa pra vocês nesse dia?</label>
+          <textarea class="form__textarea" id="sonho" name="sonho" placeholder="Ex.: Quero que seja íntimo, que minha família se sinta em casa, que a gente tenha tempo de curtir cada momento sem correria..." rows="3"></textarea>
+        </div>
+
+        <button class="form__submit" type="submit">Dar o primeiro passo</button>
+      </form>
+    </div>
+
+    <!-- Success State -->
+    <div class="form__success" id="formSuccess">
+      <div class="form__success-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h3 class="form__success-title">Recebemos o seu contato.</h3>
+      <p class="form__success-text">Aguarde — nossa equipe vai falar com você<br>em instantes pelo WhatsApp.</p>
+      <a class="form__success-link" href="https://www.instagram.com/castelodoslagosoficial" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+        Enquanto isso, conheça nossos eventos
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="footer__brand">Castelo dos Lagos</div>
+    <p class="footer__address">Rua Bonfim, 754 — Ribeirão Pires, SP</p>
+    <a class="footer__social" href="https://www.instagram.com/castelodoslagosoficial" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+      @castelodoslagosoficial
+    </a>
+  </footer>
+
+  <script>
+    /* ─── Hero video rotation (3 videos, crossfade) ─── */
+    (function() {
+      const videos = Array.from(document.querySelectorAll('.hero__video[data-hero-idx]'));
+      const poster = document.getElementById('heroPoster');
+      if (!videos.length) return;
+
+      let current = 0;
+
+      // Hide poster once first video plays
+      videos[0].addEventListener('playing', () => poster.classList.add('hidden'), { once: true });
+
+      // When a video ends, crossfade to the next
+      videos.forEach((v, i) => {
+        v.addEventListener('ended', () => {
+          const next = (i + 1) % videos.length;
+          v.classList.remove('hero__video--active');
+          videos[next].classList.add('hero__video--active');
+          videos[next].currentTime = 0;
+          videos[next].play().catch(() => {});
+          current = next;
+        });
+      });
+    })();
+
+    /* ─── Scroll Reveal ─── */
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+    /* ─── Phone Mask ─── */
+    const phoneInput = document.getElementById('whatsapp');
+    phoneInput.addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '');
+      if (v.length > 11) v = v.slice(0, 11);
+      if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,3)}.${v.slice(3,7)}-${v.slice(7)}`;
+      else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+      else if (v.length > 0) v = `(${v}`;
+      e.target.value = v;
+    });
+
+    /* ─── Form Submit ─── */
+    document.getElementById('leadForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('.form__submit');
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+
+      // Capture UTM params
+      const params = new URLSearchParams(window.location.search);
+      const data = {
+        nome: document.getElementById('nome').value,
+        whatsapp: document.getElementById('whatsapp').value,
+        tipo: document.getElementById('tipo').value,
+        convidados: document.getElementById('convidados').value,
+        periodo: document.getElementById('periodo').value,
+        sonho: document.getElementById('sonho').value,
+        timestamp: new Date().toISOString(),
+        source: params.get('utm_source') || 'direto',
+        utm_medium: params.get('utm_medium') || '',
+        utm_campaign: params.get('utm_campaign') || '',
+        utm_content: params.get('utm_content') || '',
+        utm_term: params.get('utm_term') || '',
+        fbclid: params.get('fbclid') || '',
+      };
+
+      // Fire Meta Pixel Lead event
+      if (typeof fbq === 'function') {
+        fbq('track', 'Lead', {
+          content_name: 'lp-qualificacao-castelo',
+          content_category: data.tipo,
+          value: 0,
+          currency: 'BRL'
+        });
+      }
+
+      // Send to API
+      try {
+        await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+      } catch (err) {
+        console.error('API error:', err);
+      }
+
+      // Redirect to thank-you page
+      window.location.href = '/obrigado';
+    });
+  </script>
+
+</body>
+</html>

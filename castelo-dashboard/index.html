@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Castelo dos Lagos — Ads Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0A0A0C;
+      --surface: #111113;
+      --surface-2: #1A1A1C;
+      --border: rgba(255,255,255,0.06);
+      --text: rgba(255,255,255,0.92);
+      --text-muted: rgba(255,255,255,0.45);
+      --gold: #C9A96E;
+      --gold-dim: rgba(201,169,110,0.15);
+      --green: #34D399;
+      --green-dim: rgba(52,211,153,0.12);
+      --red: #F87171;
+      --red-dim: rgba(248,113,113,0.12);
+      --blue: #60A5FA;
+      --blue-dim: rgba(96,165,250,0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* Header */
+    .header { margin-bottom: 48px; }
+    .header__eyebrow {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 12px;
+    }
+    .header__title {
+      font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 8px;
+    }
+    .header__sub {
+      font-size: 14px; font-weight: 400; color: var(--text-muted);
+    }
+    .header__date {
+      font-size: 12px; color: var(--text-muted); margin-top: 8px;
+      padding-top: 8px; border-top: 1px solid var(--border);
+    }
+
+    /* Checklist */
+    .checklist {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 28px; margin-bottom: 32px;
+    }
+    .checklist__title {
+      font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text); margin-bottom: 20px;
+    }
+    .check-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .check-item:last-child { border-bottom: none; }
+    .check-badge {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+      padding: 3px 8px; text-transform: uppercase; flex-shrink: 0; margin-top: 2px;
+    }
+    .check-badge--ok { background: var(--green-dim); color: var(--green); }
+    .check-badge--warn { background: var(--gold-dim); color: var(--gold); }
+    .check-badge--block { background: var(--red-dim); color: var(--red); }
+    .check-text { font-size: 13px; color: var(--text); }
+    .check-text span { color: var(--text-muted); }
+
+    /* Stats Grid */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .stat {
+      background: var(--surface); border: 1px solid var(--border); padding: 20px;
+    }
+    .stat__label {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;
+    }
+    .stat__value { font-size: 24px; font-weight: 600; color: var(--text); }
+    .stat__value--gold { color: var(--gold); }
+
+    /* Campaign Table */
+    .section { margin-bottom: 40px; }
+    .section__title {
+      font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+      color: var(--text); margin-bottom: 16px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      text-align: left; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-muted); padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 10px 12px; border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .tag {
+      display: inline-block; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.04em; padding: 2px 8px; text-transform: uppercase;
+    }
+    .tag--paused { background: var(--gold-dim); color: var(--gold); }
+    .tag--video { background: var(--blue-dim); color: var(--blue); }
+    .tag--image { background: var(--green-dim); color: var(--green); }
+    .tag--carousel { background: rgba(168,85,247,0.12); color: #A855F7; }
+
+    /* Creative Grid */
+    .creatives { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .creative-card {
+      background: var(--surface); border: 1px solid var(--border); padding: 20px;
+    }
+    .creative-card__name {
+      font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px;
+    }
+    .creative-card__type {
+      font-size: 11px; color: var(--text-muted); margin-bottom: 12px;
+    }
+    .creative-card__stats {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+      padding-top: 12px; border-top: 1px solid var(--border);
+    }
+    .creative-card__stat-label {
+      font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+    .creative-card__stat-value { font-size: 16px; font-weight: 600; }
+    .creative-card__stat-value--best { color: var(--green); }
+
+    /* Action Items */
+    .actions {
+      background: var(--surface); border: 1px solid var(--gold-dim);
+      padding: 28px; margin-bottom: 32px;
+    }
+    .actions__title {
+      font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 20px;
+    }
+    .action-item {
+      display: flex; gap: 12px; padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .action-item:last-child { border-bottom: none; }
+    .action-num {
+      font-size: 20px; font-weight: 300; color: var(--gold);
+      width: 28px; flex-shrink: 0;
+    }
+    .action-content { flex: 1; }
+    .action-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .action-desc { font-size: 13px; color: var(--text-muted); }
+
+    /* Briefing Section */
+    .briefing {
+      background: var(--surface-2); border: 1px solid var(--border);
+      padding: 32px; margin-top: 40px;
+    }
+    .briefing__title {
+      font-size: 16px; font-weight: 600; color: var(--gold); margin-bottom: 8px;
+    }
+    .briefing__sub {
+      font-size: 13px; color: var(--text-muted); margin-bottom: 24px;
+    }
+    .briefing__item {
+      padding: 16px 0; border-bottom: 1px solid var(--border);
+    }
+    .briefing__item:last-child { border-bottom: none; }
+    .briefing__item-title {
+      font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px;
+    }
+    .briefing__item-desc { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+    .briefing__item-spec {
+      font-size: 12px; color: var(--gold); margin-top: 8px;
+      font-weight: 500; letter-spacing: 0.02em;
+    }
+
+    @media (max-width: 768px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .creatives { grid-template-columns: 1fr; }
+      table { font-size: 12px; }
+      th, td { padding: 8px 6px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <p class="header__eyebrow">Castelo dos Lagos</p>
+    <h1 class="header__title">Painel de Anúncios — Conta Nova (BM)</h1>
+    <p class="header__sub">Resumo completo das campanhas de Instagram e Facebook criadas para atrair noivas qualificadas para o Castelo dos Lagos. Todos os anúncios que estavam na conta antiga (CA01) foram migrados para esta conta nova.</p>
+    <p class="header__date">Criado em 11/jun/2026 — Campanhas ATIVAS desde 11/jun 13:10</p>
+  </div>
+
+  <!-- Checklist -->
+  <div class="checklist">
+    <h2 class="checklist__title">O que foi configurado</h2>
+
+    <div class="check-item">
+      <span class="check-badge check-badge--ok">OK</span>
+      <p class="check-text">Conta de anúncios ativa <span>— pronta para veicular no Instagram e Facebook</span></p>
+    </div>
+    <div class="check-item">
+      <span class="check-badge check-badge--ok">OK</span>
+      <p class="check-text">Página do Facebook conectada <span>— os anúncios aparecem como vindos da página "Castelo dos Lagos"</span></p>
+    </div>
+    <div class="check-item">
+      <span class="check-badge check-badge--ok">OK</span>
+      <p class="check-text">Rastreamento instalado (Pixel) <span>— conseguimos saber quantas pessoas preencheram o formulário vindas dos anúncios</span></p>
+    </div>
+    <div class="check-item">
+      <span class="check-badge check-badge--ok">OK</span>
+      <p class="check-text">Página de captura no ar <span>— castelo-lp.vercel.app — onde a noiva preenche nome, WhatsApp, tipo de evento, data e número de convidados</span></p>
+    </div>
+    <div class="check-item">
+      <span class="check-badge check-badge--ok">OK</span>
+      <p class="check-text">Página de confirmação criada <span>— após preencher, a noiva vê uma tela de "obrigado" com os próximos passos</span></p>
+    </div>
+    <div class="check-item">
+      <span class="check-badge check-badge--ok">OK</span>
+      <p class="check-text">WhatsApp correto nos anúncios <span>— todos os anúncios de WhatsApp direcionam para (11) 9.5590-6035</span></p>
+    </div>
+    <div class="check-item">
+      <span class="check-badge check-badge--ok">OK</span>
+      <p class="check-text">Rastreamento por anúncio <span>— cada anúncio tem um código de rastreamento para saber qual deles gerou cada lead</span></p>
+    </div>
+    <div class="check-item">
+      <span class="check-badge check-badge--ok">OK</span>
+      <p class="check-text">Campanhas ativadas <span>— 3 campanhas, 4 grupos de anúncios, 28 anúncios — tudo ativo desde 11/jun</span></p>
+    </div>
+    <div class="check-item">
+      <span class="check-badge check-badge--ok">OK</span>
+      <p class="check-text">Material migrado da conta antiga <span>— 3 vídeos + 6 imagens + 1 carrossel de 5 fotos, todos reutilizados</span></p>
+    </div>
+    <div class="check-item">
+      <span class="check-badge check-badge--warn">AÇÃO</span>
+      <p class="check-text">Limite de gasto: R$1.317,75 <span>— dá para rodar ~16 dias. Precisa aumentar antes de 27/jun para não parar</span></p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <p class="stat__label">Campanhas</p>
+      <p class="stat__value">3</p>
+    </div>
+    <div class="stat">
+      <p class="stat__label">Grupos</p>
+      <p class="stat__value">4</p>
+    </div>
+    <div class="stat">
+      <p class="stat__label">Anúncios</p>
+      <p class="stat__value">28</p>
+    </div>
+    <div class="stat">
+      <p class="stat__label">Investimento/dia</p>
+      <p class="stat__value stat__value--gold">R$85</p>
+    </div>
+  </div>
+
+  <!-- Campaign Structure -->
+  <div class="section">
+    <h2 class="section__title">Como as campanhas estão organizadas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Campanha</th>
+          <th>O que faz</th>
+          <th>Público</th>
+          <th>Investimento</th>
+          <th>Anúncios</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="2"><strong>Noivas Qualificadas</strong><br><small style="color:var(--text-muted)">Leva para a página de captura</small></td>
+          <td rowspan="2">O Meta busca mulheres com maior chance de preencher o formulário com dados de contato</td>
+          <td>Mulheres 25-42 anos que noivaram recentemente (3-6 meses), em 8 cidades do ABC</td>
+          <td>R$25/dia</td>
+          <td>7</td>
+          <td><span class="tag" style="background:var(--green-dim);color:var(--green)">Ativo</span></td>
+        </tr>
+        <tr>
+          <td>Mulheres 25-45 anos interessadas em casamento, vestido de noiva, noivado — em 10 cidades</td>
+          <td>R$15/dia</td>
+          <td>7</td>
+          <td><span class="tag" style="background:var(--green-dim);color:var(--green)">Ativo</span></td>
+        </tr>
+        <tr>
+          <td><strong>Retargeting</strong><br><small style="color:var(--text-muted)">Leva para a página de captura</small></td>
+          <td>Mostra anúncios novamente para mulheres que já noivaram nos últimos 12 meses — reforça a mensagem</td>
+          <td>Mulheres 25-45 anos que noivaram nos últimos 3 a 12 meses, 8 cidades do ABC</td>
+          <td>R$20/dia</td>
+          <td>7</td>
+          <td><span class="tag" style="background:var(--green-dim);color:var(--green)">Ativo</span></td>
+        </tr>
+        <tr>
+          <td><strong>WhatsApp Direto</strong><br><small style="color:var(--text-muted)">Abre conversa no WhatsApp</small></td>
+          <td>A noiva clica e vai direto para o WhatsApp (11) 9.5590-6035 com mensagem pronta pedindo orçamento</td>
+          <td>Mulheres interessadas em casamento/noivado, 10 cidades — o Meta escolhe quem tem mais chance de mandar mensagem</td>
+          <td>R$25/dia</td>
+          <td>7</td>
+          <td><span class="tag" style="background:var(--green-dim);color:var(--green)">Ativo</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Creatives -->
+  <div class="section">
+    <h2 class="section__title">Peças publicitárias em uso (7 total — todas vindas da conta antiga)</h2>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.6;">Cada peça abaixo é um anúncio diferente que aparece no Instagram e Facebook. Os números mostram como cada um performou na conta anterior: <strong style="color:var(--text)">CPA/CPL</strong> = quanto custou cada contato gerado (quanto menor, melhor) · <strong style="color:var(--text)">Conv/Leads</strong> = quantos contatos gerou · <strong style="color:var(--text)">CTR</strong> = porcentagem de pessoas que viram e clicaram (quanto maior, melhor).</p>
+    <div class="creatives">
+      <div class="creative-card">
+        <p class="creative-card__name">Sonho Acessível</p>
+        <p class="creative-card__type"><span class="tag tag--video">Video</span> 78s — "Casar num castelo é um sonho distante?"</p>
+        <div class="creative-card__stats">
+          <div><p class="creative-card__stat-label">CPA</p><p class="creative-card__stat-value creative-card__stat-value--best">R$2,90</p></div>
+          <div><p class="creative-card__stat-label">Conv</p><p class="creative-card__stat-value">67</p></div>
+          <div><p class="creative-card__stat-label">CTR</p><p class="creative-card__stat-value">1,80%</p></div>
+        </div>
+      </div>
+      <div class="creative-card">
+        <p class="creative-card__name">Arte 2</p>
+        <p class="creative-card__type"><span class="tag tag--image">Estático</span> — Melhor CPA absoluto da conta</p>
+        <div class="creative-card__stats">
+          <div><p class="creative-card__stat-label">CPA</p><p class="creative-card__stat-value creative-card__stat-value--best">R$1,71</p></div>
+          <div><p class="creative-card__stat-label">Conv</p><p class="creative-card__stat-value">11</p></div>
+          <div><p class="creative-card__stat-label">CTR</p><p class="creative-card__stat-value">5,75%</p></div>
+        </div>
+      </div>
+      <div class="creative-card">
+        <p class="creative-card__name">Degustação</p>
+        <p class="creative-card__type"><span class="tag tag--video">Video</span> 29s — Convite para visitar o espaço</p>
+        <div class="creative-card__stats">
+          <div><p class="creative-card__stat-label">CPL</p><p class="creative-card__stat-value creative-card__stat-value--best">R$5,56</p></div>
+          <div><p class="creative-card__stat-label">Leads</p><p class="creative-card__stat-value">39</p></div>
+          <div><p class="creative-card__stat-label">CTR</p><p class="creative-card__stat-value">2,38%</p></div>
+        </div>
+      </div>
+      <div class="creative-card">
+        <p class="creative-card__name">Carrossel 2026-2027</p>
+        <p class="creative-card__type"><span class="tag tag--carousel">Carrossel</span> 5 fotos — Pacotes casamento</p>
+        <div class="creative-card__stats">
+          <div><p class="creative-card__stat-label">CPA</p><p class="creative-card__stat-value">R$6,90</p></div>
+          <div><p class="creative-card__stat-label">Conv</p><p class="creative-card__stat-value">41</p></div>
+          <div><p class="creative-card__stat-label">CTR</p><p class="creative-card__stat-value">5,02%</p></div>
+        </div>
+      </div>
+      <div class="creative-card">
+        <p class="creative-card__name">Criativo 8</p>
+        <p class="creative-card__type"><span class="tag tag--image">Estático</span> — Condições especiais sexta/domingo</p>
+        <div class="creative-card__stats">
+          <div><p class="creative-card__stat-label">CPA</p><p class="creative-card__stat-value">R$7,99</p></div>
+          <div><p class="creative-card__stat-label">Conv</p><p class="creative-card__stat-value">20</p></div>
+          <div><p class="creative-card__stat-label">CTR</p><p class="creative-card__stat-value">2,90%</p></div>
+        </div>
+      </div>
+      <div class="creative-card">
+        <p class="creative-card__name">Cream Editorial</p>
+        <p class="creative-card__type"><span class="tag tag--image">Estático</span> — Mês das Noivas promo</p>
+        <div class="creative-card__stats">
+          <div><p class="creative-card__stat-label">CPA</p><p class="creative-card__stat-value">R$8,57</p></div>
+          <div><p class="creative-card__stat-label">Conv</p><p class="creative-card__stat-value">15</p></div>
+          <div><p class="creative-card__stat-label">CTR</p><p class="creative-card__stat-value">2,70%</p></div>
+        </div>
+      </div>
+      <div class="creative-card">
+        <p class="creative-card__name">Criativo 9</p>
+        <p class="creative-card__type"><span class="tag tag--image">Estático</span> — "O sábado dos seus sonhos"</p>
+        <div class="creative-card__stats">
+          <div><p class="creative-card__stat-label">CPA</p><p class="creative-card__stat-value">R$11,63</p></div>
+          <div><p class="creative-card__stat-label">Conv</p><p class="creative-card__stat-value">10</p></div>
+          <div><p class="creative-card__stat-label">CTR</p><p class="creative-card__stat-value">2,62%</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <h2 class="actions__title">Próximos Passos</h2>
+    <div class="action-item">
+      <span class="action-num">1</span>
+      <div class="action-content">
+        <p class="action-title">Aumentar o limite de gasto da conta</p>
+        <p class="action-desc">Hoje o limite está em R$1.317,75 — dá para rodar os anúncios por ~16 dias. Antes de 27/jun, precisa aumentar para pelo menos R$2.550 (ou remover o limite) para não parar de veicular. Isso é feito no Gerenciador de Negócios (Business Manager) → Configurações → Conta de anúncios → Limite de gasto.</p>
+      </div>
+    </div>
+    <div class="action-item">
+      <span class="action-num">2</span>
+      <div class="action-content">
+        <p class="action-title">Acompanhar os resultados nos primeiros 5 dias</p>
+        <p class="action-desc">As campanhas estão ativas. Nos primeiros dias, o Meta está "aprendendo" quem é o público ideal. É normal o custo por lead ser mais alto no início e ir caindo. Após 5 dias, vamos pausar os anúncios que estiverem gerando contatos muito caros (acima de R$12 cada) e colocar mais verba nos que estiverem baratos (abaixo de R$6 cada).</p>
+      </div>
+    </div>
+    <div class="action-item">
+      <span class="action-num">3</span>
+      <div class="action-content">
+        <p class="action-title">Produzir novos vídeos e artes (briefing abaixo)</p>
+        <p class="action-desc">Os 7 anúncios atuais foram todos reaproveitados da conta antiga. Com o tempo, as mesmas pessoas vão ver os mesmos anúncios e parar de clicar (fadiga criativa). Para manter os resultados, precisamos de material novo — especialmente vídeos curtos do espaço e artes com informações práticas.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Briefing Novos Criativos -->
+  <div class="briefing">
+    <h2 class="briefing__title">Material Novo que Precisamos Produzir</h2>
+    <p class="briefing__sub">Abaixo estão 6 peças que precisam ser gravadas ou criadas para alimentar as campanhas. Estão em ordem de prioridade — as primeiras são as mais importantes. Cada item explica o que gravar/criar, por que funciona, e as especificações técnicas.</p>
+
+    <div class="briefing__item">
+      <p class="briefing__item-title">1. Vídeo "Tour Guiado" (15-30 segundos)</p>
+      <p class="briefing__item-desc">
+        <strong>O que gravar:</strong> Com celular ou drone, mostrar o caminho que a noiva faz no dia do casamento — chegada, jardim, lagos, cerimônia, salão, pista de dança. Sem ninguém falando, só a imagem bonita com uma música suave de fundo.<br><br>
+        <strong>Por que funciona:</strong> O vídeo "Degustação" (29 segundos) gerou contatos a R$5,56 cada na conta antiga. Tour do espaço é o que mais convence noivas. Esse seria a versão atualizada com imagens recentes.
+      </p>
+      <p class="briefing__item-spec">Gravar na vertical (celular em pé) | 15-30 segundos | Sem texto escrito na tela</p>
+    </div>
+
+    <div class="briefing__item">
+      <p class="briefing__item-title">2. Vídeo "Depoimento de Noiva Real" (20-45 segundos)</p>
+      <p class="briefing__item-desc">
+        <strong>O que gravar:</strong> Uma noiva que já casou no Castelo falando brevemente: "Escolhi o Castelo porque...", intercalando com imagens do casamento dela. Pode ser gravado no celular da própria noiva — não precisa ser produção profissional.<br><br>
+        <strong>Por que funciona:</strong> Depoimento real de uma noiva é a prova mais forte para quem ainda não conhece o espaço. Quando uma pessoa real fala bem, vale mais que qualquer arte profissional.
+      </p>
+      <p class="briefing__item-spec">Gravar na vertical (celular em pé) | 20-45 segundos | Colocar legenda depois</p>
+    </div>
+
+    <div class="briefing__item">
+      <p class="briefing__item-title">3. Arte "Dados do Espaço" (imagem com números)</p>
+      <p class="briefing__item-desc">
+        <strong>O que criar:</strong> Uma arte limpa mostrando os números do Castelo: 16.000m² / 300 convidados / 90 vagas de estacionamento / 1 evento por dia / Cozinha industrial Di Matoso. Fundo escuro com detalhes dourados, texto claro e legível.<br><br>
+        <strong>Por que funciona:</strong> O "Arte 2" — uma imagem simples com informações práticas — gerou contatos a R$1,71 cada (o mais barato de toda a conta) com 5,75% das pessoas clicando. Informação objetiva convence mais que imagens bonitas sozinhas.
+      </p>
+      <p class="briefing__item-spec">Tamanho: 1080x1350px (vertical, para Feed) + 1080x1920px (para Stories) | Cores do Castelo: verde escuro + dourado + creme</p>
+    </div>
+
+    <div class="briefing__item">
+      <p class="briefing__item-title">4. Carrossel "Antes e Depois" (5 fotos deslizáveis)</p>
+      <p class="briefing__item-desc">
+        <strong>O que criar:</strong> Um anúncio com 5 fotos que a pessoa desliza. Foto 1: o espaço vazio sendo montado. Fotos 2-4: o casamento já montado (decoração, mesas, cerimônia). Foto 5: frase convidando a preencher o formulário.<br><br>
+        <strong>Por que funciona:</strong> Mostrar a transformação do espaço ajuda a noiva a se imaginar ali. O carrossel "2026-2027" que já temos gerou 41 contatos com 5% de cliques — carrosséis funcionam muito bem para o Castelo.
+      </p>
+      <p class="briefing__item-spec">5 fotos reais (sem arte gráfica) | Tamanho: 1080x1350px cada</p>
+    </div>
+
+    <div class="briefing__item">
+      <p class="briefing__item-title">5. Arte "Urgência de Datas" (imagem com texto forte)</p>
+      <p class="briefing__item-desc">
+        <strong>O que criar:</strong> Uma arte com mensagem direta tipo "Casamentos 2026: últimas datas disponíveis" ou "2027: reserve sua data antes que as melhores fechem". Texto grande, visual limpo, poucas informações — só a urgência.<br><br>
+        <strong>Por que funciona:</strong> Ainda não testamos esse ângulo com arte dedicada. Noivas que já estão decididas a casar e só precisam de um empurrão reagem bem a escassez real de datas.
+      </p>
+      <p class="briefing__item-spec">Tamanho: 1080x1350px (Feed) + 1080x1920px (Stories) | Texto grande e legível</p>
+    </div>
+
+    <div class="briefing__item">
+      <p class="briefing__item-title">6. Vídeo "Drone Cinematográfico" (10-15 segundos)</p>
+      <p class="briefing__item-desc">
+        <strong>O que gravar:</strong> Tomada aérea do castelo e dos lagos com drone, lenta e bonita. Sem texto na tela, sem ninguém falando — só a imagem impressionante do espaço visto de cima.<br><br>
+        <strong>Por que funciona:</strong> Um vídeo curto e bonito faz muita gente assistir até o final. Depois, conseguimos mostrar anúncios mais detalhados para quem assistiu — ou seja, já demonstrou interesse no espaço.
+      </p>
+      <p class="briefing__item-spec">Gravar na vertical + horizontal + quadrado (3 versões) | 10-15 segundos | Qualidade 4K se possível</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center;">
+    <p style="font-size: 11px; color: var(--text-muted); letter-spacing: 0.06em;">
+      Gestão de anúncios — Castelo dos Lagos — REIS [IA]<br>
+      Documento gerado em 11/jun/2026
+    </p>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,123 @@
+---
+import { isAuthenticated } from '../lib/auth';
+if (isAuthenticated(Astro.request)) return Astro.redirect('/chat');
+---
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Castelo dos Lagos — Chat</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --forest-deep: #1E2E24;
+      --forest-mid: #2F4A3A;
+      --gold: #C9A96E;
+      --gold-dim: rgba(201, 169, 110, 0.3);
+      --cream: #F4EFE6;
+      --cream-dim: rgba(244, 239, 230, 0.6);
+    }
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: var(--forest-deep);
+      color: var(--cream);
+      -webkit-font-smoothing: antialiased;
+    }
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .login-card {
+      background: var(--forest-mid);
+      padding: 2.5rem 2rem;
+      border: 1px solid var(--gold-dim);
+      width: 100%;
+      max-width: 360px;
+    }
+    .login-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 0.4rem;
+    }
+    .login-sub {
+      font-size: 0.8rem;
+      color: var(--cream-dim);
+      text-align: center;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+    .login-input {
+      width: 100%;
+      background: var(--forest-deep);
+      border: 1px solid var(--gold-dim);
+      color: var(--cream);
+      padding: 0.75rem 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .login-input:focus { border-color: var(--gold); }
+    .login-btn {
+      width: 100%;
+      margin-top: 1rem;
+      background: var(--gold);
+      border: none;
+      color: var(--forest-deep);
+      padding: 0.75rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .login-btn:hover { opacity: 0.9; }
+    .error-msg {
+      color: #F87171;
+      font-size: 0.8rem;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-title">Castelo dos Lagos</div>
+    <div class="login-sub">Sistema de Mensagens</div>
+    <form id="loginForm">
+      <input
+        type="password"
+        id="password"
+        class="login-input"
+        placeholder="Senha de acesso"
+        autocomplete="current-password"
+      />
+      <button type="submit" class="login-btn">Entrar</button>
+      <div class="error-msg" id="errorMsg" style="display:none">Senha incorreta</div>
+    </form>
+  </div>
+  <script>
+    document.getElementById('loginForm')!.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pw = (document.getElementById('password') as HTMLInputElement).value;
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw }),
+      });
+      if (res.ok) {
+        window.location.href = '/chat';
+      } else {
+        (document.getElementById('errorMsg') as HTMLElement).style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

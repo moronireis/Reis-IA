@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Castelo dos Lagos Leads</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --forest-deep: #1E2E24;
+      --forest-mid: #2F4A3A;
+      --gold: #C9A96E;
+      --gold-line: rgba(201,169,110,0.15);
+      --cream: #F4EFE6;
+      --near-black: #0E0E0C;
+      --text: rgba(244,239,230,0.92);
+      --text-muted: rgba(244,239,230,0.5);
+      --green: #4CAF50;
+      --yellow: #FFC107;
+      --blue: #4A90FF;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--near-black);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── Header ─── */
+    .header {
+      padding: 24px 32px;
+      border-bottom: 1px solid var(--gold-line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .header__title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+    .header__title span { color: var(--gold); font-weight: 300; }
+    .header__actions { display: flex; gap: 12px; align-items: center; }
+    .header__count {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .header__btn {
+      padding: 8px 20px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid var(--gold-line);
+      background: transparent;
+      color: var(--gold);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .header__btn:hover { background: var(--gold); color: var(--near-black); }
+
+    /* ─── Stats ─── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      padding: 24px 32px;
+    }
+    .stat {
+      padding: 20px;
+      background: var(--forest-deep);
+      border: 1px solid var(--gold-line);
+    }
+    .stat__number {
+      font-size: 32px;
+      font-weight: 300;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .stat__label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* ─── Table ─── */
+    .table-wrap {
+      padding: 0 32px 48px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--gold-line);
+      white-space: nowrap;
+    }
+    td {
+      padding: 14px 16px;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: top;
+    }
+    tr:hover td { background: rgba(201,169,110,0.04); }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid;
+    }
+    .badge--novo { color: var(--green); border-color: var(--green); }
+    .badge--contatado { color: var(--yellow); border-color: var(--yellow); }
+    .badge--qualificado { color: var(--blue); border-color: var(--blue); }
+    .badge--fechado { color: var(--gold); border-color: var(--gold); }
+
+    .sonho-text {
+      max-width: 240px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .whatsapp-link {
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .whatsapp-link:hover { text-decoration: underline; }
+
+    .empty {
+      text-align: center;
+      padding: 80px 32px;
+      color: var(--text-muted);
+    }
+    .empty__title {
+      font-size: 18px;
+      font-weight: 300;
+      margin-bottom: 8px;
+      color: var(--cream);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 80px 32px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .header { padding: 16px 20px; }
+      .stats { padding: 16px 20px; }
+      .table-wrap { padding: 0 20px 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header__title">Castelo dos Lagos <span>/ Leads</span></div>
+    <div class="header__actions">
+      <span class="header__count" id="countLabel">Carregando...</span>
+      <button class="header__btn" onclick="loadLeads()">Atualizar</button>
+      <button class="header__btn" onclick="exportCSV()">Exportar CSV</button>
+    </div>
+  </header>
+
+  <section class="stats" id="stats">
+    <div class="stat">
+      <div class="stat__number" id="statTotal">-</div>
+      <div class="stat__label">Total de leads</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number" id="statCasamento">-</div>
+      <div class="stat__label">Casamentos</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number" id="statDebutante">-</div>
+      <div class="stat__label">15 Anos</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number" id="statCorporativo">-</div>
+      <div class="stat__label">Corporativo</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number" id="statHoje">-</div>
+      <div class="stat__label">Hoje</div>
+    </div>
+  </section>
+
+  <div class="table-wrap">
+    <div class="loading" id="loading">Carregando leads...</div>
+    <table id="leadsTable" style="display:none">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Nome</th>
+          <th>WhatsApp</th>
+          <th>Evento</th>
+          <th>Convidados</th>
+          <th>Período</th>
+          <th>O que importa</th>
+          <th>Origem</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="leadsBody"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none">
+      <div class="empty__title">Nenhum lead ainda</div>
+      <p>Os leads aparecerão aqui assim que preencherem o formulário da LP.</p>
+    </div>
+  </div>
+
+  <script>
+    let allLeads = [];
+
+    async function loadLeads() {
+      const loading = document.getElementById('loading');
+      const table = document.getElementById('leadsTable');
+      const empty = document.getElementById('empty');
+      loading.style.display = 'block';
+      table.style.display = 'none';
+      empty.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/lead');
+        const data = await res.json();
+        allLeads = (data.leads || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        updateStats(allLeads);
+
+        loading.style.display = 'none';
+
+        if (allLeads.length === 0) {
+          empty.style.display = 'block';
+          return;
+        }
+
+        table.style.display = 'table';
+        renderTable(allLeads);
+        document.getElementById('countLabel').textContent = `${allLeads.length} lead${allLeads.length !== 1 ? 's' : ''}`;
+      } catch (err) {
+        loading.textContent = 'Erro ao carregar leads. Tente novamente.';
+        console.error(err);
+      }
+    }
+
+    function updateStats(leads) {
+      const today = new Date().toISOString().slice(0, 10);
+      document.getElementById('statTotal').textContent = leads.length;
+      document.getElementById('statCasamento').textContent = leads.filter(l => l.tipo === 'casamento').length;
+      document.getElementById('statDebutante').textContent = leads.filter(l => l.tipo === 'debutante').length;
+      document.getElementById('statCorporativo').textContent = leads.filter(l => l.tipo === 'corporativo').length;
+      document.getElementById('statHoje').textContent = leads.filter(l => l.createdAt && l.createdAt.startsWith(today)).length;
+    }
+
+    function renderTable(leads) {
+      const body = document.getElementById('leadsBody');
+      body.innerHTML = leads.map(lead => {
+        const date = lead.createdAt ? new Date(lead.createdAt) : null;
+        const dateStr = date
+          ? `${date.toLocaleDateString('pt-BR')} ${date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
+          : '-';
+        const phone = (lead.whatsapp || '').replace(/\D/g, '');
+        const whatsappUrl = phone ? `https://wa.me/${phone.startsWith('55') ? phone : '55' + phone}` : '#';
+
+        return `<tr>
+          <td style="white-space:nowrap;font-size:12px;color:var(--text-muted)">${dateStr}</td>
+          <td style="font-weight:500">${esc(lead.nome)}</td>
+          <td><a class="whatsapp-link" href="${whatsappUrl}" target="_blank" rel="noopener">${esc(lead.whatsapp)}</a></td>
+          <td>${esc(lead.tipoLabel || lead.tipo || '-')}</td>
+          <td>${esc(lead.convidadosLabel || lead.convidados || '-')}</td>
+          <td>${esc(lead.periodoLabel || lead.periodo || '-')}</td>
+          <td><div class="sonho-text">${esc(lead.sonho || '-')}</div></td>
+          <td style="font-size:11px;white-space:nowrap">
+            ${lead.utm_content ? `<div style="color:var(--gold);font-weight:500">${esc(lead.utm_content)}</div>` : ''}
+            ${lead.utm_campaign ? `<div style="color:var(--text-muted)">${esc(lead.utm_campaign)}</div>` : ''}
+            <div style="color:var(--text-muted)">${esc(lead.source === 'meta' ? 'Meta Ads' : lead.source || 'direto')}</div>
+          </td>
+          <td><span class="badge badge--${lead.status || 'novo'}">${lead.status || 'novo'}</span></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function esc(str) {
+      const el = document.createElement('span');
+      el.textContent = str || '';
+      return el.innerHTML;
+    }
+
+    function exportCSV() {
+      if (!allLeads.length) return alert('Nenhum lead para exportar.');
+      const headers = ['Data', 'Nome', 'WhatsApp', 'Evento', 'Convidados', 'Período', 'O que importa', 'Status', 'ID'];
+      const rows = allLeads.map(l => [
+        l.createdAt || '',
+        l.nome || '',
+        l.whatsapp || '',
+        l.tipoLabel || l.tipo || '',
+        l.convidadosLabel || l.convidados || '',
+        l.periodoLabel || l.periodo || '',
+        (l.sonho || '').replace(/"/g, '""'),
+        l.status || '',
+        l.id || '',
+      ]);
+      const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `castelo-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Auto-refresh every 30s
+    loadLeads();
+    setInterval(loadLeads, 30000);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatório de Tráfego — Castelo dos Lagos</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111113;
+      --surface2: #18181b;
+      --border: rgba(255,255,255,0.08);
+      --gold: #C5A572;
+      --gold-muted: rgba(197,165,114,0.15);
+      --white: #ffffff;
+      --gray: #888;
+      --gray2: #555;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #eab308;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left h1 {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .header-left h2 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .header-right {
+      text-align: right;
+    }
+    .header-right .period {
+      font-size: 12px;
+      color: var(--gray);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .header-right .date {
+      font-size: 14px;
+      color: var(--white);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* MAIN */
+    .main { padding: 40px 48px; max-width: 1300px; margin: 0 auto; }
+
+    /* SECTION TITLE */
+    .section-title {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* SUMMARY CARDS */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 20px 22px;
+    }
+    .summary-card .label {
+      font-size: 11px;
+      color: var(--gray);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .summary-card .value {
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1;
+    }
+    .summary-card .value.gold { color: var(--gold); }
+    .summary-card .sub {
+      font-size: 11px;
+      color: var(--gray);
+      margin-top: 6px;
+    }
+
+    /* CAMPAIGN CARDS */
+    .campaigns { display: flex; flex-direction: column; gap: 24px; margin-bottom: 48px; }
+
+    .campaign-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .campaign-header {
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .campaign-header-left { display: flex; align-items: center; gap: 14px; }
+    .campaign-type {
+      background: var(--gold-muted);
+      color: var(--gold);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+    .campaign-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--white);
+    }
+    .campaign-period {
+      font-size: 11px;
+      color: var(--gray);
+      margin-top: 2px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 2px;
+    }
+    .badge.active { background: rgba(34,197,94,0.12); color: var(--green); }
+    .badge.learning { background: rgba(234,179,8,0.12); color: var(--yellow); }
+    .badge.new { background: rgba(100,100,255,0.12); color: #818cf8; }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 0;
+    }
+    .metric-cell {
+      padding: 20px 22px;
+      border-right: 1px solid var(--border);
+    }
+    .metric-cell:last-child { border-right: none; }
+    .metric-cell .m-label {
+      font-size: 10px;
+      color: var(--gray2);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .metric-cell .m-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .metric-cell .m-value.highlight { color: var(--gold); }
+    .metric-cell .m-value.good { color: var(--green); }
+    .metric-cell .m-value.bad { color: var(--red); }
+    .metric-cell .m-sub {
+      font-size: 10px;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    .insight-bar {
+      padding: 14px 28px;
+      border-top: 1px solid var(--border);
+      background: rgba(197,165,114,0.04);
+      font-size: 12px;
+      color: var(--gray);
+    }
+    .insight-bar span { color: var(--white); font-weight: 500; }
+
+    /* COMPARISON TABLE */
+    .table-wrap { margin-bottom: 48px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { border-bottom: 1px solid var(--border); }
+    thead th {
+      text-align: left;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray);
+      padding: 10px 16px;
+      font-weight: 500;
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+    tbody td {
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--white);
+    }
+    td.gray { color: var(--gray); }
+    td.gold { color: var(--gold); font-weight: 600; }
+    td.green { color: var(--green); font-weight: 600; }
+    td.red { color: var(--red); }
+    td.yellow { color: var(--yellow); }
+
+    .winner-badge {
+      background: rgba(34,197,94,0.12);
+      color: var(--green);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 2px 7px;
+      border-radius: 2px;
+      margin-left: 6px;
+      text-transform: uppercase;
+    }
+
+    /* OBSERVATIONS */
+    .obs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 48px; }
+    .obs-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 24px;
+    }
+    .obs-card h4 {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .obs-card ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .obs-card li {
+      font-size: 13px;
+      color: #ccc;
+      line-height: 1.6;
+      padding-left: 14px;
+      position: relative;
+    }
+    .obs-card li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer .brand { font-size: 12px; color: var(--gray); letter-spacing: 0.06em; }
+    footer .brand span { color: var(--gold); }
+    footer .generated { font-size: 11px; color: var(--gray2); }
+
+    @media (max-width: 900px) {
+      .header { flex-direction: column; gap: 16px; padding: 24px; }
+      .main { padding: 24px; }
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+      .metrics-grid { grid-template-columns: repeat(4, 1fr); }
+      .obs-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Relatório de Tráfego Pago</h1>
+    <h2>Castelo dos Lagos</h2>
+  </div>
+  <div class="header-right">
+    <div class="period">Período de análise</div>
+    <div class="date">17 Jun — 26 Jun 2026</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- TOTALIZADORES -->
+  <div class="section-title">Visão Geral — Todas as Campanhas</div>
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="label">Investimento Total</div>
+      <div class="value gold">R$ 664</div>
+      <div class="sub">4 campanhas ativas</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Impressões</div>
+      <div class="value">31.736</div>
+      <div class="sub">Alcance: 14.684</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Conversas WhatsApp</div>
+      <div class="value">41</div>
+      <div class="sub">Iniciadas no período</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Custo Médio / Conversa</div>
+      <div class="value">R$ 16,20</div>
+      <div class="sub">Todas as campanhas</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">CPM Médio</div>
+      <div class="value">R$ 23,88</div>
+      <div class="sub">Custo por mil impressões</div>
+    </div>
+  </div>
+
+  <!-- CAMPANHAS INDIVIDUAIS -->
+  <div class="section-title" style="margin-top: 8px;">Campanhas — Detalhamento</div>
+  <div class="campaigns">
+
+    <!-- DEGUSTAÇÃO ESTÁTICA -->
+    <div class="campaign-card">
+      <div class="campaign-header">
+        <div class="campaign-header-left">
+          <span class="campaign-type">Imagem</span>
+          <div>
+            <div class="campaign-name">Degustação Mês dos Namorados</div>
+            <div class="campaign-period">17 Jun — 26 Jun &nbsp;·&nbsp; 9 dias &nbsp;·&nbsp; Noivas + ABC Paulista</div>
+          </div>
+        </div>
+        <span class="badge active">● Ativo</span>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-cell">
+          <div class="m-label">Gasto</div>
+          <div class="m-value highlight">R$ 320,89</div>
+          <div class="m-sub">R$ 35,65/dia</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Impressões</div>
+          <div class="m-value">15.486</div>
+          <div class="m-sub">Alcance: 5.255</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Frequência</div>
+          <div class="m-value">2,95x</div>
+          <div class="m-sub">por pessoa</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">CTR</div>
+          <div class="m-value">3,10%</div>
+          <div class="m-sub">480 cliques</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">CPM</div>
+          <div class="m-value">R$ 20,72</div>
+          <div class="m-sub">custo/mil</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Conversas</div>
+          <div class="m-value good">31</div>
+          <div class="m-sub">iniciadas</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Custo / Conversa</div>
+          <div class="m-value good">R$ 10,35</div>
+          <div class="m-sub">melhor resultado</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">1ª Resposta</div>
+          <div class="m-value">27</div>
+          <div class="m-sub">87% de resposta</div>
+        </div>
+      </div>
+      <div class="insight-bar">
+        Melhor campanha do período. <span>R$ 10,35/conversa</span> — CTR de <span>3,10%</span> acima da média. Frequência alta (<span>2,95x</span>) indica audiência saturando. Considerar expansão de público ou pausa para renovação de criativo.
+      </div>
+    </div>
+
+    <!-- CORPORATIVO VÍDEO -->
+    <div class="campaign-card">
+      <div class="campaign-header">
+        <div class="campaign-header-left">
+          <span class="campaign-type">Vídeo</span>
+          <div>
+            <div class="campaign-name">Eventos Corporativos</div>
+            <div class="campaign-period">17 Jun — 26 Jun &nbsp;·&nbsp; 9 dias &nbsp;·&nbsp; Corporativo + ABC Paulista</div>
+          </div>
+        </div>
+        <span class="badge active">● Ativo</span>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-cell">
+          <div class="m-label">Gasto</div>
+          <div class="m-value highlight">R$ 238,22</div>
+          <div class="m-sub">R$ 26,47/dia</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Impressões</div>
+          <div class="m-value">12.299</div>
+          <div class="m-sub">Alcance: 6.505</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Frequência</div>
+          <div class="m-value">1,89x</div>
+          <div class="m-sub">por pessoa</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">CTR</div>
+          <div class="m-value">2,27%</div>
+          <div class="m-sub">279 cliques</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">CPM</div>
+          <div class="m-value">R$ 19,37</div>
+          <div class="m-sub">custo/mil</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Conversas</div>
+          <div class="m-value bad">7</div>
+          <div class="m-sub">iniciadas</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Custo / Conversa</div>
+          <div class="m-value bad">R$ 34,03</div>
+          <div class="m-sub">3,3x mais caro</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Views de Vídeo</div>
+          <div class="m-value">3.965</div>
+          <div class="m-sub">R$ 0,06/view</div>
+        </div>
+      </div>
+      <div class="insight-bar">
+        O vídeo gera muito <span>engajamento visual</span> (3.965 views a R$0,06) mas converte pouco em contato. Gap entre interesse e ação sugere que o público corporativo exige mais fricção na decisão. CTA ou copy podem precisar de ajuste.
+      </div>
+    </div>
+
+    <!-- CARROSSEL -->
+    <div class="campaign-card">
+      <div class="campaign-header">
+        <div class="campaign-header-left">
+          <span class="campaign-type">Carrossel</span>
+          <div>
+            <div class="campaign-name">Degustação — Conheça o Castelo</div>
+            <div class="campaign-period">24 Jun — 26 Jun &nbsp;·&nbsp; 2 dias &nbsp;·&nbsp; Noivas + ABC Paulista</div>
+          </div>
+        </div>
+        <span class="badge new">◌ Em análise / Aprendizado</span>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-cell">
+          <div class="m-label">Gasto</div>
+          <div class="m-value highlight">R$ 50,21</div>
+          <div class="m-sub">2 dias</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Impressões</div>
+          <div class="m-value">1.544</div>
+          <div class="m-sub">Alcance: 923</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Frequência</div>
+          <div class="m-value">1,67x</div>
+          <div class="m-sub">por pessoa</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">CTR</div>
+          <div class="m-value">1,62%</div>
+          <div class="m-sub">25 cliques</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">CPM</div>
+          <div class="m-value yellow">R$ 32,52</div>
+          <div class="m-sub">alto — normal no início</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Conversas</div>
+          <div class="m-value yellow">2</div>
+          <div class="m-sub">em aprendizado</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Custo / Conversa</div>
+          <div class="m-value yellow">R$ 25,11</div>
+          <div class="m-sub">cedo para julgar</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Dias Rodando</div>
+          <div class="m-value">2</div>
+          <div class="m-sub">de 7 estimados</div>
+        </div>
+      </div>
+      <div class="insight-bar">
+        Muito cedo para avaliar. CPM alto é normal na fase de aprendizado. Aguardar <span>ao menos 7 dias</span> e <span>50 conversas</span> antes de qualquer decisão sobre este criativo.
+      </div>
+    </div>
+
+    <!-- INSTITUCIONAL VENUE -->
+    <div class="campaign-card">
+      <div class="campaign-header">
+        <div class="campaign-header-left">
+          <span class="campaign-type">Vídeo</span>
+          <div>
+            <div class="campaign-name">Institucional Venue — Drone</div>
+            <div class="campaign-period">24 Jun — 26 Jun &nbsp;·&nbsp; 2 dias &nbsp;·&nbsp; Noivas + ABC Paulista</div>
+          </div>
+        </div>
+        <span class="badge new">◌ Em análise / Aprendizado</span>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-cell">
+          <div class="m-label">Gasto</div>
+          <div class="m-value highlight">R$ 55,15</div>
+          <div class="m-sub">2 dias</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Impressões</div>
+          <div class="m-value">2.407</div>
+          <div class="m-sub">Alcance: 2.001</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Frequência</div>
+          <div class="m-value">1,20x</div>
+          <div class="m-sub">por pessoa</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">CTR</div>
+          <div class="m-value">2,74%</div>
+          <div class="m-sub">66 cliques</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">CPM</div>
+          <div class="m-value yellow">R$ 22,91</div>
+          <div class="m-sub">mais barato no período</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Conversas</div>
+          <div class="m-value yellow">1</div>
+          <div class="m-sub">em aprendizado</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Views de Vídeo</div>
+          <div class="m-value">731</div>
+          <div class="m-sub">R$ 0,075/view</div>
+        </div>
+        <div class="metric-cell">
+          <div class="m-label">Dias Rodando</div>
+          <div class="m-value">2</div>
+          <div class="m-sub">de 7 estimados</div>
+        </div>
+      </div>
+      <div class="insight-bar">
+        Alcance eficiente com <span>frequência de apenas 1,2x</span> — ainda explorando público novo. CTR de <span>2,74%</span> é promissor para vídeo institucional. Aguardar mais dados.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TABELA COMPARATIVA -->
+  <div class="section-title">Comparativo Direto — Métrica Principal</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Campanha</th>
+          <th>Formato</th>
+          <th>Dias</th>
+          <th>Gasto</th>
+          <th>Impressões</th>
+          <th>Alcance</th>
+          <th>Freq.</th>
+          <th>CTR</th>
+          <th>CPM</th>
+          <th>Conversas</th>
+          <th>R$/Conversa</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Degustação Namorados <span class="winner-badge">melhor</span></td>
+          <td class="gray">Imagem</td>
+          <td class="gray">9</td>
+          <td>R$ 320,89</td>
+          <td class="gray">15.486</td>
+          <td class="gray">5.255</td>
+          <td class="yellow">2,95x</td>
+          <td>3,10%</td>
+          <td class="gray">R$ 20,72</td>
+          <td class="green">31</td>
+          <td class="green">R$ 10,35</td>
+        </tr>
+        <tr>
+          <td>Eventos Corporativos</td>
+          <td class="gray">Vídeo</td>
+          <td class="gray">9</td>
+          <td>R$ 238,22</td>
+          <td class="gray">12.299</td>
+          <td class="gray">6.505</td>
+          <td class="gray">1,89x</td>
+          <td>2,27%</td>
+          <td class="gray">R$ 19,37</td>
+          <td class="red">7</td>
+          <td class="red">R$ 34,03</td>
+        </tr>
+        <tr>
+          <td>Carrossel Castelo</td>
+          <td class="gray">Carrossel</td>
+          <td class="gray">2</td>
+          <td>R$ 50,21</td>
+          <td class="gray">1.544</td>
+          <td class="gray">923</td>
+          <td class="gray">1,67x</td>
+          <td class="yellow">1,62%</td>
+          <td class="red">R$ 32,52</td>
+          <td class="yellow">2</td>
+          <td class="yellow">R$ 25,11</td>
+        </tr>
+        <tr>
+          <td>Institucional Drone</td>
+          <td class="gray">Vídeo</td>
+          <td class="gray">2</td>
+          <td>R$ 55,15</td>
+          <td class="gray">2.407</td>
+          <td class="gray">2.001</td>
+          <td class="gray">1,20x</td>
+          <td>2,74%</td>
+          <td class="gray">R$ 22,91</td>
+          <td class="yellow">1</td>
+          <td class="yellow">R$ 55,15</td>
+        </tr>
+        <tr style="background: rgba(197,165,114,0.05); border-top: 2px solid var(--border);">
+          <td style="font-weight:600">Total Geral</td>
+          <td class="gray">—</td>
+          <td class="gray">—</td>
+          <td style="font-weight:600; color: var(--gold)">R$ 664,47</td>
+          <td class="gray">31.736</td>
+          <td class="gray">14.684</td>
+          <td class="gray">—</td>
+          <td class="gray">—</td>
+          <td class="gray">R$ 23,88</td>
+          <td style="font-weight:600">41</td>
+          <td style="font-weight:600; color: var(--gold)">R$ 16,20</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OBSERVAÇÕES -->
+  <div class="section-title">Análise e Recomendações</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <h4>O que está funcionando</h4>
+      <ul>
+        <li>Imagem estática de degustação superou o vídeo corporativo em conversas (31 vs 7), com custo 3,3x menor por contato.</li>
+        <li>CTR de 3,10% na degustação está acima da média para o objetivo de conversas no segmento de eventos.</li>
+        <li>CPM das campanhas maduras (R$ 19-20) está eficiente para o ABC Paulista.</li>
+        <li>Público de noivas/noivos responde melhor ao apelo de gastronomia e experiência do que ao apelo corporativo.</li>
+      </ul>
+    </div>
+    <div class="obs-card">
+      <h4>Pontos de atenção</h4>
+      <ul>
+        <li>Degustação com frequência 2,95x — público começando a saturar. Avaliar expansão de cidades ou renovação de criativo em breve.</li>
+        <li>Corporativo com R$34/conversa após 9 dias indica desalinhamento entre criativo e público. Pode exigir reformulação de copy ou pausa.</li>
+        <li>Carrossel e vídeo drone com apenas 2 dias — não avaliar até completar ao menos 7 dias e 50 conversas.</li>
+        <li>Nenhuma campanha saiu ainda da fase de aprendizado (necessário 50 conversas). Manter estabilidade nas campanhas ativas.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="brand">Castelo dos Lagos &nbsp;·&nbsp; <span>Relatório Interno de Tráfego</span></div>
+  <div class="generated">Gerado em 26 Jun 2026 &nbsp;·&nbsp; Conta: Castelo dos Lagos BM</div>
+</footer>
+
+</body>
+</html>

@@ -35,7 +35,7 @@ export function SuporteMockup() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid #2a2a2a' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: pulse ? '#4ade80' : '#22c55e', transition: 'all 0.5s', boxShadow: pulse ? '0 0 8px rgba(74,222,128,0.5)' : 'none' }} />
-          <span style={{ color: '#a0a0a0', letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '0.6rem' }}>CyberAct Operations</span>
+          <span style={{ color: '#a0a0a0', letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '0.6rem', fontFamily: "'JetBrains Mono', monospace" }}>CyberAct Operations</span>
         </div>
         <span style={{ color: '#4a4a4a', fontSize: '0.55rem' }}>LIVE</span>
       </div>
@@ -56,8 +56,8 @@ export function SuporteMockup() {
             <span style={{ fontSize: '0.7rem', width: '1rem', textAlign: 'center', color: i === activeItem ? '#e63946' : '#4a4a4a' }}>{item.icon}</span>
             <span style={{ flex: 1, color: i === activeItem ? '#ffffff' : '#a0a0a0', fontWeight: i === activeItem ? 500 : 400, fontSize: '0.7rem', transition: 'color 0.3s' }}>{item.label}</span>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.55rem', fontWeight: 600, color: item.statusColor, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{item.status}</div>
-              <div style={{ fontSize: '0.5rem', color: '#4a4a4a', marginTop: '1px' }}>{item.detail}</div>
+              <div style={{ fontSize: '0.55rem', fontWeight: 600, color: item.statusColor, letterSpacing: '0.05em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>{item.status}</div>
+              <div style={{ fontSize: '0.5rem', color: '#4a4a4a', marginTop: '1px', fontFamily: "'JetBrains Mono', monospace" }}>{item.detail}</div>
             </div>
           </div>
         ))}
@@ -93,7 +93,7 @@ export function SegurancaMockup() {
       background: '#111111',
       border: '1px solid #2a2a2a',
       padding: 'clamp(0.75rem, 3vw, 1.5rem)',
-      fontFamily: "'Inter', monospace",
+      fontFamily: "'JetBrains Mono', monospace",
       fontSize: 'clamp(0.65rem, 1.5vw, 0.75rem)',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid #2a2a2a' }}>
@@ -107,7 +107,7 @@ export function SegurancaMockup() {
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
         <div style={{ padding: '0.75rem', background: '#0a0a0a', border: '1px solid #1a1a1a', textAlign: 'center' }}>
-          <div style={{ color: '#e63946', fontSize: '1.25rem', fontWeight: 300 }}>{blocked.toLocaleString()}</div>
+          <div style={{ color: '#e63946', fontSize: '1.25rem', fontWeight: 300, fontFamily: "'JetBrains Mono', monospace" }}>{blocked.toLocaleString()}</div>
           <div style={{ color: '#4a4a4a', fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.25rem' }}>Ameaças bloqueadas</div>
         </div>
         <div style={{ padding: '0.75rem', background: '#0a0a0a', border: '1px solid #1a1a1a', textAlign: 'center' }}>
