@@ -202,8 +202,6 @@
       letter-spacing: .14em;
     }
     .badge--pendente   { color: var(--gold); border: 1px solid rgba(212,175,55,0.35); }
-    .badge--aprovado   { color: #6AADFF; border: 1px solid rgba(106,173,255,0.35); }
-    .badge--enviado    { color: #9BDDFF; border: 1px solid rgba(155,221,255,0.35); }
     .badge--confirmado { color: #6FCF97; border: 1px solid rgba(111,207,151,0.35); }
     .badge--recusado   { color: #EB5757; border: 1px solid rgba(235,87,87,0.35); }
 
@@ -278,54 +276,79 @@
     .kanban-col {
       min-width: 260px; max-width: 300px; flex-shrink: 0;
       background: var(--wine); border: 1px solid var(--gold-border); display: flex; flex-direction: column;
+      overflow: hidden; transition: opacity 200ms, transform 200ms;
     }
+    .kanban-col.col-dragging { opacity: .35; transform: scale(0.96); }
+    .kanban-col.col-drag-over { border-color: var(--gold); box-shadow: 0 0 16px rgba(212,175,55,0.25); transform: scale(1.02); }
     .kanban-col--unassigned { border-style: dashed; opacity: .8; }
+    .kanban-col-color-bar { height: 5px; width: 100%; transition: background 300ms; }
     .kanban-col-header {
-      padding: 16px; border-bottom: 1px solid var(--gold-border);
-      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; border-bottom: 1px solid var(--gold-border);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
     }
+    .kanban-col-drag-handle {
+      cursor: grab; padding: 4px 2px; color: var(--white-dim); opacity: .2; transition: opacity 200ms;
+      display: flex; align-items: center; flex-shrink: 0;
+    }
+    .kanban-col-drag-handle:hover { opacity: .7; color: var(--gold); }
+    .kanban-col-drag-handle:active { cursor: grabbing; opacity: 1; }
+    .kanban-col-drag-handle svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
     .kanban-col-title {
-      font-family: var(--fd); font-weight: 300; font-size: 18px;
+      font-family: var(--fd); font-weight: 300; font-size: 16px;
       font-variation-settings: "opsz" 72, "SOFT" 30, "WONK" 0;
+      cursor: pointer; transition: color 200ms; flex: 1;
     }
+    .kanban-col-title:hover { color: var(--gold); }
     .kanban-col-count {
-      font-family: var(--fu); font-size: 10px; letter-spacing: .12em;
-      text-transform: uppercase; color: var(--gold); opacity: .5;
+      font-family: var(--fu); font-size: 10px; letter-spacing: .08em;
+      color: var(--white-dim); white-space: nowrap;
     }
+    .kanban-col-tools {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .kanban-col-tools button {
+      background: none; border: none; cursor: pointer; padding: 4px; color: var(--white-dim);
+      opacity: .4; transition: all 200ms; display: flex; align-items: center; justify-content: center;
+    }
+    .kanban-col-tools button:hover { opacity: 1; color: var(--gold); }
+    .kanban-col-tools button svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; }
     .kanban-col-body {
-      padding: 12px; min-height: 80px; flex: 1;
-      display: flex; flex-direction: column; gap: 8px;
+      padding: 10px; min-height: 60px; flex: 1;
+      display: flex; flex-direction: column; gap: 6px;
     }
     .kanban-col-body.drag-over { background: rgba(212,175,55,0.06); }
     .kanban-card {
-      padding: 12px 14px; border: 1px solid rgba(212,175,55,0.12);
+      padding: 10px 12px; border: 1px solid rgba(212,175,55,0.10);
       background: var(--wine-deep); cursor: grab; transition: all 200ms;
     }
     .kanban-card:active { cursor: grabbing; }
     .kanban-card.dragging { opacity: .4; }
     .kanban-card-name {
-      font-family: var(--fd); font-weight: 300; font-size: 14px;
+      font-family: var(--fd); font-weight: 300; font-size: 13px;
       font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 0; color: var(--white);
     }
     .kanban-card-comp {
       font-family: var(--fu); font-size: 10px; color: var(--white-dim);
-      margin-top: 4px; line-height: 1.5;
+      margin-top: 3px; line-height: 1.5;
     }
     .kanban-card-fonte {
       font-family: var(--fu); font-size: 9px; text-transform: uppercase;
-      letter-spacing: .1em; color: var(--gold); opacity: .4; margin-top: 6px;
+      letter-spacing: .1em; color: var(--gold); opacity: .4; margin-top: 4px;
     }
-    .kanban-col-actions {
-      padding: 8px 12px; border-top: 1px solid rgba(212,175,55,0.08);
-      display: flex; gap: 8px;
+    .kanban-col-footer {
+      padding: 0; border-top: 1px solid rgba(212,175,55,0.06);
     }
-    .kanban-col-actions button {
-      font-family: var(--fu); font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
-      padding: 4px 10px; border: 1px solid rgba(212,175,55,0.15); background: transparent;
-      color: var(--white-dim); cursor: pointer; transition: all 200ms;
+    .kanban-color-picker {
+      display: none; gap: 5px; padding: 10px 12px; flex-wrap: wrap;
+      background: rgba(0,0,0,0.15);
     }
-    .kanban-col-actions button:hover { color: var(--gold); border-color: var(--gold-border); }
-    .kanban-col-actions .btn-del:hover { color: #EB5757; border-color: rgba(235,87,87,0.3); }
+    .kanban-color-picker.open { display: flex; }
+    .kanban-color-dot {
+      width: 20px; height: 20px; cursor: pointer; border: 2px solid rgba(255,255,255,0.08);
+      transition: all 200ms;
+    }
+    .kanban-color-dot:hover { transform: scale(1.15); border-color: rgba(255,255,255,0.3); }
+    .kanban-color-dot.active { border-color: var(--white); box-shadow: 0 0 6px rgba(255,255,255,0.2); }
 
     @media (max-width: 768px) {
       .stats-bar { flex-wrap: wrap; }
@@ -334,6 +357,86 @@
       .table-wrap { padding: 16px; }
       .kanban-wrap { padding: 16px; }
       .kanban-col { min-width: 220px; }
+    }
+
+    /* RECEPCAO */
+    .recepcao-wrap { display: none; padding-bottom: 40px; }
+    .recepcao-wrap.active { display: block; }
+    .recepcao-stats {
+      display: flex; gap: 0; border-bottom: 1px solid var(--gold-border); background: var(--wine-mid);
+    }
+    .recepcao-stats .stat { flex: 1; padding: 16px 12px; text-align: center; border-right: 1px solid var(--gold-border); }
+    .recepcao-stats .stat:last-child { border-right: none; }
+    .recepcao-stats .stat__num { font-family: var(--fd); font-weight: 300; font-size: 28px; font-variation-settings: "opsz" 72, "SOFT" 20, "WONK" 0; color: var(--white); }
+    .recepcao-stats .stat__lbl { font-family: var(--fu); font-size: 9px; text-transform: uppercase; letter-spacing: .14em; color: var(--white-dim); margin-top: 4px; }
+    .recepcao-section-label {
+      font-family: var(--fu); font-size: 10px; font-weight: 400; text-transform: uppercase;
+      letter-spacing: .16em; color: var(--gold); opacity: .6; padding: 20px 24px 12px; display: block;
+    }
+    .recepcao-card {
+      margin: 0 16px 12px; padding: 20px; border: 1px solid var(--gold-border); background: var(--wine);
+      transition: all 400ms;
+    }
+    .recepcao-card--arrived {
+      border-color: rgba(111,207,151,0.3); background: rgba(111,207,151,0.06);
+    }
+    .recepcao-card__header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+    }
+    .recepcao-card__status {
+      font-family: var(--fu); font-size: 9px; text-transform: uppercase; letter-spacing: .14em;
+    }
+    .recepcao-card__status--waiting { color: var(--gold); opacity: .6; }
+    .recepcao-card__status--arrived { color: #6FCF97; }
+    .recepcao-card__mesa {
+      font-family: var(--fu); font-size: 10px; font-weight: 500; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--white); background: var(--wine-mid);
+      padding: 4px 12px; border: 1px solid var(--gold-border);
+    }
+    .recepcao-card--arrived .recepcao-card__mesa {
+      background: rgba(111,207,151,0.15); border-color: rgba(111,207,151,0.3); color: #6FCF97;
+    }
+    .recepcao-person {
+      display: flex; align-items: center; gap: 12px; padding: 10px 0;
+      border-bottom: 1px solid rgba(212,175,55,0.06); cursor: pointer; transition: background 200ms;
+    }
+    .recepcao-person:last-child { border-bottom: none; }
+    .recepcao-person:hover { background: rgba(212,175,55,0.03); }
+    .recepcao-person__check {
+      width: 22px; height: 22px; border: 1px solid var(--gold-border); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; transition: all 300ms;
+    }
+    .recepcao-person__check.checked {
+      background: #6FCF97; border-color: #6FCF97;
+    }
+    .recepcao-person__check.checked::after {
+      content: ''; width: 6px; height: 10px;
+      border: 2px solid var(--wine-deep); border-top: none; border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+    }
+    .recepcao-person__name {
+      font-family: var(--fd); font-weight: 300; font-size: 15px;
+      font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 0; color: var(--white);
+    }
+    .recepcao-person--comp .recepcao-person__name {
+      font-family: var(--fu); font-size: 13px; font-weight: 300; color: var(--white-muted);
+    }
+    .recepcao-card__actions {
+      margin-top: 16px; display: flex; gap: 12px; align-items: center;
+    }
+    .recepcao-card__btn {
+      padding: 10px 24px; font-family: var(--fu); font-size: 11px; font-weight: 500;
+      letter-spacing: .14em; text-transform: uppercase; cursor: pointer; border: none;
+      background: var(--gold); color: var(--wine-deep); transition: opacity 300ms;
+    }
+    .recepcao-card__btn:hover { opacity: .85; }
+    .recepcao-card__btn:disabled { opacity: .3; cursor: not-allowed; }
+    .recepcao-card__time {
+      font-family: var(--fu); font-size: 11px; color: #6FCF97; opacity: .8;
+    }
+    .recepcao-empty {
+      padding: 48px 24px; text-align: center; font-family: var(--fu); font-size: 13px;
+      color: var(--white-dim);
     }
   </style>
 </head>
@@ -355,15 +458,10 @@
     <div class="stat__label">Total Pessoas</div>
     <div class="stat__detail" id="stat-total-detail" style="font-size:10px;opacity:.4;margin-top:4px;"></div>
   </div>
-  <div class="stat">
-    <div class="stat__num" id="stat-confirmados-pessoas">—</div>
+  <div class="stat" style="background:rgba(111,207,151,0.06);">
+    <div class="stat__num" id="stat-confirmados-pessoas" style="color:#6FCF97;">—</div>
     <div class="stat__label">Confirmados</div>
     <div class="stat__detail" id="stat-confirmados-detail" style="font-size:10px;opacity:.4;margin-top:4px;"></div>
-  </div>
-  <div class="stat">
-    <div class="stat__num" id="stat-enviados">—</div>
-    <div class="stat__label">Enviados</div>
-    <div class="stat__detail" id="stat-enviados-detail" style="font-size:10px;opacity:.4;margin-top:4px;"></div>
   </div>
   <div class="stat">
     <div class="stat__num" id="stat-pendentes">—</div>
@@ -371,28 +469,21 @@
     <div class="stat__detail" id="stat-pendentes-detail" style="font-size:10px;opacity:.4;margin-top:4px;"></div>
   </div>
   <div class="stat">
-    <div class="stat__num" id="stat-recusados">—</div>
+    <div class="stat__num" id="stat-recusados" style="opacity:.5;">—</div>
     <div class="stat__label">Recusados</div>
-  </div>
-  <div class="stat" style="border-left:1px solid var(--gold-border);padding-left:16px;">
-    <div class="stat__num" id="stat-cha-total" style="color:var(--gold);">—</div>
-    <div class="stat__label">Chá de Cozinha</div>
-    <div class="stat__detail" id="stat-cha-detail" style="font-size:10px;opacity:.4;margin-top:4px;"></div>
   </div>
 </div>
 
 <!-- FILTER TABS -->
 <nav class="filters">
   <button class="filter-tab active" data-status="todos" onclick="setFilter('todos', this)">Todos</button>
-  <button class="filter-tab" data-status="pendente" onclick="setFilter('pendente', this)">Pendentes</button>
-  <button class="filter-tab" data-status="aprovado" onclick="setFilter('aprovado', this)">Aprovados</button>
-  <button class="filter-tab" data-status="enviado" onclick="setFilter('enviado', this)">Convite Enviado</button>
-  <button class="filter-tab" data-status="confirmado" onclick="setFilter('confirmado', this)">Confirmados</button>
-  <button class="filter-tab" data-status="recusado" onclick="setFilter('recusado', this)">Recusados</button>
-  <span style="width:1px;height:20px;background:var(--gold-border);margin:0 8px;"></span>
-  <button class="filter-tab" data-status="cha-cozinha" onclick="setFilter('cha-cozinha', this)" style="color:var(--gold);opacity:.7;">Chá de Cozinha</button>
-  <span style="width:1px;height:20px;background:var(--gold-border);margin:0 8px;"></span>
-  <button class="filter-tab" data-status="mesas" onclick="setFilter('mesas', this)" style="color:#6FCF97;opacity:.8;">Mesas</button>
+  <button class="filter-tab" data-status="confirmado" onclick="setFilter('confirmado', this)" style="color:#6FCF97;font-weight:500;">Confirmados</button>
+  <button class="filter-tab" data-status="mesas" onclick="setFilter('mesas', this)" style="color:#6FCF97;">Mesas</button>
+  <span style="width:1px;height:20px;background:var(--gold-border);margin:0 16px;"></span>
+  <button class="filter-tab" data-status="pendente" onclick="setFilter('pendente', this)" style="opacity:.5;">Pendentes</button>
+  <button class="filter-tab" data-status="recusado" onclick="setFilter('recusado', this)" style="opacity:.5;">Recusados</button>
+  <span style="width:1px;height:20px;background:var(--gold-border);margin:0 16px;"></span>
+  <button class="filter-tab" data-status="recepcao" onclick="setFilter('recepcao', this)" style="color:#FFD700;font-weight:500;">Recepção</button>
 </nav>
 
 <!-- TABLE -->
@@ -411,6 +502,15 @@
     <span class="mesa-count" id="mesa-stats"></span>
   </div>
   <div class="kanban-board" id="kanban-board"></div>
+</div>
+
+<!-- RECEPCAO VIEW -->
+<div class="recepcao-wrap" id="recepcao-view">
+  <div class="recepcao-stats" id="recepcao-stats"></div>
+  <div style="padding:16px 24px;">
+    <input type="text" id="recepcao-search" placeholder="Buscar convidado ou acompanhante..." style="width:100%;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid var(--gold-border);color:var(--white);font-family:var(--fu);font-size:15px;font-weight:300;" oninput="filterRecepcao(this.value)">
+  </div>
+  <div id="recepcao-board"></div>
 </div>
 
 <script>
@@ -475,13 +575,22 @@
 
     const tableView = document.getElementById('table-view');
     const kanbanView = document.getElementById('kanban-view');
+    const recepcaoView = document.getElementById('recepcao-view');
+
     if (status === 'mesas') {
       tableView.style.display = 'none';
       kanbanView.classList.add('active');
+      recepcaoView.classList.remove('active');
       drawKanban();
+    } else if (status === 'recepcao') {
+      tableView.style.display = 'none';
+      kanbanView.classList.remove('active');
+      recepcaoView.classList.add('active');
+      drawRecepcao();
     } else {
       tableView.style.display = '';
       kanbanView.classList.remove('active');
+      recepcaoView.classList.remove('active');
       drawTable();
     }
   }
@@ -494,11 +603,11 @@
   }
 
   function badgeHTML(status) {
-    const s = (status || 'pendente').toLowerCase();
+    let s = (status || 'pendente').toLowerCase();
+    // Map old statuses to pendente
+    if (s === 'aprovado' || s === 'enviado') s = 'pendente';
     const labels = {
       pendente: 'Pendente',
-      aprovado: 'Aprovado',
-      enviado: 'Convite Enviado',
       confirmado: 'Confirmado',
       recusado: 'Recusado'
     };
@@ -520,42 +629,40 @@
       return { convites, acomp, total: convites + acomp };
     }
 
-    // Separate casamento vs chá
     const casamentoGuests = allGuests.filter(g => !(g.mensagem && g.mensagem.includes('[CHA-COZINHA]')));
-    const chaGuests = allGuests.filter(g => g.mensagem && g.mensagem.includes('[CHA-COZINHA]'));
 
     const all = countPeople(casamentoGuests);
     const conf = countPeople(casamentoGuests.filter(g => g.status === 'confirmado'));
-    const env = countPeople(casamentoGuests.filter(g => g.status === 'enviado'));
-    const pend = countPeople(casamentoGuests.filter(g => !g.status || g.status === 'pendente'));
+    const pend = countPeople(casamentoGuests.filter(g => !g.status || g.status === 'pendente' || g.status === 'aprovado' || g.status === 'enviado'));
     const recusados = casamentoGuests.filter(g => g.status === 'recusado').length;
 
     document.getElementById('stat-total-pessoas').textContent = all.total;
     document.getElementById('stat-total-detail').textContent = all.convites + ' convites + ' + all.acomp + ' acomp.';
+    // Count kids in confirmed
+    let confKids = 0;
+    casamentoGuests.filter(g => g.status === 'confirmado').forEach(g => {
+      const comps = Array.isArray(g.wedding_companions) ? g.wedding_companions : [];
+      comps.forEach(c => { if (c.idade && c.idade < 7) confKids++; });
+    });
     document.getElementById('stat-confirmados-pessoas').textContent = conf.total;
-    document.getElementById('stat-confirmados-detail').textContent = conf.convites + ' convites + ' + conf.acomp + ' acomp.';
-    document.getElementById('stat-enviados').textContent = env.total;
-    document.getElementById('stat-enviados-detail').textContent = env.convites + ' convites + ' + env.acomp + ' acomp.';
+    document.getElementById('stat-confirmados-detail').textContent = conf.convites + ' convites + ' + conf.acomp + ' acomp.' + (confKids > 0 ? ' (' + confKids + ' crian\u00e7as)' : '');
     document.getElementById('stat-pendentes').textContent = pend.total;
     document.getElementById('stat-pendentes-detail').textContent = pend.convites + ' convites + ' + pend.acomp + ' acomp.';
     document.getElementById('stat-recusados').textContent = recusados;
 
-    // Chá de cozinha stats
-    const chaTotal = chaGuests.length;
-    const chaPresentes = chaGuests.filter(g => g.mensagem && g.mensagem.includes('Presente:')).length;
-    document.getElementById('stat-cha-total').textContent = chaTotal;
-    document.getElementById('stat-cha-detail').textContent = chaPresentes + ' com presente escolhido';
-
     // Filter
     let guests;
     if (currentFilter === 'todos') {
-      guests = allGuests.filter(g => !(g.mensagem && g.mensagem.includes('[CHA-COZINHA]')));
-    } else if (currentFilter === 'cha-cozinha') {
-      guests = allGuests.filter(g => g.mensagem && g.mensagem.includes('[CHA-COZINHA]'));
-    } else {
-      guests = allGuests.filter(g => {
+      guests = casamentoGuests;
+    } else if (currentFilter === 'pendente') {
+      guests = casamentoGuests.filter(g => {
         const s = g.status || 'pendente';
-        return s === currentFilter && !(g.mensagem && g.mensagem.includes('[CHA-COZINHA]'));
+        return s === 'pendente' || s === 'aprovado' || s === 'enviado';
+      });
+    } else {
+      guests = casamentoGuests.filter(g => {
+        const s = g.status || 'pendente';
+        return s === currentFilter;
       });
     }
 
@@ -564,52 +671,23 @@
       return;
     }
 
-    const isCha = currentFilter === 'cha-cozinha';
-
     let rows = guests.map(g => {
       const comps = Array.isArray(g.wedding_companions) ? g.wedding_companions : [];
       const compHTML = comps.length
         ? `<div class="companions-list">${comps.map(c => `<span>${c.nome}${c.idade ? ', ' + c.idade + ' anos' : ''}</span>`).join('')}</div>`
         : '';
 
-      const statusOptions = ['pendente','aprovado','enviado','confirmado','recusado'];
+      const statusOptions = ['pendente','confirmado','recusado'];
       const currentStatus = g.status || 'pendente';
+      // Map old statuses to pendente for display
+      const displayStatus = (currentStatus === 'aprovado' || currentStatus === 'enviado') ? 'pendente' : currentStatus;
       const selectOptions = statusOptions.map(s => {
-        const labels = { pendente:'Pendente', aprovado:'Aprovado', enviado:'Convite Enviado', confirmado:'Confirmado', recusado:'Recusado' };
-        return `<option value="${s}" ${s === currentStatus ? 'selected' : ''}>${labels[s]}</option>`;
+        const labels = { pendente:'Pendente', confirmado:'Confirmado', recusado:'Recusado' };
+        return `<option value="${s}" ${s === displayStatus ? 'selected' : ''}>${labels[s]}</option>`;
       }).join('');
 
       const restricoes = g.restricoes_alimentares ? `<div style="font-size:11px;opacity:.45;margin-top:4px;">${g.restricoes_alimentares}</div>` : '';
       const mensagem = g.mensagem ? `<div style="font-size:11px;opacity:.45;margin-top:4px;font-style:italic;">"${g.mensagem}"</div>` : '';
-
-      // Parse presente e prato from mensagem for chá
-      let presenteCha = '—';
-      let pratoCha = '—';
-      if (isCha && g.mensagem) {
-        const pm = g.mensagem.match(/Presente:\s*([^|]+)/);
-        const pp = g.mensagem.match(/Prato:\s*(.+)/);
-        if (pm) presenteCha = pm[1].trim();
-        if (pp) pratoCha = pp[1].trim();
-      }
-
-      if (isCha) {
-        return `
-          <tr>
-            <td><div class="td-name">${g.nome || '—'}</div></td>
-            <td>${g.whatsapp || '—'}</td>
-            <td><span style="color:var(--gold);font-size:12px;">${presenteCha}</span></td>
-            <td style="font-size:12px;">${pratoCha}</td>
-            <td>${badgeHTML(g.status)}</td>
-            <td>${formatDate(g.created_at)}</td>
-            <td>
-              <select class="status-select" onchange="updateStatus('${g.id}', this.value)">
-                ${selectOptions}
-              </select>
-              <button onclick="deleteGuest('${g.id}', '${(g.nome||'').replace(/'/g,"\\'")}');" style="display:block;margin-top:8px;padding:4px 12px;background:transparent;border:1px solid rgba(200,50,50,0.3);color:rgba(200,50,50,0.6);font-family:var(--fu);font-size:10px;letter-spacing:.08em;cursor:pointer;transition:all .3s;" onmouseenter="this.style.background='rgba(200,50,50,0.15)';this.style.color='#c03232'" onmouseleave="this.style.background='transparent';this.style.color='rgba(200,50,50,0.6)'">Deletar</button>
-            </td>
-          </tr>
-        `;
-      }
 
       return `
         <tr>
@@ -618,10 +696,9 @@
             ${compHTML}
           </td>
           <td>${g.whatsapp || '—'}</td>
-          <td>${g.interesse || '—'}</td>
           <td>${g.acompanhantes != null ? g.acompanhantes : (comps.length || '0')}</td>
           <td><span class="fonte-tag">${g.fonte || '—'}</span></td>
-          <td>${badgeHTML(g.status)}</td>
+          <td>${badgeHTML(displayStatus)}</td>
           <td>${formatDate(g.created_at)}</td>
           <td>
             <button onclick="copyLink('${g.id}','${(g.nome||'').replace(/'/g,"\\'")}',this)" style="display:block;margin-bottom:6px;padding:4px 12px;background:transparent;border:1px solid var(--gold-border);color:var(--gold);font-family:var(--fu);font-size:10px;letter-spacing:.06em;cursor:pointer;transition:all .3s;white-space:nowrap;" onmouseenter="this.style.background='rgba(212,175,55,0.12)'" onmouseleave="this.style.background='transparent'">Copiar Link</button>
@@ -636,9 +713,7 @@
       `;
     }).join('');
 
-    const tableHeaders = isCha
-      ? '<th>Nome</th><th>WhatsApp</th><th>Presente</th><th>Prato</th><th>Status</th><th>Data</th><th>Ações</th>'
-      : '<th>Nome</th><th>WhatsApp</th><th>Interesse</th><th>Acomp.</th><th>Fonte</th><th>Status</th><th>Data</th><th>Ações</th>';
+    const tableHeaders = '<th>Nome</th><th>WhatsApp</th><th>Acomp.</th><th>Fonte</th><th>Status</th><th>Data</th><th>Ações</th>';
 
     container.innerHTML = `
       <table>
@@ -670,68 +745,162 @@
   }
 
   // ── KANBAN MESAS ──
-  const MESAS_KEY = 'md_mesas_layout';
+  const MESAS_KEY = 'md_mesas_layout_v3';
 
-  // Initial mesa layout — organized by family/affinity, ~8 people each
   const INITIAL_MESAS = {
-    "Mesa 1": [
-      "61277f24-4e5c-47fe-be38-66dbd70d4cae", // Bruno Bessa (3p)
-      "e23460e4-a35f-4e03-a963-0238f703ce68", // Luciana (2p)
-      "39a49d53-1e1c-4e2e-a70b-eb1ac74278c4", // Patrícia (2p)
-      "37d51269-66e8-4442-99e1-ad368c704794"  // Rafael Reis (2p)
-    ],
-    "Mesa 2": [
-      "d82533f2-807d-4c1a-b9d5-60483d89f4bd", // Márcia B Oliveira (5p)
-      "36886148-7189-4042-a798-f8b8299cf452", // Vanderlei (2p)
-      "6d37d562-c1db-480a-8210-005ecbe7fee1", // Ricardo (1p)
-      "0cc79b33-bf9b-4e27-8d6b-b89ede711dbd"  // Sandra (1p)
-    ],
-    "Mesa 3": [
-      "69f965b6-5526-452c-b920-64295a15f832", // Rafael Dias Oliveira (4p)
-      "cbab5c36-7d50-40de-9d70-03f44e9b2328", // Luzia (1p)
-      "c539fced-1f6a-4ef1-b2f2-efbff2026eb5"  // Josenita (1p)
-    ],
-    "Mesa 4": [
-      "22cafe90-38fb-4459-be00-961c1a75296b", // Aline Santos Rodrigues (5p)
-      "268e95b2-0b1f-4f70-af6e-d44100d572f2"  // Mariana Barbosa Rodrigues (3p)
-    ],
-    "Mesa 5": [
-      "33353c5b-a38e-4cb8-9a62-a48247accdf6", // Giovanna (2p)
-      "d5c15484-2952-4762-a831-98e907e93066", // Giovanna dup (1p)
-      "f47476ef-bf3a-4993-b574-99e90b374aef"  // Michelle Rodrigues Amorim (4p)
-    ],
-    "Mesa 6": [
-      "f0b29975-3d9d-45da-a275-775cb8675e60", // Viviane Marques Rodrigues (5p)
-      "24d3e592-97dd-41d3-8e26-c99d1665d156"  // Brigham Garcia (3p)
-    ],
-    "Mesa 7": [
-      "151ff4ac-8b9e-4701-a562-decbb597addb", // Cleonice Barroso (4p)
-      "ee112924-015c-44cf-948a-a9b92ea27f43", // Danielle Amorim Lima (3p)
-      "2b218823-da75-491b-a263-816ac5ffc25d"  // Daniela Sousa (2p)
-    ],
-    "Mesa 8": [
-      "4d5bbb18-d1ee-4d51-83a8-6bdf93fee913", // Matheus Rosa (2p) - padrinho
-      "69df4382-2d3b-4baa-b49f-554a805d8880", // Arthur Leandro (2p) - padrinho
-      "1416e35c-e414-4d74-8e86-ee2348ea355c", // Fellipe Augusto (1p) - padrinho
-      "8a3e3c05-95e7-4a77-9c95-b311684990c2", // Letícya Arantes (2p) - madrinha
-      "04f3d89e-6333-41ea-8957-1c933c201d7a"  // Maria Julia Barroso (2p) - madrinha
-    ]
+    "Mesa 1 — Família Reis": ["e23460e4-a35f-4e03-a963-0238f703ce68","a7603fad-ad68-49e8-99e1-131ec68767a7"],
+    "Mesa 2 — Primos Reis": ["61277f24-4e5c-47fe-be38-66dbd70d4cae","d8f46cb0-5104-4b9f-b0c0-46891fc430c7","37d51269-66e8-4442-99e1-ad368c704794","9538c72e-0d39-40c9-9096-8a6bd25576d2"],
+    "Mesa 3 — Família da Noiva": ["47f67aa4-e964-4363-a30f-caf0ea606f38","22cafe90-38fb-4459-be00-961c1a75296b"],
+    "Mesa 4 — Família Rodrigues": ["fa2f761b-3dff-4fe6-a5fc-a6bd95030b3b","cbab5c36-7d50-40de-9d70-03f44e9b2328","c539fced-1f6a-4ef1-b2f2-efbff2026eb5","8088b70a-32c2-4c56-b0ea-be9c81c7d092"],
+    "Mesa 5 — Família Oliveira Dias": ["36886148-7189-4042-a798-f8b8299cf452","69f965b6-5526-452c-b920-64295a15f832"],
+    "Mesa 6 — Família Dantas Amorim": ["268e95b2-0b1f-4f70-af6e-d44100d572f2","f47476ef-bf3a-4993-b574-99e90b374aef"],
+    "Mesa 7 — Nathalia e Danilo": ["b2d58c45-6ef1-4af1-91be-5ff1dbc74b0a"],
+    "Mesa 8 — Família Marques Rodrigues": ["f0b29975-3d9d-45da-a275-775cb8675e60","151ff4ac-8b9e-4701-a562-decbb597addb"],
+    "Mesa 9 — Padrinhos": ["4d5bbb18-d1ee-4d51-83a8-6bdf93fee913","69df4382-2d3b-4baa-b49f-554a805d8880","1416e35c-e414-4d74-8e86-ee2348ea355c","33353c5b-a38e-4cb8-9a62-a48247accdf6"],
+    "Mesa 10 — Padrinhos 2": ["8a3e3c05-95e7-4a77-9c95-b311684990c2","6850c3e4-4e20-488f-9fa7-bc277d06c324","6d37d562-c1db-480a-8210-005ecbe7fee1","21456ae3-3eee-461e-a9e2-c6598b741acf"],
+    "Mesa 11 — Amigos": ["8b0e68db-c0b1-4245-aa4a-633ab8ed7c72","5757f53c-7491-4a64-a79c-e3c7c7a460ab","cc3cf809-a99b-4f60-8554-fcf3a9b0b216","a3ad56bf-e265-4347-8ee7-3592cdfb5b6a"],
+    "Mesa 12 — Amigos da Noiva": ["a52029b8-fb7d-4532-bdf7-49e7860ecde1","2b218823-da75-491b-a263-816ac5ffc25d","04f3d89e-6333-41ea-8957-1c933c201d7a","c636c776-5640-4905-a725-b89d51d4f4bf"],
+    "Mesa 13 — Amigos da Noiva 2": ["d5f9ffcb-e015-4012-8963-82f6dd49d399","24d3e592-97dd-41d3-8e26-c99d1665d156","2fd02674-fdd7-48bc-a605-8628e9aa0b38"],
+    "Mesa 14 — Casais Igreja": ["fd49b0ac-a0ab-4ca8-afc1-35df4dc00c75","426c1409-d802-4fa9-a643-db13ea413a74","01786172-beb1-4ad2-92ec-dc61c17c9959","1437db4b-d25a-49f3-9e8b-639c94b06574"],
+    "Mesa 15 — Casais Igreja 2": ["899c47b4-3314-4dfe-b884-021940b0309c","39a49d53-1e1c-4e2e-a70b-eb1ac74278c4","3714eaed-da74-4091-83f4-6375ea370bba"],
+    "Mesa 16 — Amigos 3": ["ad824de5-c5e2-4243-81cd-952dea21553b","ee112924-015c-44cf-948a-a9b92ea27f43"]
   };
 
-  function loadMesasLayout() {
+  let mesasCache = null;
+
+  // Mesa colors
+  const MESA_COLORS = [
+    {name:'Sem cor', hex:'transparent'},
+    {name:'Vermelho', hex:'#EB5757'},
+    {name:'Laranja', hex:'#F2994A'},
+    {name:'Amarelo', hex:'#F2C94C'},
+    {name:'Verde', hex:'#6FCF97'},
+    {name:'Azul', hex:'#56CCF2'},
+    {name:'Roxo', hex:'#BB6BD9'},
+    {name:'Rosa', hex:'#F06292'},
+    {name:'Dourado', hex:'#D4AF37'},
+    {name:'Branco', hex:'#FFFFFF'}
+  ];
+  let mesaColorsData = {};
+  const MESA_COLORS_KEY = 'md_mesa_colors';
+
+  function loadMesaColors() {
+    try { mesaColorsData = JSON.parse(localStorage.getItem(MESA_COLORS_KEY) || '{}'); } catch(e) { mesaColorsData = {}; }
+    return mesaColorsData;
+  }
+  function saveMesaColors() {
+    localStorage.setItem(MESA_COLORS_KEY, JSON.stringify(mesaColorsData));
+    // Also save to DB
+    var APIKEY = SUPABASE_KEY;
+    fetch(SUPABASE_URL + '/rest/v1/wedding_settings?key=eq.mesa_colors&select=key', {
+      headers: { 'apikey': APIKEY, 'Authorization': 'Bearer ' + APIKEY }
+    }).then(r => r.json()).then(rows => {
+      var method = rows.length ? 'PATCH' : 'POST';
+      var url = rows.length
+        ? SUPABASE_URL + '/rest/v1/wedding_settings?key=eq.mesa_colors'
+        : SUPABASE_URL + '/rest/v1/wedding_settings';
+      var body = rows.length
+        ? { value: mesaColorsData, updated_at: new Date().toISOString() }
+        : { key: 'mesa_colors', value: mesaColorsData, updated_at: new Date().toISOString() };
+      fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json', 'apikey': APIKEY, 'Authorization': 'Bearer ' + APIKEY, 'Prefer': 'return=minimal' },
+        body: JSON.stringify(body)
+      }).catch(e => console.error('Erro ao salvar cores:', e));
+    }).catch(e => console.error('Erro ao verificar cores:', e));
+  }
+  function toggleColorPicker(colId) {
+    var picker = document.getElementById(colId + '-colors');
+    if (!picker) return;
+    // Close all others first
+    document.querySelectorAll('.kanban-color-picker.open').forEach(function(p) {
+      if (p.id !== colId + '-colors') p.classList.remove('open');
+    });
+    picker.classList.toggle('open');
+  }
+  function setMesaColor(mesaName, color) {
+    mesaColorsData[mesaName] = color;
+    saveMesaColors();
+    drawKanban();
+  }
+
+  // Load colors from DB on init
+  (function(){
+    fetch(SUPABASE_URL + '/rest/v1/wedding_settings?key=eq.mesa_colors&select=value', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    }).then(r => r.json()).then(rows => {
+      if (rows.length && rows[0].value) {
+        mesaColorsData = rows[0].value;
+        localStorage.setItem(MESA_COLORS_KEY, JSON.stringify(mesaColorsData));
+      } else {
+        loadMesaColors();
+      }
+    }).catch(() => loadMesaColors());
+  })();
+
+  async function loadMesasLayoutFromDB() {
     try {
-      const saved = JSON.parse(localStorage.getItem(MESAS_KEY));
-      if (saved && Object.keys(saved).length > 0) return saved;
-      // First time: use initial layout
-      saveMesasLayout(INITIAL_MESAS);
-      return INITIAL_MESAS;
-    } catch(e) {
-      saveMesasLayout(INITIAL_MESAS);
-      return INITIAL_MESAS;
-    }
+      const res = await fetch(SUPABASE_URL + '/rest/v1/wedding_settings?key=eq.mesas_layout&select=value', {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      const rows = await res.json();
+      if (Array.isArray(rows) && rows.length > 0 && rows[0].value) {
+        mesasCache = rows[0].value;
+        return mesasCache;
+      }
+    } catch(e) { console.error('Erro ao carregar mesas do DB:', e); }
+    // First time or error: use initial layout and save
+    mesasCache = INITIAL_MESAS;
+    await saveMesasLayoutToDB(INITIAL_MESAS);
+    return INITIAL_MESAS;
+  }
+
+  async function saveMesasLayoutToDB(layout) {
+    mesasCache = layout;
+    try {
+      // Upsert: try PATCH first, if no row exists do POST
+      const res = await fetch(SUPABASE_URL + '/rest/v1/wedding_settings?key=eq.mesas_layout', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ value: layout, updated_at: new Date().toISOString() })
+      });
+      // If PATCH updated 0 rows, insert
+      if (res.status === 200 || res.status === 204) {
+        const text = await res.text();
+        // Check via a GET if the row exists
+        const check = await fetch(SUPABASE_URL + '/rest/v1/wedding_settings?key=eq.mesas_layout&select=key', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        });
+        const rows = await check.json();
+        if (!Array.isArray(rows) || rows.length === 0) {
+          await fetch(SUPABASE_URL + '/rest/v1/wedding_settings', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SUPABASE_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_KEY,
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ key: 'mesas_layout', value: layout, updated_at: new Date().toISOString() })
+          });
+        }
+      }
+    } catch(e) { console.error('Erro ao salvar mesas no DB:', e); }
+  }
+
+  // Sync wrappers used by kanban code
+  function loadMesasLayout() {
+    return mesasCache || INITIAL_MESAS;
   }
   function saveMesasLayout(layout) {
+    mesasCache = layout;
     localStorage.setItem(MESAS_KEY, JSON.stringify(layout));
+    saveMesasLayoutToDB(layout);
   }
 
   function getConfirmedGuests() {
@@ -740,15 +909,19 @@
     );
   }
 
-  function drawKanban() {
+  async function drawKanban() {
     const board = document.getElementById('kanban-board');
+    board.innerHTML = '<div class="state-msg">Carregando mesas...</div>';
     const confirmed = getConfirmedGuests();
+    await loadMesasLayoutFromDB();
     const layout = loadMesasLayout();
 
     // layout = { "Mesa 1": ["guest-id-1", "guest-id-2"], "Mesa 2": [...] }
     const mesaNames = Object.keys(layout).sort((a,b) => {
-      const na = parseInt(a.replace(/\D/g,'')) || 0;
-      const nb = parseInt(b.replace(/\D/g,'')) || 0;
+      const ma = a.match(/Mesa (\d+)/);
+      const mb = b.match(/Mesa (\d+)/);
+      const na = ma ? parseInt(ma[1]) : 0;
+      const nb = mb ? parseInt(mb[1]) : 0;
       return na - nb;
     });
 
@@ -786,21 +959,34 @@
     function mesaColumn(name, guestIds, isUnassigned) {
       const guests = guestIds.map(id => confirmed.find(g => g.id === id)).filter(Boolean);
       const people = countMesaPeople(guestIds);
+      const mesaColor = mesaColorsData[name] || 'transparent';
+      const colorBarStyle = mesaColor !== 'transparent' ? `background:${mesaColor};` : 'background:var(--gold-border);opacity:.2;';
+      const escapedName = name.replace(/'/g,"\\'");
+      const colorDots = MESA_COLORS.map(c => {
+        const active = (mesaColor === c.hex) ? ' active' : '';
+        const bg = c.hex === 'transparent' ? 'var(--wine-mid)' : c.hex;
+        return `<div class="kanban-color-dot${active}" style="background:${bg};" title="${c.name}" onclick="setMesaColor('${escapedName}','${c.hex}')"></div>`;
+      }).join('');
+      const colId = 'mesa-col-' + name.replace(/\W/g,'_');
       return `
-        <div class="kanban-col ${isUnassigned ? 'kanban-col--unassigned' : ''}" data-mesa="${name}">
+        <div class="kanban-col ${isUnassigned ? 'kanban-col--unassigned' : ''}" data-mesa="${name}" id="${colId}">
+          <div class="kanban-col-color-bar" style="${colorBarStyle}"></div>
           <div class="kanban-col-header">
-            <span class="kanban-col-title">${name}</span>
-            <span class="kanban-col-count">${people} pessoas</span>
+            ${!isUnassigned ? `<span class="kanban-col-drag-handle" draggable="true" title="Arrastar mesa"><svg viewBox="0 0 24 24"><path d="M8 6h2M8 10h2M8 14h2M8 18h2M14 6h2M14 10h2M14 14h2M14 18h2"/></svg></span>` : ''}
+            <span class="kanban-col-title" onclick="renameMesa('${escapedName}')" title="Clique para renomear">${name}</span>
+            <span class="kanban-col-count">${people}p</span>
+            ${!isUnassigned ? `
+              <div class="kanban-col-tools">
+                <button onclick="toggleColorPicker('${colId}')" title="Cor da mesa">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/>${mesaColor !== 'transparent' ? `<circle cx="12" cy="12" r="5" fill="${mesaColor}" stroke="none"/>` : ''}</svg>
+                </button>
+              </div>
+            ` : ''}
           </div>
+          ${!isUnassigned ? `<div class="kanban-color-picker" id="${colId}-colors">${colorDots}</div>` : ''}
           <div class="kanban-col-body" data-mesa-drop="${name}">
             ${guests.map(g => guestCard(g)).join('')}
           </div>
-          ${!isUnassigned ? `
-            <div class="kanban-col-actions">
-              <button onclick="renameMesa('${name.replace(/'/g,"\\'")}')">Renomear</button>
-              <button class="btn-del" onclick="deleteMesa('${name.replace(/'/g,"\\'")}')">Remover</button>
-            </div>
-          ` : ''}
         </div>
       `;
     }
@@ -826,10 +1012,14 @@
 
   function initDragDrop() {
     let draggedId = null;
+    let draggedColName = null;
 
+    // ── Card drag ──
     document.querySelectorAll('.kanban-card').forEach(card => {
       card.addEventListener('dragstart', e => {
+        e.stopPropagation();
         draggedId = card.dataset.guestId;
+        draggedColName = null;
         card.classList.add('dragging');
         e.dataTransfer.effectAllowed = 'move';
       });
@@ -839,40 +1029,126 @@
       });
     });
 
-    document.querySelectorAll('.kanban-col-body').forEach(dropZone => {
-      dropZone.addEventListener('dragover', e => {
+    // ── Column drag (only from handle) — INSERT, not swap ──
+    document.querySelectorAll('.kanban-col-drag-handle').forEach(handle => {
+      handle.addEventListener('dragstart', e => {
+        e.stopPropagation();
+        var col = handle.closest('.kanban-col');
+        draggedColName = col.getAttribute('data-mesa');
+        draggedId = null;
+        col.classList.add('col-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setDragImage(col, 130, 30);
+      });
+      handle.addEventListener('dragend', () => {
+        document.querySelectorAll('.kanban-col').forEach(c => {
+          c.classList.remove('col-dragging');
+          c.classList.remove('col-drag-over');
+        });
+        draggedColName = null;
+      });
+    });
+
+    // Column + card drop targets on each column
+    document.querySelectorAll('.kanban-col').forEach(col => {
+      col.addEventListener('dragover', e => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
-        dropZone.classList.add('drag-over');
+        // Column drag highlight
+        var colMesa = col.getAttribute('data-mesa');
+        if (draggedColName && draggedColName !== colMesa && colMesa !== 'Sem Mesa') {
+          col.classList.add('col-drag-over');
+        }
       });
-      dropZone.addEventListener('dragleave', () => {
-        dropZone.classList.remove('drag-over');
+      col.addEventListener('dragleave', e => {
+        // Only remove if truly leaving the column (not entering a child)
+        if (!col.contains(e.relatedTarget)) {
+          col.classList.remove('col-drag-over');
+        }
       });
-      dropZone.addEventListener('drop', e => {
-        e.preventDefault();
-        dropZone.classList.remove('drag-over');
-        if (!draggedId) return;
+      col.addEventListener('drop', e => {
+        col.classList.remove('col-drag-over');
 
-        const targetMesa = dropZone.dataset.mesaDrop;
-        const layout = loadMesasLayout();
+        // Column drop — INSERT at target position
+        if (draggedColName) {
+          e.preventDefault();
+          e.stopPropagation();
+          var targetName = col.getAttribute('data-mesa');
+          if (!targetName || draggedColName === targetName || targetName === 'Sem Mesa') return;
 
-        // Remove from all mesas
-        Object.keys(layout).forEach(m => {
-          layout[m] = (layout[m] || []).filter(id => id !== draggedId);
-        });
+          var layout = loadMesasLayout();
+          // Sort keys by number
+          var sortedKeys = Object.keys(layout).sort(function(a,b) {
+            var ma = a.match(/Mesa (\d+)/), mb = b.match(/Mesa (\d+)/);
+            return (ma ? parseInt(ma[1]) : 0) - (mb ? parseInt(mb[1]) : 0);
+          });
 
-        // Add to target (if not "Sem Mesa")
-        if (targetMesa !== 'Sem Mesa') {
-          if (!layout[targetMesa]) layout[targetMesa] = [];
-          layout[targetMesa].push(draggedId);
+          var fromIdx = sortedKeys.indexOf(draggedColName);
+          var toIdx = sortedKeys.indexOf(targetName);
+          if (fromIdx === -1 || toIdx === -1) return;
+
+          // Remove from current position, insert at target
+          sortedKeys.splice(fromIdx, 1);
+          sortedKeys.splice(toIdx, 0, draggedColName);
+
+          // Rebuild layout with new numbering: Mesa 1, Mesa 2, ...
+          var newLayout = {};
+          var newColors = {};
+          sortedKeys.forEach(function(oldKey, i) {
+            var num = i + 1;
+            var label = oldKey.replace(/^Mesa \d+/, '').trim();
+            var newKey = 'Mesa ' + num + (label ? ' ' + label : '');
+            newLayout[newKey] = layout[oldKey];
+            if (mesaColorsData[oldKey]) newColors[newKey] = mesaColorsData[oldKey];
+          });
+
+          mesaColorsData = newColors;
+          saveMesaColors();
+          mesasCache = newLayout;
+          localStorage.setItem(MESAS_KEY, JSON.stringify(newLayout));
+          drawKanban();
+          draggedColName = null;
+          return;
         }
 
-        // Clean empty
-        Object.keys(layout).forEach(m => { if (!layout[m].length) delete layout[m]; });
+        // Card drop
+        if (draggedId) {
+          e.preventDefault();
+          var dropBody = col.querySelector('.kanban-col-body');
+          var targetMesa = dropBody ? dropBody.getAttribute('data-mesa-drop') : col.getAttribute('data-mesa');
+          if (!targetMesa) return;
+          var layout = loadMesasLayout();
 
-        saveMesasLayout(layout);
-        drawKanban();
-        draggedId = null;
+          Object.keys(layout).forEach(m => {
+            layout[m] = (layout[m] || []).filter(id => id !== draggedId);
+          });
+
+          if (targetMesa !== 'Sem Mesa') {
+            if (!layout[targetMesa]) layout[targetMesa] = [];
+            layout[targetMesa].push(draggedId);
+          }
+
+          saveMesasLayout(layout);
+          drawKanban();
+          draggedId = null;
+        }
+      });
+    });
+
+    // Card drag-over highlight on body
+    document.querySelectorAll('.kanban-col-body').forEach(dropZone => {
+      dropZone.addEventListener('dragover', e => {
+        if (!draggedId) return;
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+      dropZone.addEventListener('dragleave', e => {
+        if (!dropZone.contains(e.relatedTarget)) {
+          dropZone.classList.remove('drag-over');
+        }
+      });
+      dropZone.addEventListener('drop', () => {
+        dropZone.classList.remove('drag-over');
       });
     });
   }
@@ -893,6 +1169,12 @@
     const layout = loadMesasLayout();
     layout[newName.trim()] = layout[oldName] || [];
     delete layout[oldName];
+    // Carry over color
+    if (mesaColorsData[oldName]) {
+      mesaColorsData[newName.trim()] = mesaColorsData[oldName];
+      delete mesaColorsData[oldName];
+      saveMesaColors();
+    }
     saveMesasLayout(layout);
     drawKanban();
   }
@@ -905,14 +1187,239 @@
     drawKanban();
   }
 
-  function saveMesas() {
-    alert('Layout salvo no navegador. As mesas serão mantidas ao recarregar.');
+  async function saveMesas() {
+    await saveMesasLayoutToDB(mesasCache || INITIAL_MESAS);
+    alert('Layout salvo globalmente. Qualquer dispositivo verá as mesmas mesas.');
   }
 
   function resetMesas() {
     if (!confirm('Resetar todas as mesas? Todos os convidados voltarão para "Sem Mesa".')) return;
     localStorage.removeItem(MESAS_KEY);
     drawKanban();
+  }
+
+  // ── RECEPÇÃO ──
+  let checkinData = {};
+  const CHECKIN_KEY = 'md_recepcao_checkin';
+
+  async function loadCheckinFromDB() {
+    try {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/wedding_settings?key=eq.recepcao_checkin&select=value', {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      const rows = await res.json();
+      if (rows.length && rows[0].value) {
+        checkinData = rows[0].value;
+        return;
+      }
+    } catch(e) { console.error('Erro ao carregar check-in:', e); }
+    // Fallback localStorage
+    try { checkinData = JSON.parse(localStorage.getItem(CHECKIN_KEY) || '{}'); } catch(e) { checkinData = {}; }
+  }
+
+  async function saveCheckinToDB() {
+    localStorage.setItem(CHECKIN_KEY, JSON.stringify(checkinData));
+    try {
+      const check = await fetch(SUPABASE_URL + '/rest/v1/wedding_settings?key=eq.recepcao_checkin&select=key', {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      const existing = await check.json();
+      if (existing.length) {
+        await fetch(SUPABASE_URL + '/rest/v1/wedding_settings?key=eq.recepcao_checkin', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY },
+          body: JSON.stringify({ value: checkinData, updated_at: new Date().toISOString() })
+        });
+      } else {
+        await fetch(SUPABASE_URL + '/rest/v1/wedding_settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ key: 'recepcao_checkin', value: checkinData, updated_at: new Date().toISOString() })
+        });
+      }
+    } catch(e) { console.error('Erro ao salvar check-in:', e); }
+  }
+
+  function normalize(str) {
+    return (str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  function getGuestMesa(guestId) {
+    const layout = loadMesasLayout();
+    for (var mesaName in layout) {
+      if (layout[mesaName].indexOf(guestId) !== -1) return mesaName;
+    }
+    return null;
+  }
+
+  let recepcaoSearchTerm = '';
+
+  function filterRecepcao(val) {
+    recepcaoSearchTerm = val;
+    drawRecepcao();
+  }
+
+  async function drawRecepcao() {
+    if (!checkinData || !Object.keys(checkinData).length) await loadCheckinFromDB();
+    if (!allGuests.length) { allGuests = await loadGuests(); }
+    if (!mesasCache) await loadMesasLayoutFromDB();
+
+    const board = document.getElementById('recepcao-board');
+    const statsEl = document.getElementById('recepcao-stats');
+    const casamentoGuests = allGuests.filter(g => !(g.mensagem && g.mensagem.includes('[CHA-COZINHA]')));
+    const confirmed = casamentoGuests.filter(g => g.status === 'confirmado');
+    const search = normalize(recepcaoSearchTerm);
+
+    // Build full people list per guest
+    var guestCards = confirmed.map(function(g) {
+      var comps = Array.isArray(g.wedding_companions) ? g.wedding_companions : [];
+      var people = [{ name: g.nome, key: 'main', isComp: false }];
+      comps.forEach(function(c) { people.push({ name: c.nome, key: c.nome, isComp: true, idade: c.idade || null }); });
+      var mesa = getGuestMesa(g.id);
+      var ci = checkinData[g.id] || {};
+      var allChecked = people.every(function(p) {
+        return p.key === 'main' ? ci.arrived : (ci.companions && ci.companions[p.key]);
+      });
+      var anyChecked = ci.arrived || (ci.companions && Object.values(ci.companions).some(function(v) { return v; }));
+      return { guest: g, people: people, mesa: mesa, ci: ci, allChecked: allChecked, anyChecked: anyChecked };
+    });
+
+    // Filter by search
+    if (search.length > 0) {
+      guestCards = guestCards.filter(function(gc) {
+        return gc.people.some(function(p) { return normalize(p.name).indexOf(search) !== -1; });
+      });
+    }
+
+    // Stats
+    var totalPeople = 0, arrivedPeople = 0, totalKids = 0, arrivedKids = 0;
+    confirmed.forEach(function(g) {
+      var comps = Array.isArray(g.wedding_companions) ? g.wedding_companions : [];
+      totalPeople += 1 + comps.length;
+      var ci = checkinData[g.id] || {};
+      if (ci.arrived) arrivedPeople++;
+      comps.forEach(function(c) {
+        if (c.idade && c.idade < 7) totalKids++;
+        if (ci.companions && ci.companions[c.nome]) {
+          arrivedPeople++;
+          if (c.idade && c.idade < 7) arrivedKids++;
+        }
+      });
+    });
+    var pct = totalPeople ? Math.round((arrivedPeople / totalPeople) * 100) : 0;
+
+    statsEl.innerHTML = '<div class="stat"><div class="stat__num">' + totalPeople + '</div><div class="stat__lbl">Esperados</div></div>' +
+      '<div class="stat"><div class="stat__num" style="color:#6FCF97">' + arrivedPeople + '</div><div class="stat__lbl">Chegaram</div></div>' +
+      '<div class="stat"><div class="stat__num">' + (totalPeople - arrivedPeople) + '</div><div class="stat__lbl">Faltam</div></div>' +
+      '<div class="stat"><div class="stat__num" style="color:#FFD700">' + arrivedKids + '/' + totalKids + '</div><div class="stat__lbl">Crian&ccedil;as</div></div>' +
+      '<div class="stat"><div class="stat__num" style="color:#6FCF97">' + pct + '%</div><div class="stat__lbl">Presente</div></div>';
+
+    // Separate waiting vs arrived
+    var waiting = guestCards.filter(function(gc) { return !gc.allChecked; });
+    var arrived = guestCards.filter(function(gc) { return gc.allChecked; });
+
+    // Sort waiting by mesa number
+    function mesaSort(a, b) {
+      var na = a.mesa ? parseInt((a.mesa.match(/\d+/) || [999])[0]) : 999;
+      var nb = b.mesa ? parseInt((b.mesa.match(/\d+/) || [999])[0]) : 999;
+      return na - nb;
+    }
+    waiting.sort(mesaSort);
+    arrived.sort(function(a, b) {
+      var ta = (a.ci && a.ci.time) || '';
+      var tb = (b.ci && b.ci.time) || '';
+      return tb.localeCompare(ta);
+    });
+
+    var html = '';
+
+    if (waiting.length) {
+      html += '<span class="recepcao-section-label">Aguardando (' + waiting.length + ')</span>';
+      waiting.forEach(function(gc) { html += buildRecepcaoCard(gc, false); });
+    }
+    if (arrived.length) {
+      html += '<span class="recepcao-section-label" style="color:#6FCF97;">Chegaram (' + arrived.length + ')</span>';
+      arrived.forEach(function(gc) { html += buildRecepcaoCard(gc, true); });
+    }
+
+    if (!waiting.length && !arrived.length) {
+      html = '<div class="recepcao-empty">Nenhum convidado confirmado encontrado.</div>';
+    }
+
+    board.innerHTML = html;
+
+    // Bind events
+    board.querySelectorAll('.recepcao-person').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var gid = this.closest('.recepcao-card').dataset.guestId;
+        var pkey = this.dataset.personKey;
+        var isMain = this.dataset.isMain === 'true';
+        togglePerson(gid, pkey, isMain);
+      });
+    });
+    board.querySelectorAll('.recepcao-card__btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        confirmAllArrival(this.dataset.guestId);
+      });
+    });
+  }
+
+  function buildRecepcaoCard(gc, isArrived) {
+    var mesaLabel = gc.mesa ? gc.mesa.replace(/\s*—.*/, '') : 'Sem mesa';
+    var ci = gc.ci || {};
+    var statusClass = isArrived ? 'recepcao-card--arrived' : '';
+    var statusHTML = isArrived
+      ? '<span class="recepcao-card__status recepcao-card__status--arrived">Chegou' + (ci.time ? ' · ' + ci.time : '') + '</span>'
+      : '<span class="recepcao-card__status recepcao-card__status--waiting">Aguardando</span>';
+
+    var peopleHTML = gc.people.map(function(p) {
+      var checked = p.key === 'main' ? ci.arrived : (ci.companions && ci.companions[p.key]);
+      var compClass = p.isComp ? ' recepcao-person--comp' : '';
+      return '<div class="recepcao-person' + compClass + '" data-person-key="' + p.key.replace(/"/g, '&quot;') + '" data-is-main="' + (!p.isComp) + '">' +
+        '<div class="recepcao-person__check' + (checked ? ' checked' : '') + '"></div>' +
+        '<span class="recepcao-person__name">' + p.name + (p.idade ? '<span style="font-family:var(--fu);font-size:10px;color:var(--white-dim);margin-left:6px;">' + p.idade + ' anos</span>' : '') + '</span>' +
+        '</div>';
+    }).join('');
+
+    var actionsHTML = isArrived ? '' :
+      '<div class="recepcao-card__actions"><button class="recepcao-card__btn" data-guest-id="' + gc.guest.id + '">Confirmar Chegada</button></div>';
+
+    return '<div class="recepcao-card ' + statusClass + '" data-guest-id="' + gc.guest.id + '">' +
+      '<div class="recepcao-card__header">' + statusHTML + '<span class="recepcao-card__mesa">' + mesaLabel + '</span></div>' +
+      peopleHTML + actionsHTML + '</div>';
+  }
+
+  function togglePerson(guestId, personKey, isMain) {
+    if (!checkinData[guestId]) checkinData[guestId] = { arrived: false, companions: {}, time: '' };
+    var ci = checkinData[guestId];
+    if (isMain) {
+      ci.arrived = !ci.arrived;
+      if (ci.arrived && !ci.time) ci.time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    } else {
+      if (!ci.companions) ci.companions = {};
+      ci.companions[personKey] = !ci.companions[personKey];
+      if (ci.companions[personKey] && !ci.time) {
+        ci.arrived = true;
+        ci.time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      }
+    }
+    saveCheckinToDB();
+    drawRecepcao();
+  }
+
+  function confirmAllArrival(guestId) {
+    var g = allGuests.find(function(g) { return g.id === guestId; });
+    if (!g) return;
+    var comps = Array.isArray(g.wedding_companions) ? g.wedding_companions : [];
+    var now = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    checkinData[guestId] = {
+      arrived: true,
+      time: now,
+      companions: {}
+    };
+    comps.forEach(function(c) { checkinData[guestId].companions[c.nome] = true; });
+    saveCheckinToDB();
+    drawRecepcao();
   }
 
   // Init

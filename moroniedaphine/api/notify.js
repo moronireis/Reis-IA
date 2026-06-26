@@ -6,6 +6,7 @@ const EVOLUTION_URL = 'https://weirdpigeon-evolution.cloudfy.live';
 const EVOLUTION_KEY = 'tqXOKoUIAH0llngaxg9k2dYnx5CpHrnp';
 const EVOLUTION_INSTANCE = 'Reis';
 const NOTIFY_PHONES = ['5511963341710', '5511967615987'];
+const PADRINHOS_PHONES = ['5511914871992', '5511982245661', '5535991924824'];
 const NOTIFY_EMAILS = ['moronif.reis@gmail.com', 'daphine.oliveira@gmail.com'];
 
 export default async function handler(req, res) {
@@ -18,7 +19,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { event, nome, whatsapp, fonte, valor, detalhes } = req.body;
+    const { event, nome, whatsapp, fonte, valor, detalhes, telefone, presentes, outro, mesa, familia } = req.body;
 
     // Build messages based on event type
     let emailSubject, emailBody, whatsappMsg;
@@ -78,6 +79,28 @@ export default async function handler(req, res) {
         whatsappMsg = `✅ *Presença Confirmada!*\n\n👤 *${nome}*\n📱 ${whatsapp || 'N/A'}\n⏰ ${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}\n\n🔗 moroniedaphine.vercel.app/admin`;
         break;
 
+      case 'presente_mesa': {
+        const mesaLabel = mesa ? `Mesa ${mesa}` : 'Mesa não informada';
+        const familiaLabel = familia || '';
+        const presentesList = (presentes && presentes.length > 0) ? presentes.join(', ') : 'Nenhum da lista';
+        const outroLabel = outro ? outro : '';
+        const dataHora = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+
+        emailSubject = `🎁 Presente — ${nome} (${mesaLabel})`;
+        emailBody = `
+          <h2>Novo presente registrado na mesa!</h2>
+          <p><strong>Mesa:</strong> ${mesaLabel}${familiaLabel ? ` — ${familiaLabel}` : ''}</p>
+          <p><strong>Nome:</strong> ${nome}</p>
+          <p><strong>Telefone:</strong> ${telefone || 'N/A'}</p>
+          <p><strong>Presentes:</strong> ${presentesList}</p>
+          ${outroLabel ? `<p><strong>Outro:</strong> ${outroLabel}</p>` : ''}
+          <p><strong>Data:</strong> ${dataHora}</p>
+          <hr><p><a href="https://moroniedaphine.vercel.app/admin">Abrir painel</a></p>
+        `;
+        whatsappMsg = `🎁 *Presente Registrado!*\n\n🪑 *${mesaLabel}*${familiaLabel ? ` — ${familiaLabel}` : ''}\n👤 *${nome}*\n📱 ${telefone || 'N/A'}\n\n📦 *Presentes:*\n${presentes && presentes.length > 0 ? presentes.map(p => `  • ${p}`).join('\n') : '  Nenhum da lista'}${outroLabel ? `\n\n✏️ *Outro:* ${outroLabel}` : ''}\n\n⏰ ${dataHora}`;
+        break;
+      }
+
       default:
         emailSubject = `Notificação — ${event || 'evento'}`;
         emailBody = `<h2>${event}</h2><p>${JSON.stringify(req.body)}</p>`;
@@ -99,7 +122,7 @@ export default async function handler(req, res) {
       })
     }).catch(e => console.log('Email error:', e));
 
-    // Send WhatsApp via Evolution API (both numbers)
+    // Send WhatsApp via Evolution API (noivos)
     const whatsappPromises = NOTIFY_PHONES.map(phone =>
       fetch(`${EVOLUTION_URL}/message/sendText/${EVOLUTION_INSTANCE}`, {
         method: 'POST',
@@ -114,8 +137,25 @@ export default async function handler(req, res) {
       }).catch(e => console.log('WhatsApp error:', e))
     );
 
+    // Send to padrinhos for presente_mesa events
+    const padrinhosPromises = event === 'presente_mesa'
+      ? PADRINHOS_PHONES.map(phone =>
+          fetch(`${EVOLUTION_URL}/message/sendText/${EVOLUTION_INSTANCE}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': EVOLUTION_KEY
+            },
+            body: JSON.stringify({
+              number: phone,
+              text: whatsappMsg
+            })
+          }).catch(e => console.log('Padrinho WhatsApp error:', e))
+        )
+      : [];
+
     // Fire all in parallel
-    await Promise.all([emailPromise, ...whatsappPromises]);
+    await Promise.all([emailPromise, ...whatsappPromises, ...padrinhosPromises]);
 
     return res.status(200).json({ sent: true });
   } catch (error) {
