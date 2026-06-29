@@ -18,11 +18,33 @@ export const POST: APIRoute = async ({ request, params }) => {
     return new Response('ok', { status: 200 });
   }
 
-  // UazapiGO may wrap in { event, data } or { event, data: [...] }
-  // Unwrap if present
+  // UazapiGO sends two possible formats:
+  // 1. Legacy: { chatid, from, id, type, text, ... } — flat object
+  // 2. New:    { BaseUrl, EventType, chat, message } — nested CRM format
+  // Also may wrap in { event, data } or { data: [...] }
   if (body && typeof body === 'object' && !Array.isArray(body)) {
     const b = body as Record<string, unknown>;
-    if (b.data !== undefined && !b.chatid && !b.from && !b.id) {
+
+    // New UazapiGO CRM format: { EventType: "messages", chat: {...}, message: {...} }
+    if (b.EventType === 'messages' && b.message && typeof b.message === 'object') {
+      const msg = b.message as Record<string, unknown>;
+      const chat = (b.chat || {}) as Record<string, unknown>;
+      // Normalize to flat format expected by processMessage
+      body = {
+        chatid: msg.from || msg.chatId || chat.phone || '',
+        from: msg.from || msg.chatId || '',
+        id: msg.id || '',
+        type: msg.type === 'chat' ? 'text' : (msg.type || 'text'),
+        text: msg.body || msg.text || '',
+        fromMe: msg.fromMe ?? false,
+        pushName: msg.pushName || chat.name || '',
+        profilePicUrl: chat.imagePreview || chat.image || '',
+        mediaType: msg.mediaType || '',
+        content: msg.content || {},
+        participant: msg.participant || '',
+      };
+    } else if (b.data !== undefined && !b.chatid && !b.from && !b.id) {
+      // Legacy wrapper: { event, data }
       body = b.data;
     }
   }
