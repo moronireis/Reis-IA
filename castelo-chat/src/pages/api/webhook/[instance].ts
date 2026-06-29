@@ -35,7 +35,7 @@ export const POST: APIRoute = async ({ request, params }) => {
   await supabase.from('castelo_webhook_log').insert({
     instance_id: instanceId,
     raw: debugSnippet,
-  }).catch(() => {});
+  }).then(() => {}, () => {});
 
   for (const msg of messages) {
     try {
