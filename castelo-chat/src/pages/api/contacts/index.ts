@@ -11,21 +11,23 @@ export const GET: APIRoute = async ({ request, url }) => {
   const offset = Number(url.searchParams.get('offset') || 0);
 
   if (mode === 'conversations') {
-    // Only contacts with messages, ordered by last activity
+    // All contacts ordered by last activity — active conversations first, then rest
     const { data, error } = await supabase
       .from('castelo_contacts')
       .select('*')
-      .not('last_message_at', 'is', null)
-      .order('last_message_at', { ascending: false });
+      .eq('is_group', false)
+      .order('last_message_at', { ascending: false, nullsFirst: false })
+      .order('name', { ascending: true, nullsFirst: false });
 
     if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
     return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
   }
 
-  // mode=all — paginated, ordered by name
+  // mode=all — paginated, alphabetical (used for search)
   const { data, error } = await supabase
     .from('castelo_contacts')
     .select('*')
+    .eq('is_group', false)
     .order('name', { ascending: true, nullsFirst: false })
     .range(offset, offset + limit - 1);
 

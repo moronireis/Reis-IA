@@ -39,7 +39,11 @@ export function ContactList({
 
   const convos = filterBySearch(contacts);
   const allFiltered = filterBySearch(allContacts);
+
+  // Conversations tab: search narrows the full list; if no search show all (active first)
+  // All tab: paginated alphabetical for bulk search
   const displayList = tab === 'conversations' ? convos : allFiltered;
+  const activeCount = contacts.filter(c => c.last_message_at).length;
 
   return (
     <div style={{ width: 300, borderRight: '1px solid var(--gold-dim)', display: 'flex', flexDirection: 'column', background: '#162019', flexShrink: 0, height: '100%' }}>
@@ -80,7 +84,10 @@ export function ContactList({
                 padding: '0.4rem 0', fontFamily: 'Inter, sans-serif', fontWeight: 500,
               }}
             >
-              {t === 'conversations' ? `Conversas ${contacts.length > 0 ? `(${contacts.length})` : ''}` : `Todos (${allContacts.length})`}
+              {t === 'conversations'
+                ? `Recentes${activeCount > 0 ? ` (${activeCount})` : ''}`
+                : `Todos (${allContacts.length})`
+              }
             </button>
           ))}
         </div>
@@ -90,79 +97,89 @@ export function ContactList({
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {displayList.length === 0 && (
           <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--cream-dim)', fontSize: '0.8rem' }}>
-            {tab === 'conversations' ? 'Nenhuma conversa ainda.\nAguardando mensagens.' : 'Nenhum contato encontrado.'}
+            Nenhum contato encontrado.
           </div>
         )}
-        {displayList.map(contact => {
+        {displayList.map((contact, idx) => {
           const isSelected = contact.id === selectedId;
           const label = contact.name || contact.push_name || formatPhone(contact.phone);
           const initial = label.trim().slice(0, 1).toUpperCase();
           const bg = avatarColor(contact.phone);
-          const badge = contact.instance_id === 'castelo1' ? '1' : '2';
           const hasUnread = (contact.unread_count || 0) > 0;
+          const hasMessage = Boolean(contact.last_message_at);
+
+          // Separator between active and inactive contacts (conversations tab only)
+          const prevHasMessage = idx > 0 && Boolean(displayList[idx - 1].last_message_at);
+          const showSeparator = tab === 'conversations' && !hasMessage && prevHasMessage;
 
           return (
-            <div
-              key={contact.id}
-              onClick={() => onSelect(contact)}
-              style={{
-                padding: '0.6rem 1rem', cursor: 'pointer', display: 'flex', gap: '0.65rem',
-                alignItems: 'center', borderBottom: '1px solid rgba(244,239,230,0.04)',
-                background: isSelected ? 'rgba(201,169,110,0.1)' : 'transparent',
-                borderLeft: isSelected ? '2px solid var(--gold)' : '2px solid transparent',
-                transition: 'background 0.1s',
-              }}
-            >
-              {/* Avatar */}
-              <div style={{ position: 'relative', flexShrink: 0 }}>
+            <div key={contact.id}>
+              {showSeparator && (
                 <div style={{
-                  width: 40, height: 40, background: bg, borderRadius: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  overflow: 'hidden',
+                  padding: '0.35rem 1rem',
+                  fontSize: '0.62rem', letterSpacing: '0.09em', textTransform: 'uppercase',
+                  color: 'rgba(244,239,230,0.3)',
+                  borderBottom: '1px solid rgba(244,239,230,0.04)',
+                  background: 'rgba(0,0,0,0.15)',
                 }}>
-                  {contact.photo_url
-                    ? <img src={contact.photo_url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-                    : <span style={{ color: 'rgba(244,239,230,0.9)', fontSize: '0.9rem', fontWeight: 600 }}>{initial}</span>
-                  }
+                  Contatos
                 </div>
-                <span style={{
-                  position: 'absolute', bottom: -2, right: -2,
-                  background: 'var(--gold)', color: 'var(--forest-deep)',
-                  fontSize: '0.5rem', width: 13, height: 13,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700,
-                }}>{badge}</span>
-              </div>
-
-              {/* Info */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 4 }}>
-                  <span style={{
-                    fontSize: '0.83rem', fontWeight: hasUnread ? 600 : 400,
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    color: 'var(--cream)',
-                    flex: 1,
+              )}
+              <div
+                onClick={() => onSelect(contact)}
+                style={{
+                  padding: '0.6rem 1rem', cursor: 'pointer', display: 'flex', gap: '0.65rem',
+                  alignItems: 'center', borderBottom: '1px solid rgba(244,239,230,0.04)',
+                  background: isSelected ? 'rgba(201,169,110,0.1)' : 'transparent',
+                  borderLeft: isSelected ? '2px solid var(--gold)' : '2px solid transparent',
+                  transition: 'background 0.1s',
+                  opacity: hasMessage ? 1 : 0.7,
+                }}
+              >
+                {/* Avatar */}
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                  <div style={{
+                    width: 40, height: 40, background: bg, borderRadius: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    overflow: 'hidden',
                   }}>
-                    {label}
-                  </span>
-                  {contact.last_message_at && (
-                    <span style={{ fontSize: '0.65rem', color: 'var(--cream-dim)', flexShrink: 0 }}>
-                      {formatTime(contact.last_message_at)}
-                    </span>
-                  )}
+                    {contact.photo_url
+                      ? <img src={contact.photo_url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                      : <span style={{ color: 'rgba(244,239,230,0.9)', fontSize: '0.9rem', fontWeight: 600 }}>{initial}</span>
+                    }
+                  </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 1 }}>
-                  <span style={{ fontSize: '0.73rem', color: 'var(--cream-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                    {contact.last_message_preview || (tab === 'all' && !contact.last_message_at ? formatPhone(contact.phone) : '')}
-                  </span>
-                  {hasUnread && (
+
+                {/* Info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 4 }}>
                     <span style={{
-                      background: 'var(--gold)', color: 'var(--forest-deep)', borderRadius: '50%',
-                      width: 17, height: 17, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '0.6rem', fontWeight: 700, flexShrink: 0, marginLeft: 4,
+                      fontSize: '0.83rem', fontWeight: hasUnread ? 600 : 400,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      color: 'var(--cream)', flex: 1,
                     }}>
-                      {(contact.unread_count || 0) > 9 ? '9+' : contact.unread_count}
+                      {label}
                     </span>
-                  )}
+                    {contact.last_message_at && (
+                      <span style={{ fontSize: '0.65rem', color: 'var(--cream-dim)', flexShrink: 0 }}>
+                        {formatTime(contact.last_message_at)}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 1 }}>
+                    <span style={{ fontSize: '0.73rem', color: 'var(--cream-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                      {contact.last_message_preview || formatPhone(contact.phone)}
+                    </span>
+                    {hasUnread && (
+                      <span style={{
+                        background: 'var(--gold)', color: 'var(--forest-deep)', borderRadius: '50%',
+                        width: 17, height: 17, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '0.6rem', fontWeight: 700, flexShrink: 0, marginLeft: 4,
+                      }}>
+                        {(contact.unread_count || 0) > 9 ? '9+' : contact.unread_count}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
