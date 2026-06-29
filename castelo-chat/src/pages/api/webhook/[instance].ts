@@ -31,7 +31,7 @@ export const POST: APIRoute = async ({ request, params }) => {
   const supabase = createServerSupabase();
 
   // Debug: log raw payload structure — awaited so it completes before function exits
-  const debugSnippet = rawText.slice(0, 800);
+  const debugSnippet = rawText.slice(0, 4000);
   await supabase.from('castelo_webhook_log').insert({
     instance_id: instanceId,
     raw: debugSnippet,
