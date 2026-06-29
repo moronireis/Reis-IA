@@ -29,14 +29,12 @@ export const POST: APIRoute = async ({ request, params }) => {
   const messages = Array.isArray(body) ? body : [body];
   const supabase = createServerSupabase();
 
-  // Debug: log raw payload structure to Supabase for diagnostics
-  // Saves first 800 chars of body for 24h — remove after confirmed working
+  // Debug: log raw payload structure — awaited so it completes before function exits
   const debugSnippet = rawText.slice(0, 800);
-  supabase.from('castelo_webhook_log').insert({
+  await supabase.from('castelo_webhook_log').insert({
     instance_id: instanceId,
     raw: debugSnippet,
-    created_at: new Date().toISOString(),
-  }).then(() => {}).catch(() => {});
+  }).catch(() => {});
 
   for (const msg of messages) {
     try {
