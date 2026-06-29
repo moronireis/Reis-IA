@@ -5,6 +5,7 @@ import { normalizePhone } from '../../../lib/uazapi';
 import { sendToChatwoot } from '../../../lib/chatwoot';
 
 export const POST: APIRoute = async ({ request, params }) => {
+  try {
   const instanceId = params.instance || 'castelo1';
 
   let rawText = '';
@@ -45,6 +46,10 @@ export const POST: APIRoute = async ({ request, params }) => {
   }
 
   return new Response('ok', { status: 200 });
+  } catch (topErr: unknown) {
+    const msg = topErr instanceof Error ? topErr.message + '\n' + topErr.stack : String(topErr);
+    return new Response(JSON.stringify({ error: msg }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  }
 };
 
 type SupabaseClient = ReturnType<typeof createServerSupabase>;
