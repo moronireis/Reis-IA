@@ -7,15 +7,36 @@ import { sendToChatwoot } from '../../../lib/chatwoot';
 export const POST: APIRoute = async ({ request, params }) => {
   const instanceId = params.instance || 'castelo1';
 
+  let rawText = '';
   let body: unknown;
   try {
-    body = await request.json();
+    rawText = await request.text();
+    body = JSON.parse(rawText);
   } catch {
+    console.error('[webhook] Failed to parse body:', rawText?.slice(0, 200));
     return new Response('ok', { status: 200 });
+  }
+
+  // UazapiGO may wrap in { event, data } or { event, data: [...] }
+  // Unwrap if present
+  if (body && typeof body === 'object' && !Array.isArray(body)) {
+    const b = body as Record<string, unknown>;
+    if (b.data !== undefined && !b.chatid && !b.from && !b.id) {
+      body = b.data;
+    }
   }
 
   const messages = Array.isArray(body) ? body : [body];
   const supabase = createServerSupabase();
+
+  // Debug: log raw payload structure to Supabase for diagnostics
+  // Saves first 800 chars of body for 24h — remove after confirmed working
+  const debugSnippet = rawText.slice(0, 800);
+  supabase.from('castelo_webhook_log').insert({
+    instance_id: instanceId,
+    raw: debugSnippet,
+    created_at: new Date().toISOString(),
+  }).then(() => {}).catch(() => {});
 
   for (const msg of messages) {
     try {
