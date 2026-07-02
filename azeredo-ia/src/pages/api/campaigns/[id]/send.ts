@@ -3,19 +3,11 @@ import { requireAuth } from '../../../../lib/api-auth';
 import { createServerClient } from '../../../../lib/supabase-server';
 import { normalizePhone } from '../../../../lib/whatsapp/send';
 import { kickWorker } from '../../../../lib/campaign-worker';
+import { resolveAudience, type SegmentFilter } from '../../../../lib/campaign-audience';
 
 export const prerender = false;
 
 type SB = ReturnType<typeof createServerClient>;
-
-interface SegmentFilter {
-  brand_ids?: string[];
-  cidade?: string;
-  estado?: string;
-  segmento?: string;
-  status?: string;
-  tags?: string[];
-}
 
 // POST /api/campaigns/[id]/send
 // Prepara a fila de disparo e aciona o worker (/process). O envio real
@@ -59,37 +51,36 @@ export const POST: APIRoute = async ({ locals, params, url }) => {
   const instErr = await checkInstanceLive(sb, (campaign as any).instance_id);
   if (instErr) return json({ error: instErr }, 400);
 
-  // 4. Contatos do segmento (paginado — uma query única trunca em 1000 linhas)
+  // 4/5. Audiência resolvida pela MESMA lib do preview do wizard — a lista
+  //      que a Tati revisou (com inclusões/remoções manuais e dedup por
+  //      telefone) é exatamente o que entra na fila.
   const filter = (campaign.segment_filter || {}) as SegmentFilter;
-  const { contacts, error: resolveErr } = await resolveAllContacts(sb, filter);
-  if (resolveErr) return json({ error: resolveErr }, 500);
-  if (!contacts.length) {
-    return json({ error: 'Nenhum contato corresponde ao segmento selecionado' }, 400);
+  const { audience, error: resolveErr } = await resolveAudience(sb, filter);
+  if (resolveErr || !audience) return json({ error: resolveErr || 'Falha ao resolver contatos' }, 500);
+  if (!audience.contacts.length) {
+    return json({ error: 'Nenhum contato na lista de disparo — ajuste os filtros ou adicione contatos' }, 400);
   }
 
-  // 5. Dedup por telefone normalizado — cada número recebe uma única vez
-  const seen = new Map<string, string>();
-  const rows: any[] = [];
-  for (const c of contacts) {
-    const phone = normalizePhone(c.phone_primary);
-    const name = c.nome_fantasia || c.razao_social || null;
-    const firstOwner = seen.get(phone);
-    if (firstOwner) {
-      rows.push({
-        campaign_id: id, contact_id: c.id, phone, contact_name: name,
-        status: 'skipped',
-        error_message: `Número repetido (mesmo telefone de "${firstOwner}")`,
-      });
-    } else {
-      seen.set(phone, name || phone);
-      // error_message: null mantém o mesmo conjunto de chaves das linhas
-      // skipped — PostgREST rejeita bulk insert com chaves divergentes (PGRST102)
-      rows.push({
-        campaign_id: id, contact_id: c.id, phone, contact_name: name,
-        status: 'pending', error_message: null,
-      });
-    }
-  }
+  // error_message: null mantém o mesmo conjunto de chaves das linhas skipped
+  // — PostgREST rejeita bulk insert com chaves divergentes (PGRST102)
+  const rows: any[] = [
+    ...audience.contacts.map(c => ({
+      campaign_id: id,
+      contact_id: c.id,
+      phone: normalizePhone(c.phone_primary),
+      contact_name: c.nome_fantasia || c.razao_social || null,
+      status: 'pending',
+      error_message: null,
+    })),
+    ...audience.duplicates.map(({ contact: c, dupOf }) => ({
+      campaign_id: id,
+      contact_id: c.id,
+      phone: normalizePhone(c.phone_primary),
+      contact_name: c.nome_fantasia || c.razao_social || null,
+      status: 'skipped',
+      error_message: `Número repetido (mesmo telefone de "${dupOf}")`,
+    })),
+  ];
 
   // 6. Grava a fila em chunks. ignoreDuplicates: linhas já existentes
   //    (retomada) ficam intactas — quem já recebeu não recebe de novo.
@@ -178,80 +169,6 @@ async function checkInstanceLive(sb: SB, instanceId: string | null): Promise<str
     return null;
   } catch {
     return 'Não foi possível verificar o status do número no UazapiGO';
-  }
-}
-
-// Resolve TODOS os contatos do segment_filter, paginando de 1000 em 1000.
-async function resolveAllContacts(
-  sb: SB,
-  filter: SegmentFilter
-): Promise<{ contacts: any[]; error: string | null }> {
-  const { brand_ids, cidade, estado, segmento, status, tags } = filter;
-  const PAGE = 1000;
-
-  try {
-    let contactIds: string[] | null = null;
-
-    if (brand_ids && brand_ids.length > 0) {
-      const idSet = new Set<string>();
-      for (let from = 0; ; from += PAGE) {
-        const { data: cb, error: cbErr } = await sb
-          .from('az_contact_brands')
-          .select('contact_id')
-          .in('brand_id', brand_ids)
-          .range(from, from + PAGE - 1);
-        if (cbErr) return { contacts: [], error: cbErr.message };
-        (cb || []).forEach((r: any) => idSet.add(r.contact_id as string));
-        if (!cb || cb.length < PAGE) break;
-      }
-      contactIds = [...idSet];
-      if (contactIds.length === 0) return { contacts: [], error: null };
-    }
-
-    const applyFilters = (query: any) => {
-      if (cidade)                  query = query.ilike('cidade', `%${cidade}%`);
-      if (estado)                  query = query.ilike('estado', `%${estado}%`);
-      if (segmento)                query = query.ilike('segmento', `%${segmento}%`);
-      if (status)                  query = query.eq('status', status);
-      if (tags && tags.length > 0) query = query.contains('tags', tags);
-      return query;
-    };
-
-    const SELECT = 'id, nome_fantasia, razao_social, phone_primary, cidade, estado, contato, segmento';
-    const all: any[] = [];
-
-    if (contactIds) {
-      // Filtro por marca: busca em chunks de ids (um .in() com milhares de
-      // UUIDs estoura o limite de URL do PostgREST)
-      const CHUNK = 200;
-      for (let i = 0; i < contactIds.length; i += CHUNK) {
-        const { data, error } = await applyFilters(
-          sb.from('az_contacts')
-            .select(SELECT)
-            .not('phone_primary', 'is', null)
-            .in('id', contactIds.slice(i, i + CHUNK))
-        );
-        if (error) return { contacts: [], error: error.message };
-        all.push(...(data || []));
-      }
-    } else {
-      for (let from = 0; ; from += PAGE) {
-        const { data, error } = await applyFilters(
-          sb.from('az_contacts')
-            .select(SELECT)
-            .not('phone_primary', 'is', null)
-            .order('id', { ascending: true })
-            .range(from, from + PAGE - 1)
-        );
-        if (error) return { contacts: [], error: error.message };
-        all.push(...(data || []));
-        if (!data || data.length < PAGE) break;
-      }
-    }
-
-    return { contacts: all, error: null };
-  } catch (e: any) {
-    return { contacts: [], error: e.message };
   }
 }
 

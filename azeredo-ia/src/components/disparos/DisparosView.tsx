@@ -37,18 +37,27 @@ interface SegmentFilter {
   segmento?: string;
   status?: string;
   tags?: string[];
+  include_ids?: string[];   // contatos adicionados manualmente à lista
+  exclude_ids?: string[];   // contatos removidos manualmente da lista
+}
+
+interface PreviewContact {
+  id: string;
+  name: string;
+  phone: string;
+  cidade: string | null;
+  manual: boolean;
 }
 
 interface PreviewResult {
   count: number;
-  sample: { name: string; phone: string; cidade: string }[];
+  duplicates: number;
+  contacts: PreviewContact[];
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const SEGMENTO_OPTIONS = [
-  'Papelaria', 'Brinquedo', 'Bazar', 'Papelaria e Brinquedo', 'Serviço', 'Outros',
-];
+const PREVIEW_PAGE = 100;
 
 const ESTADO_OPTIONS = [
   'RS', 'SC', 'PR', 'SP', 'MG', 'RJ', 'ES', 'MS', 'MT', 'GO', 'DF',
@@ -101,6 +110,14 @@ function estimatedMinutes(total: number) {
 function instanceLabel(inst: Campaign['az_whatsapp_instances']): string {
   if (!inst) return '';
   return inst.display_name || inst.uazapi_name;
+}
+function fmtPhone(p: string | null): string {
+  const d = (p || '').replace(/\D/g, '');
+  if (d.length === 13) return `+${d.slice(0,2)} (${d.slice(2,4)}) ${d.slice(4,9)}-${d.slice(9)}`;
+  if (d.length === 12) return `+${d.slice(0,2)} (${d.slice(2,4)}) ${d.slice(4,8)}-${d.slice(8)}`;
+  if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  return p || '';
 }
 
 // ─── Shared style atoms ───────────────────────────────────────────────────────
@@ -809,11 +826,19 @@ function NewCampaignWizard({
   const [brands, setBrands]             = useState<Brand[]>([]);
   const [loadingBrands, setLoadingBrands] = useState(true);
   const [brandSearch, setBrandSearch]   = useState('');
+  const [segmentos, setSegmentos]       = useState<{ segmento: string; count: number }[]>([]);
+  const [semSegmento, setSemSegmento]   = useState(0);
   const [filter, setFilter]             = useState<SegmentFilter>(existing?.segment_filter || {});
   const [preview, setPreview]           = useState<PreviewResult | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [loadingMore, setLoadingMore]   = useState(false);
   const [campaignId, setCampaignId]     = useState<string | null>(existing?.id || null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Busca para adicionar contatos manualmente à lista
+  const [addQuery, setAddQuery]     = useState('');
+  const [addResults, setAddResults] = useState<any[]>([]);
+  const addDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Step 4 fields (dispatch monitor)
   const [dispatchTotal, setDispatchTotal] = useState(0);
@@ -831,6 +856,12 @@ function NewCampaignWizard({
       .then(r => r.json())
       .then(d => { setBrands(d.brands || []); setLoadingBrands(false); })
       .catch(() => setLoadingBrands(false));
+
+    // Segmentos reais da base (as opções fixas antigas não batiam com os dados)
+    fetch('/api/contacts/segmentos')
+      .then(r => r.json())
+      .then(d => { setSegmentos(d.segmentos || []); setSemSegmento(d.sem_segmento || 0); })
+      .catch(() => {});
 
     fetch('/api/instances?live=1')
       .then(r => r.json())
@@ -895,23 +926,75 @@ function NewCampaignWizard({
   async function loadPreview() {
     if (!campaignId) return;
     setPreviewLoading(true);
-    setPreview(null);
     try {
       await fetch(`/api/campaigns/${campaignId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ segment_filter: filter }),
       });
-      const res = await fetch(`/api/campaigns/${campaignId}/preview`);
+      const res = await fetch(`/api/campaigns/${campaignId}/preview?offset=0&limit=${PREVIEW_PAGE}`);
       const d = await res.json();
-      if (res.ok) setPreview(d);
-      else toast.error(d.error || 'Erro ao contar destinatários');
+      if (res.ok) setPreview({ count: d.count, duplicates: d.duplicates || 0, contacts: d.contacts || [] });
+      else { setPreview(null); toast.error(d.error || 'Erro ao montar a lista'); }
     } catch {
       toast.error('Erro de conexão');
     } finally {
       setPreviewLoading(false);
     }
   }
+
+  async function loadMore() {
+    if (!campaignId || !preview) return;
+    setLoadingMore(true);
+    try {
+      const res = await fetch(`/api/campaigns/${campaignId}/preview?offset=${preview.contacts.length}&limit=${PREVIEW_PAGE}`);
+      const d = await res.json();
+      if (res.ok) {
+        setPreview(p => p ? { ...p, count: d.count, contacts: [...p.contacts, ...(d.contacts || [])] } : p);
+      }
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
+  // Remover da lista: contato do filtro vai para exclude_ids;
+  // contato manual sai de include_ids
+  function removeContact(c: PreviewContact) {
+    setFilter(f => c.manual
+      ? { ...f, include_ids: (f.include_ids || []).filter(id => id !== c.id) }
+      : { ...f, exclude_ids: [...(f.exclude_ids || []), c.id] });
+  }
+
+  function restoreExcluded() {
+    setFilter(f => ({ ...f, exclude_ids: [] }));
+  }
+
+  function addContact(c: any) {
+    if (!c.phone_primary) return;
+    setFilter(f => ({
+      ...f,
+      include_ids: (f.include_ids || []).includes(c.id)
+        ? f.include_ids
+        : [...(f.include_ids || []), c.id],
+      exclude_ids: (f.exclude_ids || []).filter(id => id !== c.id),
+    }));
+    setAddQuery('');
+    setAddResults([]);
+  }
+
+  // Busca de contatos para adicionar (debounce 400ms)
+  useEffect(() => {
+    if (addDebounceRef.current) clearTimeout(addDebounceRef.current);
+    if (!addQuery.trim()) { setAddResults([]); return; }
+    addDebounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/contacts?q=${encodeURIComponent(addQuery.trim())}&limit=8`);
+        const d = await res.json();
+        setAddResults(d.contacts || []);
+      } catch { setAddResults([]); }
+    }, 400);
+    return () => { if (addDebounceRef.current) clearTimeout(addDebounceRef.current); };
+  }, [addQuery]);
 
   // Step 2 → 3
   async function goToStep3() {
@@ -1213,11 +1296,15 @@ function NewCampaignWizard({
             </div>
           </div>
 
-          {/* Segmento */}
+          {/* Segmento — opções reais da base, com contagem */}
           <div style={{ marginBottom: 14 }}>
             <label style={labelStyle}>Segmento</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {[{ value: '', label: 'Todos' }, ...SEGMENTO_OPTIONS.map(s => ({ value: s, label: s }))].map(o => {
+              {[
+                { value: '', label: 'Todos', count: null as number | null },
+                ...segmentos.map(s => ({ value: s.segmento, label: s.segmento, count: s.count as number | null })),
+                ...(semSegmento > 0 ? [{ value: '__sem__', label: 'Sem segmento', count: semSegmento as number | null }] : []),
+              ].map(o => {
                 const active = (filter.segmento || '') === o.value;
                 return (
                   <button
@@ -1232,6 +1319,9 @@ function NewCampaignWizard({
                     }}
                   >
                     {o.label}
+                    {o.count !== null && (
+                      <span style={{ opacity: 0.65, marginLeft: 5, fontSize: 10 }}>{o.count}</span>
+                    )}
                   </button>
                 );
               })}
@@ -1283,6 +1373,8 @@ function NewCampaignWizard({
                   cidade: hasTag ? f.cidade : undefined,
                   segmento: hasTag ? f.segmento : undefined,
                   status: hasTag ? f.status : undefined,
+                  include_ids: hasTag ? f.include_ids : [],
+                  exclude_ids: hasTag ? f.exclude_ids : [],
                 }));
               }}
               style={{
@@ -1297,55 +1389,163 @@ function NewCampaignWizard({
             </button>
           </div>
 
-          {/* Preview result — auto-updated */}
+          {/* Adicionar contato manualmente */}
+          <div style={{ marginBottom: 14, position: 'relative' }}>
+            <label style={labelStyle}>Adicionar contato à lista</label>
+            <input
+              style={inp}
+              placeholder="Buscar por nome, razão social, CNPJ ou contato..."
+              value={addQuery}
+              onChange={e => setAddQuery(e.target.value)}
+            />
+            {addResults.length > 0 && (
+              <div style={{
+                position: 'absolute', left: 0, right: 0, zIndex: 20,
+                background: '#0d1410', border: '1px solid #1c2820',
+                borderRadius: 8, marginTop: 4, overflow: 'hidden',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+              }}>
+                {addResults.map((c: any) => {
+                  const inList = (filter.include_ids || []).includes(c.id);
+                  const noPhone = !c.phone_primary;
+                  return (
+                    <div
+                      key={c.id}
+                      onClick={() => !noPhone && !inList && addContact(c)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '8px 12px', fontSize: 12,
+                        cursor: (noPhone || inList) ? 'not-allowed' : 'pointer',
+                        opacity: noPhone ? 0.45 : 1,
+                        borderBottom: '1px solid #111a12',
+                      }}
+                    >
+                      <span style={{ flex: 1, color: '#e8f0e8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {c.nome_fantasia || c.razao_social}
+                      </span>
+                      <span style={{ color: '#8aaa90', fontSize: 11 }}>
+                        {noPhone ? 'sem telefone' : fmtPhone(c.phone_primary)}
+                      </span>
+                      <span style={{ color: inList ? '#4a6050' : '#25D366', fontSize: 11, fontWeight: 600, flexShrink: 0 }}>
+                        {inList ? 'na lista' : '+ Adicionar'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Lista de disparo — exatamente o que será enviado */}
           <div style={{
             background: '#111a12', border: '1px solid #1c2820',
-            borderRadius: 10, padding: 16, marginBottom: 20,
-            minHeight: 70,
+            borderRadius: 10, marginBottom: 20, overflow: 'hidden',
           }}>
-            {previewLoading ? (
-              <div style={{ fontSize: 12, color: '#4a6050', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 14, height: 14, border: '2px solid #1c2820', borderTopColor: '#25D366', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-                Contando destinatários...
-              </div>
-            ) : preview ? (
-              <>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10 }}>
-                  <span style={{ fontSize: 28, fontWeight: 800, color: preview.count > 0 ? '#25D366' : '#ef4444' }}>
-                    {preview.count}
-                  </span>
-                  <span style={{ fontSize: 13, color: '#8aaa90' }}>
-                    {preview.count === 1 ? 'contato será atingido' : 'contatos serão atingidos'}
-                  </span>
-                  {preview.count > 0 && (
-                    <span style={{ fontSize: 11, color: '#4a6050', marginLeft: 'auto' }}>
-                      {estimatedMinutes(preview.count)}
-                    </span>
-                  )}
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid #1c2820' }}>
+              {previewLoading && !preview ? (
+                <div style={{ fontSize: 12, color: '#4a6050', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 14, height: 14, border: '2px solid #1c2820', borderTopColor: '#25D366', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                  Montando a lista de disparo...
                 </div>
-                {preview.sample.length > 0 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {preview.sample.map((s, i) => (
-                      <div key={i} style={{
-                        fontSize: 11, display: 'flex', gap: 8,
-                        padding: '3px 0', color: '#8aaa90',
-                        borderTop: i > 0 ? '1px solid #1c2820' : 'none',
-                      }}>
-                        <span style={{ flex: 1 }}>{s.name}</span>
-                        {s.cidade && <span style={{ color: '#4a6050' }}>{s.cidade}</span>}
-                      </div>
-                    ))}
-                    {preview.count > preview.sample.length && (
-                      <div style={{ fontSize: 11, color: '#4a6050', marginTop: 4 }}>
-                        + {preview.count - preview.sample.length} outros
-                      </div>
+              ) : preview ? (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 26, fontWeight: 800, color: preview.count > 0 ? '#25D366' : '#ef4444' }}>
+                      {preview.count}
+                    </span>
+                    <span style={{ fontSize: 13, color: '#8aaa90' }}>
+                      {preview.count === 1 ? 'contato na lista de disparo' : 'contatos na lista de disparo'}
+                    </span>
+                    {previewLoading && (
+                      <div style={{ width: 12, height: 12, border: '2px solid #1c2820', borderTopColor: '#25D366', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                    )}
+                    {preview.count > 0 && (
+                      <span style={{ fontSize: 11, color: '#4a6050', marginLeft: 'auto' }}>
+                        {estimatedMinutes(preview.count)}
+                      </span>
                     )}
                   </div>
+                  <div style={{ display: 'flex', gap: 14, marginTop: 4, flexWrap: 'wrap' }}>
+                    {preview.duplicates > 0 && (
+                      <span style={{ fontSize: 11, color: '#4a6050' }}>
+                        {preview.duplicates} com número repetido (recebem 1 vez)
+                      </span>
+                    )}
+                    {(filter.include_ids?.length || 0) > 0 && (
+                      <span style={{ fontSize: 11, color: '#fcd34d' }}>
+                        {filter.include_ids!.length} adicionado{filter.include_ids!.length > 1 ? 's' : ''} manualmente
+                      </span>
+                    )}
+                    {(filter.exclude_ids?.length || 0) > 0 && (
+                      <span style={{ fontSize: 11, color: '#f87171' }}>
+                        {filter.exclude_ids!.length} removido{filter.exclude_ids!.length > 1 ? 's' : ''}
+                        {' · '}
+                        <span onClick={restoreExcluded} style={{ textDecoration: 'underline', cursor: 'pointer' }}>
+                          restaurar
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div style={{ fontSize: 12, color: '#4a6050' }}>
+                  Ajuste os filtros acima para montar a lista de destinatários
+                </div>
+              )}
+            </div>
+
+            {preview && preview.contacts.length > 0 && (
+              <div style={{ maxHeight: 340, overflowY: 'auto' }}>
+                {preview.contacts.map(c => (
+                  <div key={c.id} style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '7px 14px', borderBottom: '1px solid #0d1410', fontSize: 12,
+                  }}>
+                    <span style={{ flex: 1, color: '#e8f0e8', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {c.name}
+                      {c.manual && (
+                        <span style={{
+                          fontSize: 9, fontWeight: 700, color: '#fcd34d',
+                          background: 'rgba(251,191,36,0.1)', borderRadius: 100,
+                          padding: '1px 6px', marginLeft: 7, verticalAlign: 'middle',
+                        }}>
+                          MANUAL
+                        </span>
+                      )}
+                    </span>
+                    <span style={{ color: '#8aaa90', fontSize: 11, flexShrink: 0 }}>{fmtPhone(c.phone)}</span>
+                    {c.cidade && <span style={{ color: '#4a6050', fontSize: 11, maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.cidade}</span>}
+                    <button
+                      onClick={() => removeContact(c)}
+                      title="Remover da lista de disparo"
+                      style={{
+                        background: 'transparent', border: 'none', cursor: 'pointer',
+                        color: '#4a6050', padding: '2px 4px', display: 'flex', flexShrink: 0,
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
+                      onMouseLeave={e => (e.currentTarget.style.color = '#4a6050')}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+                {preview.contacts.length < preview.count && (
+                  <button
+                    onClick={loadMore}
+                    disabled={loadingMore}
+                    style={{
+                      width: '100%', padding: '9px 0', border: 'none',
+                      background: '#0d1410', color: '#8aaa90', fontSize: 12,
+                      cursor: loadingMore ? 'wait' : 'pointer', fontFamily: 'inherit',
+                    }}
+                  >
+                    {loadingMore
+                      ? 'Carregando...'
+                      : `Carregar mais (${preview.contacts.length} de ${preview.count})`}
+                  </button>
                 )}
-              </>
-            ) : (
-              <div style={{ fontSize: 12, color: '#4a6050' }}>
-                Selecione os filtros acima para ver a lista de destinatários
               </div>
             )}
           </div>
