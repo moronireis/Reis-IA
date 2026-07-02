@@ -60,6 +60,7 @@ export const PATCH: APIRoute = async ({ locals, params, request }) => {
 
   const updates: Record<string, any> = {};
   if (body.name !== undefined)             updates.name = body.name;
+  if (body.template_id !== undefined)      updates.template_id = body.template_id || null;
   if (body.custom_body !== undefined)      updates.custom_body = body.custom_body;
   if (body.segment_filter !== undefined)   updates.segment_filter = body.segment_filter;
   if (body.instance_id !== undefined)      updates.instance_id = body.instance_id || null;

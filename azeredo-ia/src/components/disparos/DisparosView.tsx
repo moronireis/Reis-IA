@@ -246,13 +246,14 @@ function InstanceCard({
 // ─── Campaign Card ────────────────────────────────────────────────────────────
 
 function CampaignCard({
-  campaign, onExpand, expanded, onDelete, onChanged,
+  campaign, onExpand, expanded, onDelete, onChanged, onEdit,
 }: {
   campaign: Campaign;
   onExpand: (id: string) => void;
   expanded: boolean;
   onDelete: (id: string) => void;
   onChanged: () => void;
+  onEdit: (id: string) => void;
 }) {
   const [recipients, setRecipients] = useState<any[]>([]);
   const [loadingRec, setLoadingRec] = useState(false);
@@ -359,6 +360,18 @@ function CampaignCard({
         </div>
 
         <div style={{ display: 'flex', gap: 6, flexShrink: 0, alignItems: 'center' }}>
+          {campaign.status === 'draft' && (
+            <button
+              onClick={() => onEdit(campaign.id)}
+              style={{
+                background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.25)',
+                borderRadius: 7, padding: '6px 12px', cursor: 'pointer',
+                color: '#25D366', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
+              }}
+            >
+              Editar
+            </button>
+          )}
           {campaign.status === 'sending' && (
             <button
               disabled={acting}
@@ -395,7 +408,12 @@ function CampaignCard({
                 setDeleting(true);
                 try {
                   const r = await fetch(`/api/campaigns/${campaign.id}`, { method: 'DELETE' });
-                  if (r.ok) onDelete(campaign.id);
+                  if (r.ok) {
+                    onDelete(campaign.id);
+                  } else {
+                    const d = await r.json().catch(() => ({}));
+                    alert(d.error || 'Erro ao excluir a campanha');
+                  }
                 } finally { setDeleting(false); }
               }}
               title="Excluir"
@@ -473,11 +491,12 @@ function CampaignCard({
 
 // ─── Campaign List ────────────────────────────────────────────────────────────
 
-function CampaignList({ campaigns, loading, onRefresh, onDelete }: {
+function CampaignList({ campaigns, loading, onRefresh, onDelete, onEdit }: {
   campaigns: Campaign[];
   loading: boolean;
   onRefresh: () => void;
   onDelete: (id: string) => void;
+  onEdit: (id: string) => void;
 }) {
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -520,6 +539,7 @@ function CampaignList({ campaigns, loading, onRefresh, onDelete }: {
           expanded={expanded === c.id}
           onDelete={onDelete}
           onChanged={onRefresh}
+          onEdit={onEdit}
         />
       ))}
     </div>
@@ -762,33 +782,37 @@ function DispatchMonitor({
 
 // ─── Wizard ───────────────────────────────────────────────────────────────────
 
+// `existing` = campanha em rascunho aberta pelo botão Editar: o wizard nasce
+// pré-carregado e salva via PATCH em vez de criar uma nova.
 function NewCampaignWizard({
   onSuccess,
   toast,
+  existing,
 }: {
   onSuccess: (campaignId: string) => void;
   toast: ReturnType<typeof useToast>;
+  existing?: any | null;
 }) {
   const [step, setStep] = useState(1);
 
   // Step 1 fields
-  const [name, setName]               = useState('');
-  const [useTemplate, setUseTemplate] = useState(true);
-  const [templateId, setTemplateId]   = useState('');
-  const [customBody, setCustomBody]   = useState('');
+  const [name, setName]               = useState(existing?.name || '');
+  const [useTemplate, setUseTemplate] = useState(existing ? !!existing.template_id : true);
+  const [templateId, setTemplateId]   = useState(existing?.template_id || '');
+  const [customBody, setCustomBody]   = useState(existing?.custom_body || '');
   const [templates, setTemplates]     = useState<Template[]>([]);
   const [loadingTpl, setLoadingTpl]   = useState(true);
   const [instances, setInstances]     = useState<Instance[]>([]);
-  const [instanceId, setInstanceId]   = useState('');
+  const [instanceId, setInstanceId]   = useState(existing?.instance_id || '');
 
   // Step 2 fields
   const [brands, setBrands]             = useState<Brand[]>([]);
   const [loadingBrands, setLoadingBrands] = useState(true);
   const [brandSearch, setBrandSearch]   = useState('');
-  const [filter, setFilter]             = useState<SegmentFilter>({});
+  const [filter, setFilter]             = useState<SegmentFilter>(existing?.segment_filter || {});
   const [preview, setPreview]           = useState<PreviewResult | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [campaignId, setCampaignId]     = useState<string | null>(null);
+  const [campaignId, setCampaignId]     = useState<string | null>(existing?.id || null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Step 4 fields (dispatch monitor)
@@ -813,9 +837,10 @@ function NewCampaignWizard({
       .then(d => {
         const list: Instance[] = Array.isArray(d) ? d : [];
         setInstances(list);
-        // Auto-select first connected instance
+        // Auto-select first connected instance (só quando nada selecionado —
+        // em modo edição preserva o número salvo na campanha)
         const first = list.find(i => i.status === 'connected');
-        if (first) setInstanceId(first.id);
+        if (first) setInstanceId(prev => prev || first.id);
       })
       .catch(() => {});
   }, []);
@@ -832,28 +857,35 @@ function NewCampaignWizard({
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [filter, campaignId]); // eslint-disable-line
 
-  // Step 1 → 2
+  // Step 1 → 2 (cria a campanha, ou salva via PATCH quando está editando)
   async function goToStep2() {
     if (!name.trim()) { toast.error('Nome da campanha é obrigatório'); return; }
     if (useTemplate && !templateId) { toast.error('Selecione um template'); return; }
     if (!useTemplate && !customBody.trim()) { toast.error('Escreva a mensagem'); return; }
     if (!instanceId) { toast.error('Selecione um número de envio'); return; }
 
+    const payload = {
+      name: name.trim(),
+      template_id: useTemplate ? templateId : null,
+      custom_body: !useTemplate ? customBody.trim() : null,
+      instance_id: instanceId || null,
+    };
+
     try {
-      const res = await fetch('/api/campaigns', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name.trim(),
-          template_id: useTemplate ? templateId : null,
-          custom_body: !useTemplate ? customBody.trim() : null,
-          segment_filter: {},
-          instance_id: instanceId || null,
-        }),
-      });
+      const res = campaignId
+        ? await fetch(`/api/campaigns/${campaignId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          })
+        : await fetch('/api/campaigns', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...payload, segment_filter: filter }),
+          });
       const d = await res.json();
-      if (!res.ok) { toast.error(d.error || 'Erro ao criar campanha'); return; }
-      setCampaignId(d.campaign.id);
+      if (!res.ok) { toast.error(d.error || 'Erro ao salvar campanha'); return; }
+      if (!campaignId) setCampaignId(d.campaign.id);
       setStep(2);
     } catch {
       toast.error('Erro de conexão');
@@ -1450,8 +1482,22 @@ export default function DisparosView() {
   const [tab, setTab] = useState<'list' | 'new'>('list');
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editData, setEditData] = useState<any | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const toast = useToast();
+
+  // Botão Editar de um rascunho: carrega a campanha completa e abre o wizard
+  async function openEdit(id: string) {
+    try {
+      const res = await fetch(`/api/campaigns/${id}`);
+      const d = await res.json();
+      if (!res.ok || !d.campaign) { toast.error(d.error || 'Erro ao abrir campanha'); return; }
+      setEditData(d.campaign);
+      setTab('new');
+    } catch {
+      toast.error('Erro de conexão');
+    }
+  }
 
   const loadCampaigns = useCallback(async () => {
     try {
@@ -1482,6 +1528,7 @@ export default function DisparosView() {
   }, [campaigns, loadCampaigns]);
 
   function onWizardSuccess(campaignId: string) {
+    setEditData(null);
     setTab('list');
     setLoading(true);
     loadCampaigns();
@@ -1501,7 +1548,12 @@ export default function DisparosView() {
         {(['list', 'new'] as const).map(t => (
           <button
             key={t}
-            onClick={() => setTab(t)}
+            onClick={() => {
+              // Clicar em "+ Nova Campanha" sempre abre o wizard limpo;
+              // edição entra pelo botão Editar do card
+              if (t === 'new') setEditData(null);
+              setTab(t);
+            }}
             style={{
               padding: '6px 14px', borderRadius: 8, cursor: 'pointer',
               fontFamily: 'inherit', fontWeight: 500, fontSize: 13, border: 'none',
@@ -1509,7 +1561,7 @@ export default function DisparosView() {
               color: tab === t ? '#25D366' : '#4a6050', transition: 'all 0.12s',
             }}
           >
-            {t === 'list' ? 'Campanhas' : '+ Nova Campanha'}
+            {t === 'list' ? 'Campanhas' : (tab === 'new' && editData) ? 'Editando: ' + (editData.name || '').slice(0, 24) : '+ Nova Campanha'}
           </button>
         ))}
 
@@ -1535,9 +1587,15 @@ export default function DisparosView() {
             loading={loading}
             onRefresh={loadCampaigns}
             onDelete={id => setCampaigns(prev => prev.filter(c => c.id !== id))}
+            onEdit={openEdit}
           />
         ) : (
-          <NewCampaignWizard onSuccess={onWizardSuccess} toast={toast} />
+          <NewCampaignWizard
+            key={editData?.id || 'nova'}
+            existing={editData}
+            onSuccess={onWizardSuccess}
+            toast={toast}
+          />
         )}
       </div>
 
