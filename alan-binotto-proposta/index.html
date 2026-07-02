@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proposta Alan Binotto — u4digital</title>
+  <style>
+    :root {
+      --bg: #0a0b0d;
+      --surface: #111318;
+      --surface2: #181c24;
+      --border: rgba(255,255,255,0.07);
+      --blue: #2563eb;
+      --blue-light: #3b82f6;
+      --blue-dim: rgba(37,99,235,0.12);
+      --green: #10b981;
+      --green-dim: rgba(16,185,129,0.12);
+      --amber: #f59e0b;
+      --amber-dim: rgba(245,158,11,0.1);
+      --red: #ef4444;
+      --red-dim: rgba(239,68,68,0.1);
+      --text: #e8eaf0;
+      --text-muted: #6b7280;
+      --text-dim: #9ca3af;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(10,11,13,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    nav .logo {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text-dim);
+    }
+
+    nav .logo span { color: var(--blue-light); }
+
+    nav .nav-links {
+      display: flex;
+      gap: 4px;
+    }
+
+    nav .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      transition: all 0.15s;
+      letter-spacing: 0.02em;
+    }
+
+    nav .nav-links a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+    }
+
+    nav .badge {
+      font-size: 11px;
+      background: var(--blue-dim);
+      color: var(--blue-light);
+      border: 1px solid rgba(59,130,246,0.2);
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+    }
+
+    /* LAYOUT */
+    .main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 100px 24px 80px;
+    }
+
+    /* HEADER HERO */
+    .hero {
+      margin-bottom: 64px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .hero-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--blue-light);
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--text-dim);
+      max-width: 580px;
+      margin-bottom: 32px;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .kpi-value.blue { color: var(--blue-light); }
+    .kpi-value.green { color: var(--green); }
+    .kpi-value.amber { color: var(--amber); }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* SECTIONS */
+    section {
+      margin-bottom: 72px;
+    }
+
+    .section-tag {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue-light);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    section h2 {
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    section .section-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .card-grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .card-grid-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+    /* DIAGNOSTICO */
+    .diag-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .diag-table th {
+      text-align: left;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+    }
+
+    .diag-table td {
+      padding: 14px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: top;
+    }
+
+    .diag-table tr:last-child td { border-bottom: none; }
+
+    .diag-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .sys-name {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .sys-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .tag-red { background: var(--red-dim); color: var(--red); }
+    .tag-green { background: var(--green-dim); color: var(--green); }
+    .tag-amber { background: var(--amber-dim); color: var(--amber); }
+    .tag-blue { background: var(--blue-dim); color: var(--blue-light); }
+
+    .cost-total {
+      background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.04));
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cost-total-label {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .cost-total-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: -0.02em;
+    }
+
+    /* NARRATIVA */
+    .ato-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .ato {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ato::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .ato-1::before { background: var(--blue-light); }
+    .ato-2::before { background: var(--amber); }
+    .ato-3::before { background: var(--green); }
+
+    .ato-num {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .ato h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .ato-dur {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .ato p {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    /* DORES */
+    .dor-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dor {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+    }
+
+    .dor-num {
+      width: 24px;
+      height: 24px;
+      background: var(--blue-dim);
+      color: var(--blue-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .dor-text {
+      font-size: 13px;
+      color: var(--text);
+      font-style: italic;
+    }
+
+    /* MENSAGEM CENTRAL */
+    .mensagem-central {
+      background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(37,99,235,0.03));
+      border: 1px solid rgba(37,99,235,0.2);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      position: relative;
+    }
+
+    .mensagem-central::before {
+      content: '"';
+      position: absolute;
+      top: -8px;
+      left: 28px;
+      font-size: 80px;
+      color: rgba(59,130,246,0.15);
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+
+    .mensagem-central p {
+      font-size: 16px;
+      color: var(--text);
+      line-height: 1.8;
+      font-style: italic;
+      position: relative;
+    }
+
+    /* BLOCOS */
+    .blocos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .bloco {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .bloco-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .bloco h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .bloco ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bloco ul li {
+      font-size: 11px;
+      color: var(--text-muted);
+      padding-left: 12px;
+      position: relative;
+    }
+
+    .bloco ul li::before {
+      content: '·';
+      position: absolute;
+      left: 2px;
+      color: var(--text-muted);
+    }
+
+    /* FASES */
+    .fase {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      position: relative;
+    }
+
+    .fase-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .fase-titulo h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .fase-titulo p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .fase-prazo {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .fase-prazo-val {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .fase-prazo-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .fase-entregaveis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .entregavel {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.02);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .entregavel-check {
+      font-size: 12px;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .entregavel-text {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .fase-resultado {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green-dim);
+      border: 1px solid rgba(16,185,129,0.15);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+    }
+
+    .fase-resultado-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
+    .fase-resultado-text {
+      font-size: 12px;
+      color: var(--green);
+    }
+
+    /* PRICING */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .pricing-grid { grid-template-columns: 1fr; }
+    }
+
+    .price-table {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .price-table-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .price-table-header h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 13px;
+    }
+
+    .price-row:last-child { border-bottom: none; }
+
+    .price-row-label { color: var(--text-dim); }
+    .price-row-value { color: var(--text); font-weight: 600; }
+    .price-row-value.highlight { color: var(--blue-light); }
+    .price-row-value.total { color: #fff; font-size: 16px; }
+
+    .price-row.total-row {
+      background: rgba(37,99,235,0.06);
+      border-top: 1px solid rgba(37,99,235,0.15);
+    }
+
+    .roi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .roi-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .roi-item-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .roi-item-value {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--green);
+    }
+
+    .roi-item-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* COMPARATIVO */
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .comp-table th {
+      text-align: left;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+    }
+
+    .comp-table th:not(:first-child) { text-align: center; }
+
+    .comp-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      color: var(--text-dim);
+    }
+
+    .comp-table td:not(:first-child) { text-align: center; }
+
+    .comp-table tr:hover td { background: rgba(255,255,255,0.01); }
+
+    .check-yes { color: var(--green); font-size: 14px; }
+    .check-no { color: var(--red); font-size: 14px; }
+    .check-partial { color: var(--amber); font-size: 12px; }
+
+    .comp-table .highlight-col { background: rgba(37,99,235,0.04); }
+
+    /* PERGUNTAS */
+    .pergunta-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pergunta {
+      display: flex;
+      gap: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      align-items: flex-start;
+    }
+
+    .pergunta-num {
+      width: 22px;
+      height: 22px;
+      background: rgba(37,99,235,0.15);
+      color: var(--blue-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .pergunta-body {}
+
+    .pergunta-text {
+      font-size: 13px;
+      color: var(--text);
+      font-style: italic;
+      margin-bottom: 4px;
+    }
+
+    .pergunta-por {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* OBJECOES */
+    .objecao {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+
+    .objecao-q {
+      font-size: 13px;
+      color: var(--amber);
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .objecao-q::before {
+      content: '?';
+      width: 18px;
+      height: 18px;
+      background: var(--amber-dim);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .objecao-a {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+      padding-left: 26px;
+    }
+
+    /* SCRIPT */
+    .script-box {
+      background: rgba(37,99,235,0.05);
+      border: 1px solid rgba(37,99,235,0.15);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+    }
+
+    .script-box p {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.8;
+      font-style: italic;
+    }
+
+    .script-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue-light);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    /* ROLES */
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .role-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .role-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .role-title {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .role-section-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      margin-top: 14px;
+    }
+
+    .role-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .role-list li {
+      font-size: 12px;
+      color: var(--text-dim);
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .role-list.do li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-size: 10px;
+    }
+
+    .role-list.dont li::before {
+      content: '✕';
+      position: absolute;
+      left: 0;
+      color: var(--red);
+      font-size: 10px;
+    }
+
+    /* PRÓXIMOS PASSOS */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .step:last-child { border-bottom: none; }
+
+    .step-line {
+      position: absolute;
+      left: 16px;
+      top: 48px;
+      bottom: -20px;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .step:last-child .step-line { display: none; }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      background: var(--blue-dim);
+      border: 1px solid rgba(37,99,235,0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--blue-light);
+      flex-shrink: 0;
+    }
+
+    .step-body { flex: 1; }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .step-resp {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-resp-tag {
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    /* FECHAMENTO */
+    .fechamento-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .opcao {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .opcao:hover { border-color: rgba(37,99,235,0.3); }
+
+    .opcao.recomendada {
+      border-color: rgba(37,99,235,0.35);
+      background: linear-gradient(135deg, rgba(37,99,235,0.06), var(--surface));
+    }
+
+    .opcao-badge {
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+
+    .opcao-letra {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .opcao h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .opcao-price {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--blue-light);
+      margin: 12px 0;
+    }
+
+    .opcao-prazo {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .opcao ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .opcao ul li {
+      font-size: 12px;
+      color: var(--text-dim);
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .opcao ul li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-size: 10px;
+    }
+
+    /* DIVIDER */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 64px 0;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      nav .nav-links { display: none; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .comp-table { font-size: 11px; }
+      .comp-table th, .comp-table td { padding: 8px 10px; }
+    }
+
+    /* SCROLL SMOOTH */
+    html { scroll-behavior: smooth; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">u4digital <span>×</span> Alan Binotto</div>
+  <div class="nav-links">
+    <a href="#diagnostico">Diagnóstico</a>
+    <a href="#narrativa">Narrativa</a>
+    <a href="#arquitetura">Solução</a>
+    <a href="#fases">Fases</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#reuniao">Reunião</a>
+  </div>
+  <div class="badge">Confidencial — 2° Round</div>
+</nav>
+
+<div class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">Proposta interna — segundo round</div>
+    <h1>Planejamento da Proposta<br><em>Alan Binotto</em></h1>
+    <p>Consolidação de operação odontológica em plataforma única, com módulo escola e modelo SaaS para ex-alunos. Desenvolvido pela u4digital.</p>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">Custo atual estimado</div>
+        <div class="kpi-value amber">R$35K+</div>
+        <div class="kpi-sub">por mês — stack fragmentado</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Orçamentos parados</div>
+        <div class="kpi-value blue">2.000</div>
+        <div class="kpi-sub">clientes que não voltaram</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Base de ex-alunos</div>
+        <div class="kpi-value green">3.000+</div>
+        <div class="kpi-sub">mercado endereçável SaaS</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">MRR potencial SaaS</div>
+        <div class="kpi-value green">R$100K</div>
+        <div class="kpi-sub">1.000 alunos × R$99,90</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Investimento proposto</div>
+        <div class="kpi-value blue">R$220–310K</div>
+        <div class="kpi-sub">desenvolvimento 3 fases</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIAGNOSTICO -->
+  <section id="diagnostico">
+    <span class="section-tag">01 — Diagnóstico</span>
+    <h2>Stack atual: 5 ferramentas, zero integração</h2>
+    <p class="section-sub">Dados espalhados, consolidação manual, custo operacional alto. O diagnóstico já foi entregue ao Alan — referenciar, não reapresentar.</p>
+
+    <div class="card">
+      <table class="diag-table">
+        <thead>
+          <tr>
+            <th>Sistema</th>
+            <th>O que cobre hoje</th>
+            <th>Dor principal</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="sys-name">Sistema Legado (Ricardo)</div>
+              <div class="sys-note">Uningá — operação clínica interna</div>
+            </td>
+            <td style="color: var(--text-dim); font-size:12px;">Regras de negócio da escola, processos internos, gestão básica</td>
+            <td style="color: var(--text-dim); font-size:12px;">Windows 95, sem cloud, sem API, sem automação. Confirmações manuais.</td>
+            <td><span class="tag tag-red">Substituir Fase 1</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="sys-name">Simples Dental</div>
+              <div class="sys-note">Rede Caúso — 11 unidades</div>
+            </td>
+            <td style="color: var(--text-dim); font-size:12px;">Agenda, prontuário, financeiro básico, orçamentos</td>
+            <td style="color: var(--text-dim); font-size:12px;">API limitada, BI fraco, sem módulo escola/rede. IA é add-on pago extra.</td>
+            <td><span class="tag tag-amber">Substituir Fase 2</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="sys-name">Camino</div>
+              <div class="sys-note">Gestão financeira corporativa</div>
+            </td>
+            <td style="color: var(--text-dim); font-size:12px;">DRE, fluxo de caixa, centros de custo, consolidação financeira</td>
+            <td style="color: var(--text-dim); font-size:12px;">Não conhece a operação clínica. Dados duplicados. Mais uma licença.</td>
+            <td><span class="tag tag-amber">Substituir Fase 2</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="sys-name">Planilhas Excel</div>
+              <div class="sys-note">Controle manual</div>
+            </td>
+            <td style="color: var(--text-dim); font-size:12px;">Consolidação entre unidades, comparativos, controles paralelos</td>
+            <td style="color: var(--text-dim); font-size:12px;">Trabalho manual, risco de erro, depende de pessoa específica.</td>
+            <td><span class="tag tag-red">Eliminar Fase 2</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="sys-name">Processos Manuais</div>
+              <div class="sys-note">Equipe operacional</div>
+            </td>
+            <td style="color: var(--text-dim); font-size:12px;">Confirmações, cobranças, recuperação dos 2.000 orçamentos</td>
+            <td style="color: var(--text-dim); font-size:12px;">5 pessoas alocadas em home office para recuperar leads frios. Alto custo.</td>
+            <td><span class="tag tag-red">Automatizar Fase 1</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="sys-name">Talk</div>
+              <div class="sys-note">WhatsApp multi-atendente</div>
+            </td>
+            <td style="color: var(--text-dim); font-size:12px;">Atendimento, campanhas, fila de atendimento, futuro VoIP</td>
+            <td style="color: var(--text-dim); font-size:12px;">—</td>
+            <td><span class="tag tag-green">Permanece — API</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cost-total">
+      <div>
+        <div class="cost-total-label">Custo total estimado do stack atual (licenças + horas-equipe + retrabalho)</div>
+      </div>
+      <div class="cost-total-value">R$8.640 – R$35.800+/mês</div>
+    </div>
+  </section>
+
+  <!-- NARRATIVA -->
+  <section id="narrativa">
+    <span class="section-tag">02 — Narrativa da Reunião</span>
+    <h2>Arco em 3 atos — 30 minutos</h2>
+    <p class="section-sub">Abrir com diagnóstico (já entregue), desenvolver a ponte, fechar com escolha orientada. Alan decide dentro de um escopo que a gente já definiu.</p>
+
+    <div style="margin-bottom: 24px;">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">As 3 dores — na linguagem dele, na ordem que ele falou:</p>
+      <div class="dor-list">
+        <div class="dor">
+          <div class="dor-num">1</div>
+          <div class="dor-text">"Tenho 5 sistemas que não conversam entre si"</div>
+        </div>
+        <div class="dor">
+          <div class="dor-num">2</div>
+          <div class="dor-text">"Tenho 2.000 orçamentos que ficaram no ar — dinheiro parado"</div>
+        </div>
+        <div class="dor">
+          <div class="dor-num">3</div>
+          <div class="dor-text">"Quero trabalhar menos, não mais"</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ato-row">
+      <div class="ato ato-1">
+        <div class="ato-num">Ato 01 — Espelho</div>
+        <h3>Reconhecer, não repetir</h3>
+        <div class="ato-dur">5 minutos</div>
+        <p>Referenciar o diagnóstico já entregue. Não reapresentar — mostrar que ouvimos. "Alan, você nos disse três coisas..." Isso quebra a defensiva e valida a confiança.</p>
+      </div>
+      <div class="ato ato-2">
+        <div class="ato-num">Ato 02 — Ponte</div>
+        <h3>Consolidação, não sistema novo</h3>
+        <div class="ato-dur">15 minutos</div>
+        <p>A palavra "sistema novo" assusta — Clinicorp foi cancelado. A palavra certa é: "uma base única que conecta o que você já tem e elimina o que não funciona". Mostrar os 5 blocos + módulo escola como diferencial único.</p>
+      </div>
+      <div class="ato ato-3">
+        <div class="ato-num">Ato 03 — Caminho</div>
+        <h3>Escolha orientada</h3>
+        <div class="ato-dur">10 minutos</div>
+        <p>Faseamento em 3 etapas com entregáveis concretos. Fechar com: "Você quer começar pela recuperação dos 2.000 orçamentos ou pela substituição do sistema legado?" — a escolha pressupõe o sim.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px;">
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.08em;">Mensagem central que fecha</p>
+      <div class="mensagem-central">
+        <p>Você não precisa de mais um sistema. Você precisa de UM sistema. E o único jeito de ter um sistema que cobre clínica + escola + rede + laboratório é construir sob medida — porque ninguém no mercado faz isso. A diferença é que você não vai só resolver seu problema: você vai criar um produto que 3.000 dentistas que você já formou estão esperando.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARQUITETURA -->
+  <section id="arquitetura">
+    <span class="section-tag">03 — Arquitetura da Solução</span>
+    <h2>5 blocos — linguagem de negócio</h2>
+    <p class="section-sub">Não apresentar como "módulos técnicos". Apresentar como blocos operacionais. Alan pensa em operação, não em software.</p>
+
+    <div class="blocos-grid">
+      <div class="bloco">
+        <div class="bloco-icon" style="background: rgba(37,99,235,0.15);">🏥</div>
+        <h4>Bloco 1 — Clínica</h4>
+        <ul>
+          <li>Agenda e prontuário</li>
+          <li>Financeiro do paciente</li>
+          <li>Orçamentos e planos</li>
+          <li>Confirmações automáticas</li>
+          <li>Comissionamento</li>
+        </ul>
+      </div>
+      <div class="bloco">
+        <div class="bloco-icon" style="background: rgba(16,185,129,0.15);">⚡</div>
+        <h4>Bloco 2 — Automação</h4>
+        <ul>
+          <li>Recuperação dos 2.000 orçamentos</li>
+          <li>Follow-up pós-consulta</li>
+          <li>Cobrança automática</li>
+          <li>IA conversacional via Talk</li>
+          <li>Agendamento via WhatsApp</li>
+        </ul>
+      </div>
+      <div class="bloco">
+        <div class="bloco-icon" style="background: rgba(245,158,11,0.15);">🌐</div>
+        <h4>Bloco 3 — Rede</h4>
+        <ul>
+          <li>Dashboard multi-unidade</li>
+          <li>DRE consolidado</li>
+          <li>Indicadores por unidade</li>
+          <li>Comparativo de performance</li>
+          <li>Gestão financeira corporativa</li>
+        </ul>
+      </div>
+      <div class="bloco">
+        <div class="bloco-icon" style="background: rgba(139,92,246,0.15);">🎓</div>
+        <h4>Bloco 4 — Escola</h4>
+        <ul>
+          <li>Gestão acadêmica</li>
+          <li>Laboratório de prótese</li>
+          <li>Módulo ortodontia</li>
+          <li>Mini-sistema para alunos</li>
+          <li>Acesso ao isca SaaS</li>
+        </ul>
+      </div>
+      <div class="bloco">
+        <div class="bloco-icon" style="background: rgba(239,68,68,0.15);">📈</div>
+        <h4>Bloco 5 — SaaS</h4>
+        <ul>
+          <li>Versão simplificada para ex-alunos</li>
+          <li>Onboarding automatizado</li>
+          <li>Billing recorrente R$99,90/mês</li>
+          <li>Dashboard do franqueador</li>
+          <li>1.000 assinantes = R$100K MRR</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px;" class="card">
+      <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.08em;">Como posicionar o SaaS para alunos</div>
+      <p style="font-size: 13px; color: var(--text-dim); line-height: 1.8;">"Na Fase 3, a gente pega uma versão simplificada do que você já usa e oferece para seus alunos. O custo marginal é baixo porque o core já existe. O aluno paga R$99,90/mês, você não precisa ir a congresso, não precisa montar equipe comercial — o funil é a própria Uningá. Cada turma nova é 1.000 leads quentes que já confiam em você."</p>
+    </div>
+  </section>
+
+  <!-- FASES -->
+  <section id="fases">
+    <span class="section-tag">04 — Faseamento</span>
+    <h2>3 fases — resultado rápido, risco controlado</h2>
+    <p class="section-sub">Começar pela Uningá como piloto. Não tentar 11 unidades de uma vez. Alan tem baixa tolerância a complexidade — provar primeiro em 1 unidade, depois escalar.</p>
+
+    <div class="card-grid" style="display:flex; flex-direction:column; gap:16px;">
+
+      <div class="fase">
+        <div class="fase-header">
+          <div class="fase-titulo">
+            <h3>Fase 1 — Respirar</h3>
+            <p>Eliminar a dor mais urgente. Alan sente alívio rápido.</p>
+          </div>
+          <div class="fase-prazo">
+            <div class="fase-prazo-val">12 semanas</div>
+            <div class="fase-prazo-label">Piloto: Uningá</div>
+          </div>
+        </div>
+        <div class="fase-entregaveis">
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Agenda digital + confirmação automática via Talk</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Recuperação dos 2.000 orçamentos abandonados</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Prontuário + ficha do paciente (base clínica)</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Financeiro do paciente (recebimentos, parcelas)</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Dashboard básico da unidade piloto</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Entregas incrementais a cada 2 semanas (6 ciclos)</span>
+          </div>
+        </div>
+        <div class="fase-resultado">
+          <span class="fase-resultado-label">Resultado:</span>
+          <span class="fase-resultado-text">Para de usar sistema legado do Ricardo + confirmações funcionam sozinhas + orçamentos sendo recuperados</span>
+        </div>
+      </div>
+
+      <div class="fase">
+        <div class="fase-header">
+          <div class="fase-titulo">
+            <h3>Fase 2 — Expandir</h3>
+            <p>Escalar o que já funciona para toda a rede.</p>
+          </div>
+          <div class="fase-prazo">
+            <div class="fase-prazo-val">Meses 4–6</div>
+            <div class="fase-prazo-label">11 unidades Caúso</div>
+          </div>
+        </div>
+        <div class="fase-entregaveis">
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Rollout para rede Caúso (11 unidades)</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Dashboard de rede consolidado (elimina Excel)</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">DRE + fluxo de caixa integrado (elimina Camino)</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Comissionamento automático</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">IA de follow-up comercial (Talk + n8n)</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">BI executivo por unidade e consolidado</span>
+          </div>
+        </div>
+        <div class="fase-resultado">
+          <span class="fase-resultado-label">Resultado:</span>
+          <span class="fase-resultado-text">Cancela Simples Dental + Camino. Opera com uma plataforma só. Equipe de SDR manual liberada.</span>
+        </div>
+      </div>
+
+      <div class="fase">
+        <div class="fase-header">
+          <div class="fase-titulo">
+            <h3>Fase 3 — Monetizar</h3>
+            <p>Transformar a plataforma em produto vendável para ex-alunos.</p>
+          </div>
+          <div class="fase-prazo">
+            <div class="fase-prazo-val">Meses 7–10</div>
+            <div class="fase-prazo-label">Módulo Escola + SaaS</div>
+          </div>
+        </div>
+        <div class="fase-entregaveis">
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Módulo Escola (turmas, avaliações, laboratório)</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Versão SaaS simplificada para ex-alunos</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Onboarding automatizado para novos assinantes</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Dashboard do "franqueador" — Alan vê todos</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Billing recorrente integrado (R$99,90/mês)</span>
+          </div>
+          <div class="entregavel">
+            <span class="entregavel-check">✓</span>
+            <span class="entregavel-text">Piloto com 100–300 primeiros assinantes</span>
+          </div>
+        </div>
+        <div class="fase-resultado">
+          <span class="fase-resultado-label">Resultado:</span>
+          <span class="fase-resultado-text">Alan começa a vender para ex-alunos. R$30K–100K MRR crescendo mês a mês.</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <span class="section-tag">05 — Precificação & ROI</span>
+    <h2>O investimento que paga a si mesmo</h2>
+    <p class="section-sub">Não competir por preço — competir por ROI. A plataforma é ativo proprietário. Simples Dental e Clinicorp são aluguel.</p>
+
+    <div class="pricing-grid">
+      <div class="price-table">
+        <div class="price-table-header">
+          <h4>Estrutura de Investimento</h4>
+        </div>
+        <div class="price-row">
+          <span class="price-row-label">Fase 1 — Core clínico + automação (12 sem.)</span>
+          <span class="price-row-value highlight">R$80K – R$120K</span>
+        </div>
+        <div class="price-row">
+          <span class="price-row-label">Fase 2 — Rede + financeiro (3 meses)</span>
+          <span class="price-row-value highlight">R$60K – R$90K</span>
+        </div>
+        <div class="price-row">
+          <span class="price-row-label">Fase 3 — Escola + SaaS (4 meses)</span>
+          <span class="price-row-value highlight">R$80K – R$100K</span>
+        </div>
+        <div class="price-row total-row">
+          <span class="price-row-label" style="font-weight:600; color: var(--text);">Total desenvolvimento</span>
+          <span class="price-row-value total">R$220K – R$310K</span>
+        </div>
+        <div class="price-row">
+          <span class="price-row-label">Manutenção/suporte mensal (após Fase 1)</span>
+          <span class="price-row-value">R$5K – R$8K</span>
+        </div>
+        <div class="price-row">
+          <span class="price-row-label">Revenue share SaaS (ex-alunos)</span>
+          <span class="price-row-value">15–25% do MRR</span>
+        </div>
+      </div>
+
+      <div class="roi-card">
+        <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">ROI — por que faz sentido</div>
+        <div class="roi-item">
+          <div class="roi-item-label">Economia mensal pós-plataforma</div>
+          <div class="roi-item-value">R$3.640 – R$27.800</div>
+          <div class="roi-item-sub">Custo atual menos manutenção futura</div>
+        </div>
+        <div class="roi-item">
+          <div class="roi-item-label">Payback (só com economia)</div>
+          <div class="roi-item-value" style="color: var(--amber);">8–18 meses</div>
+          <div class="roi-item-sub">Sem contar receita SaaS</div>
+        </div>
+        <div class="roi-item">
+          <div class="roi-item-label">Receita SaaS (500 assinantes)</div>
+          <div class="roi-item-value">R$49.950/mês</div>
+          <div class="roi-item-sub">Cenário conservador</div>
+        </div>
+        <div class="roi-item">
+          <div class="roi-item-label">Receita SaaS (1.000 assinantes)</div>
+          <div class="roi-item-value">R$99.900/mês</div>
+          <div class="roi-item-sub">Cenário projetado por Alan</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARATIVO -->
+  <section>
+    <span class="section-tag">06 — Posicionamento</span>
+    <h2>Onde a u4digital ganha</h2>
+    <p class="section-sub">Não atacar concorrentes — posicionar. Alan já viveu Simples Dental (usa) e Clinicorp (cancelou). Usar a experiência DELE como prova.</p>
+
+    <div class="card">
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Capacidade</th>
+            <th>Simples Dental</th>
+            <th>Clinicorp</th>
+            <th>Plataforma u4</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Clínica básica (agenda, prontuário)</td>
+            <td><span class="check-yes">✓</span></td>
+            <td><span class="check-yes">✓</span></td>
+            <td class="highlight-col"><span class="check-yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>Facilidade de uso</td>
+            <td>Excelente</td>
+            <td><span style="color: var(--red); font-size:12px;">Complexo — cancelado</span></td>
+            <td class="highlight-col"><span style="color: var(--green); font-size:12px;">Sob medida</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: #fff;">Módulo Escola odontológica</strong></td>
+            <td><span class="check-no">✕</span></td>
+            <td><span class="check-no">✕</span></td>
+            <td class="highlight-col"><span class="check-yes">✓</span> <span style="font-size:10px; color:var(--green);">único no mercado</span></td>
+          </tr>
+          <tr>
+            <td>Gestão de Rede (11+ unidades) com BI executivo</td>
+            <td><span class="check-partial">Básico</span></td>
+            <td><span class="check-partial">Melhor</span></td>
+            <td class="highlight-col"><span class="check-yes">✓</span> <span style="font-size:10px; color:var(--green);">consolidado</span></td>
+          </tr>
+          <tr>
+            <td>DRE / Financeiro corporativo integrado</td>
+            <td><span class="check-no">✕</span> <span style="font-size:10px; color:var(--text-muted);">precisa Camino</span></td>
+            <td><span class="check-partial">Parcial</span></td>
+            <td class="highlight-col"><span class="check-yes">✓</span> <span style="font-size:10px; color:var(--green);">elimina Camino</span></td>
+          </tr>
+          <tr>
+            <td>IA integrada (não add-on)</td>
+            <td><span class="check-partial">Add-on pago</span></td>
+            <td><span class="check-partial">9 agentes (caro)</span></td>
+            <td class="highlight-col"><span class="check-yes">✓</span> <span style="font-size:10px; color:var(--green);">integrada</span></td>
+          </tr>
+          <tr>
+            <td>Integração nativa Talk</td>
+            <td><span class="check-no">✕</span></td>
+            <td><span class="check-no">✕</span></td>
+            <td class="highlight-col"><span class="check-yes">✓</span> <span style="font-size:10px; color:var(--green);">API nativa</span></td>
+          </tr>
+          <tr>
+            <td>SaaS para ex-alunos (R$99,90/mês)</td>
+            <td><span class="check-no">N/A</span></td>
+            <td><span class="check-no">N/A</span></td>
+            <td class="highlight-col"><span class="check-yes">✓</span> <span style="font-size:10px; color:var(--green);">modelo de negócio novo</span></td>
+          </tr>
+          <tr>
+            <td>Propriedade do sistema</td>
+            <td><span style="color: var(--amber); font-size:12px;">Aluguel</span></td>
+            <td><span style="color: var(--amber); font-size:12px;">Aluguel</span></td>
+            <td class="highlight-col"><span style="color: var(--green); font-size:12px;">Ativo proprietário</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top: 16px; background: rgba(37,99,235,0.04); border-color: rgba(37,99,235,0.15);">
+      <div style="font-size: 11px; color: var(--blue-light); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.08em;">Frase para a reunião</div>
+      <p style="font-size: 14px; color: var(--text); line-height: 1.7; font-style: italic;">"Simples Dental é excelente para uma clínica. Clinicorp é robusto para quem consegue operar. Mas nenhum dos dois foi construído para quem tem clínica + escola + rede + laboratório — porque esse perfil não existe no mercado. Você é o caso de uso que eles não atendem."</p>
+    </div>
+  </section>
+
+  <!-- REUNIAO -->
+  <section id="reuniao">
+    <span class="section-tag">07 — Preparação da Reunião</span>
+    <h2>O que fazer antes de apresentar</h2>
+    <p class="section-sub">Abrir com perguntas, não com slides. Moroni conduz 70% da conversa. Tiago entra cirurgicamente em perguntas técnicas.</p>
+
+    <div style="margin-bottom: 32px;">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">5 perguntas para fazer ANTES de apresentar:</p>
+      <div class="pergunta-list">
+        <div class="pergunta">
+          <div class="pergunta-num">1</div>
+          <div class="pergunta-body">
+            <div class="pergunta-text">"Alan, desde a última reunião você fez alguma mudança no stack? Contratou algo novo, cancelou algo?"</div>
+            <div class="pergunta-por">Por quê: valida se o cenário do diagnóstico ainda é o mesmo</div>
+          </div>
+        </div>
+        <div class="pergunta">
+          <div class="pergunta-num">2</div>
+          <div class="pergunta-body">
+            <div class="pergunta-text">"Dos 2.000 orçamentos parados, você tem ideia do ticket médio? Quanto dinheiro está na mesa?"</div>
+            <div class="pergunta-por">Por quê: transforma um número abstrato em receita concreta — o argumento emocional mais forte</div>
+          </div>
+        </div>
+        <div class="pergunta">
+          <div class="pergunta-num">3</div>
+          <div class="pergunta-body">
+            <div class="pergunta-text">"Se a gente começar pela Uningá como piloto, quem seria a pessoa do teu lado que acompanha no dia a dia?"</div>
+            <div class="pergunta-por">Por quê: já está pressupondo que vai começar — identifica o ponto focal</div>
+          </div>
+        </div>
+        <div class="pergunta">
+          <div class="pergunta-num">4</div>
+          <div class="pergunta-body">
+            <div class="pergunta-text">"Você já conversou com alguém da equipe sobre essa mudança? Qual a resistência que você espera?"</div>
+            <div class="pergunta-por">Por quê: Clinicorp foi cancelado por resistência da equipe — precisa saber se há risco</div>
+          </div>
+        </div>
+        <div class="pergunta">
+          <div class="pergunta-num">5</div>
+          <div class="pergunta-body">
+            <div class="pergunta-text">"O modelo SaaS para alunos — você já mencionou isso para alguém da Uningá? Qual foi a reação?"</div>
+            <div class="pergunta-por">Por quê: entende o nível de comprometimento com o modelo de negócio futuro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 32px;">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Script de abertura — Moroni:</p>
+      <div class="script-box">
+        <span class="script-label">Abertura — Moroni fala</span>
+        <p>"Alan, na última reunião você nos mostrou um cenário que, na prática, é o seguinte: você tem 5 sistemas, nenhum conversa com o outro, e você tá gastando tempo e dinheiro mantendo isso funcionando na marra. Desde então, a gente fez duas coisas: mandamos o diagnóstico que você já recebeu, e fizemos um cliente oculto no Simples Dental pra entender exatamente o que eles entregam e o que não entregam. Hoje a gente veio com uma proposta concreta. Mas antes de apresentar, quero te fazer umas perguntas pra ter certeza que a gente tá partindo do mesmo ponto."</p>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 32px;">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Papéis na reunião:</p>
+      <div class="roles-grid">
+        <div class="role-card">
+          <div class="role-name">Moroni</div>
+          <div class="role-title">Consultor estratégico + IA</div>
+          <div class="role-section-label">Faz</div>
+          <ul class="role-list do">
+            <li>Abre a reunião e conduz o diagnóstico</li>
+            <li>Faz as 5 perguntas de abertura</li>
+            <li>Posiciona o ROI e o argumento financeiro</li>
+            <li>Lidera a narrativa dos 3 atos</li>
+            <li>Fecha com as 2 opções</li>
+          </ul>
+          <div class="role-section-label" style="margin-top:12px;">Não faz</div>
+          <ul class="role-list dont">
+            <li>Não entra em detalhes técnicos</li>
+            <li>Não fala de stack ou arquitetura de código</li>
+            <li>Não promete prazos de desenvolvimento</li>
+          </ul>
+        </div>
+        <div class="role-card">
+          <div class="role-name">Tiago</div>
+          <div class="role-title">CTO / Tech Lead — u4digital</div>
+          <div class="role-section-label">Faz</div>
+          <ul class="role-list do">
+            <li>Responde perguntas técnicas cirurgicamente</li>
+            <li>Valida viabilidade quando questionado</li>
+            <li>Demonstra competência técnica</li>
+            <li>Confirma prazos de entrega</li>
+          </ul>
+          <div class="role-section-label" style="margin-top:12px;">Não faz</div>
+          <ul class="role-list dont">
+            <li>Não lidera a conversa</li>
+            <li>Não fala de preço nem negocia</li>
+            <li>Não apresenta slides</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OBJEÇÕES -->
+  <section>
+    <span class="section-tag">08 — Objeções</span>
+    <h2>O que Alan vai perguntar e como responder</h2>
+
+    <div class="objecao">
+      <div class="objecao-q">"É muito dinheiro"</div>
+      <div class="objecao-a">"Quanto você paga hoje nas 5 ferramentas + equipe manual? Em 8 a 18 meses o investimento se paga só com economia. E o SaaS é upside puro — cada aluno assinante é R$99,90/mês entrando sem custo adicional de vendas."</div>
+    </div>
+
+    <div class="objecao">
+      <div class="objecao-q">"E se não funcionar como o Clinicorp?"</div>
+      <div class="objecao-a">"O Clinicorp falhou porque era um sistema pronto que não cabia na sua operação. Isso aqui é construído EM CIMA da sua operação. Além disso: começamos com 1 unidade piloto. Se não funcionar em 1, não escalamos. Você tem 12 semanas para validar antes de qualquer compromisso com as outras 11."</div>
+    </div>
+
+    <div class="objecao">
+      <div class="objecao-q">"Quanto tempo demora?"</div>
+      <div class="objecao-a">"Fase 1 em 12 semanas com entregas a cada 2 semanas. Em 6 semanas você já vê a agenda funcionando com confirmação automática. Você acompanha o progresso antes de pagar a segunda parcela."</div>
+    </div>
+
+    <div class="objecao">
+      <div class="objecao-q">"Preciso pensar"</div>
+      <div class="objecao-a">"Entendo. O que faltaria para você ter confiança de avançar? Posso responder agora, ou agendar uma reunião específica sobre esse ponto. O que eu não quero é você sair daqui sem saber exatamente o que impede — porque provavelmente é algo que a gente consegue resolver."</div>
+    </div>
+
+    <div class="objecao">
+      <div class="objecao-q">"Por que não contratar o Simples Dental de volta?"</div>
+      <div class="objecao-a">"Simples Dental resolve clínica individual. Quem consolida escola + rede + financeiro corporativo + IA integrada para você? E o SaaS para seus alunos — quem faz isso? O SD não tem módulo escola, nunca vai ter API aberta para o Talk, e você vai continuar precisando do Camino e das planilhas."</div>
+    </div>
+
+    <div class="objecao">
+      <div class="objecao-q">"Quero ver funcionando antes de pagar"</div>
+      <div class="objecao-a">"Fase 1 tem entregas a cada 2 semanas. Posso estruturar o pagamento atrelado a milestones — você vê a agenda funcionando antes de pagar 50% do valor. O risco é compartilhado."</div>
+    </div>
+  </section>
+
+  <!-- FECHAMENTO -->
+  <section>
+    <span class="section-tag">09 — Fechamento</span>
+    <h2>Duas opções — não uma, não três</h2>
+    <p class="section-sub">Dar a Alan a sensação de escolha dentro de um escopo já definido. Ele vai tender para a Opção A porque a recuperação dos 2.000 orçamentos é dinheiro imediato.</p>
+
+    <div class="fechamento-grid">
+      <div class="opcao recomendada">
+        <div class="opcao-badge">RECOMENDADA</div>
+        <div class="opcao-letra">Opção A</div>
+        <h4>Fase 1 Completa</h4>
+        <div class="opcao-price">R$80K – 120K</div>
+        <div class="opcao-prazo">12 semanas · Piloto Uningá</div>
+        <ul>
+          <li>Agenda + confirmações automáticas</li>
+          <li>Recuperação dos 2.000 orçamentos</li>
+          <li>Prontuário + financeiro do paciente</li>
+          <li>Dashboard básico da unidade</li>
+          <li>Entregas a cada 2 semanas</li>
+          <li>Pagamento por milestones</li>
+        </ul>
+      </div>
+      <div class="opcao">
+        <div class="opcao-letra">Opção B</div>
+        <h4>MVP Reduzido</h4>
+        <div class="opcao-price">R$45K – 60K</div>
+        <div class="opcao-prazo">8 semanas · Validação</div>
+        <ul>
+          <li>Agenda + confirmações automáticas</li>
+          <li>Prontuário básico</li>
+          <li>Financeiro básico</li>
+          <li>SEM recuperação de orçamentos</li>
+          <li>Se validar → contrato Fases 2+3</li>
+          <li>Prazo total maior</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px; background: rgba(16,185,129,0.03); border-color: rgba(16,185,129,0.15);">
+      <div style="font-size: 11px; color: var(--green); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.08em;">Resultado ideal da reunião</div>
+      <p style="font-size: 13px; color: var(--text-dim);">Sair com kickoff da Fase 1 agendado — data + pessoa de contato da equipe do Alan. Mínimo aceitável: agendar uma terceira reunião para mapeamento de processos (Fase 1 pressuposta).</p>
+    </div>
+  </section>
+
+  <!-- PRÓXIMOS PASSOS -->
+  <section>
+    <span class="section-tag">10 — Próximos Passos</span>
+    <h2>Para a proposta acontecer</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-line"></div>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Validar API do Talk para integração com n8n</div>
+          <div class="step-desc">Confirmar que a integração Talk → plataforma é viável via API oficial antes da reunião. Se viável, é um argumento concreto; se tem limitação, melhor saber antes.</div>
+          <div class="step-resp"><span class="step-resp-tag">u4digital</span><span class="step-resp-tag">Semana 1</span></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-line"></div>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Confirmar dados financeiros do cenário atual</div>
+          <div class="step-desc">Perguntar a Alan o custo real das licenças atuais e quantas horas/semana a equipe gasta em processos manuais. Com números reais o argumento de ROI é irrefutável.</div>
+          <div class="step-resp"><span class="step-resp-tag">Moroni — abertura da reunião</span></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-line"></div>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Preparar materiais para o 2° round</div>
+          <div class="step-desc">1 slide dos 5 blocos + 1 slide faseamento + 1 slide comparativo + 1 slide projeção financeira (economia + SaaS). Proposta formal em PDF entrega DEPOIS da conversa, não no início.</div>
+          <div class="step-resp"><span class="step-resp-tag">Moroni + Tiago</span><span class="step-resp-tag">Antes da reunião</span></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-line"></div>
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Segundo round com Alan — apresentação da proposta faseada</div>
+          <div class="step-desc">Arco em 3 atos: espelho → ponte → caminho. Fechar com as 2 opções. Objetivo: sair com kickoff agendado.</div>
+          <div class="step-resp"><span class="step-resp-tag">Moroni + Tiago + Alan</span><span class="step-resp-tag">A agendar</span></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Kickoff Fase 1 — mapeamento de processos (Uningá)</div>
+          <div class="step-desc">Visita presencial ou call estruturada para mapear fluxos atuais do sistema legado (Ricardo), entender as regras de negócio específicas da Uningá, e definir o escopo exato da Fase 1.</div>
+          <div class="step-resp"><span class="step-resp-tag">u4digital + Alan</span><span class="step-resp-tag">Semanas 2–3</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Confidencial — u4digital × Alan Binotto · Planejamento interno para o 2° round · Junho 2026
+</footer>
+
+</body>
+</html>

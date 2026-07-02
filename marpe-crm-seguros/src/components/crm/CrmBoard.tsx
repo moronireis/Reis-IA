@@ -94,11 +94,18 @@ interface NewDealForm {
   premio: string; comissao_pct: string;
   veiculo: string; placa: string;
   next_action: string; next_action_date: string;
+  // New fields
+  campanha: string; ja_possui_produto: boolean;
+  seguradora_atual: string; vigencia_atual_fim: string; corretora_atual: string;
+  agente: string; observacoes_proposta: string;
 }
 const EMPTY_FORM: NewDealForm = {
   contact_id: '', ramo: '', seguradora: '', deal_type: 'prospeccao',
   premio: '', comissao_pct: '', veiculo: '', placa: '',
   next_action: '', next_action_date: '',
+  campanha: '', ja_possui_produto: false,
+  seguradora_atual: '', vigencia_atual_fim: '', corretora_atual: '',
+  agente: '', observacoes_proposta: '',
 };
 
 // ─── Filter state ─────────────────────────────────────────────────────────────
@@ -431,6 +438,13 @@ function NewDealModal({ funnels, activeFunnelId, onClose, onCreated }: {
         placa: form.placa || null,
         next_action: form.next_action || null,
         next_action_date: form.next_action_date || null,
+        campanha: form.campanha || null,
+        ja_possui_produto: form.ja_possui_produto,
+        seguradora_atual: form.seguradora_atual || null,
+        vigencia_atual_fim: form.vigencia_atual_fim || null,
+        corretora_atual: form.corretora_atual || null,
+        agente: form.agente || null,
+        observacoes_proposta: form.observacoes_proposta || null,
       }),
     });
     const data = await res.json();
@@ -559,14 +573,55 @@ function NewDealModal({ funnels, activeFunnelId, onClose, onCreated }: {
             </div>
           </div>
 
+          {/* Campanha + Agente */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div>
+              <label style={LABEL_S}>Campanha</label>
+              <input value={form.campanha} onChange={field('campanha')} placeholder="Opcional" style={INPUT_S} />
+            </div>
+            <div>
+              <label style={LABEL_S}>Agente</label>
+              <input value={form.agente} onChange={field('agente')} placeholder="Opcional" style={INPUT_S} />
+            </div>
+          </div>
+
+          {/* Produto Atual */}
           <div>
-            <label style={LABEL_S}>Observação</label>
-            <textarea value={form.next_action} onChange={field('next_action')} rows={3} placeholder="Próxima ação ou observação..." style={{ ...INPUT_S, resize: 'vertical', minHeight: 72 }} />
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--text-secondary)', cursor: 'pointer' }}>
+              <input type="checkbox" checked={form.ja_possui_produto} onChange={e => setForm(f => ({ ...f, ja_possui_produto: e.target.checked }))} style={{ accentColor: 'var(--accent)', margin: 0 }} />
+              Cliente já possui o produto
+            </label>
+          </div>
+          {form.ja_possui_produto && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, paddingLeft: 4, borderLeft: '2px solid rgba(59,130,246,0.2)' }}>
+              <div>
+                <label style={LABEL_S}>Seguradora Atual</label>
+                <input value={form.seguradora_atual} onChange={field('seguradora_atual')} style={INPUT_S} />
+              </div>
+              <div>
+                <label style={LABEL_S}>Vig. Atual Fim</label>
+                <input type="date" value={form.vigencia_atual_fim} onChange={field('vigencia_atual_fim')} style={INPUT_S} />
+              </div>
+              <div>
+                <label style={LABEL_S}>Corretora Atual</label>
+                <input value={form.corretora_atual} onChange={field('corretora_atual')} style={INPUT_S} />
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label style={LABEL_S}>Próxima Ação</label>
+            <textarea value={form.next_action} onChange={field('next_action')} rows={2} placeholder="Próxima ação ou observação..." style={{ ...INPUT_S, resize: 'vertical', minHeight: 52 }} />
           </div>
 
           <div>
-            <label style={LABEL_S}>Data de Aproximação</label>
+            <label style={LABEL_S}>Data da Próxima Ação</label>
             <input type="date" value={form.next_action_date} onChange={field('next_action_date')} style={INPUT_S} />
+          </div>
+
+          <div>
+            <label style={LABEL_S}>Observações da Proposta</label>
+            <textarea value={form.observacoes_proposta} onChange={field('observacoes_proposta')} rows={2} placeholder="Detalhes adicionais..." style={{ ...INPUT_S, resize: 'vertical', minHeight: 52 }} />
           </div>
 
           {error && (

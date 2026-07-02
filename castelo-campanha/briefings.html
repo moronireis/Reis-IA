@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Briefings de Conteúdo — Castelo dos Lagos</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:    #0A0A0A;
+      --surface:  #111113;
+      --card:     #18181B;
+      --card2:    #1C1C1F;
+      --border:   #27272A;
+      --muted:    #52525B;
+      --text:     #E4E4E7;
+      --white:    #FFFFFF;
+      --gold:     #C5A462;
+      --gold-dim: rgba(197,164,98,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: rgba(10,10,10,0.94);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+    .logo { font-size: 14px; font-weight: 300; letter-spacing: 0.12em; color: var(--white); text-transform: uppercase; }
+    .logo span { color: var(--gold); }
+    .badge {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--gold); background: var(--gold-dim);
+      border: 1px solid rgba(197,164,98,0.25); padding: 4px 12px; border-radius: 2px;
+    }
+
+    /* ── HERO ── */
+    .hero { padding: 80px 40px 60px; max-width: 900px; margin: 0 auto; }
+    .hero-tag { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 300; color: var(--white); line-height: 1.2; margin-bottom: 16px; }
+    .hero p { font-size: 15px; color: var(--muted); max-width: 560px; line-height: 1.7; }
+    .meta-info { margin-top: 32px; display: flex; gap: 32px; flex-wrap: wrap; }
+    .meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .meta-label { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .meta-value { font-size: 13px; color: var(--text); }
+
+    /* ── NAV PILLS ── */
+    .nav-pills { padding: 0 40px 48px; max-width: 900px; margin: 0 auto; display: flex; gap: 8px; flex-wrap: wrap; }
+    .nav-pill {
+      font-size: 12px; font-weight: 500; letter-spacing: 0.06em; color: var(--muted);
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 6px 16px; border-radius: 2px; text-decoration: none;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .nav-pill:hover { color: var(--gold); border-color: rgba(197,164,98,0.4); }
+
+    /* ── MAIN ── */
+    main { max-width: 900px; margin: 0 auto; padding: 0 40px 120px; display: flex; flex-direction: column; gap: 64px; }
+
+    /* ── BRIEFING CARD ── */
+    .briefing { border: 1px solid var(--border); background: var(--card); }
+
+    .briefing-header {
+      padding: 48px 48px 0;
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 0; gap: 20px; flex-wrap: wrap;
+    }
+    .briefing-number { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .briefing-title { font-size: 22px; font-weight: 400; color: var(--white); line-height: 1.3; }
+    .briefing-subtitle { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .priority-tag {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 2px; white-space: nowrap; flex-shrink: 0;
+    }
+    .priority-high  { color: #ef4444; background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.25); }
+    .priority-medium{ color: #f59e0b; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex; gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin: 28px 48px 0;
+    }
+    .tab-btn {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); background: none; border: none;
+      padding: 12px 20px; cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    /* ── TAB PANELS ── */
+    .tab-panel { display: none; padding: 40px 48px 48px; }
+    .tab-panel.active { display: block; }
+
+    /* ── CONTEXT BOX ── */
+    .context-box {
+      background: rgba(197,164,98,0.06); border-left: 2px solid var(--gold);
+      padding: 16px 20px; margin-bottom: 32px;
+      font-size: 13px; color: var(--muted); line-height: 1.7;
+    }
+    .context-box strong { color: var(--gold); font-weight: 500; }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 32px; }
+    .section:last-child { margin-bottom: 0; }
+    .section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 16px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── ITEM LIST ── */
+    .item-list { display: flex; flex-direction: column; gap: 10px; }
+    .item { display: flex; gap: 14px; align-items: flex-start; }
+    .item-num { font-size: 11px; font-weight: 600; color: var(--gold); min-width: 24px; padding-top: 2px; font-variant-numeric: tabular-nums; }
+    .item-text { font-size: 14px; color: var(--text); line-height: 1.6; }
+    .item-text em { font-style: normal; color: var(--muted); font-size: 12px; }
+
+    /* ── TWO COLS ── */
+    .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 640px) { .two-cols { grid-template-columns: 1fr; } }
+    .col-box { background: var(--surface); border: 1px solid var(--border); padding: 20px; }
+    .col-box-label { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .col-box ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .col-box li { font-size: 13px; color: var(--text); display: flex; gap: 8px; align-items: flex-start; }
+    .col-box li::before { content: '—'; color: var(--gold); flex-shrink: 0; font-size: 12px; padding-top: 1px; }
+
+    /* ── SCRIPT BOX ── */
+    .script-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-left: 2px solid var(--gold); padding: 20px 24px;
+      font-size: 13px; color: var(--text); line-height: 1.8; font-style: italic;
+    }
+
+    /* ── VIDEO EXAMPLE CARD ── */
+    .video-example {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .video-example:last-child { margin-bottom: 0; }
+    .ve-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+    }
+    .ve-header:hover .ve-title { color: var(--white); }
+    .ve-num {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.16em;
+      color: var(--gold); background: var(--gold-dim);
+      border: 1px solid rgba(197,164,98,0.2);
+      padding: 3px 10px; border-radius: 2px; flex-shrink: 0;
+    }
+    .ve-title { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; line-height: 1.4; }
+    .ve-toggle { font-size: 16px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+    .ve-toggle.open { transform: rotate(180deg); }
+
+    .ve-body { display: none; padding: 20px; }
+    .ve-body.open { display: block; }
+
+    .ve-meta {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .ve-meta-item { display: flex; flex-direction: column; gap: 3px; }
+    .ve-meta-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .ve-meta-value { font-size: 12px; color: var(--text); }
+
+    .ve-script {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--gold);
+      padding: 18px 20px;
+      font-size: 13px; line-height: 1.85;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    .ve-tips {
+      margin-top: 14px;
+      display: flex; flex-direction: column; gap: 7px;
+    }
+    .ve-tip {
+      font-size: 12px; color: var(--muted); display: flex; gap: 8px; align-items: flex-start;
+    }
+    .ve-tip::before { content: '↳'; color: var(--gold); flex-shrink: 0; }
+
+    /* ── FLOW ── */
+    .flow { display: flex; flex-direction: column; }
+    .flow-step { display: flex; gap: 16px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .flow-step:last-child { border-bottom: none; }
+    .flow-arrow { font-size: 18px; color: var(--gold); flex-shrink: 0; padding-top: 1px; }
+    .flow-text { font-size: 13px; color: var(--text); line-height: 1.6; }
+    .flow-text strong { color: var(--white); font-weight: 500; }
+
+    /* ── SUMMARY TABLE ── */
+    .summary-table { border: 1px solid var(--border); background: var(--surface); overflow: hidden; }
+    .summary-table table { width: 100%; border-collapse: collapse; }
+    .summary-table th {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); text-align: left; padding: 14px 20px;
+      border-bottom: 1px solid var(--border); background: var(--card);
+    }
+    .summary-table td { font-size: 13px; color: var(--text); padding: 14px 20px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .summary-table tr:last-child td { border-bottom: none; }
+    .summary-table td:first-child { color: var(--white); font-weight: 500; }
+    .urgency-alta  { color: #ef4444; font-weight: 500; }
+    .urgency-media { color: #f59e0b; font-weight: 500; }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--border); padding: 32px 40px; text-align: center; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 640px) {
+      header { padding: 20px; }
+      .hero { padding: 48px 20px 40px; }
+      .nav-pills { padding: 0 20px 36px; }
+      main { padding: 0 20px 80px; gap: 48px; }
+      .briefing-header { padding: 28px 20px 0; }
+      .tabs { margin: 20px 20px 0; }
+      .tab-panel { padding: 28px 20px 32px; }
+      footer { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Castelo dos Lagos <span>/ Briefings</span></div>
+  <div class="badge">Reunião 26/06</div>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">Planejamento de Conteúdo</div>
+  <h1>Briefings de Criativo</h1>
+  <p>4 briefings definidos na reunião de 26/06. Cada um com ângulos, porta-vozes, metas de volume e exemplos prontos de vídeo a gravar.</p>
+  <div class="meta-info">
+    <div class="meta-item"><span class="meta-label">Briefings</span><span class="meta-value">4 entregas</span></div>
+    <div class="meta-item"><span class="meta-label">Vídeos necessários</span><span class="meta-value">20 vídeos + 13 estáticos</span></div>
+    <div class="meta-item"><span class="meta-label">Campanha prioritária</span><span class="meta-value">Corporativo</span></div>
+  </div>
+</div>
+
+<div class="nav-pills">
+  <a href="#b1" class="nav-pill">01 — Vídeo Corporativo</a>
+  <a href="#b2" class="nav-pill">02 — Vídeo Casamento</a>
+  <a href="#b3" class="nav-pill">03 — Depoimentos</a>
+  <a href="#b4" class="nav-pill">04 — Workshop Degustação</a>
+  <a href="#resumo" class="nav-pill">Resumo</a>
+</div>
+
+<main>
+
+  <!-- ════════════════════════════════════════
+       BRIEFING 1 — CORPORATIVO
+  ════════════════════════════════════════ -->
+  <div class="briefing" id="b1">
+    <div class="briefing-header">
+      <div>
+        <div class="briefing-number">01</div>
+        <div class="briefing-title">Vídeo Corporativo</div>
+        <div class="briefing-subtitle">Porta-voz: Júnior — 10 vídeos + 5 estáticos</div>
+      </div>
+      <span class="priority-tag priority-high">Urgência Alta</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'b1-briefing')">Briefing</button>
+      <button class="tab-btn" onclick="switchTab(this,'b1-exemplos')">Exemplos de Vídeo</button>
+    </div>
+
+    <!-- PANEL: BRIEFING -->
+    <div class="tab-panel active" id="b1-briefing">
+      <div class="context-box">
+        <strong>Por que agora:</strong> O teste trouxe 1 lead qualificado (Silvia, formatura) com budget de apenas 1 vídeo. Campanha permanece ativa. Com volume de criativo, a projeção é de 15–20 agendamentos para o mesmo investimento.
+      </div>
+
+      <div class="section">
+        <div class="section-label">Quem é o público desses vídeos</div>
+        <p style="font-size:14px;color:var(--text);line-height:1.7;">Empresário ou gestor que quer organizar treinamento, formatura ou evento corporativo. Preocupado com logística, qualidade do buffet e não quer gerenciar tudo sozinho. Quer previsibilidade e zero dor de cabeça.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Dores a bater em cada vídeo</div>
+        <div class="item-list">
+          <div class="item"><span class="item-num">1</span><span class="item-text">Quer espaço que comporte o evento <em>(capacidade, estrutura)</em></span></div>
+          <div class="item"><span class="item-num">2</span><span class="item-text">Quer buffet de qualidade que não o envergonhe perante os convidados</span></div>
+          <div class="item"><span class="item-num">3</span><span class="item-text">Quer assistência — alguém que cuide, não ele gerenciar cada detalhe</span></div>
+          <div class="item"><span class="item-num">4</span><span class="item-text">Quer previsibilidade: vai sair como planejou?</span></div>
+          <div class="item"><span class="item-num">5</span><span class="item-text">Menos dor de cabeça, mais foco no próprio evento <em>(treinamento, formatura)</em></span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">10 ângulos — um por vídeo</div>
+        <div class="item-list">
+          <div class="item"><span class="item-num">01</span><span class="item-text">"Você quer fazer seu treinamento aqui?" — direto na dor principal</span></div>
+          <div class="item"><span class="item-num">02</span><span class="item-text">"Aqui você não precisa se preocupar com o buffet" — alívio de ansiedade</span></div>
+          <div class="item"><span class="item-num">03</span><span class="item-text">"A gente cuida de tudo, você foca no seu evento" — promessa de assistência</span></div>
+          <div class="item"><span class="item-num">04</span><span class="item-text">"Espaço para X pessoas, com estrutura completa" — capacidade e logística</span></div>
+          <div class="item"><span class="item-num">05</span><span class="item-text">"Formatura sem estresse" — nicho formatura</span></div>
+          <div class="item"><span class="item-num">06</span><span class="item-text">Depoimento do Ótimo ou CD Chapas — prova social corporativa</span></div>
+          <div class="item"><span class="item-num">07</span><span class="item-text">Tour pelo espaço sem narração — mostra estrutura/ambiente</span></div>
+          <div class="item"><span class="item-num">08</span><span class="item-text">"Já imaginou fazer seu evento aqui?" — aspiracional</span></div>
+          <div class="item"><span class="item-num">09</span><span class="item-text">Contra-objeção: "Achei que seria complicado, mas foi simples"</span></div>
+          <div class="item"><span class="item-num">10</span><span class="item-text">"Quanto custa fazer seu evento no Castelo?" — gatilho de custo</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">5 estáticos</div>
+        <div class="item-list">
+          <div class="item"><span class="item-num">E1</span><span class="item-text">Card com capacidade do espaço e estrutura disponível</span></div>
+          <div class="item"><span class="item-num">E2</span><span class="item-text">Card com diferenciais do buffet para eventos corporativos</span></div>
+          <div class="item"><span class="item-num">E3</span><span class="item-text">Depoimento em texto do Ótimo ou CD Chapas</span></div>
+          <div class="item"><span class="item-num">E4</span><span class="item-text">Foto do espaço montado para evento com headline corporativa</span></div>
+          <div class="item"><span class="item-num">E5</span><span class="item-text">Card com tabela de pacotes corporativos e condições</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Como o Júnior deve gravar</div>
+        <div class="script-box">"Não precisa decorar nada. Lê o ângulo, entende o que o cara quer ouvir, e conversa com a câmera como conversaria com qualquer empresário que chegasse querendo fazer o evento dele no Castelo. Natural, direto, sem ser quadrado. Celular na vertical resolve."</div>
+      </div>
+    </div>
+
+    <!-- PANEL: EXEMPLOS -->
+    <div class="tab-panel" id="b1-exemplos">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.7;">Scripts prontos para gravar. Não precisa ler palavra por palavra — usa como referência e fala do jeito natural. Clique em cada exemplo para expandir.</p>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V01</span>
+          <span class="ve-title">Dor principal — "Você quer fazer seu treinamento aqui?"</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">30–45 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Júnior</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Busto, celular vertical</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Local</span><span class="ve-meta-value">Espaço do Castelo ao fundo</span></div>
+          </div>
+          <div class="ve-script">Se você está procurando um lugar para fazer o treinamento ou evento da sua empresa, deixa eu te mostrar o Castelo dos Lagos.
+
+A gente tem espaço para receber times de qualquer tamanho, com estrutura completa — buffet, estacionamento, toda a logística que você precisa.
+
+E o melhor: você não precisa se preocupar com nada. A gente cuida de tudo para que você possa focar no que importa: o seu evento.
+
+Manda uma mensagem aqui e a gente te passa todas as informações.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Falar com calma, como se fosse uma conversa com o cliente — não uma locução</div>
+            <div class="ve-tip">Mostrar o espaço atrás enquanto fala (câmera passando pelo salão antes de começar o texto)</div>
+            <div class="ve-tip">Terminar com CTA direto: "manda uma mensagem" — não "acesse nosso site"</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V02</span>
+          <span class="ve-title">Alívio de ansiedade — "Você não precisa se preocupar com o buffet"</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">25–35 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Júnior</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Busto ou corpo inteiro caminhando</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Local</span><span class="ve-meta-value">Próximo à área do buffet</span></div>
+          </div>
+          <div class="ve-script">Sabe aquela dúvida de "será que o buffet vai atender bem o pessoal do meu evento"?
+
+Aqui no Castelo dos Lagos você não precisa ter essa preocupação.
+
+A gente tem buffet próprio, cardápio variado, e uma equipe que já atendeu desde treinamentos pequenos até formaturas de centenas de pessoas.
+
+Pode deixar essa parte com a gente. Foca no seu evento.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Gravar próximo ao buffet montado se possível — prova visual instantânea</div>
+            <div class="ve-tip">O tom é de parceiro, não de vendedor — "deixa isso com a gente"</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V03</span>
+          <span class="ve-title">Formatura — "Formatura sem estresse"</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">35–45 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Júnior</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Busto, salão ao fundo</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Local</span><span class="ve-meta-value">Salão principal do Castelo</span></div>
+          </div>
+          <div class="ve-script">Organizar uma formatura é uma das coisas mais trabalhosas que existe.
+
+Espaço, buffet, decoração, estacionamento, equipe de apoio — tem mil coisas para pensar ao mesmo tempo.
+
+No Castelo dos Lagos, a gente resolve tudo isso em um único lugar. Você escolhe o que você quer, a gente entrega.
+
+Já atendemos formaturas de [X] pessoas com todo o suporte que a turma precisava.
+
+Se você está planejando a formatura da sua turma, manda uma mensagem — a gente te ajuda a montar tudo.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Se tiver foto ou vídeo de formatura anterior no Castelo, inserir como B-roll no fundo enquanto o Júnior fala</div>
+            <div class="ve-tip">Incluir número concreto de pessoas se tiver referência real</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V04</span>
+          <span class="ve-title">Aspiracional — "Já imaginou fazer seu evento aqui?"</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">20–30 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Júnior — ou tour em silêncio com legenda</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Câmera passeando pelo espaço</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Local</span><span class="ve-meta-value">Todo o Castelo — entrada, salão, área externa</span></div>
+          </div>
+          <div class="ve-script">Já imaginou reunir sua equipe num lugar assim?
+
+[mostrar espaço externo]
+
+Aqui é o Castelo dos Lagos — espaço completo para eventos corporativos, formaturas e treinamentos.
+
+[mostrar salão interno]
+
+Conta para a gente o que você precisa. A gente monta o evento ideal pra você.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Esse vídeo pode ser gravado andando pelo espaço, sem precisar aparecer muito — a imagem vende sozinha</div>
+            <div class="ve-tip">Música instrumental leve de fundo funciona bem aqui</div>
+            <div class="ve-tip">Legendas são essenciais — maioria assiste sem som</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V05</span>
+          <span class="ve-title">Custo — "Quanto custa fazer seu evento no Castelo?"</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">30–40 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Júnior</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Busto, direto ao ponto</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Local</span><span class="ve-meta-value">Qualquer ambiente do Castelo</span></div>
+          </div>
+          <div class="ve-script">Quanto custa fazer um evento corporativo no Castelo dos Lagos?
+
+Depende do que você precisa — número de pessoas, cardápio, estrutura — mas a gente tem pacotes a partir de [valor se tiver referência] por pessoa.
+
+O que eu posso te dizer é que você vai ter tudo em um lugar: espaço, buffet, estacionamento e equipe de apoio.
+
+Manda uma mensagem, a gente faz o orçamento personalizado pro seu evento.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Se não quiser citar preço, cortar a segunda frase e ir direto para o terceiro parágrafo</div>
+            <div class="ve-tip">Tom direto funciona bem — público corporativo valoriza objetividade</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       BRIEFING 2 — CASAMENTO
+  ════════════════════════════════════════ -->
+  <div class="briefing" id="b2">
+    <div class="briefing-header">
+      <div>
+        <div class="briefing-number">02</div>
+        <div class="briefing-title">Vídeo de Casamento</div>
+        <div class="briefing-subtitle">Porta-vozes: Gi, Parceiros, Júnior — 10 vídeos + 5 estáticos</div>
+      </div>
+      <span class="priority-tag priority-high">Urgência Alta</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'b2-briefing')">Briefing</button>
+      <button class="tab-btn" onclick="switchTab(this,'b2-exemplos')">Exemplos de Vídeo</button>
+    </div>
+
+    <!-- PANEL: BRIEFING -->
+    <div class="tab-panel active" id="b2-briefing">
+      <div class="context-box">
+        <strong>Diagnóstico atual:</strong> Campanha rodando com estáticos de muito texto — não performa. Enquanto não tiver vídeo com pessoa falando, continuará trazendo gatos pingados.
+      </div>
+
+      <div class="section">
+        <div class="section-label">O insight central da reunião</div>
+        <p style="font-size:14px;color:var(--text);line-height:1.7;">O casal não está preocupado com o Castelo. Está preocupado em <strong style="color:var(--white);">realizar o sonho do casamento deles</strong>. O local é um meio, não o fim. Os vídeos precisam falar do problema deles, não das qualidades do espaço.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Porta-vozes e volume</div>
+        <div class="two-cols">
+          <div class="col-box">
+            <div class="col-box-label">Quem grava</div>
+            <ul>
+              <li>Gi <em>(falar com ela esta semana)</em></li>
+              <li>Júnior <em>(mesma dinâmica do corporativo)</em></li>
+              <li>Parceiros <em>(casais, fornecedores)</em></li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <div class="col-box-label">Volume alvo</div>
+            <ul>
+              <li>Mínimo: 10 vídeos + 5 estáticos</li>
+              <li>Ideal: 20–30 vídeos</li>
+              <li>Sustentar fornecimento contínuo</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">10 ângulos — um por vídeo</div>
+        <div class="item-list">
+          <div class="item"><span class="item-num">01</span><span class="item-text">"Você não sabe por onde começar o casamento?" — gancho de dúvida</span></div>
+          <div class="item"><span class="item-num">02</span><span class="item-text">"A gente ajuda você a montar tudo do zero" — promessa de assessoria</span></div>
+          <div class="item"><span class="item-num">03</span><span class="item-text">Depoimento de casal <em>(Carima ou Regiane)</em> — prova social</span></div>
+          <div class="item"><span class="item-num">04</span><span class="item-text">"O casamento dos sonhos sem você ter que gerenciar tudo" — alívio</span></div>
+          <div class="item"><span class="item-num">05</span><span class="item-text">Gi falando: "Cuidamos de cada detalhe do seu dia" — conexão com a noiva</span></div>
+          <div class="item"><span class="item-num">06</span><span class="item-text">Parceiros no espaço — conexão emocional real</span></div>
+          <div class="item"><span class="item-num">07</span><span class="item-text">Tour pelo espaço durante festa montada — prova visual</span></div>
+          <div class="item"><span class="item-num">08</span><span class="item-text">"Já pensou na sua entrada nesse salão?" — aspiracional</span></div>
+          <div class="item"><span class="item-num">09</span><span class="item-text">Depoimento de debutante — cross-sell</span></div>
+          <div class="item"><span class="item-num">10</span><span class="item-text">"2027 ainda tem datas disponíveis" — urgência e escassez</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">5 estáticos</div>
+        <div class="item-list">
+          <div class="item"><span class="item-num">E1</span><span class="item-text">Tabela de valores atualizada <em>(incluindo sábado)</em></span></div>
+          <div class="item"><span class="item-num">E2</span><span class="item-text">Foto do salão montado com headline sobre o sonho do casamento</span></div>
+          <div class="item"><span class="item-num">E3</span><span class="item-text">Depoimento em texto de casal <em>(Carima ou Regiane, com data do evento)</em></span></div>
+          <div class="item"><span class="item-num">E4</span><span class="item-text">Pacote 2026 urgente <em>(para quem está em cima da hora)</em></span></div>
+          <div class="item"><span class="item-num">E5</span><span class="item-text">Card: espaço + buffet + assessoria no mesmo lugar</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: EXEMPLOS -->
+    <div class="tab-panel" id="b2-exemplos">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.7;">Scripts prontos para cada porta-voz. Falar de forma natural — esses são roteiros de referência, não texto a decorar.</p>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V01</span>
+          <span class="ve-title">Gancho de dúvida — Gi falando para a noiva (Gi grava)</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">30–40 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Gi</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Busto, celular vertical</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Local</span><span class="ve-meta-value">Salão do Castelo ou área externa</span></div>
+          </div>
+          <div class="ve-script">Você está noiva e não sabe por onde começar?
+
+Eu sei bem como é essa sensação. São tantas decisões ao mesmo tempo — espaço, buffet, decoração, fornecedores — que dá vontade de adiar tudo.
+
+Aqui no Castelo dos Lagos a gente está acostumada a ajudar as noivas exatamente nesse momento.
+
+Vem conhecer o espaço, tomar um café, e a gente vai te ajudar a entender o que você precisa para o casamento dos seus sonhos.
+
+Manda uma mensagem aqui — sem compromisso.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Tom empático e acolhedor — Gi fala para outra mulher, conexão direta com a noiva</div>
+            <div class="ve-tip">"Sem compromisso" no final reduz barreira de contato</div>
+            <div class="ve-tip">Pode gravar no salão com luz natural — não precisa de produção</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V02</span>
+          <span class="ve-title">Alívio — "O casamento dos sonhos sem você gerenciar tudo" (Júnior ou Gi)</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">35–45 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Júnior ou Gi</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Busto ou caminhando pelo espaço</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Local</span><span class="ve-meta-value">Interior do Castelo</span></div>
+          </div>
+          <div class="ve-script">Organizar um casamento é maravilhoso. Mas não mente — é trabalhoso também.
+
+Fornecedor que some, detalhe que muda, coisa que chega errada no dia...
+
+No Castelo dos Lagos a gente tem tudo em um único lugar: o espaço, o buffet, o estacionamento, a equipe.
+
+Você chega no dia do seu casamento só para aproveitar. O resto é com a gente.
+
+Quer conhecer? Manda uma mensagem aqui.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">A linha "Você chega no dia só para aproveitar" é o gancho emocional mais forte — dizer com ênfase</div>
+            <div class="ve-tip">Pausa intencional antes de "O resto é com a gente" aumenta o impacto</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V03</span>
+          <span class="ve-title">Aspiracional — "Já pensou na sua entrada nesse salão?" (tour)</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">20–30 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Câmera passeando — sem porta-voz ou voz em off</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Câmera andando pelo salão</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Local</span><span class="ve-meta-value">Salão principal, de preferência montado</span></div>
+          </div>
+          <div class="ve-script">[câmera entra pelo corredor do salão]
+Legenda: "Já pensou na sua entrada assim?"
+
+[câmera percorre o salão decorado]
+Legenda: "Castelo dos Lagos — onde o seu casamento acontece de verdade."
+
+[plano final na pista ou na decoração]
+Legenda: "Manda uma mensagem e agende sua visita."</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Melhor gravar durante um casamento real ou degustação com o salão montado</div>
+            <div class="ve-tip">Música instrumental suave de fundo — cena vende sozinha</div>
+            <div class="ve-tip">Legendas são o roteiro aqui — vídeo sem fala nenhuma funciona muito bem nesse ângulo</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V04</span>
+          <span class="ve-title">Urgência — "2027 ainda tem datas disponíveis" (Gi ou Júnior)</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">20–30 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Gi ou Júnior</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Busto, direto</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Local</span><span class="ve-meta-value">Qualquer ponto do Castelo</span></div>
+          </div>
+          <div class="ve-script">Se você está pensando em casar em 2027, o momento de reservar é agora.
+
+As datas mais procuradas — principalmente sábados e feriados — estão preenchendo rápido.
+
+No Castelo dos Lagos ainda temos algumas datas disponíveis.
+
+Manda uma mensagem antes que a sua data preferida feche.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">A escassez precisa ser real — confirmar com a Leca quais datas realmente estão disponíveis antes de gravar</div>
+            <div class="ve-tip">Tom urgente mas não desesperado — "ainda temos algumas datas" não "corre que vai acabar"</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V05</span>
+          <span class="ve-title">Parceiros — casal real falando do Castelo</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">30–60 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Casal parceiro (Léo e Luana ou similar)</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Os dois juntos, celular vertical</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Local</span><span class="ve-meta-value">No Castelo — área externa ou salão</span></div>
+          </div>
+          <div class="ve-script">[os dois falam naturalmente, não precisa ser roteirizado]
+
+Sugestão de perguntas para o casal:
+— "Como foi a decisão de fazer o casamento no Castelo dos Lagos?"
+— "O que mais te surpreendeu no dia?"
+— "O buffet atendeu bem?"
+— "Você indicaria para outros casais?"
+
+Editar depois para pegar os melhores 30–40 segundos.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Depoimento espontâneo converte muito mais que roteiro decorado — não forçar</div>
+            <div class="ve-tip">Gravar no próprio Castelo adiciona credibilidade visual ao depoimento</div>
+            <div class="ve-tip">Se tiver foto do casamento deles no espaço, usar como B-roll na edição</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       BRIEFING 3 — DEPOIMENTOS
+  ════════════════════════════════════════ -->
+  <div class="briefing" id="b3">
+    <div class="briefing-header">
+      <div>
+        <div class="briefing-number">03</div>
+        <div class="briefing-title">Briefing de Depoimentos</div>
+        <div class="briefing-subtitle">Executar: Gera — Corporativo + Casamento + Debutante</div>
+      </div>
+      <span class="priority-tag priority-medium">Urgência Média</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'b3-briefing')">Briefing</button>
+      <button class="tab-btn" onclick="switchTab(this,'b3-exemplos')">Exemplos de Abordagem</button>
+    </div>
+
+    <!-- PANEL: BRIEFING -->
+    <div class="tab-panel active" id="b3-briefing">
+      <div class="context-box">
+        <strong>Prioridade:</strong> Corporativos primeiro — Ótimo e CD Chapas. Depois casamentos (Carima, Regiane). Por último, debutantes do arquivo da Amanda.
+      </div>
+
+      <div class="section">
+        <div class="section-label">Script de abordagem — WhatsApp</div>
+        <div class="script-box">"Olá [nome], tudo bem? Ficamos muito felizes com o resultado do [evento] de vocês aqui no Castelo. Gostaríamos muito de contar com o seu depoimento — pode ser um vídeo curtinho, de 30 segundos a 1 minuto, no celular mesmo. Gravaria respondendo só 3 perguntas simples. Posso te mandar?"</div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">3 perguntas do depoimento</div>
+        <div class="item-list">
+          <div class="item"><span class="item-num">1</span><span class="item-text">"Como foi a experiência de fazer seu evento no Castelo dos Lagos?"</span></div>
+          <div class="item"><span class="item-num">2</span><span class="item-text">"O que você mais gostou do buffet e da estrutura?"</span></div>
+          <div class="item"><span class="item-num">3</span><span class="item-text">"Você indicaria o Castelo para outras pessoas? Por quê?"</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Especificações técnicas</div>
+        <div class="two-cols">
+          <div class="col-box">
+            <div class="col-box-label">Pode</div>
+            <ul>
+              <li>Celular na vertical <em>(ideal para Reels)</em></li>
+              <li>Ambiente iluminado natural</li>
+              <li>Mandar o vídeo bruto sem edição</li>
+              <li>Gravar em casa, no trabalho ou no Castelo</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <div class="col-box-label">Evitar</div>
+            <ul>
+              <li>Ambiente com muito barulho</li>
+              <li>Contraluz <em>(janela atrás da pessoa)</em></li>
+              <li>Vídeo acima de 2 minutos</li>
+              <li>Roteiro decorado — natural é melhor</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Prioridade de contato — Gera</div>
+        <div class="item-list">
+          <div class="item"><span class="item-num">1º</span><span class="item-text"><strong style="color:var(--white);">Ótimo</strong> — corporativo <em>(maior urgência)</em></span></div>
+          <div class="item"><span class="item-num">2º</span><span class="item-text"><strong style="color:var(--white);">CD Chapas</strong> — corporativo</span></div>
+          <div class="item"><span class="item-num">3º</span><span class="item-text"><strong style="color:var(--white);">Carima</strong> — casamento / debutante</span></div>
+          <div class="item"><span class="item-num">4º</span><span class="item-text"><strong style="color:var(--white);">Regiane</strong> — Bodas, final de ano</span></div>
+          <div class="item"><span class="item-num">5º</span><span class="item-text">Casais do <strong style="color:var(--white);">arquivo da Amanda</strong> — verificar pasta do Drive</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: EXEMPLOS -->
+    <div class="tab-panel" id="b3-exemplos">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.7;">Mensagens prontas para o Gera copiar e mandar. Adaptar apenas nome e tipo de evento.</p>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">MSG 01</span>
+          <span class="ve-title">Abordagem corporativo — Ótimo / CD Chapas</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Enviar para</span><span class="ve-meta-value">Responsável da empresa</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Via</span><span class="ve-meta-value">WhatsApp</span></div>
+          </div>
+          <div class="ve-script">Olá [nome], tudo bem?
+
+Ficamos muito felizes com como ficou o evento de vocês aqui no Castelo — foi um prazer receber a equipe da [empresa].
+
+Estamos montando um material mostrando os tipos de eventos que já realizamos aqui, e gostaríamos muito de contar com um depoimento de vocês.
+
+Pode ser um vídeo curtinho — 30 segundos a 1 minuto, no celular mesmo — respondendo só:
+1. Como foi a experiência do evento aqui no Castelo?
+2. O que mais gostaram do espaço e do buffet?
+3. Indicariam para outras empresas?
+
+Fica à vontade para gravar quando der — pode mandar aqui mesmo no WhatsApp.
+
+Muito obrigado!</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Personalizar o nome da empresa no segundo parágrafo — não mandar genérico</div>
+            <div class="ve-tip">Se tiver foto do evento deles, mandar junto com a mensagem — ativa a memória e aumenta a chance de resposta</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">MSG 02</span>
+          <span class="ve-title">Abordagem casamento — Carima / Regiane</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Enviar para</span><span class="ve-meta-value">Noiva ou casal</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Via</span><span class="ve-meta-value">WhatsApp</span></div>
+          </div>
+          <div class="ve-script">Oi [nome], tudo bem com vocês?
+
+Espero que estejam bem e que o casamento tenha ficado na memória como a gente queria — especial do começo ao fim.
+
+Estamos reunindo depoimentos de casais que celebraram aqui no Castelo, e adoraríamos ter a voz de vocês nesse material.
+
+Seria um vídeo curtinho, no celular mesmo, respondendo 3 perguntas simples:
+1. Como foi o dia do casamento aqui no Castelo?
+2. O que mais marcou na experiência?
+3. Vocês indicariam para outros casais?
+
+Pode mandar quando tiver um tempinho — aqui no WhatsApp mesmo.
+
+Muito obrigado, e foi uma honra ter vocês aqui!</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Tom mais afetivo com casais — diferente do corporativo</div>
+            <div class="ve-tip">Mandar uma foto do dia do casamento deles junto com a mensagem — funciona muito bem para ativar o emocional</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">MSG 03</span>
+          <span class="ve-title">Follow-up — caso não responda em 3 dias</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Quando enviar</span><span class="ve-meta-value">3 dias sem resposta</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Via</span><span class="ve-meta-value">WhatsApp</span></div>
+          </div>
+          <div class="ve-script">Oi [nome]! Só passando para ver se viu a mensagem anterior 😊
+
+Se preferir, pode ser até por escrito mesmo — uma mensagem simples sobre como foi a experiência já nos ajuda muito.
+
+Qualquer formato serve — o importante é ter a sua opinião aqui com a gente. Obrigado!</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Follow-up único — não insistir mais de uma vez após esse</div>
+            <div class="ve-tip">Reduzir a barreira: "pode ser por escrito" aumenta a taxa de resposta</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       BRIEFING 4 — WORKSHOP DEGUSTAÇÃO
+  ════════════════════════════════════════ -->
+  <div class="briefing" id="b4">
+    <div class="briefing-header">
+      <div>
+        <div class="briefing-number">04</div>
+        <div class="briefing-title">Workshop Degustação Paga</div>
+        <div class="briefing-subtitle">Lançamento pago — aprovar com Matoso primeiro</div>
+      </div>
+      <span class="priority-tag priority-medium">Urgência Média</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'b4-briefing')">Briefing</button>
+      <button class="tab-btn" onclick="switchTab(this,'b4-exemplos')">Exemplos de Vídeo</button>
+    </div>
+
+    <!-- PANEL: BRIEFING -->
+    <div class="tab-panel active" id="b4-briefing">
+      <div class="context-box">
+        <strong>O conceito (lançamento pago):</strong> A pessoa paga um ingresso. O ticket financia a campanha. O comercial entra em contato assim que a compra acontece — pode fechar antes mesmo do evento. O evento é a isca, não o fim.
+      </div>
+
+      <div class="section">
+        <div class="section-label">Formato do workshop</div>
+        <div class="two-cols">
+          <div class="col-box">
+            <div class="col-box-label">O que inclui</div>
+            <ul>
+              <li>Degustação do buffet <em>(menu especial)</em></li>
+              <li>Consultoria com assessora de casamento</li>
+              <li>Fornecedores parceiros: cabelo, maquiagem, vestidos</li>
+              <li>Orientação sobre datas e pacotes disponíveis</li>
+              <li>Condição especial para quem fechar no dia</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <div class="col-box-label">Definir com o Matoso</div>
+            <ul>
+              <li>Ticket: R$80–R$150 por pessoa</li>
+              <li>Data do evento <em>(1–2 meses de campanha)</em></li>
+              <li>Abatimento no contrato se fechar</li>
+              <li>Capacidade máxima de casais</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Fluxo completo</div>
+        <div class="flow">
+          <div class="flow-step"><span class="flow-arrow">→</span><div class="flow-text"><strong>Campanha no ar</strong> — 1 a 2 meses antes do evento</div></div>
+          <div class="flow-step"><span class="flow-arrow">→</span><div class="flow-text"><strong>Pessoa compra o ingresso</strong> — Landing de inscrição com pagamento</div></div>
+          <div class="flow-step"><span class="flow-arrow">→</span><div class="flow-text"><strong>Comercial entra em contato no ato da compra</strong> — coleta dados, entende o evento, inicia relacionamento</div></div>
+          <div class="flow-step"><span class="flow-arrow">→</span><div class="flow-text"><strong>Tentativa de fechar antes do evento</strong> — quem está mais quente, fechar antes</div></div>
+          <div class="flow-step"><span class="flow-arrow">→</span><div class="flow-text"><strong>Evento acontece</strong> — converte quem ainda está em cima do muro</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Criativos para a campanha</div>
+        <div class="item-list">
+          <div class="item"><span class="item-num">V1</span><span class="item-text">Gi ou Júnior: "você não sabe como montar seu casamento?"</span></div>
+          <div class="item"><span class="item-num">V2</span><span class="item-text">O que você vai ter no dia: degustação + especialistas + condição especial</span></div>
+          <div class="item"><span class="item-num">V3</span><span class="item-text">Urgência: "vagas limitadas, evento no dia [X]"</span></div>
+          <div class="item"><span class="item-num">V4</span><span class="item-text">Depoimento de quem já foi a uma degustação/evento no Castelo</span></div>
+          <div class="item"><span class="item-num">V5</span><span class="item-text">Tour pelo espaço com chamada para o workshop</span></div>
+          <div class="item"><span class="item-num">E1</span><span class="item-text">Card com o que inclui a entrada + preço + data</span></div>
+          <div class="item"><span class="item-num">E2</span><span class="item-text">Card urgência: "X vagas restantes"</span></div>
+          <div class="item"><span class="item-num">E3</span><span class="item-text">Card com condição especial para quem fechar no dia</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: EXEMPLOS -->
+    <div class="tab-panel" id="b4-exemplos">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.7;">Scripts de campanha para divulgar o workshop. Aprovar data e ticket com o Matoso antes de gravar.</p>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V01</span>
+          <span class="ve-title">Convite — "Não sabe como montar seu casamento? Vem aqui" (Gi)</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">35–50 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Gi</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Busto, no Castelo</span></div>
+          </div>
+          <div class="ve-script">Se você está noiva e ainda não sabe por onde começar, eu tenho um convite pra você.
+
+No dia [DATA] a gente vai fazer aqui no Castelo dos Lagos um workshop especial para noivas.
+
+Você vai degustar o nosso buffet, conhecer fornecedores de cabelo, maquiagem e vestido, tirar todas as suas dúvidas com uma assessora, e sair daqui com o seu casamento muito mais claro na cabeça.
+
+São poucas vagas — as inscrições estão abertas agora.
+
+Clica no link aqui e garante a sua.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Substituir [DATA] pela data real quando confirmada com o Matoso</div>
+            <div class="ve-tip">Mencionar "poucas vagas" apenas se for real — escassez falsa queima credibilidade</div>
+            <div class="ve-tip">CTA deve levar para a página de inscrição com pagamento, não para o WhatsApp</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V02</span>
+          <span class="ve-title">O que você vai ter — detalha a experiência (Gi ou Júnior)</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">40–55 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Gi ou Júnior</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Busto ou caminhando pelo espaço</span></div>
+          </div>
+          <div class="ve-script">Sabe o que vai ter no nosso Workshop de Noivas?
+
+Primeiro, você vai degustar o buffet — vai provar na prática o que vai ter no dia do seu casamento.
+
+Depois, você vai ter acesso a especialistas de cabelo, maquiagem e vestido, tudo em um único lugar.
+
+Uma assessora vai te ajudar a entender o que você precisa, tirar todas as dúvidas, e montar o roteiro do seu casamento.
+
+E quem fechar o espaço no dia vai ter uma condição especial.
+
+Tudo isso pelo valor do ingresso. Link nas informações — garante o seu lugar.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Gravar preferencialmente mostrando o espaço ao fundo — prova visual enquanto descreve</div>
+            <div class="ve-tip">"condição especial" — confirmar com Matoso o que será oferecido antes de gravar</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-example">
+        <div class="ve-header" onclick="toggleVE(this)">
+          <span class="ve-num">V03</span>
+          <span class="ve-title">Urgência — últimas vagas (Gi, curto e direto)</span>
+          <span class="ve-toggle">▾</span>
+        </div>
+        <div class="ve-body">
+          <div class="ve-meta">
+            <div class="ve-meta-item"><span class="ve-meta-label">Duração</span><span class="ve-meta-value">15–20 seg</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Quem grava</span><span class="ve-meta-value">Gi</span></div>
+            <div class="ve-meta-item"><span class="ve-meta-label">Enquadramento</span><span class="ve-meta-value">Close no rosto, direto</span></div>
+          </div>
+          <div class="ve-script">Restam [X] vagas para o Workshop de Noivas do dia [DATA] aqui no Castelo dos Lagos.
+
+Se você ainda não garantiu a sua, o link está aqui.
+
+Não deixa para depois — quando encher, a gente fecha.</div>
+          <div class="ve-tips">
+            <div class="ve-tip">Esse vídeo é para a fase final da campanha — últimos 5 a 7 dias antes do evento</div>
+            <div class="ve-tip">Tom direto e rápido — sem floreio, só o fato e o CTA</div>
+            <div class="ve-tip">Gravar quando realmente tiver poucas vagas — não antes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RESUMO ── -->
+  <div id="resumo">
+    <div style="margin-bottom:20px;">
+      <div class="briefing-number">RESUMO</div>
+      <div class="briefing-title" style="font-size:18px;color:var(--white);font-weight:400;">O que cada um precisa fazer</div>
+    </div>
+    <div class="summary-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Briefing</th>
+            <th>Quem executa</th>
+            <th>Entrega para</th>
+            <th>Urgência</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Vídeo Corporativo (10 + 5)</td>
+            <td>Júnior grava</td>
+            <td>Moroni (sobe na campanha)</td>
+            <td><span class="urgency-alta">Alta</span></td>
+          </tr>
+          <tr>
+            <td>Vídeo Casamento (10 + 5)</td>
+            <td>Gi + Parceiros + Júnior</td>
+            <td>Moroni (sobe na campanha)</td>
+            <td><span class="urgency-alta">Alta</span></td>
+          </tr>
+          <tr>
+            <td>Depoimentos</td>
+            <td>Gera contata os clientes</td>
+            <td>Moroni (usa como criativo)</td>
+            <td><span class="urgency-media">Média</span></td>
+          </tr>
+          <tr>
+            <td>Workshop Degustação</td>
+            <td>Aprovar com Matoso primeiro</td>
+            <td>Moroni (cria campanha)</td>
+            <td><span class="urgency-media">Média</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Castelo dos Lagos &nbsp;·&nbsp; Briefings de Conteúdo &nbsp;·&nbsp; Reunião 26/06
+</footer>
+
+<script>
+  function switchTab(btn, panelId) {
+    const briefing = btn.closest('.briefing');
+    briefing.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    briefing.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(panelId).classList.add('active');
+  }
+
+  function toggleVE(header) {
+    const body = header.nextElementSibling;
+    const toggle = header.querySelector('.ve-toggle');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    toggle.classList.toggle('open', !isOpen);
+  }
+</script>
+
+</body>
+</html>

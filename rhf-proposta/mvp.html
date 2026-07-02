@@ -11,19 +11,19 @@
     --bg: #FAFAFA;
     --bg-white: #FFFFFF;
     --bg-light: #F3F4F6;
-    --bg-sidebar: #1E1E2D;
-    --bg-sidebar-hover: #2A2A3C;
-    --bg-sidebar-active: #32324A;
+    --bg-sidebar: #0D2035;
+    --bg-sidebar-hover: #163050;
+    --bg-sidebar-active: rgba(242,101,34,0.12);
     --border: #E5E7EB;
     --border-light: #F0F0F0;
     --text: #1F2937;
     --text-sec: #6B7280;
     --text-muted: #9CA3AF;
-    --text-sidebar: #A0A3B1;
+    --text-sidebar: #7AA3C4;
     --text-sidebar-active: #FFFFFF;
-    --orange: #FF6B35;
-    --orange-light: #FFF0EB;
-    --orange-hover: #E85A26;
+    --orange: #F26522;
+    --orange-light: #FEF0E6;
+    --orange-hover: #D4571B;
     --green: #10B981;
     --green-light: #ECFDF5;
     --green-dark: #059669;
@@ -67,12 +67,12 @@
   .sidebar-nav { padding: 16px 12px; flex: 1; }
   .sidebar-section { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.25); letter-spacing: 0.1em; text-transform: uppercase; padding: 16px 12px 8px; }
   .nav-item {
-    display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px;
+    display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 9px; border-radius: 8px;
     color: var(--text-sidebar); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s;
-    margin-bottom: 2px; text-decoration: none;
+    margin-bottom: 2px; text-decoration: none; border-left: 3px solid transparent;
   }
   .nav-item:hover { background: var(--bg-sidebar-hover); color: #fff; }
-  .nav-item.active { background: var(--bg-sidebar-active); color: var(--text-sidebar-active); }
+  .nav-item.active { background: var(--bg-sidebar-active); color: var(--text-sidebar-active); border-left-color: #F26522; }
   .nav-item .nav-icon { width: 20px; height: 20px; opacity: 0.6; flex-shrink: 0; }
   .nav-item.active .nav-icon { opacity: 1; }
   .nav-item .nav-badge {
@@ -228,7 +228,7 @@
   }
   .cv-preview-header { display: flex; align-items: flex-start; gap: 16px; padding-bottom: 16px; border-bottom: 2px solid var(--orange); margin-bottom: 16px; }
   .cv-preview-avatar {
-    width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #FF6B35, #FF8F66);
+    width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #F26522, #FF8F66);
     display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #fff; flex-shrink: 0;
   }
   .cv-preview-name { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
@@ -496,49 +496,58 @@
   var t=localStorage.getItem('rhf_token');
   if(!t){document.documentElement.style.visibility='';window.location.replace('/login');return;}
   fetch('/api/auth?action=verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:t})})
-    .then(function(r){
-      if(r.ok){document.documentElement.style.visibility='';}
-      else{localStorage.removeItem('rhf_token');document.documentElement.style.visibility='';window.location.replace('/login');}
+    .then(function(r){return r.ok?r.json():Promise.reject();})
+    .then(function(data){
+      var u=Object.assign({},data.user||{},data.profile||{});
+      if(!u.role)u.role='recrutador';
+      window.RHF_USER=u;
+      // Update localStorage with fresh profile
+      try{localStorage.setItem('rhf_user',JSON.stringify(u));}catch(_){}
+      // Apply to sidebar
+      var fn=u.full_name||u.email||'Usuário';
+      var role=u.role==='admin'?'Administrador':'Recrutador';
+      var initials=fn.split(' ').map(function(p){return p[0];}).join('').slice(0,2).toUpperCase();
+      var avEl=document.getElementById('sidebar-avatar');
+      var nameEl=document.getElementById('sidebar-user-name');
+      var roleEl=document.getElementById('sidebar-user-role');
+      if(avEl)avEl.textContent=initials;
+      if(nameEl)nameEl.textContent=fn;
+      if(roleEl)roleEl.textContent=role;
+      // Show admin-only nav items
+      if(u.role==='admin'){
+        document.querySelectorAll('.admin-only').forEach(function(el){el.style.display='';});
+      }
+      document.documentElement.style.visibility='';
     })
-    .catch(function(){localStorage.removeItem('rhf_token');document.documentElement.style.visibility='';window.location.replace('/login');});
+    .catch(function(){localStorage.removeItem('rhf_token');localStorage.removeItem('rhf_user');document.documentElement.style.visibility='';window.location.replace('/login');});
 })();
 </script>
 
 <div class="sidebar">
-  <div class="sidebar-brand">
-    <div class="logo-icon">R</div>
-    <div>
-      <div class="logo-text">RHF Talentos</div>
-      <div class="logo-sub">Plataforma IA</div>
-    </div>
+  <div class="sidebar-brand" style="padding: 20px 20px 16px;">
+    <img src="/assets/logo-rhf-mark.png" alt="RHF Talentos" style="height:34px; width:auto; filter: brightness(0) invert(1);">
   </div>
 
   <nav class="sidebar-nav">
     <div class="sidebar-section">Principal</div>
-    <a class="nav-item active" onclick="showTab('dashboard')">
+    <a class="nav-item active" data-tab="dashboard" onclick="showTab('dashboard')">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Dashboard
     </a>
-    <a class="nav-item" onclick="showTab('curriculo')">
+    <a class="nav-item" data-tab="curriculo" onclick="showTab('curriculo')">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       Gerador de CV
       <span class="nav-badge">IA</span>
     </a>
-    <a class="nav-item" onclick="showTab('vagas')">
+    <a class="nav-item" data-tab="vagas" onclick="showTab('vagas')">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
       Vagas Ativas
-      <span class="nav-badge">23</span>
+      <span class="nav-badge" id="nav-badge-vagas">—</span>
     </a>
-
-    <div class="sidebar-section">Integrações</div>
-    <a class="nav-item" onclick="showTab('sync')">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-      Sync Status
-    </a>
-    <a class="nav-item" onclick="showTab('candidatos')">
+    <a class="nav-item" data-tab="candidatos" onclick="showTab('candidatos')">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
       Candidatos
-      <span class="nav-badge">147</span>
+      <span class="nav-badge" id="nav-badge-candidatos">—</span>
     </a>
     <a class="nav-item" href="/chat">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
@@ -546,13 +555,18 @@
     </a>
   </nav>
 
+  <a class="nav-item admin-only" href="/configuracoes" style="display:none; margin: 0 12px 8px; border-left: 3px solid transparent;">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    Configurações
+  </a>
+
   <div class="sidebar-footer">
-    <div class="avatar">RS</div>
+    <div class="avatar" id="sidebar-avatar">?</div>
     <div class="user-info">
-      <div class="user-name">Rodrigo Silva</div>
-      <div class="user-role">RHF Vale dos Sinos</div>
+      <div class="user-name" id="sidebar-user-name">Carregando...</div>
+      <div class="user-role" id="sidebar-user-role">—</div>
     </div>
-    <button onclick="(function(){localStorage.removeItem('rhf_token');window.location.replace('/login');})()" title="Sair" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;color:rgba(255,255,255,0.35);transition:color 0.15s,background 0.15s;flex-shrink:0;" onmouseover="this.style.color='#EF4444';this.style.background='rgba(239,68,68,0.12)'" onmouseout="this.style.color='rgba(255,255,255,0.35)';this.style.background='none'">
+    <button onclick="(function(){localStorage.removeItem('rhf_token');localStorage.removeItem('rhf_user');window.location.replace('/login');})()" title="Sair" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;color:rgba(255,255,255,0.35);transition:color 0.15s,background 0.15s;flex-shrink:0;" onmouseover="this.style.color='#EF4444';this.style.background='rgba(239,68,68,0.12)'" onmouseout="this.style.color='rgba(255,255,255,0.35)';this.style.background='none'">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </button>
   </div>
@@ -568,14 +582,10 @@
     <div class="topbar">
       <div class="topbar-left">
         <span class="topbar-title">Dashboard</span>
-        <span class="topbar-tag">Abril 2026</span>
+        <span class="topbar-tag" id="dashboard-month-tag"></span>
       </div>
       <div class="topbar-right">
-        <button class="topbar-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Exportar
-        </button>
-        <button class="topbar-btn primary">
+        <button class="topbar-btn primary" onclick="showTab('vagas');openVagaModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Nova Vaga
         </button>
@@ -587,11 +597,11 @@
           <div class="stat-icon orange">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
           </div>
-          <div class="stat-value" id="stat-vagas">23</div>
+          <div class="stat-value" id="stat-vagas">0</div>
           <div class="stat-label">Vagas ativas</div>
           <div class="stat-change up">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-            +12% vs mês anterior
+            Atualizado em tempo real
           </div>
         </div>
         <div class="stat-card">
@@ -637,15 +647,8 @@
             </div>
           </div>
           <div class="panel-body">
-            <div class="chart-bars">
-              <div class="chart-bar-col"><div class="chart-bar-val">42</div><div class="chart-bar" style="height: 56px;"></div><div class="chart-bar-label">Sem 1</div></div>
-              <div class="chart-bar-col"><div class="chart-bar-val">38</div><div class="chart-bar" style="height: 50px;"></div><div class="chart-bar-label">Sem 2</div></div>
-              <div class="chart-bar-col"><div class="chart-bar-val">55</div><div class="chart-bar" style="height: 74px;"></div><div class="chart-bar-label">Sem 3</div></div>
-              <div class="chart-bar-col"><div class="chart-bar-val">47</div><div class="chart-bar" style="height: 63px;"></div><div class="chart-bar-label">Sem 4</div></div>
-              <div class="chart-bar-col"><div class="chart-bar-val">62</div><div class="chart-bar" style="height: 84px;"></div><div class="chart-bar-label">Sem 5</div></div>
-              <div class="chart-bar-col"><div class="chart-bar-val">58</div><div class="chart-bar" style="height: 78px;"></div><div class="chart-bar-label">Sem 6</div></div>
-              <div class="chart-bar-col"><div class="chart-bar-val">71</div><div class="chart-bar" style="height: 96px;"></div><div class="chart-bar-label">Sem 7</div></div>
-              <div class="chart-bar-col"><div class="chart-bar-val">68</div><div class="chart-bar" style="height: 92px; background: var(--orange);" ></div><div class="chart-bar-label" style="font-weight: 700; color: var(--orange);">Atual</div></div>
+            <div class="chart-bars" id="dashboard-chart">
+              <div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--text-muted);font-size:12px;width:100%;">Carregando...</div>
             </div>
           </div>
         </div>
@@ -696,42 +699,12 @@
 
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title">Performance por recrutador</div>
-          <div class="panel-subtitle">Mês atual</div>
+          <div class="panel-title">Últimos currículos gerados</div>
+          <div class="panel-subtitle">Mais recentes primeiro</div>
         </div>
-        <table class="data-table">
-          <thead><tr><th>Recrutador</th><th>CVs gerados</th><th>Vagas ativas</th><th>Tempo médio</th><th>Taxa de aprovação</th></tr></thead>
-          <tbody>
-            <tr>
-              <td>Ana Carolina</td>
-              <td>34</td>
-              <td>8</td>
-              <td>2.1 min</td>
-              <td><span class="badge green"><span class="badge-dot green"></span> 78%</span></td>
-            </tr>
-            <tr>
-              <td>Bruno Santos</td>
-              <td>28</td>
-              <td>7</td>
-              <td>2.4 min</td>
-              <td><span class="badge green"><span class="badge-dot green"></span> 72%</span></td>
-            </tr>
-            <tr>
-              <td>Camila Ferreira</td>
-              <td>31</td>
-              <td>5</td>
-              <td>1.9 min</td>
-              <td><span class="badge green"><span class="badge-dot green"></span> 85%</span></td>
-            </tr>
-            <tr>
-              <td>Diego Oliveira</td>
-              <td>22</td>
-              <td>3</td>
-              <td>2.8 min</td>
-              <td><span class="badge orange"><span class="badge-dot orange"></span> 64%</span></td>
-            </tr>
-          </tbody>
-        </table>
+        <div id="dashboard-recent-cvs">
+          <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">Carregando...</div>
+        </div>
       </div>
 
       <div class="panel" style="margin-top: 20px;">
@@ -796,7 +769,7 @@
         <span class="topbar-tag">Automático</span>
       </div>
       <div class="topbar-right">
-        <button class="topbar-btn">Histórico</button>
+        <button class="topbar-btn" onclick="openHistorico()">Histórico</button>
       </div>
     </div>
     <div class="content">
@@ -809,41 +782,7 @@
             </div>
           </div>
           <div class="candidate-list" id="curriculo-candidate-list">
-            <div class="candidate-item selected" onclick="selectCandidate(this)">
-              <div class="candidate-avatar">MR</div>
-              <div>
-                <div class="candidate-name">Mariana Rocha</div>
-                <div class="candidate-role">Analista Financeiro — Vaga #187 (TechSul Ltda)</div>
-              </div>
-            </div>
-            <div class="candidate-item" onclick="selectCandidate(this)">
-              <div class="candidate-avatar">JP</div>
-              <div>
-                <div class="candidate-name">João Pereira</div>
-                <div class="candidate-role">Auxiliar Administrativo — Vaga #184 (Grupo Voar)</div>
-              </div>
-            </div>
-            <div class="candidate-item" onclick="selectCandidate(this)">
-              <div class="candidate-avatar">FS</div>
-              <div>
-                <div class="candidate-name">Fernanda Souza</div>
-                <div class="candidate-role">Gerente Comercial — Vaga #190 (Vetor Soluções)</div>
-              </div>
-            </div>
-            <div class="candidate-item" onclick="selectCandidate(this)">
-              <div class="candidate-avatar">RL</div>
-              <div>
-                <div class="candidate-name">Ricardo Lima</div>
-                <div class="candidate-role">Coordenador de RH — Vaga #186 (ABCTech)</div>
-              </div>
-            </div>
-            <div class="candidate-item" onclick="selectCandidate(this)">
-              <div class="candidate-avatar">PT</div>
-              <div>
-                <div class="candidate-name">Priscila Torres</div>
-                <div class="candidate-role">Assistente Contábil — Vaga #191 (Contábil RS)</div>
-              </div>
-            </div>
+            <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">Carregando candidatos...</div>
           </div>
         </div>
         <div class="panel">
@@ -911,11 +850,95 @@
             </div>
             <div class="cv-field">
               <div class="cv-field-label">Resumo da conversa</div>
-              <div class="cv-field-value" style="font-size: 12px; line-height: 1.6; color: var(--text-sec);">
-                Candidata demonstrou interesse forte na vaga. Mencionou que busca crescimento profissional e estabilidade. Tem experiência com SAP e Excel avançado. Disponibilidade imediata. Pretensão salarial compatível (R$ 4.500-5.500). Referências: ex-gestor na Tramontina disposto a indicar.
+              <div class="cv-field-value" style="font-size: 12px; line-height: 1.6; color: var(--text-sec);" id="cv-field-chatguru-summary">
+                Nenhuma conversa carregada para este candidato.
               </div>
             </div>
           </div>
+
+          <!-- Informações Complementares -->
+          <div class="cv-source" style="margin-top: 16px;">
+            <div class="cv-source-header" style="cursor:pointer;" onclick="toggleComplementar(this)">
+              <div class="cv-source-icon" style="background: var(--orange-light); color: var(--orange);">+</div>
+              <div style="flex:1;">
+                <div class="cv-source-title">Informações Complementares</div>
+                <div class="cv-source-sub">Preencha para enriquecer o currículo (opcional)</div>
+              </div>
+              <svg id="complementar-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);flex-shrink:0;transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div id="complementar-fields" style="display:none;margin-top:12px;display:none;">
+
+              <!-- Foto do candidato -->
+              <div style="margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+                <div class="cv-field-label" style="margin-bottom:8px;">Foto do Candidato (opcional)</div>
+                <div style="display:flex;align-items:center;gap:14px;">
+                  <div id="photo-preview" style="width:68px;height:68px;border-radius:50%;background:var(--bg-light);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;cursor:pointer;" onclick="document.getElementById('comp-foto').click()">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  </div>
+                  <div>
+                    <label for="comp-foto" style="cursor:pointer;display:inline-block;padding:7px 14px;background:var(--bg-light);border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-weight:500;color:var(--text);transition:background 0.15s;" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--bg-light)'">
+                      Escolher foto
+                    </label>
+                    <input id="comp-foto" type="file" accept="image/*" style="display:none;" onchange="handlePhotoUpload(this)">
+                    <button id="photo-remove-btn" onclick="removePhoto()" style="display:none;margin-left:8px;background:none;border:1px solid var(--red);color:var(--red);border-radius:var(--radius-xs);padding:6px 10px;font-size:12px;cursor:pointer;">Remover</button>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:5px;">JPG ou PNG • Máx. 2MB • A foto aparece no currículo</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div style="grid-column:1/-1;">
+                  <div class="cv-field-label">Vaga (aparece no cabeçalho do currículo)</div>
+                  <input id="comp-vaga" type="text" placeholder="Ex.: Auxiliar Administrativo — Novo Hamburgo" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+                </div>
+                <div>
+                  <div class="cv-field-label">Pretensão Salarial</div>
+                  <input id="comp-pretensao" type="text" placeholder="R$ 2.500,00" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+                </div>
+                <div>
+                  <div class="cv-field-label">Último Salário</div>
+                  <input id="comp-ultimo-salario" type="text" placeholder="R$ 2.300,00" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+                </div>
+                <div>
+                  <div class="cv-field-label">Data de Nascimento</div>
+                  <input id="comp-nascimento" type="text" placeholder="23/01/1995" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+                </div>
+                <div>
+                  <div class="cv-field-label">Cidade/UF</div>
+                  <input id="comp-cidade" type="text" placeholder="Campo Bom/RS" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+                </div>
+                <div>
+                  <div class="cv-field-label">Estado Civil</div>
+                  <input id="comp-estado-civil" type="text" placeholder="Casado(a)" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+                </div>
+                <div>
+                  <div class="cv-field-label">Filhos</div>
+                  <input id="comp-filhos" type="text" placeholder="2 (5 e 13 anos)" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+                </div>
+                <div>
+                  <div class="cv-field-label">CNH</div>
+                  <input id="comp-cnh" type="text" placeholder="B" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+                </div>
+                <div>
+                  <div class="cv-field-label">Veículo Próprio</div>
+                  <input id="comp-veiculo" type="text" placeholder="Sim" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+                </div>
+              </div>
+              <div style="margin-top:10px;">
+                <div class="cv-field-label">Idiomas</div>
+                <input id="comp-idiomas" type="text" placeholder="Português – Nativo; Inglês – Básico; Espanhol – Intermediário" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+              </div>
+              <div style="margin-top:10px;">
+                <div class="cv-field-label">Disponibilidade</div>
+                <input id="comp-disponibilidade" type="text" placeholder="Total de horários, viagens e mudança" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+              </div>
+              <div style="margin-top:10px;">
+                <div class="cv-field-label">Observações / Informações Adicionais</div>
+                <textarea id="comp-info-extra" rows="2" placeholder="Qualquer informação adicional relevante para o currículo..." style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);resize:vertical;"></textarea>
+              </div>
+            </div>
+          </div>
+
           <div style="text-align: center; margin-top: 20px;">
             <button class="cv-btn primary" onclick="generateCV()" id="generateBtn" style="margin: 0 auto; font-size: 15px; padding: 14px 32px;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -931,70 +954,10 @@
             <div class="ai-loading-sub">Analisando dados do Pandapé + conversa do ChatGuru</div>
           </div>
           <div id="cvResult">
-            <div class="cv-preview">
-              <div class="cv-preview-badge">Gerado por IA</div>
-              <div class="cv-preview-header">
-                <div class="cv-preview-avatar">MR</div>
-                <div>
-                  <div class="cv-preview-name">Mariana Rocha da Silva</div>
-                  <div class="cv-preview-role">Analista Financeiro</div>
-                  <div class="cv-preview-contact">Novo Hamburgo, RS | Disponibilidade imediata</div>
-                </div>
-              </div>
-
-              <div class="cv-section">
-                <div class="cv-section-title">Resumo Profissional</div>
-                <div class="cv-section-text">
-                  Profissional com 5 anos de experiência em controladoria e finanças, com passagem relevante pela Tramontina S.A. Domínio de SAP e Excel avançado, com foco em análise de custos e relatórios gerenciais. Pós-graduada em Controladoria pela FGV. Perfil analítico com forte orientação a resultados e capacidade comprovada de trabalho em equipe. Referências profissionais disponíveis.
-                </div>
-              </div>
-
-              <div class="cv-section">
-                <div class="cv-section-title">Experiência Profissional</div>
-                <div class="cv-section-text">
-                  <strong>Assistente de Controladoria</strong> — Tramontina S.A.<br>
-                  <span style="font-size: 12px; color: var(--text-muted);">Jan 2021 — Mar 2024 (3 anos)</span><br>
-                  Elaboração de relatórios gerenciais, análise de custos, fechamento contábil mensal, conciliações bancárias e suporte à auditoria externa. Utilização de SAP e Excel avançado.
-                  <br><br>
-                  <strong>Estagiária de Finanças</strong> — Randon S.A.<br>
-                  <span style="font-size: 12px; color: var(--text-muted);">Mar 2019 — Dez 2020 (1 ano e 9 meses)</span><br>
-                  Apoio em contas a pagar/receber, classificação contábil e suporte ao departamento fiscal.
-                </div>
-              </div>
-
-              <div class="cv-section">
-                <div class="cv-section-title">Formação Acadêmica</div>
-                <div class="cv-section-text">
-                  <strong>Pós-graduação em Controladoria</strong> — FGV (2022)<br>
-                  <strong>Ciências Contábeis</strong> — Universidade do Vale do Rio dos Sinos (2019)
-                </div>
-              </div>
-
-              <div class="cv-section">
-                <div class="cv-section-title">Competências</div>
-                <div>
-                  <span class="cv-tag">SAP</span>
-                  <span class="cv-tag">Excel Avançado</span>
-                  <span class="cv-tag">Análise de Custos</span>
-                  <span class="cv-tag">Fechamento Contábil</span>
-                  <span class="cv-tag">Conciliação Bancária</span>
-                  <span class="cv-tag">Relatórios Gerenciais</span>
-                </div>
-              </div>
-            </div>
-            <div class="cv-actions">
-              <button class="cv-btn primary">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                Enviar ao Cliente
-              </button>
-              <button class="cv-btn secondary">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Baixar PDF
-              </button>
-              <button class="cv-btn secondary">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Editar
-              </button>
+            <div style="padding:56px 24px;text-align:center;color:var(--text-muted);">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="margin:0 auto 14px;display:block;opacity:0.4;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <div style="font-size:14px;font-weight:600;color:var(--text-sec);margin-bottom:6px;">Nenhum currículo gerado ainda</div>
+              <div style="font-size:13px;line-height:1.6;">Selecione um candidato na lista ao lado, preencha as informações complementares se necessário e clique em <strong>Gerar Currículo</strong>.</div>
             </div>
           </div>
         </div>
@@ -1006,12 +969,11 @@
   <div class="tab-content" id="tab-vagas">
     <div class="topbar">
       <div class="topbar-left">
-        <span class="topbar-title">Vagas Ativas</span>
-        <span class="topbar-tag" style="background: var(--amber-light); color: var(--amber);">Pandapé pendente</span>
+        <span class="topbar-title">Vagas</span>
+        <span class="topbar-tag" id="vagas-header-count">—</span>
       </div>
       <div class="topbar-right">
-        <button class="topbar-btn">Filtrar</button>
-        <button class="topbar-btn primary">
+        <button class="topbar-btn primary" onclick="openVagaModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Nova Vaga
         </button>
@@ -1020,133 +982,129 @@
     <div class="content">
       <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
         <div class="stat-card">
-          <div class="stat-value" style="font-size: 28px; color: var(--orange);">23</div>
+          <div class="stat-value" style="font-size: 28px; color: var(--orange);" id="vagas-stat-abertas">—</div>
           <div class="stat-label">Em andamento</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value" style="font-size: 28px; color: var(--green);">8</div>
-          <div class="stat-label">Fechadas este mês</div>
+          <div class="stat-value" style="font-size: 28px; color: var(--green);" id="vagas-stat-fechadas">—</div>
+          <div class="stat-label">Fechadas</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value" style="font-size: 28px; color: var(--blue);">3.2 dias</div>
-          <div class="stat-label">Tempo médio até apresentação</div>
+          <div class="stat-value" style="font-size: 28px; color: var(--blue);" id="vagas-stat-total">—</div>
+          <div class="stat-label">Total cadastradas</div>
         </div>
       </div>
 
-      <div style="background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--amber);flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--amber);">Integração Pandapé pendente</div>
-          <div style="font-size:12px;color:var(--text-sec);margin-top:2px;">Os dados de vagas abaixo são demonstrativos. Após configuração das credenciais OAuth2 do Pandapé, as vagas reais serão exibidas aqui automaticamente.</div>
-        </div>
+      <div style="background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--radius);padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--amber);flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div style="font-size:12px;color:var(--text-sec);">Sincronização automática com o Pandapé pendente (aguarda credenciais). As vagas abertas aqui pela plataforma já são reais e geram descrição + texto de divulgação automaticamente.</div>
       </div>
 
-      <div class="panel">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Vaga</th>
-              <th>Cliente</th>
-              <th>Candidatos</th>
-              <th>CVs gerados</th>
-              <th>Status</th>
-              <th>Tempo</th>
-              <th>Recrutador</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>#190</strong> Gerente Comercial</td>
-              <td>Vetor Soluções</td>
-              <td>12</td>
-              <td>4</td>
-              <td><span class="badge orange"><span class="badge-dot orange"></span> Em triagem</span></td>
-              <td>1 dia</td>
-              <td>Ana Carolina</td>
-            </tr>
-            <tr>
-              <td><strong>#189</strong> Desenvolvedor Full Stack</td>
-              <td>TechSul Ltda</td>
-              <td>18</td>
-              <td>6</td>
-              <td><span class="badge blue"><span class="badge-dot blue"></span> Apresentando</span></td>
-              <td>3 dias</td>
-              <td>Bruno Santos</td>
-            </tr>
-            <tr>
-              <td><strong>#188</strong> Coordenador de Logística</td>
-              <td>Transportes RS</td>
-              <td>8</td>
-              <td>3</td>
-              <td><span class="badge orange"><span class="badge-dot orange"></span> Em triagem</span></td>
-              <td>2 dias</td>
-              <td>Camila Ferreira</td>
-            </tr>
-            <tr>
-              <td><strong>#187</strong> Analista Financeiro</td>
-              <td>TechSul Ltda</td>
-              <td>15</td>
-              <td>5</td>
-              <td><span class="badge blue"><span class="badge-dot blue"></span> Apresentando</span></td>
-              <td>4 dias</td>
-              <td>Ana Carolina</td>
-            </tr>
-            <tr>
-              <td><strong>#186</strong> Coordenador de RH</td>
-              <td>ABCTech</td>
-              <td>6</td>
-              <td>2</td>
-              <td><span class="badge orange"><span class="badge-dot orange"></span> Em triagem</span></td>
-              <td>1 dia</td>
-              <td>Diego Oliveira</td>
-            </tr>
-            <tr>
-              <td><strong>#185</strong> Auxiliar Administrativo</td>
-              <td>Grupo Solar</td>
-              <td>22</td>
-              <td>8</td>
-              <td><span class="badge green"><span class="badge-dot green"></span> Candidato aceito</span></td>
-              <td>6 dias</td>
-              <td>Bruno Santos</td>
-            </tr>
-            <tr>
-              <td><strong>#184</strong> Auxiliar Administrativo</td>
-              <td>Grupo Voar</td>
-              <td>19</td>
-              <td>7</td>
-              <td><span class="badge blue"><span class="badge-dot blue"></span> Apresentando</span></td>
-              <td>5 dias</td>
-              <td>Camila Ferreira</td>
-            </tr>
-            <tr>
-              <td><strong>#183</strong> Analista de Marketing</td>
-              <td>Agência Impulso</td>
-              <td>11</td>
-              <td>4</td>
-              <td><span class="badge orange"><span class="badge-dot orange"></span> Em triagem</span></td>
-              <td>2 dias</td>
-              <td>Ana Carolina</td>
-            </tr>
-            <tr>
-              <td><strong>#182</strong> Assistente Contábil</td>
-              <td>Contábil RS</td>
-              <td>9</td>
-              <td>3</td>
-              <td><span class="badge green"><span class="badge-dot green"></span> Candidato aceito</span></td>
-              <td>7 dias</td>
-              <td>Diego Oliveira</td>
-            </tr>
-            <tr>
-              <td><strong>#181</strong> Vendedor Externo</td>
-              <td>Distribuidora Vale</td>
-              <td>14</td>
-              <td>5</td>
-              <td><span class="badge blue"><span class="badge-dot blue"></span> Apresentando</span></td>
-              <td>4 dias</td>
-              <td>Bruno Santos</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="panel" id="vagas-panel">
+        <div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px;">Carregando vagas...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Enviar no Chat (seletor de conversa ChatGuru) -->
+  <div id="chatSendModal" style="display:none;position:fixed;inset:0;background:rgba(13,32,53,0.55);z-index:300;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--bg-white);border-radius:12px;max-width:480px;width:100%;max-height:85vh;display:flex;flex-direction:column;padding:24px 26px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div style="font-size:17px;font-weight:700;color:var(--text);">Enviar no Chat</div>
+        <button onclick="closeChatSendModal()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:14px;">Escolha a conversa do ChatGuru que vai receber o currículo formatado.</div>
+
+      <input id="chat-send-search" type="text" placeholder="Buscar por nome ou telefone..." oninput="filterChatSendList(this.value)"
+             style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--bg-white);color:var(--text);margin-bottom:10px;">
+
+      <div id="chat-send-list" style="flex:1;overflow-y:auto;min-height:180px;max-height:340px;border:1px solid var(--border-light);border-radius:8px;padding:4px;"></div>
+
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-light);">
+        <div class="cv-field-label" style="margin-bottom:6px;">Ou enviar para um número avulso</div>
+        <div style="display:flex;gap:8px;">
+          <input id="chat-send-manual" type="text" placeholder="5551999998888" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--bg-white);color:var(--text);">
+          <button onclick="sendCVToManualPhone()" style="background:var(--orange);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;">Enviar</button>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:5px;">A conversa precisa existir no ChatGuru (número com DDI+DDD).</div>
+      </div>
+
+      <div id="chat-send-status" style="font-size:12.5px;margin-top:10px;min-height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- Modal Histórico de Currículos -->
+  <div id="historicoModal" style="display:none;position:fixed;inset:0;background:rgba(13,32,53,0.55);z-index:300;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--bg-white);border-radius:12px;max-width:680px;width:100%;max-height:85vh;overflow-y:auto;padding:24px 26px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-size:17px;font-weight:700;color:var(--text);">Histórico de Currículos</div>
+        <button onclick="closeHistorico()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div id="historico-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal Nova Vaga -->
+  <div id="vagaModal" style="display:none;position:fixed;inset:0;background:rgba(13,32,53,0.55);z-index:300;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--bg-white);border-radius:12px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;padding:26px 28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div style="font-size:17px;font-weight:700;color:var(--text);">Nova Vaga</div>
+        <button onclick="closeVagaModal()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div id="vaga-form">
+        <div style="margin-bottom:12px;">
+          <div class="cv-field-label">Título da vaga *</div>
+          <input id="vaga-title" type="text" placeholder="Ex.: Auxiliar Administrativo" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div>
+            <div class="cv-field-label">Cliente (empresa)</div>
+            <input id="vaga-client" type="text" placeholder="Deixe vazio p/ confidencial" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+          </div>
+          <div>
+            <div class="cv-field-label">Cidade/UF</div>
+            <input id="vaga-city" type="text" placeholder="Novo Hamburgo/RS" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+          </div>
+          <div>
+            <div class="cv-field-label">Contratação</div>
+            <input id="vaga-contract" type="text" placeholder="CLT, PJ, Temporária..." style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+          </div>
+          <div>
+            <div class="cv-field-label">Faixa salarial</div>
+            <input id="vaga-salary" type="text" placeholder="R$ 2.200 a R$ 2.800" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div class="cv-field-label">Requisitos (um por linha)</div>
+          <textarea id="vaga-requirements" rows="4" placeholder="Ensino médio completo&#10;Experiência com rotinas administrativas&#10;Conhecimento em Excel" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);resize:vertical;line-height:1.6;"></textarea>
+        </div>
+        <button id="vaga-create-btn" class="cv-btn primary" style="width:100%;justify-content:center;" onclick="createVaga()">Gerar descrição e abrir vaga</button>
+      </div>
+
+      <div id="vaga-result" style="display:none;">
+        <div style="background:var(--green-light,#ECFDF5);border:1px solid var(--green,#10B981);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--green,#059669);font-weight:600;">Vaga aberta com sucesso. Descrição e divulgação geradas:</div>
+        <div style="margin-bottom:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div class="cv-field-label" style="margin:0;">Descrição da vaga</div>
+            <button onclick="copyVagaText('vaga-desc-out', this)" style="background:var(--bg-light);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--text);">Copiar</button>
+          </div>
+          <textarea id="vaga-desc-out" readonly rows="9" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:12.5px;background:var(--bg-light);color:var(--text);resize:vertical;line-height:1.6;font-family:inherit;"></textarea>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div class="cv-field-label" style="margin:0;">Texto de divulgação (WhatsApp)</div>
+            <button onclick="copyVagaText('vaga-script-out', this)" style="background:var(--bg-light);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--text);">Copiar</button>
+          </div>
+          <textarea id="vaga-script-out" readonly rows="7" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:12.5px;background:var(--bg-light);color:var(--text);resize:vertical;line-height:1.6;font-family:inherit;"></textarea>
+        </div>
+        <button class="cv-btn secondary" style="width:100%;justify-content:center;" onclick="closeVagaModal()">Fechar</button>
       </div>
     </div>
   </div>
@@ -1159,12 +1117,12 @@
         <span class="topbar-tag" id="candidatos-header-count">147 no funil</span>
       </div>
       <div class="topbar-right">
-        <button class="topbar-btn">
+        <button class="topbar-btn" onclick="exportCandidatosCSV()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Exportar
+          Exportar CSV
         </button>
-        <button class="topbar-btn primary">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <button class="topbar-btn primary" id="pandape-import-btn" onclick="importFromPandape()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
           Importar do Pandapé
         </button>
       </div>
@@ -1194,534 +1152,19 @@
       </div>
 
       <div class="cand-grid" id="candidatos-grid">
-        <div class="cand-card">
-          <div class="cand-card-top">
-            <div class="cand-card-avatar" style="background: linear-gradient(135deg, #FF6B35, #FF8F66);">MR</div>
-            <div>
-              <div class="cand-card-name">Mariana Rocha da Silva</div>
-              <div class="cand-card-role">Analista Financeiro</div>
-              <div class="cand-card-vaga">Vaga #187 — TechSul Ltda</div>
-            </div>
-          </div>
-          <div class="cand-card-details">
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Novo Hamburgo, RS</span>
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg> 5 anos exp.</span>
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c6 3 12 0 12 0v-5"/></svg> Pós FGV</span>
-            <span class="cand-detail">SAP, Excel</span>
-          </div>
-          <div class="cand-card-footer">
-            <div>
-              <span class="badge blue"><span class="badge-dot blue"></span> Apresentando</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="cand-score" style="color: var(--green);">92%</div>
-              <div class="cand-card-actions">
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="cand-card">
-          <div class="cand-card-top">
-            <div class="cand-card-avatar" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);">JP</div>
-            <div>
-              <div class="cand-card-name">João Pereira</div>
-              <div class="cand-card-role">Auxiliar Administrativo</div>
-              <div class="cand-card-vaga">Vaga #184 — Grupo Voar</div>
-            </div>
-          </div>
-          <div class="cand-card-details">
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> São Leopoldo, RS</span>
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg> 2 anos exp.</span>
-            <span class="cand-detail">Pacote Office</span>
-          </div>
-          <div class="cand-card-footer">
-            <div>
-              <span class="badge orange"><span class="badge-dot orange"></span> Em triagem</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="cand-score" style="color: var(--amber);">74%</div>
-              <div class="cand-card-actions">
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="cand-card">
-          <div class="cand-card-top">
-            <div class="cand-card-avatar" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">FS</div>
-            <div>
-              <div class="cand-card-name">Fernanda Souza</div>
-              <div class="cand-card-role">Gerente Comercial</div>
-              <div class="cand-card-vaga">Vaga #190 — Vetor Soluções</div>
-            </div>
-          </div>
-          <div class="cand-card-details">
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Porto Alegre, RS</span>
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg> 8 anos exp.</span>
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c6 3 12 0 12 0v-5"/></svg> MBA PUCRS</span>
-            <span class="cand-detail">Gestão, CRM</span>
-          </div>
-          <div class="cand-card-footer">
-            <div>
-              <span class="badge green"><span class="badge-dot green"></span> Qualificada</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="cand-score" style="color: var(--green);">88%</div>
-              <div class="cand-card-actions">
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="cand-card">
-          <div class="cand-card-top">
-            <div class="cand-card-avatar" style="background: linear-gradient(135deg, #10B981, #34D399);">RL</div>
-            <div>
-              <div class="cand-card-name">Ricardo Lima</div>
-              <div class="cand-card-role">Coordenador de RH</div>
-              <div class="cand-card-vaga">Vaga #186 — ABCTech</div>
-            </div>
-          </div>
-          <div class="cand-card-details">
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Canoas, RS</span>
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg> 6 anos exp.</span>
-            <span class="cand-detail">DP, R&S, T&D</span>
-          </div>
-          <div class="cand-card-footer">
-            <div>
-              <span class="badge purple"><span class="badge-dot" style="background: var(--purple);"></span> Entrevista</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="cand-score" style="color: var(--green);">81%</div>
-              <div class="cand-card-actions">
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="cand-card">
-          <div class="cand-card-top">
-            <div class="cand-card-avatar" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">PT</div>
-            <div>
-              <div class="cand-card-name">Priscila Torres</div>
-              <div class="cand-card-role">Assistente Contábil</div>
-              <div class="cand-card-vaga">Vaga #191 — Contábil RS</div>
-            </div>
-          </div>
-          <div class="cand-card-details">
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Esteio, RS</span>
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg> 1 ano exp.</span>
-            <span class="cand-detail">Contábil, Fiscal</span>
-          </div>
-          <div class="cand-card-footer">
-            <div>
-              <span class="badge orange"><span class="badge-dot orange"></span> Em triagem</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="cand-score" style="color: var(--amber);">67%</div>
-              <div class="cand-card-actions">
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="cand-card">
-          <div class="cand-card-top">
-            <div class="cand-card-avatar" style="background: linear-gradient(135deg, #EF4444, #F87171);">LC</div>
-            <div>
-              <div class="cand-card-name">Lucas Cardoso</div>
-              <div class="cand-card-role">Desenvolvedor Full Stack</div>
-              <div class="cand-card-vaga">Vaga #189 — TechSul Ltda</div>
-            </div>
-          </div>
-          <div class="cand-card-details">
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Gravataí, RS</span>
-            <span class="cand-detail"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg> 4 anos exp.</span>
-            <span class="cand-detail">React, Node, Python</span>
-          </div>
-          <div class="cand-card-footer">
-            <div>
-              <span class="badge blue"><span class="badge-dot blue"></span> Apresentando</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="cand-score" style="color: var(--green);">85%</div>
-              <div class="cand-card-actions">
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                <div class="cand-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div style="grid-column:1/-1;padding:32px;text-align:center;color:var(--text-muted);font-size:13px;">Carregando candidatos...</div>
       </div>
     </div>
   </div>
 
-  <!-- ===== TAB: CHATGURU ===== -->
-  <div class="tab-content" id="tab-chatguru">
-    <div class="chat-layout">
-      <div class="chat-contacts">
-        <div class="chat-search">
-          <input type="text" placeholder="Buscar candidato..." />
-        </div>
-        <div class="chat-contact active">
-          <div class="chat-contact-avatar" style="background: linear-gradient(135deg, #FF6B35, #FF8F66);">MR</div>
-          <div class="chat-contact-info">
-            <div class="chat-contact-name">Mariana Rocha</div>
-            <div class="chat-contact-last">Ótimo, fico no aguardo então!</div>
-          </div>
-          <div class="chat-contact-meta">
-            <div class="chat-contact-time">14:52</div>
-            <div class="chat-contact-unread">2</div>
-          </div>
-        </div>
-        <div class="chat-contact">
-          <div class="chat-contact-avatar" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);">JP</div>
-          <div class="chat-contact-info">
-            <div class="chat-contact-name">João Pereira</div>
-            <div class="chat-contact-last">Posso ir na entrevista segunda?</div>
-          </div>
-          <div class="chat-contact-meta">
-            <div class="chat-contact-time">14:38</div>
-            <div class="chat-contact-unread">1</div>
-          </div>
-        </div>
-        <div class="chat-contact">
-          <div class="chat-contact-avatar" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">FS</div>
-          <div class="chat-contact-info">
-            <div class="chat-contact-name">Fernanda Souza</div>
-            <div class="chat-contact-last">Currículo enviado ao cliente</div>
-          </div>
-          <div class="chat-contact-meta">
-            <div class="chat-contact-time">13:20</div>
-          </div>
-        </div>
-        <div class="chat-contact">
-          <div class="chat-contact-avatar" style="background: linear-gradient(135deg, #10B981, #34D399);">RL</div>
-          <div class="chat-contact-info">
-            <div class="chat-contact-name">Ricardo Lima</div>
-            <div class="chat-contact-last">Sim, tenho disponibilidade</div>
-          </div>
-          <div class="chat-contact-meta">
-            <div class="chat-contact-time">12:45</div>
-          </div>
-        </div>
-        <div class="chat-contact">
-          <div class="chat-contact-avatar" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">PT</div>
-          <div class="chat-contact-info">
-            <div class="chat-contact-name">Priscila Torres</div>
-            <div class="chat-contact-last">Bom dia! Vi a vaga no site</div>
-          </div>
-          <div class="chat-contact-meta">
-            <div class="chat-contact-time">11:30</div>
-          </div>
-        </div>
-        <div class="chat-contact">
-          <div class="chat-contact-avatar" style="background: linear-gradient(135deg, #EF4444, #F87171);">LC</div>
-          <div class="chat-contact-info">
-            <div class="chat-contact-name">Lucas Cardoso</div>
-            <div class="chat-contact-last">Trabalhei com React e Node.js</div>
-          </div>
-          <div class="chat-contact-meta">
-            <div class="chat-contact-time">10:15</div>
-          </div>
-        </div>
-      </div>
 
-      <div class="chat-window">
-        <div class="chat-header">
-          <div class="chat-contact-avatar" style="background: linear-gradient(135deg, #FF6B35, #FF8F66); width: 40px; height: 40px; font-size: 14px;">MR</div>
-          <div>
-            <div class="chat-header-name">Mariana Rocha da Silva</div>
-            <div class="chat-header-status">
-              <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block;"></span>
-              Online agora
-            </div>
-          </div>
-          <div style="margin-left: 16px; padding-left: 16px; border-left: 1px solid var(--border);">
-            <div class="chat-header-vaga">Vaga #187 — Analista Financeiro</div>
-            <div style="font-size: 11px; color: var(--text-muted);">TechSul Ltda | Novo Hamburgo</div>
-            <div style="font-size: 11px; color: var(--green); margin-top: 2px; display: flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--green); display: inline-block;"></span>Conectado via +55 51 99369855</div>
-          </div>
-          <div class="chat-header-actions">
-            <button class="topbar-btn" style="font-size: 12px; padding: 6px 12px;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              Ver CV
-            </button>
-            <button class="topbar-btn" style="font-size: 12px; padding: 6px 12px;">Perfil Pandapé</button>
-          </div>
-        </div>
-
-        <div class="chat-messages">
-          <div class="chat-msg sent">
-            Olá Mariana, tudo bem? Sou a Ana Carolina da RHF Talentos. Vi seu cadastro no Pandapé para a vaga de Analista Financeiro na TechSul. Podemos conversar um pouquinho?
-            <div class="chat-msg-time">14:20</div>
-          </div>
-          <div class="chat-msg received">
-            Oi Ana! Tudo ótimo, sim, pode falar! Tenho bastante interesse nessa vaga.
-            <div class="chat-msg-time">14:22</div>
-          </div>
-          <div class="chat-msg sent">
-            Que bom! Vi que você tem experiência na Tramontina em controladoria. Pode me contar um pouco sobre o que fazia no dia a dia lá?
-            <div class="chat-msg-time">14:23</div>
-          </div>
-          <div class="chat-msg received">
-            Claro! Eu era responsável pelo fechamento contábil mensal, conciliações bancárias, análise de custos e relatórios gerenciais. Trabalhava muito com SAP e Excel avançado. Também dava suporte à auditoria externa.
-            <div class="chat-msg-time">14:26</div>
-          </div>
-          <div class="chat-msg sent">
-            Perfeito, isso é bem alinhado com o que a TechSul precisa. E sobre pretensão salarial, você tem uma faixa em mente?
-            <div class="chat-msg-time">14:28</div>
-          </div>
-          <div class="chat-msg received">
-            Estou buscando algo entre R$ 4.500 e R$ 5.500, dependendo dos benefícios. Tenho disponibilidade imediata também.
-            <div class="chat-msg-time">14:31</div>
-          </div>
-          <div class="chat-msg sent">
-            Ótimo! A faixa está compatível com a vaga. Vou preparar seu currículo para apresentar ao cliente. Em breve te dou retorno, tá?
-            <div class="chat-msg-time">14:35</div>
-          </div>
-          <div class="chat-msg received">
-            Ótimo, fico no aguardo então! Ah, e se precisar de referência, meu ex-gestor na Tramontina pode indicar.
-            <div class="chat-msg-time">14:38</div>
-          </div>
-
-          <div class="chat-msg ai-suggest">
-            <div class="ai-suggest-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              Sugestão da IA (Claude) — baseada no contexto da vaga e perfil
-            </div>
-            <div style="font-size: 13px; color: var(--text); line-height: 1.6;">
-              "Perfeito, Mariana! Já anotei sobre a referência. Seu currículo já foi gerado automaticamente e está pronto para revisão. Vou enviar ao cliente da TechSul ainda hoje. Qualquer novidade, te aviso por aqui. Obrigada pela conversa!"
-            </div>
-            <div class="ai-suggest-actions">
-              <button class="ai-suggest-btn accept">Enviar como está</button>
-              <button class="ai-suggest-btn edit">Editar antes</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="chat-input-area">
-          <button class="chat-ai-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            Sugerir com IA
-          </button>
-          <input type="text" class="chat-input" placeholder="Digite sua mensagem..." />
-          <button class="chat-send-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== TAB: SYNC ===== -->
-  <div class="tab-content" id="tab-sync">
-    <div class="topbar">
-      <div class="topbar-left">
-        <span class="topbar-title">Sincronização</span>
-        <span class="topbar-tag">Pandapé &harr; ChatGuru</span>
-      </div>
-      <div class="topbar-right">
-        <button class="topbar-btn">Configurar</button>
-      </div>
-    </div>
-    <div class="content">
-      <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
-        <div class="stat-card">
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-            <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite;"></div>
-            <span style="font-size: 13px; font-weight: 700; color: var(--green);">Conectado</span>
-          </div>
-          <div class="stat-value" style="font-size: 24px;">ChatGuru API</div>
-          <div class="stat-label">s18.chatguru.app | Ras Consultoria | +55 51 99369855</div>
-        </div>
-        <div class="stat-card">
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-            <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--amber);"></div>
-            <span style="font-size: 13px; font-weight: 700; color: var(--amber);">Pendente</span>
-          </div>
-          <div class="stat-value" style="font-size: 24px;">Pandapé API</div>
-          <div class="stat-label">Aguardando credenciais do Rodrigo</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" style="font-size: 28px; color: var(--green);">2</div>
-          <div class="stat-label">Operações confirmadas</div>
-          <div class="stat-change up">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-            1 mensagem + 1 contato criado
-          </div>
-        </div>
-      </div>
-
-      <style>@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }</style>
-
-      <div class="grid-2">
-        <div class="panel">
-          <div class="panel-header">
-            <div>
-              <div class="panel-title">Eventos de sincronização</div>
-              <div class="panel-subtitle">Tempo real</div>
-            </div>
-          </div>
-          <div class="panel-body">
-            <div class="sync-timeline">
-              <div class="sync-item">
-                <div class="sync-dot green"></div>
-                <div class="sync-card">
-                  <div class="sync-card-header">
-                    <div class="sync-card-title">Mensagem de teste enviada</div>
-                    <div class="sync-card-time">12:05</div>
-                  </div>
-                  <div class="sync-card-desc">Mensagem enviada para +55 11 97057-8082 via ChatGuru API. Status: entregue. message_id: 6a0f253867664abeb1ef4bc9</div>
-                  <div class="sync-card-systems">
-                    <span class="sync-sys chatguru">ChatGuru</span>
-                    <span class="sync-arrow">&rarr;</span>
-                    <span class="sync-sys pandape" style="background: var(--blue-light); color: var(--blue);">Candidato</span>
-                  </div>
-                </div>
-              </div>
-              <div class="sync-item">
-                <div class="sync-dot green"></div>
-                <div class="sync-card">
-                  <div class="sync-card-header">
-                    <div class="sync-card-title">Contato criado automaticamente</div>
-                    <div class="sync-card-time">12:04</div>
-                  </div>
-                  <div class="sync-card-desc">Contato 'Teste RHF' criado no ChatGuru via API. chat_add_id: 6a0f252c2d587425df51a345. Status: confirmado.</div>
-                  <div class="sync-card-systems">
-                    <span class="sync-sys pandape" style="background: var(--purple-light); color: var(--purple);">Sistema</span>
-                    <span class="sync-arrow">&rarr;</span>
-                    <span class="sync-sys chatguru">ChatGuru</span>
-                  </div>
-                </div>
-              </div>
-              <div class="sync-item">
-                <div class="sync-dot blue"></div>
-                <div class="sync-card">
-                  <div class="sync-card-header">
-                    <div class="sync-card-title">Banco de dados configurado</div>
-                    <div class="sync-card-time">11:58</div>
-                  </div>
-                  <div class="sync-card-desc">5 tabelas criadas no Supabase: candidates, jobs, cvs, sync_log, rhf_messages. 6 índices aplicados. 11/11 migrações OK.</div>
-                  <div class="sync-card-systems">
-                    <span class="sync-sys pandape" style="background: var(--purple-light); color: var(--purple);">Sistema</span>
-                    <span class="sync-arrow">&rarr;</span>
-                    <span class="sync-sys pandape" style="background: var(--blue-light); color: var(--blue);">Supabase</span>
-                  </div>
-                </div>
-              </div>
-              <div class="sync-item">
-                <div class="sync-dot orange"></div>
-                <div class="sync-card">
-                  <div class="sync-card-header">
-                    <div class="sync-card-title">API ChatGuru autenticada</div>
-                    <div class="sync-card-time">11:50</div>
-                  </div>
-                  <div class="sync-card-desc">Conectividade validada com endpoint s18.chatguru.app. Conta: Ras Consultoria. Aparelho: +55 51 99369855.</div>
-                  <div class="sync-card-systems">
-                    <span class="sync-sys pandape" style="background: var(--purple-light); color: var(--purple);">Sistema</span>
-                    <span class="sync-arrow">&rarr;</span>
-                    <span class="sync-sys chatguru">ChatGuru</span>
-                  </div>
-                </div>
-              </div>
-              <div class="sync-item">
-                <div class="sync-dot green"></div>
-                <div class="sync-card">
-                  <div class="sync-card-header">
-                    <div class="sync-card-title">Candidato sincronizado</div>
-                    <div class="sync-card-time">13:58</div>
-                  </div>
-                  <div class="sync-card-desc">Ricardo Lima aprovado na triagem da vaga #186. Contato criado no ChatGuru automaticamente.</div>
-                  <div class="sync-card-systems">
-                    <span class="sync-sys pandape">Pandapé</span>
-                    <span class="sync-arrow">&rarr;</span>
-                    <span class="sync-sys chatguru">ChatGuru</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="panel" style="margin-bottom: 20px;">
-            <div class="panel-header">
-              <div class="panel-title">Mapeamento de funis</div>
-            </div>
-            <div class="panel-body">
-              <table class="data-table">
-                <thead><tr><th>Pandapé</th><th></th><th>ChatGuru</th><th>Status</th></tr></thead>
-                <tbody>
-                  <tr><td>Triagem</td><td style="text-align:center; color: var(--text-muted);">&harr;</td><td>Novo Contato</td><td><span class="badge green">Ativo</span></td></tr>
-                  <tr><td>Qualificado</td><td style="text-align:center; color: var(--text-muted);">&harr;</td><td>Em Atendimento</td><td><span class="badge green">Ativo</span></td></tr>
-                  <tr><td>Entrevista</td><td style="text-align:center; color: var(--text-muted);">&harr;</td><td>Entrevista</td><td><span class="badge green">Ativo</span></td></tr>
-                  <tr><td>Apresentado</td><td style="text-align:center; color: var(--text-muted);">&harr;</td><td>CV Enviado</td><td><span class="badge green">Ativo</span></td></tr>
-                  <tr><td>Contratado</td><td style="text-align:center; color: var(--text-muted);">&harr;</td><td>Fechado</td><td><span class="badge green">Ativo</span></td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-header">
-              <div class="panel-title">Saúde da integração</div>
-            </div>
-            <div class="panel-body">
-              <div class="status-row">
-                <div class="status-icon" style="background: var(--green-light); color: var(--green);">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <div class="status-info">
-                  <div class="status-name">ChatGuru API</div>
-                  <div class="status-desc">Latência: ~200ms | Última operação: 21/05 12:05</div>
-                </div>
-                <span class="badge green">Saudável</span>
-              </div>
-              <div class="status-row">
-                <div class="status-icon" style="background: var(--amber-light); color: var(--amber);">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                </div>
-                <div class="status-info">
-                  <div class="status-name">Pandapé API</div>
-                  <div class="status-desc">Aguardando credenciais</div>
-                </div>
-                <span class="badge amber">Pendente</span>
-              </div>
-              <div class="status-row">
-                <div class="status-icon" style="background: var(--green-light); color: var(--green);">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <div class="status-info">
-                  <div class="status-name">Motor de IA</div>
-                  <div class="status-desc">Modo template | Upgrade para Claude Haiku pendente</div>
-                </div>
-                <span class="badge green">Ativo</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
   // ============================================================
   // TAB SYSTEM
   // ============================================================
-  const tabs = { dashboard: 'tab-dashboard', curriculo: 'tab-curriculo', vagas: 'tab-vagas', sync: 'tab-sync', candidatos: 'tab-candidatos', chatguru: 'tab-chatguru' };
+  const tabs = { dashboard: 'tab-dashboard', curriculo: 'tab-curriculo', vagas: 'tab-vagas', candidatos: 'tab-candidatos' };
   const tabLoaded = {};
   let selectedCandidateId = null;
 
@@ -1729,9 +1172,8 @@
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(tabs[name]).classList.add('active');
-    const items = document.querySelectorAll('.nav-item');
-    const idx = { dashboard: 0, curriculo: 1, vagas: 2, sync: 3, candidatos: 4, chatguru: 5 };
-    if (items[idx[name]]) items[idx[name]].classList.add('active');
+    const target = document.querySelector(`.nav-item[data-tab="${name}"]`);
+    if (target) target.classList.add('active');
 
     // Lazy-load data on first tab visit
     if (!tabLoaded[name]) {
@@ -1739,7 +1181,151 @@
       if (name === 'dashboard') loadDashboard();
       if (name === 'candidatos') loadCandidatos();
       if (name === 'curriculo') loadCurriculoCandidates();
+      if (name === 'vagas') loadVagas();
     }
+  }
+
+  // ============================================================
+  // VAGAS TAB — Smart Job Opening
+  // ============================================================
+
+  async function loadVagas() {
+    const panel = document.getElementById('vagas-panel');
+    try {
+      const res = await fetch('/api/vacancies?action=list');
+      const json = await res.json();
+      if (json.status !== 'ok') throw new Error(json.message || 'Falha ao listar vagas');
+      const rows = json.data || [];
+
+      const abertas = rows.filter(v => v.status === 'aberta').length;
+      document.getElementById('vagas-stat-abertas').textContent = abertas;
+      document.getElementById('vagas-stat-fechadas').textContent = rows.length - abertas;
+      document.getElementById('vagas-stat-total').textContent = rows.length;
+      document.getElementById('vagas-header-count').textContent = `${abertas} em andamento`;
+
+      if (rows.length === 0) {
+        panel.innerHTML = `
+          <div style="padding:40px;text-align:center;color:var(--text-muted);font-size:13px;">
+            Nenhuma vaga cadastrada ainda.<br>
+            <span style="font-size:12px;">Clique em "Nova Vaga" para abrir a primeira com descrição gerada automaticamente.</span>
+          </div>`;
+        return;
+      }
+
+      function escV(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+      panel.innerHTML = `
+        <table class="data-table">
+          <thead>
+            <tr><th>Vaga</th><th>Cliente</th><th>Cidade</th><th>Salário</th><th>Status</th><th>Aberta em</th><th></th></tr>
+          </thead>
+          <tbody>
+            ${rows.map(v => `
+            <tr>
+              <td><strong>${escV(v.title)}</strong></td>
+              <td>${escV(v.client_name || 'Confidencial')}</td>
+              <td>${escV(v.city || '—')}</td>
+              <td>${escV(v.salary_range || '—')}</td>
+              <td>${v.status === 'aberta'
+                ? '<span class="badge orange"><span class="badge-dot orange"></span> Em andamento</span>'
+                : '<span class="badge green"><span class="badge-dot green"></span> Fechada</span>'}</td>
+              <td>${new Date(v.created_at).toLocaleDateString('pt-BR')}</td>
+              <td style="white-space:nowrap;">
+                <button onclick="viewVaga('${v.id}')" title="Ver descrição e divulgação" style="background:var(--bg-light);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--text);margin-right:6px;">Ver textos</button>
+                ${v.status === 'aberta'
+                  ? `<button onclick="setVagaStatus('${v.id}','fechada')" style="background:none;border:1px solid var(--green);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--green);">Fechar</button>`
+                  : `<button onclick="setVagaStatus('${v.id}','aberta')" style="background:none;border:1px solid var(--orange);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--orange);">Reabrir</button>`}
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+      window._vagasCache = rows;
+    } catch (err) {
+      panel.innerHTML = `<div style="padding:32px;text-align:center;color:var(--red);font-size:13px;">Erro ao carregar vagas: ${err.message}</div>`;
+    }
+  }
+
+  function openVagaModal() {
+    document.getElementById('vaga-form').style.display = 'block';
+    document.getElementById('vaga-result').style.display = 'none';
+    document.getElementById('vagaModal').style.display = 'flex';
+    document.getElementById('vaga-title').focus();
+  }
+
+  function closeVagaModal() {
+    document.getElementById('vagaModal').style.display = 'none';
+    ['vaga-title','vaga-client','vaga-city','vaga-contract','vaga-salary','vaga-requirements'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
+    });
+  }
+
+  async function createVaga() {
+    const title = document.getElementById('vaga-title').value.trim();
+    if (!title) { alert('Informe o título da vaga.'); return; }
+
+    const btn = document.getElementById('vaga-create-btn');
+    btn.textContent = 'Gerando...'; btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/vacancies?action=create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          client_name: document.getElementById('vaga-client').value.trim() || undefined,
+          city: document.getElementById('vaga-city').value.trim() || undefined,
+          contract_type: document.getElementById('vaga-contract').value.trim() || undefined,
+          salary_range: document.getElementById('vaga-salary').value.trim() || undefined,
+          requirements: document.getElementById('vaga-requirements').value.trim() || undefined,
+        }),
+      });
+      const json = await res.json();
+      if (json.status !== 'ok') { alert('Erro: ' + (json.message || 'falha ao criar vaga')); return; }
+
+      document.getElementById('vaga-desc-out').value = json.data.description || '';
+      document.getElementById('vaga-script-out').value = json.data.whatsapp_script || '';
+      document.getElementById('vaga-form').style.display = 'none';
+      document.getElementById('vaga-result').style.display = 'block';
+      tabLoaded['vagas'] = false; // force reload next visit
+      loadVagas();
+    } catch (e) {
+      alert('Erro de conexão: ' + e.message);
+    } finally {
+      btn.textContent = 'Gerar descrição e abrir vaga'; btn.disabled = false;
+    }
+  }
+
+  function viewVaga(id) {
+    const v = (window._vagasCache || []).find(x => x.id === id);
+    if (!v) return;
+    document.getElementById('vaga-desc-out').value = v.description || '';
+    document.getElementById('vaga-script-out').value = v.whatsapp_script || '';
+    document.getElementById('vaga-form').style.display = 'none';
+    document.getElementById('vaga-result').style.display = 'block';
+    document.getElementById('vagaModal').style.display = 'flex';
+  }
+
+  async function setVagaStatus(id, status) {
+    try {
+      const res = await fetch('/api/vacancies?action=status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      });
+      const json = await res.json();
+      if (json.status !== 'ok') { alert('Erro: ' + (json.message || 'falha')); return; }
+      loadVagas();
+    } catch (e) { alert('Erro de conexão: ' + e.message); }
+  }
+
+  function copyVagaText(textareaId, btn) {
+    const ta = document.getElementById(textareaId);
+    ta.select();
+    navigator.clipboard.writeText(ta.value).then(() => {
+      const old = btn.textContent;
+      btn.textContent = 'Copiado';
+      setTimeout(() => { btn.textContent = old; }, 1500);
+    });
   }
 
   // ============================================================
@@ -1752,7 +1338,7 @@
   }
 
   const AVATAR_COLORS = [
-    'linear-gradient(135deg,#FF6B35,#FF8F66)',
+    'linear-gradient(135deg,#F26522,#FF8F66)',
     'linear-gradient(135deg,#3B82F6,#60A5FA)',
     'linear-gradient(135deg,#8B5CF6,#A78BFA)',
     'linear-gradient(135deg,#10B981,#34D399)',
@@ -1796,6 +1382,104 @@
     return `<span class="badge ${color}"><span class="badge-dot ${color}"></span> ${label}</span>`;
   }
 
+  function retryTab(containerId) {
+    const map = {
+      'dashboard-activity': loadDashboard,
+      'candidatos-grid': loadCandidatos,
+      'candidatos-stats': loadCandidatos,
+      'curriculo-candidate-list': loadCurriculoCandidates,
+      'vagas-panel': loadVagas,
+    };
+    const fn = map[containerId];
+    if (fn) fn();
+  }
+
+  function exportCandidatosCSV() {
+    const data = window._candidatesData || [];
+    if (data.length === 0) { alert('Nenhum candidato carregado para exportar.'); return; }
+    const cols = ['name', 'email', 'phone', 'city', 'vacancy_name', 'stage', 'created_at'];
+    const header = ['Nome', 'Email', 'Telefone', 'Cidade', 'Vaga', 'Estágio', 'Cadastrado em'];
+    function cell(v) {
+      const s = v === null || v === undefined ? '' : String(v);
+      return `"${s.replace(/"/g, '""')}"`;
+    }
+    const rows = data.map(c => cols.map(k => cell(k === 'created_at' && c[k] ? new Date(c[k]).toLocaleDateString('pt-BR') : c[k])).join(';'));
+    const csv = '\uFEFF' + header.join(';') + '\n' + rows.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `candidatos-rhf-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  async function importFromPandape() {
+    const btn = document.getElementById('pandape-import-btn');
+    if (btn) { btn.textContent = 'Sincronizando...'; btn.disabled = true; }
+    try {
+      const t = localStorage.getItem('rhf_token');
+      const res = await fetch('/api/pandape/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + t },
+        body: JSON.stringify({ all: true }),
+      });
+      const data = await res.json();
+      if (res.ok && (data.status === 'ok' || data.synced !== undefined)) {
+        alert(`Sincronização concluída: ${data.synced ?? 0} candidato(s) importado(s).`);
+        loadCandidatos();
+      } else {
+        const msg = data.message || data.error || 'Falha na sincronização.';
+        if (/PANDAPE_CLIENT/i.test(msg)) {
+          alert('Integração Pandapé ainda não ativada.\n\nFalta configurar as credenciais (Client ID e Secret) fornecidas pelo Pandapé. Assim que forem cadastradas no servidor, este botão importará os candidatos automaticamente.');
+        } else {
+          alert('Erro na sincronização: ' + msg);
+        }
+      }
+    } catch (e) {
+      alert('Erro de conexão: ' + e.message);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg> Importar do Pandapé';
+      }
+    }
+  }
+
+  async function openHistorico() {
+    document.getElementById('historicoModal').style.display = 'flex';
+    const body = document.getElementById('historico-body');
+    body.innerHTML = '<div style="padding:28px;text-align:center;color:var(--text-muted);font-size:13px;">Carregando...</div>';
+    function escH(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    try {
+      const res = await fetch('/api/cv?action=query&limit=50');
+      const json = await res.json();
+      const cvs = json.data || [];
+      if (cvs.length === 0) {
+        body.innerHTML = '<div style="padding:28px;text-align:center;color:var(--text-muted);font-size:13px;">Nenhum currículo gerado ainda.</div>';
+        return;
+      }
+      body.innerHTML = `
+        <table class="data-table">
+          <thead><tr><th>Candidato</th><th>Vaga</th><th>Gerado em</th><th></th></tr></thead>
+          <tbody>
+            ${cvs.map(cv => `
+            <tr>
+              <td><strong>${escH(cv.candidate_name)}</strong></td>
+              <td>${escH(cv.vacancy_name || '—')}</td>
+              <td>${new Date(cv.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+              <td><a href="/cv-print?cv_id=${cv.id}" target="_blank" style="font-size:12px;color:var(--orange);text-decoration:none;font-weight:600;">Abrir</a></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+    } catch (e) {
+      body.innerHTML = `<div style="padding:28px;text-align:center;color:var(--red);font-size:13px;">Erro ao carregar histórico: ${e.message}</div>`;
+    }
+  }
+
+  function closeHistorico() {
+    document.getElementById('historicoModal').style.display = 'none';
+  }
+
   function showError(containerId, msg) {
     const el = document.getElementById(containerId);
     if (el) el.innerHTML = `
@@ -1830,10 +1514,11 @@
 
     try {
       // Fetch in parallel
-      const [contactsRes, cvsRes, chatsRes] = await Promise.allSettled([
+      const [contactsRes, cvsRes, chatsRes, vagasRes] = await Promise.allSettled([
         fetch('/api/contacts?limit=500').then(r => r.json()),
-        fetch('/api/cv?action=query?limit=500').then(r => r.json()),
+        fetch('/api/cv?action=query&limit=100').then(r => r.json()),
         fetch('/api/whatsapp?action=chats').then(r => r.json()),
+        fetch('/api/vacancies?action=list').then(r => r.json()),
       ]);
 
       // Candidates count
@@ -1842,15 +1527,29 @@
       const statCandidates = document.getElementById('stat-candidates');
       if (statCandidates) statCandidates.textContent = candidates.length;
 
-      // Badge in sidebar
-      const sidebarBadges = document.querySelectorAll('.nav-badge');
-      if (sidebarBadges.length >= 2) sidebarBadges[1].textContent = candidates.length || '0';
+      // Sidebar badges
+      const badgeCand = document.getElementById('nav-badge-candidatos');
+      if (badgeCand) badgeCand.textContent = candidates.length || '0';
+      const vagasData = vagasRes.status === 'fulfilled' && vagasRes.value.status === 'ok'
+        ? vagasRes.value.data : [];
+      const badgeVagas = document.getElementById('nav-badge-vagas');
+      if (badgeVagas) badgeVagas.textContent = vagasData.filter(v => v.status === 'aberta').length || '0';
+
+      // Vagas stat card on dashboard
+      const statVagas = document.getElementById('stat-vagas');
+      if (statVagas) statVagas.textContent = vagasData.filter(v => v.status === 'aberta').length || '0';
 
       // CVs count
       const cvsData = cvsRes.status === 'fulfilled' && cvsRes.value.status === 'ok'
         ? cvsRes.value : { count: 0, data: [] };
       const statCvs = document.getElementById('stat-cvs');
       if (statCvs) statCvs.textContent = cvsData.count || 0;
+
+      // Weekly chart from real CVs
+      renderDashboardChart(cvsData.data || []);
+
+      // Recent CVs table
+      renderRecentCVs(cvsData.data || []);
 
       // Conversations count
       const chats = chatsRes.status === 'fulfilled' && chatsRes.value.status === 'ok'
@@ -1865,6 +1564,69 @@
       console.error('[Dashboard] Error:', err);
       showError('dashboard-activity', 'Erro ao carregar dados do dashboard.');
     }
+  }
+
+  function renderDashboardChart(cvs) {
+    const container = document.getElementById('dashboard-chart');
+    if (!container) return;
+
+    // Bucket CVs into the last 8 ISO weeks
+    const now = new Date();
+    const weeks = [];
+    for (let i = 7; i >= 0; i--) {
+      const start = new Date(now);
+      start.setDate(now.getDate() - now.getDay() - i * 7); // Sunday of that week
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 7);
+      weeks.push({ start, end, count: 0 });
+    }
+    for (const cv of cvs) {
+      const d = new Date(cv.created_at);
+      for (const w of weeks) {
+        if (d >= w.start && d < w.end) { w.count++; break; }
+      }
+    }
+
+    const max = Math.max(1, ...weeks.map(w => w.count));
+    container.innerHTML = weeks.map((w, i) => {
+      const isLast = i === weeks.length - 1;
+      const h = Math.max(6, Math.round((w.count / max) * 96));
+      return `<div class="chart-bar-col">
+        <div class="chart-bar-val">${w.count}</div>
+        <div class="chart-bar" style="height:${h}px;${isLast ? 'background:var(--orange);' : ''}"></div>
+        <div class="chart-bar-label" ${isLast ? 'style="font-weight:700;color:var(--orange);"' : ''}>${isLast ? 'Atual' : 'Sem ' + (i + 1)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderRecentCVs(cvs) {
+    const container = document.getElementById('dashboard-recent-cvs');
+    if (!container) return;
+    function escR(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+    if (!cvs || cvs.length === 0) {
+      container.innerHTML = `
+        <div style="padding:28px;text-align:center;color:var(--text-muted);font-size:13px;">
+          Nenhum currículo gerado ainda.<br>
+          <span style="font-size:12px;">Use o Gerador de CV para criar o primeiro.</span>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = `
+      <table class="data-table">
+        <thead><tr><th>Candidato</th><th>Vaga</th><th>Gerado em</th><th></th></tr></thead>
+        <tbody>
+          ${cvs.slice(0, 8).map(cv => `
+          <tr>
+            <td><strong>${escR(cv.candidate_name)}</strong></td>
+            <td>${escR(cv.vacancy_name || '—')}</td>
+            <td>${new Date(cv.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+            <td><a href="/cv-print?cv_id=${cv.id}" target="_blank" style="font-size:12px;color:var(--orange);text-decoration:none;font-weight:600;">Abrir</a></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
   }
 
   function renderDashboardActivity(recentCandidates) {
@@ -2153,8 +1915,54 @@
   }
 
   // ============================================================
+  // PHOTO UPLOAD
+  // ============================================================
+
+  let _cvPhotoDataUrl = null;
+
+  function handlePhotoUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { alert('Foto muito grande. Máximo 2MB.'); input.value = ''; return; }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Compress to max 400x400 before storing
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 400;
+        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        _cvPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        document.getElementById('photo-preview').innerHTML = `<img src="${_cvPhotoDataUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+        document.getElementById('photo-remove-btn').style.display = 'inline-block';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removePhoto() {
+    _cvPhotoDataUrl = null;
+    document.getElementById('photo-preview').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    document.getElementById('photo-remove-btn').style.display = 'none';
+    document.getElementById('comp-foto').value = '';
+  }
+
+  // ============================================================
   // CV GENERATION — wired to real API
   // ============================================================
+
+  function toggleComplementar(header) {
+    const fields = document.getElementById('complementar-fields');
+    const chevron = document.getElementById('complementar-chevron');
+    const open = fields.style.display !== 'none';
+    fields.style.display = open ? 'none' : 'block';
+    if (chevron) chevron.style.transform = open ? '' : 'rotate(180deg)';
+  }
 
   async function generateCV() {
     const loading = document.getElementById('aiLoading');
@@ -2171,10 +1979,33 @@
     loading.classList.add('show');
 
     try {
+      const complementar = {
+        pretensao: document.getElementById('comp-pretensao')?.value?.trim() || undefined,
+        ultimo_salario: document.getElementById('comp-ultimo-salario')?.value?.trim() || undefined,
+        data_nascimento: document.getElementById('comp-nascimento')?.value?.trim() || undefined,
+        cidade: document.getElementById('comp-cidade')?.value?.trim() || undefined,
+        estado_civil: document.getElementById('comp-estado-civil')?.value?.trim() || undefined,
+        filhos: document.getElementById('comp-filhos')?.value?.trim() || undefined,
+        cnh: document.getElementById('comp-cnh')?.value?.trim() || undefined,
+        veiculo: document.getElementById('comp-veiculo')?.value?.trim() || undefined,
+        idiomas: document.getElementById('comp-idiomas')?.value?.trim() || undefined,
+        disponibilidade: document.getElementById('comp-disponibilidade')?.value?.trim() || undefined,
+        info_extra: document.getElementById('comp-info-extra')?.value?.trim() || undefined,
+        photo: _cvPhotoDataUrl || undefined,
+      };
+      // Remove undefined keys
+      Object.keys(complementar).forEach(k => complementar[k] === undefined && delete complementar[k]);
+
+      const vacancyName = document.getElementById('comp-vaga')?.value?.trim() || undefined;
+
       const res = await fetch('/api/cv?action=generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ candidate_id: selectedCandidateId }),
+        body: JSON.stringify({
+          candidate_id: selectedCandidateId,
+          vacancy_name: vacancyName,
+          complementar: Object.keys(complementar).length > 0 ? complementar : undefined,
+        }),
       });
 
       const json = await res.json();
@@ -2182,6 +2013,8 @@
 
       if (json.status === 'ok' && json.cv) {
         window._lastGeneratedForCandidate = selectedCandidateId;
+        window._currentCVId = json.cv.id || null;
+        window._currentCVPhone = json.cv.candidate_phone || null;
         renderGeneratedCV(json.cv);
         result.style.display = 'block';
 
@@ -2195,7 +2028,7 @@
             <div style="background:var(--red-light);border:1px solid var(--red);border-radius:var(--radius);padding:20px;max-width:400px;margin:0 auto;">
               <div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:6px;">Erro ao gerar currículo</div>
               <div style="font-size:13px;color:var(--text-sec);">${errMsg}</div>
-              ${errMsg.includes('ANTHROPIC_API_KEY') ? '<div style="font-size:12px;color:var(--text-muted);margin-top:8px;">Configure a variável ANTHROPIC_API_KEY no painel do Vercel para ativar a geração com IA.</div>' : ''}
+              ${errMsg.includes('GEMINI_API_KEY') ? '<div style="font-size:12px;color:var(--text-muted);margin-top:8px;">Configure a variável GEMINI_API_KEY no painel do Vercel para ativar a geração com IA.</div>' : ''}
             </div>
           </div>`;
         result.style.display = 'block';
@@ -2221,46 +2054,315 @@
     const name = cv.candidate_name || 'Candidato';
     const initials = getInitials(name);
     const color = avatarColor(name);
+    window._currentCVSections = sections;
 
+    function escT(t) {
+      return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
     function nl2br(text) {
       if (!text) return '<em style="color:var(--text-muted)">Não informado</em>';
-      return text.replace(/\n/g, '<br>');
+      return escT(text).replace(/\n/g, '<br>');
     }
 
     result.innerHTML = `
       <div class="cv-preview">
-        <div class="cv-preview-badge">Gerado por IA</div>
+        <div class="cv-preview-badge">Gerado automaticamente</div>
         <div class="cv-preview-header">
-          <div class="cv-preview-avatar" style="background:${color};">${initials}</div>
+          ${sections.photo
+            ? `<img src="${sections.photo}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.25);">`
+            : `<div class="cv-preview-avatar" style="background:${color};">${initials}</div>`}
           <div>
-            <div class="cv-preview-name">${name}</div>
-            <div class="cv-preview-role">${cv.vacancy_name || 'Candidato'}</div>
+            <div class="cv-preview-name">${escT(name)}</div>
+            <div class="cv-preview-role">${escT(cv.vacancy_name || 'Candidato')}</div>
             <div class="cv-preview-contact">Currículo gerado em ${new Date(cv.generated_at || Date.now()).toLocaleDateString('pt-BR')}</div>
           </div>
         </div>
 
-        ${sections.resumo ? `<div class="cv-section"><div class="cv-section-title">Resumo Profissional</div><div class="cv-section-text">${nl2br(sections.resumo)}</div></div>` : ''}
-        ${sections.experiencia ? `<div class="cv-section"><div class="cv-section-title">Experiência Profissional</div><div class="cv-section-text">${nl2br(sections.experiencia)}</div></div>` : ''}
-        ${sections.competencias ? `<div class="cv-section"><div class="cv-section-title">Competências</div><div class="cv-section-text">${nl2br(sections.competencias)}</div></div>` : ''}
-        ${sections.formacao ? `<div class="cv-section"><div class="cv-section-title">Formação Acadêmica</div><div class="cv-section-text">${nl2br(sections.formacao)}</div></div>` : ''}
-        ${sections.observacoes ? `<div class="cv-section"><div class="cv-section-title">Observações</div><div class="cv-section-text">${nl2br(sections.observacoes)}</div></div>` : ''}
-
-        ${cv.model_used ? `<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted);">Gerado com ${cv.model_used} · ${cv.prompt_tokens || 0} tokens entrada · ${cv.completion_tokens || 0} tokens saída</div>` : ''}
+        ${sections.resumo ? `<div class="cv-section"><div class="cv-section-title">Resumo</div><div class="cv-section-text" data-key="resumo">${nl2br(sections.resumo)}</div></div>` : ''}
+        ${sections.pretensao ? `<div class="cv-section"><div class="cv-section-title">Pretensão Salarial</div><div class="cv-section-text" data-key="pretensao">• ${escT(sections.pretensao)}</div></div>` : ''}
+        <div class="cv-section"><div class="cv-section-title">Experiência Profissional</div><div class="cv-section-text" data-key="experiencia">${sections.experiencia ? nl2br(sections.experiencia) : '<em style="color:var(--text-muted)">A ser complementado via Pandapé.</em>'}</div></div>
+        ${sections.formacao ? `<div class="cv-section"><div class="cv-section-title">Formação</div><div class="cv-section-text" data-key="formacao">${nl2br(sections.formacao)}</div></div>` : ''}
+        ${sections.competencias ? `<div class="cv-section"><div class="cv-section-title">Competências</div><div class="cv-section-text" data-key="competencias">${nl2br(sections.competencias)}</div></div>` : ''}
+        ${sections.idiomas ? `<div class="cv-section"><div class="cv-section-title">Idiomas</div><div class="cv-section-text" data-key="idiomas">${nl2br(sections.idiomas)}</div></div>` : ''}
+        ${(sections.info_complementares || sections.observacoes) ? `<div class="cv-section"><div class="cv-section-title">Informações Complementares</div><div class="cv-section-text" data-key="info_complementares">${nl2br(sections.info_complementares || sections.observacoes)}</div></div>` : ''}
       </div>
-      <div class="cv-actions">
-        <button class="cv-btn primary">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          Enviar ao Cliente
+      <div class="cv-actions" style="flex-wrap:wrap;gap:8px;">
+        <button class="cv-btn secondary" onclick="editCV()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar
         </button>
-        <button class="cv-btn secondary" onclick="printCV()">
+        <button class="cv-btn secondary" onclick="savePDF()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Imprimir / PDF
+          Salvar PDF
+        </button>
+        <button class="cv-btn primary" onclick="openEmailModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Enviar por Email
+        </button>
+        <button class="cv-btn secondary" onclick="openChatSendModal()" title="Escolher a conversa do ChatGuru para enviar o currículo">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          Enviar no Chat
         </button>
       </div>`;
   }
 
-  function printCV() {
-    window.print();
+  // ============================================================
+  // CV ACTIONS — Edit, PDF, Email, ChatGuru upload
+  // ============================================================
+
+  let _cvEditMode = false;
+
+  async function editCV() {
+    const preview = document.querySelector('.cv-preview');
+    if (!preview) return;
+    const btn = document.querySelector('[onclick="editCV()"]');
+
+    if (!_cvEditMode) {
+      // ── Enter edit mode ──
+      _cvEditMode = true;
+      preview.querySelectorAll('.cv-section-text').forEach(el => {
+        const ta = document.createElement('textarea');
+        // Placeholder <em> text should not become editable content
+        ta.value = el.querySelector('em') ? '' : el.innerText.replace(/^•\s*/, '');
+        ta.style.cssText = 'width:100%;min-height:80px;font-family:inherit;font-size:13px;border:1.5px solid var(--orange);border-radius:6px;padding:8px;resize:vertical;line-height:1.6;';
+        ta.dataset.cvField = 'true';
+        ta.dataset.key = el.dataset.key || '';
+        el.replaceWith(ta);
+      });
+      btn.textContent = 'Salvar edições';
+      return;
+    }
+
+    // ── Save edits: persist to DB so email/WhatsApp/print reflect them ──
+    const sections = {};
+    preview.querySelectorAll('textarea[data-cv-field]').forEach(ta => {
+      if (ta.dataset.key) sections[ta.dataset.key] = ta.value;
+    });
+
+    btn.textContent = 'Salvando...'; btn.disabled = true;
+    try {
+      if (window._currentCVId) {
+        const res = await fetch('/api/cv?action=update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cv_id: window._currentCVId, sections }),
+        });
+        const data = await res.json();
+        if (data.status !== 'ok') {
+          alert('Erro ao salvar edições: ' + (data.message || 'falha desconhecida'));
+          btn.textContent = 'Salvar edições'; btn.disabled = false;
+          return;
+        }
+        // Re-render preview from the persisted row (keeps photo, escaping, bullets)
+        _cvEditMode = false;
+        btn.disabled = false;
+        const updated = data.data;
+        renderGeneratedCV({
+          id: updated.id,
+          candidate_name: updated.candidate_name,
+          vacancy_name: updated.vacancy_name,
+          sections: updated.cv_content,
+          generated_at: updated.created_at,
+        });
+        return;
+      }
+      // No saved CV (shouldn't happen) — just restore DOM
+      _cvEditMode = false;
+      preview.querySelectorAll('textarea[data-cv-field]').forEach(ta => {
+        const div = document.createElement('div');
+        div.className = 'cv-section-text';
+        div.dataset.key = ta.dataset.key || '';
+        div.textContent = ta.value;
+        ta.replaceWith(div);
+      });
+      btn.textContent = 'Editar'; btn.disabled = false;
+    } catch (e) {
+      alert('Erro de conexão ao salvar: ' + e.message);
+      btn.textContent = 'Salvar edições'; btn.disabled = false;
+    }
+  }
+
+  function savePDF() {
+    const cvId = window._currentCVId;
+    if (cvId) {
+      window.open(`/cv-print?cv_id=${cvId}`, '_blank');
+    } else {
+      // Fallback: print the inline preview directly
+      const preview = document.querySelector('.cv-preview');
+      if (!preview) { alert('Gere o currículo primeiro.'); return; }
+      const win = window.open('', '_blank');
+      win.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Currículo RHF</title>
+        <style>
+          body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:20mm 18mm;color:#1a1a1a;font-size:13px;line-height:1.6;}
+          .cv-preview-badge{display:none}
+          .cv-preview-header{display:flex;align-items:center;gap:16px;padding-bottom:12px;border-bottom:2px solid #F26522;margin-bottom:16px;}
+          .cv-preview-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;}
+          .cv-preview-name{font-size:22px;font-weight:700;color:#0D2035;}
+          .cv-preview-role{font-size:13px;color:#F26522;font-weight:600;}
+          .cv-preview-contact{font-size:12px;color:#555;}
+          .cv-section{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #e0e0e0;}
+          .cv-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#0D2035;margin-bottom:6px;}
+          .cv-section-text{font-size:13px;color:#222;}
+          @media print{body{padding:0;}@page{margin:1cm;size:A4;}}
+        </style></head><body>${preview.outerHTML}<script>window.print();setTimeout(()=>window.close(),1000);<\/script></body></html>`);
+      win.document.close();
+    }
+  }
+
+  function openEmailModal() {
+    document.getElementById('emailModal').style.display = 'flex';
+    document.getElementById('emailTo').focus();
+  }
+
+  function closeEmailModal() {
+    document.getElementById('emailModal').style.display = 'none';
+  }
+
+  async function sendCVEmail() {
+    const to = document.getElementById('emailTo').value.trim();
+    const cc = document.getElementById('emailCc').value.trim();
+    if (!to) { alert('Informe o email do destinatário.'); return; }
+    if (!window._currentCVId) { alert('Currículo não salvo. Gere novamente.'); return; }
+
+    const btn = document.getElementById('emailSendBtn');
+    btn.textContent = 'Enviando...'; btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/cv?action=send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cv_id: window._currentCVId, to, cc: cc || undefined }),
+      });
+      const data = await res.json();
+      if (data.status === 'ok') {
+        closeEmailModal();
+        alert('Email enviado com sucesso!');
+      } else {
+        const isKeyError = data.code === 'INVALID_RESEND_KEY' || data.code === 'NO_RESEND_KEY';
+        let banner = document.getElementById('emailConfigBanner');
+        if (!banner) {
+          banner = document.createElement('div');
+          banner.id = 'emailConfigBanner';
+          banner.style.cssText = 'background:#FFF3CD;border:1px solid #FBBF24;border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400E;line-height:1.5;';
+          const modal = document.getElementById('emailModal').querySelector('div');
+          modal.insertBefore(banner, document.getElementById('emailTo').closest('div'));
+        }
+        if (isKeyError) {
+          banner.innerHTML = `<strong>Atenção: chave Resend inválida ou expirada.</strong><br>
+            1. Acesse <strong>resend.com/api-keys</strong> e gere uma nova chave.<br>
+            2. No Vercel: <em>Settings → Environment Variables → RESEND_API_KEY</em> → atualize.<br>
+            3. Faça novo deploy.<br><br>
+            Por enquanto, use <strong>"Abrir para Impressão"</strong> para gerar o PDF.`;
+        } else {
+          banner.innerHTML = `<strong>Erro ao enviar:</strong> ${data.message || 'Falha desconhecida.'}`;
+        }
+      }
+    } catch (e) {
+      alert('Erro de conexão: ' + e.message);
+    } finally {
+      btn.textContent = 'Enviar'; btn.disabled = false;
+    }
+  }
+
+  // ── Enviar no Chat: seletor de conversa do ChatGuru ──────────
+
+  let _chatSendList = [];
+
+  function openChatSendModal() {
+    if (!window._currentCVId) { alert('Gere o currículo primeiro.'); return; }
+    document.getElementById('chatSendModal').style.display = 'flex';
+    document.getElementById('chat-send-search').value = '';
+    document.getElementById('chat-send-status').textContent = '';
+    loadChatSendList();
+  }
+
+  function closeChatSendModal() {
+    document.getElementById('chatSendModal').style.display = 'none';
+  }
+
+  async function loadChatSendList() {
+    const listEl = document.getElementById('chat-send-list');
+    listEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">Carregando conversas...</div>';
+    try {
+      const res = await fetch('/api/whatsapp?action=chats');
+      const json = await res.json();
+      if (json.status !== 'ok') throw new Error(json.message || 'Falha ao listar conversas');
+      _chatSendList = (json.data || []).filter(c => c.phone);
+      renderChatSendList(_chatSendList);
+    } catch (e) {
+      listEl.innerHTML = `<div style="padding:24px;text-align:center;color:var(--red);font-size:13px;">Erro ao carregar conversas: ${e.message}</div>`;
+    }
+  }
+
+  function renderChatSendList(chats) {
+    const listEl = document.getElementById('chat-send-list');
+    function escC(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+    if (!chats || chats.length === 0) {
+      listEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">Nenhuma conversa encontrada.</div>';
+      return;
+    }
+    listEl.innerHTML = chats.slice(0, 80).map(c => {
+      const phoneClean = String(c.phone).replace(/\D/g, '');
+      const isCandidate = window._currentCVPhone && phoneClean === String(window._currentCVPhone).replace(/\D/g, '');
+      return `
+      <div onclick="sendCVToChat('${phoneClean}', '${escC(c.name).replace(/'/g, '&#39;')}', this)"
+           style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.12s;"
+           onmouseover="this.style.background='var(--bg-light)'" onmouseout="this.style.background='none'">
+        <div style="width:36px;height:36px;border-radius:50%;background:${avatarColor(c.name || c.phone)};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">${getInitials(c.name || '?')}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escC(c.name || 'Sem nome')}${isCandidate ? ' <span style="font-size:10px;font-weight:700;color:var(--orange);border:1px solid var(--orange);border-radius:100px;padding:1px 7px;margin-left:6px;vertical-align:middle;">candidato</span>' : ''}</div>
+          <div style="font-size:12px;color:var(--text-muted);">${escC(c.phone)}</div>
+        </div>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </div>`;
+    }).join('');
+  }
+
+  function filterChatSendList(q) {
+    const query = (q || '').trim().toLowerCase();
+    if (!query) return renderChatSendList(_chatSendList);
+    renderChatSendList(_chatSendList.filter(c =>
+      (c.name || '').toLowerCase().includes(query) || String(c.phone || '').includes(query.replace(/\D/g, '') || query)
+    ));
+  }
+
+  async function sendCVToChat(phone, name, rowEl) {
+    if (!window._currentCVId) { alert('Gere o currículo primeiro.'); return; }
+    if (!confirm(`Enviar o currículo na conversa de ${name || phone}?`)) return;
+
+    const statusEl = document.getElementById('chat-send-status');
+    statusEl.style.color = 'var(--text-muted)';
+    statusEl.textContent = `Enviando para ${name || phone}...`;
+    if (rowEl) rowEl.style.opacity = '0.5';
+
+    try {
+      const res = await fetch('/api/cv?action=upload-chatguru', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cv_id: window._currentCVId, phone }),
+      });
+      const data = await res.json();
+      if (data.status === 'ok') {
+        statusEl.style.color = 'var(--green)';
+        statusEl.textContent = `Currículo enviado na conversa de ${name || phone}.`;
+        setTimeout(closeChatSendModal, 1400);
+      } else {
+        statusEl.style.color = 'var(--red)';
+        statusEl.textContent = 'Erro: ' + (data.message || 'falha no envio');
+      }
+    } catch (e) {
+      statusEl.style.color = 'var(--red)';
+      statusEl.textContent = 'Erro de conexão: ' + e.message;
+    } finally {
+      if (rowEl) rowEl.style.opacity = '1';
+    }
+  }
+
+  function sendCVToManualPhone() {
+    const input = document.getElementById('chat-send-manual');
+    const phone = (input.value || '').replace(/\D/g, '');
+    if (phone.length < 10) { alert('Número inválido. Use DDI+DDD+número, ex.: 5551999998888'); return; }
+    sendCVToChat(phone, input.value.trim(), null);
   }
 
   // ============================================================
@@ -2275,7 +2377,7 @@
     });
     el.classList.add('selected');
     const av = el.querySelector('.candidate-avatar');
-    if (av) { av.style.background = 'linear-gradient(135deg,#FF6B35,#FF8F66)'; av.style.color = '#fff'; }
+    if (av) { av.style.background = 'linear-gradient(135deg,#F26522,#FF8F66)'; av.style.color = '#fff'; }
     const id = el.dataset.candidateId;
     if (id) selectedCandidateId = id;
   }
@@ -2283,8 +2385,48 @@
   // ============================================================
   // INIT
   // ============================================================
+  // Current month tag on dashboard
+  (function(){
+    const el = document.getElementById('dashboard-month-tag');
+    if (el) {
+      const m = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      el.textContent = m.charAt(0).toUpperCase() + m.slice(1);
+    }
+  })();
+
   showTab('dashboard');
 </script>
+
+<!-- ── Email Modal ─────────────────────────────────────────────── -->
+<div id="emailModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.3);margin:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <h3 style="font-size:18px;font-weight:700;color:#111827;">Enviar Currículo por Email</h3>
+      <button onclick="closeEmailModal()" style="background:none;border:none;cursor:pointer;color:#6B7280;padding:4px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Para (destinatário)</label>
+      <input id="emailTo" type="email" placeholder="email@empresa.com" style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-family:inherit;outline:none;" onfocus="this.style.borderColor='#F26522'" onblur="this.style.borderColor='#E5E7EB'">
+    </div>
+    <div style="margin-bottom:24px;">
+      <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">CC (opcional)</label>
+      <input id="emailCc" type="email" placeholder="copia@empresa.com" style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-family:inherit;outline:none;" onfocus="this.style.borderColor='#F26522'" onblur="this.style.borderColor='#E5E7EB'">
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button onclick="closeEmailModal()" style="flex:1;min-width:90px;padding:12px;background:#F3F4F6;color:#374151;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancelar</button>
+      <button onclick="savePDF();closeEmailModal();" style="flex:1;min-width:130px;padding:12px;background:#F3F4F6;color:#F26522;border:1.5px solid #F26522;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Abrir para Impressão
+      </button>
+      <button id="emailSendBtn" onclick="sendCVEmail()" style="flex:2;min-width:120px;padding:12px;background:#F26522;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+        Enviar por Email
+      </button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

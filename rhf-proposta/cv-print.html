@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currículo RHF Talentos</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #e8e8e8;
+      color: #1a1a1a;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ── Print bar (hidden when printing) ─────────── */
+    #print-bar {
+      background: #0D2035;
+      color: #fff;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    #print-bar span { font-size: 14px; font-weight: 600; }
+    .print-btn {
+      background: #F26522;
+      color: #fff;
+      border: none;
+      padding: 8px 22px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+    .print-btn:hover { background: #D4571B; }
+
+    /* ── A4 page ───────────────────────────────────── */
+    #cv-page {
+      background: #fff;
+      width: 210mm;
+      min-height: 297mm;
+      margin: 28px auto;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Decorative header shapes (top-left) ─────── */
+    .cv-deco {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100px;
+      height: 100px;
+    }
+
+    /* ── Top header area ──────────────────────────── */
+    .cv-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 18px 24px 14px;
+      min-height: 90px;
+    }
+    .cv-top-franchise {
+      text-align: right;
+      font-size: 11px;
+      color: #444;
+      line-height: 1.8;
+    }
+    .cv-top-franchise strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0D2035;
+      margin-bottom: 2px;
+    }
+    .cv-top-franchise a { color: #0D2035; text-decoration: none; }
+
+    .cv-logo {
+      height: 56px;
+      width: auto;
+      object-fit: contain;
+      margin-left: 20px;
+      flex-shrink: 0;
+    }
+
+    /* ── Content area ─────────────────────────────── */
+    .cv-body {
+      padding: 10px 30px 28px;
+    }
+
+    /* ── Candidate name ────────────────────────────── */
+    .cv-name {
+      font-size: 32px;
+      font-weight: 400;
+      color: #0D2035;
+      letter-spacing: -0.5px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1.5px solid #ddd;
+    }
+
+    /* ── Section ───────────────────────────────────── */
+    .cv-section {
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .cv-section:last-child {
+      border-bottom: none;
+    }
+    .cv-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    .cv-section-body {
+      font-size: 13px;
+      color: #222;
+      line-height: 1.7;
+    }
+    .cv-section-body p {
+      margin-bottom: 3px;
+    }
+    .cv-section-body p:last-child {
+      margin-bottom: 0;
+    }
+    .cv-placeholder {
+      color: #999;
+      font-style: italic;
+      font-size: 12px;
+    }
+
+    /* ── Two-column info grid ──────────────────────── */
+    .cv-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px 32px;
+    }
+    .cv-info-item {
+      font-size: 12.5px;
+      color: #222;
+    }
+
+    /* ── WhatsApp messages block ───────────────────── */
+    .cv-wa-block {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #eee;
+      font-size: 12px;
+      color: #555;
+    }
+    .cv-wa-block strong { color: #333; }
+    .cv-wa-msg {
+      display: block;
+      margin-top: 4px;
+      padding: 6px 10px;
+      background: #f9f9f9;
+      border-left: 3px solid #F26522;
+      border-radius: 0 4px 4px 0;
+      font-style: italic;
+      color: #555;
+    }
+
+    /* ── Footer ────────────────────────────────────── */
+    .cv-footer {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1.5px solid #ddd;
+      text-align: center;
+      font-size: 11px;
+      color: #444;
+      line-height: 1.9;
+    }
+    .cv-footer strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0D2035;
+    }
+    .cv-footer a { color: #0D2035; text-decoration: none; }
+
+    /* ── Loading / error states ────────────────────── */
+    #state-loading, #state-error {
+      text-align: center;
+      padding: 64px 24px;
+      color: #555;
+    }
+    #state-error { color: #c00; }
+
+    /* ── Print styles ──────────────────────────────── */
+    @media print {
+      body { background: #fff; }
+      #print-bar { display: none !important; }
+      #cv-page {
+        margin: 0;
+        box-shadow: none;
+        width: 100%;
+        min-height: auto;
+      }
+      @page { margin: 0.8cm 1cm; size: A4; }
+    }
+
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- Print bar -->
+<div id="print-bar">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <img src="/assets/logo-rhf-mark.png" alt="RHF Talentos" style="height:26px;filter:brightness(0) invert(1);">
+    <span id="print-bar-title">Currículo RHF Talentos</span>
+  </div>
+  <button class="print-btn" onclick="window.print()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+      <rect x="6" y="14" width="12" height="8"/>
+    </svg>
+    Imprimir / Salvar PDF
+  </button>
+</div>
+
+<!-- CV Page -->
+<div id="cv-page">
+
+  <!-- Loading state -->
+  <div id="state-loading" style="padding:80px 24px;">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0D2035" stroke-width="2" style="animation:spin 1s linear infinite;display:block;margin:0 auto 14px;">
+      <circle cx="12" cy="12" r="10" stroke-dasharray="40 20"/>
+    </svg>
+    Carregando currículo...
+  </div>
+
+  <!-- Error state -->
+  <div id="state-error" style="display:none;padding:80px 24px;"></div>
+
+  <!-- CV content (injected by JS) -->
+  <div id="cv-content" style="display:none;"></div>
+
+</div>
+
+<script>
+  (async function () {
+    const params = new URLSearchParams(window.location.search);
+    const cvId = params.get('cv_id');
+
+    function showError(msg) {
+      document.getElementById('state-loading').style.display = 'none';
+      const el = document.getElementById('state-error');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    if (!cvId) {
+      showError('Parâmetro cv_id ausente na URL. Use /cv-print?cv_id=123');
+      return;
+    }
+
+    // Optional auth check
+    const token = localStorage.getItem('rhf_token');
+    if (token) {
+      try {
+        const authRes = await fetch('/api/auth?action=verify', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const authData = await authRes.json();
+        if (!authData.valid) console.warn('[cv-print] token invalid, continuing as guest');
+      } catch (e) {
+        console.warn('[cv-print] auth check failed, continuing as guest', e.message);
+      }
+    }
+
+    // Fetch CV data
+    let cv;
+    try {
+      const res = await fetch(`/api/cv?action=query&id=${encodeURIComponent(cvId)}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      if (json.status !== 'ok' || !json.data) throw new Error(json.message || 'CV não encontrado');
+      cv = json.data;
+    } catch (e) {
+      showError('Erro ao carregar currículo: ' + e.message);
+      return;
+    }
+
+    const sections = cv.cv_content || {};
+    const name = cv.candidate_name || 'Candidato';
+
+    function escHtml(s) {
+      if (!s) return '';
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderText(text) {
+      if (!text) return '';
+      return escHtml(text)
+        .split('\n')
+        .filter(l => l.trim())
+        .map(l => `<p>${l}</p>`)
+        .join('');
+    }
+
+    // Render EXPERIÊNCIA PROFISSIONAL in RHF format
+    // Lines can be: "Cargo | Empresa – Cidade" (bold header), "Período: ..." (muted), "• atividade" (bullet), "" (spacer)
+    function renderExperience(text) {
+      if (!text) return '<span class="cv-placeholder">Informações de experiência a serem complementadas via Pandapé.</span>';
+      const lines = text.split('\n');
+      let html = '';
+      for (const line of lines) {
+        const t = line.trim();
+        if (!t) {
+          html += '<div style="height:10px;"></div>';
+        } else if (t.startsWith('Período:')) {
+          html += `<p style="font-size:12px;color:#555;margin:1px 0 4px;">${escHtml(t)}</p>`;
+        } else if (t.startsWith('•')) {
+          html += `<p style="margin:1px 0;padding-left:2px;">${escHtml(t)}</p>`;
+        } else {
+          // Job header line
+          html += `<p style="font-weight:700;color:#0D2035;margin:2px 0 1px;">${escHtml(t)}</p>`;
+        }
+      }
+      return html;
+    }
+
+    // Render INFORMAÇÕES COMPLEMENTARES as key-value pairs
+    function renderInfoComp(text) {
+      if (!text) return '<span class="cv-placeholder">Não informado</span>';
+      const lines = text.split('\n').filter(l => l.trim());
+      let html = '<div class="cv-info-grid">';
+      for (const line of lines) {
+        const colonIdx = line.indexOf(':');
+        if (colonIdx > 0) {
+          const key = line.slice(0, colonIdx).trim();
+          const val = line.slice(colonIdx + 1).trim();
+          html += `<div class="cv-info-item"><strong style="font-weight:600;color:#555;font-size:11px;">${escHtml(key)}:</strong> ${escHtml(val)}</div>`;
+        } else {
+          html += `<div class="cv-info-item" style="grid-column:1/-1;">${escHtml(line)}</div>`;
+        }
+      }
+      html += '</div>';
+      return html;
+    }
+
+    const vacancyLine = [cv.vacancy_id ? `#${cv.vacancy_id}` : '', cv.vacancy_name || '']
+      .filter(Boolean).join(' — ');
+
+    const generatedDate = new Date(cv.created_at || Date.now()).toLocaleDateString('pt-BR', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+    });
+
+    // Update print bar title
+    document.getElementById('print-bar-title').textContent = `${name} — Currículo RHF`;
+    document.title = `Currículo — ${name} | RHF Talentos`;
+
+    // Build sections in RHF order — only include non-empty
+    const sectionBlocks = [];
+
+    if (vacancyLine) {
+      sectionBlocks.push({
+        title: 'Informações da Vaga',
+        body: `<p>${escHtml(vacancyLine)}</p>`,
+      });
+    }
+
+    if (sections.resumo) {
+      sectionBlocks.push({
+        title: 'Resumo',
+        body: renderText(sections.resumo),
+      });
+    }
+
+    // Pretensão: new field, or backwards-compat extract from observacoes
+    const pretensaoText = sections.pretensao
+      || (sections.observacoes ? (sections.observacoes.match(/Pretens[aã]o salarial:\s*(.+)/i) || [])[1] : null);
+    if (pretensaoText) {
+      sectionBlocks.push({
+        title: 'Pretensão Salarial',
+        body: `<p>• ${escHtml(pretensaoText.trim())}</p>`,
+      });
+    }
+
+    sectionBlocks.push({
+      title: 'Experiência Profissional',
+      body: renderExperience(sections.experiencia),
+    });
+
+    if (sections.formacao) {
+      sectionBlocks.push({
+        title: 'Formação',
+        body: renderText(sections.formacao),
+      });
+    }
+
+    if (sections.competencias) {
+      sectionBlocks.push({
+        title: 'Competências',
+        // RHF style: plain lines, no bullets
+        body: sections.competencias.split('\n').filter(l => l.trim())
+          .map(l => `<p style="margin:1px 0;">${escHtml(l.replace(/^•\s*/, ''))}</p>`).join(''),
+      });
+    }
+
+    if (sections.idiomas) {
+      sectionBlocks.push({
+        title: 'Idiomas',
+        body: renderText(sections.idiomas),
+      });
+    }
+
+    // Info complementares: new field or fallback to observacoes (old CVs)
+    const infoCompText = sections.info_complementares
+      || (sections.observacoes
+          ? sections.observacoes.split('\n').filter(l => !/Pretens[aã]o salarial/i.test(l)).join('\n').trim()
+          : '');
+    if (infoCompText) {
+      sectionBlocks.push({
+        title: 'Informações Complementares',
+        body: renderInfoComp(infoCompText),
+      });
+    }
+
+    const html = `
+      <!-- Decorative top-left shapes -->
+      <div class="cv-deco">
+        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Back rectangle navy -->
+          <rect x="0" y="0" width="68" height="52" rx="2" fill="#0D2035"/>
+          <!-- Front rectangle teal/lighter -->
+          <rect x="18" y="28" width="52" height="42" rx="2" fill="#1B5C8A"/>
+          <!-- Small accent square -->
+          <rect x="10" y="20" width="22" height="18" rx="1" fill="#164B72"/>
+        </svg>
+      </div>
+
+      <!-- Top header -->
+      <div class="cv-top">
+        <div class="cv-top-franchise">
+          <strong>RHF Talentos Vale dos Sinos/RS</strong>
+          e-mail: <a href="mailto:valedosinos@rhf.com.br">valedosinos@rhf.com.br</a> &bull; <a href="http://www.rhf.com.br/valedosinos">www.rhf.com.br/valedosinos</a><br>
+          Fone: 51 99936-9855
+        </div>
+        <img src="/assets/logo-rhf-full.png" alt="RHF Talentos" class="cv-logo">
+      </div>
+
+      <!-- Body -->
+      <div class="cv-body">
+
+        <!-- Candidate name + photo -->
+        ${sections.photo
+          ? `<div style="display:flex;align-items:center;gap:20px;margin-bottom:18px;padding-bottom:14px;border-bottom:1.5px solid #ddd;">
+              <img src="${sections.photo}" style="width:88px;height:88px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #ddd;">
+              <div style="font-size:32px;font-weight:400;color:#0D2035;letter-spacing:-0.5px;">${escHtml(name)}</div>
+            </div>`
+          : `<div class="cv-name">${escHtml(name)}</div>`
+        }
+
+        <!-- Sections -->
+        ${sectionBlocks.map(s => `
+        <div class="cv-section">
+          <div class="cv-section-title">${escHtml(s.title)}</div>
+          <div class="cv-section-body">${s.body}</div>
+        </div>`).join('')}
+
+        <!-- Footer -->
+        <div class="cv-footer">
+          <strong>RHF Talentos Vale dos Sinos/RS</strong>
+          e-mail: valedosinos@rhf.com.br &bull; www.rhf.com.br/valedosinos &bull; Fone: 51 99936-9855
+          <div style="margin-top:4px;font-size:10px;color:#aaa;">Gerado automaticamente pela Plataforma RHF Talentos IA &bull; ${generatedDate}</div>
+        </div>
+
+      </div>
+    `;
+
+    document.getElementById('state-loading').style.display = 'none';
+    const content = document.getElementById('cv-content');
+    content.innerHTML = html;
+    content.style.display = 'block';
+  })();
+</script>
+
+</body>
+</html>

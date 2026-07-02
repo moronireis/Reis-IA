@@ -31,7 +31,9 @@ export async function select(table, query = '') {
   const res = await fetch(`${url}/rest/v1/${table}${qs}`, {
     headers: headers(key),
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) throw new Error(`[supabase select ${table}] ${data?.message || res.status}`);
+  return data;
 }
 
 /**
@@ -50,7 +52,29 @@ export async function insert(table, data, returning = true) {
     }),
     body: JSON.stringify(data),
   });
-  return returning ? res.json() : res.ok;
+  if (!returning) return res.ok;
+  const body = await res.json();
+  if (!res.ok) throw new Error(`[supabase insert ${table}] ${body?.message || res.status}`);
+  return body;
+}
+
+/**
+ * UPDATE rows in a table matching a filter.
+ * @param {string} table - Table name
+ * @param {string} query - PostgREST filter e.g. "id=eq.123"
+ * @param {object} data - Fields to update
+ * @returns {Promise<Array>}
+ */
+export async function update(table, query, data) {
+  const { url, key } = getClient();
+  const res = await fetch(`${url}/rest/v1/${table}?${query}`, {
+    method: 'PATCH',
+    headers: headers(key, { 'Prefer': 'return=representation' }),
+    body: JSON.stringify(data),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(`[supabase update ${table}] ${body?.message || res.status}`);
+  return body;
 }
 
 /**
@@ -71,5 +95,7 @@ export async function upsert(table, data, onConflict = '') {
     headers: headers(key, { 'Prefer': prefer }),
     body: JSON.stringify(data),
   });
-  return res.json();
+  const body = await res.json();
+  if (!res.ok) throw new Error(`[supabase upsert ${table}] ${body?.message || res.status}`);
+  return body;
 }

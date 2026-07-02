@@ -185,7 +185,7 @@ export function ConnectionPage() {
         </div>
       ) : (
         <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-          {instances.map(inst => (
+          {instances.slice(0, 1).map(inst => (
             <NumberCard key={inst.id} instance={inst} onStatusChange={fetchStatus} />
           ))}
         </div>

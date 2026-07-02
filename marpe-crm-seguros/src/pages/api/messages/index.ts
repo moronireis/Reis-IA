@@ -15,10 +15,28 @@ export const GET: APIRoute = async ({ locals, url }) => {
   const dealId = url.searchParams.get('deal_id');
   if (!contactId && !dealId) return new Response(JSON.stringify({ error: 'contact_id or deal_id required' }), { status: 400 });
 
+  // Optional filters
+  const dateFrom = url.searchParams.get('date_from');
+  const dateTo = url.searchParams.get('date_to');
+  const sentBy = url.searchParams.get('sent_by');
+  const search = url.searchParams.get('search');
+  const limit = parseInt(url.searchParams.get('limit') || '200');
+
   const sb = createServerClient();
-  let query = sb.from('marpe_messages').select('*').order('created_at', { ascending: true }).limit(200);
+  let query = sb.from('marpe_messages').select('*').order('created_at', { ascending: true }).limit(limit);
   if (dealId) query = query.eq('deal_id', dealId);
   else if (contactId) query = query.eq('contact_id', contactId);
+
+  // Date range filters
+  if (dateFrom) query = query.gte('created_at', dateFrom);
+  if (dateTo) query = query.lte('created_at', dateTo + 'T23:59:59.999Z');
+
+  // Filter by sender (user_id who sent)
+  if (sentBy) query = query.eq('sent_by', sentBy);
+
+  // Text search in message body
+  if (search) query = query.ilike('body', `%${search}%`);
+
   const { data, error } = await query;
 
   if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
