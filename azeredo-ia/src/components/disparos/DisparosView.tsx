@@ -46,6 +46,9 @@ interface PreviewContact {
   name: string;
   phone: string;
   cidade: string | null;
+  estado?: string | null;
+  contato?: string | null;
+  segmento?: string | null;
   manual: boolean;
 }
 
@@ -111,6 +114,24 @@ function instanceLabel(inst: Campaign['az_whatsapp_instances']): string {
   if (!inst) return '';
   return inst.display_name || inst.uazapi_name;
 }
+// Espelho client-side do resolveVariables do servidor — para a prévia da
+// mensagem final no passo Confirmar (renderizada com um contato real)
+function renderMessage(template: string, c?: PreviewContact | null): string {
+  const nome = c?.name || 'Papelaria Exemplo';
+  const primeiro = nome.split(' ')[0] || nome;
+  const hour = new Date().getHours();
+  const periodo = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+  return template
+    .replace(/\{\{nome\}\}/gi, nome)
+    .replace(/\{\{nome_fantasia\}\}/gi, nome)
+    .replace(/\{\{primeiro_nome\}\}/gi, primeiro)
+    .replace(/\{\{cidade\}\}/gi, c?.cidade || 'Santa Maria')
+    .replace(/\{\{estado\}\}/gi, c?.estado || 'RS')
+    .replace(/\{\{contato\}\}/gi, c?.contato || '')
+    .replace(/\{\{segmento\}\}/gi, c?.segmento || '')
+    .replace(/\{\{periodo_dia\}\}/gi, periodo);
+}
+
 function fmtPhone(p: string | null): string {
   const d = (p || '').replace(/\D/g, '');
   if (d.length === 13) return `+${d.slice(0,2)} (${d.slice(2,4)}) ${d.slice(4,9)}-${d.slice(9)}`;
@@ -1622,6 +1643,81 @@ function NewCampaignWizard({
                   </span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Prévia da mensagem final — renderizada com o 1º contato real */}
+          <div style={{
+            background: '#0d1410', border: '1px solid #1c2820',
+            borderRadius: 10, padding: 16, marginBottom: 14,
+          }}>
+            <div style={labelStyle}>Prévia da mensagem</div>
+            <div style={{
+              background: '#0b3d2e', border: '1px solid rgba(37,211,102,0.2)',
+              borderRadius: '10px 10px 10px 2px', padding: '10px 14px',
+              fontSize: 13, color: '#e8f0e8', whiteSpace: 'pre-wrap',
+              lineHeight: 1.6, maxWidth: 480,
+            }}>
+              {renderMessage(messageBody, preview?.contacts[0])}
+            </div>
+            {preview?.contacts[0] && (
+              <div style={{ fontSize: 11, color: '#4a6050', marginTop: 8 }}>
+                Exemplo real: assim a mensagem chega para {preview.contacts[0].name}
+                {' '}({fmtPhone(preview.contacts[0].phone)}). As variáveis são preenchidas
+                contato a contato.
+              </div>
+            )}
+          </div>
+
+          {/* Destinatários — confirmação final */}
+          <div style={{
+            background: '#0d1410', border: '1px solid #1c2820',
+            borderRadius: 10, marginBottom: 18, overflow: 'hidden',
+          }}>
+            <div style={{
+              padding: '10px 16px', borderBottom: '1px solid #1c2820',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <span style={{ ...labelStyle, marginBottom: 0 }}>
+                Destinatários ({preview?.count ?? 0})
+              </span>
+              <button
+                onClick={() => setStep(2)}
+                style={{
+                  fontSize: 11, padding: '3px 10px', borderRadius: 20,
+                  border: '1px solid #1c2820', background: 'transparent',
+                  color: '#8aaa90', cursor: 'pointer', fontFamily: 'inherit',
+                }}
+              >
+                Ajustar lista
+              </button>
+            </div>
+            <div style={{ maxHeight: 220, overflowY: 'auto' }}>
+              {(preview?.contacts || []).map(c => (
+                <div key={c.id} style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '6px 16px', borderBottom: '1px solid #111a12', fontSize: 12,
+                }}>
+                  <span style={{ flex: 1, color: '#e8f0e8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {c.name}
+                    {c.manual && (
+                      <span style={{
+                        fontSize: 9, fontWeight: 700, color: '#fcd34d',
+                        background: 'rgba(251,191,36,0.1)', borderRadius: 100,
+                        padding: '1px 6px', marginLeft: 7, verticalAlign: 'middle',
+                      }}>
+                        MANUAL
+                      </span>
+                    )}
+                  </span>
+                  <span style={{ color: '#8aaa90', fontSize: 11, flexShrink: 0 }}>{fmtPhone(c.phone)}</span>
+                </div>
+              ))}
+              {(preview?.count ?? 0) > (preview?.contacts.length ?? 0) && (
+                <div style={{ padding: '8px 16px', fontSize: 11, color: '#4a6050' }}>
+                  + {(preview!.count - preview!.contacts.length)} outros contatos (lista completa no passo anterior)
+                </div>
+              )}
             </div>
           </div>
 

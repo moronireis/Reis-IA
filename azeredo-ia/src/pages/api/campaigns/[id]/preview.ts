@@ -44,6 +44,9 @@ export const GET: APIRoute = async ({ locals, params, url }) => {
       name: c.nome_fantasia || c.razao_social || '—',
       phone: c.phone_primary,
       cidade: c.cidade,
+      estado: c.estado,
+      contato: c.contato,
+      segmento: c.segmento,
       manual: !!c.manual,
     })),
     // compat: amostra usada por versões antigas do wizard
