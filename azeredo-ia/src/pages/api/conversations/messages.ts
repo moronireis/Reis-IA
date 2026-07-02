@@ -43,25 +43,29 @@ export const POST: APIRoute = async ({ locals, request }) => {
   const instance = (conv as any).az_whatsapp_instances;
   const UAZAPI_URL = import.meta.env.UAZAPI_URL || 'https://u4digital.uazapi.com';
 
-  // Send via UazapiGO
-  const sendResp = await fetch(`${UAZAPI_URL}/message/text`, {
+  // Send via UazapiGO (endpoint correto é /send/text — /message/text não existe)
+  const sendResp = await fetch(`${UAZAPI_URL}/send/text`, {
     method: 'POST',
     headers: { token: instance.token, 'Content-Type': 'application/json' },
     body: JSON.stringify({ number: conv.remote_jid, text }),
+    signal: AbortSignal.timeout(15_000),
   });
-  const sendBody = await sendResp.json();
+  const sendBody = await sendResp.json().catch(() => ({}));
 
   if (!sendResp.ok) return new Response(JSON.stringify({ error: 'Send failed', detail: sendBody }), { status: 500 });
 
-  // Save message to DB
+  // Save message to DB (phone é NOT NULL no schema)
   const { data: msg, error: msgErr } = await sb
     .from('az_messages')
     .insert({
       conversation_id,
       instance_id: conv.instance_id,
       remote_jid: conv.remote_jid,
+      phone: String(conv.remote_jid).replace(/@.*$/, ''),
       direction: 'outbound',
       body: text,
+      status: 'sent',
+      wa_message_id: sendBody?.messageid || null,
       sent_at: new Date().toISOString(),
     })
     .select()
