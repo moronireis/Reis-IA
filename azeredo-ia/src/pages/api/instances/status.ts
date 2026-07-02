@@ -35,14 +35,17 @@ export const GET: APIRoute = async ({ locals, url }) => {
     const instance = body?.instance ?? body;
 
     const status       = instance?.status === 'connected' ? 'connected' : 'disconnected';
-    const phoneNumber  = instance?.phoneNumber ?? instance?.phone ?? null;
+    const phoneNumber  = instance?.phoneNumber ?? instance?.phone
+      ?? (typeof instance?.owner === 'string' ? instance.owner.split('@')[0] : null)
+      ?? null;
     const profileName  = instance?.profileName ?? null;
     const profilePic   = instance?.profilePicUrl ?? null;
 
-    // Sync to DB
+    // Sync to DB — phone_number só quando a API retorna (undefined = não toca
+    // no valor salvo; antes, uma resposta sem o campo APAGAVA o número)
     await sb.from('az_whatsapp_instances').update({
       status,
-      phone_number: phoneNumber,
+      phone_number: phoneNumber || undefined,
       updated_at: new Date().toISOString(),
     }).eq('id', instanceId);
 
