@@ -1,19 +1,28 @@
 import type { APIRoute } from 'astro';
 import { requireAuth } from '../../../../lib/api-auth';
 import { createServerClient } from '../../../../lib/supabase-server';
-import { sendWhatsAppText } from '../../../../lib/whatsapp/send';
-import { resolveVariables } from '../../../../lib/variables';
+import { normalizePhone } from '../../../../lib/whatsapp/send';
+import { kickWorker } from '../../../../lib/campaign-worker';
 
 export const prerender = false;
 
-const DELAY_MS = 2000;
+type SB = ReturnType<typeof createServerClient>;
 
-function sleep(ms: number) {
-  return new Promise(r => setTimeout(r, ms));
+interface SegmentFilter {
+  brand_ids?: string[];
+  cidade?: string;
+  estado?: string;
+  segmento?: string;
+  status?: string;
+  tags?: string[];
 }
 
 // POST /api/campaigns/[id]/send
-export const POST: APIRoute = async ({ locals, params }) => {
+// Prepara a fila de disparo e aciona o worker (/process). O envio real
+// acontece em lotes curtos no worker — sobrevive ao limite de tempo do
+// serverless e é retomável após qualquer interrupção.
+// Aceita campanhas em draft, error e cancelled (error/cancelled = retomada).
+export const POST: APIRoute = async ({ locals, params, url }) => {
   const profile = requireAuth(locals as any);
   if (profile instanceof Response) return profile;
 
@@ -22,10 +31,10 @@ export const POST: APIRoute = async ({ locals, params }) => {
 
   const sb = createServerClient();
 
-  // 1. Fetch campaign — must be draft or error
+  // 1. Campanha
   const { data: campaign, error: campErr } = await sb
     .from('az_campaigns')
-    .select('id, name, status, template_id, custom_body, segment_filter, az_templates(id, name, body)')
+    .select('id, name, status, started_at, template_id, custom_body, segment_filter, instance_id, az_templates(id, name, body)')
     .eq('id', id)
     .single();
 
@@ -38,7 +47,7 @@ export const POST: APIRoute = async ({ locals, params }) => {
     return json({ error: 'Campanha já foi concluída' }, 409);
   }
 
-  // 2. Resolve message body
+  // 2. Mensagem
   const templateBody: string | null =
     (campaign as any).az_templates?.body || campaign.custom_body || null;
 
@@ -46,149 +55,201 @@ export const POST: APIRoute = async ({ locals, params }) => {
     return json({ error: 'Campanha sem mensagem — defina um template ou mensagem personalizada' }, 400);
   }
 
-  // 3. Resolve contacts from segment_filter
-  const filter = (campaign.segment_filter || {}) as {
-    brand_ids?: string[];
-    cidade?: string;
-    estado?: string;
-    segmento?: string;
-    status?: string;
-  };
+  // 3. Instância — status ao vivo no UazapiGO (o status do banco pode estar velho)
+  const instErr = await checkInstanceLive(sb, (campaign as any).instance_id);
+  if (instErr) return json({ error: instErr }, 400);
 
+  // 4. Contatos do segmento (paginado — uma query única trunca em 1000 linhas)
+  const filter = (campaign.segment_filter || {}) as SegmentFilter;
   const { contacts, error: resolveErr } = await resolveAllContacts(sb, filter);
   if (resolveErr) return json({ error: resolveErr }, 500);
   if (!contacts.length) {
     return json({ error: 'Nenhum contato corresponde ao segmento selecionado' }, 400);
   }
 
-  const total = contacts.length;
+  // 5. Dedup por telefone normalizado — cada número recebe uma única vez
+  const seen = new Map<string, string>();
+  const rows: any[] = [];
+  for (const c of contacts) {
+    const phone = normalizePhone(c.phone_primary);
+    const name = c.nome_fantasia || c.razao_social || null;
+    const firstOwner = seen.get(phone);
+    if (firstOwner) {
+      rows.push({
+        campaign_id: id, contact_id: c.id, phone, contact_name: name,
+        status: 'skipped',
+        error_message: `Número repetido (mesmo telefone de "${firstOwner}")`,
+      });
+    } else {
+      seen.set(phone, name || phone);
+      // error_message: null mantém o mesmo conjunto de chaves das linhas
+      // skipped — PostgREST rejeita bulk insert com chaves divergentes (PGRST102)
+      rows.push({
+        campaign_id: id, contact_id: c.id, phone, contact_name: name,
+        status: 'pending', error_message: null,
+      });
+    }
+  }
 
-  // 4. Mark campaign as sending
+  // 6. Grava a fila em chunks. ignoreDuplicates: linhas já existentes
+  //    (retomada) ficam intactas — quem já recebeu não recebe de novo.
+  for (let i = 0; i < rows.length; i += 500) {
+    const { error: upErr } = await sb
+      .from('az_campaign_recipients')
+      .upsert(rows.slice(i, i + 500), { onConflict: 'campaign_id,contact_id', ignoreDuplicates: true });
+    if (upErr) return json({ error: `Falha ao gravar destinatários: ${upErr.message}` }, 500);
+  }
+
+  // 7. Retomada após erro/cancelamento: falhas voltam para a fila
+  if (campaign.status === 'error' || campaign.status === 'cancelled') {
+    await sb.from('az_campaign_recipients')
+      .update({ status: 'pending', error_message: null, claimed_at: null })
+      .eq('campaign_id', id)
+      .eq('status', 'failed');
+  }
+
+  // 8. Contadores a partir da fonte de verdade (recipients)
+  const total  = await countRecipients(sb, id, null);
+  const sent   = await countRecipients(sb, id, 'sent');
+  const failed = await countRecipients(sb, id, 'failed');
+
   await sb.from('az_campaigns').update({
     status: 'sending',
     total_count: total,
-    started_at: new Date().toISOString(),
+    sent_count: sent,
+    failed_count: failed,
+    started_at: campaign.started_at || new Date().toISOString(),
+    processing_until: null,
+    last_error: null,
   }).eq('id', id);
 
-  // 5. Insert all recipients as pending
-  const recipientRows = contacts.map((c: any) => ({
-    campaign_id: id,
-    contact_id: c.id,
-    status: 'pending',
-  }));
+  // 9. Aciona o worker — o frontend também "bombeia" via polling como backup
+  await kickWorker(url.origin, id);
 
-  await sb.from('az_campaign_recipients').insert(recipientRows);
-
-  // 6. Fire and forget — return 200 immediately, process in background
-  Promise.resolve().then(async () => {
-    let sent = 0;
-    let failed = 0;
-
-    for (const contact of contacts) {
-      // Resolve recipient row id for status update
-      const { data: recipRow } = await sb
-        .from('az_campaign_recipients')
-        .select('id')
-        .eq('campaign_id', id)
-        .eq('contact_id', contact.id)
-        .single();
-
-      const recipId = recipRow?.id;
-
-      try {
-        const body = resolveVariables(templateBody, {
-          nome_fantasia: contact.nome_fantasia,
-          razao_social: contact.razao_social,
-          cidade: contact.cidade,
-          estado: contact.estado,
-          contato: contact.contato,
-          segmento: contact.segmento,
-        });
-
-        const result = await sendWhatsAppText(contact.phone_primary, body, contact.id, id);
-
-        if (recipId) {
-          await sb.from('az_campaign_recipients').update({
-            status: result.ok ? 'sent' : 'failed',
-            sent_at: result.ok ? new Date().toISOString() : null,
-            error_message: result.error || null,
-          }).eq('id', recipId);
-        }
-
-        if (result.ok) {
-          sent++;
-          await sb.from('az_campaigns').update({ sent_count: sent }).eq('id', id);
-        } else {
-          failed++;
-          await sb.from('az_campaigns').update({ failed_count: failed }).eq('id', id);
-        }
-      } catch (e: any) {
-        failed++;
-        if (recipId) {
-          await sb.from('az_campaign_recipients').update({
-            status: 'failed',
-            error_message: e.message || 'Erro desconhecido',
-          }).eq('id', recipId);
-        }
-        await sb.from('az_campaigns').update({ failed_count: failed }).eq('id', id);
-      }
-
-      await sleep(DELAY_MS);
-    }
-
-    // 7. Mark campaign completed
-    await sb.from('az_campaigns').update({
-      status: 'completed',
-      completed_at: new Date().toISOString(),
-      sent_count: sent,
-      failed_count: failed,
-    }).eq('id', id);
-  }).catch(async () => {
-    // Top-level failure: mark as error
-    await sb.from('az_campaigns').update({ status: 'error' }).eq('id', id);
-  });
-
-  // Return immediately — do not block
   return json({ ok: true, total, campaignId: id });
 };
 
-// Resolves all contacts matching the segment_filter
+async function countRecipients(sb: SB, campaignId: string, status: string | null): Promise<number> {
+  let q = sb.from('az_campaign_recipients')
+    .select('id', { count: 'exact', head: true })
+    .eq('campaign_id', campaignId);
+  q = status ? q.eq('status', status) : q.neq('status', 'skipped');
+  const { count } = await q;
+  return count || 0;
+}
+
+// Confere ao vivo se o número está conectado; sincroniza status/fone no banco.
+async function checkInstanceLive(sb: SB, instanceId: string | null): Promise<string | null> {
+  const UAZAPI_URL = import.meta.env.UAZAPI_URL;
+  let token: string | undefined = import.meta.env.UAZAPI_TOKEN;
+
+  if (instanceId) {
+    const { data: inst } = await sb
+      .from('az_whatsapp_instances')
+      .select('id, token')
+      .eq('id', instanceId)
+      .single();
+    if (!inst) return 'Número de envio não encontrado';
+    token = inst.token;
+  }
+
+  if (!UAZAPI_URL || !token) return 'WhatsApp não configurado (UAZAPI_URL / token ausente)';
+
+  try {
+    const res = await fetch(`${UAZAPI_URL}/instance/status`, {
+      headers: { token },
+      signal: AbortSignal.timeout(10_000),
+    });
+    const body = await res.json().catch(() => ({}));
+    const instData = body?.instance ?? body;
+    const liveStatus = instData?.status === 'connected' ? 'connected' : 'disconnected';
+
+    if (instanceId) {
+      await sb.from('az_whatsapp_instances').update({
+        status: liveStatus,
+        phone_number: instData?.phoneNumber ?? instData?.phone ?? undefined,
+        updated_at: new Date().toISOString(),
+      }).eq('id', instanceId);
+    }
+
+    if (liveStatus !== 'connected') {
+      return 'O número selecionado não está conectado ao WhatsApp — reconecte em Configurações';
+    }
+    return null;
+  } catch {
+    return 'Não foi possível verificar o status do número no UazapiGO';
+  }
+}
+
+// Resolve TODOS os contatos do segment_filter, paginando de 1000 em 1000.
 async function resolveAllContacts(
-  sb: ReturnType<typeof import('../../../../lib/supabase-server').createServerClient>,
-  filter: { brand_ids?: string[]; cidade?: string; estado?: string; segmento?: string; status?: string }
+  sb: SB,
+  filter: SegmentFilter
 ): Promise<{ contacts: any[]; error: string | null }> {
-  const { brand_ids, cidade, estado, segmento, status } = filter;
+  const { brand_ids, cidade, estado, segmento, status, tags } = filter;
+  const PAGE = 1000;
 
   try {
     let contactIds: string[] | null = null;
 
     if (brand_ids && brand_ids.length > 0) {
-      const { data: cb, error: cbErr } = await sb
-        .from('az_contact_brands')
-        .select('contact_id')
-        .in('brand_id', brand_ids);
-
-      if (cbErr) return { contacts: [], error: cbErr.message };
-
-      contactIds = [...new Set((cb || []).map((r: any) => r.contact_id as string))];
+      const idSet = new Set<string>();
+      for (let from = 0; ; from += PAGE) {
+        const { data: cb, error: cbErr } = await sb
+          .from('az_contact_brands')
+          .select('contact_id')
+          .in('brand_id', brand_ids)
+          .range(from, from + PAGE - 1);
+        if (cbErr) return { contacts: [], error: cbErr.message };
+        (cb || []).forEach((r: any) => idSet.add(r.contact_id as string));
+        if (!cb || cb.length < PAGE) break;
+      }
+      contactIds = [...idSet];
       if (contactIds.length === 0) return { contacts: [], error: null };
     }
 
-    let query = sb
-      .from('az_contacts')
-      .select('id, nome_fantasia, razao_social, phone_primary, cidade, estado, contato, segmento')
-      .not('phone_primary', 'is', null);
+    const applyFilters = (query: any) => {
+      if (cidade)                  query = query.ilike('cidade', `%${cidade}%`);
+      if (estado)                  query = query.ilike('estado', `%${estado}%`);
+      if (segmento)                query = query.ilike('segmento', `%${segmento}%`);
+      if (status)                  query = query.eq('status', status);
+      if (tags && tags.length > 0) query = query.contains('tags', tags);
+      return query;
+    };
 
-    if (contactIds) query = query.in('id', contactIds);
-    if (cidade)     query = query.ilike('cidade', `%${cidade}%`);
-    if (estado)     query = query.ilike('estado', `%${estado}%`);
-    if (segmento)   query = query.ilike('segmento', `%${segmento}%`);
-    if (status)     query = query.eq('status', status);
+    const SELECT = 'id, nome_fantasia, razao_social, phone_primary, cidade, estado, contato, segmento';
+    const all: any[] = [];
 
-    const { data, error } = await query;
-    if (error) return { contacts: [], error: error.message };
+    if (contactIds) {
+      // Filtro por marca: busca em chunks de ids (um .in() com milhares de
+      // UUIDs estoura o limite de URL do PostgREST)
+      const CHUNK = 200;
+      for (let i = 0; i < contactIds.length; i += CHUNK) {
+        const { data, error } = await applyFilters(
+          sb.from('az_contacts')
+            .select(SELECT)
+            .not('phone_primary', 'is', null)
+            .in('id', contactIds.slice(i, i + CHUNK))
+        );
+        if (error) return { contacts: [], error: error.message };
+        all.push(...(data || []));
+      }
+    } else {
+      for (let from = 0; ; from += PAGE) {
+        const { data, error } = await applyFilters(
+          sb.from('az_contacts')
+            .select(SELECT)
+            .not('phone_primary', 'is', null)
+            .order('id', { ascending: true })
+            .range(from, from + PAGE - 1)
+        );
+        if (error) return { contacts: [], error: error.message };
+        all.push(...(data || []));
+        if (!data || data.length < PAGE) break;
+      }
+    }
 
-    return { contacts: data || [], error: null };
+    return { contacts: all, error: null };
   } catch (e: any) {
     return { contacts: [], error: e.message };
   }

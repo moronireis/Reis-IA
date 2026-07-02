@@ -16,7 +16,7 @@ export const GET: APIRoute = async ({ locals, params }) => {
 
   const { data: campaign, error } = await sb
     .from('az_campaigns')
-    .select('id, name, status, total_count, sent_count, failed_count, created_at, started_at, completed_at, template_id, custom_body, segment_filter, az_templates(id, name, body)')
+    .select('id, name, status, total_count, sent_count, delivered_count, failed_count, last_error, created_at, started_at, completed_at, template_id, custom_body, segment_filter, instance_id, az_templates(id, name, body), az_whatsapp_instances(id, display_name, uazapi_name, phone_number, status)')
     .eq('id', id)
     .single();
 
@@ -59,9 +59,10 @@ export const PATCH: APIRoute = async ({ locals, params, request }) => {
   if (existing.status !== 'draft') return json({ error: 'Só é possível editar campanhas em rascunho' }, 409);
 
   const updates: Record<string, any> = {};
-  if (body.name !== undefined)          updates.name = body.name;
-  if (body.custom_body !== undefined)   updates.custom_body = body.custom_body;
-  if (body.segment_filter !== undefined) updates.segment_filter = body.segment_filter;
+  if (body.name !== undefined)             updates.name = body.name;
+  if (body.custom_body !== undefined)      updates.custom_body = body.custom_body;
+  if (body.segment_filter !== undefined)   updates.segment_filter = body.segment_filter;
+  if (body.instance_id !== undefined)      updates.instance_id = body.instance_id || null;
 
   const { data, error } = await sb
     .from('az_campaigns')

@@ -10,7 +10,10 @@ interface ContactVars {
 export function resolveVariables(template: string, contact: ContactVars): string {
   const name = contact.nome_fantasia || contact.razao_social || '';
   const firstName = name.split(' ')[0] || '';
-  const hour = new Date().getHours();
+  // Vercel roda em UTC — sem timeZone, 10h de Brasília viraria "Boa tarde"
+  const hour = Number(new Date().toLocaleString('en-US', {
+    hour: 'numeric', hourCycle: 'h23', timeZone: 'America/Sao_Paulo',
+  }));
   const periodo = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
 
   return template

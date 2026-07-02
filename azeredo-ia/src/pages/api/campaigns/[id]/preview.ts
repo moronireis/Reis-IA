@@ -29,6 +29,7 @@ export const GET: APIRoute = async ({ locals, params }) => {
     estado?: string;
     segmento?: string;
     status?: string;
+    tags?: string[];
   };
 
   const { contacts, error } = await resolveContacts(sb, filter, 5);
@@ -42,10 +43,10 @@ export const GET: APIRoute = async ({ locals, params }) => {
 
 async function resolveContacts(
   sb: ReturnType<typeof import('../../../../lib/supabase-server').createServerClient>,
-  filter: { brand_ids?: string[]; cidade?: string; estado?: string; segmento?: string; status?: string },
+  filter: { brand_ids?: string[]; cidade?: string; estado?: string; segmento?: string; status?: string; tags?: string[] },
   sampleLimit = 5
 ) {
-  const { brand_ids, cidade, estado, segmento, status } = filter;
+  const { brand_ids, cidade, estado, segmento, status, tags } = filter;
 
   try {
     // If brand_ids filter: join through az_contact_brands
@@ -68,10 +69,11 @@ async function resolveContacts(
         .in('id', contactIds)
         .not('phone_primary', 'is', null);
 
-      if (cidade)   countQ = countQ.ilike('cidade', `%${cidade}%`);
-      if (estado)   countQ = countQ.ilike('estado', `%${estado}%`);
-      if (segmento) countQ = countQ.ilike('segmento', `%${segmento}%`);
-      if (status)   countQ = countQ.eq('status', status);
+      if (cidade)                countQ = countQ.ilike('cidade', `%${cidade}%`);
+      if (estado)                countQ = countQ.ilike('estado', `%${estado}%`);
+      if (segmento)              countQ = countQ.ilike('segmento', `%${segmento}%`);
+      if (status)                countQ = countQ.eq('status', status);
+      if (tags && tags.length > 0) countQ = (countQ as any).contains('tags', tags);
 
       const { count } = await countQ;
 
@@ -83,10 +85,11 @@ async function resolveContacts(
         .not('phone_primary', 'is', null)
         .limit(sampleLimit);
 
-      if (cidade)   sampleQ = sampleQ.ilike('cidade', `%${cidade}%`);
-      if (estado)   sampleQ = sampleQ.ilike('estado', `%${estado}%`);
-      if (segmento) sampleQ = sampleQ.ilike('segmento', `%${segmento}%`);
-      if (status)   sampleQ = sampleQ.eq('status', status);
+      if (cidade)                sampleQ = sampleQ.ilike('cidade', `%${cidade}%`);
+      if (estado)                sampleQ = sampleQ.ilike('estado', `%${estado}%`);
+      if (segmento)              sampleQ = sampleQ.ilike('segmento', `%${segmento}%`);
+      if (status)                sampleQ = sampleQ.eq('status', status);
+      if (tags && tags.length > 0) sampleQ = (sampleQ as any).contains('tags', tags);
 
       const { data: sample } = await sampleQ;
 
@@ -109,10 +112,11 @@ async function resolveContacts(
       .select('id', { count: 'exact', head: true })
       .not('phone_primary', 'is', null);
 
-    if (cidade)   countQ = countQ.ilike('cidade', `%${cidade}%`);
-    if (estado)   countQ = countQ.ilike('estado', `%${estado}%`);
-    if (segmento) countQ = countQ.ilike('segmento', `%${segmento}%`);
-    if (status)   countQ = countQ.eq('status', status);
+    if (cidade)                countQ = countQ.ilike('cidade', `%${cidade}%`);
+    if (estado)                countQ = countQ.ilike('estado', `%${estado}%`);
+    if (segmento)              countQ = countQ.ilike('segmento', `%${segmento}%`);
+    if (status)                countQ = countQ.eq('status', status);
+    if (tags && tags.length > 0) countQ = (countQ as any).contains('tags', tags);
 
     const { count } = await countQ;
 
@@ -122,10 +126,11 @@ async function resolveContacts(
       .not('phone_primary', 'is', null)
       .limit(sampleLimit);
 
-    if (cidade)   sampleQ = sampleQ.ilike('cidade', `%${cidade}%`);
-    if (estado)   sampleQ = sampleQ.ilike('estado', `%${estado}%`);
-    if (segmento) sampleQ = sampleQ.ilike('segmento', `%${segmento}%`);
-    if (status)   sampleQ = sampleQ.eq('status', status);
+    if (cidade)                sampleQ = sampleQ.ilike('cidade', `%${cidade}%`);
+    if (estado)                sampleQ = sampleQ.ilike('estado', `%${estado}%`);
+    if (segmento)              sampleQ = sampleQ.ilike('segmento', `%${segmento}%`);
+    if (status)                sampleQ = sampleQ.eq('status', status);
+    if (tags && tags.length > 0) sampleQ = (sampleQ as any).contains('tags', tags);
 
     const { data: sample } = await sampleQ;
 

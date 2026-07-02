@@ -23,8 +23,8 @@ from dotenv import load_dotenv
 # ---------------------------------------------------------------------------
 
 XLS_DIR = Path(
-    "/Users/moronireis/Downloads/OneDrive_1_25-06-2026"
-    "/RELAÇÃO CLIENTES-REPRESENTADAS"
+    "/Users/moronireis/Downloads/drive-download-20260629T025309Z-3-001"
+    "/1 - BASE DE CONTATOS/RELAÇÃO CLIENTES-REPRESENTADAS"
 )
 
 BRAND_MAP = {

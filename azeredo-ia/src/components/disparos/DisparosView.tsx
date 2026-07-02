@@ -7,18 +7,28 @@ import { Toast, useToast } from '../ui/Toast';
 interface Campaign {
   id: string;
   name: string;
-  status: 'draft' | 'sending' | 'completed' | 'error';
+  status: 'draft' | 'sending' | 'completed' | 'cancelled' | 'error';
   total_count: number | null;
   sent_count: number | null;
+  delivered_count: number | null;
   failed_count: number | null;
+  last_error?: string | null;
   created_at: string;
   started_at: string | null;
   completed_at: string | null;
   az_templates: { name: string } | null;
+  az_whatsapp_instances: { display_name: string | null; uazapi_name: string; phone_number: string | null } | null;
 }
 
 interface Template { id: string; name: string; body: string; }
 interface Brand    { id: string; name: string; }
+interface Instance {
+  id: string;
+  display_name: string | null;
+  uazapi_name: string;
+  phone_number: string | null;
+  status: string;
+}
 
 interface SegmentFilter {
   brand_ids?: string[];
@@ -26,6 +36,7 @@ interface SegmentFilter {
   estado?: string;
   segmento?: string;
   status?: string;
+  tags?: string[];
 }
 
 interface PreviewResult {
@@ -36,17 +47,16 @@ interface PreviewResult {
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const SEGMENTO_OPTIONS = [
-  { value: '', label: 'Todos' },
-  { value: 'Papelaria', label: 'Papelaria' },
-  { value: 'Brinquedo', label: 'Brinquedo' },
-  { value: 'Bazar', label: 'Bazar' },
-  { value: 'Papelaria e Brinquedo', label: 'Papelaria e Brinquedo' },
-  { value: 'Serviço', label: 'Serviço' },
-  { value: 'Outros', label: 'Outros' },
+  'Papelaria', 'Brinquedo', 'Bazar', 'Papelaria e Brinquedo', 'Serviço', 'Outros',
+];
+
+const ESTADO_OPTIONS = [
+  'RS', 'SC', 'PR', 'SP', 'MG', 'RJ', 'ES', 'MS', 'MT', 'GO', 'DF',
+  'BA', 'PE', 'CE', 'MA', 'PI', 'RN', 'PB', 'SE', 'AL', 'AM', 'PA',
+  'AC', 'RO', 'RR', 'AP', 'TO',
 ];
 
 const STATUS_OPTIONS = [
-  { value: '', label: 'Todos' },
   { value: 'ativo', label: 'Ativos' },
   { value: 'inativo_recente', label: 'Inativo recente' },
   { value: 'inativo_antigo', label: 'Inativo antigo' },
@@ -56,31 +66,51 @@ const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }>
   draft:     { bg: 'rgba(107,114,128,0.12)', color: '#6b7280', label: 'Rascunho' },
   sending:   { bg: 'rgba(37,211,102,0.12)',  color: '#25D366', label: 'Enviando' },
   completed: { bg: 'rgba(34,197,94,0.12)',   color: '#22c55e', label: 'Concluído' },
+  cancelled: { bg: 'rgba(245,158,11,0.12)',  color: '#f59e0b', label: 'Cancelado' },
   error:     { bg: 'rgba(239,68,68,0.12)',   color: '#ef4444', label: 'Erro' },
 };
+
+const RECIPIENT_LABEL: Record<string, { color: string; label: string }> = {
+  pending:    { color: '#4a6050', label: 'Aguardando' },
+  processing: { color: '#25D366', label: 'Enviando…' },
+  sent:       { color: '#22c55e', label: 'Enviado' },
+  delivered:  { color: '#22c55e', label: 'Entregue' },
+  read:       { color: '#22c55e', label: 'Lido' },
+  failed:     { color: '#ef4444', label: 'Falhou' },
+  skipped:    { color: '#6b7280', label: 'Ignorado' },
+};
+
+// Dispara o worker da fila — idempotente (o lease no servidor impede
+// processamento duplicado), então pode ser chamado a cada polling.
+function pumpCampaign(id: string) {
+  fetch(`/api/campaigns/${id}/process`, { method: 'POST' }).catch(() => {});
+}
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
-
+function fmtTime(iso: string) {
+  return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
 function estimatedMinutes(total: number) {
-  const seconds = total * 2;
-  const mins = Math.ceil(seconds / 60);
-  return mins === 1 ? '~1 minuto' : `~${mins} minutos`;
+  const mins = Math.ceil((total * 3) / 60); // ~3s por mensagem (2s + jitter)
+  return mins <= 1 ? '~1 minuto' : `~${mins} minutos`;
+}
+function instanceLabel(inst: Campaign['az_whatsapp_instances']): string {
+  if (!inst) return '';
+  return inst.display_name || inst.uazapi_name;
 }
 
 // ─── Shared style atoms ───────────────────────────────────────────────────────
 
 const inp: React.CSSProperties = {
   width: '100%', padding: '9px 12px',
-  background: '#0d1410',
-  border: '1px solid #1c2820',
+  background: '#0d1410', border: '1px solid #1c2820',
   borderRadius: 8, color: '#e8f0e8',
   fontSize: 13, outline: 'none',
-  fontFamily: 'inherit',
-  boxSizing: 'border-box',
+  fontFamily: 'inherit', boxSizing: 'border-box',
 };
 
 const btn = (variant: 'primary' | 'ghost' | 'danger' = 'ghost'): React.CSSProperties => ({
@@ -88,7 +118,7 @@ const btn = (variant: 'primary' | 'ghost' | 'danger' = 'ghost'): React.CSSProper
   fontFamily: 'inherit', fontWeight: 500, fontSize: 13,
   border: variant === 'ghost' ? '1px solid #1c2820' : 'none',
   background: variant === 'primary' ? '#25D366'
-            : variant === 'danger'  ? '#25D366'
+            : variant === 'danger'  ? '#ef4444'
             : 'transparent',
   color: variant === 'ghost' ? '#8aaa90' : '#fff',
   transition: 'opacity 0.12s',
@@ -113,8 +143,7 @@ function StatusBadge({ status }: { status: string }) {
       {status === 'sending' && (
         <span style={{
           width: 5, height: 5, borderRadius: '50%', background: s.color,
-          animation: 'pulse-dot 1s ease-in-out infinite',
-          display: 'inline-block',
+          animation: 'pulse-dot 1s ease-in-out infinite', display: 'inline-block',
         }} />
       )}
       {s.label}
@@ -122,22 +151,94 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function ProgressBar({ sent, total }: { sent: number; total: number }) {
-  const pct = total > 0 ? Math.round((sent / total) * 100) : 0;
+function ProgressBar({ sent, failed, total, compact = false }: { sent: number; failed: number; total: number; compact?: boolean }) {
+  const pct     = total > 0 ? Math.round((sent / total) * 100) : 0;
+  const failPct = total > 0 ? Math.round((failed / total) * 100) : 0;
+
   return (
-    <div style={{ marginTop: 8 }}>
+    <div style={{ marginTop: compact ? 0 : 8 }}>
       <div style={{
-        height: 3, background: '#1c2820', borderRadius: 2, overflow: 'hidden', marginTop: 8,
+        height: compact ? 4 : 5, background: '#1c2820',
+        borderRadius: 3, overflow: 'hidden',
+        marginTop: compact ? 0 : 8,
+        display: 'flex',
       }}>
         <div style={{
           height: '100%', width: `${pct}%`,
-          background: '#25D366', borderRadius: 2,
+          background: '#25D366', borderRadius: '3px 0 0 3px',
+          transition: 'width 0.4s ease',
+        }} />
+        <div style={{
+          height: '100%', width: `${failPct}%`,
+          background: '#ef4444',
           transition: 'width 0.4s ease',
         }} />
       </div>
-      <div style={{ fontSize: 11, color: '#8aaa90', marginTop: 4 }}>
-        {sent} / {total} enviados ({pct}%)
+      {!compact && (
+        <div style={{ fontSize: 11, color: '#8aaa90', marginTop: 4, display: 'flex', gap: 12 }}>
+          <span><span style={{ color: '#25D366' }}>{sent}</span> enviados</span>
+          {failed > 0 && <span><span style={{ color: '#ef4444' }}>{failed}</span> falhos</span>}
+          <span style={{ marginLeft: 'auto' }}>{pct}% de {total}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Instance Card ────────────────────────────────────────────────────────────
+
+function InstanceCard({
+  inst, selected, onClick,
+}: { inst: Instance; selected: boolean; onClick: () => void }) {
+  const connected = inst.status === 'connected';
+  return (
+    <div
+      onClick={connected ? onClick : undefined}
+      style={{
+        border: selected
+          ? '1.5px solid #25D366'
+          : `1px solid ${connected ? '#1c2820' : '#1c2820'}`,
+        borderRadius: 10,
+        padding: '12px 14px',
+        background: selected ? 'rgba(37,211,102,0.07)' : '#0d1410',
+        cursor: connected ? 'pointer' : 'not-allowed',
+        opacity: connected ? 1 : 0.45,
+        transition: 'all 0.12s',
+        display: 'flex', alignItems: 'center', gap: 12,
+        userSelect: 'none',
+      }}
+    >
+      {/* Status dot */}
+      <div style={{
+        width: 9, height: 9, borderRadius: '50%', flexShrink: 0,
+        background: connected ? '#25D366' : '#4a6050',
+        boxShadow: connected ? '0 0 6px rgba(37,211,102,0.6)' : 'none',
+        animation: connected ? 'pulse-dot 2s ease-in-out infinite' : 'none',
+      }} />
+
+      {/* Info */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: selected ? '#e8f0e8' : '#c4d4c8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {inst.display_name || inst.uazapi_name}
+        </div>
+        {inst.phone_number && (
+          <div style={{ fontSize: 11, color: '#4a6050', marginTop: 2 }}>{inst.phone_number}</div>
+        )}
       </div>
+
+      {/* Selected check */}
+      {selected && (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="2.5" strokeLinecap="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      )}
+
+      {/* Not connected badge */}
+      {!connected && (
+        <span style={{ fontSize: 10, color: '#6b7280', background: 'rgba(107,114,128,0.12)', padding: '2px 7px', borderRadius: 100 }}>
+          Desconectado
+        </span>
+      )}
     </div>
   );
 }
@@ -145,19 +246,40 @@ function ProgressBar({ sent, total }: { sent: number; total: number }) {
 // ─── Campaign Card ────────────────────────────────────────────────────────────
 
 function CampaignCard({
-  campaign,
-  onExpand,
-  expanded,
-  onDelete,
+  campaign, onExpand, expanded, onDelete, onChanged,
 }: {
   campaign: Campaign;
   onExpand: (id: string) => void;
   expanded: boolean;
   onDelete: (id: string) => void;
+  onChanged: () => void;
 }) {
   const [recipients, setRecipients] = useState<any[]>([]);
   const [loadingRec, setLoadingRec] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [acting, setActing] = useState(false);
+
+  async function cancelCampaign() {
+    if (!confirm(`Cancelar o disparo de "${campaign.name}"? Os pendentes ficam na fila para retomada.`)) return;
+    setActing(true);
+    try {
+      await fetch(`/api/campaigns/${campaign.id}/cancel`, { method: 'POST' });
+      onChanged();
+    } finally { setActing(false); }
+  }
+
+  async function resumeCampaign() {
+    if (!confirm(`Retomar o disparo de "${campaign.name}"? Quem já recebeu não recebe de novo.`)) return;
+    setActing(true);
+    try {
+      const r = await fetch(`/api/campaigns/${campaign.id}/send`, { method: 'POST' });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        alert(d.error || 'Erro ao retomar o disparo');
+      }
+      onChanged();
+    } finally { setActing(false); }
+  }
 
   const loadRecipients = useCallback(async () => {
     if (recipients.length > 0) return;
@@ -166,9 +288,7 @@ function CampaignCard({
       const res = await fetch(`/api/campaigns/${campaign.id}`);
       const d = await res.json();
       setRecipients(d.recipients || []);
-    } finally {
-      setLoadingRec(false);
-    }
+    } finally { setLoadingRec(false); }
   }, [campaign.id, recipients.length]);
 
   useEffect(() => {
@@ -180,7 +300,7 @@ function CampaignCard({
       background: '#111a12', border: '1px solid #1c2820',
       borderRadius: 10, marginBottom: 10, overflow: 'hidden',
     }}>
-      {/* Card header row */}
+      {/* Card header */}
       <div style={{ padding: '14px 16px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
@@ -188,56 +308,97 @@ function CampaignCard({
             <StatusBadge status={campaign.status} />
             {campaign.az_templates?.name && (
               <span style={{ fontSize: 11, color: '#4a6050' }}>
-                Template: {campaign.az_templates.name}
+                {campaign.az_templates.name}
+              </span>
+            )}
+            {campaign.az_whatsapp_instances && (
+              <span style={{
+                fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 100,
+                background: 'rgba(37,211,102,0.1)', color: '#4de08c',
+              }}>
+                via {instanceLabel(campaign.az_whatsapp_instances)}
               </span>
             )}
           </div>
 
-          {/* Metrics row */}
+          {/* Metrics */}
           {(campaign.total_count || 0) > 0 && (
-            <div style={{ display: 'flex', gap: 16, fontSize: 12, marginBottom: 4 }}>
-              <span>
-                <span style={{ color: '#4a6050' }}>Total </span>
-                <span style={{ fontWeight: 600, color: '#e8f0e8' }}>{campaign.total_count ?? 0}</span>
-              </span>
-              <span>
-                <span style={{ color: '#4a6050' }}>Enviados </span>
-                <span style={{ color: '#22c55e', fontWeight: 600 }}>{campaign.sent_count ?? 0}</span>
-              </span>
-              <span>
-                <span style={{ color: '#4a6050' }}>Falhos </span>
-                <span style={{ color: '#ef4444', fontWeight: 600 }}>{campaign.failed_count ?? 0}</span>
-              </span>
+            <>
+              <div style={{ display: 'flex', gap: 16, fontSize: 12, marginBottom: 4, flexWrap: 'wrap' }}>
+                <span><span style={{ color: '#4a6050' }}>Total </span><span style={{ fontWeight: 600 }}>{campaign.total_count ?? 0}</span></span>
+                <span><span style={{ color: '#4a6050' }}>Enviados </span><span style={{ color: '#22c55e', fontWeight: 600 }}>{campaign.sent_count ?? 0}</span></span>
+                <span><span style={{ color: '#4a6050' }}>Entregues </span><span style={{ color: '#4de08c', fontWeight: 600 }}>{campaign.delivered_count ?? 0}</span></span>
+                <span><span style={{ color: '#4a6050' }}>Falhos </span><span style={{ color: '#ef4444', fontWeight: 600 }}>{campaign.failed_count ?? 0}</span></span>
+              </div>
+              {campaign.status === 'sending' && (
+                <ProgressBar
+                  sent={campaign.sent_count ?? 0}
+                  failed={campaign.failed_count ?? 0}
+                  total={campaign.total_count ?? 0}
+                  compact
+                />
+              )}
+            </>
+          )}
+
+          <div style={{ fontSize: 11, color: '#4a6050', marginTop: 6 }}>
+            {fmtDate(campaign.created_at)}
+            {campaign.started_at && ` · Iniciado ${fmtTime(campaign.started_at)}`}
+            {campaign.completed_at && ` · Concluído ${fmtTime(campaign.completed_at)}`}
+          </div>
+
+          {campaign.status === 'error' && campaign.last_error && (
+            <div style={{
+              fontSize: 11, color: '#f87171', marginTop: 6, lineHeight: 1.5,
+              background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)',
+              borderRadius: 6, padding: '6px 10px',
+            }}>
+              {campaign.last_error}
             </div>
           )}
-
-          {campaign.status === 'sending' && (campaign.total_count || 0) > 0 && (
-            <ProgressBar
-              sent={campaign.sent_count ?? 0}
-              total={campaign.total_count ?? 0}
-            />
-          )}
-
-          <div style={{ fontSize: 11, color: '#4a6050', marginTop: 4 }}>
-            Criada {fmtDate(campaign.created_at)}
-            {campaign.completed_at && ` · Concluída ${fmtDate(campaign.completed_at)}`}
-          </div>
         </div>
 
         <div style={{ display: 'flex', gap: 6, flexShrink: 0, alignItems: 'center' }}>
-          {/* Delete button — not allowed while sending */}
+          {campaign.status === 'sending' && (
+            <button
+              disabled={acting}
+              onClick={cancelCampaign}
+              style={{
+                background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
+                borderRadius: 7, padding: '6px 12px', cursor: acting ? 'not-allowed' : 'pointer',
+                color: '#f87171', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
+                opacity: acting ? 0.5 : 1,
+              }}
+            >
+              {acting ? 'Cancelando...' : 'Cancelar'}
+            </button>
+          )}
+          {(campaign.status === 'error' || campaign.status === 'cancelled') && (
+            <button
+              disabled={acting}
+              onClick={resumeCampaign}
+              style={{
+                background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.25)',
+                borderRadius: 7, padding: '6px 12px', cursor: acting ? 'not-allowed' : 'pointer',
+                color: '#25D366', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
+                opacity: acting ? 0.5 : 1,
+              }}
+            >
+              {acting ? 'Retomando...' : 'Retomar'}
+            </button>
+          )}
           {campaign.status !== 'sending' && (
             <button
               disabled={deleting}
               onClick={async () => {
-                if (!confirm(`Excluir a campanha "${campaign.name}"?`)) return;
+                if (!confirm(`Excluir "${campaign.name}"?`)) return;
                 setDeleting(true);
                 try {
                   const r = await fetch(`/api/campaigns/${campaign.id}`, { method: 'DELETE' });
                   if (r.ok) onDelete(campaign.id);
                 } finally { setDeleting(false); }
               }}
-              title="Excluir campanha"
+              title="Excluir"
               style={{
                 background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)',
                 borderRadius: 7, padding: '5px 8px', cursor: deleting ? 'not-allowed' : 'pointer',
@@ -249,16 +410,12 @@ function CampaignCard({
               </svg>
             </button>
           )}
-
           <button
             onClick={() => onExpand(campaign.id)}
-            style={{
-              ...btn('ghost'),
-              fontSize: 12, padding: '6px 12px',
-              display: 'flex', alignItems: 'center', gap: 4,
-            }}
+            style={{ ...btn('ghost'), fontSize: 12, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 4 }}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: expanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              style={{ transform: expanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
               <polyline points="9 18 15 12 9 6" />
             </svg>
             {expanded ? 'Fechar' : 'Detalhes'}
@@ -276,32 +433,28 @@ function CampaignCard({
           ) : (
             <>
               <div style={{ fontSize: 11, color: '#4a6050', marginBottom: 8 }}>
-                Mostrando até 100 destinatários
+                {recipients.length} destinatário{recipients.length !== 1 ? 's' : ''}
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3, maxHeight: 300, overflowY: 'auto' }}>
                 {recipients.map((r: any) => {
                   const contact = r.az_contacts;
-                  const name = contact?.nome_fantasia || contact?.razao_social || '—';
+                  const name = contact?.nome_fantasia || contact?.razao_social || r.contact_name || '—';
+                  const rl = RECIPIENT_LABEL[r.status] || RECIPIENT_LABEL.pending;
                   return (
                     <div key={r.id} style={{
                       display: 'flex', alignItems: 'center', gap: 10,
-                      padding: '6px 10px', borderRadius: 6,
+                      padding: '5px 10px', borderRadius: 6,
                       background: '#0d1410', fontSize: 12,
+                      opacity: r.status === 'skipped' ? 0.55 : 1,
                     }}>
                       <span style={{
                         width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
-                        background: r.status === 'sent' ? '#22c55e'
-                                  : r.status === 'failed' ? '#ef4444'
-                                  : '#4a6050',
+                        background: rl.color,
                       }} />
-                      <span style={{ flex: 1, minWidth: 0 }}>
-                        <span style={{ fontWeight: 500, color: '#e8f0e8' }}>{name}</span>
-                        {contact?.cidade && (
-                          <span style={{ color: '#4a6050', marginLeft: 6 }}>{contact.cidade}</span>
-                        )}
-                      </span>
-                      <span style={{ color: '#4a6050', fontSize: 11 }}>
-                        {r.status === 'sent' ? 'Enviado' : r.status === 'failed' ? 'Falhou' : 'Pendente'}
+                      <span style={{ flex: 1, fontWeight: 500, color: '#e8f0e8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
+                      {contact?.cidade && <span style={{ color: '#4a6050', fontSize: 11 }}>{contact.cidade}</span>}
+                      <span style={{ color: rl.color, fontSize: 11, flexShrink: 0 }}>
+                        {rl.label}
                       </span>
                       {r.error_message && (
                         <span style={{ color: '#ef4444', fontSize: 10 }} title={r.error_message}>!</span>
@@ -318,23 +471,15 @@ function CampaignCard({
   );
 }
 
-// ─── Tab 1: Campaign List ─────────────────────────────────────────────────────
+// ─── Campaign List ────────────────────────────────────────────────────────────
 
-function CampaignList({
-  campaigns,
-  loading,
-  onDelete,
-}: {
+function CampaignList({ campaigns, loading, onRefresh, onDelete }: {
   campaigns: Campaign[];
   loading: boolean;
   onRefresh: () => void;
   onDelete: (id: string) => void;
 }) {
   const [expanded, setExpanded] = useState<string | null>(null);
-
-  function toggleExpand(id: string) {
-    setExpanded(prev => prev === id ? null : id);
-  }
 
   if (loading) {
     return (
@@ -357,11 +502,10 @@ function CampaignList({
         justifyContent: 'center', padding: 60, color: '#4a6050', gap: 8,
       }}>
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4 }}>
-          <line x1="22" y1="2" x2="11" y2="13" />
-          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
         </svg>
         <div style={{ fontSize: 13 }}>Nenhuma campanha ainda.</div>
-        <div style={{ fontSize: 12 }}>Crie uma na aba "Nova Campanha".</div>
+        <div style={{ fontSize: 12 }}>Crie uma na aba "+ Nova Campanha".</div>
       </div>
     );
   }
@@ -372,16 +516,251 @@ function CampaignList({
         <CampaignCard
           key={c.id}
           campaign={c}
-          onExpand={toggleExpand}
+          onExpand={id => setExpanded(prev => prev === id ? null : id)}
           expanded={expanded === c.id}
           onDelete={onDelete}
+          onChanged={onRefresh}
         />
       ))}
     </div>
   );
 }
 
-// ─── Tab 2: Wizard ────────────────────────────────────────────────────────────
+// ─── Live Dispatch Monitor (Step 4) ──────────────────────────────────────────
+
+function DispatchMonitor({
+  campaignId, campaignName, total,
+  onViewList,
+}: {
+  campaignId: string;
+  campaignName: string;
+  total: number;
+  onViewList: () => void;
+}) {
+  const [sent, setSent] = useState(0);
+  const [delivered, setDelivered] = useState(0);
+  const [failed, setFailed] = useState(0);
+  const [status, setStatus] = useState<Campaign['status']>('sending');
+  const [lastError, setLastError] = useState<string | null>(null);
+  const [recipients, setRecipients] = useState<any[]>([]);
+  const [cancelling, setCancelling] = useState(false);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pumpRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const poll = useCallback(async () => {
+    try {
+      const res  = await fetch(`/api/campaigns/${campaignId}`);
+      const data = await res.json();
+      if (data.campaign) {
+        setSent(data.campaign.sent_count ?? 0);
+        setDelivered(data.campaign.delivered_count ?? 0);
+        setFailed(data.campaign.failed_count ?? 0);
+        setStatus(data.campaign.status ?? 'sending');
+        setLastError(data.campaign.last_error ?? null);
+      }
+      if (data.recipients) {
+        setRecipients(data.recipients);
+      }
+    } catch {}
+  }, [campaignId]);
+
+  useEffect(() => {
+    poll();
+    pollRef.current = setInterval(poll, 2000);
+    // Pump: retoma o worker se a cadeia serverless morrer (idempotente)
+    pumpCampaign(campaignId);
+    pumpRef.current = setInterval(() => pumpCampaign(campaignId), 10000);
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+      if (pumpRef.current) clearInterval(pumpRef.current);
+    };
+  }, [poll, campaignId]);
+
+  // Stop polling when done
+  useEffect(() => {
+    if (status !== 'sending') {
+      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+      if (pumpRef.current) { clearInterval(pumpRef.current); pumpRef.current = null; }
+    }
+  }, [status]);
+
+  async function cancelDispatch() {
+    if (!confirm('Cancelar o disparo? Os pendentes ficam na fila e você pode retomar depois.')) return;
+    setCancelling(true);
+    try {
+      await fetch(`/api/campaigns/${campaignId}/cancel`, { method: 'POST' });
+      await poll();
+    } finally { setCancelling(false); }
+  }
+
+  const pct      = total > 0 ? Math.round((sent / total) * 100) : 0;
+  const pending  = Math.max(0, total - sent - failed);
+  const isDone   = status !== 'sending';
+
+  return (
+    <div style={{ padding: 24, maxWidth: 640 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+        {!isDone ? (
+          <div style={{
+            width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+            border: '2.5px solid #25D366', borderTopColor: 'transparent',
+            animation: 'spin 0.8s linear infinite',
+          }} />
+        ) : status === 'completed' ? (
+          <div style={{
+            width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(34,197,94,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
+          </div>
+        ) : status === 'cancelled' ? (
+          <div style={{
+            width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(245,158,11,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+          </div>
+        ) : (
+          <div style={{
+            width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(239,68,68,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+        )}
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#e8f0e8' }}>
+            {isDone
+              ? status === 'completed' ? 'Disparo concluído'
+              : status === 'cancelled' ? 'Disparo cancelado'
+              : 'Disparo com erro'
+              : 'Disparando mensagens...'}
+          </div>
+          <div style={{ fontSize: 12, color: '#4a6050' }}>{campaignName}</div>
+        </div>
+        {!isDone && (
+          <button
+            onClick={cancelDispatch}
+            disabled={cancelling}
+            style={{
+              padding: '7px 14px', borderRadius: 8, cursor: cancelling ? 'not-allowed' : 'pointer',
+              fontFamily: 'inherit', fontWeight: 600, fontSize: 12,
+              border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)',
+              color: '#f87171', opacity: cancelling ? 0.5 : 1, flexShrink: 0,
+            }}
+          >
+            {cancelling ? 'Cancelando...' : 'Cancelar disparo'}
+          </button>
+        )}
+      </div>
+
+      {/* Progress bar */}
+      <div style={{
+        background: '#111a12', border: '1px solid #1c2820',
+        borderRadius: 10, padding: 18, marginBottom: 16,
+      }}>
+        <ProgressBar sent={sent} failed={failed} total={total} />
+
+        {/* Stats grid */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
+          gap: 10, marginTop: 16,
+        }}>
+          {[
+            { label: 'Total', value: total, color: '#e8f0e8' },
+            { label: 'Enviados', value: sent, color: '#22c55e' },
+            { label: 'Entregues', value: delivered, color: delivered > 0 ? '#4de08c' : '#4a6050' },
+            { label: 'Falhos', value: failed, color: failed > 0 ? '#ef4444' : '#4a6050' },
+          ].map(({ label, value, color }) => (
+            <div key={label} style={{
+              background: '#0d1410', borderRadius: 8, padding: '10px 12px', textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color }}>{value}</div>
+              <div style={{ fontSize: 11, color: '#4a6050', marginTop: 2 }}>{label}</div>
+            </div>
+          ))}
+        </div>
+
+        {!isDone && sent > 0 && delivered === 0 && (
+          <div style={{
+            fontSize: 11, color: '#fcd34d', marginTop: 12, textAlign: 'center', lineHeight: 1.5,
+            background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.15)',
+            borderRadius: 6, padding: '7px 10px',
+          }}>
+            Proteção canário: aguardando a confirmação de entrega do 1º envio antes de liberar o volume total.
+          </div>
+        )}
+
+        {status === 'error' && lastError && (
+          <div style={{
+            fontSize: 12, color: '#f87171', marginTop: 12, lineHeight: 1.5,
+            background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)',
+            borderRadius: 6, padding: '8px 12px',
+          }}>
+            {lastError}
+          </div>
+        )}
+
+        {!isDone && pending > 0 && (
+          <div style={{ fontSize: 11, color: '#4a6050', marginTop: 12, textAlign: 'center' }}>
+            {pending} mensagens pendentes · {estimatedMinutes(pending)} restantes
+          </div>
+        )}
+      </div>
+
+      {/* Recipient list */}
+      <div style={{
+        background: '#111a12', border: '1px solid #1c2820',
+        borderRadius: 10, overflow: 'hidden',
+      }}>
+        <div style={{ padding: '10px 14px', borderBottom: '1px solid #1c2820', fontSize: 11, color: '#4a6050', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Destinatários
+        </div>
+        <div style={{ maxHeight: 320, overflowY: 'auto' }}>
+          {recipients.length === 0 ? (
+            <div style={{ padding: '20px 14px', fontSize: 12, color: '#4a6050', textAlign: 'center' }}>
+              Carregando lista...
+            </div>
+          ) : (
+            recipients.map((r: any) => {
+              const contact = r.az_contacts;
+              const name = contact?.nome_fantasia || contact?.razao_social || r.contact_name || '—';
+              const rl = RECIPIENT_LABEL[r.status] || RECIPIENT_LABEL.pending;
+              return (
+                <div key={r.id} style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '7px 14px', borderBottom: '1px solid #0d1410',
+                  fontSize: 12, opacity: r.status === 'skipped' ? 0.55 : 1,
+                }} title={r.error_message || undefined}>
+                  <span style={{
+                    width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
+                    background: rl.color,
+                    animation: (r.status === 'pending' || r.status === 'processing') ? 'pulse-dot 1.5s ease-in-out infinite' : 'none',
+                  }} />
+                  <span style={{ flex: 1, color: '#e8f0e8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
+                  {contact?.cidade && <span style={{ color: '#4a6050', fontSize: 11 }}>{contact.cidade}</span>}
+                  <span style={{ fontSize: 11, flexShrink: 0, color: rl.color }}>
+                    {rl.label}
+                  </span>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div style={{ marginTop: 16 }}>
+        <button onClick={onViewList} style={{ ...btn('ghost'), width: '100%' }}>
+          Ver lista de campanhas
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Wizard ───────────────────────────────────────────────────────────────────
 
 function NewCampaignWizard({
   onSuccess,
@@ -392,46 +771,73 @@ function NewCampaignWizard({
 }) {
   const [step, setStep] = useState(1);
 
-  // Step 1: message
-  const [name, setName] = useState('');
+  // Step 1 fields
+  const [name, setName]               = useState('');
   const [useTemplate, setUseTemplate] = useState(true);
-  const [templateId, setTemplateId] = useState('');
-  const [customBody, setCustomBody] = useState('');
-  const [templates, setTemplates] = useState<Template[]>([]);
-  const [loadingTemplates, setLoadingTemplates] = useState(true);
+  const [templateId, setTemplateId]   = useState('');
+  const [customBody, setCustomBody]   = useState('');
+  const [templates, setTemplates]     = useState<Template[]>([]);
+  const [loadingTpl, setLoadingTpl]   = useState(true);
+  const [instances, setInstances]     = useState<Instance[]>([]);
+  const [instanceId, setInstanceId]   = useState('');
 
-  // Step 2: segment
-  const [brands, setBrands] = useState<Brand[]>([]);
+  // Step 2 fields
+  const [brands, setBrands]             = useState<Brand[]>([]);
   const [loadingBrands, setLoadingBrands] = useState(true);
-  const [filter, setFilter] = useState<SegmentFilter>({});
-  const [preview, setPreview] = useState<PreviewResult | null>(null);
+  const [brandSearch, setBrandSearch]   = useState('');
+  const [filter, setFilter]             = useState<SegmentFilter>({});
+  const [preview, setPreview]           = useState<PreviewResult | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [campaignId, setCampaignId] = useState<string | null>(null);
+  const [campaignId, setCampaignId]     = useState<string | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Step 3: confirm
-  const [sending, setSending] = useState(false);
+  // Step 4 fields (dispatch monitor)
+  const [dispatchTotal, setDispatchTotal] = useState(0);
+  const [dispatchName, setDispatchName]   = useState('');
+  const [sending, setSending]             = useState(false);
 
-  // Load templates + brands on mount
+  // Load data on mount
   useEffect(() => {
     fetch('/api/templates')
       .then(r => r.json())
-      .then(d => { setTemplates(d.templates || []); setLoadingTemplates(false); })
-      .catch(() => setLoadingTemplates(false));
+      .then(d => { setTemplates(d.templates || []); setLoadingTpl(false); })
+      .catch(() => setLoadingTpl(false));
 
     fetch('/api/brands')
       .then(r => r.json())
       .then(d => { setBrands(d.brands || []); setLoadingBrands(false); })
       .catch(() => setLoadingBrands(false));
+
+    fetch('/api/instances?live=1')
+      .then(r => r.json())
+      .then(d => {
+        const list: Instance[] = Array.isArray(d) ? d : [];
+        setInstances(list);
+        // Auto-select first connected instance
+        const first = list.find(i => i.status === 'connected');
+        if (first) setInstanceId(first.id);
+      })
+      .catch(() => {});
   }, []);
 
   const selectedTemplate = templates.find(t => t.id === templateId);
-  const messageBody = useTemplate ? (selectedTemplate?.body || '') : customBody;
+  const messageBody      = useTemplate ? (selectedTemplate?.body || '') : customBody;
+  const connectedInstances = instances.filter(i => i.status === 'connected');
 
-  // Step 1 → 2: create draft campaign first
+  // Auto-trigger preview after filter changes (500ms debounce)
+  useEffect(() => {
+    if (!campaignId) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(loadPreview, 500);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [filter, campaignId]); // eslint-disable-line
+
+  // Step 1 → 2
   async function goToStep2() {
     if (!name.trim()) { toast.error('Nome da campanha é obrigatório'); return; }
     if (useTemplate && !templateId) { toast.error('Selecione um template'); return; }
     if (!useTemplate && !customBody.trim()) { toast.error('Escreva a mensagem'); return; }
+    if (!instanceId) { toast.error('Selecione um número de envio'); return; }
 
     try {
       const res = await fetch('/api/campaigns', {
@@ -442,6 +848,7 @@ function NewCampaignWizard({
           template_id: useTemplate ? templateId : null,
           custom_body: !useTemplate ? customBody.trim() : null,
           segment_filter: {},
+          instance_id: instanceId || null,
         }),
       });
       const d = await res.json();
@@ -453,13 +860,11 @@ function NewCampaignWizard({
     }
   }
 
-  // Fetch preview count
   async function loadPreview() {
     if (!campaignId) return;
     setPreviewLoading(true);
     setPreview(null);
     try {
-      // Update segment filter first
       await fetch(`/api/campaigns/${campaignId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -478,21 +883,12 @@ function NewCampaignWizard({
 
   // Step 2 → 3
   async function goToStep3() {
-    if (!preview) { toast.error('Clique em "Contar destinatários" primeiro'); return; }
+    if (!preview) { await loadPreview(); return; }
     if (preview.count === 0) { toast.error('Nenhum contato corresponde ao filtro'); return; }
-
-    // Save final segment_filter to campaign
-    if (campaignId) {
-      await fetch(`/api/campaigns/${campaignId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ segment_filter: filter }),
-      });
-    }
     setStep(3);
   }
 
-  // Step 3: fire!
+  // Step 3 → fire
   async function fireDisparo() {
     if (!campaignId) return;
     setSending(true);
@@ -500,8 +896,9 @@ function NewCampaignWizard({
       const res = await fetch(`/api/campaigns/${campaignId}/send`, { method: 'POST' });
       const d = await res.json();
       if (!res.ok) { toast.error(d.error || 'Erro ao disparar'); setSending(false); return; }
-      toast.success(`Disparo iniciado — ${d.total} mensagens em fila`);
-      onSuccess(campaignId);
+      setDispatchTotal(d.total);
+      setDispatchName(name);
+      setStep(4); // Go to live monitor
     } catch {
       toast.error('Erro de conexão');
       setSending(false);
@@ -511,29 +908,44 @@ function NewCampaignWizard({
   function toggleBrand(id: string) {
     setFilter(f => {
       const ids = f.brand_ids || [];
-      return {
-        ...f,
-        brand_ids: ids.includes(id) ? ids.filter(b => b !== id) : [...ids, id],
-      };
+      return { ...f, brand_ids: ids.includes(id) ? ids.filter(b => b !== id) : [...ids, id] };
     });
-    setPreview(null);
   }
 
-  // ── Render step ──
+  function toggleAllBrands() {
+    const allSelected = (filter.brand_ids || []).length === brands.length && brands.length > 0;
+    setFilter(f => ({ ...f, brand_ids: allSelected ? [] : brands.map(b => b.id) }));
+  }
+
+  const filteredBrands = brands.filter(b =>
+    !brandSearch || b.name.toLowerCase().includes(brandSearch.toLowerCase())
+  );
+
+  // ── Render ──
+
+  // Step 4: dispatch monitor
+  if (step === 4 && campaignId) {
+    return (
+      <DispatchMonitor
+        campaignId={campaignId}
+        campaignName={dispatchName}
+        total={dispatchTotal}
+        onViewList={() => onSuccess(campaignId)}
+      />
+    );
+  }
 
   return (
-    <div style={{ padding: 24, maxWidth: 640 }}>
+    <div style={{ padding: 24, maxWidth: 660 }}>
       {/* Step indicator */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 28 }}>
-        {['Mensagem', 'Destinatários', 'Confirmar'].map((label, i) => {
+        {['Mensagem', 'Lista', 'Confirmar'].map((label, i) => {
           const n = i + 1;
           const active = step === n;
           const done   = step > n;
           return (
             <div key={n} style={{ display: 'flex', alignItems: 'center' }}>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 7,
-              }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                 <div style={{
                   width: 24, height: 24, borderRadius: '50%',
                   background: done ? '#25D366' : active ? '#25D366' : '#1c2820',
@@ -549,18 +961,17 @@ function NewCampaignWizard({
                   {label}
                 </span>
               </div>
-              {i < 2 && (
-                <div style={{ width: 24, height: 1, background: '#1c2820', margin: '0 8px' }} />
-              )}
+              {i < 2 && <div style={{ width: 28, height: 1, background: '#1c2820', margin: '0 8px' }} />}
             </div>
           );
         })}
       </div>
 
-      {/* ── Step 1: Mensagem ── */}
+      {/* ── Step 1: Mensagem + Número ── */}
       {step === 1 && (
         <div>
-          <div style={{ marginBottom: 16 }}>
+          {/* Campaign name */}
+          <div style={{ marginBottom: 18 }}>
             <label style={labelStyle}>Nome da campanha</label>
             <input
               style={inp}
@@ -570,21 +981,41 @@ function NewCampaignWizard({
             />
           </div>
 
-          {/* Toggle template vs custom */}
+          {/* Instance picker — visual cards */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={labelStyle}>
+              Número de envio
+              {connectedInstances.length === 0 && (
+                <span style={{ color: '#f59e0b', marginLeft: 6, textTransform: 'none', fontSize: 11 }}>
+                  Nenhum número conectado
+                </span>
+              )}
+            </label>
+            {instances.length === 0 ? (
+              <div style={{ fontSize: 12, color: '#4a6050' }}>Carregando instâncias...</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {instances.map(inst => (
+                  <InstanceCard
+                    key={inst.id}
+                    inst={inst}
+                    selected={instanceId === inst.id}
+                    onClick={() => setInstanceId(inst.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Message type toggle */}
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>Mensagem</label>
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              {[
-                { id: true,  label: 'Usar template' },
-                { id: false, label: 'Escrever mensagem' },
-              ].map(opt => (
+              {[{ id: true, label: 'Usar template' }, { id: false, label: 'Personalizada' }].map(opt => (
                 <button
                   key={String(opt.id)}
                   onClick={() => setUseTemplate(opt.id)}
-                  style={{
-                    ...btn(useTemplate === opt.id ? 'primary' : 'ghost'),
-                    fontSize: 12, padding: '6px 14px',
-                  }}
+                  style={{ ...btn(useTemplate === opt.id ? 'primary' : 'ghost'), fontSize: 12, padding: '6px 14px' }}
                 >
                   {opt.label}
                 </button>
@@ -592,7 +1023,7 @@ function NewCampaignWizard({
             </div>
 
             {useTemplate ? (
-              loadingTemplates ? (
+              loadingTpl ? (
                 <div style={{ fontSize: 12, color: '#4a6050' }}>Carregando templates...</div>
               ) : (
                 <select
@@ -609,8 +1040,8 @@ function NewCampaignWizard({
             ) : (
               <div>
                 <textarea
-                  style={{ ...inp, minHeight: 120, resize: 'vertical', lineHeight: 1.5 }}
-                  placeholder="Olá {{nome_fantasia}}, temos novidades para você..."
+                  style={{ ...inp, minHeight: 110, resize: 'vertical', lineHeight: 1.5 }}
+                  placeholder="Olá {{nome_fantasia}}, temos novidades para você em {{cidade}}..."
                   value={customBody}
                   onChange={e => setCustomBody(e.target.value)}
                 />
@@ -621,22 +1052,20 @@ function NewCampaignWizard({
             )}
           </div>
 
-          {/* Preview */}
+          {/* Message preview */}
           {messageBody && (
             <div style={{
               background: '#0d1410', border: '1px solid #1c2820',
-              borderRadius: 8, padding: 14, marginBottom: 16,
+              borderRadius: 8, padding: 14, marginBottom: 18,
             }}>
-              <div style={{ fontSize: 11, color: '#4a6050', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
-                Preview da mensagem
-              </div>
+              <div style={labelStyle}>Preview</div>
               <div style={{ fontSize: 13, color: '#e8f0e8', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
                 {messageBody
                   .replace(/\{\{nome_fantasia\}\}/gi, 'Papelaria Exemplo')
                   .replace(/\{\{nome\}\}/gi, 'Papelaria Exemplo')
                   .replace(/\{\{primeiro_nome\}\}/gi, 'Papelaria')
-                  .replace(/\{\{cidade\}\}/gi, 'São Paulo')
-                  .replace(/\{\{estado\}\}/gi, 'SP')
+                  .replace(/\{\{cidade\}\}/gi, 'Santa Maria')
+                  .replace(/\{\{estado\}\}/gi, 'RS')
                   .replace(/\{\{contato\}\}/gi, 'João')
                   .replace(/\{\{segmento\}\}/gi, 'Papelaria')
                   .replace(/\{\{periodo_dia\}\}/gi, 'Bom dia')}
@@ -644,8 +1073,12 @@ function NewCampaignWizard({
             </div>
           )}
 
-          <button onClick={goToStep2} style={btn('primary')}>
-            Próximo →
+          <button
+            onClick={goToStep2}
+            disabled={!instanceId || connectedInstances.length === 0}
+            style={{ ...btn('primary'), opacity: (!instanceId || connectedInstances.length === 0) ? 0.5 : 1 }}
+          >
+            Próximo — Lista →
           </button>
         </div>
       )}
@@ -655,26 +1088,58 @@ function NewCampaignWizard({
         <div>
           {/* Brands */}
           <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Marcas (multi-seleção)</label>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+              <label style={{ ...labelStyle, marginBottom: 0 }}>
+                Marcas representadas
+                {(filter.brand_ids || []).length > 0 && (
+                  <span style={{ color: '#25D366', marginLeft: 6, textTransform: 'none', fontWeight: 500 }}>
+                    {(filter.brand_ids || []).length} selecionadas
+                  </span>
+                )}
+              </label>
+              <button
+                onClick={toggleAllBrands}
+                style={{
+                  fontSize: 11, padding: '3px 10px', borderRadius: 20,
+                  border: '1px solid #1c2820', background: 'transparent',
+                  color: '#4a6050', cursor: 'pointer', fontFamily: 'inherit',
+                }}
+              >
+                {(filter.brand_ids || []).length === brands.length && brands.length > 0 ? 'Desmarcar todas' : 'Selecionar todas'}
+              </button>
+            </div>
+
+            {/* Brand search */}
+            {brands.length > 10 && (
+              <input
+                style={{ ...inp, marginBottom: 8, padding: '7px 12px' }}
+                placeholder="Buscar marca..."
+                value={brandSearch}
+                onChange={e => setBrandSearch(e.target.value)}
+              />
+            )}
+
             {loadingBrands ? (
               <div style={{ fontSize: 12, color: '#4a6050' }}>Carregando marcas...</div>
-            ) : brands.length === 0 ? (
-              <div style={{ fontSize: 12, color: '#4a6050' }}>Nenhuma marca encontrada.</div>
             ) : (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {brands.map(b => {
+              <div style={{
+                display: 'flex', flexWrap: 'wrap', gap: 6,
+                maxHeight: brands.length > 15 ? 160 : 'none',
+                overflowY: brands.length > 15 ? 'auto' : 'visible',
+                padding: brands.length > 15 ? '4px 2px' : 0,
+              }}>
+                {filteredBrands.map(b => {
                   const active = (filter.brand_ids || []).includes(b.id);
                   return (
                     <button
                       key={b.id}
                       onClick={() => toggleBrand(b.id)}
                       style={{
-                        padding: '5px 12px', borderRadius: 20, fontSize: 12,
+                        padding: '4px 12px', borderRadius: 20, fontSize: 12,
                         fontFamily: 'inherit', cursor: 'pointer', fontWeight: 500,
                         border: active ? 'none' : '1px solid #1c2820',
                         background: active ? '#25D366' : 'transparent',
-                        color: active ? '#fff' : '#8aaa90',
-                        transition: 'all 0.12s',
+                        color: active ? '#fff' : '#8aaa90', transition: 'all 0.1s',
                       }}
                     >
                       {b.name}
@@ -683,55 +1148,55 @@ function NewCampaignWizard({
                 })}
               </div>
             )}
-            {(filter.brand_ids?.length || 0) === 0 && (
-              <div style={{ fontSize: 11, color: '#4a6050', marginTop: 6 }}>
-                Nenhuma marca selecionada = todos os contatos com telefone.
-              </div>
-            )}
+            <div style={{ fontSize: 11, color: '#4a6050', marginTop: 6 }}>
+              {(filter.brand_ids?.length || 0) === 0
+                ? 'Sem filtro de marca — inclui todos os contatos com telefone'
+                : `Somente contatos vinculados às ${filter.brand_ids!.length} marca(s) selecionada(s)`}
+            </div>
           </div>
 
-          {/* Cidade */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Cidade</label>
-            <input
-              style={inp}
-              placeholder="Ex: São Paulo"
-              value={filter.cidade || ''}
-              onChange={e => { setFilter(f => ({ ...f, cidade: e.target.value || undefined })); setPreview(null); }}
-            />
+          {/* Linha 1: Cidade + Estado */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+            <div>
+              <label style={labelStyle}>Cidade</label>
+              <input
+                style={inp}
+                placeholder="Ex: Santa Maria"
+                value={filter.cidade || ''}
+                onChange={e => setFilter(f => ({ ...f, cidade: e.target.value || undefined }))}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Estado</label>
+              <select
+                style={inp}
+                value={filter.estado || ''}
+                onChange={e => setFilter(f => ({ ...f, estado: e.target.value || undefined }))}
+              >
+                <option value="">Todos</option>
+                {ESTADO_OPTIONS.map(uf => (
+                  <option key={uf} value={uf}>{uf}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Segmento */}
-          <div style={{ marginBottom: 16 }}>
+          <div style={{ marginBottom: 14 }}>
             <label style={labelStyle}>Segmento</label>
-            <select
-              style={inp}
-              value={filter.segmento || ''}
-              onChange={e => { setFilter(f => ({ ...f, segmento: e.target.value || undefined })); setPreview(null); }}
-            >
-              {SEGMENTO_OPTIONS.map(o => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Status */}
-          <div style={{ marginBottom: 20 }}>
-            <label style={labelStyle}>Status do cliente</label>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {STATUS_OPTIONS.map(o => {
-                const active = (filter.status || '') === o.value;
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {[{ value: '', label: 'Todos' }, ...SEGMENTO_OPTIONS.map(s => ({ value: s, label: s }))].map(o => {
+                const active = (filter.segmento || '') === o.value;
                 return (
                   <button
                     key={o.value}
-                    onClick={() => { setFilter(f => ({ ...f, status: o.value || undefined })); setPreview(null); }}
+                    onClick={() => setFilter(f => ({ ...f, segmento: o.value || undefined }))}
                     style={{
-                      padding: '5px 12px', borderRadius: 20, fontSize: 12,
+                      padding: '4px 12px', borderRadius: 20, fontSize: 12,
                       fontFamily: 'inherit', cursor: 'pointer', fontWeight: 500,
                       border: active ? 'none' : '1px solid #1c2820',
                       background: active ? '#25D366' : 'transparent',
-                      color: active ? '#fff' : '#8aaa90',
-                      transition: 'all 0.12s',
+                      color: active ? '#fff' : '#8aaa90', transition: 'all 0.1s',
                     }}
                   >
                     {o.label}
@@ -741,53 +1206,131 @@ function NewCampaignWizard({
             </div>
           </div>
 
-          {/* Preview count button */}
-          <button
-            onClick={loadPreview}
-            disabled={previewLoading}
-            style={{ ...btn('ghost'), marginBottom: 16, opacity: previewLoading ? 0.6 : 1 }}
-          >
-            {previewLoading ? 'Calculando...' : 'Contar destinatários'}
-          </button>
-
-          {/* Preview result */}
-          {preview && (
-            <div style={{
-              background: '#0d1410', border: '1px solid #1c2820',
-              borderRadius: 8, padding: 14, marginBottom: 20,
-            }}>
-              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>
-                <span style={{ color: '#25D366', fontSize: 22, fontWeight: 700 }}>{preview.count}</span>
-                <span style={{ color: '#8aaa90', marginLeft: 6 }}>
-                  {preview.count === 1 ? 'contato será atingido' : 'contatos serão atingidos'}
-                </span>
-              </div>
-              {preview.sample.length > 0 && (
-                <div>
-                  <div style={{ fontSize: 11, color: '#4a6050', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
-                    Amostra
-                  </div>
-                  {preview.sample.map((s, i) => (
-                    <div key={i} style={{
-                      fontSize: 12, padding: '5px 0',
-                      borderBottom: i < preview.sample.length - 1 ? '1px solid #1c2820' : 'none',
-                      display: 'flex', gap: 10,
-                    }}>
-                      <span style={{ fontWeight: 500, flex: 1 }}>{s.name}</span>
-                      {s.cidade && <span style={{ color: '#4a6050' }}>{s.cidade}</span>}
-                    </div>
-                  ))}
-                </div>
-              )}
+          {/* Status */}
+          <div style={{ marginBottom: 14 }}>
+            <label style={labelStyle}>Status do cliente</label>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {[{ value: '', label: 'Todos' }, ...STATUS_OPTIONS].map(o => {
+                const active = (filter.status || '') === o.value;
+                return (
+                  <button
+                    key={o.value}
+                    onClick={() => setFilter(f => ({ ...f, status: o.value || undefined }))}
+                    style={{
+                      padding: '4px 12px', borderRadius: 20, fontSize: 12,
+                      fontFamily: 'inherit', cursor: 'pointer', fontWeight: 500,
+                      border: active ? 'none' : '1px solid #1c2820',
+                      background: active ? '#25D366' : 'transparent',
+                      color: active ? '#fff' : '#8aaa90', transition: 'all 0.1s',
+                    }}
+                  >
+                    {o.label}
+                  </button>
+                );
+              })}
             </div>
-          )}
+          </div>
+
+          {/* Teste interno */}
+          <div style={{
+            marginBottom: 18, padding: '10px 14px', borderRadius: 8,
+            background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.18)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <div>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#fcd34d' }}>Teste — equipe u4digital</span>
+              <span style={{ fontSize: 11, color: '#4a6050', marginLeft: 8 }}>Dispara só para o time interno</span>
+            </div>
+            <button
+              onClick={() => {
+                const hasTag = (filter.tags || []).includes('u4digital');
+                setFilter(f => ({
+                  ...f,
+                  tags: hasTag ? [] : ['u4digital'],
+                  brand_ids: hasTag ? f.brand_ids : [],
+                  cidade: hasTag ? f.cidade : undefined,
+                  segmento: hasTag ? f.segmento : undefined,
+                  status: hasTag ? f.status : undefined,
+                }));
+              }}
+              style={{
+                padding: '5px 14px', borderRadius: 20, fontSize: 12,
+                fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600,
+                border: 'none', transition: 'all 0.12s',
+                background: (filter.tags || []).includes('u4digital') ? '#fcd34d' : 'rgba(251,191,36,0.15)',
+                color: (filter.tags || []).includes('u4digital') ? '#000' : '#fcd34d',
+              }}
+            >
+              {(filter.tags || []).includes('u4digital') ? '✓ Ativo' : 'Ativar'}
+            </button>
+          </div>
+
+          {/* Preview result — auto-updated */}
+          <div style={{
+            background: '#111a12', border: '1px solid #1c2820',
+            borderRadius: 10, padding: 16, marginBottom: 20,
+            minHeight: 70,
+          }}>
+            {previewLoading ? (
+              <div style={{ fontSize: 12, color: '#4a6050', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 14, height: 14, border: '2px solid #1c2820', borderTopColor: '#25D366', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                Contando destinatários...
+              </div>
+            ) : preview ? (
+              <>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10 }}>
+                  <span style={{ fontSize: 28, fontWeight: 800, color: preview.count > 0 ? '#25D366' : '#ef4444' }}>
+                    {preview.count}
+                  </span>
+                  <span style={{ fontSize: 13, color: '#8aaa90' }}>
+                    {preview.count === 1 ? 'contato será atingido' : 'contatos serão atingidos'}
+                  </span>
+                  {preview.count > 0 && (
+                    <span style={{ fontSize: 11, color: '#4a6050', marginLeft: 'auto' }}>
+                      {estimatedMinutes(preview.count)}
+                    </span>
+                  )}
+                </div>
+                {preview.sample.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {preview.sample.map((s, i) => (
+                      <div key={i} style={{
+                        fontSize: 11, display: 'flex', gap: 8,
+                        padding: '3px 0', color: '#8aaa90',
+                        borderTop: i > 0 ? '1px solid #1c2820' : 'none',
+                      }}>
+                        <span style={{ flex: 1 }}>{s.name}</span>
+                        {s.cidade && <span style={{ color: '#4a6050' }}>{s.cidade}</span>}
+                      </div>
+                    ))}
+                    {preview.count > preview.sample.length && (
+                      <div style={{ fontSize: 11, color: '#4a6050', marginTop: 4 }}>
+                        + {preview.count - preview.sample.length} outros
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={{ fontSize: 12, color: '#4a6050' }}>
+                Selecione os filtros acima para ver a lista de destinatários
+              </div>
+            )}
+          </div>
 
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => setStep(1)} style={btn('ghost')}>← Voltar</button>
             <button
+              onClick={loadPreview}
+              disabled={previewLoading}
+              style={{ ...btn('ghost'), opacity: previewLoading ? 0.5 : 1 }}
+            >
+              {previewLoading ? 'Calculando...' : 'Atualizar lista'}
+            </button>
+            <button
               onClick={goToStep3}
               disabled={!preview || preview.count === 0}
-              style={{ ...btn('primary'), opacity: (!preview || preview.count === 0) ? 0.5 : 1 }}
+              style={{ ...btn('primary'), opacity: (!preview || preview.count === 0) ? 0.45 : 1 }}
             >
               Próximo →
             </button>
@@ -798,61 +1341,73 @@ function NewCampaignWizard({
       {/* ── Step 3: Confirmar e Disparar ── */}
       {step === 3 && (
         <div>
+          {/* Summary card */}
           <div style={{
             background: '#0d1410', border: '1px solid #1c2820',
-            borderRadius: 10, padding: 20, marginBottom: 20,
+            borderRadius: 10, padding: 20, marginBottom: 18,
           }}>
-            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 14 }}>Resumo da campanha</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#e8f0e8', marginBottom: 14 }}>
+              Resumo do disparo
+            </div>
+
+            {/* Instance summary */}
+            {(() => {
+              const inst = instances.find(i => i.id === instanceId);
+              return inst ? (
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
+                  background: 'rgba(37,211,102,0.07)', border: '1px solid rgba(37,211,102,0.18)',
+                  borderRadius: 8, marginBottom: 14,
+                }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#25D366', animation: 'pulse-dot 2s ease-in-out infinite' }} />
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#e8f0e8' }}>
+                      {inst.display_name || inst.uazapi_name}
+                    </span>
+                    {inst.phone_number && (
+                      <span style={{ fontSize: 11, color: '#25D366', marginLeft: 8 }}>{inst.phone_number}</span>
+                    )}
+                  </div>
+                  <span style={{ fontSize: 11, color: '#25D366' }}>Conectado</span>
+                </div>
+              ) : null;
+            })()}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div style={{ display: 'flex', gap: 12 }}>
-                <span style={{ fontSize: 12, color: '#4a6050', width: 110, flexShrink: 0 }}>Nome</span>
-                <span style={{ fontSize: 12, fontWeight: 500 }}>{name}</span>
-              </div>
-              <div style={{ display: 'flex', gap: 12 }}>
-                <span style={{ fontSize: 12, color: '#4a6050', width: 110, flexShrink: 0 }}>Mensagem</span>
-                <span style={{ fontSize: 12, color: '#8aaa90' }}>
-                  {useTemplate ? (selectedTemplate?.name || '—') : 'Mensagem personalizada'}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: 12 }}>
-                <span style={{ fontSize: 12, color: '#4a6050', width: 110, flexShrink: 0 }}>Destinatários</span>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#25D366' }}>
-                  {preview?.count ?? 0} contatos
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: 12 }}>
-                <span style={{ fontSize: 12, color: '#4a6050', width: 110, flexShrink: 0 }}>Estimativa</span>
-                <span style={{ fontSize: 12, color: '#8aaa90' }}>
-                  {estimatedMinutes(preview?.count ?? 0)}
-                  <span style={{ marginLeft: 4, opacity: 0.7 }}>(intervalo de 2s entre mensagens)</span>
-                </span>
-              </div>
+              {[
+                { label: 'Campanha', value: name },
+                {
+                  label: 'Mensagem',
+                  value: useTemplate ? (selectedTemplate?.name || '—') : 'Personalizada',
+                },
+                { label: 'Destinatários', value: `${preview?.count ?? 0} contatos`, green: true },
+                { label: 'Estimativa', value: estimatedMinutes(preview?.count ?? 0), muted: true },
+              ].map(({ label, value, green, muted }) => (
+                <div key={label} style={{ display: 'flex', gap: 12 }}>
+                  <span style={{ fontSize: 12, color: '#4a6050', width: 100, flexShrink: 0 }}>{label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: green ? '#25D366' : muted ? '#8aaa90' : '#e8f0e8' }}>
+                    {value}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Warning */}
           <div style={{
-            background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)',
+            background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)',
             borderRadius: 8, padding: '10px 14px', marginBottom: 20,
-            display: 'flex', gap: 10, alignItems: 'flex-start',
+            display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 12, color: '#f59e0b', lineHeight: 1.5,
           }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-              <line x1="12" y1="9" x2="12" y2="13" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
+              <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
-            <div style={{ fontSize: 12, color: '#f59e0b', lineHeight: 1.5 }}>
-              Após iniciar, as mensagens serão enviadas em segundo plano com intervalo de 2 segundos.
-              Não feche esta janela até receber a confirmação do disparo.
-            </div>
+            As mensagens serão enviadas com intervalo de 2 a 4 segundos entre cada uma. Números repetidos recebem uma única vez. Você pode acompanhar o progresso em tempo real e cancelar a qualquer momento.
           </div>
 
-          {/* Fire button */}
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <button onClick={() => setStep(2)} style={btn('ghost')} disabled={sending}>
-              ← Voltar
-            </button>
+            <button onClick={() => setStep(2)} style={btn('ghost')} disabled={sending}>← Voltar</button>
             <button
               onClick={fireDisparo}
               disabled={sending}
@@ -861,14 +1416,13 @@ function NewCampaignWizard({
                 padding: '11px 28px', fontSize: 14, fontWeight: 700,
                 opacity: sending ? 0.7 : 1,
                 display: 'flex', alignItems: 'center', gap: 8,
+                flex: 1, justifyContent: 'center',
               }}
             >
               {sending ? (
                 <>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ animation: 'spin 0.8s linear infinite' }}>
-                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                  </svg>
-                  Iniciando...
+                  <div style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                  Iniciando disparo...
                 </>
               ) : (
                 <>
@@ -884,16 +1438,13 @@ function NewCampaignWizard({
       )}
 
       <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );
 }
 
-// ─── Root: DisparosView ───────────────────────────────────────────────────────
+// ─── Root ─────────────────────────────────────────────────────────────────────
 
 export default function DisparosView() {
   const [tab, setTab] = useState<'list' | 'new'>('list');
@@ -906,58 +1457,47 @@ export default function DisparosView() {
     try {
       const res = await fetch('/api/campaigns?limit=50');
       const d = await res.json();
-      setCampaigns(d.campaigns || []);
+      const list: Campaign[] = d.campaigns || [];
+      setCampaigns(list);
       setLoading(false);
+      // Pump: garante que campanhas "Enviando" continuem avançando mesmo
+      // que a cadeia do worker tenha morrido (lease evita duplicação)
+      list.filter(c => c.status === 'sending').forEach(c => pumpCampaign(c.id));
     } catch {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    loadCampaigns();
-  }, [loadCampaigns]);
+  useEffect(() => { loadCampaigns(); }, [loadCampaigns]);
 
-  // Poll every 3s if any campaign is 'sending'
+  // Poll every 3s if any campaign is sending
   useEffect(() => {
     const hasSending = campaigns.some(c => c.status === 'sending');
-
     if (hasSending) {
-      if (!pollRef.current) {
-        pollRef.current = setInterval(loadCampaigns, 3000);
-      }
+      if (!pollRef.current) pollRef.current = setInterval(loadCampaigns, 3000);
     } else {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-        pollRef.current = null;
-      }
+      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
     }
-
-    return () => {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-        pollRef.current = null;
-      }
-    };
+    return () => { if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; } };
   }, [campaigns, loadCampaigns]);
 
-  function onWizardSuccess(_campaignId: string) {
-    // Switch to list and refresh
+  function onWizardSuccess(campaignId: string) {
     setTab('list');
     setLoading(true);
     loadCampaigns();
   }
+
+  const sendingCount = campaigns.filter(c => c.status === 'sending').length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div style={{
         height: 56, borderBottom: '1px solid #1c2820', background: '#080c09',
-        display: 'flex', alignItems: 'center',
-        padding: '0 24px', gap: 4, flexShrink: 0,
+        display: 'flex', alignItems: 'center', padding: '0 24px', gap: 4, flexShrink: 0,
       }}>
         <span style={{ fontSize: 16, fontWeight: 600, marginRight: 12 }}>Disparos</span>
 
-        {/* Tabs */}
         {(['list', 'new'] as const).map(t => (
           <button
             key={t}
@@ -966,33 +1506,23 @@ export default function DisparosView() {
               padding: '6px 14px', borderRadius: 8, cursor: 'pointer',
               fontFamily: 'inherit', fontWeight: 500, fontSize: 13, border: 'none',
               background: tab === t ? 'rgba(37,211,102,0.1)' : 'transparent',
-              color: tab === t ? '#25D366' : '#4a6050',
-              transition: 'all 0.12s',
+              color: tab === t ? '#25D366' : '#4a6050', transition: 'all 0.12s',
             }}
           >
             {t === 'list' ? 'Campanhas' : '+ Nova Campanha'}
           </button>
         ))}
 
-        {/* Campaign count */}
         {tab === 'list' && !loading && (
           <span style={{ fontSize: 12, color: '#4a6050', marginLeft: 4 }}>
             {campaigns.length} {campaigns.length === 1 ? 'campanha' : 'campanhas'}
           </span>
         )}
 
-        {/* Sending indicator */}
-        {campaigns.some(c => c.status === 'sending') && (
-          <div style={{
-            marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6,
-            fontSize: 12, color: '#25D366',
-          }}>
-            <span style={{
-              width: 6, height: 6, borderRadius: '50%', background: '#25D366',
-              animation: 'pulse-dot 1s ease-in-out infinite',
-              display: 'inline-block',
-            }} />
-            Disparando...
+        {sendingCount > 0 && (
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#25D366' }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#25D366', animation: 'pulse-dot 1s ease-in-out infinite', display: 'inline-block' }} />
+            {sendingCount === 1 ? 'Disparando...' : `${sendingCount} disparos ativos`}
           </div>
         )}
       </div>
@@ -1007,24 +1537,15 @@ export default function DisparosView() {
             onDelete={id => setCampaigns(prev => prev.filter(c => c.id !== id))}
           />
         ) : (
-          <NewCampaignWizard
-            onSuccess={onWizardSuccess}
-            toast={toast}
-          />
+          <NewCampaignWizard onSuccess={onWizardSuccess} toast={toast} />
         )}
       </div>
 
       <Toast toasts={toast.toasts} onDismiss={toast.dismiss} />
 
       <style>{`
-        @keyframes pulse-dot {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.3; }
-        }
-        @keyframes skeleton-pulse {
-          0%, 100% { opacity: 0.5; }
-          50%       { opacity: 0.8; }
-        }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes skeleton-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
       `}</style>
     </div>
   );

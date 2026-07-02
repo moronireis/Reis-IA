@@ -14,6 +14,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
   const cidade    = url.searchParams.get('cidade') || '';
   const segmento  = url.searchParams.get('segmento') || '';
   const status    = url.searchParams.get('status') || '';
+  const tag       = url.searchParams.get('tag') || '';   // e.g. "u4digital"
   const q         = url.searchParams.get('q') || '';
   const page      = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
   const limit     = Math.min(200, parseInt(url.searchParams.get('limit') || '50'));
@@ -41,6 +42,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
   if (cidade)   countQuery = countQuery.ilike('cidade', `%${cidade}%`);
   if (segmento) countQuery = countQuery.ilike('segmento', `%${segmento}%`);
   if (status)   countQuery = countQuery.eq('status', status);
+  if (tag)      countQuery = (countQuery as any).contains('tags', [tag]);
   if (q)        countQuery = countQuery.or(
     `razao_social.ilike.%${q}%,nome_fantasia.ilike.%${q}%,cnpj.ilike.%${q}%,contato.ilike.%${q}%`
   );
@@ -50,7 +52,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
   // Data query
   let dataQuery = sb
     .from('az_contacts')
-    .select('id, razao_social, nome_fantasia, cnpj, phone_primary, phones, email, cidade, estado, segmento, status, contato, created_at')
+    .select('id, razao_social, nome_fantasia, cnpj, phone_primary, phones, email, cidade, estado, segmento, status, contato, tags, created_at')
     .order('razao_social', { ascending: true })
     .range(offset, offset + limit - 1);
 
@@ -58,6 +60,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
   if (cidade)   dataQuery = dataQuery.ilike('cidade', `%${cidade}%`);
   if (segmento) dataQuery = dataQuery.ilike('segmento', `%${segmento}%`);
   if (status)   dataQuery = dataQuery.eq('status', status);
+  if (tag)      dataQuery = (dataQuery as any).contains('tags', [tag]);
   if (q)        dataQuery = dataQuery.or(
     `razao_social.ilike.%${q}%,nome_fantasia.ilike.%${q}%,cnpj.ilike.%${q}%,contato.ilike.%${q}%`
   );

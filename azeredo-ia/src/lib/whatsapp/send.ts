@@ -30,10 +30,12 @@ export async function sendWhatsAppText(
   phone: string,
   text: string,
   contactId?: string,
-  campaignId?: string
+  campaignId?: string,
+  instanceToken?: string,  // when provided, overrides UAZAPI_TOKEN env var
+  instanceId?: string      // logged in az_messages (per-instance daily cap)
 ): Promise<SendResult> {
   const UAZAPI_URL = import.meta.env.UAZAPI_URL;
-  const UAZAPI_TOKEN = import.meta.env.UAZAPI_TOKEN;
+  const UAZAPI_TOKEN = instanceToken || import.meta.env.UAZAPI_TOKEN;
 
   if (!UAZAPI_URL || !UAZAPI_TOKEN) {
     return { ok: false, error: 'WhatsApp not configured' };
@@ -42,10 +44,12 @@ export async function sendWhatsAppText(
   const normalizedPhone = normalizePhone(phone);
 
   try {
-    const res = await fetch(`${UAZAPI_URL}/send/text?token=${UAZAPI_TOKEN}`, {
+    const res = await fetch(`${UAZAPI_URL}/send/text`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', token: UAZAPI_TOKEN },
       body: JSON.stringify({ number: normalizedPhone, text }),
+      // Sem timeout, uma request pendurada trava o worker de disparo inteiro
+      signal: AbortSignal.timeout(15_000),
     });
 
     const data = await res.json().catch(() => ({}));
@@ -59,6 +63,7 @@ export async function sendWhatsAppText(
       await sb.from('az_messages').insert({
         contact_id: contactId,
         campaign_id: campaignId || null,
+        instance_id: instanceId || null,
         phone: normalizedPhone,
         wa_message_id: data.messageid || null,
         direction: 'outbound',

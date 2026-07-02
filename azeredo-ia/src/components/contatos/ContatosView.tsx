@@ -13,6 +13,7 @@ interface Contact {
   segmento: string | null;
   status: string;
   contato: string | null;
+  tags: string[];
   brands: Brand[];
 }
 
@@ -91,6 +92,7 @@ export default function ContatosView() {
   const [cidadeFilter, setCidadeFilter] = useState('');
   const [segmentoFilter, setSegmentoFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [tagFilter, setTagFilter] = useState('');
 
   const LIMIT = 50;
 
@@ -106,11 +108,12 @@ export default function ContatosView() {
     setLoading(true);
     try {
       const params = new URLSearchParams({ page: String(p), limit: String(LIMIT) });
-      if (q)             params.set('q', q);
-      if (brandFilter)   params.set('brand_id', brandFilter);
-      if (cidadeFilter)  params.set('cidade', cidadeFilter);
+      if (q)              params.set('q', q);
+      if (brandFilter)    params.set('brand_id', brandFilter);
+      if (cidadeFilter)   params.set('cidade', cidadeFilter);
       if (segmentoFilter) params.set('segmento', segmentoFilter);
-      if (statusFilter)  params.set('status', statusFilter);
+      if (statusFilter)   params.set('status', statusFilter);
+      if (tagFilter)      params.set('tag', tagFilter);
 
       const res = await fetch(`/api/contacts?${params}`);
       const data = await res.json();
@@ -123,7 +126,7 @@ export default function ContatosView() {
     } finally {
       setLoading(false);
     }
-  }, [q, brandFilter, cidadeFilter, segmentoFilter, statusFilter, showError]);
+  }, [q, brandFilter, cidadeFilter, segmentoFilter, statusFilter, tagFilter, showError]);
 
   // Debounced search
   useEffect(() => {
@@ -171,6 +174,17 @@ export default function ContatosView() {
             <option value="inativo_recente">Inativo recente</option>
             <option value="inativo_antigo">Inativo antigo</option>
           </select>
+          <button
+            onClick={() => setTagFilter(t => t === 'u4digital' ? '' : 'u4digital')}
+            style={{
+              padding: '7px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 600,
+              fontFamily: 'inherit', cursor: 'pointer', border: 'none', transition: 'all 0.12s',
+              background: tagFilter === 'u4digital' ? '#fcd34d' : 'rgba(251,191,36,0.12)',
+              color: tagFilter === 'u4digital' ? '#000' : '#fcd34d',
+            }}
+          >
+            u4digital
+          </button>
         </div>
       </div>
 
@@ -189,6 +203,7 @@ export default function ContatosView() {
                 <th style={S.th}>Cidade</th>
                 <th style={S.th}>Segmento</th>
                 <th style={S.th}>Marcas</th>
+                <th style={S.th}>Tags</th>
                 <th style={S.th}>Status</th>
               </tr>
             </thead>
@@ -215,6 +230,18 @@ export default function ContatosView() {
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px' }}>
                       {c.brands.length === 0 ? '—' : c.brands.map(b => (
                         <span key={b.id} style={S.brandBadge}>{b.name}</span>
+                      ))}
+                    </div>
+                  </td>
+                  <td style={S.td}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px' }}>
+                      {(c.tags || []).length === 0 ? '—' : (c.tags || []).map(tag => (
+                        <span key={tag} style={{
+                          display: 'inline-flex', alignItems: 'center', padding: '2px 7px',
+                          borderRadius: '4px', fontSize: '10px', fontWeight: 600,
+                          background: 'rgba(251,191,36,0.12)', color: '#fcd34d',
+                          border: '1px solid rgba(251,191,36,0.25)',
+                        }}>{tag}</span>
                       ))}
                     </div>
                   </td>

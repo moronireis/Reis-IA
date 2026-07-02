@@ -1,13 +1,28 @@
 import { defineMiddleware } from 'astro:middleware';
 import { createClient } from '@supabase/supabase-js';
 
-const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/logout'];
+// /api/webhook: chamado pelo UazapiGO (sem sessão) — o handler valida o
+// token da instância. Sem essa exceção o middleware redirecionava o webhook
+// para /login e nenhuma mensagem inbound era gravada.
+const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/logout', '/api/webhook'];
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const { pathname } = context.url;
 
   // Allow public paths through without auth check
   if (PUBLIC_PATHS.some(p => pathname.startsWith(p))) {
+    return next();
+  }
+
+  // Worker de disparo (self-chain servidor→servidor, sem cookie de sessão).
+  // O handler revalida o header — aqui só liberamos a passagem.
+  // trim(): o valor da env no Vercel pode ter newline no final.
+  const workerKey = (import.meta.env.WEBHOOK_KEY || '').trim();
+  if (
+    workerKey &&
+    pathname.startsWith('/api/campaigns/') && pathname.endsWith('/process') &&
+    context.request.headers.get('x-worker-key') === workerKey
+  ) {
     return next();
   }
 
