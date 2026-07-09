@@ -255,16 +255,26 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
   (async function () {
     const params = new URLSearchParams(window.location.search);
     const cvId = params.get('cv_id');
+
+    // Embed mode (?embed=1): página carregada em iframe oculto pelo mvp.html
+    // apenas para gerar o PDF — esconde a barra de impressão.
+    if (params.get('embed') === '1') {
+      const bar = document.getElementById('print-bar');
+      if (bar) bar.style.display = 'none';
+      document.body.style.background = '#fff';
+    }
 
     function showError(msg) {
       document.getElementById('state-loading').style.display = 'none';
       const el = document.getElementById('state-error');
       el.textContent = msg;
       el.style.display = 'block';
+      window.__cvRenderError = msg;
     }
 
     if (!cvId) {
@@ -495,7 +505,33 @@
     const content = document.getElementById('cv-content');
     content.innerHTML = html;
     content.style.display = 'block';
+    window.__cvRenderDone = true;
   })();
+
+  // ── PDF client-side (usado pelo mvp.html via iframe para o envio ChatGuru) ──
+  // Retorna o PDF do currículo como base64 puro (sem prefixo data:).
+  window.generatePdfBase64 = async function () {
+    // Aguarda o render terminar (fetch do CV + injeção do HTML)
+    for (let i = 0; i < 100; i++) {
+      if (window.__cvRenderError) throw new Error(window.__cvRenderError);
+      if (window.__cvRenderDone) break;
+      await new Promise(r => setTimeout(r, 150));
+    }
+    if (!window.__cvRenderDone) throw new Error('Tempo esgotado ao renderizar o currículo.');
+
+    const el = document.getElementById('cv-page');
+    const dataUri = await html2pdf().set({
+      margin: 0,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'avoid-all'] },
+    }).from(el).outputPdf('datauristring');
+
+    const idx = String(dataUri).indexOf('base64,');
+    if (idx === -1) throw new Error('Falha ao gerar o PDF.');
+    return String(dataUri).slice(idx + 7);
+  };
 </script>
 
 </body>

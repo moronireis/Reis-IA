@@ -1,20 +1,30 @@
 /**
  * CV Unified Handler — Vercel Serverless Function
  *
- * POST /api/cv?action=generate      → { candidate_id, vacancy_id?, complementar? }
+ * POST /api/cv?action=generate      → { candidate_id, vacancy_id?, complementar?, user_id?, user_name? }
  * GET  /api/cv?action=query         → list/fetch CVs
  * GET  /api/cv?action=query&id=X    → single CV
  * POST /api/cv?action=send-email    → { cv_id, to, cc?, candidate_name? }
- * POST /api/cv?action=upload-chatguru → { cv_id, phone, file_base64, file_name? }
+ * POST /api/cv?action=upload-chatguru → { cv_id, phone, file_base64?, file_name?, caption? }
+ *                                      with file_base64: uploads PDF to Supabase Storage
+ *                                      and sends via ChatGuru message_file_send;
+ *                                      without: legacy formatted-text message_send
+ * POST /api/cv?action=import-pdf    → { pdf_text, file_name? }
+ *                                      extracts structured data from a Pandapé CV PDF
+ *                                      (Claude structured outputs) and upserts the candidate
  *
  * complementar object fields:
  *   pretensao, idiomas, data_nascimento, cidade, estado_civil,
  *   filhos, cnh, veiculo, disponibilidade, ultimo_salario, info_extra
  */
 
-import { select, insert, update } from '../lib/supabase.js';
+import { select, insert, update, uploadToStorage } from '../lib/supabase.js';
 import { getVacancy } from '../lib/pandape.js';
-import { sendMessage as chatguruSendMessage } from '../lib/chatguru.js';
+import { sendMessage as chatguruSendMessage, sendFileUrl as chatguruSendFileUrl } from '../lib/chatguru.js';
+
+const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
+const IMPORT_MODEL = 'claude-haiku-4-5';
+const CV_BUCKET = 'rhf-cvs';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -30,8 +40,9 @@ export default async function handler(req, res) {
   if (action === 'update' && req.method === 'POST') return handleUpdate(req, res);
   if (action === 'send-email' && req.method === 'POST') return handleSendEmail(req, res);
   if (action === 'upload-chatguru' && req.method === 'POST') return handleUploadChatguru(req, res);
+  if (action === 'import-pdf' && req.method === 'POST') return handleImportPdf(req, res);
 
-  return res.status(400).json({ error: 'Use action=generate (POST) | query (GET) | update (POST) | send-email (POST) | upload-chatguru (POST)' });
+  return res.status(400).json({ error: 'Use action=generate (POST) | query (GET) | update (POST) | send-email (POST) | upload-chatguru (POST) | import-pdf (POST)' });
 }
 
 // ─── Query ────────────────────────────────────────────────────────────────────
@@ -416,7 +427,7 @@ function buildCvSections(candidate, messages, vacancy, complementar) {
 
 async function handleGenerate(req, res) {
   try {
-    const { candidate_id, vacancy_id, vacancy_name: vacancyNameManual, complementar } = req.body ?? {};
+    const { candidate_id, vacancy_id, vacancy_name: vacancyNameManual, complementar, user_id, user_name } = req.body ?? {};
     if (!candidate_id) return res.status(400).json({ status: 'error', message: 'candidate_id is required' });
 
     const candidates = await select('candidates', `id=eq.${candidate_id}&limit=1`);
@@ -470,6 +481,8 @@ async function handleGenerate(req, res) {
         sections.info_complementares ? `\nINFORMAÇÕES COMPLEMENTARES\n${sections.info_complementares}` : '',
       ].filter(Boolean).join('\n'),
       model_used: 'template',
+      created_by: user_id || null,
+      created_by_name: user_name || null,
     };
 
     // Save is mandatory: send-email / ChatGuru / cv-print all depend on the persisted row
@@ -588,6 +601,10 @@ async function handleSendEmail(req, res) {
       });
     }
 
+    try {
+      await update('generated_cvs', `id=eq.${cv_id}`, { sent_status: 'email', sent_at: new Date().toISOString() });
+    } catch (err) { console.warn('[CV send-email] sent_status update failed:', err.message); }
+
     return res.status(200).json({ status: 'ok', message: 'Email enviado com sucesso.', email_id: emailData.id });
   } catch (error) {
     console.error('[CV send-email] error:', error);
@@ -649,7 +666,7 @@ function formatCVAsWhatsApp(cv) {
 // ─── Send CV to ChatGuru as WhatsApp message ─────────────────────────────────
 
 async function handleUploadChatguru(req, res) {
-  const { cv_id, phone } = req.body || {};
+  const { cv_id, phone, file_base64, file_name, caption } = req.body || {};
   if (!cv_id || !phone) return res.status(400).json({ status: 'error', message: 'cv_id e phone são obrigatórios.' });
 
   // Normalize phone: keep only digits, ensure it has country code
@@ -661,13 +678,52 @@ async function handleUploadChatguru(req, res) {
     const cv = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
     if (!cv) return res.status(404).json({ status: 'error', message: 'CV não encontrado.' });
 
-    const text = formatCVAsWhatsApp(cv);
-    const result = await chatguruSendMessage(phoneClean, text);
+    let result;
+    let sentStatus;
+    let sentFileUrl = null;
 
-    console.log('[CV chatguru] result:', JSON.stringify(result));
+    if (file_base64) {
+      // File mode: host the PDF on Supabase Storage, then send the public URL
+      // via ChatGuru message_file_send (the API has no base64 file upload).
+      const buffer = Buffer.from(String(file_base64).replace(/^data:.*?;base64,/, ''), 'base64');
+      if (buffer.length < 1024) return res.status(400).json({ status: 'error', message: 'PDF inválido ou vazio.' });
+      if (buffer.length > 8 * 1024 * 1024) return res.status(400).json({ status: 'error', message: 'PDF acima de 8MB.' });
 
-    if (result?.result === 'success' || result?.result === 'ok' || result?.code === 200 || result?.message_id) {
-      return res.status(200).json({ status: 'ok', message: 'Currículo enviado ao ChatGuru com sucesso.' });
+      const safeName = String(file_name || `curriculo-${cv.candidate_name || 'candidato'}`)
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/\.pdf$/i, '')
+        .replace(/[^a-zA-Z0-9 _-]/g, '')
+        .trim().replace(/\s+/g, '-')
+        .slice(0, 80) || 'curriculo';
+      const objectPath = `cvs/${cv_id}/${safeName}.pdf`;
+
+      sentFileUrl = await uploadToStorage(CV_BUCKET, objectPath, buffer, 'application/pdf');
+      const defaultCaption = `Currículo — ${cv.candidate_name || 'Candidato'}${cv.vacancy_name ? ` | ${cv.vacancy_name}` : ''}`;
+      result = await chatguruSendFileUrl(phoneClean, sentFileUrl, caption || defaultCaption);
+      sentStatus = 'chatguru_arquivo';
+    } else {
+      // Legacy text mode: formatted WhatsApp message
+      const text = formatCVAsWhatsApp(cv);
+      result = await chatguruSendMessage(phoneClean, text);
+      sentStatus = 'chatguru_texto';
+    }
+
+    console.log('[CV chatguru] mode:', sentStatus, 'result:', JSON.stringify(result));
+
+    if (result?.result === 'success' || result?.result === 'ok' || result?.code === 200 || result?.code === 201 || result?.message_id) {
+      try {
+        await update('generated_cvs', `id=eq.${cv_id}`, {
+          sent_status: sentStatus,
+          sent_at: new Date().toISOString(),
+          ...(sentFileUrl ? { sent_file_url: sentFileUrl } : {}),
+        });
+      } catch (err) { console.warn('[CV upload-chatguru] sent_status update failed:', err.message); }
+
+      return res.status(200).json({
+        status: 'ok',
+        message: sentStatus === 'chatguru_arquivo' ? 'Arquivo PDF enviado no ChatGuru com sucesso.' : 'Currículo enviado ao ChatGuru com sucesso.',
+        file_url: sentFileUrl,
+      });
     } else {
       return res.status(400).json({
         status: 'error',
@@ -677,6 +733,200 @@ async function handleUploadChatguru(req, res) {
     }
   } catch (error) {
     console.error('[CV upload-chatguru] error:', error);
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+}
+
+// ─── Import Pandapé PDF → structured candidate data ──────────────────────────
+//
+// The recruiter downloads the pre-formatted CV PDF from Pandapé and uploads it
+// on the Gerador de Currículo tab. The front extracts raw text client-side
+// (pdf.js) and posts it here. Claude structures the text into the SAME shape
+// the Pandapé webhook writes to candidates.raw_data (Experience[], Education[],
+// Skills[]...), so handleGenerate consumes it with zero changes.
+
+const IMPORT_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['name', 'phone', 'email', 'birth_date', 'city', 'marital_status', 'children', 'cnh',
+    'vehicle', 'salary_expectation', 'last_salary', 'languages', 'main_education', 'vacancy_name',
+    'skills', 'experiences', 'educations'],
+  properties: {
+    name: { type: 'string', description: 'Nome completo do candidato' },
+    phone: { type: 'string', description: 'Somente dígitos com DDI 55 e DDD, ex.: 5551999998888. Vazio se ausente.' },
+    email: { type: 'string', description: 'Vazio se ausente' },
+    birth_date: { type: 'string', description: 'DD/MM/AAAA. Vazio se ausente.' },
+    city: { type: 'string', description: 'Cidade/UF, ex.: Novo Hamburgo/RS' },
+    marital_status: { type: 'string' },
+    children: { type: 'string', description: 'Ex.: "2 (5 e 13 anos)" ou vazio' },
+    cnh: { type: 'string', description: 'Categoria, ex.: B' },
+    vehicle: { type: 'string', description: 'Sim/Não ou vazio' },
+    salary_expectation: { type: 'string', description: 'Somente o valor numérico, ex.: 2500.00. Vazio se ausente.' },
+    last_salary: { type: 'string', description: 'Somente o valor numérico ou vazio' },
+    languages: { type: 'string', description: 'Ex.: "Inglês – Intermediário; Espanhol – Básico" ou vazio' },
+    main_education: { type: 'string', description: 'Formação principal em uma linha' },
+    vacancy_name: { type: 'string', description: 'Vaga/processo a que o candidato concorre, se constar no PDF' },
+    skills: { type: 'array', items: { type: 'string' } },
+    experiences: {
+      type: 'array',
+      description: 'Da mais recente para a mais antiga',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['JobTitle', 'Company', 'City', 'StartDate', 'EndDate', 'Description'],
+        properties: {
+          JobTitle: { type: 'string' },
+          Company: { type: 'string' },
+          City: { type: 'string', description: 'Vazio se ausente' },
+          StartDate: { type: 'string', description: 'MM/AAAA' },
+          EndDate: { type: 'string', description: 'MM/AAAA ou "Atual"' },
+          Description: { type: 'string', description: 'Atividades realizadas, uma por frase' },
+        },
+      },
+    },
+    educations: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['Degree', 'Institution', 'Year', 'Status'],
+        properties: {
+          Degree: { type: 'string' },
+          Institution: { type: 'string' },
+          Year: { type: 'string', description: 'Ano de conclusão ou vazio' },
+          Status: { type: 'string', description: 'Completo | Cursando | Incompleto | vazio' },
+        },
+      },
+    },
+  },
+};
+
+const IMPORT_SYSTEM = `Você extrai dados estruturados de currículos em PDF exportados do ATS Pandapé (texto bruto extraído do PDF).
+Regras:
+- Extraia SOMENTE o que está no texto. Nunca invente dados. Campos ausentes ficam como string vazia (ou array vazio).
+- Telefone: normalize para dígitos com DDI 55 (ex.: 5551999998888). Se houver mais de um, use o celular/WhatsApp.
+- Datas de experiência: MM/AAAA. Emprego atual: EndDate = "Atual".
+- Description de cada experiência: liste as atividades de forma limpa, uma por frase, sem bullets.
+- Corrija quebras de linha e hifenização causadas pela extração do PDF.
+- Acentuação correta em português.`;
+
+async function handleImportPdf(req, res) {
+  try {
+    const { pdf_text, file_name } = req.body || {};
+    const text = String(pdf_text || '').trim();
+    if (text.length < 80) {
+      return res.status(400).json({ status: 'error', message: 'Texto do PDF vazio ou curto demais. O arquivo é um PDF de texto (não escaneado)?' });
+    }
+
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) return res.status(500).json({ status: 'error', message: 'ANTHROPIC_API_KEY não configurada no ambiente.' });
+
+    const claudeRes = await fetch(CLAUDE_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: IMPORT_MODEL,
+        max_tokens: 4096,
+        system: IMPORT_SYSTEM,
+        output_config: { format: { type: 'json_schema', schema: IMPORT_SCHEMA } },
+        messages: [{ role: 'user', content: text.slice(0, 60000) }],
+      }),
+    });
+
+    const claudeData = await claudeRes.json();
+    if (!claudeRes.ok) {
+      console.error('[CV import-pdf] Claude error:', JSON.stringify(claudeData).slice(0, 500));
+      return res.status(502).json({ status: 'error', message: claudeData?.error?.message || 'Falha na extração com IA.' });
+    }
+
+    const jsonText = (claudeData.content || []).find(b => b.type === 'text')?.text || '';
+    let parsed;
+    try { parsed = JSON.parse(jsonText); }
+    catch { return res.status(502).json({ status: 'error', message: 'IA retornou resposta não estruturada.' }); }
+
+    // ── Upsert candidate ──────────────────────────────────────
+    const phoneClean = String(parsed.phone || '').replace(/\D/g, '');
+    const salaryNum = parseFloat(String(parsed.salary_expectation || '').replace(/[^\d.,]/g, '').replace(',', '.'));
+
+    const rawData = {
+      Experience: parsed.experiences || [],
+      Education: parsed.educations || [],
+      Skills: parsed.skills || [],
+      ...(parsed.salary_expectation ? { SalaryExpectation: parsed.salary_expectation } : {}),
+      ...(parsed.languages ? { Languages: parsed.languages } : {}),
+      pdf_import: {
+        file_name: file_name || null,
+        imported_at: new Date().toISOString(),
+        marital_status: parsed.marital_status || null,
+        children: parsed.children || null,
+        cnh: parsed.cnh || null,
+        vehicle: parsed.vehicle || null,
+        birth_date: parsed.birth_date || null,
+        last_salary: parsed.last_salary || null,
+      },
+    };
+
+    const candidateFields = {
+      name: parsed.name || 'Candidato importado',
+      ...(phoneClean.length >= 10 ? { phone: phoneClean } : {}),
+      ...(parsed.email ? { email: parsed.email } : {}),
+      ...(parsed.city ? { city: parsed.city } : {}),
+      ...(parsed.main_education ? { education: parsed.main_education } : {}),
+      ...(Array.isArray(parsed.skills) && parsed.skills.length ? { skills: parsed.skills } : {}),
+      ...(!isNaN(salaryNum) && salaryNum > 0 ? { salary_expectation: salaryNum } : {}),
+      ...(parsed.vacancy_name ? { vacancy_name: parsed.vacancy_name } : {}),
+    };
+
+    let candidate = null;
+    let existing = null;
+    if (phoneClean.length >= 10) {
+      const found = await select('candidates', `phone=eq.${phoneClean}&limit=1`);
+      existing = Array.isArray(found) && found.length > 0 ? found[0] : null;
+    }
+
+    if (existing) {
+      const mergedRaw = { ...(existing.raw_data && typeof existing.raw_data === 'object' ? existing.raw_data : {}), ...rawData };
+      const updated = await update('candidates', `id=eq.${existing.id}`, {
+        ...candidateFields,
+        raw_data: mergedRaw,
+        updated_at: new Date().toISOString(),
+      });
+      candidate = Array.isArray(updated) && updated.length > 0 ? updated[0] : { ...existing, ...candidateFields };
+    } else {
+      const inserted = await insert('candidates', {
+        ...candidateFields,
+        raw_data: rawData,
+        status: 'new',
+        ...(phoneClean.length < 10 ? { phone: null } : {}),
+      });
+      candidate = Array.isArray(inserted) ? inserted[0] : inserted;
+    }
+
+    return res.status(200).json({
+      status: 'ok',
+      message: existing ? 'Candidato atualizado a partir do PDF.' : 'Candidato criado a partir do PDF.',
+      candidate_id: candidate?.id || null,
+      candidate,
+      parsed: {
+        birth_date: parsed.birth_date || '',
+        city: parsed.city || '',
+        marital_status: parsed.marital_status || '',
+        children: parsed.children || '',
+        cnh: parsed.cnh || '',
+        vehicle: parsed.vehicle || '',
+        salary_expectation: parsed.salary_expectation || '',
+        last_salary: parsed.last_salary || '',
+        languages: parsed.languages || '',
+        vacancy_name: parsed.vacancy_name || '',
+      },
+      usage: claudeData.usage || null,
+    });
+  } catch (error) {
+    console.error('[CV import-pdf] error:', error);
     return res.status(500).json({ status: 'error', message: error.message });
   }
 }

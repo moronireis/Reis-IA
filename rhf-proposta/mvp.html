@@ -549,10 +549,6 @@
       Candidatos
       <span class="nav-badge" id="nav-badge-candidatos">—</span>
     </a>
-    <a class="nav-item" href="/chat">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      Conversas
-    </a>
   </nav>
 
   <a class="nav-item admin-only" href="/configuracoes" style="display:none; margin: 0 12px 8px; border-left: 3px solid transparent;">
@@ -619,8 +615,8 @@
           <div class="stat-icon blue">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </div>
-          <div class="stat-value" id="stat-chats" style="color: var(--blue);">0</div>
-          <div class="stat-label">Conversas WhatsApp</div>
+          <div class="stat-value" id="stat-cvs-week" style="color: var(--blue);">0</div>
+          <div class="stat-label">Currículos esta semana</div>
           <div class="stat-change up">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
             Atualizado em tempo real
@@ -826,12 +822,34 @@
 
       <div class="cv-flow">
         <div>
+          <!-- Importar PDF do Pandapé (upload manual) -->
+          <div class="cv-source" style="margin-bottom: 16px;">
+            <div class="cv-source-header">
+              <div class="cv-source-icon" style="background: var(--orange-light); color: var(--orange);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div>
+                <div class="cv-source-title">Importar PDF do Pandapé</div>
+                <div class="cv-source-sub">Suba o currículo exportado do Pandapé — a IA extrai os dados</div>
+              </div>
+            </div>
+            <div style="margin-top:10px;">
+              <label for="pdf-import-input" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;border:2px dashed var(--border);border-radius:var(--radius-xs);cursor:pointer;font-size:13px;color:var(--text-sec);transition:border-color 0.15s;"
+                     onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Clique para escolher o PDF do candidato
+              </label>
+              <input id="pdf-import-input" type="file" accept="application/pdf,.pdf" style="display:none;" onchange="handleCvPdfImport(this)">
+              <div id="pdf-import-status" style="font-size:12px;color:var(--text-muted);margin-top:8px;min-height:15px;"></div>
+            </div>
+          </div>
+
           <div class="cv-source" style="margin-bottom: 16px;">
             <div class="cv-source-header">
               <div class="cv-source-icon" style="background: var(--blue-light); color: var(--blue);">P</div>
               <div>
                 <div class="cv-source-title">Dados do Pandapé</div>
-                <div class="cv-source-sub">Extraídos automaticamente do ATS</div>
+                <div class="cv-source-sub">Extraídos do ATS ou importados do PDF</div>
               </div>
             </div>
             <div class="cv-field"><div class="cv-field-label">Nome completo</div><div class="cv-field-value" id="cv-field-nome">Selecione um candidato</div></div>
@@ -1010,12 +1028,12 @@
   <div id="chatSendModal" style="display:none;position:fixed;inset:0;background:rgba(13,32,53,0.55);z-index:300;align-items:center;justify-content:center;padding:20px;">
     <div style="background:var(--bg-white);border-radius:12px;max-width:480px;width:100%;max-height:85vh;display:flex;flex-direction:column;padding:24px 26px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-        <div style="font-size:17px;font-weight:700;color:var(--text);">Enviar no Chat</div>
+        <div style="font-size:17px;font-weight:700;color:var(--text);">Enviar arquivo no ChatGuru</div>
         <button onclick="closeChatSendModal()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:14px;">Escolha a conversa do ChatGuru que vai receber o currículo formatado.</div>
+      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:14px;">Escolha a conversa do ChatGuru que vai receber o currículo em PDF. O arquivo aparece no chat e no módulo de arquivos.</div>
 
       <input id="chat-send-search" type="text" placeholder="Buscar por nome ou telefone..." oninput="filterChatSendList(this.value)"
              style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--bg-white);color:var(--text);margin-bottom:10px;">
@@ -1160,6 +1178,7 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
   // ============================================================
   // TAB SYSTEM
@@ -1505,7 +1524,7 @@
 
   async function loadDashboard() {
     // Show loading state in stat cards
-    ['stat-candidates', 'stat-cvs', 'stat-chats'].forEach(id => {
+    ['stat-candidates', 'stat-cvs', 'stat-cvs-week'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.innerHTML = '<span style="font-size:18px;color:var(--text-muted);">...</span>';
     });
@@ -1514,10 +1533,9 @@
 
     try {
       // Fetch in parallel
-      const [contactsRes, cvsRes, chatsRes, vagasRes] = await Promise.allSettled([
+      const [contactsRes, cvsRes, vagasRes] = await Promise.allSettled([
         fetch('/api/contacts?limit=500').then(r => r.json()),
         fetch('/api/cv?action=query&limit=100').then(r => r.json()),
-        fetch('/api/whatsapp?action=chats').then(r => r.json()),
         fetch('/api/vacancies?action=list').then(r => r.json()),
       ]);
 
@@ -1551,11 +1569,13 @@
       // Recent CVs table
       renderRecentCVs(cvsData.data || []);
 
-      // Conversations count
-      const chats = chatsRes.status === 'fulfilled' && chatsRes.value.status === 'ok'
-        ? chatsRes.value : { count: 0, data: [] };
-      const statChats = document.getElementById('stat-chats');
-      if (statChats) statChats.textContent = chats.count || 0;
+      // CVs gerados na semana atual (domingo 00:00 em diante)
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+      const cvsWeek = (cvsData.data || []).filter(cv => new Date(cv.created_at) >= weekStart).length;
+      const statCvsWeek = document.getElementById('stat-cvs-week');
+      if (statCvsWeek) statCvsWeek.textContent = cvsWeek;
 
       // Recent activity feed — use last 5 candidates as activity
       renderDashboardActivity(candidates.slice(0, 5));
@@ -1964,6 +1984,100 @@
     if (chevron) chevron.style.transform = open ? '' : 'rotate(180deg)';
   }
 
+  // ============================================================
+  // IMPORTAR PDF DO PANDAPÉ (extração client-side + IA no back)
+  // ============================================================
+
+  async function handleCvPdfImport(input) {
+    const file = input.files && input.files[0];
+    input.value = '';
+    if (!file) return;
+
+    const statusEl = document.getElementById('pdf-import-status');
+    const setStatus = (msg, color) => { statusEl.style.color = color || 'var(--text-muted)'; statusEl.textContent = msg; };
+
+    if (!/\.pdf$/i.test(file.name)) { setStatus('Selecione um arquivo PDF.', 'var(--red)'); return; }
+    if (file.size > 15 * 1024 * 1024) { setStatus('PDF acima de 15MB.', 'var(--red)'); return; }
+
+    try {
+      setStatus('Lendo PDF...');
+      const text = await extractPdfText(file);
+      if (!text || text.trim().length < 80) {
+        setStatus('Não foi possível extrair texto. O PDF é escaneado (imagem)?', 'var(--red)');
+        return;
+      }
+
+      setStatus('Extraindo dados com IA...');
+      const res = await fetch('/api/cv?action=import-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pdf_text: text, file_name: file.name }),
+      });
+      const json = await res.json();
+      if (json.status !== 'ok') { setStatus('Erro: ' + (json.message || 'falha na importação'), 'var(--red)'); return; }
+
+      await loadCurriculoCandidates();
+      if (json.candidate_id) selectCandidateById(json.candidate_id);
+      prefillComplementarFromImport(json.parsed || {});
+      setStatus(`${json.message} Revise os dados e clique em "Gerar Currículo com IA".`, 'var(--green)');
+    } catch (e) {
+      console.error('[pdf-import]', e);
+      setStatus('Erro: ' + e.message, 'var(--red)');
+    }
+  }
+
+  async function extractPdfText(file) {
+    if (!window.pdfjsLib) throw new Error('Leitor de PDF não carregado. Recarregue a página.');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    const parts = [];
+    for (let p = 1; p <= Math.min(pdf.numPages, 20); p++) {
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+      // Agrupa itens por linha (coordenada y) para preservar a estrutura do texto
+      let lastY = null, line = [];
+      const lines = [];
+      for (const item of content.items) {
+        const y = Math.round(item.transform[5]);
+        if (lastY !== null && Math.abs(y - lastY) > 2) { lines.push(line.join(' ')); line = []; }
+        line.push(item.str);
+        lastY = y;
+      }
+      if (line.length) lines.push(line.join(' '));
+      parts.push(lines.join('\n'));
+    }
+    return parts.join('\n\n');
+  }
+
+  function prefillComplementarFromImport(p) {
+    const map = {
+      'comp-nascimento': p.birth_date,
+      'comp-cidade': p.city,
+      'comp-estado-civil': p.marital_status,
+      'comp-filhos': p.children,
+      'comp-cnh': p.cnh,
+      'comp-veiculo': p.vehicle,
+      'comp-pretensao': p.salary_expectation,
+      'comp-ultimo-salario': p.last_salary,
+      'comp-idiomas': p.languages,
+      'comp-vaga': p.vacancy_name,
+    };
+    let filled = 0;
+    Object.entries(map).forEach(([id, v]) => {
+      const el = document.getElementById(id);
+      if (el && v) { el.value = v; filled++; }
+    });
+    if (filled > 0) {
+      const fields = document.getElementById('complementar-fields');
+      if (fields && fields.style.display === 'none') {
+        const header = fields.previousElementSibling;
+        if (typeof toggleComplementar === 'function' && header) toggleComplementar(header);
+        else fields.style.display = 'block';
+      }
+    }
+  }
+
   async function generateCV() {
     const loading = document.getElementById('aiLoading');
     const result = document.getElementById('cvResult');
@@ -2005,6 +2119,8 @@
           candidate_id: selectedCandidateId,
           vacancy_name: vacancyName,
           complementar: Object.keys(complementar).length > 0 ? complementar : undefined,
+          user_id: (window.RHF_USER && window.RHF_USER.id) || undefined,
+          user_name: (window.RHF_USER && (window.RHF_USER.full_name || window.RHF_USER.email)) || undefined,
         }),
       });
 
@@ -2099,9 +2215,9 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           Enviar por Email
         </button>
-        <button class="cv-btn secondary" onclick="openChatSendModal()" title="Escolher a conversa do ChatGuru para enviar o currículo">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-          Enviar no Chat
+        <button class="cv-btn secondary" onclick="openChatSendModal()" title="Enviar o currículo em PDF para uma conversa do ChatGuru">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+          Enviar arquivo ChatGuru
         </button>
       </div>`;
   }
@@ -2326,33 +2442,61 @@
     ));
   }
 
+  // Gera o PDF do currículo no cliente, reutilizando o layout do /cv-print
+  // dentro de um iframe oculto (a página expõe window.generatePdfBase64).
+  async function getCvPdfBase64(cvId) {
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;left:-10000px;top:0;width:900px;height:1400px;visibility:hidden;';
+    iframe.src = `/cv-print?cv_id=${encodeURIComponent(cvId)}&embed=1`;
+    document.body.appendChild(iframe);
+    try {
+      await new Promise((resolve, reject) => {
+        iframe.onload = resolve;
+        iframe.onerror = () => reject(new Error('Falha ao carregar o layout do currículo.'));
+        setTimeout(() => reject(new Error('Tempo esgotado ao carregar o currículo.')), 20000);
+      });
+      for (let i = 0; i < 40 && !(iframe.contentWindow && iframe.contentWindow.generatePdfBase64); i++) {
+        await new Promise(r => setTimeout(r, 150));
+      }
+      if (!iframe.contentWindow || !iframe.contentWindow.generatePdfBase64) {
+        throw new Error('Gerador de PDF indisponível. Recarregue a página.');
+      }
+      return await iframe.contentWindow.generatePdfBase64();
+    } finally {
+      iframe.remove();
+    }
+  }
+
   async function sendCVToChat(phone, name, rowEl) {
     if (!window._currentCVId) { alert('Gere o currículo primeiro.'); return; }
-    if (!confirm(`Enviar o currículo na conversa de ${name || phone}?`)) return;
+    if (!confirm(`Enviar o currículo em PDF na conversa de ${name || phone}?`)) return;
 
     const statusEl = document.getElementById('chat-send-status');
     statusEl.style.color = 'var(--text-muted)';
-    statusEl.textContent = `Enviando para ${name || phone}...`;
     if (rowEl) rowEl.style.opacity = '0.5';
 
     try {
+      statusEl.textContent = 'Gerando PDF do currículo...';
+      const fileBase64 = await getCvPdfBase64(window._currentCVId);
+
+      statusEl.textContent = `Enviando arquivo para ${name || phone}...`;
       const res = await fetch('/api/cv?action=upload-chatguru', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cv_id: window._currentCVId, phone }),
+        body: JSON.stringify({ cv_id: window._currentCVId, phone, file_base64: fileBase64 }),
       });
       const data = await res.json();
       if (data.status === 'ok') {
         statusEl.style.color = 'var(--green)';
-        statusEl.textContent = `Currículo enviado na conversa de ${name || phone}.`;
-        setTimeout(closeChatSendModal, 1400);
+        statusEl.textContent = `Arquivo PDF enviado na conversa de ${name || phone}.`;
+        setTimeout(closeChatSendModal, 1600);
       } else {
         statusEl.style.color = 'var(--red)';
         statusEl.textContent = 'Erro: ' + (data.message || 'falha no envio');
       }
     } catch (e) {
       statusEl.style.color = 'var(--red)';
-      statusEl.textContent = 'Erro de conexão: ' + e.message;
+      statusEl.textContent = 'Erro: ' + e.message;
     } finally {
       if (rowEl) rowEl.style.opacity = '1';
     }

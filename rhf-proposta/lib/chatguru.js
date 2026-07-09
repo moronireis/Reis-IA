@@ -64,97 +64,25 @@ export async function createContact({ chatNumber, name, ...extra }) {
 }
 
 /**
- * List chats from ChatGuru.
- * @param {object} params - optional filters: { agentId, status, limit, page }
- * @returns {Promise<object>} ChatGuru API response with chat list
- */
-export async function listChats({ agentId, status, limit = 100, page = 1 } = {}) {
-  const { key, endpoint, accountId, phoneId } = getConfig();
-  const params = {
-    key,
-    account_id: accountId,
-    phone_id: phoneId,
-    action: 'chat_list',
-    limit: String(limit),
-    page: String(page),
-  };
-  if (agentId) params.agent_id = agentId;
-  if (status) params.status = status;
-
-  const body = new URLSearchParams(params);
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
-  });
-  return res.json();
-}
-
-/**
- * Get details for a specific chat (custom fields, status, process, tags).
- * @param {string} chatNumber
- * @returns {Promise<object>} ChatGuru API response with chat details
- */
-export async function getChatDetails(chatNumber) {
-  const { key, endpoint, accountId, phoneId } = getConfig();
-  const body = new URLSearchParams({
-    key,
-    account_id: accountId,
-    phone_id: phoneId,
-    action: 'chat_info',
-    chat_number: chatNumber,
-  });
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
-  });
-  return res.json();
-}
-
-/**
- * Get messages for a specific chat from ChatGuru.
- * @param {string} chatNumber
- * @param {number} limit
- * @returns {Promise<object>} ChatGuru API response with messages
- */
-export async function getChatMessages(chatNumber, limit = 50) {
-  const { key, endpoint, accountId, phoneId } = getConfig();
-  const body = new URLSearchParams({
-    key,
-    account_id: accountId,
-    phone_id: phoneId,
-    action: 'chat_read',
-    chat_number: chatNumber,
-    limit: String(limit),
-  });
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
-  });
-  return res.json();
-}
-
-/**
- * Send a file (PDF, image, etc.) to a chat in ChatGuru via base64.
- * @param {string} chatNumber
- * @param {string} fileBase64 - base64-encoded file content
- * @param {string} fileName - file name with extension (e.g. "curriculo-joao.pdf")
- * @param {string} mimeType - MIME type (e.g. "application/pdf")
+ * Send a file to a chat via public URL (action: message_file_send).
+ * The s18 API has no chat_list/chat_read/chat_info and no base64 file_send —
+ * confirmed by probe 2026-07-08 ("ação inválida"). Files must be hosted at a
+ * public URL whose path ends with the file extension (e.g. .pdf).
+ * @param {string} chatNumber - Recipient phone (DDI+DDD+number)
+ * @param {string} fileUrl - Public URL ending with the extension
+ * @param {string} [caption] - Optional caption shown with the file
  * @returns {Promise<object>} ChatGuru API response
  */
-export async function sendFile(chatNumber, fileBase64, fileName, mimeType = 'application/pdf') {
+export async function sendFileUrl(chatNumber, fileUrl, caption) {
   const { key, endpoint, accountId, phoneId } = getConfig();
   const body = new URLSearchParams({
     key,
     account_id: accountId,
     phone_id: phoneId,
-    action: 'file_send',
+    action: 'message_file_send',
     chat_number: chatNumber,
-    file_name: fileName,
-    file_type: mimeType,
-    file_data: fileBase64,
+    file_url: fileUrl,
+    ...(caption ? { caption } : {}),
   });
   const res = await fetch(endpoint, {
     method: 'POST',

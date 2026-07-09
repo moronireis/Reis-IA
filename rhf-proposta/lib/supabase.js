@@ -78,6 +78,37 @@ export async function update(table, query, data) {
 }
 
 /**
+ * Upload a file to Supabase Storage and return its public URL.
+ * Uses SUPABASE_SERVICE_KEY (storage writes need service role).
+ * @param {string} bucket - Bucket name (must exist and be public)
+ * @param {string} path - Object path inside the bucket (e.g. "cvs/abc.pdf")
+ * @param {Buffer} buffer - File content
+ * @param {string} contentType - MIME type (e.g. "application/pdf")
+ * @returns {Promise<string>} Public URL of the uploaded object
+ */
+export async function uploadToStorage(bucket, path, buffer, contentType = 'application/pdf') {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+  if (!url || !key) throw new Error('SUPABASE_URL and SUPABASE_SERVICE_KEY env vars are required');
+
+  const res = await fetch(`${url}/storage/v1/object/${bucket}/${path}`, {
+    method: 'POST',
+    headers: {
+      'apikey': key,
+      'Authorization': `Bearer ${key}`,
+      'Content-Type': contentType,
+      'x-upsert': 'true',
+    },
+    body: buffer,
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`[supabase storage ${bucket}/${path}] ${res.status}: ${body.slice(0, 200)}`);
+  }
+  return `${url}/storage/v1/object/public/${bucket}/${path}`;
+}
+
+/**
  * UPSERT a row into a table (insert or update on conflict).
  * @param {string} table - Table name
  * @param {object} data - Row data
