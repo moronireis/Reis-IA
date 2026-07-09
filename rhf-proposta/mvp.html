@@ -634,6 +634,34 @@
         </div>
       </div>
 
+      <!-- Central Pandapé — entradas manuais (sem API) -->
+      <div class="panel" style="margin-bottom: 20px;">
+        <div class="panel-header" style="align-items:center;">
+          <div>
+            <div class="panel-title">Central Pandapé</div>
+            <div class="panel-subtitle" id="pandape-freshness">Carregando...</div>
+          </div>
+        </div>
+        <div class="panel-body" style="display:flex;gap:10px;flex-wrap:wrap;padding:16px 24px;">
+          <button class="topbar-btn" onclick="showTab('candidatos'); openSheetImport('candidatos')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+            Planilha de candidatos
+          </button>
+          <button class="topbar-btn" onclick="goToPdfImport()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            PDF de candidato
+          </button>
+          <button class="topbar-btn" onclick="showTab('vagas'); openSheetImport('vagas')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+            Planilha de vagas
+          </button>
+          <button class="topbar-btn" onclick="showTab('vagas'); openVagaTextModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+            Colar texto de vaga
+          </button>
+        </div>
+      </div>
+
       <div class="grid-3-1" style="margin-bottom: 20px;">
         <div class="panel">
           <div class="panel-header">
@@ -823,7 +851,7 @@
       <div class="cv-flow">
         <div>
           <!-- Importar PDF do Pandapé (upload manual) -->
-          <div class="cv-source" style="margin-bottom: 16px;">
+          <div class="cv-source" id="pdf-import-card" style="margin-bottom: 16px; transition: box-shadow 0.3s;">
             <div class="cv-source-header">
               <div class="cv-source-icon" style="background: var(--orange-light); color: var(--orange);">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -907,6 +935,9 @@
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 <div style="grid-column:1/-1;">
                   <div class="cv-field-label">Vaga (aparece no cabeçalho do currículo)</div>
+                  <select id="comp-vaga-select" onchange="onVagaSelectChange(this)" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);margin-bottom:6px;">
+                    <option value="">— escolher vaga cadastrada (ou digite abaixo) —</option>
+                  </select>
                   <input id="comp-vaga" type="text" placeholder="Ex.: Auxiliar Administrativo — Novo Hamburgo" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
                 </div>
                 <div>
@@ -991,6 +1022,14 @@
         <span class="topbar-tag" id="vagas-header-count">—</span>
       </div>
       <div class="topbar-right">
+        <button class="topbar-btn" onclick="openSheetImport('vagas')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Importar planilha
+        </button>
+        <button class="topbar-btn" onclick="openVagaTextModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+          Colar texto da vaga
+        </button>
         <button class="topbar-btn primary" onclick="openVagaModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Nova Vaga
@@ -1015,7 +1054,7 @@
 
       <div style="background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--radius);padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--amber);flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <div style="font-size:12px;color:var(--text-sec);">Sincronização automática com o Pandapé pendente (aguarda credenciais). As vagas abertas aqui pela plataforma já são reais e geram descrição + texto de divulgação automaticamente.</div>
+        <div style="font-size:12px;color:var(--text-sec);">Sem API do Pandapé, as vagas entram por aqui: <strong>Importar planilha</strong> (exportada do Pandapé), <strong>Colar texto da vaga</strong> (a IA preenche os campos) ou <strong>Nova Vaga</strong> manual. Toda vaga criada gera descrição + texto de divulgação automaticamente.</div>
       </div>
 
       <div class="panel" id="vagas-panel">
@@ -1098,6 +1137,10 @@
             <div class="cv-field-label">Faixa salarial</div>
             <input id="vaga-salary" type="text" placeholder="R$ 2.200 a R$ 2.800" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
           </div>
+          <div style="grid-column:1/-1;">
+            <div class="cv-field-label">Nº do processo no Pandapé (opcional)</div>
+            <input id="vaga-processo" type="text" placeholder="Ex.: 4512" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+          </div>
         </div>
         <div style="margin-bottom:16px;">
           <div class="cv-field-label">Requisitos (um por linha)</div>
@@ -1127,6 +1170,142 @@
     </div>
   </div>
 
+  <!-- ===== MODAL: MENU IMPORTAR DO PANDAPÉ ===== -->
+  <div id="pandapeMenuModal" style="display:none;position:fixed;inset:0;background:rgba(13,32,53,0.55);z-index:300;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--bg-white);border-radius:12px;max-width:440px;width:100%;padding:24px 26px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div style="font-size:17px;font-weight:700;color:var(--text);">Importar do Pandapé</div>
+        <button onclick="document.getElementById('pandapeMenuModal').style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:16px;">Escolha como trazer os dados do Pandapé para a plataforma.</div>
+
+      <button onclick="document.getElementById('pandapeMenuModal').style.display='none'; openSheetImport('candidatos')" style="width:100%;text-align:left;display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--bg-white);cursor:pointer;margin-bottom:10px;" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:36px;height:36px;border-radius:8px;background:var(--green-light,#ECFDF5);color:var(--green,#059669);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13.5px;font-weight:600;color:var(--text);">Planilha de candidatos (Excel/CSV)</div>
+          <div style="font-size:11.5px;color:var(--text-muted);">Exporte a listagem no Pandapé e suba aqui — importa em lote</div>
+        </div>
+      </button>
+
+      <button onclick="document.getElementById('pandapeMenuModal').style.display='none'; goToPdfImport()" style="width:100%;text-align:left;display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--bg-white);cursor:pointer;margin-bottom:10px;" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:36px;height:36px;border-radius:8px;background:var(--orange-light);color:var(--orange);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13.5px;font-weight:600;color:var(--text);">PDF de um candidato</div>
+          <div style="font-size:11.5px;color:var(--text-muted);">Baixe o currículo do Pandapé — a IA extrai os dados completos</div>
+        </div>
+      </button>
+
+      <button onclick="document.getElementById('pandapeMenuModal').style.display='none'; openNovoCandidatoModal()" style="width:100%;text-align:left;display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--bg-white);cursor:pointer;" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:36px;height:36px;border-radius:8px;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13.5px;font-weight:600;color:var(--text);">Digitar manualmente</div>
+          <div style="font-size:11.5px;color:var(--text-muted);">Cadastro rápido de um candidato avulso</div>
+        </div>
+      </button>
+
+      <div style="font-size:11px;color:var(--text-muted);margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">Sincronização automática via API do Pandapé: indisponível (em negociação com a matriz). Enquanto isso, o fluxo é manual por aqui.</div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: NOVO CANDIDATO MANUAL ===== -->
+  <div id="novoCandidatoModal" style="display:none;position:fixed;inset:0;background:rgba(13,32,53,0.55);z-index:300;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--bg-white);border-radius:12px;max-width:440px;width:100%;padding:24px 26px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:17px;font-weight:700;color:var(--text);">Novo candidato</div>
+        <button onclick="document.getElementById('novoCandidatoModal').style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div class="cv-field-label">Nome completo *</div>
+        <input id="nc-nome" type="text" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div>
+          <div class="cv-field-label">Telefone (WhatsApp)</div>
+          <input id="nc-telefone" type="text" placeholder="51 99999-8888" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+        </div>
+        <div>
+          <div class="cv-field-label">E-mail</div>
+          <input id="nc-email" type="text" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+        </div>
+        <div>
+          <div class="cv-field-label">Cidade/UF</div>
+          <input id="nc-cidade" type="text" placeholder="Novo Hamburgo/RS" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+        </div>
+        <div>
+          <div class="cv-field-label">Vaga/Processo</div>
+          <input id="nc-vaga" type="text" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;background:var(--bg-white);color:var(--text);">
+        </div>
+      </div>
+      <div id="nc-status" style="font-size:12px;min-height:16px;margin-bottom:8px;color:var(--text-muted);"></div>
+      <button id="nc-save-btn" class="cv-btn primary" style="width:100%;justify-content:center;" onclick="saveNovoCandidato()">Cadastrar candidato</button>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: IMPORTAR PLANILHA (candidatos/vagas) ===== -->
+  <div id="sheetImportModal" style="display:none;position:fixed;inset:0;background:rgba(13,32,53,0.55);z-index:300;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--bg-white);border-radius:12px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;padding:24px 26px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div style="font-size:17px;font-weight:700;color:var(--text);" id="sheet-title">Importar planilha</div>
+        <button onclick="closeSheetImport()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:14px;" id="sheet-subtitle">Exporte a listagem no Pandapé (Excel ou CSV) e suba o arquivo aqui.</div>
+
+      <div id="sheet-step-file">
+        <label for="sheet-file-input" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:22px;border:2px dashed var(--border);border-radius:10px;cursor:pointer;font-size:13px;color:var(--text-sec);" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Clique para escolher o arquivo (.xlsx, .xls ou .csv)
+        </label>
+        <input id="sheet-file-input" type="file" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleSheetFile(this)">
+      </div>
+
+      <div id="sheet-step-map" style="display:none;">
+        <div style="font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:8px;" id="sheet-map-info"></div>
+        <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">Confira se cada campo aponta para a coluna certa da planilha (o mapeamento fica salvo para as próximas importações):</div>
+        <div id="sheet-map-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-bottom:14px;"></div>
+        <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;">Prévia (3 primeiras linhas):</div>
+        <div id="sheet-preview" style="overflow-x:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:14px;"></div>
+        <div id="sheet-import-status" style="font-size:12px;min-height:16px;margin-bottom:8px;color:var(--text-muted);"></div>
+        <div style="display:flex;gap:10px;">
+          <button class="cv-btn secondary" style="flex:1;justify-content:center;" onclick="resetSheetImport()">Trocar arquivo</button>
+          <button id="sheet-import-btn" class="cv-btn primary" style="flex:2;justify-content:center;" onclick="runSheetImport()">Importar</button>
+        </div>
+      </div>
+
+      <div id="sheet-step-done" style="display:none;">
+        <div id="sheet-done-msg" style="background:var(--green-light,#ECFDF5);border:1px solid var(--green,#10B981);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--green,#059669);font-weight:600;margin-bottom:14px;"></div>
+        <button class="cv-btn secondary" style="width:100%;justify-content:center;" onclick="closeSheetImport()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: COLAR TEXTO DA VAGA (Pandapé → IA) ===== -->
+  <div id="vagaTextModal" style="display:none;position:fixed;inset:0;background:rgba(13,32,53,0.55);z-index:300;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--bg-white);border-radius:12px;max-width:560px;width:100%;padding:24px 26px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div style="font-size:17px;font-weight:700;color:var(--text);">Colar texto da vaga</div>
+        <button onclick="document.getElementById('vagaTextModal').style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:12px;">Copie a vaga no Pandapé e cole abaixo. A IA preenche o formulário — você revisa antes de salvar.</div>
+      <textarea id="vaga-text-input" rows="9" placeholder="Cole aqui o texto completo da vaga..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:12.5px;background:var(--bg-white);color:var(--text);resize:vertical;line-height:1.6;margin-bottom:10px;"></textarea>
+      <div id="vaga-text-status" style="font-size:12px;min-height:16px;margin-bottom:8px;color:var(--text-muted);"></div>
+      <button id="vaga-text-btn" class="cv-btn primary" style="width:100%;justify-content:center;" onclick="parseVagaText()">Extrair campos com IA</button>
+    </div>
+  </div>
+
   <!-- ===== TAB: CANDIDATOS ===== -->
   <div class="tab-content" id="tab-candidatos">
     <div class="topbar">
@@ -1139,8 +1318,12 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Exportar CSV
         </button>
-        <button class="topbar-btn primary" id="pandape-import-btn" onclick="importFromPandape()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        <button class="topbar-btn" onclick="openNovoCandidatoModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo candidato
+        </button>
+        <button class="topbar-btn primary" id="pandape-import-btn" onclick="openPandapeMenu()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Importar do Pandapé
         </button>
       </div>
@@ -1179,6 +1362,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
   // ============================================================
   // TAB SYSTEM
@@ -1273,7 +1457,7 @@
 
   function closeVagaModal() {
     document.getElementById('vagaModal').style.display = 'none';
-    ['vaga-title','vaga-client','vaga-city','vaga-contract','vaga-salary','vaga-requirements'].forEach(id => {
+    ['vaga-title','vaga-client','vaga-city','vaga-contract','vaga-salary','vaga-requirements','vaga-processo'].forEach(id => {
       const el = document.getElementById(id); if (el) el.value = '';
     });
   }
@@ -1296,6 +1480,7 @@
           contract_type: document.getElementById('vaga-contract').value.trim() || undefined,
           salary_range: document.getElementById('vaga-salary').value.trim() || undefined,
           requirements: document.getElementById('vaga-requirements').value.trim() || undefined,
+          processo_numero: document.getElementById('vaga-processo')?.value?.trim() || undefined,
         }),
       });
       const json = await res.json();
@@ -1576,6 +1761,20 @@
       const cvsWeek = (cvsData.data || []).filter(cv => new Date(cv.created_at) >= weekStart).length;
       const statCvsWeek = document.getElementById('stat-cvs-week');
       if (statCvsWeek) statCvsWeek.textContent = cvsWeek;
+
+      // Central Pandapé — frescor dos dados importados
+      const freshEl = document.getElementById('pandape-freshness');
+      if (freshEl) {
+        const pandapeRows = candidates.filter(c => String(c.source || '').startsWith('pandape') || (c.raw_data && c.raw_data.pdf_import));
+        const lastP = pandapeRows.map(c => new Date(c.updated_at || c.created_at)).sort((a, b) => b - a)[0];
+        if (!lastP) {
+          freshEl.textContent = 'Sem API do Pandapé — importe planilhas ou PDFs por aqui. Nenhum dado importado ainda.';
+        } else {
+          const days = Math.floor((Date.now() - lastP.getTime()) / 86400000);
+          const when = days === 0 ? 'hoje' : days === 1 ? 'ontem' : `há ${days} dias`;
+          freshEl.textContent = `Última importação do Pandapé: ${when} — ${pandapeRows.length} candidato(s) com origem Pandapé.`;
+        }
+      }
 
       // Recent activity feed — use last 5 candidates as activity
       renderDashboardActivity(candidates.slice(0, 5));
@@ -2007,11 +2206,17 @@
         return;
       }
 
+      // PDF original (≤3MB) vai junto e fica arquivado no candidato (auditoria)
+      let fileB64;
+      if (file.size <= 3 * 1024 * 1024) {
+        try { fileB64 = await fileToBase64(file); } catch (e) { console.warn('[pdf-import] base64 skip:', e.message); }
+      }
+
       setStatus('Extraindo dados com IA...');
       const res = await fetch('/api/cv?action=import-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pdf_text: text, file_name: file.name }),
+        body: JSON.stringify({ pdf_text: text, file_name: file.name, file_base64: fileB64 }),
       });
       const json = await res.json();
       if (json.status !== 'ok') { setStatus('Erro: ' + (json.message || 'falha na importação'), 'var(--red)'); return; }
@@ -2024,6 +2229,15 @@
       console.error('[pdf-import]', e);
       setStatus('Erro: ' + e.message, 'var(--red)');
     }
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => { const s = String(fr.result); resolve(s.slice(s.indexOf('base64,') + 7)); };
+      fr.onerror = () => reject(new Error('falha ao ler o arquivo'));
+      fr.readAsDataURL(file);
+    });
   }
 
   async function extractPdfText(file) {
@@ -2077,6 +2291,285 @@
       }
     }
   }
+
+  // ============================================================
+  // ENTRADAS MANUAIS DO PANDAPÉ (planilhas, menu, candidato manual)
+  // ============================================================
+
+  function openPandapeMenu() {
+    document.getElementById('pandapeMenuModal').style.display = 'flex';
+  }
+
+  function goToPdfImport() {
+    showTab('curriculo');
+    setTimeout(() => {
+      const card = document.getElementById('pdf-import-card');
+      if (card) { card.scrollIntoView({ behavior: 'smooth', block: 'center' }); card.style.boxShadow = '0 0 0 2px var(--orange)'; setTimeout(() => card.style.boxShadow = '', 2200); }
+    }, 150);
+  }
+
+  function openNovoCandidatoModal() {
+    ['nc-nome','nc-telefone','nc-email','nc-cidade','nc-vaga'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    document.getElementById('nc-status').textContent = '';
+    document.getElementById('novoCandidatoModal').style.display = 'flex';
+    document.getElementById('nc-nome').focus();
+  }
+
+  async function saveNovoCandidato() {
+    const nome = document.getElementById('nc-nome').value.trim();
+    const statusEl = document.getElementById('nc-status');
+    if (!nome) { statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Informe o nome.'; return; }
+    const btn = document.getElementById('nc-save-btn');
+    btn.disabled = true; btn.textContent = 'Salvando...';
+    try {
+      const res = await fetch('/api/contacts?action=import-bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source: 'manual', rows: [{
+          name: nome,
+          phone: document.getElementById('nc-telefone').value,
+          email: document.getElementById('nc-email').value,
+          city: document.getElementById('nc-cidade').value,
+          vacancy_name: document.getElementById('nc-vaga').value,
+        }] }),
+      });
+      const json = await res.json();
+      if (json.status !== 'ok') { statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Erro: ' + (json.message || 'falha ao salvar'); return; }
+      statusEl.style.color = 'var(--green)';
+      statusEl.textContent = json.inserted > 0 ? 'Candidato cadastrado.' : 'Candidato já existia (dados complementados).';
+      tabLoaded['candidatos'] = false; tabLoaded['dashboard'] = false;
+      if (typeof loadCandidatos === 'function') loadCandidatos();
+      setTimeout(() => { document.getElementById('novoCandidatoModal').style.display = 'none'; }, 1200);
+    } catch (e) {
+      statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Erro: ' + e.message;
+    } finally {
+      btn.disabled = false; btn.textContent = 'Cadastrar candidato';
+    }
+  }
+
+  // ── Importação de planilha (candidatos e vagas) ─────────────
+
+  const SHEET_FIELDS = {
+    candidatos: [
+      { key: 'name', label: 'Nome *', guess: ['nome', 'candidato'] },
+      { key: 'phone', label: 'Telefone/WhatsApp', guess: ['telefone', 'celular', 'whats', 'fone', 'contato'] },
+      { key: 'email', label: 'E-mail', guess: ['mail'] },
+      { key: 'city', label: 'Cidade/UF', guess: ['cidade', 'municip', 'local'] },
+      { key: 'vacancy_name', label: 'Vaga/Processo', guess: ['vaga', 'processo', 'cargo', 'oportunidade'] },
+      { key: 'education', label: 'Formação', guess: ['forma', 'escolaridade', 'educa'] },
+      { key: 'salary_expectation', label: 'Pretensão salarial', guess: ['pretens', 'salar'] },
+    ],
+    vagas: [
+      { key: 'title', label: 'Título da vaga *', guess: ['titulo', 'vaga', 'cargo', 'nome'] },
+      { key: 'client_name', label: 'Empresa/Cliente', guess: ['empresa', 'cliente'] },
+      { key: 'city', label: 'Cidade/UF', guess: ['cidade', 'local'] },
+      { key: 'contract_type', label: 'Contratação', guess: ['contrat', 'tipo'] },
+      { key: 'salary_range', label: 'Faixa salarial', guess: ['salar', 'faixa'] },
+      { key: 'requirements', label: 'Requisitos', guess: ['requisit'] },
+      { key: 'processo_numero', label: 'Nº do processo', guess: ['processo', 'numero', 'codigo', 'id'] },
+      { key: 'status', label: 'Status', guess: ['status', 'situa'] },
+    ],
+  };
+
+  let _sheet = null; // { mode, headers, rows }
+
+  function openSheetImport(mode) {
+    _sheet = { mode, headers: [], rows: [] };
+    document.getElementById('sheet-title').textContent = mode === 'vagas' ? 'Importar planilha de vagas' : 'Importar planilha de candidatos';
+    document.getElementById('sheet-subtitle').textContent = mode === 'vagas'
+      ? 'Exporte a listagem de vagas/processos no Pandapé (Excel ou CSV) e suba o arquivo aqui.'
+      : 'Exporte a listagem de candidatos no Pandapé (Excel ou CSV) e suba o arquivo aqui.';
+    resetSheetImport();
+    document.getElementById('sheetImportModal').style.display = 'flex';
+  }
+
+  function closeSheetImport() { document.getElementById('sheetImportModal').style.display = 'none'; _sheet = null; }
+
+  function resetSheetImport() {
+    document.getElementById('sheet-step-file').style.display = 'block';
+    document.getElementById('sheet-step-map').style.display = 'none';
+    document.getElementById('sheet-step-done').style.display = 'none';
+    document.getElementById('sheet-file-input').value = '';
+    document.getElementById('sheet-import-status').textContent = '';
+  }
+
+  function normHeader(h) {
+    return String(h || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+
+  async function handleSheetFile(input) {
+    const file = input.files && input.files[0];
+    if (!file || !_sheet) return;
+    try {
+      if (!window.XLSX) throw new Error('Leitor de planilha não carregado. Recarregue a página.');
+      const wb = XLSX.read(await file.arrayBuffer(), { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const grid = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      if (!grid.length || grid.length < 2) throw new Error('Planilha vazia ou sem linhas de dados.');
+      _sheet.headers = grid[0].map(h => String(h).trim());
+      _sheet.rows = grid.slice(1).filter(r => r.some(c => String(c).trim() !== ''));
+      const cap = _sheet.mode === 'vagas' ? 200 : 300;
+      if (_sheet.rows.length > cap) {
+        alert(`A planilha tem ${_sheet.rows.length} linhas — o limite por importação é ${cap}. Somente as ${cap} primeiras serão consideradas.`);
+        _sheet.rows = _sheet.rows.slice(0, cap);
+      }
+      document.getElementById('sheet-map-info').textContent = `${file.name} — ${_sheet.rows.length} linha(s) de dados, ${_sheet.headers.length} coluna(s).`;
+      renderSheetMapping();
+      document.getElementById('sheet-step-file').style.display = 'none';
+      document.getElementById('sheet-step-map').style.display = 'block';
+    } catch (e) {
+      alert('Erro ao ler a planilha: ' + e.message);
+      input.value = '';
+    }
+  }
+
+  function renderSheetMapping() {
+    const fields = SHEET_FIELDS[_sheet.mode];
+    const saved = JSON.parse(localStorage.getItem('rhf_sheet_map_' + _sheet.mode) || '{}');
+    const grid = document.getElementById('sheet-map-grid');
+    grid.innerHTML = '';
+    const esc = t => String(t ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    fields.forEach(f => {
+      // Prioridade: mapeamento salvo (pelo NOME do cabeçalho) → palpite por palavra-chave
+      let sel = '';
+      if (saved[f.key] && _sheet.headers.includes(saved[f.key])) sel = saved[f.key];
+      else {
+        const hit = _sheet.headers.find(h => f.guess.some(g => normHeader(h).includes(g)));
+        if (hit) sel = hit;
+      }
+      const opts = ['<option value="">— não importar —</option>']
+        .concat(_sheet.headers.map(h => `<option value="${esc(h)}" ${h === sel ? 'selected' : ''}>${esc(h)}</option>`)).join('');
+      grid.insertAdjacentHTML('beforeend', `
+        <div>
+          <div class="cv-field-label">${f.label}</div>
+          <select data-field="${f.key}" onchange="renderSheetPreview()" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:12.5px;background:var(--bg-white);color:var(--text);">${opts}</select>
+        </div>`);
+    });
+    renderSheetPreview();
+  }
+
+  function getSheetMapping() {
+    const mapping = {};
+    document.querySelectorAll('#sheet-map-grid select').forEach(s => { if (s.value) mapping[s.dataset.field] = s.value; });
+    return mapping;
+  }
+
+  function renderSheetPreview() {
+    if (!_sheet) return;
+    const mapping = getSheetMapping();
+    const fields = SHEET_FIELDS[_sheet.mode].filter(f => mapping[f.key]);
+    const esc = t => String(t ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const idx = h => _sheet.headers.indexOf(h);
+    let html = '<table style="width:100%;border-collapse:collapse;font-size:11.5px;"><tr>' +
+      fields.map(f => `<th style="text-align:left;padding:6px 10px;background:var(--bg-light);border-bottom:1px solid var(--border);white-space:nowrap;">${esc(f.label.replace(' *',''))}</th>`).join('') + '</tr>';
+    _sheet.rows.slice(0, 3).forEach(r => {
+      html += '<tr>' + fields.map(f => `<td style="padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text-sec);">${esc(r[idx(mapping[f.key])])}</td>`).join('') + '</tr>';
+    });
+    document.getElementById('sheet-preview').innerHTML = html + '</table>';
+  }
+
+  async function runSheetImport() {
+    if (!_sheet) return;
+    const mapping = getSheetMapping();
+    const requiredKey = _sheet.mode === 'vagas' ? 'title' : 'name';
+    if (!mapping[requiredKey]) { alert(`Mapeie a coluna de ${_sheet.mode === 'vagas' ? 'título da vaga' : 'nome'} antes de importar.`); return; }
+    localStorage.setItem('rhf_sheet_map_' + _sheet.mode, JSON.stringify(mapping));
+
+    const idx = h => _sheet.headers.indexOf(h);
+    const rows = _sheet.rows.map(r => {
+      const obj = {};
+      Object.entries(mapping).forEach(([k, h]) => { obj[k] = r[idx(h)]; });
+      return obj;
+    });
+
+    const btn = document.getElementById('sheet-import-btn');
+    const statusEl = document.getElementById('sheet-import-status');
+    btn.disabled = true; btn.textContent = 'Importando...';
+    statusEl.style.color = 'var(--text-muted)'; statusEl.textContent = `Enviando ${rows.length} linha(s)...`;
+    try {
+      const endpoint = _sheet.mode === 'vagas' ? '/api/vacancies?action=import-bulk' : '/api/contacts?action=import-bulk';
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rows, source: 'pandape-sheet' }),
+      });
+      const json = await res.json();
+      if (json.status !== 'ok') { statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Erro: ' + (json.message || 'falha na importação'); return; }
+      document.getElementById('sheet-done-msg').textContent = 'Importação concluída: ' + json.message;
+      document.getElementById('sheet-step-map').style.display = 'none';
+      document.getElementById('sheet-step-done').style.display = 'block';
+      localStorage.setItem('rhf_last_pandape_import', new Date().toISOString());
+      tabLoaded['dashboard'] = false;
+      if (_sheet.mode === 'vagas') { tabLoaded['vagas'] = false; if (typeof loadVagas === 'function') loadVagas(); refreshVagaSelect(); }
+      else { tabLoaded['candidatos'] = false; if (typeof loadCandidatos === 'function') loadCandidatos(); }
+    } catch (e) {
+      statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Erro: ' + e.message;
+    } finally {
+      btn.disabled = false; btn.textContent = 'Importar';
+    }
+  }
+
+  // ── Colar texto da vaga (IA preenche o formulário) ──────────
+
+  function openVagaTextModal() {
+    document.getElementById('vaga-text-input').value = '';
+    document.getElementById('vaga-text-status').textContent = '';
+    document.getElementById('vagaTextModal').style.display = 'flex';
+    document.getElementById('vaga-text-input').focus();
+  }
+
+  async function parseVagaText() {
+    const text = document.getElementById('vaga-text-input').value.trim();
+    const statusEl = document.getElementById('vaga-text-status');
+    if (text.length < 30) { statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Cole o texto completo da vaga.'; return; }
+    const btn = document.getElementById('vaga-text-btn');
+    btn.disabled = true; btn.textContent = 'Extraindo...';
+    statusEl.style.color = 'var(--text-muted)'; statusEl.textContent = 'Analisando o texto com IA...';
+    try {
+      const res = await fetch('/api/vacancies?action=import-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      const json = await res.json();
+      if (json.status !== 'ok') { statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Erro: ' + (json.message || 'falha na extração'); return; }
+      const p = json.parsed || {};
+      const set = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
+      set('vaga-title', p.title); set('vaga-client', p.client_name); set('vaga-city', p.city);
+      set('vaga-contract', p.contract_type); set('vaga-salary', p.salary_range);
+      set('vaga-requirements', p.requirements); set('vaga-processo', p.processo_numero);
+      document.getElementById('vagaTextModal').style.display = 'none';
+      openVagaModal();
+    } catch (e) {
+      statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Erro: ' + e.message;
+    } finally {
+      btn.disabled = false; btn.textContent = 'Extrair campos com IA';
+    }
+  }
+
+  // ── Seletor de vaga cadastrada no Gerador ───────────────────
+
+  async function refreshVagaSelect() {
+    const sel = document.getElementById('comp-vaga-select');
+    if (!sel) return;
+    try {
+      const res = await fetch('/api/vacancies?action=list&limit=100');
+      const json = await res.json();
+      const vagas = (json.data || []).slice().sort((a, b) => (a.status === 'aberta' ? -1 : 1) - (b.status === 'aberta' ? -1 : 1));
+      const esc = t => String(t ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      sel.innerHTML = '<option value="">— escolher vaga cadastrada (ou digite abaixo) —</option>' + vagas.map(v => {
+        const label = `${v.title}${v.client_name ? ' · ' + v.client_name : ''}${v.processo_numero ? ' (proc. ' + v.processo_numero + ')' : ''}${v.status === 'fechada' ? ' [fechada]' : ''}`;
+        const value = `${v.title}${v.city ? ' — ' + v.city : ''}`;
+        return `<option value="${esc(value)}">${esc(label)}</option>`;
+      }).join('');
+    } catch (e) { /* silencioso — o campo texto continua funcionando */ }
+  }
+
+  function onVagaSelectChange(sel) {
+    if (sel.value) { const inp = document.getElementById('comp-vaga'); if (inp) inp.value = sel.value; }
+  }
+
+  refreshVagaSelect();
 
   async function generateCV() {
     const loading = document.getElementById('aiLoading');

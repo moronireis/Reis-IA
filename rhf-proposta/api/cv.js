@@ -812,7 +812,7 @@ Regras:
 
 async function handleImportPdf(req, res) {
   try {
-    const { pdf_text, file_name } = req.body || {};
+    const { pdf_text, file_name, file_base64 } = req.body || {};
     const text = String(pdf_text || '').trim();
     if (text.length < 80) {
       return res.status(400).json({ status: 'error', message: 'Texto do PDF vazio ou curto demais. O arquivo é um PDF de texto (não escaneado)?' });
@@ -861,6 +861,21 @@ async function handleImportPdf(req, res) {
     try { parsed = JSON.parse(jsonText); }
     catch { return res.status(502).json({ status: 'error', message: 'IA retornou resposta não estruturada.' }); }
 
+    // ── Guarda o PDF original no Storage (auditoria) — falha não bloqueia ──
+    let originalUrl = null;
+    if (file_base64) {
+      try {
+        const buf = Buffer.from(String(file_base64).replace(/^data:.*?;base64,/, ''), 'base64');
+        if (buf.length >= 1024 && buf.length <= 3 * 1024 * 1024) {
+          const safe = String(file_name || 'curriculo')
+            .normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9 _-]/g, '')
+            .trim().replace(/\s+/g, '-').slice(0, 80) || 'curriculo';
+          originalUrl = await uploadToStorage(CV_BUCKET, `pandape/${Date.now()}-${safe}.pdf`, buf, 'application/pdf');
+        }
+      } catch (err) { console.warn('[CV import-pdf] original PDF store failed:', err.message); }
+    }
+
     // ── Upsert candidate ──────────────────────────────────────
     const phoneClean = String(parsed.phone || '').replace(/\D/g, '');
     const salaryNum = parseFloat(String(parsed.salary_expectation || '').replace(/[^\d.,]/g, '').replace(',', '.'));
@@ -873,6 +888,7 @@ async function handleImportPdf(req, res) {
       ...(parsed.languages ? { Languages: parsed.languages } : {}),
       pdf_import: {
         file_name: file_name || null,
+        file_url: originalUrl,
         model: IMPORT_MODEL,
         imported_at: new Date().toISOString(),
         marital_status: parsed.marital_status || null,
@@ -886,6 +902,7 @@ async function handleImportPdf(req, res) {
 
     const candidateFields = {
       name: parsed.name || 'Candidato importado',
+      source: 'pandape-pdf',
       ...(phoneClean.length >= 10 ? { phone: phoneClean } : {}),
       ...(parsed.email ? { email: parsed.email } : {}),
       ...(parsed.city ? { city: parsed.city } : {}),

@@ -22,7 +22,19 @@
 3. Confirmar com o Rodrigo que o arquivo enviado aparece no módulo Arquivos do ChatGuru para organização por tags
 4. ~~Commit do código~~ → FEITO 09/07 (`b7119b6` Fase 1 + commit da troca para OpenAI)
 
-**Próxima frente aprovação pendente (09/07):** plano "entradas manuais Pandapé em cada aba" (planilhas de candidatos/vagas via SheetJS client-side, `action=import-bulk` em contacts/vacancies, seletor de vaga no Gerador, central Pandapé no Dashboard) — apresentado ao Moroni, aguardando OK e amostras reais do Rodrigo (2–3 PDFs + planilha de candidatos + planilha de vagas).
+**Entradas manuais Pandapé — IMPLEMENTADO E DEPLOYADO 09/07 (aprovado pelo Moroni):**
+
+| Aba | Entrada manual | Como funciona |
+|-----|----------------|---------------|
+| Candidatos | "Importar do Pandapé" → menu (planilha / PDF / manual) + botão "Novo candidato" | Planilha Excel/CSV lida no navegador (SheetJS CDN) → mapeamento de colunas com palpite automático + salvo em localStorage → preview → `POST /api/contacts?action=import-bulk` (dedupe por telefone normalizado/e-mail, merge só de campos vazios, lote ≤300) |
+| Vagas | "Importar planilha" + "Colar texto da vaga" + campo Nº do processo no modal | Planilha → `POST /api/vacancies?action=import-bulk` (dedupe por processo_numero ou título+empresa, status normalizado aberta/fechada, ≤200). Texto colado → `action=import-text` (OpenAI estrutura) → pré-preenche o modal Nova Vaga para revisão |
+| Gerador | Seletor de vaga cadastrada acima do campo livre + PDF original arquivado | `comp-vaga-select` populado de vacancies; PDF ≤3MB vai em base64 junto do import e fica no bucket `rhf-cvs/pandape/` (raw_data.pdf_import.file_url) |
+| Dashboard | Card "Central Pandapé" | Atalhos para os 4 fluxos + indicador de frescor (última importação, contagem por origem) |
+
+- Migration 007 aplicada: `candidates.source`, `vacancies.processo_numero`, `vacancies.source`
+- Continuamos em 10/12 funções (tudo via actions em handlers existentes; parsing de planilha é client-side)
+- E2E produção 09/07: candidatos (insert/dedupe/merge/invalid ✅), vagas (dedupe por processo + status normalizado ✅), import-text (extração perfeita ✅) — registros de teste removidos
+- PENDENTE: amostras reais do Rodrigo (2–3 PDFs + planilhas de candidatos e vagas) para calibrar os palpites de coluna; E2E com chat real do ChatGuru
 
 ---
 
