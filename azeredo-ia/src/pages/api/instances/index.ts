@@ -58,12 +58,18 @@ export const PATCH: APIRoute = async ({ locals, request }) => {
     return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403 });
 
   const sb = createServerClient();
-  const { id, display_name } = await request.json();
+  const body = await request.json();
+  const { id } = body;
   if (!id) return new Response(JSON.stringify({ error: 'id required' }), { status: 400 });
+
+  // M1: owner_profile_id vincula a instância ao vendedor (conversas filtradas)
+  const updates: Record<string, any> = { updated_at: new Date().toISOString() };
+  if (body.display_name !== undefined)     updates.display_name = body.display_name;
+  if (body.owner_profile_id !== undefined) updates.owner_profile_id = body.owner_profile_id || null;
 
   const { data, error } = await sb
     .from('az_whatsapp_instances')
-    .update({ display_name, updated_at: new Date().toISOString() })
+    .update(updates)
     .eq('id', id)
     .select()
     .single();

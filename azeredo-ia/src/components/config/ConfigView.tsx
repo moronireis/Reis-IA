@@ -10,7 +10,10 @@ interface Instance {
   status: string;
   qr_code: string | null;
   is_active: boolean;
+  owner_profile_id: string | null;
 }
+
+interface ProfileOption { id: string; full_name: string | null; email: string; role: string; }
 
 interface LiveInfo {
   profile_name: string | null;
@@ -48,6 +51,42 @@ export default function ConfigView() {
   const [maxDaily, setMaxDaily]         = useState(500);
   const [savingSettings, setSavingSettings] = useState(false);
   const pollRef = useRef<Record<string, ReturnType<typeof setInterval>>>({});
+
+  // M1: vínculo instância↔vendedor (admin) — filtra as conversas do operador
+  const [isAdmin, setIsAdmin]           = useState(false);
+  const [profiles, setProfiles]         = useState<ProfileOption[]>([]);
+  const [savingOwnerId, setSavingOwnerId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => setIsAdmin(d?.profile?.role === 'admin'))
+      .catch(() => {});
+    fetch('/api/profiles')
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => setProfiles((d?.profiles || []).filter((p: ProfileOption & { is_active?: boolean }) => p.is_active !== false)))
+      .catch(() => {});
+  }, []);
+
+  const saveOwner = async (inst: Instance, ownerId: string) => {
+    setSavingOwnerId(inst.id);
+    try {
+      const r = await fetch('/api/instances', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: inst.id, owner_profile_id: ownerId || null }),
+      });
+      if (r.ok) {
+        setInstances(prev => prev.map(i => i.id === inst.id ? { ...i, owner_profile_id: ownerId || null } : i));
+        const who = profiles.find(p => p.id === ownerId);
+        success(ownerId
+          ? `${inst.display_name || inst.uazapi_name} vinculado a ${who?.full_name || who?.email}.`
+          : `Vínculo removido de ${inst.display_name || inst.uazapi_name}.`);
+      } else {
+        showError('Erro ao salvar vínculo.');
+      }
+    } finally { setSavingOwnerId(null); }
+  };
 
   const loadInstances = useCallback(async () => {
     setLoading(true);
@@ -309,6 +348,33 @@ export default function ConfigView() {
                             <div style={{ fontSize: 11, color: '#4b5a52' }}>{liveInfo[inst.id].phone_number}</div>
                           )}
                         </div>
+                      </div>
+                    )}
+
+                    {/* M1: vendedor vinculado (as conversas dele mostram só este número) */}
+                    {isAdmin && (
+                      <div style={{ padding: '10px 16px', borderBottom: '1px solid #1a2218', display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 10, color: '#4b5a52', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700, flexShrink: 0 }}>
+                          Vendedor
+                        </span>
+                        <select
+                          value={inst.owner_profile_id || ''}
+                          disabled={savingOwnerId === inst.id}
+                          onChange={e => saveOwner(inst, e.target.value)}
+                          style={{
+                            flex: 1, background: '#080c09', border: '1px solid #1e2820', borderRadius: 6,
+                            padding: '5px 8px', color: inst.owner_profile_id ? '#4de08c' : '#4b5a52',
+                            fontSize: 11, outline: 'none', fontFamily: 'inherit',
+                            cursor: savingOwnerId === inst.id ? 'wait' : 'pointer',
+                          }}
+                        >
+                          <option value="">— sem vínculo (todos veem) —</option>
+                          {profiles.map(p => (
+                            <option key={p.id} value={p.id}>
+                              {(p.full_name || p.email)}{p.role === 'admin' ? ' (admin)' : ''}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     )}
 

@@ -8,7 +8,10 @@ interface Instance {
   uazapi_name: string;
   phone_number: string | null;
   status: string;
+  owner_profile_id?: string | null;
 }
+
+interface Me { id: string; role: string; }
 
 // Local DB conversation (from webhook)
 interface Conversation {
@@ -76,6 +79,18 @@ export default function ConversasView() {
   const [instances, setInstances]         = useState<Instance[]>([]);
   const [activeInst, setActiveInst]       = useState<Instance | null>(null); // selected instance for live mode
 
+  // M1: operador com instância vinculada fica travado nela; filtros de
+  // pertinência limitam o chat live à base de contatos / campanhas
+  const [me, setMe]                       = useState<Me | null>(null);
+  const [baseOnly, setBaseOnly]           = useState(false);
+  const [campaignOnly, setCampaignOnly]   = useState(false);
+  const autoSelectedRef                   = useRef(false);
+
+  const myInstance = me && me.role !== 'admin'
+    ? instances.find(i => i.owner_profile_id === me.id) || null
+    : null;
+  const lockedToMyInstance = !!myInstance;
+
   // Local DB mode
   const [convs, setConvs]                 = useState<Conversation[]>([]);
   const [tab, setTab]                     = useState<'open' | 'resolved'>('open');
@@ -123,7 +138,10 @@ export default function ConversasView() {
     setLiveError('');
     setLiveChats([]);
     try {
-      const r = await fetch(`/api/conversations/live?instance_id=${inst.id}`);
+      const p = new URLSearchParams({ instance_id: inst.id });
+      if (baseOnly) p.set('base_only', '1');
+      if (campaignOnly) p.set('campaign_only', '1');
+      const r = await fetch(`/api/conversations/live?${p}`);
       const d = await r.json();
       if (!r.ok) { setLiveError(d.error || 'Erro ao carregar chats'); return; }
       setLiveChats(d.chats || []);
@@ -132,7 +150,7 @@ export default function ConversasView() {
     } finally {
       setLiveLoading(false);
     }
-  }, []);
+  }, [baseOnly, campaignOnly]);
 
   const loadLiveMessages = useCallback(async (inst: Instance, jid: string) => {
     const r = await fetch(`/api/conversations/live-messages?instance_id=${inst.id}&jid=${encodeURIComponent(jid)}&limit=60`);
@@ -147,6 +165,27 @@ export default function ConversasView() {
   // ── Effects ───────────────────────────────────────────────────────────────
 
   useEffect(() => { loadInstances(); }, [loadInstances]);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (d?.profile) setMe({ id: d.profile.id, role: d.profile.role }); })
+      .catch(() => {});
+  }, []);
+
+  // Operador com número vinculado: pré-seleciona a instância dele, trava e
+  // liga o filtro "só contatos da base" por padrão
+  useEffect(() => {
+    if (autoSelectedRef.current || !myInstance) return;
+    autoSelectedRef.current = true;
+    setBaseOnly(true);
+    if (myInstance.status === 'connected') {
+      setActiveInst(myInstance);
+      setSelectedJid(null);
+      setSelectedName(null);
+      setSelectedConv(null);
+    }
+  }, [myInstance]);
 
   // Stored convs polling (when no live instance selected)
   useEffect(() => {
@@ -231,6 +270,16 @@ export default function ConversasView() {
   const connectedInstances = instances.filter(i => i.status === 'connected');
 
   const selectInstance = (inst: Instance) => {
+    // M1: operador travado na própria instância — não troca nem desmarca
+    if (lockedToMyInstance) {
+      if (inst.id !== myInstance!.id) return;
+      if (activeInst?.id === inst.id) return;
+      setActiveInst(inst);
+      setSelectedJid(null);
+      setSelectedName(null);
+      setSelectedConv(null);
+      return;
+    }
     if (activeInst?.id === inst.id) {
       // Deselect → back to stored convs mode
       setActiveInst(null);
@@ -304,15 +353,18 @@ export default function ConversasView() {
           instances.map(inst => {
             const connected = inst.status === 'connected';
             const active    = activeInst?.id === inst.id;
+            const lockedOut = lockedToMyInstance && inst.id !== myInstance!.id;
             return (
               <button
                 key={inst.id}
                 onClick={() => selectInstance(inst)}
+                title={lockedOut ? 'Seu perfil está vinculado a outro número' : undefined}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 7,
                   padding: '6px 12px', borderRadius: 20, border: 'none',
-                  cursor: connected ? 'pointer' : 'default',
+                  cursor: connected && !lockedOut ? 'pointer' : 'default',
                   fontFamily: 'inherit', whiteSpace: 'nowrap',
+                  opacity: lockedOut ? 0.35 : 1,
                   background: active
                     ? 'rgba(37,211,102,0.18)'
                     : connected
@@ -350,6 +402,7 @@ export default function ConversasView() {
 
         {/* Mode label */}
         <div style={{ marginLeft: 'auto', fontSize: 10, color: '#3a4a3e', whiteSpace: 'nowrap', flexShrink: 0 }}>
+          {lockedToMyInstance && <span style={{ color: '#4de08c', marginRight: 8 }}>Seu número: {myInstance!.display_name || myInstance!.uazapi_name}</span>}
           {activeInst ? `Live · ${activeInst.display_name || activeInst.uazapi_name}` : 'Conversas salvas'}
         </div>
       </div>
@@ -375,6 +428,30 @@ export default function ConversasView() {
                 </svg>
               </button>
             </div>
+
+            {/* M1: filtros de pertinência — only in live mode */}
+            {activeInst && (
+              <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+                {[
+                  { on: baseOnly, set: setBaseOnly, label: 'Só da base' },
+                  { on: campaignOnly, set: setCampaignOnly, label: 'Com campanha' },
+                ].map(f => (
+                  <button
+                    key={f.label}
+                    onClick={() => f.set(!f.on)}
+                    style={{
+                      padding: '4px 10px', borderRadius: 12, fontSize: 10, fontWeight: 600,
+                      fontFamily: 'inherit', cursor: 'pointer', transition: 'all 0.15s',
+                      border: `1px solid ${f.on ? 'rgba(37,211,102,0.4)' : '#1e2820'}`,
+                      background: f.on ? 'rgba(37,211,102,0.12)' : 'transparent',
+                      color: f.on ? '#4de08c' : '#4b5a52',
+                    }}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Tabs — only in stored mode */}
             {!activeInst && (

@@ -1,8 +1,9 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../../lib/supabase-server';
-import { sendWhatsAppText } from '../../../../lib/whatsapp/send';
+import { sendWhatsAppText, sendWhatsAppMedia } from '../../../../lib/whatsapp/send';
 import { resolveVariables } from '../../../../lib/variables';
 import { kickWorker, isWorkerRequest } from '../../../../lib/campaign-worker';
+import { scanReplies, type ReplyScanRow } from '../../../../lib/reply-scan';
 
 export const prerender = false;
 
@@ -14,6 +15,8 @@ const LEASE_MS        = 90_000;     // lease da campanha (1 worker por vez)
 const STALE_CLAIM_MS  = 3 * 60_000; // recipient preso em 'processing' volta à fila
 const DELAY_MIN_MS    = 2_000;      // intervalo entre mensagens: 2s
 const DELAY_JITTER_MS = 2_000;      // + jitter aleatório de até 2s (anti-padrão robótico)
+const DELAY_MEDIA_MIN_MS    = 4_000; // mídia pesa mais na reputação do número: 4–6s
+const DELAY_MEDIA_JITTER_MS = 2_000;
 const FAIL_DELAY_MS   = 400;        // falha não consome espaçamento anti-ban
 const CANARY_MAX_SENT = 3;          // envios aceitos sem NENHUMA entrega → erro
 const CANARY_POLL_MS  = 5_000;      // intervalo do poll de entrega do canário
@@ -64,7 +67,7 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
 
   const { data: campaign } = await sb
     .from('az_campaigns')
-    .select('id, status, processing_until, instance_id, custom_body, template_id, segment_filter, az_templates(body)')
+    .select('id, status, processing_until, instance_id, custom_body, template_id, segment_filter, custom_media_url, custom_media_type, az_templates(body, media_url, media_type)')
     .eq('id', id)
     .maybeSingle();
 
@@ -83,6 +86,13 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
 
   const templateBody: string | null =
     (campaign as any).az_templates?.body || campaign.custom_body || null;
+
+  // M2: mídia da campanha — override por campanha > mídia do template
+  const tpl = (campaign as any).az_templates || {};
+  const mediaUrl: string | null = (campaign as any).custom_media_url || tpl.media_url || null;
+  const mediaType: 'image' | 'video' =
+    (((campaign as any).custom_media_url ? (campaign as any).custom_media_type : tpl.media_type) === 'video')
+      ? 'video' : 'image';
 
   if (!templateBody) {
     await sb.from('az_campaigns')
@@ -144,6 +154,10 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
   //     promove para delivered/read via /message/find.
   await reconcileDeliveries(sb, UAZAPI_URL, uazToken, id, 12, started);
   await refreshDelivered(sb, id);
+
+  // 3c. Respostas (Fase 2): varredura curta por hop — o grosso roda no
+  //     polling do dashboard, aqui é só para campanhas em andamento.
+  await scanCampaignReplies(sb, UAZAPI_URL, uazToken, campaign, 5, started + 18_000);
 
   // 4. Canário: enquanto 0 entregas confirmadas, 1 mensagem por hop
   const deliveredSoFar = await countByStatuses(sb, id, ['delivered', 'read']);
@@ -221,9 +235,14 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
     let errMsg: string | null = null;
     let waMsgId: string | null = null;
     try {
-      const result = await sendWhatsAppText(
-        r.phone, body, r.contact_id || undefined, id, instanceToken, campaign.instance_id || undefined
-      );
+      // M2: campanha com mídia envia imagem/vídeo com a mensagem de legenda
+      const result = mediaUrl
+        ? await sendWhatsAppMedia(
+            r.phone, mediaUrl, mediaType, body, r.contact_id || undefined, id, instanceToken, campaign.instance_id || undefined
+          )
+        : await sendWhatsAppText(
+            r.phone, body, r.contact_id || undefined, id, instanceToken, campaign.instance_id || undefined
+          );
       ok = result.ok;
       waMsgId = result.messageid || null;
       errMsg = friendlySendError(result.error);
@@ -250,7 +269,11 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
       break; // canário processa exatamente 1 por hop
     }
 
-    await sleep(ok ? DELAY_MIN_MS + Math.floor(Math.random() * DELAY_JITTER_MS) : FAIL_DELAY_MS);
+    // Anti-ban: mídia usa espaçamento maior (4–6s) que texto (2–4s)
+    const okDelay = mediaUrl
+      ? DELAY_MEDIA_MIN_MS + Math.floor(Math.random() * DELAY_MEDIA_JITTER_MS)
+      : DELAY_MIN_MS + Math.floor(Math.random() * DELAY_JITTER_MS);
+    await sleep(ok ? okDelay : FAIL_DELAY_MS);
   }
 
   // 6. Fila ainda tem pendentes → libera o lease e encadeia o próximo lote
@@ -266,8 +289,9 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
   if (processing > 0) return json({ ok: true, processed, waiting: processing });
 
   // 7. Fila vazia → conclui (guard em 'sending' preserva cancelamento)
-  //    Varredura final de entregas antes de fechar o relatório
+  //    Varredura final de entregas + respostas antes de fechar o relatório
   await reconcileDeliveries(sb, UAZAPI_URL, uazToken, id, 30, started);
+  await scanCampaignReplies(sb, UAZAPI_URL, uazToken, campaign, 12, started + TIME_BUDGET_MS);
   await refreshCounters(sb, id);
   await refreshDelivered(sb, id);
   await sb.from('az_campaigns').update({
@@ -417,6 +441,32 @@ async function waitForDelivery(
     } catch { /* tenta de novo no próximo ciclo */ }
   }
   return false;
+}
+
+// Fase 2: respostas da campanha em andamento — pega os recipients enviados
+// menos recentemente conferidos e delega à lib compartilhada com o dashboard.
+async function scanCampaignReplies(
+  sb: SB, uazUrl: string, fallbackToken: string,
+  campaign: any, maxRows: number, deadlineMs: number
+): Promise<void> {
+  if (Date.now() > deadlineMs) return;
+  const { data: rows } = await sb
+    .from('az_campaign_recipients')
+    .select('id, phone, sent_at, contact_id, campaign_id')
+    .eq('campaign_id', campaign.id)
+    .in('status', ['sent', 'delivered', 'read'])
+    .is('replied_at', null)
+    .not('sent_at', 'is', null)
+    .order('reply_checked_at', { ascending: true, nullsFirst: true })
+    .limit(maxRows);
+
+  if (!rows?.length) return;
+  const scanRows: ReplyScanRow[] = rows.map((r: any) => ({
+    ...r,
+    instance_id: campaign.instance_id || null,
+    token: fallbackToken || null,
+  }));
+  await scanReplies(sb, uazUrl, fallbackToken, scanRows, deadlineMs);
 }
 
 function friendlySendError(err: string | undefined | null): string | null {

@@ -38,6 +38,10 @@ export const PATCH: APIRoute = async ({ locals, params, request }) => {
   if (body.name !== undefined)     updates.name     = body.name.trim();
   if (body.body !== undefined)     updates.body     = body.body.trim();
   if (body.category !== undefined) updates.category = body.category;
+  if (body.media_url !== undefined) {
+    updates.media_url  = body.media_url || null;
+    updates.media_type = body.media_url ? (body.media_type === 'video' ? 'video' : 'image') : null;
+  }
 
   const sb = createServerClient();
   const { data, error } = await sb

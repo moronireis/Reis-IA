@@ -36,7 +36,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
     return json({ error: 'JSON inválido' }, 400);
   }
 
-  const { name, template_id, custom_body, segment_filter, instance_id } = body;
+  const { name, template_id, custom_body, segment_filter, instance_id, custom_media_url, custom_media_type } = body;
 
   if (!name?.trim()) return json({ error: 'Nome é obrigatório' }, 400);
   if (!template_id && !custom_body?.trim()) {
@@ -53,6 +53,8 @@ export const POST: APIRoute = async ({ locals, request }) => {
       custom_body: custom_body?.trim() || null,
       segment_filter: segment_filter || {},
       instance_id: instance_id || null,
+      custom_media_url: custom_media_url || null,
+      custom_media_type: custom_media_type || null,
       status: 'draft',
       created_by: (profile as any).id,
     })

@@ -6,6 +6,8 @@ interface Template {
   name: string;
   body: string;
   category: string;
+  media_url: string | null;
+  media_type: 'image' | 'video' | null;
   created_at: string;
   updated_at: string;
 }
@@ -140,7 +142,30 @@ export default function TemplatesView() {
   const [formName, setFormName] = useState('');
   const [formBody, setFormBody] = useState('');
   const [formCat, setFormCat] = useState('geral');
+  const [formMediaUrl, setFormMediaUrl]   = useState<string | null>(null);
+  const [formMediaType, setFormMediaType] = useState<'image' | 'video' | null>(null);
+  const [uploading, setUploading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
+
+  // M2: mídia do template — sobe para o bucket az-media e guarda a URL pública
+  async function uploadMedia(file: File) {
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/media/upload', { method: 'POST', body: fd });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || 'Falha no upload');
+      setFormMediaUrl(d.url);
+      setFormMediaType(d.media_type);
+      success('Mídia anexada.');
+    } catch (e: any) {
+      showError(e.message);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   function load() {
     setLoading(true);
@@ -154,11 +179,13 @@ export default function TemplatesView() {
 
   function openCreate() {
     setFormName(''); setFormBody(''); setFormCat('geral');
+    setFormMediaUrl(null); setFormMediaType(null);
     setModal({ open: true, mode: 'create', template: null });
   }
 
   function openEdit(t: Template) {
     setFormName(t.name); setFormBody(t.body); setFormCat(t.category);
+    setFormMediaUrl(t.media_url || null); setFormMediaType(t.media_type || null);
     setModal({ open: true, mode: 'edit', template: t });
   }
 
@@ -189,7 +216,10 @@ export default function TemplatesView() {
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: formName, body: formBody, category: formCat }),
+        body: JSON.stringify({
+          name: formName, body: formBody, category: formCat,
+          media_url: formMediaUrl, media_type: formMediaType,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
@@ -242,8 +272,18 @@ export default function TemplatesView() {
           >
             <div style={S.cardHeader}>
               <span style={S.cardName}>{t.name}</span>
-              <span style={S.badge(CAT_COLORS[t.category] || '#7a7a82')}>{catLabel(t.category)}</span>
+              <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                {t.media_url && (
+                  <span style={S.badge('#25D366')} title={t.media_type === 'video' ? 'Template com vídeo' : 'Template com imagem'}>
+                    {t.media_type === 'video' ? 'vídeo' : 'imagem'}
+                  </span>
+                )}
+                <span style={S.badge(CAT_COLORS[t.category] || '#7a7a82')}>{catLabel(t.category)}</span>
+              </div>
             </div>
+            {t.media_url && t.media_type === 'image' && (
+              <img src={t.media_url} alt="" style={{ width: '100%', height: 110, objectFit: 'cover', borderRadius: 6, border: '1px solid #1e1e21' }} />
+            )}
             <div style={S.body}>{t.body}</div>
             <div style={S.actions}>
               <button style={S.btnSm()} onClick={() => openEdit(t)}>Editar</button>
@@ -297,6 +337,41 @@ export default function TemplatesView() {
                     {v.token}
                   </span>
                 ))}
+              </div>
+            </div>
+
+            <div>
+              <label style={S.label}>Imagem ou vídeo (opcional — enviado com a mensagem)</label>
+              {formMediaUrl ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  {formMediaType === 'image' ? (
+                    <img src={formMediaUrl} alt="mídia do template" style={{ width: 84, height: 84, objectFit: 'cover', borderRadius: 8, border: '1px solid #1e1e21' }} />
+                  ) : (
+                    <video src={formMediaUrl} style={{ width: 84, height: 84, objectFit: 'cover', borderRadius: 8, border: '1px solid #1e1e21' }} muted />
+                  )}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <span style={{ fontSize: 11, color: '#7a7a82' }}>{formMediaType === 'image' ? 'Imagem anexada' : 'Vídeo anexado'}</span>
+                    <button style={S.btnSm(true)} onClick={() => { setFormMediaUrl(null); setFormMediaType(null); }}>
+                      Remover mídia
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  style={{ ...S.btnSm(), padding: '8px 14px', opacity: uploading ? 0.6 : 1 }}
+                  disabled={uploading}
+                  onClick={() => mediaInputRef.current?.click()}
+                >
+                  {uploading ? 'Enviando…' : '+ Anexar imagem/vídeo'}
+                </button>
+              )}
+              <input
+                ref={mediaInputRef} type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime"
+                style={{ display: 'none' }}
+                onChange={e => { const f = e.target.files?.[0]; if (f) uploadMedia(f); e.target.value = ''; }}
+              />
+              <div style={{ fontSize: 10, color: '#4a4a52', marginTop: 6 }}>
+                JPG/PNG/WebP até 5MB · MP4/MOV até 16MB. A mensagem vira legenda da mídia no WhatsApp.
               </div>
             </div>
 

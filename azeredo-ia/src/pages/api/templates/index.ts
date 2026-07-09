@@ -38,6 +38,8 @@ export const POST: APIRoute = async ({ locals, request }) => {
       name: body.name.trim(),
       body: body.body.trim(),
       category: body.category || 'geral',
+      media_url: body.media_url || null,
+      media_type: body.media_url ? (body.media_type === 'video' ? 'video' : 'image') : null,
       created_by: profile.id,
     })
     .select()

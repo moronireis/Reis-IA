@@ -20,7 +20,7 @@ interface Campaign {
   az_whatsapp_instances: { display_name: string | null; uazapi_name: string; phone_number: string | null } | null;
 }
 
-interface Template { id: string; name: string; body: string; }
+interface Template { id: string; name: string; body: string; media_url?: string | null; media_type?: 'image' | 'video' | null; }
 interface Brand    { id: string; name: string; }
 interface Instance {
   id: string;
@@ -600,6 +600,7 @@ function DispatchMonitor({
   const [sent, setSent] = useState(0);
   const [delivered, setDelivered] = useState(0);
   const [failed, setFailed] = useState(0);
+  const [replied, setReplied] = useState(0);
   const [status, setStatus] = useState<Campaign['status']>('sending');
   const [lastError, setLastError] = useState<string | null>(null);
   const [recipients, setRecipients] = useState<any[]>([]);
@@ -621,6 +622,7 @@ function DispatchMonitor({
       if (data.recipients) {
         setRecipients(data.recipients);
       }
+      if (typeof data.replied_count === 'number') setReplied(data.replied_count);
     } catch {}
   }, [campaignId]);
 
@@ -724,13 +726,14 @@ function DispatchMonitor({
 
         {/* Stats grid */}
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
+          display: 'grid', gridTemplateColumns: 'repeat(5,1fr)',
           gap: 10, marginTop: 16,
         }}>
           {[
             { label: 'Total', value: total, color: '#e8f0e8' },
             { label: 'Enviados', value: sent, color: '#22c55e' },
             { label: 'Entregues', value: delivered, color: delivered > 0 ? '#4de08c' : '#4a6050' },
+            { label: 'Respostas', value: replied, color: replied > 0 ? '#6AADFF' : '#4a6050' },
             { label: 'Falhos', value: failed, color: failed > 0 ? '#ef4444' : '#4a6050' },
           ].map(({ label, value, color }) => (
             <div key={label} style={{
@@ -799,6 +802,15 @@ function DispatchMonitor({
                     animation: (r.status === 'pending' || r.status === 'processing') ? 'pulse-dot 1.5s ease-in-out infinite' : 'none',
                   }} />
                   <span style={{ flex: 1, color: '#e8f0e8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
+                  {r.replied_at && (
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, flexShrink: 0, color: '#6AADFF',
+                      background: 'rgba(106,173,255,0.1)', border: '1px solid rgba(106,173,255,0.25)',
+                      borderRadius: 4, padding: '1px 6px',
+                    }}>
+                      Respondeu
+                    </span>
+                  )}
                   {contact?.cidade && <span style={{ color: '#4a6050', fontSize: 11 }}>{contact.cidade}</span>}
                   <span style={{ fontSize: 11, flexShrink: 0, color: rl.color }}>
                     {rl.label}
@@ -844,6 +856,29 @@ function NewCampaignWizard({
   const [loadingTpl, setLoadingTpl]   = useState(true);
   const [instances, setInstances]     = useState<Instance[]>([]);
   const [instanceId, setInstanceId]   = useState(existing?.instance_id || '');
+
+  // M2: mídia específica da campanha (tem precedência sobre a mídia do template)
+  const [customMediaUrl, setCustomMediaUrl]   = useState<string | null>(existing?.custom_media_url || null);
+  const [customMediaType, setCustomMediaType] = useState<'image' | 'video' | null>(existing?.custom_media_type || null);
+  const [uploadingMedia, setUploadingMedia]   = useState(false);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
+
+  async function uploadCampaignMedia(file: File) {
+    setUploadingMedia(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/media/upload', { method: 'POST', body: fd });
+      const d = await res.json();
+      if (!res.ok) { toast.error(d.error || 'Falha no upload'); return; }
+      setCustomMediaUrl(d.url);
+      setCustomMediaType(d.media_type);
+    } catch {
+      toast.error('Erro de conexão no upload');
+    } finally {
+      setUploadingMedia(false);
+    }
+  }
 
   // Step 2 fields
   const [brands, setBrands]             = useState<Brand[]>([]);
@@ -940,6 +975,8 @@ function NewCampaignWizard({
       template_id: useTemplate ? templateId : null,
       custom_body: !useTemplate ? customBody.trim() : null,
       instance_id: instanceId || null,
+      custom_media_url: customMediaUrl,
+      custom_media_type: customMediaUrl ? customMediaType : null,
     };
 
     try {
@@ -1244,6 +1281,71 @@ function NewCampaignWizard({
             )}
           </div>
 
+          {/* M2: imagem/vídeo da campanha */}
+          <div style={{ marginBottom: 18 }}>
+            <label style={labelStyle}>Imagem ou vídeo (opcional)</label>
+            {(() => {
+              const tplMedia = useTemplate ? selectedTemplate?.media_url : null;
+              const effUrl  = customMediaUrl || tplMedia || null;
+              const effType = customMediaUrl ? customMediaType : (selectedTemplate?.media_type || 'image');
+              return (
+                <div style={{ background: '#0d1410', border: '1px solid #1c2820', borderRadius: 8, padding: 12 }}>
+                  {effUrl ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      {effType === 'video' ? (
+                        <video src={effUrl} style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, border: '1px solid #1c2820' }} muted />
+                      ) : (
+                        <img src={effUrl} alt="" style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, border: '1px solid #1c2820' }} />
+                      )}
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 12, color: '#4de08c', fontWeight: 600 }}>
+                          {customMediaUrl
+                            ? `${effType === 'video' ? 'Vídeo' : 'Imagem'} desta campanha`
+                            : `${effType === 'video' ? 'Vídeo' : 'Imagem'} do template`}
+                        </div>
+                        <div style={{ fontSize: 11, color: '#4a6050', marginTop: 2 }}>
+                          A mensagem vai como legenda. Envio de mídia usa intervalo maior entre mensagens (4–6s).
+                        </div>
+                      </div>
+                      {customMediaUrl ? (
+                        <button
+                          onClick={() => { setCustomMediaUrl(null); setCustomMediaType(null); }}
+                          style={{ ...btn('ghost'), fontSize: 11, padding: '5px 10px', color: '#f87171', borderColor: 'rgba(239,68,68,0.3)' }}
+                        >
+                          Remover
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => mediaInputRef.current?.click()}
+                          disabled={uploadingMedia}
+                          style={{ ...btn('ghost'), fontSize: 11, padding: '5px 10px' }}
+                        >
+                          {uploadingMedia ? 'Enviando…' : 'Substituir nesta campanha'}
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <button
+                        onClick={() => mediaInputRef.current?.click()}
+                        disabled={uploadingMedia}
+                        style={{ ...btn('ghost'), fontSize: 12, padding: '7px 14px' }}
+                      >
+                        {uploadingMedia ? 'Enviando…' : '+ Anexar imagem/vídeo'}
+                      </button>
+                      <span style={{ fontSize: 11, color: '#4a6050' }}>JPG/PNG/WebP até 5MB · MP4/MOV até 16MB</span>
+                    </div>
+                  )}
+                  <input
+                    ref={mediaInputRef} type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime"
+                    style={{ display: 'none' }}
+                    onChange={e => { const f = e.target.files?.[0]; if (f) uploadCampaignMedia(f); e.target.value = ''; }}
+                  />
+                </div>
+              );
+            })()}
+          </div>
+
           {/* Message preview */}
           {messageBody && (
             <div style={{
@@ -1251,6 +1353,15 @@ function NewCampaignWizard({
               borderRadius: 8, padding: 14, marginBottom: 18,
             }}>
               <div style={labelStyle}>Preview</div>
+              {(customMediaUrl || (useTemplate && selectedTemplate?.media_url)) && (
+                <div style={{ marginBottom: 8 }}>
+                  {(customMediaUrl ? customMediaType : selectedTemplate?.media_type) === 'video' ? (
+                    <video src={customMediaUrl || selectedTemplate?.media_url || ''} style={{ maxWidth: 220, borderRadius: 8, border: '1px solid #1c2820' }} muted controls />
+                  ) : (
+                    <img src={customMediaUrl || selectedTemplate?.media_url || ''} alt="" style={{ maxWidth: 220, borderRadius: 8, border: '1px solid #1c2820' }} />
+                  )}
+                </div>
+              )}
               <div style={{ fontSize: 13, color: '#e8f0e8', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
                 {messageBody
                   .replace(/\{\{nome_fantasia\}\}/gi, 'Papelaria Exemplo')
@@ -1748,6 +1859,15 @@ function NewCampaignWizard({
                   label: 'Mensagem',
                   value: useTemplate ? (selectedTemplate?.name || '—') : 'Personalizada',
                 },
+                {
+                  label: 'Mídia',
+                  value: customMediaUrl
+                    ? (customMediaType === 'video' ? 'Vídeo da campanha' : 'Imagem da campanha')
+                    : (useTemplate && selectedTemplate?.media_url)
+                    ? (selectedTemplate.media_type === 'video' ? 'Vídeo do template' : 'Imagem do template')
+                    : 'Sem mídia (só texto)',
+                  muted: !customMediaUrl && !(useTemplate && selectedTemplate?.media_url),
+                },
                 { label: 'Destinatários', value: `${preview?.count ?? 0} contatos`, green: true },
                 { label: 'Estimativa', value: estimatedMinutes(preview?.count ?? 0), muted: true },
               ].map(({ label, value, green, muted }) => (
@@ -1773,6 +1893,17 @@ function NewCampaignWizard({
               fontSize: 13, color: '#e8f0e8', whiteSpace: 'pre-wrap',
               lineHeight: 1.6, maxWidth: 480,
             }}>
+              {(() => {
+                const mUrl  = customMediaUrl || (useTemplate ? selectedTemplate?.media_url : null);
+                const mType = customMediaUrl ? customMediaType : selectedTemplate?.media_type;
+                return mUrl ? (
+                  <div style={{ marginBottom: 8 }}>
+                    {mType === 'video'
+                      ? <video src={mUrl} style={{ maxWidth: '100%', borderRadius: 8 }} muted controls />
+                      : <img src={mUrl} alt="" style={{ maxWidth: '100%', borderRadius: 8 }} />}
+                  </div>
+                ) : null;
+              })()}
               {renderMessage(messageBody, preview?.contacts[0])}
             </div>
             {preview?.contacts[0] && (
@@ -1889,8 +2020,191 @@ function NewCampaignWizard({
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 
+// ─── Dashboard (Fase 2 do backlog) ────────────────────────────────────────────
+// Visão agregada em tempo real: polling 5s com scan=1 (varredura de respostas
+// no servidor via /message/find — o "tempo real" possível sem webhook).
+
+interface DashStats { sent: number; delivered: number; failed: number; replies: number; }
+interface DashCampaign {
+  id: string; name: string; status: string;
+  total_count: number | null; sent_count: number | null; delivered_count: number | null;
+  failed_count: number | null; replied_count: number; started_at: string | null;
+  completed_at?: string | null; last_error?: string | null;
+  az_whatsapp_instances: { display_name: string | null; uazapi_name: string } | null;
+}
+interface DashReply {
+  id: string; phone: string; body: string | null; created_at: string;
+  contact_name: string | null; campaign_name: string | null;
+}
+
+function DashboardPanel() {
+  const [today, setToday]     = useState<DashStats | null>(null);
+  const [week, setWeek]       = useState<DashStats | null>(null);
+  const [active, setActive]   = useState<DashCampaign[]>([]);
+  const [recent, setRecent]   = useState<DashCampaign[]>([]);
+  const [replies, setReplies] = useState<DashReply[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const inFlightRef = useRef(false);
+
+  const load = useCallback(async () => {
+    if (inFlightRef.current) return; // scan no servidor pode passar de 5s — não empilha
+    inFlightRef.current = true;
+    try {
+      const res = await fetch('/api/campaigns/dashboard?scan=1');
+      if (!res.ok) return;
+      const d = await res.json();
+      setToday(d.today || null);
+      setWeek(d.week || null);
+      setActive(d.active || []);
+      setRecent(d.recent || []);
+      setReplies(d.replies_feed || []);
+      setLastUpdate(new Date());
+      // Pump: mantém campanhas ativas andando mesmo se a cadeia do worker morrer
+      (d.active || []).forEach((c: DashCampaign) => pumpCampaign(c.id));
+    } catch {
+    } finally {
+      inFlightRef.current = false;
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+    pollRef.current = setInterval(load, 5000);
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+  }, [load]);
+
+  const statCard = (label: string, value: number, color: string, sub?: string) => (
+    <div key={label} style={{ background: '#111a12', border: '1px solid #1c2820', borderRadius: 10, padding: '16px 18px' }}>
+      <div style={{ fontSize: 26, fontWeight: 700, color }}>{value.toLocaleString('pt-BR')}</div>
+      <div style={{ fontSize: 12, color: '#8aaa90', marginTop: 2 }}>{label}</div>
+      {sub && <div style={{ fontSize: 10, color: '#4a6050', marginTop: 2 }}>{sub}</div>}
+    </div>
+  );
+
+  const campRow = (c: DashCampaign, live: boolean) => {
+    const total = c.total_count || 0;
+    const sent = c.sent_count || 0;
+    const inst = c.az_whatsapp_instances;
+    return (
+      <div key={c.id} style={{ padding: '10px 14px', borderBottom: '1px solid #111a12' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+          {live && <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#25D366', animation: 'pulse-dot 1s ease-in-out infinite', flexShrink: 0 }} />}
+          <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#e8f0e8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
+          <StatusBadge status={c.status} />
+        </div>
+        <ProgressBar sent={sent} failed={c.failed_count || 0} total={total} compact />
+        <div style={{ display: 'flex', gap: 14, marginTop: 6, fontSize: 11, color: '#4a6050', flexWrap: 'wrap' }}>
+          <span style={{ color: '#22c55e' }}>{sent}/{total} enviadas</span>
+          <span style={{ color: (c.delivered_count || 0) > 0 ? '#4de08c' : '#4a6050' }}>{c.delivered_count || 0} entregues</span>
+          <span style={{ color: c.replied_count > 0 ? '#6AADFF' : '#4a6050' }}>{c.replied_count} respostas</span>
+          {(c.failed_count || 0) > 0 && <span style={{ color: '#ef4444' }}>{c.failed_count} falhas</span>}
+          {inst && <span>via {inst.display_name || inst.uazapi_name}</span>}
+          {c.started_at && <span>{fmtDate(c.started_at)} {fmtTime(c.started_at)}</span>}
+        </div>
+        {c.last_error && c.status === 'error' && (
+          <div style={{ fontSize: 11, color: '#f87171', marginTop: 6 }}>{c.last_error}</div>
+        )}
+      </div>
+    );
+  };
+
+  if (loading) {
+    return <div style={{ padding: 40, textAlign: 'center', color: '#4a6050', fontSize: 13 }}>Carregando dashboard...</div>;
+  }
+
+  return (
+    <div style={{ padding: 24, maxWidth: 1080 }}>
+      {/* Cards Hoje */}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 10 }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#e8f0e8' }}>Hoje</span>
+        {lastUpdate && (
+          <span style={{ fontSize: 10, color: '#2d3d30' }}>
+            atualizado {lastUpdate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })} · a cada 5s
+          </span>
+        )}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 18 }}>
+        {statCard('Enviadas', today?.sent ?? 0, '#22c55e')}
+        {statCard('Entregues', today?.delivered ?? 0, (today?.delivered ?? 0) > 0 ? '#4de08c' : '#4a6050')}
+        {statCard('Respostas', today?.replies ?? 0, (today?.replies ?? 0) > 0 ? '#6AADFF' : '#4a6050')}
+        {statCard('Falhas', today?.failed ?? 0, (today?.failed ?? 0) > 0 ? '#ef4444' : '#4a6050')}
+      </div>
+
+      {/* Cards 7 dias */}
+      <div style={{ fontSize: 13, fontWeight: 700, color: '#e8f0e8', marginBottom: 10 }}>Últimos 7 dias</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 22 }}>
+        {statCard('Enviadas', week?.sent ?? 0, '#8aaa90')}
+        {statCard('Entregues', week?.delivered ?? 0, '#8aaa90')}
+        {statCard('Respostas', week?.replies ?? 0, (week?.replies ?? 0) > 0 ? '#6AADFF' : '#8aaa90')}
+        {statCard('Falhas', week?.failed ?? 0, (week?.failed ?? 0) > 0 ? '#ef4444' : '#8aaa90')}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, alignItems: 'start' }}>
+        <div>
+          {/* Campanhas ativas */}
+          <div style={{ background: '#0d1410', border: '1px solid #1c2820', borderRadius: 10, overflow: 'hidden', marginBottom: 16 }}>
+            <div style={{ padding: '10px 14px', borderBottom: '1px solid #1c2820', fontSize: 11, color: '#4a6050', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Disparos em andamento {active.length > 0 && <span style={{ color: '#25D366' }}>({active.length})</span>}
+            </div>
+            {active.length === 0 ? (
+              <div style={{ padding: '18px 14px', fontSize: 12, color: '#4a6050', textAlign: 'center' }}>Nenhum disparo em andamento agora</div>
+            ) : active.map(c => campRow(c, true))}
+          </div>
+
+          {/* Recentes */}
+          <div style={{ background: '#0d1410', border: '1px solid #1c2820', borderRadius: 10, overflow: 'hidden' }}>
+            <div style={{ padding: '10px 14px', borderBottom: '1px solid #1c2820', fontSize: 11, color: '#4a6050', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Campanhas dos últimos 7 dias
+            </div>
+            {recent.length === 0 ? (
+              <div style={{ padding: '18px 14px', fontSize: 12, color: '#4a6050', textAlign: 'center' }}>Nenhuma campanha na última semana</div>
+            ) : recent.map(c => campRow(c, false))}
+          </div>
+        </div>
+
+        {/* Feed de respostas */}
+        <div style={{ background: '#0d1410', border: '1px solid #1c2820', borderRadius: 10, overflow: 'hidden' }}>
+          <div style={{ padding: '10px 14px', borderBottom: '1px solid #1c2820', fontSize: 11, color: '#4a6050', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            Últimas respostas
+          </div>
+          {replies.length === 0 ? (
+            <div style={{ padding: '18px 14px', fontSize: 12, color: '#4a6050', textAlign: 'center', lineHeight: 1.6 }}>
+              Nenhuma resposta registrada ainda.<br />
+              <span style={{ fontSize: 11, color: '#2d3d30' }}>As respostas dos clientes aparecem aqui minutos após chegarem (varredura ativa — o servidor WhatsApp não envia notificações).</span>
+            </div>
+          ) : (
+            <div style={{ maxHeight: 520, overflowY: 'auto' }}>
+              {replies.map(r => (
+                <div key={r.id} style={{ padding: '10px 14px', borderBottom: '1px solid #111a12' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 3 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#6AADFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {r.contact_name || fmtPhone(r.phone)}
+                    </span>
+                    <span style={{ fontSize: 10, color: '#4a6050', flexShrink: 0 }}>
+                      {fmtDate(r.created_at)} {fmtTime(r.created_at)}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 12, color: '#c9d5cc', lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' as const }}>
+                    {r.body || '[mensagem]'}
+                  </div>
+                  {r.campaign_name && (
+                    <div style={{ fontSize: 10, color: '#4a6050', marginTop: 3 }}>← {r.campaign_name}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DisparosView() {
-  const [tab, setTab] = useState<'list' | 'new'>('list');
+  const [tab, setTab] = useState<'dashboard' | 'list' | 'new'>('list');
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [editData, setEditData] = useState<any | null>(null);
@@ -1956,7 +2270,7 @@ export default function DisparosView() {
       }}>
         <span style={{ fontSize: 16, fontWeight: 600, marginRight: 12 }}>Disparos</span>
 
-        {(['list', 'new'] as const).map(t => (
+        {(['dashboard', 'list', 'new'] as const).map(t => (
           <button
             key={t}
             onClick={() => {
@@ -1972,7 +2286,7 @@ export default function DisparosView() {
               color: tab === t ? '#25D366' : '#4a6050', transition: 'all 0.12s',
             }}
           >
-            {t === 'list' ? 'Campanhas' : (tab === 'new' && editData) ? 'Editando: ' + (editData.name || '').slice(0, 24) : '+ Nova Campanha'}
+            {t === 'dashboard' ? 'Dashboard' : t === 'list' ? 'Campanhas' : (tab === 'new' && editData) ? 'Editando: ' + (editData.name || '').slice(0, 24) : '+ Nova Campanha'}
           </button>
         ))}
 
@@ -1992,7 +2306,9 @@ export default function DisparosView() {
 
       {/* Content */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
-        {tab === 'list' ? (
+        {tab === 'dashboard' ? (
+          <DashboardPanel />
+        ) : tab === 'list' ? (
           <CampaignList
             campaigns={campaigns}
             loading={loading}

@@ -1,11 +1,28 @@
 /**
- * GET /api/conversations/live?instance_id=UUID
+ * GET /api/conversations/live?instance_id=UUID[&base_only=1][&campaign_only=1]
  * Fetches chat list live from UazapiGO for a specific connected instance.
  * Uses POST /chat/find — the correct UazapiGO endpoint for listing chats.
+ *
+ * M1 (backlog): base_only=1 mostra só chats cujo número está na base de
+ * contatos; campaign_only=1 restringe a números que já receberam campanha.
  */
 import type { APIRoute } from 'astro';
 import { requireAuth } from '../../../lib/api-auth';
 import { createServerClient } from '../../../lib/supabase-server';
+
+// Variantes de um número BR para casar chat ↔ contato: com e sem o 9 do
+// celular (bases antigas guardam sem o 9; o WhatsApp usa com o 9 — e vice-versa)
+function phoneVariants(raw: string): string[] {
+  const d = String(raw || '').replace(/\D/g, '').replace(/^0+/, '');
+  if (!d) return [];
+  const full = (d.length === 10 || d.length === 11) ? `55${d}` : d;
+  const out = new Set<string>([full]);
+  if (full.startsWith('55')) {
+    if (full.length === 13 && full[4] === '9') out.add(full.slice(0, 4) + full.slice(5)); // remove o 9
+    if (full.length === 12) out.add(full.slice(0, 4) + '9' + full.slice(4));              // adiciona o 9
+  }
+  return [...out];
+}
 
 export const prerender = false;
 
@@ -77,7 +94,33 @@ export const GET: APIRoute = async ({ locals, url }) => {
       return new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime();
     });
 
-    return json({ chats, instance: { id: inst.id, display_name: inst.display_name, phone_number: inst.phone_number } });
+    // M1: filtros de pertinência (só contatos da base / só interação de campanha)
+    let filtered = chats;
+    const chatPhone = (jid: string) => jid.split('@')[0].replace(/\D/g, '');
+
+    if (url.searchParams.get('base_only') === '1') {
+      const known = new Set<string>();
+      const { data: contacts } = await sb.from('az_contacts').select('phone_primary, phones');
+      for (const c of contacts || []) {
+        for (const p of [c.phone_primary, ...((c.phones as string[]) || [])]) {
+          if (p) phoneVariants(p).forEach(v => known.add(v));
+        }
+      }
+      filtered = filtered.filter((c: any) => !c.is_group && known.has(chatPhone(c.jid)));
+    }
+
+    if (url.searchParams.get('campaign_only') === '1') {
+      const { data: msgs } = await sb
+        .from('az_messages')
+        .select('phone')
+        .eq('direction', 'outbound')
+        .not('campaign_id', 'is', null);
+      const campaignPhones = new Set<string>();
+      for (const m of msgs || []) phoneVariants(m.phone).forEach(v => campaignPhones.add(v));
+      filtered = filtered.filter((c: any) => !c.is_group && campaignPhones.has(chatPhone(c.jid)));
+    }
+
+    return json({ chats: filtered, total_unfiltered: chats.length, instance: { id: inst.id, display_name: inst.display_name, phone_number: inst.phone_number } });
   } catch (e: any) {
     return json({ error: e.message }, 500);
   }

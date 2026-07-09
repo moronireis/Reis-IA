@@ -78,7 +78,30 @@ const S = {
 };
 
 export default function ContatosView() {
-  const { toasts, dismiss, error: showError } = useToast();
+  const { toasts, dismiss, success, error: showError } = useToast();
+  const [savingStatusId, setSavingStatusId] = useState<string | null>(null);
+
+  // Interim do A1a: edição manual de status (até a planilha de última compra
+  // da Tati permitir a derivação automática)
+  async function changeStatus(contact: Contact, status: string) {
+    if (status === contact.status) return;
+    setSavingStatusId(contact.id);
+    try {
+      const res = await fetch(`/api/contacts/${contact.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || 'Erro ao atualizar status');
+      setContacts(prev => prev.map(c => c.id === contact.id ? { ...c, status } : c));
+      success(`Status de ${contact.nome_fantasia || contact.razao_social} → ${STATUS_LABELS[status]}`);
+    } catch (e: any) {
+      showError(e.message);
+    } finally {
+      setSavingStatusId(null);
+    }
+  }
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -246,9 +269,25 @@ export default function ContatosView() {
                     </div>
                   </td>
                   <td style={S.td}>
-                    <span style={S.badge(STATUS_COLORS[c.status] || '#8aaa90')}>
-                      {STATUS_LABELS[c.status] || c.status}
-                    </span>
+                    <select
+                      value={c.status}
+                      disabled={savingStatusId === c.id}
+                      onChange={e => changeStatus(c, e.target.value)}
+                      title="Status manual — será recalculado quando o dado de última compra for importado"
+                      style={{
+                        background: (STATUS_COLORS[c.status] || '#8aaa90') + '18',
+                        color: STATUS_COLORS[c.status] || '#8aaa90',
+                        border: `1px solid ${(STATUS_COLORS[c.status] || '#8aaa90')}33`,
+                        borderRadius: '4px', fontSize: '11px', fontWeight: 500,
+                        padding: '2px 6px', outline: 'none', fontFamily: 'inherit',
+                        cursor: savingStatusId === c.id ? 'wait' : 'pointer',
+                        opacity: savingStatusId === c.id ? 0.5 : 1,
+                      }}
+                    >
+                      <option value="ativo">Ativo</option>
+                      <option value="inativo_recente">Inativo recente</option>
+                      <option value="inativo_antigo">Inativo antigo</option>
+                    </select>
                   </td>
                 </tr>
               ))}

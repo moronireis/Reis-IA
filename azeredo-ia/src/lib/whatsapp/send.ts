@@ -77,3 +77,69 @@ export async function sendWhatsAppText(
     return { ok: false, error: e.message };
   }
 }
+
+/**
+ * Envia mídia (imagem/vídeo) com legenda via POST /send/media do UazapiGO.
+ * `file` é uma URL pública (bucket az-media) — o servidor UazapiGO precisa
+ * alcançá-la para baixar e reenviar.
+ */
+export async function sendWhatsAppMedia(
+  phone: string,
+  mediaUrl: string,
+  mediaType: 'image' | 'video',
+  caption: string,
+  contactId?: string,
+  campaignId?: string,
+  instanceToken?: string,
+  instanceId?: string
+): Promise<SendResult> {
+  const UAZAPI_URL = import.meta.env.UAZAPI_URL;
+  const UAZAPI_TOKEN = instanceToken || import.meta.env.UAZAPI_TOKEN;
+
+  if (!UAZAPI_URL || !UAZAPI_TOKEN) {
+    return { ok: false, error: 'WhatsApp not configured' };
+  }
+
+  const normalizedPhone = normalizePhone(phone);
+
+  try {
+    const res = await fetch(`${UAZAPI_URL}/send/media`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', token: UAZAPI_TOKEN },
+      body: JSON.stringify({
+        number: normalizedPhone,
+        type: mediaType,
+        file: mediaUrl,
+        text: caption || undefined,
+      }),
+      // Mídia envolve download+upload no servidor UazapiGO — mais folga que texto
+      signal: AbortSignal.timeout(45_000),
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      return { ok: false, error: data.message || `HTTP ${res.status}` };
+    }
+
+    if (contactId) {
+      const sb = createServerClient();
+      await sb.from('az_messages').insert({
+        contact_id: contactId,
+        campaign_id: campaignId || null,
+        instance_id: instanceId || null,
+        phone: normalizedPhone,
+        wa_message_id: data.messageid || null,
+        direction: 'outbound',
+        body: caption || null,
+        content_type: mediaType,
+        media_url: mediaUrl,
+        status: 'sent',
+      });
+    }
+
+    return { ok: true, messageid: data.messageid };
+  } catch (e: any) {
+    return { ok: false, error: e.message };
+  }
+}

@@ -16,7 +16,7 @@ export const GET: APIRoute = async ({ locals, params }) => {
 
   const { data: campaign, error } = await sb
     .from('az_campaigns')
-    .select('id, name, status, total_count, sent_count, delivered_count, failed_count, last_error, created_at, started_at, completed_at, template_id, custom_body, segment_filter, instance_id, az_templates(id, name, body), az_whatsapp_instances(id, display_name, uazapi_name, phone_number, status)')
+    .select('id, name, status, total_count, sent_count, delivered_count, failed_count, last_error, created_at, started_at, completed_at, template_id, custom_body, segment_filter, instance_id, custom_media_url, custom_media_type, az_templates(id, name, body, media_url, media_type), az_whatsapp_instances(id, display_name, uazapi_name, phone_number, status)')
     .eq('id', id)
     .single();
 
@@ -25,12 +25,18 @@ export const GET: APIRoute = async ({ locals, params }) => {
   // Fetch recipients preview (max 100)
   const { data: recipients } = await sb
     .from('az_campaign_recipients')
-    .select('id, contact_id, status, sent_at, error_message, az_contacts(nome_fantasia, razao_social, phone_primary, cidade)')
+    .select('id, contact_id, status, sent_at, replied_at, error_message, az_contacts(nome_fantasia, razao_social, phone_primary, cidade)')
     .eq('campaign_id', id)
     .limit(100)
     .order('created_at', { ascending: true });
 
-  return json({ campaign, recipients: recipients || [] });
+  const { count: repliedCount } = await sb
+    .from('az_campaign_recipients')
+    .select('id', { count: 'exact', head: true })
+    .eq('campaign_id', id)
+    .not('replied_at', 'is', null);
+
+  return json({ campaign, recipients: recipients || [], replied_count: repliedCount || 0 });
 };
 
 // PATCH /api/campaigns/[id]
@@ -64,6 +70,8 @@ export const PATCH: APIRoute = async ({ locals, params, request }) => {
   if (body.custom_body !== undefined)      updates.custom_body = body.custom_body;
   if (body.segment_filter !== undefined)   updates.segment_filter = body.segment_filter;
   if (body.instance_id !== undefined)      updates.instance_id = body.instance_id || null;
+  if (body.custom_media_url !== undefined)  updates.custom_media_url = body.custom_media_url || null;
+  if (body.custom_media_type !== undefined) updates.custom_media_type = body.custom_media_type || null;
 
   const { data, error } = await sb
     .from('az_campaigns')
