@@ -10,17 +10,19 @@
 |------|--------|
 | 1.1 Remover módulo Conversas (chat.html, messages.js, webhook/meta.js, navs, vercel.json) | ✅ FEITO — 12→10 funções |
 | 1.2 Spike ChatGuru | ✅ FEITO — descobriu `message_file_send` (file_url + caption). `file_send`/`chat_list`/`chat_read`/`chat_info` NÃO existem na API. Coleta da Fase 2 será via webhook, não polling. Escritas existem: `chat_update_custom_fields`, `note_add`, `chat_update_context`, `chat_update_name` |
-| 1.3 Upload PDF Pandapé + import com IA | ✅ CÓDIGO PRONTO — card na aba Gerador, pdf.js client-side, `action=import-pdf` (Haiku + structured outputs), grava `raw_data` no formato Pandapé (geração consome sem mudanças). **PENDENTE: `ANTHROPIC_API_KEY` com créditos no Vercel** (a chave local existe mas a conta está sem créditos) |
+| 1.3 Upload PDF Pandapé + import com IA | ✅ FUNCIONANDO EM PRODUÇÃO (09/07) — card na aba Gerador, pdf.js client-side, `action=import-pdf` (**OpenAI `gpt-4o-mini` + structured outputs estritos, conta U4D** — trocado de Claude em 09/07 por decisão do Moroni), grava `raw_data` no formato Pandapé (geração consome sem mudanças). `OPENAI_API_KEY` configurada no Vercel. Testado E2E em produção: candidato criado a partir de texto de PDF (~1,2K tokens ≈ R$0,002/currículo). Override de modelo via env `OPENAI_IMPORT_MODEL` |
 | 1.4 Enviar arquivo PDF no ChatGuru | ✅ FEITO — PDF client-side (html2pdf via iframe do cv-print) → bucket `rhf-cvs` (Supabase Storage, público) → `message_file_send` com caption. Testado E2E até a entrega (número fake → "Chat não existe", parâmetros aceitos). Fallback texto preservado (`sent_status='chatguru_texto'`) |
 | Migration 006 (sent_status/sent_at/sent_file_url/presented_at/client_response_at/client_company/vacancy_ref/created_by_name + vacancies.updated_at) | ✅ APLICADA no banco |
 | Rastreio de recrutador (created_by/created_by_name no generate) | ✅ FEITO — front envia RHF_USER |
 | Deploy produção + alias | ✅ dpl_9MRtJnJe8eiTMwDndmtpTXADn6bk — smoke tests todos verdes |
 
 **Pendências para fechar a Fase 1:**
-1. `ANTHROPIC_API_KEY` com créditos → `npx vercel env add ANTHROPIC_API_KEY production` (único bloqueio do import-pdf)
+1. ~~`ANTHROPIC_API_KEY` com créditos~~ → RESOLVIDO 09/07: IA trocada para OpenAI (conta U4D), `OPENAI_API_KEY` no Vercel, E2E verde em produção
 2. E2E com o Rodrigo: importar 3–5 PDFs reais do Pandapé + enviar um CV em PDF para um chat real do ChatGuru
 3. Confirmar com o Rodrigo que o arquivo enviado aparece no módulo Arquivos do ChatGuru para organização por tags
-4. Commit do código (working tree com as mudanças, aguardando ordem)
+4. ~~Commit do código~~ → FEITO 09/07 (`b7119b6` Fase 1 + commit da troca para OpenAI)
+
+**Próxima frente aprovação pendente (09/07):** plano "entradas manuais Pandapé em cada aba" (planilhas de candidatos/vagas via SheetJS client-side, `action=import-bulk` em contacts/vacancies, seletor de vaga no Gerador, central Pandapé no Dashboard) — apresentado ao Moroni, aguardando OK e amostras reais do Rodrigo (2–3 PDFs + planilha de candidatos + planilha de vagas).
 
 ---
 

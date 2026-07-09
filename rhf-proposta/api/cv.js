@@ -11,7 +11,7 @@
  *                                      without: legacy formatted-text message_send
  * POST /api/cv?action=import-pdf    → { pdf_text, file_name? }
  *                                      extracts structured data from a Pandapé CV PDF
- *                                      (Claude structured outputs) and upserts the candidate
+ *                                      (OpenAI structured outputs) and upserts the candidate
  *
  * complementar object fields:
  *   pretensao, idiomas, data_nascimento, cidade, estado_civil,
@@ -22,8 +22,8 @@ import { select, insert, update, uploadToStorage } from '../lib/supabase.js';
 import { getVacancy } from '../lib/pandape.js';
 import { sendMessage as chatguruSendMessage, sendFileUrl as chatguruSendFileUrl } from '../lib/chatguru.js';
 
-const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
-const IMPORT_MODEL = 'claude-haiku-4-5';
+const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+const IMPORT_MODEL = process.env.OPENAI_IMPORT_MODEL || 'gpt-4o-mini';
 const CV_BUCKET = 'rhf-cvs';
 
 export default async function handler(req, res) {
@@ -741,9 +741,9 @@ async function handleUploadChatguru(req, res) {
 //
 // The recruiter downloads the pre-formatted CV PDF from Pandapé and uploads it
 // on the Gerador de Currículo tab. The front extracts raw text client-side
-// (pdf.js) and posts it here. Claude structures the text into the SAME shape
-// the Pandapé webhook writes to candidates.raw_data (Experience[], Education[],
-// Skills[]...), so handleGenerate consumes it with zero changes.
+// (pdf.js) and posts it here. OpenAI (conta U4D) structures the text into the
+// SAME shape the Pandapé webhook writes to candidates.raw_data (Experience[],
+// Education[], Skills[]...), so handleGenerate consumes it with zero changes.
 
 const IMPORT_SCHEMA = {
   type: 'object',
@@ -818,32 +818,45 @@ async function handleImportPdf(req, res) {
       return res.status(400).json({ status: 'error', message: 'Texto do PDF vazio ou curto demais. O arquivo é um PDF de texto (não escaneado)?' });
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) return res.status(500).json({ status: 'error', message: 'ANTHROPIC_API_KEY não configurada no ambiente.' });
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) return res.status(500).json({ status: 'error', message: 'OPENAI_API_KEY não configurada no ambiente.' });
 
-    const claudeRes = await fetch(CLAUDE_API_URL, {
+    const aiRes = await fetch(OPENAI_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: IMPORT_MODEL,
         max_tokens: 4096,
-        system: IMPORT_SYSTEM,
-        output_config: { format: { type: 'json_schema', schema: IMPORT_SCHEMA } },
-        messages: [{ role: 'user', content: text.slice(0, 60000) }],
+        temperature: 0,
+        response_format: {
+          type: 'json_schema',
+          json_schema: { name: 'pandape_cv', strict: true, schema: IMPORT_SCHEMA },
+        },
+        messages: [
+          { role: 'system', content: IMPORT_SYSTEM },
+          { role: 'user', content: text.slice(0, 60000) },
+        ],
       }),
     });
 
-    const claudeData = await claudeRes.json();
-    if (!claudeRes.ok) {
-      console.error('[CV import-pdf] Claude error:', JSON.stringify(claudeData).slice(0, 500));
-      return res.status(502).json({ status: 'error', message: claudeData?.error?.message || 'Falha na extração com IA.' });
+    const aiData = await aiRes.json();
+    if (!aiRes.ok) {
+      console.error('[CV import-pdf] OpenAI error:', JSON.stringify(aiData).slice(0, 500));
+      return res.status(502).json({ status: 'error', message: aiData?.error?.message || 'Falha na extração com IA.' });
     }
 
-    const jsonText = (claudeData.content || []).find(b => b.type === 'text')?.text || '';
+    const choice = aiData.choices?.[0];
+    if (choice?.message?.refusal) {
+      return res.status(502).json({ status: 'error', message: 'IA recusou o conteúdo: ' + choice.message.refusal });
+    }
+    if (choice?.finish_reason === 'length') {
+      return res.status(502).json({ status: 'error', message: 'PDF longo demais para a extração. Tente um PDF menor.' });
+    }
+
+    const jsonText = choice?.message?.content || '';
     let parsed;
     try { parsed = JSON.parse(jsonText); }
     catch { return res.status(502).json({ status: 'error', message: 'IA retornou resposta não estruturada.' }); }
@@ -860,6 +873,7 @@ async function handleImportPdf(req, res) {
       ...(parsed.languages ? { Languages: parsed.languages } : {}),
       pdf_import: {
         file_name: file_name || null,
+        model: IMPORT_MODEL,
         imported_at: new Date().toISOString(),
         marital_status: parsed.marital_status || null,
         children: parsed.children || null,
@@ -923,7 +937,7 @@ async function handleImportPdf(req, res) {
         languages: parsed.languages || '',
         vacancy_name: parsed.vacancy_name || '',
       },
-      usage: claudeData.usage || null,
+      usage: aiData.usage || null,
     });
   } catch (error) {
     console.error('[CV import-pdf] error:', error);
