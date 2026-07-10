@@ -643,17 +643,9 @@
           </div>
         </div>
         <div class="panel-body" style="display:flex;gap:10px;flex-wrap:wrap;padding:16px 24px;">
-          <button class="topbar-btn" onclick="showTab('candidatos'); openSheetImport('candidatos')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
-            Planilha de candidatos
-          </button>
           <button class="topbar-btn" onclick="goToPdfImport()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             PDF de candidato
-          </button>
-          <button class="topbar-btn" onclick="showTab('vagas'); openSheetImport('vagas')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
-            Planilha de vagas
           </button>
           <button class="topbar-btn" onclick="showTab('vagas'); openVagaTextModal()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
@@ -1011,6 +1003,20 @@
           </div>
         </div>
       </div>
+
+      <!-- Fila de entrega — ChatGuru > Arquivos -->
+      <div class="panel" id="delivery-panel" style="margin-top:24px;">
+        <div class="panel-header" style="align-items:center;">
+          <div>
+            <div class="panel-title">Entrega — ChatGuru &gt; Arquivos</div>
+            <div class="panel-subtitle">Baixe o PDF pronto, suba no módulo Arquivos do ChatGuru (com as tags de vocês) e marque como disponibilizado.</div>
+          </div>
+          <button class="topbar-btn" onclick="loadDeliveryQueue()" style="flex-shrink:0;">Atualizar</button>
+        </div>
+        <div class="panel-body" id="delivery-list" style="padding:8px 24px 16px;">
+          <div style="padding:16px 0;color:var(--text-muted);font-size:12.5px;">Carregando...</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1022,10 +1028,6 @@
         <span class="topbar-tag" id="vagas-header-count">—</span>
       </div>
       <div class="topbar-right">
-        <button class="topbar-btn" onclick="openSheetImport('vagas')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Importar planilha
-        </button>
         <button class="topbar-btn" onclick="openVagaTextModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
           Colar texto da vaga
@@ -1054,41 +1056,12 @@
 
       <div style="background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--radius);padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--amber);flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <div style="font-size:12px;color:var(--text-sec);">Sem API do Pandapé, as vagas entram por aqui: <strong>Importar planilha</strong> (exportada do Pandapé), <strong>Colar texto da vaga</strong> (a IA preenche os campos) ou <strong>Nova Vaga</strong> manual. Toda vaga criada gera descrição + texto de divulgação automaticamente.</div>
+        <div style="font-size:12px;color:var(--text-sec);">Sem API do Pandapé, as vagas entram por aqui: <strong>Colar texto da vaga</strong> (a IA preenche os campos) ou <strong>Nova Vaga</strong> manual. Ao importar o PDF de um candidato, o nº do processo da vaga vem junto automaticamente. Toda vaga criada gera descrição + texto de divulgação.</div>
       </div>
 
       <div class="panel" id="vagas-panel">
         <div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px;">Carregando vagas...</div>
       </div>
-    </div>
-  </div>
-
-  <!-- Modal Enviar no Chat (seletor de conversa ChatGuru) -->
-  <div id="chatSendModal" style="display:none;position:fixed;inset:0;background:rgba(13,32,53,0.55);z-index:300;align-items:center;justify-content:center;padding:20px;">
-    <div style="background:var(--bg-white);border-radius:12px;max-width:480px;width:100%;max-height:85vh;display:flex;flex-direction:column;padding:24px 26px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-        <div style="font-size:17px;font-weight:700;color:var(--text);">Enviar arquivo no ChatGuru</div>
-        <button onclick="closeChatSendModal()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:14px;">Escolha a conversa do ChatGuru que vai receber o currículo em PDF. O arquivo aparece no chat e no módulo de arquivos.</div>
-
-      <input id="chat-send-search" type="text" placeholder="Buscar por nome ou telefone..." oninput="filterChatSendList(this.value)"
-             style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--bg-white);color:var(--text);margin-bottom:10px;">
-
-      <div id="chat-send-list" style="flex:1;overflow-y:auto;min-height:180px;max-height:340px;border:1px solid var(--border-light);border-radius:8px;padding:4px;"></div>
-
-      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-light);">
-        <div class="cv-field-label" style="margin-bottom:6px;">Ou enviar para um número avulso</div>
-        <div style="display:flex;gap:8px;">
-          <input id="chat-send-manual" type="text" placeholder="5551999998888" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--bg-white);color:var(--text);">
-          <button onclick="sendCVToManualPhone()" style="background:var(--orange);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;">Enviar</button>
-        </div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:5px;">A conversa precisa existir no ChatGuru (número com DDI+DDD).</div>
-      </div>
-
-      <div id="chat-send-status" style="font-size:12.5px;margin-top:10px;min-height:16px;"></div>
     </div>
   </div>
 
@@ -1181,16 +1154,6 @@
       </div>
       <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:16px;">Escolha como trazer os dados do Pandapé para a plataforma.</div>
 
-      <button onclick="document.getElementById('pandapeMenuModal').style.display='none'; openSheetImport('candidatos')" style="width:100%;text-align:left;display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--bg-white);cursor:pointer;margin-bottom:10px;" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="width:36px;height:36px;border-radius:8px;background:var(--green-light,#ECFDF5);color:var(--green,#059669);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
-        </div>
-        <div>
-          <div style="font-size:13.5px;font-weight:600;color:var(--text);">Planilha de candidatos (Excel/CSV)</div>
-          <div style="font-size:11.5px;color:var(--text-muted);">Exporte a listagem no Pandapé e suba aqui — importa em lote</div>
-        </div>
-      </button>
-
       <button onclick="document.getElementById('pandapeMenuModal').style.display='none'; goToPdfImport()" style="width:100%;text-align:left;display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--bg-white);cursor:pointer;margin-bottom:10px;" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
         <div style="width:36px;height:36px;border-radius:8px;background:var(--orange-light);color:var(--orange);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -1248,45 +1211,6 @@
       </div>
       <div id="nc-status" style="font-size:12px;min-height:16px;margin-bottom:8px;color:var(--text-muted);"></div>
       <button id="nc-save-btn" class="cv-btn primary" style="width:100%;justify-content:center;" onclick="saveNovoCandidato()">Cadastrar candidato</button>
-    </div>
-  </div>
-
-  <!-- ===== MODAL: IMPORTAR PLANILHA (candidatos/vagas) ===== -->
-  <div id="sheetImportModal" style="display:none;position:fixed;inset:0;background:rgba(13,32,53,0.55);z-index:300;align-items:center;justify-content:center;padding:20px;">
-    <div style="background:var(--bg-white);border-radius:12px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;padding:24px 26px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-        <div style="font-size:17px;font-weight:700;color:var(--text);" id="sheet-title">Importar planilha</div>
-        <button onclick="closeSheetImport()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:14px;" id="sheet-subtitle">Exporte a listagem no Pandapé (Excel ou CSV) e suba o arquivo aqui.</div>
-
-      <div id="sheet-step-file">
-        <label for="sheet-file-input" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:22px;border:2px dashed var(--border);border-radius:10px;cursor:pointer;font-size:13px;color:var(--text-sec);" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Clique para escolher o arquivo (.xlsx, .xls ou .csv)
-        </label>
-        <input id="sheet-file-input" type="file" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleSheetFile(this)">
-      </div>
-
-      <div id="sheet-step-map" style="display:none;">
-        <div style="font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:8px;" id="sheet-map-info"></div>
-        <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">Confira se cada campo aponta para a coluna certa da planilha (o mapeamento fica salvo para as próximas importações):</div>
-        <div id="sheet-map-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-bottom:14px;"></div>
-        <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;">Prévia (3 primeiras linhas):</div>
-        <div id="sheet-preview" style="overflow-x:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:14px;"></div>
-        <div id="sheet-import-status" style="font-size:12px;min-height:16px;margin-bottom:8px;color:var(--text-muted);"></div>
-        <div style="display:flex;gap:10px;">
-          <button class="cv-btn secondary" style="flex:1;justify-content:center;" onclick="resetSheetImport()">Trocar arquivo</button>
-          <button id="sheet-import-btn" class="cv-btn primary" style="flex:2;justify-content:center;" onclick="runSheetImport()">Importar</button>
-        </div>
-      </div>
-
-      <div id="sheet-step-done" style="display:none;">
-        <div id="sheet-done-msg" style="background:var(--green-light,#ECFDF5);border:1px solid var(--green,#10B981);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--green,#059669);font-weight:600;margin-bottom:14px;"></div>
-        <button class="cv-btn secondary" style="width:100%;justify-content:center;" onclick="closeSheetImport()">Fechar</button>
-      </div>
     </div>
   </div>
 
@@ -1362,7 +1286,6 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
   // ============================================================
   // TAB SYSTEM
@@ -1768,7 +1691,7 @@
         const pandapeRows = candidates.filter(c => String(c.source || '').startsWith('pandape') || (c.raw_data && c.raw_data.pdf_import));
         const lastP = pandapeRows.map(c => new Date(c.updated_at || c.created_at)).sort((a, b) => b - a)[0];
         if (!lastP) {
-          freshEl.textContent = 'Sem API do Pandapé — importe planilhas ou PDFs por aqui. Nenhum dado importado ainda.';
+          freshEl.textContent = 'Sem API do Pandapé — importe os PDFs dos candidatos por aqui. Nenhum dado importado ainda.';
         } else {
           const days = Math.floor((Date.now() - lastP.getTime()) / 86400000);
           const when = days === 0 ? 'hoje' : days === 1 ? 'ontem' : `há ${days} dias`;
@@ -2275,7 +2198,7 @@
       'comp-pretensao': p.salary_expectation,
       'comp-ultimo-salario': p.last_salary,
       'comp-idiomas': p.languages,
-      'comp-vaga': p.vacancy_name,
+      'comp-vaga': (p.vacancy_title ? p.vacancy_title + (p.vacancy_city ? ' - ' + p.vacancy_city : '') : p.vacancy_name),
     };
     let filled = 0;
     Object.entries(map).forEach(([id, v]) => {
@@ -2344,168 +2267,6 @@
       statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Erro: ' + e.message;
     } finally {
       btn.disabled = false; btn.textContent = 'Cadastrar candidato';
-    }
-  }
-
-  // ── Importação de planilha (candidatos e vagas) ─────────────
-
-  const SHEET_FIELDS = {
-    candidatos: [
-      { key: 'name', label: 'Nome *', guess: ['nome', 'candidato'] },
-      { key: 'phone', label: 'Telefone/WhatsApp', guess: ['telefone', 'celular', 'whats', 'fone', 'contato'] },
-      { key: 'email', label: 'E-mail', guess: ['mail'] },
-      { key: 'city', label: 'Cidade/UF', guess: ['cidade', 'municip', 'local'] },
-      { key: 'vacancy_name', label: 'Vaga/Processo', guess: ['vaga', 'processo', 'cargo', 'oportunidade'] },
-      { key: 'education', label: 'Formação', guess: ['forma', 'escolaridade', 'educa'] },
-      { key: 'salary_expectation', label: 'Pretensão salarial', guess: ['pretens', 'salar'] },
-    ],
-    vagas: [
-      { key: 'title', label: 'Título da vaga *', guess: ['titulo', 'vaga', 'cargo', 'nome'] },
-      { key: 'client_name', label: 'Empresa/Cliente', guess: ['empresa', 'cliente'] },
-      { key: 'city', label: 'Cidade/UF', guess: ['cidade', 'local'] },
-      { key: 'contract_type', label: 'Contratação', guess: ['contrat', 'tipo'] },
-      { key: 'salary_range', label: 'Faixa salarial', guess: ['salar', 'faixa'] },
-      { key: 'requirements', label: 'Requisitos', guess: ['requisit'] },
-      { key: 'processo_numero', label: 'Nº do processo', guess: ['processo', 'numero', 'codigo', 'id'] },
-      { key: 'status', label: 'Status', guess: ['status', 'situa'] },
-    ],
-  };
-
-  let _sheet = null; // { mode, headers, rows }
-
-  function openSheetImport(mode) {
-    _sheet = { mode, headers: [], rows: [] };
-    document.getElementById('sheet-title').textContent = mode === 'vagas' ? 'Importar planilha de vagas' : 'Importar planilha de candidatos';
-    document.getElementById('sheet-subtitle').textContent = mode === 'vagas'
-      ? 'Exporte a listagem de vagas/processos no Pandapé (Excel ou CSV) e suba o arquivo aqui.'
-      : 'Exporte a listagem de candidatos no Pandapé (Excel ou CSV) e suba o arquivo aqui.';
-    resetSheetImport();
-    document.getElementById('sheetImportModal').style.display = 'flex';
-  }
-
-  function closeSheetImport() { document.getElementById('sheetImportModal').style.display = 'none'; _sheet = null; }
-
-  function resetSheetImport() {
-    document.getElementById('sheet-step-file').style.display = 'block';
-    document.getElementById('sheet-step-map').style.display = 'none';
-    document.getElementById('sheet-step-done').style.display = 'none';
-    document.getElementById('sheet-file-input').value = '';
-    document.getElementById('sheet-import-status').textContent = '';
-  }
-
-  function normHeader(h) {
-    return String(h || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-  }
-
-  async function handleSheetFile(input) {
-    const file = input.files && input.files[0];
-    if (!file || !_sheet) return;
-    try {
-      if (!window.XLSX) throw new Error('Leitor de planilha não carregado. Recarregue a página.');
-      const wb = XLSX.read(await file.arrayBuffer(), { type: 'array' });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const grid = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-      if (!grid.length || grid.length < 2) throw new Error('Planilha vazia ou sem linhas de dados.');
-      _sheet.headers = grid[0].map(h => String(h).trim());
-      _sheet.rows = grid.slice(1).filter(r => r.some(c => String(c).trim() !== ''));
-      const cap = _sheet.mode === 'vagas' ? 200 : 300;
-      if (_sheet.rows.length > cap) {
-        alert(`A planilha tem ${_sheet.rows.length} linhas — o limite por importação é ${cap}. Somente as ${cap} primeiras serão consideradas.`);
-        _sheet.rows = _sheet.rows.slice(0, cap);
-      }
-      document.getElementById('sheet-map-info').textContent = `${file.name} — ${_sheet.rows.length} linha(s) de dados, ${_sheet.headers.length} coluna(s).`;
-      renderSheetMapping();
-      document.getElementById('sheet-step-file').style.display = 'none';
-      document.getElementById('sheet-step-map').style.display = 'block';
-    } catch (e) {
-      alert('Erro ao ler a planilha: ' + e.message);
-      input.value = '';
-    }
-  }
-
-  function renderSheetMapping() {
-    const fields = SHEET_FIELDS[_sheet.mode];
-    const saved = JSON.parse(localStorage.getItem('rhf_sheet_map_' + _sheet.mode) || '{}');
-    const grid = document.getElementById('sheet-map-grid');
-    grid.innerHTML = '';
-    const esc = t => String(t ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    fields.forEach(f => {
-      // Prioridade: mapeamento salvo (pelo NOME do cabeçalho) → palpite por palavra-chave
-      let sel = '';
-      if (saved[f.key] && _sheet.headers.includes(saved[f.key])) sel = saved[f.key];
-      else {
-        const hit = _sheet.headers.find(h => f.guess.some(g => normHeader(h).includes(g)));
-        if (hit) sel = hit;
-      }
-      const opts = ['<option value="">— não importar —</option>']
-        .concat(_sheet.headers.map(h => `<option value="${esc(h)}" ${h === sel ? 'selected' : ''}>${esc(h)}</option>`)).join('');
-      grid.insertAdjacentHTML('beforeend', `
-        <div>
-          <div class="cv-field-label">${f.label}</div>
-          <select data-field="${f.key}" onchange="renderSheetPreview()" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:12.5px;background:var(--bg-white);color:var(--text);">${opts}</select>
-        </div>`);
-    });
-    renderSheetPreview();
-  }
-
-  function getSheetMapping() {
-    const mapping = {};
-    document.querySelectorAll('#sheet-map-grid select').forEach(s => { if (s.value) mapping[s.dataset.field] = s.value; });
-    return mapping;
-  }
-
-  function renderSheetPreview() {
-    if (!_sheet) return;
-    const mapping = getSheetMapping();
-    const fields = SHEET_FIELDS[_sheet.mode].filter(f => mapping[f.key]);
-    const esc = t => String(t ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const idx = h => _sheet.headers.indexOf(h);
-    let html = '<table style="width:100%;border-collapse:collapse;font-size:11.5px;"><tr>' +
-      fields.map(f => `<th style="text-align:left;padding:6px 10px;background:var(--bg-light);border-bottom:1px solid var(--border);white-space:nowrap;">${esc(f.label.replace(' *',''))}</th>`).join('') + '</tr>';
-    _sheet.rows.slice(0, 3).forEach(r => {
-      html += '<tr>' + fields.map(f => `<td style="padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text-sec);">${esc(r[idx(mapping[f.key])])}</td>`).join('') + '</tr>';
-    });
-    document.getElementById('sheet-preview').innerHTML = html + '</table>';
-  }
-
-  async function runSheetImport() {
-    if (!_sheet) return;
-    const mapping = getSheetMapping();
-    const requiredKey = _sheet.mode === 'vagas' ? 'title' : 'name';
-    if (!mapping[requiredKey]) { alert(`Mapeie a coluna de ${_sheet.mode === 'vagas' ? 'título da vaga' : 'nome'} antes de importar.`); return; }
-    localStorage.setItem('rhf_sheet_map_' + _sheet.mode, JSON.stringify(mapping));
-
-    const idx = h => _sheet.headers.indexOf(h);
-    const rows = _sheet.rows.map(r => {
-      const obj = {};
-      Object.entries(mapping).forEach(([k, h]) => { obj[k] = r[idx(h)]; });
-      return obj;
-    });
-
-    const btn = document.getElementById('sheet-import-btn');
-    const statusEl = document.getElementById('sheet-import-status');
-    btn.disabled = true; btn.textContent = 'Importando...';
-    statusEl.style.color = 'var(--text-muted)'; statusEl.textContent = `Enviando ${rows.length} linha(s)...`;
-    try {
-      const endpoint = _sheet.mode === 'vagas' ? '/api/vacancies?action=import-bulk' : '/api/contacts?action=import-bulk';
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rows, source: 'pandape-sheet' }),
-      });
-      const json = await res.json();
-      if (json.status !== 'ok') { statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Erro: ' + (json.message || 'falha na importação'); return; }
-      document.getElementById('sheet-done-msg').textContent = 'Importação concluída: ' + json.message;
-      document.getElementById('sheet-step-map').style.display = 'none';
-      document.getElementById('sheet-step-done').style.display = 'block';
-      localStorage.setItem('rhf_last_pandape_import', new Date().toISOString());
-      tabLoaded['dashboard'] = false;
-      if (_sheet.mode === 'vagas') { tabLoaded['vagas'] = false; if (typeof loadVagas === 'function') loadVagas(); refreshVagaSelect(); }
-      else { tabLoaded['candidatos'] = false; if (typeof loadCandidatos === 'function') loadCandidatos(); }
-    } catch (e) {
-      statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Erro: ' + e.message;
-    } finally {
-      btn.disabled = false; btn.textContent = 'Importar';
     }
   }
 
@@ -2623,6 +2384,7 @@
       if (json.status === 'ok' && json.cv) {
         window._lastGeneratedForCandidate = selectedCandidateId;
         window._currentCVId = json.cv.id || null;
+        window._currentCV = json.cv;
         window._currentCVPhone = json.cv.candidate_phone || null;
         renderGeneratedCV(json.cv);
         result.style.display = 'block';
@@ -2708,11 +2470,12 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           Enviar por Email
         </button>
-        <button class="cv-btn secondary" onclick="openChatSendModal()" title="Enviar o currículo em PDF para uma conversa do ChatGuru">
+        <button class="cv-btn secondary" onclick="prepareCvFile(this)" title="Gera o PDF final no padrão RHF e deixa pronto para subir no módulo Arquivos do ChatGuru">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-          Enviar arquivo ChatGuru
+          Preparar arquivo (ChatGuru)
         </button>
-      </div>`;
+      </div>
+      <div id="cv-action-status" style="font-size:12px;color:var(--text-muted);margin-top:8px;min-height:15px;"></div>`;
   }
 
   // ============================================================
@@ -2877,130 +2640,115 @@
 
   let _chatSendList = [];
 
-  function openChatSendModal() {
+  // ============================================================
+  // ENTREGA — ChatGuru > Arquivos (sem envio para conversas)
+  // ============================================================
+
+  // Nome no padrão real da RHF: "Nome - Vaga - Cidade-UF.pdf"
+  function buildCvFileName(cv) {
+    const name = String((cv && cv.candidate_name) || 'Candidato').trim();
+    let v = String((cv && cv.vacancy_name) || '').trim();
+    v = v.replace(/^#?\d+\s*[-\u2013\u2014]\s*/, ''); // remove "#1164 - "
+    let title = v, city = '';
+    const parts = v.split(/\s+[-\u2013\u2014]\s+/);
+    if (parts.length >= 2) { city = parts.pop().trim(); title = parts.join(' - ').trim(); }
+    city = city.replace(/\//g, '-');
+    const base = [name, title, city].filter(Boolean).join(' - ').replace(/[\\/:*?"<>|#%]/g, '-').replace(/\s+/g, ' ').trim();
+    return base + '.pdf';
+  }
+
+  async function prepareCvFile(btn) {
     if (!window._currentCVId) { alert('Gere o currículo primeiro.'); return; }
-    document.getElementById('chatSendModal').style.display = 'flex';
-    document.getElementById('chat-send-search').value = '';
-    document.getElementById('chat-send-status').textContent = '';
-    loadChatSendList();
-  }
-
-  function closeChatSendModal() {
-    document.getElementById('chatSendModal').style.display = 'none';
-  }
-
-  async function loadChatSendList() {
-    const listEl = document.getElementById('chat-send-list');
-    listEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">Carregando conversas...</div>';
+    const statusEl = document.getElementById('cv-action-status');
+    const setS = (m, c) => { if (statusEl) { statusEl.style.color = c || 'var(--text-muted)'; statusEl.textContent = m; } };
+    if (btn) btn.disabled = true;
     try {
-      const res = await fetch('/api/whatsapp?action=chats');
-      const json = await res.json();
-      if (json.status !== 'ok') throw new Error(json.message || 'Falha ao listar conversas');
-      _chatSendList = (json.data || []).filter(c => c.phone);
-      renderChatSendList(_chatSendList);
-    } catch (e) {
-      listEl.innerHTML = `<div style="padding:24px;text-align:center;color:var(--red);font-size:13px;">Erro ao carregar conversas: ${e.message}</div>`;
-    }
-  }
-
-  function renderChatSendList(chats) {
-    const listEl = document.getElementById('chat-send-list');
-    function escC(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-    if (!chats || chats.length === 0) {
-      listEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">Nenhuma conversa encontrada.</div>';
-      return;
-    }
-    listEl.innerHTML = chats.slice(0, 80).map(c => {
-      const phoneClean = String(c.phone).replace(/\D/g, '');
-      const isCandidate = window._currentCVPhone && phoneClean === String(window._currentCVPhone).replace(/\D/g, '');
-      return `
-      <div onclick="sendCVToChat('${phoneClean}', '${escC(c.name).replace(/'/g, '&#39;')}', this)"
-           style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.12s;"
-           onmouseover="this.style.background='var(--bg-light)'" onmouseout="this.style.background='none'">
-        <div style="width:36px;height:36px;border-radius:50%;background:${avatarColor(c.name || c.phone)};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">${getInitials(c.name || '?')}</div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escC(c.name || 'Sem nome')}${isCandidate ? ' <span style="font-size:10px;font-weight:700;color:var(--orange);border:1px solid var(--orange);border-radius:100px;padding:1px 7px;margin-left:6px;vertical-align:middle;">candidato</span>' : ''}</div>
-          <div style="font-size:12px;color:var(--text-muted);">${escC(c.phone)}</div>
-        </div>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="flex-shrink:0;"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-      </div>`;
-    }).join('');
-  }
-
-  function filterChatSendList(q) {
-    const query = (q || '').trim().toLowerCase();
-    if (!query) return renderChatSendList(_chatSendList);
-    renderChatSendList(_chatSendList.filter(c =>
-      (c.name || '').toLowerCase().includes(query) || String(c.phone || '').includes(query.replace(/\D/g, '') || query)
-    ));
-  }
-
-  // Gera o PDF do currículo no cliente, reutilizando o layout do /cv-print
-  // dentro de um iframe oculto (a página expõe window.generatePdfBase64).
-  async function getCvPdfBase64(cvId) {
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;left:-10000px;top:0;width:900px;height:1400px;visibility:hidden;';
-    iframe.src = `/cv-print?cv_id=${encodeURIComponent(cvId)}&embed=1`;
-    document.body.appendChild(iframe);
-    try {
-      await new Promise((resolve, reject) => {
-        iframe.onload = resolve;
-        iframe.onerror = () => reject(new Error('Falha ao carregar o layout do currículo.'));
-        setTimeout(() => reject(new Error('Tempo esgotado ao carregar o currículo.')), 20000);
-      });
-      for (let i = 0; i < 40 && !(iframe.contentWindow && iframe.contentWindow.generatePdfBase64); i++) {
-        await new Promise(r => setTimeout(r, 150));
-      }
-      if (!iframe.contentWindow || !iframe.contentWindow.generatePdfBase64) {
-        throw new Error('Gerador de PDF indisponível. Recarregue a página.');
-      }
-      return await iframe.contentWindow.generatePdfBase64();
-    } finally {
-      iframe.remove();
-    }
-  }
-
-  async function sendCVToChat(phone, name, rowEl) {
-    if (!window._currentCVId) { alert('Gere o currículo primeiro.'); return; }
-    if (!confirm(`Enviar o currículo em PDF na conversa de ${name || phone}?`)) return;
-
-    const statusEl = document.getElementById('chat-send-status');
-    statusEl.style.color = 'var(--text-muted)';
-    if (rowEl) rowEl.style.opacity = '0.5';
-
-    try {
-      statusEl.textContent = 'Gerando PDF do currículo...';
+      setS('Gerando o PDF final...');
       const fileBase64 = await getCvPdfBase64(window._currentCVId);
-
-      statusEl.textContent = `Enviando arquivo para ${name || phone}...`;
-      const res = await fetch('/api/cv?action=upload-chatguru', {
+      const fileName = buildCvFileName(window._currentCV || {});
+      setS('Hospedando o arquivo...');
+      const res = await fetch('/api/cv?action=prepare-file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cv_id: window._currentCVId, phone, file_base64: fileBase64 }),
+        body: JSON.stringify({ cv_id: window._currentCVId, file_base64: fileBase64, file_name: fileName }),
       });
-      const data = await res.json();
-      if (data.status === 'ok') {
-        statusEl.style.color = 'var(--green)';
-        statusEl.textContent = `Arquivo PDF enviado na conversa de ${name || phone}.`;
-        setTimeout(closeChatSendModal, 1600);
-      } else {
-        statusEl.style.color = 'var(--red)';
-        statusEl.textContent = 'Erro: ' + (data.message || 'falha no envio');
-      }
+      const json = await res.json();
+      if (json.status !== 'ok') { setS('Erro: ' + (json.message || 'falha ao preparar'), 'var(--red)'); return; }
+      setS('Arquivo preparado: ' + fileName + ' — baixe na fila "Entrega" abaixo e suba no ChatGuru > Arquivos.', 'var(--green)');
+      loadDeliveryQueue();
+      const panel = document.getElementById('delivery-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } catch (e) {
-      statusEl.style.color = 'var(--red)';
-      statusEl.textContent = 'Erro: ' + e.message;
+      setS('Erro: ' + e.message, 'var(--red)');
     } finally {
-      if (rowEl) rowEl.style.opacity = '1';
+      if (btn) btn.disabled = false;
     }
   }
 
-  function sendCVToManualPhone() {
-    const input = document.getElementById('chat-send-manual');
-    const phone = (input.value || '').replace(/\D/g, '');
-    if (phone.length < 10) { alert('Número inválido. Use DDI+DDD+número, ex.: 5551999998888'); return; }
-    sendCVToChat(phone, input.value.trim(), null);
+  async function loadDeliveryQueue() {
+    const list = document.getElementById('delivery-list');
+    if (!list) return;
+    try {
+      const res = await fetch('/api/cv?action=query&limit=60');
+      const json = await res.json();
+      const rows = (json.data || []).filter(cv => cv.sent_status === 'preparado' || cv.sent_status === 'chatguru_arquivo');
+      if (rows.length === 0) {
+        list.innerHTML = '<div style="padding:16px 0;color:var(--text-muted);font-size:12.5px;">Nenhum arquivo preparado ainda. Gere um currículo e clique em "Preparar arquivo (ChatGuru)".</div>';
+        return;
+      }
+      const esc = t => String(t ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      list.innerHTML = rows.map(cv => {
+        const fname = buildCvFileName(cv);
+        const delivered = cv.sent_status === 'chatguru_arquivo';
+        const when = delivered && cv.sent_at ? new Date(cv.sent_at).toLocaleDateString('pt-BR') : '';
+        const fnameAttr = esc(fname).replace(/'/g, '&#39;');
+        return `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);${delivered ? 'opacity:0.65;' : ''}">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(fname)}</div>
+            <div style="font-size:11.5px;color:${delivered ? 'var(--green)' : 'var(--text-muted)'};">${delivered ? '✓ Disponibilizado no ChatGuru' + (when ? ' em ' + when : '') : 'Aguardando upload no ChatGuru > Arquivos'}</div>
+          </div>
+          ${cv.sent_file_url ? `<button class="topbar-btn" onclick="downloadPrepared('${esc(cv.sent_file_url)}', '${fnameAttr}')">Baixar</button>` : ''}
+          ${delivered
+            ? `<button class="topbar-btn" onclick="markDelivered('${cv.id}', true)" title="Voltar para a fila">Desfazer</button>`
+            : `<button class="topbar-btn primary" onclick="markDelivered('${cv.id}', false)">Marcar como disponibilizado</button>`}
+        </div>`;
+      }).join('');
+    } catch (e) {
+      list.innerHTML = '<div style="padding:16px 0;color:var(--red);font-size:12.5px;">Erro ao carregar a fila: ' + e.message + '</div>';
+    }
   }
+
+  // Baixa via blob para forçar o nome correto do arquivo (URL é cross-origin)
+  async function downloadPrepared(url, name) {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const blob = await r.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = name || 'curriculo.pdf';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    } catch (e) {
+      window.open(url, '_blank');
+    }
+  }
+
+  async function markDelivered(cvId, undo) {
+    try {
+      const res = await fetch('/api/cv?action=mark-delivered', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cv_id: cvId, undo: !!undo }),
+      });
+      const json = await res.json();
+      if (json.status !== 'ok') { alert('Erro: ' + (json.message || 'falha ao atualizar')); return; }
+      loadDeliveryQueue();
+    } catch (e) { alert('Erro: ' + e.message); }
+  }
+
+  loadDeliveryQueue();
 
   // ============================================================
   // LEGACY selectCandidate (kept for backward compat)

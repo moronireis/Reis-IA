@@ -5,13 +5,19 @@
  * GET  /api/cv?action=query         → list/fetch CVs
  * GET  /api/cv?action=query&id=X    → single CV
  * POST /api/cv?action=send-email    → { cv_id, to, cc?, candidate_name? }
- * POST /api/cv?action=upload-chatguru → { cv_id, phone, file_base64?, file_name?, caption? }
- *                                      with file_base64: uploads PDF to Supabase Storage
- *                                      and sends via ChatGuru message_file_send;
- *                                      without: legacy formatted-text message_send
- * POST /api/cv?action=import-pdf    → { pdf_text, file_name? }
+ * POST /api/cv?action=prepare-file  → { cv_id, file_base64, file_name? }
+ *                                      hosts the final PDF on Supabase Storage and marks
+ *                                      sent_status='preparado' (delivery queue for ChatGuru Arquivos)
+ * POST /api/cv?action=mark-delivered → { cv_id, undo? }
+ *                                      marks sent_status='chatguru_arquivo' + sent_at after the
+ *                                      team uploads the PDF to the ChatGuru Files module
+ * POST /api/cv?action=import-pdf    → { pdf_text, file_name?, file_base64? }
  *                                      extracts structured data from a Pandapé CV PDF
  *                                      (OpenAI structured outputs) and upserts the candidate
+ *
+ * NOTE (checkpoint 04/07): CV NUNCA vai para conversa/chat. A entrega é
+ * exclusivamente no módulo Arquivos do ChatGuru (upload manual do Rodrigo até
+ * existir endpoint de API para o repositório — spike pendente).
  *
  * complementar object fields:
  *   pretensao, idiomas, data_nascimento, cidade, estado_civil,
@@ -20,7 +26,6 @@
 
 import { select, insert, update, uploadToStorage } from '../lib/supabase.js';
 import { getVacancy } from '../lib/pandape.js';
-import { sendMessage as chatguruSendMessage, sendFileUrl as chatguruSendFileUrl } from '../lib/chatguru.js';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const IMPORT_MODEL = process.env.OPENAI_IMPORT_MODEL || 'gpt-4o-mini';
@@ -39,10 +44,11 @@ export default async function handler(req, res) {
   if (action === 'query' && req.method === 'GET') return handleQuery(req, res);
   if (action === 'update' && req.method === 'POST') return handleUpdate(req, res);
   if (action === 'send-email' && req.method === 'POST') return handleSendEmail(req, res);
-  if (action === 'upload-chatguru' && req.method === 'POST') return handleUploadChatguru(req, res);
+  if (action === 'prepare-file' && req.method === 'POST') return handlePrepareFile(req, res);
+  if (action === 'mark-delivered' && req.method === 'POST') return handleMarkDelivered(req, res);
   if (action === 'import-pdf' && req.method === 'POST') return handleImportPdf(req, res);
 
-  return res.status(400).json({ error: 'Use action=generate (POST) | query (GET) | update (POST) | send-email (POST) | upload-chatguru (POST) | import-pdf (POST)' });
+  return res.status(400).json({ error: 'Use action=generate (POST) | query (GET) | update (POST) | send-email (POST) | prepare-file (POST) | mark-delivered (POST) | import-pdf (POST)' });
 }
 
 // ─── Query ────────────────────────────────────────────────────────────────────
@@ -300,7 +306,7 @@ function buildCvSections(candidate, messages, vacancy, complementar) {
 
   // ── EXPERIÊNCIA PROFISSIONAL ───────────────────────────────
   const experienceRaw = pick('Experience', 'experience', 'Experiences', 'Experiencia', 'WorkHistory', 'Jobs');
-  const expLines = [];
+  const expEntries = [];
   if (Array.isArray(experienceRaw) && experienceRaw.length > 0) {
     for (const exp of experienceRaw) {
       const cargo = exp.JobTitle ?? exp.Title ?? exp.Cargo ?? exp.Role ?? exp.title ?? '';
@@ -308,35 +314,27 @@ function buildCvSections(candidate, messages, vacancy, complementar) {
       const cidade = exp.City ?? exp.Location ?? exp.Cidade ?? exp.city ?? '';
       const startRaw = exp.StartDate ?? exp.DataInicio ?? exp.start ?? '';
       const endRaw = exp.EndDate ?? exp.DataFim ?? exp.end ?? '';
-      const start = formatDateBR(startRaw);
-      const end = endRaw ? formatDateBR(endRaw) : 'Atual';
-      const periodo = calcPeriod(startRaw, endRaw || 'atual');
       const desc = exp.Description ?? exp.Descricao ?? exp.description ?? '';
 
-      if (expLines.length > 0) expLines.push(''); // blank line between entries
+      const fallbackBullets = desc
+        ? String(desc)
+            .split(/\n|(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÂÊÎÔÛÃÕÇ])/)
+            .map(p => p.trim().replace(/^[•\-]\s*/, ''))
+            .filter(p => p.length > 3)
+        : [];
 
-      // Header: "Cargo | Empresa – Cidade/UF"
-      const headerParts = [];
-      if (cargo) headerParts.push(cargo);
-      if (empresa) headerParts.push(cidade ? `${empresa} – ${cidade}` : empresa);
-      if (headerParts.length > 0) expLines.push(headerParts.join(' | '));
-
-      // Period line
-      if (start) expLines.push(`Período: ${start} a ${end}${periodo ? ' ' + periodo : ''}`);
-
-      // Activities as bullet points
-      if (desc) {
-        const activities = String(desc)
-          .split(/\n|(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÂÊÎÔÛÃÕÇ])/)
-          .map(p => p.trim().replace(/^[•\-]\s*/, ''))
-          .filter(p => p.length > 3);
-        for (const a of activities) expLines.push(`• ${a}`);
-      }
+      expEntries.push({
+        cargo, empresa, cidade, desc,
+        start: formatDateBR(startRaw),
+        end: endRaw ? formatDateBR(endRaw) : 'Atual',
+        periodo: calcPeriod(startRaw, endRaw || 'atual'),
+        fallbackBullets,
+      });
     }
-  } else if (typeof experienceRaw === 'string' && experienceRaw.trim()) {
-    expLines.push(experienceRaw.trim());
   }
-  const experiencia = expLines.length > 0 ? expLines.join('\n') : null;
+  let experiencia = null;
+  if (expEntries.length > 0) experiencia = assembleExperienceSection(expEntries);
+  else if (typeof experienceRaw === 'string' && experienceRaw.trim()) experiencia = experienceRaw.trim();
 
   // ── FORMAÇÃO ───────────────────────────────────────────────
   const eduRaw = pick('Education', 'education', 'Formacao', 'Escolaridade', 'Educations');
@@ -420,7 +418,106 @@ function buildCvSections(candidate, messages, vacancy, complementar) {
   if (complementar?.ultimo_salario) infoLines.push(`Último salário: ${complementar.ultimo_salario}`);
   const info_complementares = infoLines.length > 0 ? infoLines.join('\n') : null;
 
-  return { pretensao, experiencia, formacao, competencias, idiomas, info_complementares };
+  return { pretensao, experiencia, formacao, competencias, idiomas, info_complementares, expEntries };
+}
+
+// Assemble the EXPERIÊNCIA section text. bulletsByIndex (opcional) substitui os
+// bullets brutos pelos reescritos pela IA, mantendo o mesmo cabeçalho/período.
+function assembleExperienceSection(entries, bulletsByIndex) {
+  const lines = [];
+  entries.forEach((e, i) => {
+    if (lines.length > 0) lines.push('');
+    const headerParts = [];
+    if (e.cargo) headerParts.push(e.cargo);
+    if (e.empresa) headerParts.push(e.cidade ? `${e.empresa} – ${e.cidade}` : e.empresa);
+    if (headerParts.length > 0) lines.push(headerParts.join(' | '));
+    if (e.start) lines.push(`Período: ${e.start} a ${e.end}${e.periodo ? ' ' + e.periodo : ''}`);
+    const aiBullets = bulletsByIndex && Array.isArray(bulletsByIndex[i]) ? bulletsByIndex[i].filter(b => String(b).trim()) : null;
+    const bullets = (aiBullets && aiBullets.length > 0) ? aiBullets : e.fallbackBullets;
+    for (const b of bullets) lines.push(`• ${String(b).trim()}`);
+  });
+  return lines.length > 0 ? lines.join('\n') : null;
+}
+
+// ─── Reescrita com IA no padrão RHF ──────────────────────────────────────────
+//
+// Os currículos prontos reais da RHF (pares bruto→pronto de 10/07) mostram que
+// o padrão reescreve o resumo profissionalmente e transforma as descrições em
+// bullets limpos. A IA faz essa reescrita; falha NUNCA bloqueia a geração
+// (fallback = template atual).
+
+const REWRITE_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['resumo', 'experiencias'],
+  properties: {
+    resumo: { type: 'string', description: 'RESUMO PROFISSIONAL reescrito: parágrafo único, 3 a 5 linhas.' },
+    experiencias: {
+      type: 'array',
+      description: 'Mesma quantidade e MESMA ORDEM das experiências de entrada.',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['bullets'],
+        properties: {
+          bullets: { type: 'array', items: { type: 'string' }, description: '3 a 7 atividades reescritas' },
+        },
+      },
+    },
+  },
+};
+
+const REWRITE_SYSTEM = `Você prepara currículos no padrão da RHF Talentos a partir de dados brutos extraídos do ATS Pandapé.
+REGRAS:
+- NUNCA invente fatos, empresas, números, tecnologias ou habilidades que não estejam nos dados recebidos.
+- Corrija ortografia e gramática. Tom profissional e impessoal (nunca use "eu", "meu").
+- "resumo": parágrafo único de 3 a 5 linhas no estilo: área de atuação e experiências-chave → formação e conhecimentos relevantes → fecho com perfil comportamental e interesse de desenvolvimento. Exemplo de estilo (NÃO copie o conteúdo): "Profissional com experiência em suporte técnico, manutenção de computadores e atendimento a usuários, atuando em suporte remoto e presencial. Possui formação técnica em Informática e conhecimentos em sistemas operacionais e redes. Perfil comprometido, organizado e com grande interesse em desenvolvimento contínuo na área."
+- "experiencias[].bullets": reescreva a descrição bruta de cada experiência em 3 a 7 itens curtos e objetivos, iniciando com substantivo de ação ("Atendimento de...", "Montagem e desmontagem de...", "Controle de..."), cada item terminando com ";" e o último com ".". Não repita o nome da empresa nos itens.
+- Se a descrição bruta de uma experiência for vazia, derive no máximo 2 itens genéricos do próprio cargo.
+- Retorne EXATAMENTE a mesma quantidade de experiências recebidas, na mesma ordem.`;
+
+async function rewriteCvWithAI({ expEntries, rawResumo, skills, vacancyName }) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return null;
+  const hasContent = (Array.isArray(expEntries) && expEntries.length > 0) || (rawResumo && rawResumo.length > 30);
+  if (!hasContent) return null;
+
+  try {
+    const payload = {
+      vaga: vacancyName || '',
+      resumo_bruto: String(rawResumo || '').slice(0, 3000),
+      competencias: Array.isArray(skills) ? skills.slice(0, 25) : [],
+      experiencias: (expEntries || []).map(e => ({
+        cargo: e.cargo, empresa: e.empresa,
+        periodo: e.start ? `${e.start} a ${e.end}` : '',
+        descricao_bruta: String(e.desc || '').slice(0, 1200),
+      })),
+    };
+
+    const r = await fetch(OPENAI_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: IMPORT_MODEL,
+        max_tokens: 3000,
+        temperature: 0.2,
+        response_format: { type: 'json_schema', json_schema: { name: 'rhf_cv_rewrite', strict: true, schema: REWRITE_SCHEMA } },
+        messages: [
+          { role: 'system', content: REWRITE_SYSTEM },
+          { role: 'user', content: JSON.stringify(payload) },
+        ],
+      }),
+    });
+    const data = await r.json();
+    if (!r.ok) { console.warn('[CV rewrite] OpenAI error:', JSON.stringify(data?.error || {}).slice(0, 200)); return null; }
+    const choice = data.choices?.[0];
+    if (choice?.message?.refusal || choice?.finish_reason === 'length') return null;
+    const parsed = JSON.parse(choice?.message?.content || '');
+    return parsed && typeof parsed.resumo === 'string' ? parsed : null;
+  } catch (err) {
+    console.warn('[CV rewrite] skipped:', err.message);
+    return null;
+  }
 }
 
 // ─── Generate ─────────────────────────────────────────────────────────────────
@@ -451,10 +548,26 @@ async function handleGenerate(req, res) {
     // Build structural sections
     const sections = buildCvSections(candidate, messages, vacancy, extra);
 
-    // Generate RESUMO via template (no external API)
-    const resumo = buildResumoTemplate(candidate, vacancy, extra);
-
     const vacancyName = vacancy?.Title ?? vacancy?.title ?? vacancy?.Name ?? vacancy?.name ?? vacancyNameManual ?? candidate.vacancy_name ?? null;
+
+    // RESUMO template (fallback) + reescrita com IA no padrão RHF
+    let resumo = buildResumoTemplate(candidate, vacancy, extra);
+    let experiencia = sections.experiencia;
+    let modelUsed = 'template';
+
+    const raw = (candidate.raw_data && typeof candidate.raw_data === 'object') ? candidate.raw_data : {};
+    const rawResumo = raw.Resumo || raw.resumo || raw.Summary || raw.summary || '';
+    const rawSkills = Array.isArray(raw.Skills) ? raw.Skills : [];
+
+    const ai = await rewriteCvWithAI({ expEntries: sections.expEntries, rawResumo, skills: rawSkills, vacancyName });
+    if (ai) {
+      if (ai.resumo && ai.resumo.trim().length > 40) { resumo = ai.resumo.trim(); modelUsed = `${IMPORT_MODEL}-rewrite`; }
+      if (Array.isArray(ai.experiencias) && Array.isArray(sections.expEntries)
+          && ai.experiencias.length === sections.expEntries.length && sections.expEntries.length > 0) {
+        const rebuilt = assembleExperienceSection(sections.expEntries, ai.experiencias.map(x => x.bullets));
+        if (rebuilt) { experiencia = rebuilt; modelUsed = `${IMPORT_MODEL}-rewrite`; }
+      }
+    }
 
     const cvRow = {
       candidate_id,
@@ -464,7 +577,7 @@ async function handleGenerate(req, res) {
       cv_content: {
         resumo,
         pretensao: sections.pretensao || null,
-        experiencia: sections.experiencia,
+        experiencia,
         formacao: sections.formacao,
         competencias: sections.competencias,
         idiomas: sections.idiomas,
@@ -474,13 +587,13 @@ async function handleGenerate(req, res) {
       full_text: [
         'RESUMO', resumo,
         sections.pretensao ? `\nPRETENSÃO SALARIAL\n• ${sections.pretensao}` : '',
-        sections.experiencia ? `\nEXPERIÊNCIA PROFISSIONAL\n${sections.experiencia}` : '',
+        experiencia ? `\nEXPERIÊNCIA PROFISSIONAL\n${experiencia}` : '',
         sections.formacao ? `\nFORMAÇÃO\n${sections.formacao}` : '',
         sections.competencias ? `\nCOMPETÊNCIAS\n${sections.competencias}` : '',
         sections.idiomas ? `\nIDIOMAS\n${sections.idiomas}` : '',
         sections.info_complementares ? `\nINFORMAÇÕES COMPLEMENTARES\n${sections.info_complementares}` : '',
       ].filter(Boolean).join('\n'),
-      model_used: 'template',
+      model_used: modelUsed,
       created_by: user_id || null,
       created_by_name: user_name || null,
     };
@@ -612,127 +725,67 @@ async function handleSendEmail(req, res) {
   }
 }
 
-// ─── Format CV as WhatsApp text ─────────────────────────────────────────────
+// ─── Preparar arquivo para o ChatGuru (módulo Arquivos) ─────────────────────
+//
+// Checkpoint 04/07: o currículo NUNCA vai para conversa. O PDF final é
+// hospedado no Storage (fila de entrega) e a equipe RHF sobe no módulo
+// Arquivos do ChatGuru, onde organizam por tags. mark-delivered registra a
+// entrega (base do SLA da Fase 2). Se o spike encontrar endpoint de upload do
+// repositório, o push passa a ser automático a partir daqui.
 
-function formatCVAsWhatsApp(cv) {
-  const s = cv?.cv_content || {};
-  const name = cv?.candidate_name || 'Candidato';
-  const vacancy = cv?.vacancy_name || '';
-
-  const lines = [];
-  lines.push(`*CURRÍCULO — ${name.toUpperCase()}*`);
-  if (vacancy) lines.push(`_Vaga: ${vacancy}_`);
-  lines.push('');
-
-  if (s.resumo) {
-    lines.push('*RESUMO*');
-    lines.push(s.resumo);
-    lines.push('');
-  }
-  if (s.pretensao) {
-    lines.push('*PRETENSÃO SALARIAL*');
-    lines.push(`• ${s.pretensao}`);
-    lines.push('');
-  }
-  if (s.experiencia) {
-    lines.push('*EXPERIÊNCIA PROFISSIONAL*');
-    lines.push(s.experiencia);
-    lines.push('');
-  }
-  if (s.formacao) {
-    lines.push('*FORMAÇÃO*');
-    lines.push(s.formacao);
-    lines.push('');
-  }
-  if (s.competencias) {
-    lines.push('*COMPETÊNCIAS*');
-    lines.push(s.competencias);
-    lines.push('');
-  }
-  if (s.idiomas) {
-    lines.push('*IDIOMAS*');
-    lines.push(s.idiomas);
-    lines.push('');
-  }
-  if (s.info_complementares || s.observacoes) {
-    lines.push('*INFORMAÇÕES COMPLEMENTARES*');
-    lines.push(s.info_complementares || s.observacoes);
-    lines.push('');
-  }
-  lines.push('_Currículo gerado pela Plataforma RHF Talentos IA_');
-  return lines.join('\n');
-}
-
-// ─── Send CV to ChatGuru as WhatsApp message ─────────────────────────────────
-
-async function handleUploadChatguru(req, res) {
-  const { cv_id, phone, file_base64, file_name, caption } = req.body || {};
-  if (!cv_id || !phone) return res.status(400).json({ status: 'error', message: 'cv_id e phone são obrigatórios.' });
-
-  // Normalize phone: keep only digits, ensure it has country code
-  const phoneClean = String(phone).replace(/\D/g, '');
-  if (phoneClean.length < 10) return res.status(400).json({ status: 'error', message: 'Número de telefone inválido.' });
+async function handlePrepareFile(req, res) {
+  const { cv_id, file_base64, file_name } = req.body || {};
+  if (!cv_id || !file_base64) return res.status(400).json({ status: 'error', message: 'cv_id e file_base64 são obrigatórios.' });
 
   try {
     const rows = await select('generated_cvs', `id=eq.${cv_id}&limit=1`);
     const cv = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
     if (!cv) return res.status(404).json({ status: 'error', message: 'CV não encontrado.' });
 
-    let result;
-    let sentStatus;
-    let sentFileUrl = null;
+    const buffer = Buffer.from(String(file_base64).replace(/^data:.*?;base64,/, ''), 'base64');
+    if (buffer.length < 1024) return res.status(400).json({ status: 'error', message: 'PDF inválido ou vazio.' });
+    if (buffer.length > 8 * 1024 * 1024) return res.status(400).json({ status: 'error', message: 'PDF acima de 8MB.' });
 
-    if (file_base64) {
-      // File mode: host the PDF on Supabase Storage, then send the public URL
-      // via ChatGuru message_file_send (the API has no base64 file upload).
-      const buffer = Buffer.from(String(file_base64).replace(/^data:.*?;base64,/, ''), 'base64');
-      if (buffer.length < 1024) return res.status(400).json({ status: 'error', message: 'PDF inválido ou vazio.' });
-      if (buffer.length > 8 * 1024 * 1024) return res.status(400).json({ status: 'error', message: 'PDF acima de 8MB.' });
+    // Nome no padrão RHF ("Nome - Vaga - Cidade-UF"); acentos removidos só na chave do Storage
+    const safeName = String(file_name || `Curriculo - ${cv.candidate_name || 'Candidato'}`)
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/\.pdf$/i, '')
+      .replace(/[\/\\:*?"<>|#%]/g, '-')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 120) || 'curriculo';
+    const objectPath = `prontos/${cv_id}/${safeName}.pdf`;
 
-      const safeName = String(file_name || `curriculo-${cv.candidate_name || 'candidato'}`)
-        .normalize('NFD').replace(/[̀-ͯ]/g, '')
-        .replace(/\.pdf$/i, '')
-        .replace(/[^a-zA-Z0-9 _-]/g, '')
-        .trim().replace(/\s+/g, '-')
-        .slice(0, 80) || 'curriculo';
-      const objectPath = `cvs/${cv_id}/${safeName}.pdf`;
+    const fileUrl = await uploadToStorage(CV_BUCKET, objectPath, buffer, 'application/pdf');
 
-      sentFileUrl = await uploadToStorage(CV_BUCKET, objectPath, buffer, 'application/pdf');
-      const defaultCaption = `Currículo — ${cv.candidate_name || 'Candidato'}${cv.vacancy_name ? ` | ${cv.vacancy_name}` : ''}`;
-      result = await chatguruSendFileUrl(phoneClean, sentFileUrl, caption || defaultCaption);
-      sentStatus = 'chatguru_arquivo';
-    } else {
-      // Legacy text mode: formatted WhatsApp message
-      const text = formatCVAsWhatsApp(cv);
-      result = await chatguruSendMessage(phoneClean, text);
-      sentStatus = 'chatguru_texto';
-    }
+    try {
+      await update('generated_cvs', `id=eq.${cv_id}`, { sent_status: 'preparado', sent_file_url: fileUrl });
+    } catch (err) { console.warn('[CV prepare-file] status update failed:', err.message); }
 
-    console.log('[CV chatguru] mode:', sentStatus, 'result:', JSON.stringify(result));
-
-    if (result?.result === 'success' || result?.result === 'ok' || result?.code === 200 || result?.code === 201 || result?.message_id) {
-      try {
-        await update('generated_cvs', `id=eq.${cv_id}`, {
-          sent_status: sentStatus,
-          sent_at: new Date().toISOString(),
-          ...(sentFileUrl ? { sent_file_url: sentFileUrl } : {}),
-        });
-      } catch (err) { console.warn('[CV upload-chatguru] sent_status update failed:', err.message); }
-
-      return res.status(200).json({
-        status: 'ok',
-        message: sentStatus === 'chatguru_arquivo' ? 'Arquivo PDF enviado no ChatGuru com sucesso.' : 'Currículo enviado ao ChatGuru com sucesso.',
-        file_url: sentFileUrl,
-      });
-    } else {
-      return res.status(400).json({
-        status: 'error',
-        message: result?.description || result?.message || 'ChatGuru não confirmou o envio.',
-        chatguru: result,
-      });
-    }
+    return res.status(200).json({
+      status: 'ok',
+      message: 'Arquivo preparado. Baixe e suba no módulo Arquivos do ChatGuru.',
+      file_url: fileUrl,
+    });
   } catch (error) {
-    console.error('[CV upload-chatguru] error:', error);
+    console.error('[CV prepare-file] error:', error);
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+}
+
+async function handleMarkDelivered(req, res) {
+  const { cv_id, undo } = req.body || {};
+  if (!cv_id) return res.status(400).json({ status: 'error', message: 'cv_id é obrigatório.' });
+
+  try {
+    const patch = undo
+      ? { sent_status: 'preparado', sent_at: null }
+      : { sent_status: 'chatguru_arquivo', sent_at: new Date().toISOString() };
+    const rows = await update('generated_cvs', `id=eq.${cv_id}`, patch);
+    if (!Array.isArray(rows) || rows.length === 0) return res.status(404).json({ status: 'error', message: 'CV não encontrado.' });
+    return res.status(200).json({ status: 'ok', data: rows[0] });
+  } catch (error) {
+    console.error('[CV mark-delivered] error:', error);
     return res.status(500).json({ status: 'error', message: error.message });
   }
 }
@@ -750,22 +803,28 @@ const IMPORT_SCHEMA = {
   additionalProperties: false,
   required: ['name', 'phone', 'email', 'birth_date', 'city', 'marital_status', 'children', 'cnh',
     'vehicle', 'salary_expectation', 'last_salary', 'languages', 'main_education', 'vacancy_name',
+    'processo_numero', 'etapa', 'vacancy_title', 'vacancy_city', 'summary',
     'skills', 'experiences', 'educations'],
   properties: {
     name: { type: 'string', description: 'Nome completo do candidato' },
     phone: { type: 'string', description: 'Somente dígitos com DDI 55 e DDD, ex.: 5551999998888. Vazio se ausente.' },
     email: { type: 'string', description: 'Vazio se ausente' },
-    birth_date: { type: 'string', description: 'DD/MM/AAAA. Vazio se ausente.' },
-    city: { type: 'string', description: 'Cidade/UF, ex.: Novo Hamburgo/RS' },
+    birth_date: { type: 'string', description: 'DD/MM/AAAA. Converta datas por extenso ("30 agosto de 1988" → 30/08/1988). Vazio se ausente.' },
+    city: { type: 'string', description: 'Cidade/UF de residência do candidato, ex.: Novo Hamburgo/RS' },
     marital_status: { type: 'string' },
     children: { type: 'string', description: 'Ex.: "2 (5 e 13 anos)" ou vazio' },
     cnh: { type: 'string', description: 'Categoria, ex.: B' },
     vehicle: { type: 'string', description: 'Sim/Não ou vazio' },
-    salary_expectation: { type: 'string', description: 'Somente o valor numérico, ex.: 2500.00. Vazio se ausente.' },
+    salary_expectation: { type: 'string', description: 'Valor ou faixa COMO APARECE no texto, ex.: "2500.00" ou "Entre R$ 700 e R$ 1.200". Vazio se ausente.' },
     last_salary: { type: 'string', description: 'Somente o valor numérico ou vazio' },
     languages: { type: 'string', description: 'Ex.: "Inglês – Intermediário; Espanhol – Básico" ou vazio' },
     main_education: { type: 'string', description: 'Formação principal em uma linha' },
-    vacancy_name: { type: 'string', description: 'Vaga/processo a que o candidato concorre, se constar no PDF' },
+    vacancy_name: { type: 'string', description: 'Linha COMPLETA da "Vaga atual" como está no PDF, ex.: "#1164 - Técnico em Informática - Novo Hamburgo/RS". Vazio se ausente.' },
+    processo_numero: { type: 'string', description: 'Número do processo da vaga atual (dígitos após o #), ex.: "1164". Vazio se ausente.' },
+    etapa: { type: 'string', description: 'Etapa do funil, de "Atualmente está na etapa: X", ex.: "Apresentação". Vazio se ausente.' },
+    vacancy_title: { type: 'string', description: 'Somente o título da vaga, sem número e sem cidade, ex.: "Técnico em Informática". Vazio se ausente.' },
+    vacancy_city: { type: 'string', description: 'Somente a cidade/UF da vaga, ex.: "Novo Hamburgo/RS". Vazio se ausente.' },
+    summary: { type: 'string', description: 'Texto integral do campo "Resumo" do perfil, como está (apenas corrija quebras de linha). Vazio se ausente.' },
     skills: { type: 'array', items: { type: 'string' } },
     experiences: {
       type: 'array',
@@ -878,12 +937,17 @@ async function handleImportPdf(req, res) {
 
     // ── Upsert candidate ──────────────────────────────────────
     const phoneClean = String(parsed.phone || '').replace(/\D/g, '');
-    const salaryNum = parseFloat(String(parsed.salary_expectation || '').replace(/[^\d.,]/g, '').replace(',', '.'));
+    // Pretensão pode vir como faixa ("Entre R$ 700 e R$ 1.200") — pega o primeiro valor monetário
+    const salaryMatch = String(parsed.salary_expectation || '').match(/\d{1,3}(?:\.\d{3})+(?:,\d{2})?|\d+(?:[.,]\d{2})?/);
+    const salaryNum = salaryMatch
+      ? parseFloat(salaryMatch[0].includes(',') ? salaryMatch[0].replace(/\./g, '').replace(',', '.') : salaryMatch[0].replace(/\.(?=\d{3}\b)/g, ''))
+      : NaN;
 
     const rawData = {
       Experience: parsed.experiences || [],
       Education: parsed.educations || [],
       Skills: parsed.skills || [],
+      ...(parsed.summary ? { Resumo: parsed.summary } : {}),
       ...(parsed.salary_expectation ? { SalaryExpectation: parsed.salary_expectation } : {}),
       ...(parsed.languages ? { Languages: parsed.languages } : {}),
       pdf_import: {
@@ -897,6 +961,10 @@ async function handleImportPdf(req, res) {
         vehicle: parsed.vehicle || null,
         birth_date: parsed.birth_date || null,
         last_salary: parsed.last_salary || null,
+        processo_numero: parsed.processo_numero || null,
+        etapa: parsed.etapa || null,
+        vacancy_title: parsed.vacancy_title || null,
+        vacancy_city: parsed.vacancy_city || null,
       },
     };
 
@@ -953,6 +1021,10 @@ async function handleImportPdf(req, res) {
         last_salary: parsed.last_salary || '',
         languages: parsed.languages || '',
         vacancy_name: parsed.vacancy_name || '',
+        vacancy_title: parsed.vacancy_title || '',
+        vacancy_city: parsed.vacancy_city || '',
+        processo_numero: parsed.processo_numero || '',
+        etapa: parsed.etapa || '',
       },
       usage: aiData.usage || null,
     });

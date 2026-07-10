@@ -34,7 +34,26 @@
 - Migration 007 aplicada: `candidates.source`, `vacancies.processo_numero`, `vacancies.source`
 - Continuamos em 10/12 funções (tudo via actions em handlers existentes; parsing de planilha é client-side)
 - E2E produção 09/07: candidatos (insert/dedupe/merge/invalid ✅), vagas (dedupe por processo + status normalizado ✅), import-text (extração perfeita ✅) — registros de teste removidos
-- PENDENTE: amostras reais do Rodrigo (2–3 PDFs + planilhas de candidatos e vagas) para calibrar os palpites de coluna; E2E com chat real do ChatGuru
+
+---
+
+## CORREÇÃO DE ROTA — Checkpoint do cliente 10/07 (IMPLEMENTADO E DEPLOYADO 10/07)
+
+Feedback do Rodrigo (amostras reais em `~/Downloads/rhf att/` — 3 pares PDF bruto Pandapé → CV pronto RHF):
+1. **Não existe planilha** — o processo é exclusivamente via PDF do Pandapé.
+2. **CV NUNCA vai para conversa** — entrega é SÓ no módulo **Arquivos** do ChatGuru (lá a equipe organiza por tags).
+
+O que mudou (tudo em produção):
+- **Removido**: importação por planilha (UI candidatos/vagas/central — endpoints `import-bulk` ficam dormentes; "Novo candidato" manual continua usando o de contacts), modal "Enviar no Chat", envio de texto/arquivo para conversa, ação `upload-chatguru`, `formatCVAsWhatsApp`, SheetJS.
+- **Novo fluxo de entrega**: botão "Preparar arquivo (ChatGuru)" → PDF final nomeado no padrão real `Nome - Vaga - Cidade-UF.pdf` → bucket `rhf-cvs/prontos/` → `sent_status='preparado'` → painel "Entrega — ChatGuru > Arquivos" na aba Gerador (Baixar via blob com nome certo + "Marcar como disponibilizado" → `sent_status='chatguru_arquivo'` + `sent_at`, com Desfazer). Ações novas: `cv?action=prepare-file` e `mark-delivered`.
+- **Extração calibrada com os PDFs reais**: schema agora captura `processo_numero` (o PDF traz "Vaga atual: #1164 - ..."!), `etapa` do funil, `vacancy_title`/`vacancy_city` separados, `summary` (Resumo bruto) e pretensão em faixa ("Entre R$ 700 e R$ 1.200" → texto no prefill + primeiro valor numérico no banco).
+- **Reescrita com IA no padrão RHF** (`gpt-4o-mini-rewrite` em `model_used`): resumo profissional reescrito + experiências em bullets ("Atendimento de...;"), estilo calibrado pelos pares reais bruto→pronto. Falha da IA nunca bloqueia (fallback = template). cv-print: seção "Resumo" → "Resumo Profissional".
+- **Bugs corrigidos no caminho**: `SUPABASE_URL` no Vercel tem newline no fim → `cleanEnv()` em lib/supabase.js; chaves de storage com espaço → URL pública gravada com `encodeURI`. (Proxy Cloudfy bloqueia user-agent `Python-urllib` — browsers ok.)
+- **E2E 10/07 com o PDF REAL do Jonathan**: import (processo 1164 + etapa Apresentação + 7 experiências ✅) → geração com IA (resumo idêntico em estilo ao CV pronto real ✅) → prepare-file (URL pública ok ✅) → mark-delivered/undo ✅. O CV do Jonathan ficou na fila como demonstração.
+
+**Spike módulo Arquivos (Bloco C):** 10 nomes prováveis de ação testados na API s18 (file_upload, archive_add, media_upload...) — TODOS "ação inválida". Caminhos restantes: (a) Rodrigo pedir a doc ao suporte ChatGuru (ele se ofereceu na call de 03/07); (b) inspecionar via DevTools a requisição de upload do painel web com o login do Tiago. Se surgir endpoint, o "Preparar" passa a subir direto e o passo manual morre.
+
+**PENDENTE:** resposta do ChatGuru sobre API de Arquivos; validação do Rodrigo no fluxo novo (importar PDF → gerar → preparar → subir no Arquivos); Fase 2 (grupos, resumo→grupo, dashboard/SLA) segue no roadmap.
 
 ---
 

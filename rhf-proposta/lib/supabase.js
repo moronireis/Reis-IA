@@ -3,9 +3,15 @@
  * Uses process.env.SUPABASE_URL and process.env.SUPABASE_KEY.
  */
 
+// Env vars no Vercel podem carregar \n/espaços no fim (lição 10/07: a URL pública
+// do Storage saiu com newline embutida) — sempre sanitizar.
+function cleanEnv(v) {
+  return String(v || '').trim();
+}
+
 function getClient() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_KEY;
+  const url = cleanEnv(process.env.SUPABASE_URL);
+  const key = cleanEnv(process.env.SUPABASE_KEY);
   if (!url || !key) throw new Error('SUPABASE_URL and SUPABASE_KEY env vars are required');
   return { url, key };
 }
@@ -87,11 +93,12 @@ export async function update(table, query, data) {
  * @returns {Promise<string>} Public URL of the uploaded object
  */
 export async function uploadToStorage(bucket, path, buffer, contentType = 'application/pdf') {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+  const url = cleanEnv(process.env.SUPABASE_URL);
+  const key = cleanEnv(process.env.SUPABASE_SERVICE_KEY) || cleanEnv(process.env.SUPABASE_KEY);
   if (!url || !key) throw new Error('SUPABASE_URL and SUPABASE_SERVICE_KEY env vars are required');
 
-  const res = await fetch(`${url}/storage/v1/object/${bucket}/${path}`, {
+  const encodedPath = encodeURI(path); // chaves podem ter espaços (padrão de nome RHF)
+  const res = await fetch(`${url}/storage/v1/object/${bucket}/${encodedPath}`, {
     method: 'POST',
     headers: {
       'apikey': key,
@@ -105,7 +112,7 @@ export async function uploadToStorage(bucket, path, buffer, contentType = 'appli
     const body = await res.text();
     throw new Error(`[supabase storage ${bucket}/${path}] ${res.status}: ${body.slice(0, 200)}`);
   }
-  return `${url}/storage/v1/object/public/${bucket}/${path}`;
+  return `${url}/storage/v1/object/public/${bucket}/${encodedPath}`;
 }
 
 /**
