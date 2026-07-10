@@ -1,9 +1,11 @@
 # Proposta Comercial — FUTURA DO BRASIL × u4digital
 
-> Last updated: 2026-06-05
-> Status: Planejamento
+> Last updated: 2026-07-09
+> Status: **FECHADO — R$5.850 em 4× no cartão (reunião 08/07/2026). Aguardando link de pagamento até sexta 10/07.**
 > Reuniao de entendimento: 2026-06-02 (48 min, Tiago + Moroni + Telma + Daniela)
 > Recording: https://fathom.video/calls/694717829
+> Reunião de fechamento: 2026-07-08 (51 min, Moroni + Thelma + Tiago) — https://fathom.video/calls/739919987
+> Documentos derivados: `PLANO-MVP.md` (planejamento do MVP 30 dias) + `KICKOFF.md` (documento de kickoff)
 
 ---
 
@@ -581,6 +583,70 @@ Para a segunda reuniao, construir uma demo visual (como mvp.html da RHF) mostran
 ### Urgencia
 - "O concorrente de Passo Fundo ja te mostrou uma solucao. A diferenca: eles vendem uma caixa pronta. Nos construimos a SUA plataforma."
 - "Cada mes sem background check e um mes entregando menos do que o mercado ja espera."
+
+---
+
+## 14. ATUALIZAÇÃO DE ESCOPO — Reunião 08/07/2026 [ADDED — 2026-07-09]
+
+> Fonte: reunião de fechamento 08/07/2026 (51 min, Moroni + Thelma + Tiago)
+> Recording: https://fathom.video/calls/739919987
+
+### 14.1 Fechamento Comercial
+
+| Item | Valor |
+|------|-------|
+| Valor fechado | **R$5.850,00** (setup) |
+| Forma de pagamento | **4× R$1.462,50 no cartão de crédito** |
+| Prazo de fechamento | Até sexta-feira **10/07/2026** |
+| Autorização | Tiago autorizou via mensagem durante a reunião |
+| Ação pendente (Moroni/Tiago) | Gerar e enviar link de pagamento para Thelma |
+| Recorrência mensal | Não rediscutida na reunião — confirmar no kickoff (proposta original: R$697/mês) |
+
+### 14.2 Pivô Estratégico: de plataforma interna para STARTUP
+
+A conversa mudou o enquadramento do projeto. A plataforma deixa de ser apenas ferramenta interna da Futura e passa a ser posicionada como **startup**, com nome de trabalho **Conecta Futura** (sugestão do Tiago, aceita pela Thelma — pode mudar depois).
+
+Contexto que motivou o pivô:
+
+1. **Alavanca Digital (SEBRAE) desclassificada** — erro formal no item 7.1 (valor apresentado com desconto em vez do valor cheio; deveria ser R$61.600 = R$88K − 30%). Thelma vai enviar e-mail ao SEBRAE pedindo reconsideração após o declínio de empresas que não entregarem documentação até 10/07. Sem depender disso, o projeto segue direto com a u4digital.
+2. **Convite do SEBRAE para o Rio Innovation Week (Ela Hub)** — 4 a 7 de agosto, bancada para mulheres à frente de startups a partir de **R$300** (PIX à vista). Thelma vai responder pedindo mais informações. Evento conecta com grandes empresas e investidores.
+3. **Concorrente "Divisão" (SP)** — plataforma para agências de emprego, assinatura anual de **R$5.000/empresa**. Quiseram a Thelma como parceira em Santa Maria (2º maior polo militar do Brasil). Ela recusou implicitamente: **quer plataforma própria com o DNA da Futura**. Modelo de assinatura anual foi validado por ela como referência de monetização.
+4. **Ativo engavetado: Recruta Brasil Oficial** (2024) — projeto de recolocação de militares com **1.200 candidatos do Exército** em banco. Potencial vertical de segmentação futura.
+
+### 14.3 Estratégia definida na reunião (recomendação Moroni, aceita)
+
+- **Fase 1 = MVP em ~30 dias** ("a Ferrari que já anda": rodas + motor + volante). Prioridade é ter algo funcionando, rodando, testável internamente — antes de qualquer conversa com investidor.
+- Meta de validação: **15-20 usuários testando** a plataforma, com feedback estruturado (o que está forte / o que melhorar) — usuários não precisam ser pagantes.
+- Narrativa para investidor (conversa B, não conversa A): MVP rodando + usuários testando + banco de 54K+ pessoas prontas para oferta + previsão de MRR pessimista.
+- **Pitch deck incluído na entrega** (compromisso do Moroni na reunião) — como conversar com investidor, o que ele quer ver.
+- Segmentação vertical fica para fase 5-6 (pós-MVP): **indústria alimentícia** (interesse explícito da Thelma — ticket R$10K/ano "é barbada" para essas empresas) e/ou **vertical militar** (Recruta Brasil).
+- Thelma NÃO quer plataforma restrita a Santa Maria — ambição nacional desde o início.
+
+### 14.4 Diferencial central confirmado: Módulo NR-1 (risco psicossocial)
+
+Citação da Thelma: *"tu imagina tu recolocar um colaborador e a cada mês a plataforma mandar para ele o questionário dos riscos psicossociais e já alimentar a empresa na NR-1, isso aí não existe."*
+
+- Após a recolocação, a plataforma envia **questionário mensal de risco psicossocial** ao colaborador recolocado.
+- Se houver sinal de alerta ("papelho"), a plataforma **notifica o RH da empresa cliente** automaticamente.
+- Alimenta o compliance da empresa com a **NR-1** (gerenciamento de riscos psicossociais, obrigatório desde 2025-2026).
+- **Moroni confirmou na reunião que este módulo está incluso na proposta** (convergência candidato ↔ plataforma ↔ empresa já prevista).
+- É o diferencial anti-commodity: atração + recrutamento + **monitoramento pós-recolocação** — nenhum concorrente (Divisão, Gupy, etc.) tem isso.
+
+### 14.5 Itens fora do escopo deste contrato (registrados para não criar expectativa)
+
+| Item | Status |
+|------|--------|
+| Mentoria/acompanhamento do Moroni (eventos, investidores) | Produto educacional à parte — conversar depois, condição especial sinalizada |
+| Presença do Moroni no Rio Innovation Week | Fora do escopo — avaliar separadamente |
+| Participação da Thelma no evento (bancada R$300) | Decisão e custo da Thelma |
+| Reconsideração Alavanca Digital / SEBRAE | Ação da Thelma (e-mail) — não bloqueia o projeto |
+
+---
+
+## CHANGELOG
+
+- **2026-07-09** — Adicionada Seção 14 (fechamento R$5.850 em 4×, pivô startup Conecta Futura, MVP 30 dias para Rio Innovation Week, módulo NR-1 como diferencial central, pitch deck incluído). Status do header atualizado para FECHADO. Criados `PLANO-MVP.md` e `KICKOFF.md`.
+- **2026-06-05** — Documento criado após reunião de entendimento de 02/06.
 
 ---
 

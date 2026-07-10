@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kickoff | Conecta Futura — Futura do Brasil × u4digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #060608;
+    --bg-secondary: #0a0a10;
+    --bg-card: #0f0f18;
+    --bg-card-hover: #141420;
+    --border: #1a1a2a;
+    --border-accent: #242440;
+    --text-primary: #e8e8f0;
+    --text-secondary: #7a7a96;
+    --text-muted: #4a4a64;
+    --accent: #4A6CF7;
+    --accent-light: #6B8AFF;
+    --accent-dim: rgba(74, 108, 247, 0.12);
+    --accent-glow: rgba(74, 108, 247, 0.06);
+    --green: #2d8a4e;
+    --green-dim: rgba(45, 138, 78, 0.12);
+    --red: #c44040;
+    --red-dim: rgba(196, 64, 64, 0.10);
+    --amber: #c49a30;
+    --amber-dim: rgba(196, 154, 48, 0.10);
+    --purple: #7a6abf;
+    --purple-dim: rgba(122, 106, 191, 0.10);
+    --cyan: #22a7c3;
+    --cyan-dim: rgba(34, 167, 195, 0.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+  }
+
+  /* ===== vertical deck ===== */
+  main {
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+  main::-webkit-scrollbar { width: 0; }
+  section {
+    min-height: 100vh;
+    min-height: 100dvh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 96px clamp(24px, 7vw, 100px) 72px;
+    position: relative;
+    overflow: hidden;
+  }
+  section::before {
+    content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .inner { max-width: 1060px; width: 100%; margin: 0 auto; position: relative; z-index: 1; }
+
+  /* reveal */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal.d1 { transition-delay: 0.08s; }
+  .reveal.d2 { transition-delay: 0.16s; }
+  .reveal.d3 { transition-delay: 0.24s; }
+
+  /* nav */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 14px clamp(20px, 4vw, 40px); display: flex; align-items: center; justify-content: space-between;
+    background: rgba(6, 6, 8, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
+  }
+  nav .logo-text { font-weight: 600; font-size: 15px; letter-spacing: -0.02em; }
+  nav .logo-text span { color: var(--text-muted); font-weight: 400; }
+  nav .nav-tag { font-size: 11px; color: var(--accent); background: var(--accent-dim); padding: 4px 12px; border-radius: 100px; font-weight: 500; letter-spacing: 0.03em; }
+
+  /* side dots */
+  .dots {
+    position: fixed; right: clamp(12px, 2.5vw, 28px); top: 50%; transform: translateY(-50%);
+    z-index: 100; display: flex; flex-direction: column; gap: 10px;
+  }
+  .dots a { width: 8px; height: 8px; border-radius: 50%; background: var(--border-accent); transition: all 0.3s; display: block; }
+  .dots a.active { background: var(--accent); height: 24px; border-radius: 4px; }
+  .scroll-hint {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 100;
+    font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase;
+    display: flex; flex-direction: column; align-items: center; gap: 6px; transition: opacity 0.4s;
+  }
+  .scroll-hint svg { animation: drift 2s ease-in-out infinite; }
+  @keyframes drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+  .scroll-hint.hide { opacity: 0; pointer-events: none; }
+
+  /* type */
+  .section-number { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .section-number::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent); }
+  h1 { font-size: clamp(38px, 5.5vw, 68px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 22px; }
+  h2 { font-size: clamp(28px, 3.4vw, 44px); font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; margin-bottom: 16px; }
+  h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.015em; margin-bottom: 8px; }
+  .subtitle { font-size: clamp(15px, 1.6vw, 18px); color: var(--text-secondary); max-width: 680px; line-height: 1.7; }
+  .accent { color: var(--accent-light); }
+  .green { color: #4db673; }
+  .amber-t { color: var(--amber); }
+
+  .badge { font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 100px; border: 1px solid var(--border); color: var(--text-secondary); background: var(--bg-card); }
+  .badge.accent-badge { color: var(--accent-light); border-color: rgba(74,108,247,0.25); background: var(--accent-dim); }
+  .badge.green-badge { color: #4db673; border-color: rgba(45,138,78,0.3); background: var(--green-dim); }
+  .hero-badges { display: flex; gap: 10px; margin-top: 30px; flex-wrap: wrap; }
+  #hero .meta { display: flex; gap: 22px; margin-top: 36px; font-size: 13px; color: var(--text-muted); flex-wrap: wrap; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 34px; }
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 22px 22px 20px; transition: border-color 0.3s, background 0.3s;
+  }
+  .card:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+  .card .icon {
+    width: 38px; height: 38px; border-radius: 10px; background: var(--accent-dim);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 14px; color: var(--accent-light);
+  }
+  .card p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; }
+  .card .tag { display: inline-block; font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; margin-bottom: 10px; }
+  .tag.mvp { color: var(--accent-light); background: var(--accent-dim); }
+  .tag.f2 { color: var(--purple); background: var(--purple-dim); }
+  .tag.mig { color: var(--amber); background: var(--amber-dim); }
+  .tag.man { color: #4db673; background: var(--green-dim); }
+  .tag.fut { color: var(--cyan); background: var(--cyan-dim); }
+
+  /* list points */
+  .points { margin-top: 30px; display: grid; gap: 12px; }
+  .point {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px;
+  }
+  .point .num {
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; margin-top: 2px;
+    background: var(--accent-dim); color: var(--accent-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums;
+  }
+  .point strong { display: block; font-size: 14.5px; font-weight: 600; margin-bottom: 2px; }
+  .point p { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+
+  /* checklist */
+  .check-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px; }
+  .check-block .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .check-block .deadline { font-size: 11.5px; font-weight: 600; letter-spacing: 0.05em; padding: 4px 12px; border-radius: 100px; }
+  .deadline.red-d { color: #d96b6b; background: var(--red-dim); }
+  .deadline.amber-d { color: var(--amber); background: var(--amber-dim); }
+  .deadline.cyan-d { color: var(--cyan); background: var(--cyan-dim); }
+  .check-block ul { list-style: none; display: grid; gap: 9px; }
+  .check-block li { display: flex; gap: 11px; align-items: flex-start; font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; }
+  .check-block li::before {
+    content: ''; flex-shrink: 0; width: 16px; height: 16px; margin-top: 3px; border-radius: 5px;
+    border: 1.5px solid var(--border-accent); background: var(--bg-secondary);
+  }
+  .check-grid { display: grid; gap: 16px; margin-top: 30px; }
+
+  /* timeline */
+  .timeline { margin-top: 36px; position: relative; padding-left: 26px; display: grid; gap: 20px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 1px; background: var(--border-accent); }
+  .t-item { position: relative; }
+  .t-item::before {
+    content: ''; position: absolute; left: -26px; top: 7px; width: 15px; height: 15px; border-radius: 50%;
+    background: var(--bg-primary); border: 2px solid var(--accent); z-index: 1;
+  }
+  .t-item.milestone::before { background: var(--accent); box-shadow: 0 0 16px rgba(74,108,247,0.5); }
+  .t-item .date { font-size: 11.5px; font-weight: 600; color: var(--accent-light); letter-spacing: 0.08em; text-transform: uppercase; }
+  .t-item strong { display: block; font-size: 15.5px; font-weight: 600; margin: 2px 0; }
+  .t-item p { font-size: 13px; color: var(--text-secondary); max-width: 640px; }
+
+  /* NR-1 flow */
+  .flow { margin-top: 36px; display: grid; gap: 10px; }
+  .flow-step { display: flex; align-items: center; gap: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; }
+  .flow-step .fnum { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-dim); color: var(--accent-light); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .flow-step p { font-size: 13.5px; color: var(--text-secondary); }
+  .flow-step p b { color: var(--text-primary); font-weight: 600; }
+  .flow-arrow { text-align: center; color: var(--text-muted); font-size: 14px; line-height: 1; }
+  .flags { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+  .flag { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 500; padding: 7px 14px; border-radius: 100px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); }
+  .flag i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+  .flag.g i { background: #4db673; } .flag.a i { background: var(--amber); } .flag.r i { background: #d96b6b; }
+
+  /* responsibilities table */
+  .resp { margin-top: 32px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .resp .row { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 13px 22px; border-bottom: 1px solid var(--border); font-size: 13.5px; align-items: center; }
+  .resp .row:last-child { border-bottom: none; }
+  .resp .row:nth-child(odd) { background: var(--bg-card); }
+  .resp .who { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; white-space: nowrap; }
+  .who.u4 { color: var(--accent-light); background: var(--accent-dim); }
+  .who.fu { color: var(--amber); background: var(--amber-dim); }
+  .who.both { color: var(--cyan); background: var(--cyan-dim); }
+  .resp .row span:first-child { color: var(--text-secondary); }
+
+  .callout {
+    margin-top: 30px; border-left: 3px solid var(--accent); background: var(--accent-dim);
+    border-radius: 0 12px 12px 0; padding: 16px 22px; font-size: 14px; color: var(--text-secondary); max-width: 760px;
+  }
+  .callout b { color: var(--text-primary); }
+
+  .divider-label { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin: 34px 0 14px; display: flex; align-items: center; gap: 12px; }
+  .divider-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* final */
+  #final { text-align: center; align-items: center; }
+  #final .inner { display: flex; flex-direction: column; align-items: center; }
+  #final .meta-final { margin-top: 40px; font-size: 13px; color: var(--text-muted); display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+
+  @media (max-width: 640px) {
+    section { padding: 84px 20px 64px; }
+    .dots { display: none; }
+    .resp .row { grid-template-columns: 1fr; gap: 8px; }
+    .resp .who { justify-self: start; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo-text">FUTURA DO BRASIL <span>× u4digital</span></div>
+  <div class="nav-tag">Kickoff — Julho 2026</div>
+</nav>
+
+<div class="dots" id="dots"></div>
+
+<div class="scroll-hint" id="scrollHint">
+  <span>Role para navegar</span>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+</div>
+
+<main id="deck">
+
+  <!-- 1. HERO -->
+  <section id="hero">
+    <div class="inner">
+      <div class="section-number reveal">Kickoff do projeto</div>
+      <h1 class="reveal d1">Conecta <span class="accent">Futura</span></h1>
+      <p class="subtitle reveal d2">A plataforma de recrutamento com DNA Futura — atração, seleção e monitoramento de riscos psicossociais (NR-1) em um único produto. Projeto confirmado. Agora é execução.</p>
+      <div class="hero-badges reveal d3">
+        <span class="badge green-badge">Projeto confirmado</span>
+        <span class="badge accent-badge">MVP no ar em 01/08</span>
+        <span class="badge">Rio Innovation Week · 4-7/08</span>
+      </div>
+      <div class="meta reveal d3">
+        <span>Futura do Brasil — Santa Maria/RS</span>
+        <span>u4digital — Tiago Donicht + Moroni Reis</span>
+        <span>Julho 2026</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. NOVO ESCOPO -->
+  <section id="escopo">
+    <div class="inner">
+      <div class="section-number reveal">01 · O novo escopo</div>
+      <h2 class="reveal d1">De ferramenta interna a <span class="accent">startup</span></h2>
+      <p class="subtitle reveal d2">O projeto evoluiu: a plataforma nasce posicionada como startup, com marca própria, diferencial claro e caminho aberto para investidores — sem perder o objetivo original de atender a operação da Futura primeiro.</p>
+      <div class="card-grid reveal d3">
+        <div class="card">
+          <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg></div>
+          <h3>Plataforma própria</h3>
+          <p>Código e produto da Futura, com o DNA de 23 anos de recrutamento humano — não uma assinatura de plataforma de terceiros.</p>
+        </div>
+        <div class="card">
+          <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3.5"/></svg></div>
+          <h3>Diferencial NR-1</h3>
+          <p>Monitoramento mensal de risco psicossocial dos recolocados, alimentando o RH das empresas — algo que nenhum concorrente entrega.</p>
+        </div>
+        <div class="card">
+          <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+          <h3>MVP primeiro</h3>
+          <p>O mínimo viável rodando em 30 dias, testado por usuários reais, antes de qualquer conversa com investidor. Validação antes de expansão.</p>
+        </div>
+        <div class="card">
+          <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></div>
+          <h3>Pitch deck incluído</h3>
+          <p>Apresentação pronta para o Rio Innovation Week: problema, solução, tração, modelo de receita e o que apresentar a um investidor.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. NR-1 -->
+  <section id="nr1">
+    <div class="inner">
+      <div class="section-number reveal">02 · O diferencial</div>
+      <h2 class="reveal d1">Módulo NR-1: recrutar é só o começo</h2>
+      <p class="subtitle reveal d2">Depois da recolocação, a Conecta Futura continua trabalhando — acompanhando a saúde mental do colaborador e alimentando o compliance de riscos psicossociais da empresa.</p>
+      <div class="flow reveal d3">
+        <div class="flow-step"><div class="fnum">1</div><p><b>Colaborador recolocado</b> pela Futura é marcado como contratado na plataforma</p></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><div class="fnum">2</div><p>Todo mês, a plataforma envia o <b>questionário de riscos psicossociais</b></p></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><div class="fnum">3</div><p>As respostas geram um <b>score de risco</b> com histórico mês a mês</p></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><div class="fnum">4</div><p>Qualquer sinal de alerta <b>notifica o RH da empresa automaticamente</b>, alimentando a NR-1</p></div>
+      </div>
+      <div class="flags reveal d3">
+        <span class="flag g"><i></i>Verde — acompanhamento normal</span>
+        <span class="flag a"><i></i>Amarelo — atenção</span>
+        <span class="flag r"><i></i>Vermelho — alerta imediato ao RH</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. O QUE JÁ EXISTE -->
+  <section id="hoje">
+    <div class="inner">
+      <div class="section-number reveal">03 · O que já existe hoje</div>
+      <h2 class="reveal d1">Cada peça atual tem um destino claro</h2>
+      <p class="subtitle reveal d2">Nada se perde na transição. Mapeamos toda a estrutura atual da Futura e o que acontece com cada parte — e nenhuma mudança acontece antes da migração estar validada.</p>
+      <div class="card-grid reveal d3">
+        <div class="card"><span class="tag mig">Migra</span><h3>Banco de 54.226 candidatos</h3><p>Hoje no WordPress (GetCommerce). Extraímos tudo para o novo banco seguro: cada candidato vira um registro completo com score. Decisão no kickoff: importar como está ou acionar a base para recadastro (o que aumenta os scores).</p></div>
+        <div class="card"><span class="tag man">Mantém</span><h3>Site futuradobrasil.com.br</h3><p>O site institucional continua exatamente como está. O botão "Atualize seu perfil" passa a levar para a plataforma — não precisa de site novo.</p></div>
+        <div class="card"><span class="tag man">Mantém</span><h3>Domínio + e-mails</h3><p>O domínio e os e-mails (contrate@futuradobrasil.com.br) são da Futura e seguem intocados. Só apontamos o endereço da plataforma dentro do que já existe.</p></div>
+        <div class="card"><span class="tag mig">Transição</span><h3>Hospedagem GetCommerce</h3><p>Os dados migram para a nova infraestrutura (custo de manutenção estimado abaixo de ~R$120/mês, assumido pela u4digital nos primeiros meses). Encerramento com a GetCommerce só depois da migração validada.</p></div>
+        <div class="card"><span class="tag fut">Fase 2</span><h3>Boletos e faturamento</h3><p>A plataforma entrega o relatório de vagas fechadas com filtros (substitui o Excel). A integração de boleto direto com o banco será estudada na Fase 2, como combinado.</p></div>
+        <div class="card"><span class="tag fut">Futuro</span><h3>Instagram / divulgação</h3><p>Integração com redes sociais fica para fase futura. Como bônus do projeto, as vagas passam a ser publicadas automaticamente no site da Futura.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. MVP -->
+  <section id="mvp">
+    <div class="inner">
+      <div class="section-number reveal">04 · O que entra no MVP</div>
+      <h2 class="reveal d1">A versão que já anda — no ar em <span class="accent">01/08</span></h2>
+      <p class="subtitle reveal d2">Foco total no essencial: o que a Futura precisa para operar, validar com usuários reais e se apresentar como startup no evento.</p>
+      <div class="card-grid reveal d3">
+        <div class="card"><span class="tag mvp">MVP</span><h3>Portal do candidato</h3><p>Cadastro simples direto do celular (4 campos no primeiro passo), perfil e acompanhamento das candidaturas.</p></div>
+        <div class="card"><span class="tag mvp">MVP</span><h3>Gestão de vagas</h3><p>Abertura de vagas com requisitos estruturados e pipeline visual: aberta → triagem → enviados → fechada.</p></div>
+        <div class="card"><span class="tag mvp">MVP</span><h3>Busca de candidatos</h3><p>Filtros por área, cidade, experiência e pretensão salarial, com ranking dos mais aderentes à vaga.</p></div>
+        <div class="card"><span class="tag mvp">MVP</span><h3>Módulo NR-1</h3><p>Questionário mensal, score de risco, flags e alerta automático ao RH — o diferencial, funcionando desde o primeiro dia.</p></div>
+        <div class="card"><span class="tag mvp">MVP</span><h3>Painel Futura + dashboard</h3><p>Visão completa para Thelma e Dani: candidatos, vagas, funil e alertas NR-1 em tempo real.</p></div>
+        <div class="card"><span class="tag mvp">MVP</span><h3>Marca + pitch deck</h3><p>Identidade visual da Conecta Futura, página institucional e apresentação para investidores.</p></div>
+      </div>
+      <div class="divider-label reveal d3">Fase 2 — agosto, dentro do mesmo projeto</div>
+      <div class="card-grid reveal d3" style="margin-top: 0;">
+        <div class="card"><span class="tag f2">Fase 2</span><h3>Migração dos 54 mil candidatos</h3><p>Todo o banco atual do WordPress transferido com segurança e estrutura profissional (LGPD), cada candidato com registro e score próprios.</p></div>
+        <div class="card"><span class="tag f2">Fase 2</span><h3>Background check completo</h3><p>Consultas automatizadas após o cadastro: CPF (Receita), ficha criminal, processos trabalhistas e crédito (opcional) — com flags verde/amarelo/vermelho.</p></div>
+        <div class="card"><span class="tag f2">Fase 2</span><h3>DISC + match inteligente com IA</h3><p>Questionário DISC integrado (sem mensalidade de ferramenta externa), score de adequação candidato × vaga e ranking automático contra toda a base.</p></div>
+        <div class="card"><span class="tag f2">Fase 2</span><h3>Relatório consolidado + currículo IA</h3><p>O entregável premium: capa Futura, currículo formatado por IA, background, DISC, score e parecer da Futura já sugerido pela IA para você aprovar.</p></div>
+        <div class="card"><span class="tag f2">Fase 2</span><h3>Automação WhatsApp + e-mail</h3><p>Lembretes, confirmações de entrevista e follow-up automáticos — o humano entra onde importa: no relacionamento.</p></div>
+        <div class="card"><span class="tag f2">Fase 2</span><h3>Portal da empresa cliente</h3><p>Acessos categorizados: admin (Futura), candidato e empresa — cada cliente acompanha as próprias vagas, vendo só o que importa para ele.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. TIMELINE -->
+  <section id="timeline">
+    <div class="inner">
+      <div class="section-number reveal">05 · Linha do tempo</div>
+      <h2 class="reveal d1">Do kickoff ao palco em 4 semanas</h2>
+      <div class="timeline reveal d2">
+        <div class="t-item milestone">
+          <span class="date">Semana 1 · 13-19/07</span>
+          <strong>Kickoff + Fundação</strong>
+          <p>Reunião de kickoff, coleta de materiais, estrutura do banco de dados e portal do candidato no ar — primeiros cadastros reais.</p>
+        </div>
+        <div class="t-item">
+          <span class="date">Semana 2 · 20-26/07</span>
+          <strong>Operação + NR-1</strong>
+          <p>Gestão de vagas, pipeline, busca de candidatos e o módulo NR-1 funcionando. Início dos testes com Thelma, Dani e candidatos convidados.</p>
+        </div>
+        <div class="t-item">
+          <span class="date">Semana 3 · 27/07-01/08</span>
+          <strong>Validação + Pitch</strong>
+          <p>Dashboard, ajustes do feedback dos testadores (meta: 15-20 usuários reais), pitch deck finalizado e revisado com a Thelma.</p>
+        </div>
+        <div class="t-item milestone">
+          <span class="date">01/08 · Sexta</span>
+          <strong>Entrega do MVP</strong>
+          <p>Plataforma em produção + walkthrough completo + pitch deck em mãos.</p>
+        </div>
+        <div class="t-item milestone">
+          <span class="date">04-07/08</span>
+          <strong>Rio Innovation Week — Ela Hub</strong>
+          <p>Thelma apresenta a Conecta Futura como startup, com produto rodando e usuários testando.</p>
+        </div>
+        <div class="t-item">
+          <span class="date">Agosto</span>
+          <strong>Fase 2</strong>
+          <p>Migração dos 54K, background check, DISC, relatório PDF, automações e treinamento.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. MAPEAMENTO DOS DESEJOS -->
+  <section id="visao">
+    <div class="inner">
+      <div class="section-number reveal">06 · A visão da Thelma</div>
+      <h2 class="reveal d1">O que mapeamos das nossas conversas</h2>
+      <p class="subtitle reveal d2">Estes são os pontos que entendemos como a essência do que você quer construir. Confirme (ou corrija) no kickoff — este mapeamento guia todas as decisões do projeto.</p>
+      <div class="points reveal d3">
+        <div class="point"><div class="num">1</div><div><strong>Uma plataforma sua, com o DNA da Futura</strong><p>Não ser parceira ou assinante da plataforma dos outros. Marca própria, produto próprio, diferencial próprio.</p></div></div>
+        <div class="point"><div class="num">2</div><div><strong>O diferencial NR-1 como coração do produto</strong><p>Recolocar e continuar acompanhando: questionário mensal de risco psicossocial + alerta ao RH. "Isso não existe" no mercado.</p></div></div>
+        <div class="point"><div class="num">3</div><div><strong>Alcance nacional desde o início</strong><p>Nada restrito a Santa Maria. A plataforma nasce pronta para atender qualquer região do Brasil.</p></div></div>
+        <div class="point"><div class="num">4</div><div><strong>O contato humano preservado</strong><p>A automação cuida do repetitivo; a entrevista, o áudio, a relação com o candidato continuam sendo a essência da Futura.</p></div></div>
+        <div class="point"><div class="num">5</div><div><strong>Experiência simples para o candidato</strong><p>"O troço tem que fluir" — cadastro rápido pelo celular, sem processo tecnológico demais.</p></div></div>
+        <div class="point"><div class="num">6</div><div><strong>Modelo de receita por assinatura anual</strong><p>Referência validada no mercado: empresas pagando assinatura anual (R$5-10 mil/ano) pela plataforma — recorrência e previsibilidade.</p></div></div>
+        <div class="point"><div class="num">7</div><div><strong>Posicionamento de startup para investidores</strong><p>Chegar ao Rio Innovation Week com produto rodando, usuários testando e pitch na mão — a "conversa B", não a conversa de ideia.</p></div></div>
+        <div class="point"><div class="num">8</div><div><strong>Entregável que justifica honorários maiores</strong><p>Relatório consolidado premium com parecer da Futura — e, na evolução, o diagnóstico da vaga: por que candidatos não avançaram (salário, distância, desinteresse), no estilo que você citou como referência.</p></div></div>
+        <div class="point"><div class="num">9</div><div><strong>Ativos prontos para a fase comercial</strong><p>1.700 CNPJs que já trabalharam com a Futura como potenciais assinantes, mais a ideia da associação/cooperativa de agências com plataforma comum — caminhos de monetização quando o MVP estiver validado.</p></div></div>
+        <div class="point"><div class="num">10</div><div><strong>Verticais futuras já no radar</strong><p>Indústria alimentícia (ticket alto, volume de colaboradores) e o público militar do Recruta Brasil (1.200 candidatos do Exército) como segmentações da fase de crescimento.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. O QUE PRECISAMOS -->
+  <section id="precisamos">
+    <div class="inner">
+      <div class="section-number reveal">07 · O que precisamos de você</div>
+      <h2 class="reveal d1">Checklist para destravar a execução</h2>
+      <p class="subtitle reveal d2">Tudo que depende da Futura para o cronograma se manter. Pode enviar direto no grupo de WhatsApp.</p>
+      <div class="check-grid reveal d3">
+        <div class="check-block">
+          <div class="head"><h3>Acessos e infraestrutura</h3><span class="deadline red-d">até 15/07</span></div>
+          <ul>
+            <li>Acesso admin ao WordPress (ou contato direto da GetCommerce) — para extrairmos o banco de 54.226 candidatos e os campos do cadastro atual</li>
+            <li>Export/backup do banco de candidatos, se a GetCommerce puder gerar (acelera a migração; senão, extraímos direto)</li>
+            <li>Acesso ao gerenciador do domínio futuradobrasil.com.br (Registro.br ou onde foi contratado) — para apontar o endereço da plataforma sem tocar nos e-mails</li>
+            <li>Onde ficam hospedados os e-mails (contrate@futuradobrasil.com.br) — só para garantir que nada é interrompido</li>
+            <li>Exemplo do relatório mensal de vagas fechadas (Excel) usado hoje para gerar os boletos</li>
+          </ul>
+        </div>
+        <div class="check-block">
+          <div class="head"><h3>Essencial para o desenvolvimento</h3><span class="deadline red-d">até 15/07</span></div>
+          <ul>
+            <li>Logo da Futura em alta resolução (PNG ou SVG) + cores da marca</li>
+            <li>Referência do questionário de riscos psicossociais que deseja usar no módulo NR-1 — ou nos autorizar a propor um padrão baseado nas diretrizes da NR-1</li>
+            <li>Lista dos tipos de vaga mais frequentes (cargos, áreas, faixas salariais)</li>
+            <li>Decisão sobre a base de 54 mil: importar como está ou acionar para recadastro (aumenta os scores)</li>
+          </ul>
+        </div>
+        <div class="check-block">
+          <div class="head"><h3>Importante para as semanas 2-3</h3><span class="deadline amber-d">até 20/07</span></div>
+          <ul>
+            <li>Nome definitivo da startup (ou confirmar "Conecta Futura") + endereço da plataforma: domínio próprio ou dentro do futuradobrasil.com.br</li>
+            <li>Exemplo de relatório/feedback que a Futura envia hoje para as empresas clientes (base do parecer padrão)</li>
+            <li>Lista de 3-5 empresas clientes ativas (para modelar o cadastro de empresas e o alerta NR-1 ao RH)</li>
+            <li>Modelos de e-mail que já usa com candidatos (convite de entrevista etc.)</li>
+          </ul>
+        </div>
+        <div class="check-block">
+          <div class="head"><h3>Para o pitch deck</h3><span class="deadline cyan-d">até 25/07</span></div>
+          <ul>
+            <li>Foto profissional da Thelma</li>
+            <li>História da Futura em 3-4 frases (23 anos, números de orgulho)</li>
+            <li>Confirmação dos números públicos: 54.226 candidatos, ~200 contatos/semana, 1.700 CNPJs atendidos, 1.200 militares (Recruta Brasil)</li>
+            <li>Indicação de 15-20 candidatos/contatos para testar o MVP nas semanas 2 e 3</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. RESPONSABILIDADES + COMBINADOS -->
+  <section id="combinados">
+    <div class="inner">
+      <div class="section-number reveal">08 · Responsabilidades e combinados</div>
+      <h2 class="reveal d1">Quem cuida do quê</h2>
+      <div class="resp reveal d2">
+        <div class="row"><span>Desenvolvimento completo do MVP + identidade visual + pitch deck</span><span class="who u4">u4digital</span></div>
+        <div class="row"><span>Migração dos 54 mil candidatos (extração, limpeza e importação)</span><span class="who u4">u4digital</span></div>
+        <div class="row"><span>Liberação dos acessos (WordPress/GetCommerce, domínio) + decisão sobre recadastro da base</span><span class="who fu">Futura</span></div>
+        <div class="row"><span>Conteúdo técnico do questionário NR-1 (expertise de RH)</span><span class="who fu">Futura</span></div>
+        <div class="row"><span>Implementação do questionário e dos alertas na plataforma</span><span class="who u4">u4digital</span></div>
+        <div class="row"><span>Recrutamento dos 15-20 testadores + testes e feedback</span><span class="who fu">Futura</span></div>
+        <div class="row"><span>Validação de cada entrega semanal (retorno em até 2 dias úteis)</span><span class="who fu">Futura</span></div>
+        <div class="row"><span>Definição do nome final e aprovação da identidade</span><span class="who both">Juntos</span></div>
+        <div class="row"><span>Encerramento da hospedagem GetCommerce (só após migração validada)</span><span class="who both">Juntos</span></div>
+        <div class="row"><span>Inscrição e logística do Rio Innovation Week (Ela Hub)</span><span class="who fu">Futura</span></div>
+      </div>
+      <div class="callout reveal d3">
+        <b>Comunicação:</b> grupo de WhatsApp como canal principal, com update de progresso toda sexta-feira. <b>Regra de ouro do prazo:</b> tudo que surgir de novo durante o desenvolvimento entra na Fase 2 — o escopo do MVP fica travado até 01/08 para proteger a entrega antes do evento.
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. FINAL -->
+  <section id="final">
+    <div class="inner">
+      <div class="section-number reveal" style="justify-content: center;">Próximo passo</div>
+      <h2 class="reveal d1">Vamos construir a <span class="accent">Conecta Futura</span></h2>
+      <p class="subtitle reveal d2" style="margin: 0 auto;">Reunião de kickoff na segunda-feira, 13/07 — 45 minutos para validar este documento, definir o questionário NR-1 e receber os primeiros materiais. Depois disso, é desenvolvimento até o palco.</p>
+      <div class="hero-badges reveal d3" style="justify-content: center;">
+        <span class="badge accent-badge">Kickoff · 13/07</span>
+        <span class="badge">Entrega MVP · 01/08</span>
+        <span class="badge">Rio Innovation Week · 04-07/08</span>
+      </div>
+      <div class="meta-final reveal d3">
+        <span>u4digital — Tiago Donicht + Moroni Reis</span>
+        <span>Futura do Brasil — Thelma + Dani</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const deck = document.getElementById('deck');
+  const sections = [...document.querySelectorAll('section')];
+  const dotsWrap = document.getElementById('dots');
+  const hint = document.getElementById('scrollHint');
+
+  sections.forEach((s, i) => {
+    const a = document.createElement('a');
+    a.href = '#' + s.id;
+    a.setAttribute('aria-label', 'Slide ' + (i + 1));
+    a.addEventListener('click', e => { e.preventDefault(); s.scrollIntoView({ behavior: 'smooth' }); });
+    dotsWrap.appendChild(a);
+  });
+  const dots = [...dotsWrap.children];
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = sections.indexOf(e.target);
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        e.target.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+        hint.classList.toggle('hide', idx > 0);
+      }
+    });
+  }, { root: deck, threshold: 0.55 });
+  sections.forEach(s => io.observe(s));
+
+  document.addEventListener('keydown', e => {
+    const cur = dots.findIndex(d => d.classList.contains('active'));
+    if (['ArrowDown', 'PageDown', ' '].includes(e.key) && cur < sections.length - 1) {
+      e.preventDefault(); sections[cur + 1].scrollIntoView({ behavior: 'smooth' });
+    }
+    if (['ArrowUp', 'PageUp'].includes(e.key) && cur > 0) {
+      e.preventDefault(); sections[cur - 1].scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+</script>
+
+</body>
+</html>
