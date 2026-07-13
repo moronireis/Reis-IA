@@ -803,7 +803,7 @@
       </div>
     </div>
     <div class="content">
-      <div class="grid-3-1" style="margin-bottom: 24px;">
+      <div style="margin-bottom: 24px;">
         <div class="panel">
           <div class="panel-header">
             <div>
@@ -813,43 +813,6 @@
           </div>
           <div class="candidate-list" id="curriculo-candidate-list">
             <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">Carregando candidatos...</div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Status da fila</div>
-          </div>
-          <div class="panel-body">
-            <div class="status-row">
-              <div class="status-icon" style="background: var(--orange-light); color: var(--orange);" id="curriculo-queue-waiting">—</div>
-              <div class="status-info">
-                <div class="status-name">Candidatos cadastrados</div>
-                <div class="status-desc">No banco de dados</div>
-              </div>
-            </div>
-            <div class="status-row">
-              <div class="status-icon" style="background: var(--blue-light); color: var(--blue);">—</div>
-              <div class="status-info">
-                <div class="status-name">Aguardando Pandapé</div>
-                <div class="status-desc">Integração pendente</div>
-              </div>
-            </div>
-            <div class="status-row">
-              <div class="status-icon" style="background: var(--green-light); color: var(--green);" id="curriculo-queue-sent">—</div>
-              <div class="status-info">
-                <div class="status-name">CVs gerados total</div>
-                <div class="status-desc">Via motor de IA</div>
-              </div>
-            </div>
-            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                <span style="font-size: 12px; font-weight: 600; color: var(--text);">Meta diária</span>
-                <span style="font-size: 12px; font-weight: 600; color: var(--orange);">12 / 15</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 80%; background: var(--orange);"></div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -892,22 +855,6 @@
             <div class="cv-field"><div class="cv-field-label">Email</div><div class="cv-field-value" id="cv-field-email">—</div></div>
             <div class="cv-field"><div class="cv-field-label">Estágio no funil</div><div class="cv-field-value" id="cv-field-stage">—</div></div>
           </div>
-          <div class="cv-source">
-            <div class="cv-source-header">
-              <div class="cv-source-icon" style="background: var(--green-light); color: var(--green-dark);">C</div>
-              <div>
-                <div class="cv-source-title">Conversa do ChatGuru</div>
-                <div class="cv-source-sub">Resumo da interação com recrutador</div>
-              </div>
-            </div>
-            <div class="cv-field">
-              <div class="cv-field-label">Resumo da conversa</div>
-              <div class="cv-field-value" style="font-size: 12px; line-height: 1.6; color: var(--text-sec);" id="cv-field-chatguru-summary">
-                Nenhuma conversa carregada para este candidato.
-              </div>
-            </div>
-          </div>
-
           <!-- Informações Complementares -->
           <div class="cv-source" style="margin-top: 16px;">
             <div class="cv-source-header" style="cursor:pointer;" onclick="toggleComplementar(this)">
@@ -1022,8 +969,8 @@
       <div class="panel" id="delivery-panel" style="margin-top:24px;">
         <div class="panel-header" style="align-items:center;">
           <div>
-            <div class="panel-title">Entrega — ChatGuru &gt; Arquivos</div>
-            <div class="panel-subtitle">Baixe o PDF pronto, suba no módulo Arquivos do ChatGuru (com as tags de vocês) e marque como disponibilizado.</div>
+            <div class="panel-title">Currículos prontos — ChatGuru &gt; Arquivos</div>
+            <div class="panel-subtitle"><strong>Passo 1</strong> Baixar o PDF &nbsp;·&nbsp; <strong>Passo 2</strong> Subir no ChatGuru &gt; Arquivos e aplicar as tags &nbsp;·&nbsp; <strong>Passo 3</strong> Marcar como concluído</div>
           </div>
           <button class="topbar-btn" onclick="loadDeliveryQueue()" style="flex-shrink:0;">Atualizar</button>
         </div>
@@ -2534,10 +2481,6 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
           Preparar arquivo (ChatGuru)
         </button>
-        <button class="cv-btn secondary" onclick="openGroupSummary()" title="Gera o resumo do candidato com IA e envia para o grupo de WhatsApp do cliente">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-          Resumo p/ grupo
-        </button>
       </div>
       <div id="cv-action-status" style="font-size:12px;color:var(--text-muted);margin-top:8px;min-height:15px;"></div>`;
   }
@@ -2721,6 +2664,31 @@
     return base + '.pdf';
   }
 
+  // Gera o PDF do currículo no cliente, reutilizando o layout do /cv-print
+  // dentro de um iframe oculto (a página expõe window.generatePdfBase64).
+  async function getCvPdfBase64(cvId) {
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;left:-10000px;top:0;width:900px;height:1400px;visibility:hidden;';
+    iframe.src = `/cv-print?cv_id=${encodeURIComponent(cvId)}&embed=1`;
+    document.body.appendChild(iframe);
+    try {
+      await new Promise((resolve, reject) => {
+        iframe.onload = resolve;
+        iframe.onerror = () => reject(new Error('Falha ao carregar o layout do currículo.'));
+        setTimeout(() => reject(new Error('Tempo esgotado ao carregar o currículo.')), 20000);
+      });
+      for (let i = 0; i < 40 && !(iframe.contentWindow && iframe.contentWindow.generatePdfBase64); i++) {
+        await new Promise(r => setTimeout(r, 150));
+      }
+      if (!iframe.contentWindow || !iframe.contentWindow.generatePdfBase64) {
+        throw new Error('Gerador de PDF indisponível. Recarregue a página.');
+      }
+      return await iframe.contentWindow.generatePdfBase64();
+    } finally {
+      iframe.remove();
+    }
+  }
+
   async function prepareCvFile(btn) {
     if (!window._currentCVId) { alert('Gere o currículo primeiro.'); return; }
     const statusEl = document.getElementById('cv-action-status');
@@ -2769,12 +2737,11 @@
         let statusLine = '', actions = '';
 
         if (st === 'preparado') {
-          statusLine = '<span style="color:var(--text-muted);">1/3 — Aguardando upload no ChatGuru &gt; Arquivos</span>';
-          actions = `<button class="topbar-btn primary" onclick="markDelivered('${cv.id}', false)">Marcar como disponibilizado</button>`;
+          statusLine = '<span style="color:var(--text-muted);">Passo 1 de 3 — Baixe o PDF e suba no módulo Arquivos do ChatGuru</span>';
+          actions = `<button class="topbar-btn primary" onclick="markDelivered('${cv.id}', false)">Concluído: está no ChatGuru</button>`;
         } else if (st === 'chatguru_arquivo') {
-          statusLine = `<span style="color:var(--blue);">2/3 — No ChatGuru &gt; Arquivos${cv.sent_at ? ' desde ' + br(cv.sent_at) : ''}</span>`;
-          actions = `<button class="topbar-btn primary" onclick="openGroupSummary('${cv.id}')">Apresentar no grupo</button>
-                     <button class="topbar-btn" onclick="markDelivered('${cv.id}', true)" title="Voltar para a fila">Desfazer</button>`;
+          statusLine = `<span style="color:var(--green);">✓ Concluído — no ChatGuru &gt; Arquivos${cv.sent_at ? ' desde ' + br(cv.sent_at) : ''}</span>`;
+          actions = `<button class="topbar-btn" onclick="markDelivered('${cv.id}', true)" title="Voltar ao passo 1">Desfazer</button>`;
         } else { // apresentado
           const resp = cv.client_response_at;
           const dias = cv.presented_at ? Math.floor((Date.now() - new Date(cv.presented_at)) / 86400000) : null;
