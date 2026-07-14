@@ -265,3 +265,27 @@ Fonte: `~/Downloads/Checkpoint (RHF) - 1007 - Novos Ajustes.pdf` (11 itens).
 | 8 | Tags do ChatGuru | DEPENDÊNCIA EXTERNA: payloads no banco são da era Meta (sem tags); precisa de webhook ChatGuru real disparado (teste conjunto) OU doc do suporte — mesmo ticket do módulo Arquivos |
 
 Estratégico: Pandapé em standby (zero investimento na integração); ChatGuru é a fonte primária.
+
+## ENTREGA AUTOMÁTICA NO MÓDULO ARQUIVOS — IMPLEMENTADA 14/07 (Opção A funcionou)
+
+O pedido do Moroni (arquivo salvo no módulo **Arquivos** do ChatGuru, não em conversa) foi resolvido 100% e está em produção.
+
+**Descoberta (engenharia reversa do painel s18, com login real do Rodrigo):**
+- A API REST oficial do ChatGuru NÃO expõe o módulo Arquivos (confirmado por ~22 probes, todas "ação inválida").
+- O módulo é servido por rotas internas do painel, **autenticadas por cookie de sessão** (não pela chave da API):
+  - `POST /login` (email+senha, SEM captcha/CSRF) → cookie `session` HttpOnly
+  - `POST /user_upload_files` (multipart: `attachment`, `send_or_save=save`|`send`, `chat_id`) → salva no repositório global (save) ou envia dentro da conversa da pessoa (send + chat_id)
+  - `GET /attachments/search` → lista JSON
+  - `POST /attachments/{id}/edit_tags` (urlencoded `tags=a,b,c`) → tags
+  - `GET /attachments/{id}/delete` → remover
+
+**Implementação:**
+- `lib/chatguru-panel.js`: login com cache de sessão em memória (15min, re-login automático em 302→/login), `uploadToArquivos(buffer, nome, {tags, mode})`, `deleteArquivo`. Credenciais em `CHATGURU_PANEL_EMAIL`/`CHATGURU_PANEL_PASSWORD` (Vercel + .env gitignored).
+- `api/cv.js` `prepare-file`: continua salvando no Storage (backup/auditoria + fallback de download) E agora envia direto ao módulo Arquivos, aplicando a **tag do nº do processo** automaticamente. `sent_status='chatguru_arquivo'` na hora. Se o ChatGuru falhar, cai para `preparado` + botão Baixar (entrega nunca trava).
+- `mvp.html`: botão "Preparar arquivo (ChatGuru)" agora entrega direto; a fila virou controle de entrega (verde = no ChatGuru; âmbar = falhou, subir manual).
+
+**E2E produção 14/07** (conta real do Rodrigo): CV real → apareceu no módulo Arquivos com nome acentuado ("Jonathan Vicente Da Silva - Técnico em Informática - Novo Hamburgo-RS.pdf") + tag "1164" aplicada. Arquivo de teste removido da conta ao fim.
+
+**Bônus destravados:** (a) `mode='send'` + `chat_id` envia o arquivo DENTRO da conversa da pessoa (se um dia quiserem esse caminho); (b) `edit_tags` viabiliza a **leitura/escrita de tags** — abre caminho para o item 8 do checkpoint (cruzar tags de Arquivos com o funil/dashboard).
+
+**Riscos conhecidos:** depende do painel do ChatGuru não mudar as rotas; a conta não pode ter 2FA (não tem hoje); credenciais do painel guardadas como env (nunca no git). Fallback manual sempre disponível.
