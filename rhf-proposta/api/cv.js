@@ -26,6 +26,7 @@
 
 import { select, insert, update, uploadToStorage } from '../lib/supabase.js';
 import { getVacancy } from '../lib/pandape.js';
+import { uploadToArquivos } from '../lib/chatguru-panel.js';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const IMPORT_MODEL = process.env.OPENAI_IMPORT_MODEL || 'gpt-4o-mini';
@@ -726,13 +727,14 @@ async function handleSendEmail(req, res) {
   }
 }
 
-// ─── Preparar arquivo para o ChatGuru (módulo Arquivos) ─────────────────────
+// ─── Preparar arquivo + entregar no ChatGuru > Arquivos ─────────────────────
 //
-// Checkpoint 04/07: o currículo NUNCA vai para conversa. O PDF final é
-// hospedado no Storage (fila de entrega) e a equipe RHF sobe no módulo
-// Arquivos do ChatGuru, onde organizam por tags. mark-delivered registra a
-// entrega (base do SLA da Fase 2). Se o spike encontrar endpoint de upload do
-// repositório, o push passa a ser automático a partir daqui.
+// O PDF final é hospedado no Storage (auditoria/backup + fallback de download)
+// E enviado direto ao módulo Arquivos do ChatGuru via lib/chatguru-panel
+// (login de sessão + /user_upload_files — engenharia reversa do painel 14/07).
+// Aplica a tag do nº do processo para casar com a organização do Rodrigo.
+// Se o ChatGuru falhar, fica em 'preparado' com file_url para o botão Baixar —
+// a entrega nunca trava.
 
 async function handlePrepareFile(req, res) {
   const { cv_id, file_base64, file_name } = req.body || {};
@@ -747,25 +749,56 @@ async function handlePrepareFile(req, res) {
     if (buffer.length < 1024) return res.status(400).json({ status: 'error', message: 'PDF inválido ou vazio.' });
     if (buffer.length > 8 * 1024 * 1024) return res.status(400).json({ status: 'error', message: 'PDF acima de 8MB.' });
 
-    // Nome no padrão RHF ("Nome - Vaga - Cidade-UF"); acentos removidos só na chave do Storage
-    const safeName = String(file_name || `Curriculo - ${cv.candidate_name || 'Candidato'}`)
+    // displayName mantém acentos (ChatGuru aceita); só a chave do Storage é ASCII
+    const displayName = String(file_name || `Curriculo - ${cv.candidate_name || 'Candidato'}`)
+      .replace(/[\r\n"]/g, '').replace(/\.pdf$/i, '').replace(/\s+/g, ' ').trim().slice(0, 160) || 'Curriculo';
+    // storageKey = ASCII-safe (só a chave do Storage; displayName mantém acentos)
+    const storageKey = displayName
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/\.pdf$/i, '')
       .replace(/[\/\\:*?"<>|#%]/g, '-')
       .replace(/\s+/g, ' ')
       .trim()
       .slice(0, 120) || 'curriculo';
-    const objectPath = `prontos/${cv_id}/${safeName}.pdf`;
+    const objectPath = `prontos/${cv_id}/${storageKey}.pdf`;
 
+    // 1. Storage (backup/auditoria + fallback de download)
     const fileUrl = await uploadToStorage(CV_BUCKET, objectPath, buffer, 'application/pdf');
 
+    // 2. ChatGuru > Arquivos (entrega direta). Tag = nº do processo, se houver.
+    const tags = [];
+    const processo = cv.raw_data?.pdf_import?.processo_numero
+      || (String(cv.vacancy_name || '').match(/#(\d+)/) || [])[1];
+    if (processo) tags.push(String(processo));
+
+    let chatguruOk = false, chatguruId = null;
+    let sentStatus = 'preparado';
+    let message = 'Arquivo preparado. O envio automático ao ChatGuru falhou — use "Baixar" e suba manualmente.';
     try {
-      await update('generated_cvs', `id=eq.${cv_id}`, { sent_status: 'preparado', sent_file_url: fileUrl });
+      const r = await uploadToArquivos(buffer, `${displayName}.pdf`, { tags, mode: 'save' });
+      if (r.ok) {
+        chatguruOk = true; chatguruId = r.id; sentStatus = 'chatguru_arquivo';
+        message = 'Currículo enviado ao módulo Arquivos do ChatGuru' + (tags.length ? ` (tag: ${tags.join(', ')})` : '') + '.';
+      }
+    } catch (err) {
+      console.warn('[CV prepare-file] ChatGuru upload failed:', err.message);
+      message = `Arquivo preparado, mas o envio ao ChatGuru falhou (${err.message}). Use "Baixar" e suba manualmente.`;
+    }
+
+    try {
+      await update('generated_cvs', `id=eq.${cv_id}`, {
+        sent_status: sentStatus,
+        sent_file_url: fileUrl,
+        ...(sentStatus === 'chatguru_arquivo' ? { sent_at: new Date().toISOString() } : {}),
+      });
     } catch (err) { console.warn('[CV prepare-file] status update failed:', err.message); }
 
     return res.status(200).json({
       status: 'ok',
-      message: 'Arquivo preparado. Baixe e suba no módulo Arquivos do ChatGuru.',
+      chatguru_ok: chatguruOk,
+      chatguru_id: chatguruId,
+      sent_status: sentStatus,
+      message,
       file_url: fileUrl,
     });
   } catch (error) {

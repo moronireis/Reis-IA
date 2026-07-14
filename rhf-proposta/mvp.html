@@ -1090,8 +1090,8 @@
       <div class="panel" id="delivery-panel" style="margin-top:24px;">
         <div class="panel-header" style="align-items:center;">
           <div>
-            <div class="panel-title">Currículos prontos — ChatGuru &gt; Arquivos</div>
-            <div class="panel-subtitle"><strong>Passo 1</strong> Baixar o PDF &nbsp;·&nbsp; <strong>Passo 2</strong> Subir no ChatGuru &gt; Arquivos e aplicar as tags &nbsp;·&nbsp; <strong>Passo 3</strong> Marcar como concluído</div>
+            <div class="panel-title">Currículos entregues — ChatGuru &gt; Arquivos</div>
+            <div class="panel-subtitle">O botão "Preparar arquivo" já envia direto ao módulo Arquivos do ChatGuru (com a tag do processo). Esta lista é o controle de entrega.</div>
           </div>
           <button class="topbar-btn" onclick="loadDeliveryQueue()" style="flex-shrink:0;">Atualizar</button>
         </div>
@@ -2853,7 +2853,7 @@
       setS('Gerando o PDF final...');
       const fileBase64 = await getCvPdfBase64(window._currentCVId);
       const fileName = buildCvFileName(window._currentCV || {});
-      setS('Hospedando o arquivo...');
+      setS('Enviando ao módulo Arquivos do ChatGuru...');
       const res = await fetch('/api/cv?action=prepare-file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2861,7 +2861,7 @@
       });
       const json = await res.json();
       if (json.status !== 'ok') { setS('Erro: ' + (json.message || 'falha ao preparar'), 'var(--red)'); return; }
-      setS('Arquivo preparado: ' + fileName + ' — baixe na fila "Entrega" abaixo e suba no ChatGuru > Arquivos.', 'var(--green)');
+      setS(json.message || 'Enviado ao ChatGuru.', json.chatguru_ok ? 'var(--green)' : 'var(--amber)');
       loadDeliveryQueue();
       const panel = document.getElementById('delivery-panel');
       if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -2892,11 +2892,11 @@
         let statusLine = '', actions = '';
 
         if (st === 'preparado') {
-          statusLine = '<span style="color:var(--text-muted);">Passo 1 de 3 — Baixe o PDF e suba no módulo Arquivos do ChatGuru</span>';
-          actions = `<button class="topbar-btn primary" onclick="markDelivered('${cv.id}', false)">Concluído: está no ChatGuru</button>`;
+          statusLine = '<span style="color:var(--amber);">Envio automático falhou — baixe e suba manualmente no ChatGuru &gt; Arquivos</span>';
+          actions = `<button class="topbar-btn primary" onclick="markDelivered('${cv.id}', false)">Marcar como concluído</button>`;
         } else if (st === 'chatguru_arquivo') {
-          statusLine = `<span style="color:var(--green);">✓ Concluído — no ChatGuru &gt; Arquivos${cv.sent_at ? ' desde ' + br(cv.sent_at) : ''}</span>`;
-          actions = `<button class="topbar-btn" onclick="markDelivered('${cv.id}', true)" title="Voltar ao passo 1">Desfazer</button>`;
+          statusLine = `<span style="color:var(--green);">✓ No ChatGuru &gt; Arquivos${cv.sent_at ? ' desde ' + br(cv.sent_at) : ''}</span>`;
+          actions = `<button class="topbar-btn" onclick="markDelivered('${cv.id}', true)" title="Remover do controle">Desfazer</button>`;
         } else { // apresentado
           const resp = cv.client_response_at;
           const dias = cv.presented_at ? Math.floor((Date.now() - new Date(cv.presented_at)) / 86400000) : null;
