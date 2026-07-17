@@ -2194,8 +2194,25 @@
     if (candidate) updateCurriculoSourceData(candidate);
   }
 
+  // #26/#15 — o formulário complementar NUNCA herda dados do candidato anterior
+  const COMPLEMENTAR_FIELD_IDS = ['comp-pretensao', 'comp-ultimo-salario', 'comp-nascimento', 'comp-cidade', 'comp-estado-civil', 'comp-filhos', 'comp-cnh', 'comp-veiculo', 'comp-idiomas', 'comp-disponibilidade', 'comp-info-extra', 'comp-vaga', 'comp-vaga-select'];
+  let _compFieldsCandidateId = null;
+
+  function clearComplementarFields() {
+    COMPLEMENTAR_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    removePhoto();
+  }
+
   function updateCurriculoSourceData(candidate) {
     if (!candidate) return;
+
+    if (candidate.id !== _compFieldsCandidateId) {
+      clearComplementarFields();
+      _compFieldsCandidateId = candidate.id;
+    }
 
     // Update the Pandapé source panel fields
     const fieldMap = {
@@ -2560,6 +2577,7 @@
         const statCvs = document.getElementById('stat-cvs');
         if (statCvs) statCvs.textContent = (parseInt(statCvs.textContent) || 0) + 1;
         tabLoaded['dashboard'] = false;
+        clearComplementarFields();
       } else {
         const errMsg = json.message || 'Erro desconhecido.';
         result.innerHTML = `
@@ -2634,11 +2652,11 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Salvar PDF
         </button>
-        <button class="cv-btn primary" onclick="openEmailModal()">
+        <button class="cv-btn secondary" onclick="openEmailModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           Enviar por Email
         </button>
-        <button class="cv-btn secondary" onclick="prepareCvFile(this)" title="Gera o PDF final no padrão RHF e deixa pronto para subir no módulo Arquivos do ChatGuru">
+        <button class="cv-btn primary" onclick="prepareCvFile(this)" title="Gera o PDF final no padrão RHF e deixa pronto para subir no módulo Arquivos do ChatGuru">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
           Preparar arquivo (ChatGuru)
         </button>
@@ -2918,6 +2936,7 @@
         <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
           <div style="flex:1;min-width:0;">
             <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(fname)}</div>
+            ${cv.created_by_name ? `<div style="font-size:11px;color:var(--text-muted);margin:1px 0;">Enviado por ${esc(cv.created_by_name)}</div>` : ''}
             <div style="font-size:11.5px;">${statusLine}</div>
           </div>
           ${cv.sent_file_url ? `<button class="topbar-btn" onclick="downloadPrepared('${esc(cv.sent_file_url)}', '${fnameAttr}')">Baixar</button>` : ''}
@@ -3270,24 +3289,24 @@
 
 <!-- ── Email Modal ─────────────────────────────────────────────── -->
 <div id="emailModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:16px;padding:32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.3);margin:16px;">
+  <div style="background:var(--bg-white);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.5);margin:16px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
-      <h3 style="font-size:18px;font-weight:700;color:#111827;">Enviar Currículo por Email</h3>
-      <button onclick="closeEmailModal()" style="background:none;border:none;cursor:pointer;color:#6B7280;padding:4px;">
+      <h3 style="font-size:18px;font-weight:700;color:var(--text);">Enviar Currículo por Email</h3>
+      <button onclick="closeEmailModal()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div style="margin-bottom:16px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Para (destinatário)</label>
-      <input id="emailTo" type="email" placeholder="email@empresa.com" style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-family:inherit;outline:none;" onfocus="this.style.borderColor='#F26522'" onblur="this.style.borderColor='#E5E7EB'">
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--text-sec);margin-bottom:6px;">Para (destinatário)</label>
+      <input id="emailTo" type="email" placeholder="email@empresa.com" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;background:var(--field-bg);color:var(--text);" onfocus="this.style.borderColor='#F26522'" onblur="this.style.borderColor='var(--border)'">
     </div>
     <div style="margin-bottom:24px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">CC (opcional)</label>
-      <input id="emailCc" type="email" placeholder="copia@empresa.com" style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-family:inherit;outline:none;" onfocus="this.style.borderColor='#F26522'" onblur="this.style.borderColor='#E5E7EB'">
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--text-sec);margin-bottom:6px;">CC (opcional)</label>
+      <input id="emailCc" type="email" placeholder="copia@empresa.com" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;background:var(--field-bg);color:var(--text);" onfocus="this.style.borderColor='#F26522'" onblur="this.style.borderColor='var(--border)'">
     </div>
     <div style="display:flex;gap:12px;flex-wrap:wrap;">
-      <button onclick="closeEmailModal()" style="flex:1;min-width:90px;padding:12px;background:#F3F4F6;color:#374151;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancelar</button>
-      <button onclick="savePDF();closeEmailModal();" style="flex:1;min-width:130px;padding:12px;background:#F3F4F6;color:#F26522;border:1.5px solid #F26522;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <button onclick="closeEmailModal()" style="flex:1;min-width:90px;padding:12px;background:var(--field-bg);color:var(--text-sec);border:1px solid var(--border);border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancelar</button>
+      <button onclick="savePDF();closeEmailModal();" style="flex:1;min-width:130px;padding:12px;background:transparent;color:#F26522;border:1.5px solid #F26522;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
         Abrir para Impressão
       </button>

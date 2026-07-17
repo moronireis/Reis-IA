@@ -451,9 +451,10 @@ function assembleExperienceSection(entries, bulletsByIndex) {
 const REWRITE_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['resumo', 'experiencias'],
+  required: ['resumo', 'experiencias', 'observacoes_bullets'],
   properties: {
     resumo: { type: 'string', description: 'RESUMO PROFISSIONAL reescrito: parágrafo único, 3 a 5 linhas.' },
+    observacoes_bullets: { type: 'array', items: { type: 'string' }, description: 'Observações do recrutador reescritas em 1 a 5 itens curtos e profissionais. Array vazio se não houver observacoes_brutas na entrada.' },
     experiencias: {
       type: 'array',
       description: 'Mesma quantidade e MESMA ORDEM das experiências de entrada.',
@@ -476,18 +477,24 @@ REGRAS:
 - "resumo": parágrafo único de 3 a 5 linhas no estilo: área de atuação e experiências-chave → formação e conhecimentos relevantes → fecho com perfil comportamental e interesse de desenvolvimento. Exemplo de estilo (NÃO copie o conteúdo): "Profissional com experiência em suporte técnico, manutenção de computadores e atendimento a usuários, atuando em suporte remoto e presencial. Possui formação técnica em Informática e conhecimentos em sistemas operacionais e redes. Perfil comprometido, organizado e com grande interesse em desenvolvimento contínuo na área."
 - "experiencias[].bullets": reescreva a descrição bruta de cada experiência em 3 a 7 itens curtos e objetivos, iniciando com substantivo de ação ("Atendimento de...", "Montagem e desmontagem de...", "Controle de..."), cada item terminando com ";" e o último com ".". Não repita o nome da empresa nos itens.
 - Se a descrição bruta de uma experiência for vazia, derive no máximo 2 itens genéricos do próprio cargo.
-- Retorne EXATAMENTE a mesma quantidade de experiências recebidas, na mesma ordem.`;
+- Retorne EXATAMENTE a mesma quantidade de experiências recebidas, na mesma ordem.
+- A origem pode ser Pandapé, Infojobs ou qualquer outro formato de currículo — normalize SEMPRE a saída para o padrão RHF descrito acima.
+- Corrija TODA a ortografia, gramática, acentuação e pontuação em TODOS os campos de saída.
+- "observacoes_bullets": se houver "observacoes_brutas" na entrada, reescreva o conteúdo em 1 a 5 itens curtos e profissionais (mesmo estilo dos bullets de experiência, sem inventar nada). Sem observações na entrada, retorne [].`;
 
-async function rewriteCvWithAI({ expEntries, rawResumo, skills, vacancyName }) {
+async function rewriteCvWithAI({ expEntries, rawResumo, skills, vacancyName, infoExtra }) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return null;
-  const hasContent = (Array.isArray(expEntries) && expEntries.length > 0) || (rawResumo && rawResumo.length > 30);
+  const hasContent = (Array.isArray(expEntries) && expEntries.length > 0)
+    || (rawResumo && rawResumo.length > 30)
+    || (infoExtra && String(infoExtra).trim().length > 10);
   if (!hasContent) return null;
 
   try {
     const payload = {
       vaga: vacancyName || '',
       resumo_bruto: String(rawResumo || '').slice(0, 3000),
+      observacoes_brutas: String(infoExtra || '').slice(0, 1500),
       competencias: Array.isArray(skills) ? skills.slice(0, 25) : [],
       experiencias: (expEntries || []).map(e => ({
         cargo: e.cargo, empresa: e.empresa,
@@ -561,7 +568,7 @@ async function handleGenerate(req, res) {
     const rawResumo = raw.Resumo || raw.resumo || raw.Summary || raw.summary || '';
     const rawSkills = Array.isArray(raw.Skills) ? raw.Skills : [];
 
-    const ai = await rewriteCvWithAI({ expEntries: sections.expEntries, rawResumo, skills: rawSkills, vacancyName });
+    const ai = await rewriteCvWithAI({ expEntries: sections.expEntries, rawResumo, skills: rawSkills, vacancyName, infoExtra: extra.info_extra });
     if (ai) {
       if (ai.resumo && ai.resumo.trim().length > 40) { resumo = ai.resumo.trim(); modelUsed = `${IMPORT_MODEL}-rewrite`; }
       if (Array.isArray(ai.experiencias) && Array.isArray(sections.expEntries)
@@ -569,6 +576,19 @@ async function handleGenerate(req, res) {
         const rebuilt = assembleExperienceSection(sections.expEntries, ai.experiencias.map(x => x.bullets));
         if (rebuilt) { experiencia = rebuilt; modelUsed = `${IMPORT_MODEL}-rewrite`; }
       }
+    }
+
+    // #8 — observações do recrutador entram em Informações Complementares:
+    // bullets da IA quando disponíveis; texto bruto como fallback (nunca se perdem)
+    const aiObs = ai && Array.isArray(ai.observacoes_bullets)
+      ? ai.observacoes_bullets.map(b => String(b).trim()).filter(Boolean)
+      : [];
+    if (aiObs.length > 0) {
+      const obsLines = aiObs.map(b => `• ${b.replace(/^[•\-]\s*/, '')}`).join('\n');
+      sections.info_complementares = sections.info_complementares ? `${sections.info_complementares}\n${obsLines}` : obsLines;
+    } else if (extra.info_extra && String(extra.info_extra).trim()) {
+      const rawObs = String(extra.info_extra).trim();
+      sections.info_complementares = sections.info_complementares ? `${sections.info_complementares}\n${rawObs}` : rawObs;
     }
 
     const cvRow = {
@@ -682,6 +702,10 @@ async function handleSendEmail(req, res) {
       ${cv.vacancy_name ? `<div style="color:rgba(255,255,255,0.6);margin-top:5px;font-size:13px;">${escHtml(cv.vacancy_name)}</div>` : ''}
     </div>
     <div style="padding:24px 28px;">
+      <p style="font-size:13.5px;color:#333;line-height:1.55;margin:0 0 4px;">Prezados,</p>
+      <p style="font-size:13.5px;color:#333;line-height:1.55;margin:0 0 4px;">Possuímos um novo candidato selecionado pela RHF Talentos Vale do Sinos e apresentamos o currículo abaixo para sua avaliação.</p>
+      <p style="font-size:13.5px;color:#333;line-height:1.55;margin:0 0 18px;">Pedimos que confirme o interesse em avançar para uma entrevista ou o motivo de eventual reprovação para que possamos ajustar a continuidade da busca.</p>
+      <hr style="border:none;border-top:1px solid #eee;margin:0 0 18px;">
       ${sections.join('')}
       <hr style="border:none;border-top:1px solid #eee;margin-top:8px;">
       <p style="font-size:11px;color:#aaa;margin-top:14px;text-align:center;">Currículo gerado pela Plataforma RHF Talentos IA &bull; valedosinos@rhf.com.br &bull; 51 99936-9855</p>
@@ -765,11 +789,18 @@ async function handlePrepareFile(req, res) {
     // 1. Storage (backup/auditoria + fallback de download)
     const fileUrl = await uploadToStorage(CV_BUCKET, objectPath, buffer, 'application/pdf');
 
-    // 2. ChatGuru > Arquivos (entrega direta). Tag = nº do processo, se houver.
-    const tags = [];
-    const processo = cv.raw_data?.pdf_import?.processo_numero
-      || (String(cv.vacancy_name || '').match(/#(\d+)/) || [])[1];
-    if (processo) tags.push(String(processo));
+    // 2. ChatGuru > Arquivos (entrega direta).
+    // Tags (#9): recrutador + nome do processo + cidade. O nº do processo (ex.: 1164)
+    // é o código fixo da unidade RHF — igual para todas as vagas, não segmenta nada.
+    // edit_tags do painel é CSV: tags não podem conter vírgula.
+    const noComma = (t) => String(t || '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60);
+    const pdfImp = cv.raw_data?.pdf_import || {};
+    const vacRaw = String(cv.vacancy_name || '').replace(/^#?\d+\s*[-–—]\s*/, '');
+    const vacParts = vacRaw.split(/\s[-–—]\s/);
+    const lastPart = vacParts.length > 1 ? vacParts[vacParts.length - 1].trim() : '';
+    const vacCity = pdfImp.vacancy_city || (/\/[A-Z]{2}$/.test(lastPart) ? lastPart : '');
+    const vacTitle = pdfImp.vacancy_title || (vacCity && !pdfImp.vacancy_city ? vacParts.slice(0, -1).join(' - ') : vacRaw);
+    const tags = [...new Set([noComma(cv.created_by_name), noComma(vacTitle), noComma(vacCity)].filter(Boolean))];
 
     let chatguruOk = false, chatguruId = null;
     let sentStatus = 'preparado';
@@ -911,9 +942,10 @@ const IMPORT_SCHEMA = {
   },
 };
 
-const IMPORT_SYSTEM = `Você extrai dados estruturados de currículos em PDF exportados do ATS Pandapé (texto bruto extraído do PDF).
+const IMPORT_SYSTEM = `Você extrai dados estruturados de currículos em PDF (texto bruto extraído do PDF). A origem típica é o ATS Pandapé (currículos do Infojobs), mas aceite QUALQUER formato ou origem de currículo e normalize para a mesma estrutura de saída.
 Regras:
 - Extraia SOMENTE o que está no texto. Nunca invente dados. Campos ausentes ficam como string vazia (ou array vazio).
+- Corrija erros de ortografia e gramática do texto extraído.
 - Telefone: normalize para dígitos com DDI 55 (ex.: 5551999998888). Se houver mais de um, use o celular/WhatsApp.
 - Datas de experiência: MM/AAAA. Emprego atual: EndDate = "Atual".
 - Description de cada experiência: liste as atividades de forma limpa, uma por frase, sem bullets.
