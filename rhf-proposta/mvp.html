@@ -642,6 +642,11 @@
       // Show admin-only nav items
       if(u.role==='admin'){
         document.querySelectorAll('.admin-only').forEach(function(el){el.style.display='';});
+      } else {
+        // #1 — Fase 3: recrutador vê só o Gerador de CV (Dashboard e Funil são admin)
+        document.querySelectorAll('.nav-item[data-tab="dashboard"], .nav-item[data-tab="funil"]').forEach(function(el){el.style.display='none';});
+        window.__RHF_START_TAB='curriculo';
+        if(typeof showTab==='function'){showTab('curriculo');}
       }
       document.documentElement.style.visibility='';
     })
@@ -2920,7 +2925,7 @@
           actions = `<button class="topbar-btn primary" onclick="markDelivered('${cv.id}', false)">Marcar como concluído</button>`;
         } else if (st === 'chatguru_arquivo') {
           statusLine = `<span style="color:var(--green);">✓ No ChatGuru &gt; Arquivos${cv.sent_at ? ' desde ' + br(cv.sent_at) : ''}</span>`;
-          actions = `<button class="topbar-btn" onclick="markDelivered('${cv.id}', true)" title="Remover do controle">Desfazer</button>`;
+          actions = `<button class="topbar-btn" onclick="deleteCvFile('${cv.id}', '${fnameAttr}')" title="Exclui o PDF do módulo Arquivos do ChatGuru e da plataforma" style="color:var(--red);">Excluir</button>`;
         } else { // apresentado
           const resp = cv.client_response_at;
           const dias = cv.presented_at ? Math.floor((Date.now() - new Date(cv.presented_at)) / 86400000) : null;
@@ -2962,6 +2967,22 @@
     } catch (e) {
       window.open(url, '_blank');
     }
+  }
+
+  // #10 — Fase 2: exclui o PDF entregue (ChatGuru > Arquivos + Storage) e limpa o status
+  async function deleteCvFile(cvId, fname) {
+    if (!confirm(`Excluir "${fname}"?\n\nO PDF será removido do módulo Arquivos do ChatGuru E da plataforma. O currículo gerado continua salvo e pode ser preparado de novo.`)) return;
+    try {
+      const res = await fetch('/api/cv?action=delete-file', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cv_id: cvId }),
+      });
+      const json = await res.json();
+      if (json.status !== 'ok') { alert('Erro: ' + (json.message || 'falha ao excluir')); return; }
+      alert(json.message || 'Arquivo excluído.');
+      loadDeliveryQueue();
+    } catch (e) { alert('Erro: ' + e.message); }
   }
 
   async function markDelivered(cvId, undo) {
@@ -3210,7 +3231,9 @@
     const body = document.getElementById('metrics-body');
     if (!body) return;
     try {
-      const res = await fetch('/api/metrics?action=dashboard&days=90');
+      const res = await fetch('/api/metrics?action=dashboard&days=90', {
+        headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('rhf_token') || '') },
+      });
       const json = await res.json();
       if (json.status !== 'ok') throw new Error(json.message || 'falha');
       const esc = t => String(t ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -3284,7 +3307,7 @@
     }
   })();
 
-  showTab('dashboard');
+  showTab(window.__RHF_START_TAB || 'dashboard');
 </script>
 
 <!-- ── Email Modal ─────────────────────────────────────────────── -->

@@ -17,6 +17,34 @@ import { select } from '../lib/supabase.js';
 
 const STALE_DAYS = 7;
 
+// #1 — Fase 3: o Dashboard é exclusivo do admin. Valida o Bearer token e o
+// perfil em user_profiles (mesma regra do api/auth.js requireAdmin).
+async function requireAdmin(req) {
+  const authHeader = req.headers['authorization'] || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!token) return false;
+
+  const supabaseUrl = (process.env.SUPABASE_URL || '').replace(/\\n/g, '').trim();
+  const supabaseKey = (process.env.SUPABASE_KEY || '').replace(/\\n/g, '').trim();
+  const serviceKey = (process.env.SUPABASE_SERVICE_KEY || '').replace(/\\n/g, '').trim();
+  if (!supabaseUrl || !supabaseKey || !serviceKey) return false;
+
+  try {
+    const r = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: { apikey: supabaseKey, Authorization: `Bearer ${token}` },
+    });
+    const user = await r.json();
+    if (!r.ok || !user.id) return false;
+    const pr = await fetch(`${supabaseUrl}/rest/v1/user_profiles?id=eq.${user.id}&select=role&limit=1`, {
+      headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` },
+    });
+    const rows = pr.ok ? await pr.json() : [];
+    return Array.isArray(rows) && rows[0]?.role === 'admin';
+  } catch {
+    return false;
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -24,7 +52,12 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const action = req.query.action || 'dashboard';
-  if (action === 'dashboard' && req.method === 'GET') return handleDashboard(req, res);
+  if (action === 'dashboard' && req.method === 'GET') {
+    if (!(await requireAdmin(req))) {
+      return res.status(403).json({ status: 'error', message: 'Acesso restrito ao perfil Administrador.' });
+    }
+    return handleDashboard(req, res);
+  }
 
   return res.status(400).json({ error: 'Use action=dashboard (GET)' });
 }

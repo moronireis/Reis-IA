@@ -24,9 +24,9 @@
  *   filhos, cnh, veiculo, disponibilidade, ultimo_salario, info_extra
  */
 
-import { select, insert, update, uploadToStorage } from '../lib/supabase.js';
+import { select, insert, update, uploadToStorage, deleteFromStorage } from '../lib/supabase.js';
 import { getVacancy } from '../lib/pandape.js';
-import { uploadToArquivos } from '../lib/chatguru-panel.js';
+import { uploadToArquivos, deleteArquivo, searchArquivos } from '../lib/chatguru-panel.js';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const IMPORT_MODEL = process.env.OPENAI_IMPORT_MODEL || 'gpt-4o-mini';
@@ -48,6 +48,7 @@ export default async function handler(req, res) {
   if (action === 'prepare-file' && req.method === 'POST') return handlePrepareFile(req, res);
   if (action === 'mark-delivered' && req.method === 'POST') return handleMarkDelivered(req, res);
   if (action === 'mark-response' && req.method === 'POST') return handleMarkResponse(req, res);
+  if (action === 'delete-file' && req.method === 'POST') return handleDeleteFile(req, res);
   if (action === 'import-pdf' && req.method === 'POST') return handleImportPdf(req, res);
 
   return res.status(400).json({ error: 'Use action=generate (POST) | query (GET) | update (POST) | send-email (POST) | prepare-file (POST) | mark-delivered (POST) | import-pdf (POST)' });
@@ -820,7 +821,7 @@ async function handlePrepareFile(req, res) {
       await update('generated_cvs', `id=eq.${cv_id}`, {
         sent_status: sentStatus,
         sent_file_url: fileUrl,
-        ...(sentStatus === 'chatguru_arquivo' ? { sent_at: new Date().toISOString() } : {}),
+        ...(sentStatus === 'chatguru_arquivo' ? { sent_at: new Date().toISOString(), chatguru_attachment_id: chatguruId } : {}),
       });
     } catch (err) { console.warn('[CV prepare-file] status update failed:', err.message); }
 
@@ -851,6 +852,77 @@ async function handleMarkDelivered(req, res) {
     return res.status(200).json({ status: 'ok', data: rows[0] });
   } catch (error) {
     console.error('[CV mark-delivered] error:', error);
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+}
+
+// ─── Excluir arquivo entregue (#10 — Fase 2) ────────────────────────────────
+// "Desfazer" virou EXCLUIR de verdade: remove o PDF do módulo Arquivos do
+// ChatGuru + do Storage e limpa o status de entrega do CV (que volta a poder
+// ser preparado de novo). Fallback p/ CVs antigos sem attachment_id: busca por
+// nome no repositório.
+
+async function handleDeleteFile(req, res) {
+  const { cv_id } = req.body || {};
+  if (!cv_id) return res.status(400).json({ status: 'error', message: 'cv_id é obrigatório.' });
+
+  try {
+    const rows = await select('generated_cvs', `id=eq.${cv_id}&limit=1`);
+    const cv = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+    if (!cv) return res.status(404).json({ status: 'error', message: 'CV não encontrado.' });
+
+    const result = { chatguru: 'não havia', storage: 'não havia' };
+
+    // 1. ChatGuru > Arquivos
+    let attachmentId = cv.chatguru_attachment_id || null;
+    try {
+      if (!attachmentId && cv.sent_status === 'chatguru_arquivo') {
+        // CV antigo (antes da migration 009): tenta achar pelo nome no repositório
+        const wanted = String(cv.candidate_name || '').trim().toLowerCase();
+        if (wanted) {
+          const list = await searchArquivos();
+          const match = list.find(a => String(a.original_name || a.name || '').toLowerCase().includes(wanted));
+          attachmentId = match?._id?.$oid || null;
+        }
+      }
+      if (attachmentId) {
+        const ok = await deleteArquivo(attachmentId);
+        result.chatguru = ok ? 'excluído' : 'falha ao excluir';
+      }
+    } catch (err) {
+      console.warn('[CV delete-file] ChatGuru delete failed:', err.message);
+      result.chatguru = 'falha: ' + err.message;
+    }
+
+    // 2. Storage (backup)
+    try {
+      if (cv.sent_file_url && cv.sent_file_url.includes(`/object/public/${CV_BUCKET}/`)) {
+        const objectPath = decodeURI(cv.sent_file_url.split(`/object/public/${CV_BUCKET}/`)[1] || '');
+        if (objectPath) {
+          await deleteFromStorage(CV_BUCKET, objectPath);
+          result.storage = 'excluído';
+        }
+      }
+    } catch (err) {
+      console.warn('[CV delete-file] storage delete failed:', err.message);
+      result.storage = 'falha: ' + err.message;
+    }
+
+    // 3. Limpa o estado de entrega (o CV gerado permanece; pode ser preparado de novo)
+    await update('generated_cvs', `id=eq.${cv_id}`, {
+      sent_status: null,
+      sent_file_url: null,
+      sent_at: null,
+      chatguru_attachment_id: null,
+    });
+
+    return res.status(200).json({
+      status: 'ok',
+      message: `Arquivo excluído (ChatGuru: ${result.chatguru}; plataforma: ${result.storage}).`,
+      detail: result,
+    });
+  } catch (error) {
+    console.error('[CV delete-file] error:', error);
     return res.status(500).json({ status: 'error', message: error.message });
   }
 }

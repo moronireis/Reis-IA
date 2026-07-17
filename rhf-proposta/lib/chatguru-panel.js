@@ -141,3 +141,37 @@ export async function deleteArquivo(id) {
   const res = await panelFetch(`/attachments/${clean(id)}/delete`, { method: 'GET' });
   return res.ok;
 }
+
+/**
+ * Lista os arquivos do repositório (id, original_name, tags, ...).
+ * Usado pelo delete-file (#10, fallback por nome) e pelo sync de tags (#24).
+ * @returns {Promise<Array<object>>}
+ */
+export async function searchArquivos() {
+  const res = await panelFetch('/attachments/search', { method: 'GET' });
+  if (!res.ok) throw new Error(`attachments/search falhou (status ${res.status})`);
+  const data = await res.json();
+  return Array.isArray(data.attachments) ? data.attachments : [];
+}
+
+/**
+ * Lê as tags cadastradas na conta ChatGuru (módulo Tags, #24/#3/#9).
+ * A REST oficial não expõe tags; o módulo só existe no painel (server-rendered).
+ * Cada tag é uma <span data-tag-id="..." style="...">NOME</span> na tabela /tags.
+ * @returns {Promise<Array<{id:string,name:string,color:string}>>}
+ */
+export async function fetchTags() {
+  const res = await panelFetch('/tags', { method: 'GET' });
+  if (!res.ok) throw new Error(`/tags falhou (status ${res.status})`);
+  const html = await res.text();
+  const tags = [...html.matchAll(/<span[^>]*data-tag-id=["']([a-f0-9]{24})["'][^>]*style=["']([^"']*)["'][^>]*>([^<]{1,60})<\/span>/gi)]
+    .map(m => ({
+      id: m[1],
+      color: (m[2].match(/background-color:\s*(#[0-9a-f]{3,8})/i) || [])[1] || '',
+      name: m[3].trim(),
+    }))
+    .filter(t => t.name);
+  // dedupe por id (o span aparece 1x por tag na tabela)
+  const seen = new Set();
+  return tags.filter(t => (seen.has(t.id) ? false : seen.add(t.id)));
+}

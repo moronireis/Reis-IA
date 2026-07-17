@@ -203,6 +203,10 @@
     }
     #state-error { color: #c00; }
 
+    /* Paginação do PDF (html2pdf modo 'css'): títulos nunca órfãos no pé da página */
+    .cv-section-title { page-break-after: avoid; }
+    .cv-info-item { page-break-inside: avoid; }
+
     /* ── Print styles ──────────────────────────────── */
     @media print {
       body { background: #fff; }
@@ -521,9 +525,11 @@
 
     const el = document.getElementById('cv-page');
     const dataUri = await html2pdf().set({
-      margin: 0,
+      // #17: margens sup/inf em TODAS as páginas (laterais 0 preservam a arte full-bleed)
+      margin: [10, 0, 12, 0],
+      // #16: scale 3 = arte/logo nítidos na rasterização
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      html2canvas: { scale: 3, useCORS: true, backgroundColor: '#ffffff' },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['css', 'avoid-all'] },
     }).from(el).outputPdf('datauristring');

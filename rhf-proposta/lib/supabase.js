@@ -116,6 +116,29 @@ export async function uploadToStorage(bucket, path, buffer, contentType = 'appli
 }
 
 /**
+ * Delete an object from Supabase Storage (used by cv delete-file, #10).
+ * @param {string} bucket - Bucket name
+ * @param {string} path - Object path inside the bucket
+ * @returns {Promise<boolean>} true if deleted (404 counts as already gone)
+ */
+export async function deleteFromStorage(bucket, path) {
+  const url = cleanEnv(process.env.SUPABASE_URL);
+  const key = cleanEnv(process.env.SUPABASE_SERVICE_KEY) || cleanEnv(process.env.SUPABASE_KEY);
+  if (!url || !key) throw new Error('SUPABASE_URL and SUPABASE_SERVICE_KEY env vars are required');
+
+  const encodedPath = encodeURI(path);
+  const res = await fetch(`${url}/storage/v1/object/${bucket}/${encodedPath}`, {
+    method: 'DELETE',
+    headers: { 'apikey': key, 'Authorization': `Bearer ${key}` },
+  });
+  if (!res.ok && res.status !== 404) {
+    const body = await res.text();
+    throw new Error(`[supabase storage delete ${bucket}/${path}] ${res.status}: ${body.slice(0, 200)}`);
+  }
+  return true;
+}
+
+/**
  * UPSERT a row into a table (insert or update on conflict).
  * @param {string} table - Table name
  * @param {object} data - Row data

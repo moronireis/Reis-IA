@@ -17,6 +17,7 @@
 
 import { select, insert, update } from '../lib/supabase.js';
 import { sendMessage as chatguruSend } from '../lib/chatguru.js';
+import { fetchTags } from '../lib/chatguru-panel.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -34,8 +35,23 @@ export default async function handler(req, res) {
   if (action === 'group-delete' && req.method === 'POST') return handleGroupDelete(req, res);
   if (action === 'summary' && req.method === 'POST') return handleSummary(req, res);
   if (action === 'send-summary' && req.method === 'POST') return handleSendSummary(req, res);
+  if (action === 'chatguru-tags' && req.method === 'GET') return handleChatguruTags(req, res);
 
-  return res.status(400).json({ error: 'Use action=chats (GET) | send (POST) | groups (GET) | group-upsert (POST) | group-delete (POST) | summary (POST) | send-summary (POST)' });
+  return res.status(400).json({ error: 'Use action=chats (GET) | send (POST) | groups (GET) | group-upsert (POST) | group-delete (POST) | summary (POST) | send-summary (POST) | chatguru-tags (GET)' });
+}
+
+// ─── Tags do ChatGuru (Fase 4 — fundação p/ #3 filtros e #24 sync) ───────────
+// Lê as tags reais da conta (módulo Tags do painel) para alimentar filtros e
+// mapeamento. Read-only; não persiste nada — a persistência/cron vem no #24.
+
+async function handleChatguruTags(req, res) {
+  try {
+    const tags = await fetchTags();
+    return res.status(200).json({ status: 'ok', count: tags.length, data: tags });
+  } catch (err) {
+    console.error('[whatsapp chatguru-tags] error:', err.message);
+    return res.status(502).json({ status: 'error', message: 'Falha ao ler as tags do ChatGuru: ' + err.message });
+  }
 }
 
 // ─── Chats (from rhf_messages) ───────────────────────────────────────────────
