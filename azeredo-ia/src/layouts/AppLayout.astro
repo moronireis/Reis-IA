@@ -42,7 +42,8 @@ const showConfig = role === 'admin' || role === 'operacional';
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title} | Azeredo IA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23F2984F'/%3E%3Cstop offset='1' stop-color='%23D96E1F'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='32' y='43' font-family='Arial, sans-serif' font-size='27' font-weight='800' fill='white' text-anchor='middle'%3EAZ%3C/text%3E%3C/svg%3E" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <ClientRouter />
   <!-- #16: tema claro/escuro — aplica antes do primeiro paint (sem flash).
        is:inline + re-aplicação em astro:after-swap porque o ClientRouter troca o <html>. -->
@@ -65,7 +66,7 @@ const showConfig = role === 'admin' || role === 'operacional';
       <span></span><span></span><span></span>
     </button>
     <div class="mobile-logo">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      <span class="brand-monogram brand-monogram--sm">AZ</span>
       AZEREDO IA
     </div>
     <div style="width:38px"></div>
@@ -76,14 +77,12 @@ const showConfig = role === 'admin' || role === 'operacional';
 
   <!-- Sidebar -->
   <nav id="sidebar" class="sidebar">
-    <!-- Logo -->
+    <!-- Logo — monograma AZ nas cores da marca (laranja + navy) -->
     <a href="/disparos" class="sidebar-brand">
-      <div class="brand-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      </div>
+      <div class="brand-monogram">AZ</div>
       <div>
         <div class="brand-name">AZEREDO <span>IA</span></div>
-        <div class="brand-tagline">Disparos WhatsApp</div>
+        <div class="brand-tagline">Representações Comerciais</div>
       </div>
     </a>
 
@@ -110,16 +109,18 @@ const showConfig = role === 'admin' || role === 'operacional';
 
     <!-- Bottom -->
     <div class="sidebar-footer">
-      <!-- #16: alternar tema claro/escuro -->
-      <button id="theme-toggle" class="nav-item" type="button">
-        <svg class="nav-icon theme-icon-dark" viewBox="0 0 24 24">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      <!-- #16: alternar tema claro/escuro — pílula estilo Marpe -->
+      <button id="theme-toggle" class="theme-row" type="button" aria-label="Alternar entre tema escuro e claro">
+        <svg class="nav-icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
         </svg>
-        <svg class="nav-icon theme-icon-light" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-        </svg>
-        <span class="nav-label theme-label-dark">Tema claro</span>
-        <span class="nav-label theme-label-light">Tema escuro</span>
+        <span class="nav-label">Tema</span>
+        <span class="theme-pill">
+          <span class="theme-pill-thumb">
+            <svg class="theme-ic theme-ic--moon" width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg class="theme-ic theme-ic--sun" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </span>
+        </span>
       </button>
 
       {showConfig && (
@@ -176,7 +177,7 @@ body { display: flex; height: 100vh; overflow: hidden; }
   overflow: hidden;
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .sidebar { background: #060a07; }
+  .sidebar { background: #070b13; }
 }
 
 /* Brand */
@@ -188,15 +189,17 @@ body { display: flex; height: 100vh; overflow: hidden; }
   text-decoration: none;
   color: var(--text-primary);
 }
-.brand-icon {
+.brand-monogram {
   width: 34px; height: 34px;
-  background: var(--accent);
+  background: linear-gradient(180deg, #F2984F, #D96E1F);
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   color: #fff;
+  font-size: 13px; font-weight: 800; letter-spacing: -0.02em;
   flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(37,211,102,0.25);
+  box-shadow: 0 4px 16px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.28);
 }
+.brand-monogram--sm { width: 24px; height: 24px; border-radius: 7px; font-size: 10px; }
 .brand-name {
   font-size: 14px; font-weight: 700;
   letter-spacing: -0.01em; color: var(--text-primary);
@@ -221,10 +224,10 @@ body { display: flex; height: 100vh; overflow: hidden; }
 }
 .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-secondary); }
 .nav-item.active {
-  background: linear-gradient(180deg, rgba(37,211,102,0.20), rgba(37,211,102,0.09));
+  background: linear-gradient(180deg, var(--accent-dim), var(--accent-dim));
   color: var(--accent-light);
-  border: 1px solid rgba(37,211,102,0.28);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 4px 14px rgba(37,211,102,0.14);
+  border: 1px solid var(--accent-glow);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 4px 14px var(--accent-dim);
 }
 .nav-icon {
   width: 17px; height: 17px; stroke: currentColor; fill: none;
@@ -244,7 +247,7 @@ body { display: flex; height: 100vh; overflow: hidden; }
 }
 .user-avatar {
   width: 30px; height: 30px; border-radius: 50%;
-  background: var(--accent-dim); border: 1px solid rgba(37,211,102,0.2);
+  background: var(--accent-dim); border: 1px solid var(--accent-dim);
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 700; color: var(--accent-light);
   flex-shrink: 0;
@@ -259,13 +262,37 @@ body { display: flex; height: 100vh; overflow: hidden; }
 }
 .logout-btn:hover { color: var(--red); background: var(--red-dim); }
 
-/* #16: toggle de tema — mostra lua no escuro, sol no claro */
-#theme-toggle { text-align: left; }
-.theme-icon-light, .theme-label-light { display: none; }
-:global([data-theme="light"]) .theme-icon-light,
-:global([data-theme="light"]) .theme-label-light { display: flex; }
-:global([data-theme="light"]) .theme-icon-dark,
-:global([data-theme="light"]) .theme-label-dark { display: none; }
+/* #16: toggle de tema — pílula estilo Marpe */
+.theme-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 10px;
+  color: var(--text-muted); background: none; border: none;
+  font-size: 13px; font-weight: 500; font-family: inherit;
+  cursor: pointer; width: 100%; text-align: left;
+  transition: all var(--dur-fast, 0.18s) var(--ease-glass, ease-out);
+}
+.theme-row:hover { background: rgba(255,255,255,0.05); color: var(--text-secondary); }
+.theme-row .nav-label { flex: 1; }
+.theme-pill {
+  width: 38px; height: 22px; border-radius: 11px;
+  background: var(--field-bg);
+  border: 1px solid var(--hairline-hi);
+  display: flex; align-items: center; padding: 2px;
+  transition: background 0.25s var(--ease-glass);
+  flex-shrink: 0;
+}
+.theme-pill-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--text-muted); color: var(--bg-primary);
+  display: flex; align-items: center; justify-content: center;
+  transform: translateX(0);
+  transition: transform 0.25s var(--ease-spring, ease), background 0.25s var(--ease-glass);
+}
+.theme-ic--sun { display: none; }
+:global([data-theme="light"]) .theme-pill { background: var(--accent-dim); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+:global([data-theme="light"]) .theme-pill-thumb { transform: translateX(16px); background: var(--accent); color: #fff; }
+:global([data-theme="light"]) .theme-ic--sun { display: block; }
+:global([data-theme="light"]) .theme-ic--moon { display: none; }
 
 /* Mobile header */
 .mobile-header {

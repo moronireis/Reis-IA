@@ -65,7 +65,7 @@ const S = {
   brandBadge: {
     display: 'inline-flex', alignItems: 'center', padding: '2px 7px',
     borderRadius: '4px', fontSize: '11px', fontWeight: 500, marginRight: '4px', marginBottom: '2px',
-    background: 'rgba(37,211,102,0.1)', color: 'var(--accent-light)', border: '1px solid rgba(37,211,102,0.2)',
+    background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--accent-light)', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
   },
   footer: {
     padding: '12px 24px', borderTop: '1px solid var(--hairline)', display: 'flex',
@@ -272,7 +272,7 @@ export default function ContatosView() {
                       {isLikelyLandline(c.phone_primary) && (
                         <span title="Número com cara de telefone fixo — provavelmente sem WhatsApp. Cadastre o celular do cliente para o disparo funcionar." style={{
                           fontSize: 9, fontWeight: 700, color: 'var(--amber)',
-                          background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)',
+                          background: 'color-mix(in srgb, var(--amber) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--amber) 25%, transparent)',
                           borderRadius: 100, padding: '1px 6px',
                         }}>
                           FIXO

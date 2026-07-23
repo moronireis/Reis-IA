@@ -31,7 +31,7 @@ const S = {
   dropzone: (drag: boolean) => ({
     border: `2px dashed ${drag ? 'var(--accent-light)' : 'var(--border)'}`,
     borderRadius: 10, padding: '36px 24px', textAlign: 'center' as const,
-    cursor: 'pointer', background: drag ? 'rgba(37,211,102,0.04)' : 'var(--bg-secondary)',
+    cursor: 'pointer', background: drag ? 'color-mix(in srgb, var(--accent) 4%, transparent)' : 'var(--bg-secondary)',
     transition: 'all 0.15s',
   }),
   dropText: { fontSize: 14, color: 'var(--text-muted)', marginBottom: 6 },
@@ -46,12 +46,12 @@ const S = {
   mapLabel: (req: boolean, rec: boolean) => ({ fontSize: 13, color: req ? 'var(--red)' : rec ? 'var(--amber)' : 'var(--text-secondary)', fontWeight: req || rec ? 600 : 400 }),
   mapBadge: (req: boolean, rec: boolean) => ({
     fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 3, marginLeft: 6,
-    background: req ? 'rgba(248,113,113,0.15)' : 'rgba(252,211,77,0.12)',
+    background: req ? 'color-mix(in srgb, var(--red) 15%, transparent)' : 'color-mix(in srgb, var(--amber) 12%, transparent)',
     color: req ? 'var(--red)' : 'var(--amber)',
   }),
   aiBadge: {
     fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 3, marginLeft: 6,
-    background: 'rgba(77,224,140,0.12)', color: 'var(--accent-light)',
+    background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent-light)',
   },
   select: {
     background: 'var(--bg-card-translucent)', border: '1px solid var(--hairline)', borderRadius: 6,
@@ -84,8 +84,8 @@ const S = {
   info: { fontSize: 12, color: 'var(--text-muted)', marginTop: 8 },
   aiNotice: (kind: 'ok' | 'warn' | 'err') => ({
     fontSize: 12, borderRadius: 8, padding: '10px 14px', marginBottom: 14,
-    border: `1px solid ${kind === 'ok' ? 'rgba(77,224,140,0.25)' : kind === 'warn' ? 'rgba(252,211,77,0.25)' : 'rgba(248,113,113,0.25)'}`,
-    background: kind === 'ok' ? 'rgba(37,211,102,0.05)' : kind === 'warn' ? 'rgba(252,211,77,0.05)' : 'rgba(248,113,113,0.05)',
+    border: `1px solid ${kind === 'ok' ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : kind === 'warn' ? 'color-mix(in srgb, var(--amber) 25%, transparent)' : 'color-mix(in srgb, var(--red) 25%, transparent)'}`,
+    background: kind === 'ok' ? 'color-mix(in srgb, var(--accent) 5%, transparent)' : kind === 'warn' ? 'color-mix(in srgb, var(--amber) 5%, transparent)' : 'color-mix(in srgb, var(--red) 5%, transparent)',
     color: kind === 'ok' ? 'var(--accent-light)' : kind === 'warn' ? 'var(--amber)' : 'var(--red)',
   }),
 };
@@ -474,7 +474,7 @@ export default function ConversorMercos() {
                 </thead>
                 <tbody>
                   {rows.slice(0, Math.min(rows.length, headerRow + 6)).map((row, ri) => (
-                    <tr key={ri} style={{ background: ri === headerRow ? 'rgba(252,211,77,0.06)' : undefined }}>
+                    <tr key={ri} style={{ background: ri === headerRow ? 'color-mix(in srgb, var(--amber) 6%, transparent)' : undefined }}>
                       <td style={{ ...S.td, color: ri === headerRow ? 'var(--amber)' : 'var(--text-faint)', fontWeight: ri === headerRow ? 700 : 400 }}>
                         {ri === headerRow ? '▶' : ri}
                       </td>

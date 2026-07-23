@@ -128,7 +128,7 @@ export default function ImportarMercos() {
           style={{
             border: `2px dashed ${dragging ? 'var(--accent-light)' : 'rgba(255,255,255,0.1)'}`,
             borderRadius: 12, padding: '32px 24px', textAlign: 'center', cursor: 'pointer',
-            background: dragging ? 'rgba(37,211,102,0.04)' : 'rgba(255,255,255,0.02)', transition: 'all 0.15s',
+            background: dragging ? 'color-mix(in srgb, var(--accent) 4%, transparent)' : 'rgba(255,255,255,0.02)', transition: 'all 0.15s',
           }}
         >
           <div style={{ fontSize: 14, color: mut, marginBottom: 4 }}>
@@ -189,7 +189,7 @@ export default function ImportarMercos() {
       )}
 
       {error && (
-        <div style={{ fontSize: 12, color: 'var(--red)', border: '1px solid rgba(248,113,113,0.25)', background: 'rgba(248,113,113,0.05)', borderRadius: 10, padding: '10px 14px', marginBottom: 16 }}>
+        <div style={{ fontSize: 12, color: 'var(--red)', border: '1px solid color-mix(in srgb, var(--red) 25%, transparent)', background: 'color-mix(in srgb, var(--red) 5%, transparent)', borderRadius: 10, padding: '10px 14px', marginBottom: 16 }}>
           {error}
         </div>
       )}

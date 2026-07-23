@@ -36,8 +36,8 @@ export default function AudioPlayer({ src, mime, outbound = false }: Props) {
   const bars = src ? buildBars(src) : Array(BAR_COUNT).fill(0.3);
 
   // Colors
-  const filled   = outbound ? 'rgba(37,211,102,0.9)'  : 'rgba(96,165,250,0.9)';
-  const playhead = outbound ? 'rgba(77,224,140,0.7)'  : 'rgba(147,197,253,0.7)';
+  const filled   = outbound ? 'color-mix(in srgb, var(--accent) 90%, transparent)'  : 'rgba(96,165,250,0.9)';
+  const playhead = outbound ? 'color-mix(in srgb, var(--accent) 70%, transparent)'  : 'rgba(147,197,253,0.7)';
   const unfilled = 'rgba(255,255,255,0.18)';
 
   const draw = () => {
@@ -150,9 +150,9 @@ export default function AudioPlayer({ src, mime, outbound = false }: Props) {
         onClick={toggle}
         style={{
           width: 34, height: 34, borderRadius: '50%', border: 'none', cursor: 'pointer', flexShrink: 0,
-          background: outbound ? 'rgba(37,211,102,0.2)' : 'rgba(96,165,250,0.2)',
+          background: outbound ? 'color-mix(in srgb, var(--accent) 20%, transparent)' : 'rgba(96,165,250,0.2)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: playing ? `0 0 0 3px ${outbound ? 'rgba(37,211,102,0.2)' : 'rgba(96,165,250,0.2)'}` : 'none',
+          boxShadow: playing ? `0 0 0 3px ${outbound ? 'color-mix(in srgb, var(--accent) 20%, transparent)' : 'rgba(96,165,250,0.2)'}` : 'none',
           transition: 'box-shadow 0.2s',
         }}
       >
@@ -171,7 +171,7 @@ export default function AudioPlayer({ src, mime, outbound = false }: Props) {
           onClick={seek}
           style={{ cursor: 'pointer', width: '100%', height: 36 }}
         />
-        <div style={{ fontSize: 10, color: outbound ? 'rgba(37,211,102,0.7)' : 'rgba(96,165,250,0.7)', textAlign: 'right' }}>
+        <div style={{ fontSize: 10, color: outbound ? 'color-mix(in srgb, var(--accent) 70%, transparent)' : 'rgba(96,165,250,0.7)', textAlign: 'right' }}>
           {playing ? fmt(elapsed) : fmt(duration)}
         </div>
       </div>

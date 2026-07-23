@@ -103,8 +103,8 @@ function Avatar({ image, name, size = 38, active = false, unread = false, isGrou
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%', flexShrink: 0,
-      background: active ? 'rgba(37,211,102,0.15)' : 'var(--bg-secondary)',
-      border: `1px solid ${active ? 'rgba(37,211,102,0.3)' : 'var(--border)'}`,
+      background: active ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'var(--bg-secondary)',
+      border: `1px solid ${active ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'var(--border)'}`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: size * 0.34, fontWeight: 700, color: active ? 'var(--accent-light)' : 'var(--text-muted)',
       position: 'relative', overflow: 'visible',
@@ -122,7 +122,7 @@ function Avatar({ image, name, size = 38, active = false, unread = false, isGrou
         initials(name)
       )}
       {unread && (
-        <div style={{ position: 'absolute', top: -1, right: -1, width: 10, height: 10, borderRadius: '50%', background: 'var(--accent)', border: '2px solid #060a07' }} />
+        <div style={{ position: 'absolute', top: -1, right: -1, width: 10, height: 10, borderRadius: '50%', background: 'var(--accent)', border: '2px solid var(--bg-secondary)' }} />
       )}
     </div>
   );
@@ -574,7 +574,7 @@ export default function ConversasView() {
         padding: '10px 16px', display: 'flex', gap: 8, alignItems: 'center',
         flexShrink: 0, overflowX: 'auto',
       }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: '#3a4a3e', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', marginRight: 4 }}>
+        <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', marginRight: 4 }}>
           Números:
         </span>
 
@@ -586,8 +586,8 @@ export default function ConversasView() {
               display: 'flex', alignItems: 'center', gap: 7,
               padding: '6px 12px', borderRadius: 20,
               cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
-              background: allMode ? 'rgba(37,211,102,0.18)' : 'rgba(37,211,102,0.06)',
-              border: `1px solid ${allMode ? 'rgba(37,211,102,0.4)' : 'rgba(37,211,102,0.15)'}`,
+              background: allMode ? 'color-mix(in srgb, var(--accent) 18%, transparent)' : 'color-mix(in srgb, var(--accent) 6%, transparent)',
+              border: `1px solid ${allMode ? 'color-mix(in srgb, var(--accent) 40%, transparent)' : 'color-mix(in srgb, var(--accent) 15%, transparent)'}`,
               transition: 'all 0.15s',
             }}
           >
@@ -602,7 +602,7 @@ export default function ConversasView() {
         )}
 
         {instances.length === 0 ? (
-          <span style={{ fontSize: 12, color: '#3a4a3e' }}>Nenhum número cadastrado</span>
+          <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>Nenhum número cadastrado</span>
         ) : (
           instances.map(inst => {
             const connected = inst.status === 'connected';
@@ -620,26 +620,26 @@ export default function ConversasView() {
                   fontFamily: 'inherit', whiteSpace: 'nowrap',
                   opacity: lockedOut ? 0.35 : 1,
                   background: active
-                    ? 'rgba(37,211,102,0.18)'
+                    ? 'color-mix(in srgb, var(--accent) 18%, transparent)'
                     : connected
-                    ? 'rgba(37,211,102,0.06)'
+                    ? 'color-mix(in srgb, var(--accent) 6%, transparent)'
                     : 'var(--bg-secondary)',
-                  border: `1px solid ${active ? 'rgba(37,211,102,0.4)' : connected ? 'rgba(37,211,102,0.15)' : 'var(--border)'}`,
+                  border: `1px solid ${active ? 'color-mix(in srgb, var(--accent) 40%, transparent)' : connected ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'var(--border)'}`,
                   transition: 'all 0.15s',
                 }}
               >
                 {/* Status dot */}
                 <div style={{
                   width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-                  background: connected ? 'var(--accent)' : '#3a4a3e',
-                  boxShadow: connected ? '0 0 6px rgba(37,211,102,0.6)' : 'none',
+                  background: connected ? 'var(--green)' : 'var(--text-faint)',
+                  boxShadow: connected ? '0 0 6px color-mix(in srgb, var(--accent) 60%, transparent)' : 'none',
                 }} />
                 <div>
                   <div style={{ fontSize: 12, fontWeight: 600, color: active ? 'var(--accent-light)' : connected ? 'var(--text-secondary)' : 'var(--text-muted)' }}>
                     {inst.display_name || inst.uazapi_name}
                   </div>
                   {inst.phone_number && (
-                    <div style={{ fontSize: 10, color: active ? 'rgba(77,224,140,0.7)' : '#3a4a3e', marginTop: 1 }}>
+                    <div style={{ fontSize: 10, color: active ? 'color-mix(in srgb, var(--accent) 70%, transparent)' : 'var(--text-faint)', marginTop: 1 }}>
                       {phoneDisplay(inst.phone_number)}
                     </div>
                   )}
@@ -655,7 +655,7 @@ export default function ConversasView() {
         )}
 
         {/* Mode label */}
-        <div style={{ marginLeft: 'auto', fontSize: 10, color: '#3a4a3e', whiteSpace: 'nowrap', flexShrink: 0 }}>
+        <div style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--text-faint)', whiteSpace: 'nowrap', flexShrink: 0 }}>
           {isVendedor && <span style={{ color: 'var(--accent-light)', marginRight: 8 }}>Seu número: {myInstance!.display_name || myInstance!.uazapi_name}</span>}
           {allMode ? 'Live · Todos os números' : activeInst ? `Live · ${activeInst.display_name || activeInst.uazapi_name}` : 'Conversas salvas'}
         </div>
@@ -675,7 +675,7 @@ export default function ConversasView() {
               </div>
               <button
                 onClick={() => activeInstId ? loadLiveChats(activeInstId) : loadConvs()}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3a4a3e', padding: 4 }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-faint)', padding: 4 }}
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
@@ -743,7 +743,7 @@ export default function ConversasView() {
 
             {/* Search */}
             <div style={{ position: 'relative', marginBottom: 10 }}>
-              <svg style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: '#3a4a3e', pointerEvents: 'none' }}
+              <svg style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-faint)', pointerEvents: 'none' }}
                 width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
@@ -779,7 +779,7 @@ export default function ConversasView() {
                   return (
                     <div key={`${chat.instance_id || 'i'}-${chat.jid}`} onClick={() => selectLiveChat(chat)} style={{
                       padding: '11px 14px', cursor: 'pointer', borderBottom: '1px solid var(--bg-secondary)',
-                      background: isActive ? 'rgba(37,211,102,0.06)' : 'transparent',
+                      background: isActive ? 'color-mix(in srgb, var(--accent) 6%, transparent)' : 'transparent',
                       borderLeft: isActive ? '2px solid var(--accent)' : '2px solid transparent',
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
@@ -795,7 +795,7 @@ export default function ConversasView() {
                                   {chat.unread_count}
                                 </span>
                               )}
-                              <span style={{ fontSize: 10, color: '#3a4a3e' }}>{timeAgo(chat.last_message_at)}</span>
+                              <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>{timeAgo(chat.last_message_at)}</span>
                             </div>
                           </div>
                           <div style={{ fontSize: 11, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 2 }}>
@@ -849,7 +849,7 @@ export default function ConversasView() {
                   return (
                     <div key={c.id} onClick={() => selectStoredConv(c)} style={{
                       padding: '11px 14px', cursor: 'pointer', borderBottom: '1px solid var(--bg-secondary)',
-                      background: isActive ? 'rgba(37,211,102,0.06)' : 'transparent',
+                      background: isActive ? 'color-mix(in srgb, var(--accent) 6%, transparent)' : 'transparent',
                       borderLeft: isActive ? '2px solid var(--accent)' : '2px solid transparent',
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
@@ -863,7 +863,7 @@ export default function ConversasView() {
                               {hasUnread && (
                                 <span style={{ background: 'var(--accent)', color: '#fff', borderRadius: 10, padding: '1px 5px', fontSize: 9, fontWeight: 700 }}>{c.unread_count}</span>
                               )}
-                              <span style={{ fontSize: 10, color: '#3a4a3e' }}>{timeAgo(c.last_message_at)}</span>
+                              <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>{timeAgo(c.last_message_at)}</span>
                             </div>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 2, gap: 4 }}>
@@ -936,7 +936,7 @@ export default function ConversasView() {
                     return (
                       <div key={msg.id}>
                         {showDate && (
-                          <div style={{ textAlign: 'center', margin: '8px 0', fontSize: 10, color: '#3a4a3e' }}>
+                          <div style={{ textAlign: 'center', margin: '8px 0', fontSize: 10, color: 'var(--text-faint)' }}>
                             {new Date(msg.sent_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                           </div>
                         )}
@@ -944,11 +944,11 @@ export default function ConversasView() {
                           <div style={{
                             maxWidth: '72%', padding: '8px 12px',
                             borderRadius: out ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-                            background: out ? 'rgba(37,211,102,0.13)' : 'var(--bg-secondary)',
-                            border: `1px solid ${out ? 'rgba(37,211,102,0.2)' : 'var(--border)'}`,
+                            background: out ? 'color-mix(in srgb, var(--accent) 13%, transparent)' : 'var(--bg-secondary)',
+                            border: `1px solid ${out ? 'color-mix(in srgb, var(--accent) 20%, transparent)' : 'var(--border)'}`,
                           }}>
                             <MessageContent msg={msg} />
-                            <div style={{ fontSize: 10, color: out ? 'rgba(37,211,102,0.6)' : '#3a4a3e', marginTop: 4, textAlign: 'right' }}>
+                            <div style={{ fontSize: 10, color: out ? 'color-mix(in srgb, var(--accent) 60%, transparent)' : 'var(--text-faint)', marginTop: 4, textAlign: 'right' }}>
                               {new Date(msg.sent_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                               {out && <span style={{ marginLeft: 4, color: 'var(--accent)' }}>✓</span>}
                             </div>
@@ -1016,7 +1016,7 @@ export default function ConversasView() {
                 )}
 
                 {recording ? (
-                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 10, padding: '9px 14px' }}>
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, background: 'color-mix(in srgb, var(--red) 7%, transparent)', border: '1px solid color-mix(in srgb, var(--red) 25%, transparent)', borderRadius: 10, padding: '9px 14px' }}>
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--red)', animation: 'pulse-dot 1s ease-in-out infinite' }} />
                     <span style={{ fontSize: 13, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
                       Gravando… {Math.floor(recSeconds / 60)}:{String(recSeconds % 60).padStart(2, '0')}
@@ -1075,7 +1075,7 @@ export default function ConversasView() {
                     width: 38, height: 38, borderRadius: 10, border: 'none',
                     cursor: !sending ? 'pointer' : 'not-allowed',
                     background: !sending ? 'var(--accent)' : 'var(--bg-secondary)',
-                    color: !sending ? '#fff' : '#3a4a3e',
+                    color: !sending ? '#fff' : 'var(--text-faint)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s',
                   }}>
                     {sending ? (

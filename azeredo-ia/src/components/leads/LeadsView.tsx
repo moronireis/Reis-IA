@@ -44,7 +44,7 @@ function LeadCard({ lead, onOpen, dragging }: { lead: Lead; onOpen?: () => void;
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.nome}</span>
         {lead.contact_id && (
-          <span title="Já virou cliente" style={{ fontSize: 9, fontWeight: 700, color: 'var(--accent-light)', background: 'rgba(37,211,102,0.12)', border: '1px solid rgba(37,211,102,0.3)', borderRadius: 100, padding: '1px 6px', flexShrink: 0 }}>
+          <span title="Já virou cliente" style={{ fontSize: 9, fontWeight: 700, color: 'var(--accent-light)', background: 'color-mix(in srgb, var(--accent) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)', borderRadius: 100, padding: '1px 6px', flexShrink: 0 }}>
             cliente
           </span>
         )}
@@ -356,8 +356,8 @@ function LeadModal({ lead, stages, onClose, onSaved, onDeleted, toast }: {
                 marginLeft: 8, textTransform: 'none', letterSpacing: 0,
                 fontSize: 10, fontWeight: 700, padding: '1px 8px', borderRadius: 100,
                 color: situacaoReceita === 'ATIVA' ? 'var(--accent-light)' : 'var(--amber)',
-                background: situacaoReceita === 'ATIVA' ? 'rgba(37,211,102,0.12)' : 'rgba(245,158,11,0.12)',
-                border: `1px solid ${situacaoReceita === 'ATIVA' ? 'rgba(37,211,102,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                background: situacaoReceita === 'ATIVA' ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'color-mix(in srgb, var(--amber) 12%, transparent)',
+                border: `1px solid ${situacaoReceita === 'ATIVA' ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'color-mix(in srgb, var(--amber) 30%, transparent)'}`,
               }}>
                 {situacaoReceita === 'ATIVA' ? 'Ativa na Receita' : `Receita: ${situacaoReceita}`}
               </span>
@@ -457,7 +457,7 @@ function LeadModal({ lead, stages, onClose, onSaved, onDeleted, toast }: {
           )}
           <div style={{ flex: 1 }} />
           {lead && (
-            <button className="btn" style={{ color: 'var(--red)', borderColor: 'rgba(239,68,68,0.3)' }} onClick={del}>Excluir</button>
+            <button className="btn" style={{ color: 'var(--red)', borderColor: 'color-mix(in srgb, var(--red) 30%, transparent)' }} onClick={del}>Excluir</button>
           )}
           <button className="btn" onClick={onClose}>Fechar</button>
         </div>
@@ -553,7 +553,7 @@ function StagesModal({ stages, onClose, onChanged, toast }: {
               )}
               <button className="btn" style={{ padding: '4px 8px', fontSize: 11 }} onClick={() => move(i, -1)} disabled={i === 0}>▲</button>
               <button className="btn" style={{ padding: '4px 8px', fontSize: 11 }} onClick={() => move(i, 1)} disabled={i === list.length - 1}>▼</button>
-              <button className="btn" style={{ padding: '4px 8px', fontSize: 11, color: 'var(--red)', borderColor: 'rgba(239,68,68,0.3)' }} onClick={() => remove(s)} disabled={list.length <= 1}>
+              <button className="btn" style={{ padding: '4px 8px', fontSize: 11, color: 'var(--red)', borderColor: 'color-mix(in srgb, var(--red) 30%, transparent)' }} onClick={() => remove(s)} disabled={list.length <= 1}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>

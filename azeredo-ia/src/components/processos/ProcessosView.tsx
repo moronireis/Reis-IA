@@ -12,7 +12,7 @@ interface Process {
 const CATEGORIES = ['Geral', 'Disparos', 'Atendimento', 'Vendas', 'Interno'];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Disparos:    { bg: 'rgba(37,211,102,0.12)',  color: 'var(--accent-light)'  } as any,
+  Disparos:    { bg: 'color-mix(in srgb, var(--accent) 12%, transparent)',  color: 'var(--accent-light)'  } as any,
   Atendimento: { bg: 'rgba(59,130,246,0.12)',  color: '#93c5fd'  } as any,
   Vendas:      { bg: 'rgba(251,191,36,0.12)',  color: 'var(--amber)'  } as any,
   Interno:     { bg: 'rgba(168,85,247,0.12)',  color: '#c4b5fd'  } as any,
@@ -181,8 +181,8 @@ export default function ProcessosView() {
                       onClick={() => { setSelected(p); setEditing(false); }}
                       style={{
                         margin: '2px 8px', padding: '12px 14px', borderRadius: 8, cursor: 'pointer',
-                        background: isActive ? 'rgba(37,211,102,0.08)' : 'transparent',
-                        border: isActive ? '1px solid rgba(37,211,102,0.15)' : '1px solid transparent',
+                        background: isActive ? 'color-mix(in srgb, var(--accent) 8%, transparent)' : 'transparent',
+                        border: isActive ? '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' : '1px solid transparent',
                         transition: 'all 0.15s',
                       }}
                     >
@@ -304,13 +304,13 @@ export default function ProcessosView() {
               {isAdmin && (
                 <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                   <button onClick={() => openEdit(selected)} style={{
-                    background: 'rgba(37,211,102,0.1)', color: 'var(--accent)', border: '1px solid rgba(37,211,102,0.2)',
+                    background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--accent)', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
                     borderRadius: 8, padding: '7px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
                   }}>
                     Editar
                   </button>
                   <button onClick={() => del(selected)} disabled={deleting} style={{
-                    background: 'rgba(239,68,68,0.1)', color: 'var(--red)', border: '1px solid rgba(239,68,68,0.2)',
+                    background: 'color-mix(in srgb, var(--red) 10%, transparent)', color: 'var(--red)', border: '1px solid color-mix(in srgb, var(--red) 20%, transparent)',
                     borderRadius: 8, padding: '7px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
                   }}>
                     Excluir
@@ -340,8 +340,8 @@ export default function ProcessosView() {
             <div style={{ fontSize: 14, color: 'var(--text-muted)' }}>Selecione um processo para visualizar</div>
             {isAdmin && (
               <button onClick={openNew} style={{
-                marginTop: 8, background: 'rgba(37,211,102,0.1)', color: 'var(--accent)',
-                border: '1px solid rgba(37,211,102,0.2)', borderRadius: 8, padding: '8px 20px',
+                marginTop: 8, background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--accent)',
+                border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 8, padding: '8px 20px',
                 fontSize: 13, fontWeight: 600, cursor: 'pointer',
               }}>
                 + Criar primeiro processo

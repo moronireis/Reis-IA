@@ -28,7 +28,7 @@ const S = {
   dropzone: (drag: boolean) => ({
     border: `2px dashed ${drag ? 'var(--accent-light)' : 'var(--border)'}`,
     borderRadius: 10, padding: '36px 24px', textAlign: 'center' as const,
-    cursor: 'pointer', background: drag ? 'rgba(37,211,102,0.04)' : 'var(--bg-secondary)',
+    cursor: 'pointer', background: drag ? 'color-mix(in srgb, var(--accent) 4%, transparent)' : 'var(--bg-secondary)',
     transition: 'all 0.15s',
   }),
   dropText: { fontSize: 14, color: 'var(--text-muted)', marginBottom: 6 },
@@ -63,20 +63,20 @@ const S = {
   }),
   notice: (kind: 'ok' | 'warn' | 'err') => ({
     fontSize: 12, borderRadius: 8, padding: '10px 14px', marginBottom: 14,
-    border: `1px solid ${kind === 'ok' ? 'rgba(77,224,140,0.25)' : kind === 'warn' ? 'rgba(252,211,77,0.25)' : 'rgba(248,113,113,0.25)'}`,
-    background: kind === 'ok' ? 'rgba(37,211,102,0.05)' : kind === 'warn' ? 'rgba(252,211,77,0.05)' : 'rgba(248,113,113,0.05)',
+    border: `1px solid ${kind === 'ok' ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : kind === 'warn' ? 'color-mix(in srgb, var(--amber) 25%, transparent)' : 'color-mix(in srgb, var(--red) 25%, transparent)'}`,
+    background: kind === 'ok' ? 'color-mix(in srgb, var(--accent) 5%, transparent)' : kind === 'warn' ? 'color-mix(in srgb, var(--amber) 5%, transparent)' : 'color-mix(in srgb, var(--red) 5%, transparent)',
     color: kind === 'ok' ? 'var(--accent-light)' : kind === 'warn' ? 'var(--amber)' : 'var(--red)',
   }),
   info: { fontSize: 12, color: 'var(--text-muted)', marginTop: 8 },
   status: (s: 'ok' | 'dup' | 'fail') => ({
     fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 3,
-    background: s === 'ok' ? 'rgba(77,224,140,0.12)' : s === 'dup' ? 'rgba(252,211,77,0.12)' : 'rgba(248,113,113,0.15)',
+    background: s === 'ok' ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : s === 'dup' ? 'color-mix(in srgb, var(--amber) 12%, transparent)' : 'color-mix(in srgb, var(--red) 15%, transparent)',
     color: s === 'ok' ? 'var(--accent-light)' : s === 'dup' ? 'var(--amber)' : 'var(--red)',
   }),
   modeBtn: (active: boolean) => ({
     padding: '8px 16px', borderRadius: 7, fontFamily: 'inherit', fontSize: 12,
     fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
-    background: active ? 'rgba(37,211,102,0.08)' : 'none',
+    background: active ? 'color-mix(in srgb, var(--accent) 8%, transparent)' : 'none',
     border: `1px solid ${active ? 'var(--accent-light)' : 'var(--border)'}`,
     color: active ? 'var(--accent-light)' : 'var(--text-muted)',
   }),
@@ -447,7 +447,7 @@ export default function RenomeadorFotos() {
                         <td style={{ ...S.td, color: r.newName ? 'var(--text-primary)' : 'var(--red)', fontWeight: r.newName ? 600 : 400 }}>
                           {r.newName || (
                             <input
-                              style={{ ...S.input, width: 150, borderColor: 'rgba(248,113,113,0.4)' }}
+                              style={{ ...S.input, width: 150, borderColor: 'color-mix(in srgb, var(--red) 40%, transparent)' }}
                               placeholder="digite o código…"
                               value={overrides[r.original] || ''}
                               onChange={e => setOverrides(prev => ({ ...prev, [r.original]: e.target.value }))}

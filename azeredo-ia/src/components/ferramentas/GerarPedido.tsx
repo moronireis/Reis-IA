@@ -90,7 +90,7 @@ const S = {
   },
   removeBtn: {
     padding: '4px 8px', borderRadius: 4, border: 'none',
-    background: 'rgba(239,68,68,0.12)', color: 'var(--red)',
+    background: 'color-mix(in srgb, var(--red) 12%, transparent)', color: 'var(--red)',
     cursor: 'pointer', fontSize: 11, fontFamily: 'inherit',
   },
   totalsBox: {

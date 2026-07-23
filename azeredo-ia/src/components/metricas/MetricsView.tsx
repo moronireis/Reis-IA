@@ -23,7 +23,7 @@ const RANGES = [
   { id: '30d', label: '30 dias' },
 ] as const;
 
-const C = { green: 'var(--accent)', greenLight: 'var(--accent-light)', blue: '#4A90FF', red: 'var(--red)', ink: 'var(--text-primary)', sub: 'var(--text-secondary)', mut: 'var(--text-muted)' };
+const C = { green: 'var(--accent)', greenLight: 'var(--green)', blue: 'var(--navy)', red: 'var(--red)', ink: 'var(--text-primary)', sub: 'var(--text-secondary)', mut: 'var(--text-muted)' };
 
 const fmt = (n: number) => n.toLocaleString('pt-BR');
 const pct = (r: number) => `${(r * 100).toFixed(r >= 0.1 ? 0 : 1)}%`;
@@ -384,7 +384,7 @@ function niceCeil(v: number) {
 // ── inline style tokens ──────────────────────────────────────────────────────────
 const segBtn = (active: boolean): React.CSSProperties => ({
   padding: '6px 13px', borderRadius: 7, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 600, fontFamily: 'inherit',
-  background: active ? 'linear-gradient(180deg, rgba(37,211,102,0.24), rgba(37,211,102,0.10))' : 'transparent',
+  background: active ? 'linear-gradient(180deg, color-mix(in srgb, var(--accent) 24%, transparent), color-mix(in srgb, var(--accent) 10%, transparent))' : 'transparent',
   color: active ? C.greenLight : C.sub,
   boxShadow: active ? 'inset 0 1px 0 rgba(255,255,255,0.12)' : 'none', transition: 'all 0.15s',
 });
@@ -394,7 +394,7 @@ const ghostBtn: React.CSSProperties = {
 };
 const tabBtn = (active: boolean): React.CSSProperties => ({
   padding: '7px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 600, fontFamily: 'inherit',
-  background: active ? 'rgba(37,211,102,0.14)' : 'transparent', color: active ? C.greenLight : C.sub, transition: 'all 0.15s',
+  background: active ? 'color-mix(in srgb, var(--accent) 14%, transparent)' : 'transparent', color: active ? C.greenLight : C.sub, transition: 'all 0.15s',
 });
 const panelTitle: React.CSSProperties = { fontSize: 13.5, fontWeight: 600, color: C.ink };
 const emptyBox: React.CSSProperties = { padding: '30px 0', textAlign: 'center', fontSize: 13, color: C.mut };

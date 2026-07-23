@@ -92,10 +92,10 @@ const STATUS_OPTIONS = [
 
 const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
   draft:     { bg: 'rgba(107,114,128,0.12)', color: 'var(--text-muted)', label: 'Rascunho' },
-  sending:   { bg: 'rgba(37,211,102,0.12)',  color: 'var(--accent)', label: 'Enviando' },
-  completed: { bg: 'rgba(34,197,94,0.12)',   color: 'var(--green)', label: 'Concluído' },
-  cancelled: { bg: 'rgba(245,158,11,0.12)',  color: 'var(--amber)', label: 'Cancelado' },
-  error:     { bg: 'rgba(239,68,68,0.12)',   color: 'var(--red)', label: 'Erro' },
+  sending:   { bg: 'color-mix(in srgb, var(--accent) 12%, transparent)',  color: 'var(--accent)', label: 'Enviando' },
+  completed: { bg: 'color-mix(in srgb, var(--green) 12%, transparent)',   color: 'var(--green)', label: 'Concluído' },
+  cancelled: { bg: 'color-mix(in srgb, var(--amber) 12%, transparent)',  color: 'var(--amber)', label: 'Cancelado' },
+  error:     { bg: 'color-mix(in srgb, var(--red) 12%, transparent)',   color: 'var(--red)', label: 'Erro' },
 };
 
 const RECIPIENT_LABEL: Record<string, { color: string; label: string }> = {
@@ -132,7 +132,7 @@ function FailureSummary({ recipients }: { recipients: any[] }) {
   if (breakdown.length === 0) return null;
   return (
     <div style={{
-      background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)',
+      background: 'color-mix(in srgb, var(--red) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--red) 15%, transparent)',
       borderRadius: 6, padding: '8px 12px', marginBottom: 10,
     }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--red)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
@@ -287,7 +287,7 @@ function InstanceCard({
           : `1px solid ${connected ? 'var(--border)' : 'var(--border)'}`,
         borderRadius: 10,
         padding: '12px 14px',
-        background: selected ? 'rgba(37,211,102,0.07)' : 'var(--bg-secondary)',
+        background: selected ? 'color-mix(in srgb, var(--accent) 7%, transparent)' : 'var(--bg-secondary)',
         cursor: connected ? 'pointer' : 'not-allowed',
         opacity: connected ? 1 : 0.45,
         transition: 'all 0.12s',
@@ -298,8 +298,8 @@ function InstanceCard({
       {/* Status dot */}
       <div style={{
         width: 9, height: 9, borderRadius: '50%', flexShrink: 0,
-        background: connected ? 'var(--accent)' : 'var(--text-muted)',
-        boxShadow: connected ? '0 0 6px rgba(37,211,102,0.6)' : 'none',
+        background: connected ? 'var(--green)' : 'var(--text-muted)',
+        boxShadow: connected ? '0 0 6px color-mix(in srgb, var(--green) 60%, transparent)' : 'none',
         animation: connected ? 'pulse-dot 2s ease-in-out infinite' : 'none',
       }} />
 
@@ -324,7 +324,7 @@ function InstanceCard({
       {connected && inst.restricted_at && (
         <span title={inst.restricted_reason || 'Envios aceitos mas não entregues — número possivelmente restrito.'} style={{
           fontSize: 10, fontWeight: 700, color: 'var(--red)',
-          background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+          background: 'color-mix(in srgb, var(--red) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--red) 30%, transparent)',
           padding: '2px 7px', borderRadius: 100, flexShrink: 0,
         }}>
           Restrita
@@ -383,7 +383,7 @@ function VendedorPicker({
             style={{
               display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
               borderTop: i > 0 ? '1px solid var(--bg-secondary)' : 'none', fontSize: 12,
-              background: on ? 'rgba(37,211,102,0.06)' : 'var(--bg-card-translucent)',
+              background: on ? 'color-mix(in srgb, var(--accent) 6%, transparent)' : 'var(--bg-card-translucent)',
               cursor: selectable ? 'pointer' : 'default',
               opacity: selectable ? 1 : 0.65,
               userSelect: 'none', transition: 'background 0.12s',
@@ -413,11 +413,11 @@ function VendedorPicker({
                   <span style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--text-muted)', background: 'rgba(107,114,128,0.15)', borderRadius: 100, padding: '1px 6px' }}>desconectado</span>
                 )}
                 {p.instance.restricted && (
-                  <span style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--red)', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 100, padding: '1px 6px' }}>restrita</span>
+                  <span style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--red)', background: 'color-mix(in srgb, var(--red) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--red) 30%, transparent)', borderRadius: 100, padding: '1px 6px' }}>restrita</span>
                 )}
               </span>
             ) : (
-              <span style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--amber)', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 100, padding: '1px 6px', flexShrink: 0 }}>
+              <span style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--amber)', background: 'color-mix(in srgb, var(--amber) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--amber) 25%, transparent)', borderRadius: 100, padding: '1px 6px', flexShrink: 0 }}>
                 fica de fora — sem número
               </span>
             )}
@@ -500,7 +500,7 @@ function CampaignCard({
             {campaign.az_whatsapp_instances && (
               <span style={{
                 fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 100,
-                background: 'rgba(37,211,102,0.1)', color: 'var(--accent-light)',
+                background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--accent-light)',
               }}>
                 via {instanceLabel(campaign.az_whatsapp_instances)}
               </span>
@@ -544,7 +544,7 @@ function CampaignCard({
           {campaign.status === 'error' && campaign.last_error && (
             <div style={{
               fontSize: 11, color: 'var(--red)', marginTop: 6, lineHeight: 1.5,
-              background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)',
+              background: 'color-mix(in srgb, var(--red) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--red) 15%, transparent)',
               borderRadius: 6, padding: '6px 10px',
             }}>
               {campaign.last_error}
@@ -557,7 +557,7 @@ function CampaignCard({
             <button
               onClick={() => onEdit(campaign.id)}
               style={{
-                background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.25)',
+                background: 'color-mix(in srgb, var(--accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)',
                 borderRadius: 7, padding: '6px 12px', cursor: 'pointer',
                 color: 'var(--accent)', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
               }}
@@ -570,7 +570,7 @@ function CampaignCard({
               disabled={acting}
               onClick={cancelCampaign}
               style={{
-                background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
+                background: 'color-mix(in srgb, var(--red) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--red) 25%, transparent)',
                 borderRadius: 7, padding: '6px 12px', cursor: acting ? 'not-allowed' : 'pointer',
                 color: 'var(--red)', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
                 opacity: acting ? 0.5 : 1,
@@ -584,7 +584,7 @@ function CampaignCard({
               disabled={acting}
               onClick={resumeCampaign}
               style={{
-                background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.25)',
+                background: 'color-mix(in srgb, var(--accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)',
                 borderRadius: 7, padding: '6px 12px', cursor: acting ? 'not-allowed' : 'pointer',
                 color: 'var(--accent)', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
                 opacity: acting ? 0.5 : 1,
@@ -611,7 +611,7 @@ function CampaignCard({
               }}
               title="Excluir"
               style={{
-                background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)',
+                background: 'color-mix(in srgb, var(--red) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--red) 18%, transparent)',
                 borderRadius: 7, padding: '5px 8px', cursor: deleting ? 'not-allowed' : 'pointer',
                 color: 'var(--red)', display: 'flex', alignItems: 'center', opacity: deleting ? 0.5 : 1,
               }}
@@ -671,7 +671,7 @@ function CampaignCard({
                       {r.fallback_from && (
                         <span title={`Fone do cadastro (${r.fallback_from}) sem WhatsApp — enviado para ${r.phone}`} style={{
                           fontSize: 10, fontWeight: 700, flexShrink: 0, color: 'var(--amber)',
-                          background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)',
+                          background: 'color-mix(in srgb, var(--amber) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--amber) 25%, transparent)',
                           borderRadius: 4, padding: '1px 6px',
                         }}>
                           fone alternativo
@@ -836,21 +836,21 @@ function DispatchMonitor({
         ) : status === 'completed' ? (
           <div style={{
             width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
-            background: 'rgba(34,197,94,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'color-mix(in srgb, var(--green) 15%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
           </div>
         ) : status === 'cancelled' ? (
           <div style={{
             width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
-            background: 'rgba(245,158,11,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'color-mix(in srgb, var(--amber) 15%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" strokeWidth="2.5" strokeLinecap="round"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
           </div>
         ) : (
           <div style={{
             width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
-            background: 'rgba(239,68,68,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'color-mix(in srgb, var(--red) 15%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </div>
@@ -872,7 +872,7 @@ function DispatchMonitor({
             style={{
               padding: '7px 14px', borderRadius: 8, cursor: cancelling ? 'not-allowed' : 'pointer',
               fontFamily: 'inherit', fontWeight: 600, fontSize: 12,
-              border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)',
+              border: '1px solid color-mix(in srgb, var(--red) 30%, transparent)', background: 'color-mix(in srgb, var(--red) 8%, transparent)',
               color: 'var(--red)', opacity: cancelling ? 0.5 : 1, flexShrink: 0,
             }}
           >
@@ -922,7 +922,7 @@ function DispatchMonitor({
         {status === 'error' && lastError && (
           <div style={{
             fontSize: 12, color: 'var(--red)', marginTop: 12, lineHeight: 1.5,
-            background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)',
+            background: 'color-mix(in srgb, var(--red) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--red) 15%, transparent)',
             borderRadius: 6, padding: '8px 12px',
           }}>
             {lastError}
@@ -978,7 +978,7 @@ function DispatchMonitor({
                   {r.fallback_from && (
                     <span title={`Fone do cadastro (${r.fallback_from}) sem WhatsApp — enviado para ${r.phone}`} style={{
                       fontSize: 10, fontWeight: 700, flexShrink: 0, color: 'var(--amber)',
-                      background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)',
+                      background: 'color-mix(in srgb, var(--amber) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--amber) 25%, transparent)',
                       borderRadius: 4, padding: '1px 6px',
                     }}>
                       fone alternativo
@@ -1580,7 +1580,7 @@ function NewCampaignWizard({
                       flex: '1 1 150px', textAlign: 'left', padding: '9px 12px', borderRadius: 10,
                       fontFamily: 'inherit', cursor: 'pointer', transition: 'all 0.12s',
                       border: active ? '1px solid var(--accent)' : '1px solid var(--border)',
-                      background: active ? 'rgba(37,211,102,0.10)' : 'transparent',
+                      background: active ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'transparent',
                     }}
                   >
                     <div style={{ fontSize: 12.5, fontWeight: 600, color: active ? 'var(--accent)' : 'var(--text-primary)' }}>{label}</div>
@@ -1622,7 +1622,7 @@ function NewCampaignWizard({
                       {customMediaUrl ? (
                         <button
                           onClick={() => { setCustomMediaUrl(null); setCustomMediaType(null); setExtraMedia([]); }}
-                          style={{ ...btn('ghost'), fontSize: 11, padding: '5px 10px', color: 'var(--red)', borderColor: 'rgba(239,68,68,0.3)' }}
+                          style={{ ...btn('ghost'), fontSize: 11, padding: '5px 10px', color: 'var(--red)', borderColor: 'color-mix(in srgb, var(--red) 30%, transparent)' }}
                         >
                           Remover
                         </button>
@@ -1794,7 +1794,7 @@ function NewCampaignWizard({
                       padding: '6px 16px', borderRadius: 8, fontSize: 12,
                       fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600,
                       border: active ? '1px solid var(--accent)' : '1px solid var(--border)',
-                      background: active ? 'rgba(37,211,102,0.12)' : 'transparent',
+                      background: active ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'transparent',
                       color: active ? 'var(--accent)' : 'var(--text-secondary)', transition: 'all 0.1s',
                     }}
                   >
@@ -1908,7 +1908,7 @@ function NewCampaignWizard({
                       padding: '6px 16px', borderRadius: 8, fontSize: 12,
                       fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600,
                       border: active ? '1px solid var(--accent)' : '1px solid var(--border)',
-                      background: active ? 'rgba(37,211,102,0.12)' : 'transparent',
+                      background: active ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'transparent',
                       color: active ? 'var(--accent)' : 'var(--text-secondary)', transition: 'all 0.1s',
                     }}
                   >
@@ -2281,7 +2281,7 @@ function NewCampaignWizard({
                     {isLikelyLandline(c.phone) && (
                       <span title="Número com cara de telefone fixo — provavelmente sem WhatsApp. O disparo tenta os outros fones do contato automaticamente." style={{
                         fontSize: 9, fontWeight: 700, color: 'var(--amber)', flexShrink: 0,
-                        background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)',
+                        background: 'color-mix(in srgb, var(--amber) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--amber) 25%, transparent)',
                         borderRadius: 100, padding: '1px 6px',
                       }}>
                         FIXO
@@ -2358,13 +2358,13 @@ function NewCampaignWizard({
             {/* Números de envio: partição por vendedor (split) ou número único */}
             {splitMode ? (
               <div style={{ marginBottom: 14 }}>
-                <div style={{ border: '1px solid rgba(37,211,102,0.18)', background: 'rgba(37,211,102,0.05)', borderRadius: 8, overflow: 'hidden' }}>
+                <div style={{ border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)', background: 'color-mix(in srgb, var(--accent) 5%, transparent)', borderRadius: 8, overflow: 'hidden' }}>
                   {splitRows.map((p, i) => (
                     <div key={p.vendedor} style={{
                       display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
-                      borderTop: i > 0 ? '1px solid rgba(37,211,102,0.1)' : 'none', fontSize: 12,
+                      borderTop: i > 0 ? '1px solid color-mix(in srgb, var(--accent) 10%, transparent)' : 'none', fontSize: 12,
                     }}>
-                      <div style={{ width: 7, height: 7, borderRadius: '50%', flexShrink: 0, background: p.instance!.connected ? 'var(--accent)' : 'var(--text-muted)' }} />
+                      <div style={{ width: 7, height: 7, borderRadius: '50%', flexShrink: 0, background: p.instance!.connected ? 'var(--green)' : 'var(--text-muted)' }} />
                       <span style={{ flex: 1, fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.vendedor}</span>
                       <span style={{ color: 'var(--text-secondary)', flexShrink: 0 }}>{p.count} cliente{p.count !== 1 ? 's' : ''}</span>
                       <span style={{ color: 'var(--text-muted)', fontSize: 11, flexShrink: 0 }}>via {p.instance!.name}</span>
@@ -2387,7 +2387,7 @@ function NewCampaignWizard({
               return inst ? (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
-                  background: 'rgba(37,211,102,0.07)', border: '1px solid rgba(37,211,102,0.18)',
+                  background: 'color-mix(in srgb, var(--accent) 7%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)',
                   borderRadius: 8, marginBottom: 14,
                 }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse-dot 2s ease-in-out infinite' }} />
@@ -2399,7 +2399,7 @@ function NewCampaignWizard({
                       <span style={{ fontSize: 11, color: 'var(--accent)', marginLeft: 8 }}>{inst.phone_number}</span>
                     )}
                   </div>
-                  <span style={{ fontSize: 11, color: 'var(--accent)' }}>Conectado</span>
+                  <span style={{ fontSize: 11, color: 'var(--green)' }}>Conectado</span>
                 </div>
               ) : null;
             })()}
@@ -2446,7 +2446,7 @@ function NewCampaignWizard({
           }}>
             <div style={labelStyle}>Prévia da mensagem</div>
             <div style={{
-              background: '#0b3d2e', border: '1px solid rgba(37,211,102,0.2)',
+              background: '#0b3d2e', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
               borderRadius: '10px 10px 10px 2px', padding: '10px 14px',
               fontSize: 13, color: 'var(--text-primary)', whiteSpace: 'pre-wrap',
               lineHeight: 1.6, maxWidth: 480,
@@ -2527,7 +2527,7 @@ function NewCampaignWizard({
 
           {/* Warning */}
           <div style={{
-            background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)',
+            background: 'color-mix(in srgb, var(--amber) 7%, transparent)', border: '1px solid color-mix(in srgb, var(--amber) 20%, transparent)',
             borderRadius: 8, padding: '10px 14px', marginBottom: 20,
             display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 12, color: 'var(--amber)', lineHeight: 1.5,
           }}>
@@ -2843,7 +2843,7 @@ export default function DisparosView() {
             style={{
               padding: '6px 14px', borderRadius: 8, cursor: 'pointer',
               fontFamily: 'inherit', fontWeight: 500, fontSize: 13, border: 'none',
-              background: tab === t ? 'rgba(37,211,102,0.1)' : 'transparent',
+              background: tab === t ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'transparent',
               color: tab === t ? 'var(--accent)' : 'var(--text-muted)', transition: 'all 0.12s',
             }}
           >

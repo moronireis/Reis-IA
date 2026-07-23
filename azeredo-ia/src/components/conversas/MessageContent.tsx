@@ -84,8 +84,8 @@ export default function MessageContent({ msg }: Props) {
       return (
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
-          background: out ? 'rgba(37,211,102,0.08)' : 'rgba(255,255,255,0.04)',
-          border: `1px solid ${out ? 'rgba(37,211,102,0.15)' : 'rgba(255,255,255,0.08)'}`,
+          background: out ? 'color-mix(in srgb, var(--accent) 8%, transparent)' : 'rgba(255,255,255,0.04)',
+          border: `1px solid ${out ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'rgba(255,255,255,0.08)'}`,
           borderRadius: 10, padding: '10px 14px', maxWidth: 240,
         }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={out ? 'var(--accent-light)' : 'var(--text-muted)'} strokeWidth="1.5" strokeLinecap="round">

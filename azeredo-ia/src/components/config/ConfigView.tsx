@@ -422,7 +422,7 @@ export default function ConfigView() {
                 onClick={addInstance}
                 disabled={adding}
                 style={{
-                  background: 'rgba(37,211,102,0.12)', border: '1px solid rgba(37,211,102,0.25)',
+                  background: 'color-mix(in srgb, var(--accent) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)',
                   borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 600,
                   color: 'var(--accent)', cursor: adding ? 'wait' : 'pointer', fontFamily: 'inherit',
                 }}
@@ -447,7 +447,7 @@ export default function ConfigView() {
                 return (
                   <div key={inst.id} style={{
                     background: 'var(--bg-card-translucent)',
-                    border: `1px solid ${inst.status === 'connected' ? 'rgba(37,211,102,0.2)' : 'var(--border)'}`,
+                    border: `1px solid ${inst.status === 'connected' ? 'color-mix(in srgb, var(--green) 25%, transparent)' : 'var(--border)'}`,
                     borderRadius: 12, overflow: 'hidden',
                     transition: 'border-color 0.2s',
                     opacity: inst.is_active === false ? 0.55 : 1,   /* #15: desativado */
@@ -457,11 +457,11 @@ export default function ConfigView() {
                       {/* Slot badge */}
                       <div style={{
                         width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-                        background: inst.status === 'connected' ? 'rgba(37,211,102,0.12)' : 'var(--bg-secondary)',
-                        border: `1px solid ${inst.status === 'connected' ? 'rgba(37,211,102,0.25)' : 'var(--border)'}`,
+                        background: inst.status === 'connected' ? 'color-mix(in srgb, var(--green) 12%, transparent)' : 'var(--bg-secondary)',
+                        border: `1px solid ${inst.status === 'connected' ? 'color-mix(in srgb, var(--green) 28%, transparent)' : 'var(--border)'}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: 13, fontWeight: 700,
-                        color: inst.status === 'connected' ? 'var(--accent-light)' : 'var(--text-muted)',
+                        color: inst.status === 'connected' ? 'var(--green)' : 'var(--text-muted)',
                       }}>
                         {inst.slot_number}
                       </div>
@@ -476,7 +476,7 @@ export default function ConfigView() {
                               placeholder={inst.uazapi_name}
                               autoFocus
                               style={{
-                                flex: 1, background: 'transparent', border: '1px solid rgba(37,211,102,0.3)',
+                                flex: 1, background: 'transparent', border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)',
                                 borderRadius: 6, padding: '4px 8px', color: 'var(--text-primary)', fontSize: 13, outline: 'none',
                               }}
                             />
@@ -509,13 +509,13 @@ export default function ConfigView() {
                         {inst.is_active === false && (
                           <span style={{
                             fontSize: 10, fontWeight: 700, color: 'var(--amber)',
-                            background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)',
+                            background: 'color-mix(in srgb, var(--amber) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--amber) 30%, transparent)',
                             padding: '1px 7px', borderRadius: 100,
                           }}>
                             Desativado
                           </span>
                         )}
-                        <div style={{ width: 7, height: 7, borderRadius: '50%', background: statusColor, boxShadow: inst.status === 'connected' ? '0 0 6px rgba(37,211,102,0.5)' : 'none' }} />
+                        <div style={{ width: 7, height: 7, borderRadius: '50%', background: statusColor, boxShadow: inst.status === 'connected' ? '0 0 6px color-mix(in srgb, var(--green) 50%, transparent)' : 'none' }} />
                         <span style={{ fontSize: 11, color: statusColor, fontWeight: 500 }}>{statusLabel}</span>
                       </div>
                     </div>
@@ -524,12 +524,12 @@ export default function ConfigView() {
                     {inst.restricted_at && (
                       <div style={{
                         padding: '8px 16px', borderBottom: '1px solid var(--border)',
-                        background: 'rgba(239,68,68,0.05)', display: 'flex', flexDirection: 'column', gap: 8,
+                        background: 'color-mix(in srgb, var(--red) 5%, transparent)', display: 'flex', flexDirection: 'column', gap: 8,
                       }}>
                         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                           <span style={{
                             fontSize: 10, fontWeight: 700, color: 'var(--red)', flexShrink: 0, marginTop: 1,
-                            background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+                            background: 'color-mix(in srgb, var(--red) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--red) 30%, transparent)',
                             padding: '1px 7px', borderRadius: 100,
                           }}>
                             Restrita
@@ -545,8 +545,8 @@ export default function ConfigView() {
                             onClick={() => testDelivery(inst)}
                             disabled={testingId === inst.id}
                             style={{
-                              alignSelf: 'flex-start', background: 'rgba(239,68,68,0.08)',
-                              border: '1px solid rgba(239,68,68,0.25)', borderRadius: 7,
+                              alignSelf: 'flex-start', background: 'color-mix(in srgb, var(--red) 8%, transparent)',
+                              border: '1px solid color-mix(in srgb, var(--red) 25%, transparent)', borderRadius: 7,
                               padding: '5px 12px', fontSize: 11, fontWeight: 600, fontFamily: 'inherit',
                               color: testingId === inst.id ? 'var(--text-muted)' : '#f0a0a0',
                               cursor: testingId === inst.id ? 'wait' : 'pointer',
@@ -587,7 +587,7 @@ export default function ConfigView() {
                               src={pic}
                               alt="perfil"
                               onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                              style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(37,211,102,0.3)', flexShrink: 0 }}
+                              style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid color-mix(in srgb, var(--accent) 30%, transparent)', flexShrink: 0 }}
                             />
                           )}
                           <div style={{ minWidth: 0 }}>
@@ -688,8 +688,8 @@ export default function ConfigView() {
                           onClick={() => fetchQR(inst)}
                           disabled={!!isLoading}
                           style={{
-                            flex: 1, background: isLoading ? 'var(--bg-secondary)' : 'rgba(37,211,102,0.12)',
-                            border: '1px solid rgba(37,211,102,0.2)', borderRadius: 8,
+                            flex: 1, background: isLoading ? 'var(--bg-secondary)' : 'color-mix(in srgb, var(--accent) 12%, transparent)',
+                            border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 8,
                             padding: '8px 0', fontSize: 12, fontWeight: 600,
                             color: isLoading ? 'var(--text-muted)' : 'var(--accent)',
                             cursor: isLoading ? 'not-allowed' : 'pointer',
@@ -699,7 +699,7 @@ export default function ConfigView() {
                         </button>
                       ) : (
                         <>
-                          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>
+                          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12, color: 'var(--green)', fontWeight: 600 }}>
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                             Pronto para disparar
                           </div>
@@ -709,7 +709,7 @@ export default function ConfigView() {
                             disabled={disconnectingId === inst.id}
                             title="Desconectar"
                             style={{
-                              background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
+                              background: 'color-mix(in srgb, var(--red) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--red) 20%, transparent)',
                               borderRadius: 8, padding: '8px 10px', cursor: 'pointer',
                               color: disconnectingId === inst.id ? 'var(--text-muted)' : 'var(--red)',
                             }}
@@ -737,7 +737,7 @@ export default function ConfigView() {
                           disabled={togglingActiveId === inst.id}
                           style={{
                             flex: 1, background: 'transparent',
-                            border: '1px solid rgba(245,158,11,0.25)', borderRadius: 8,
+                            border: '1px solid color-mix(in srgb, var(--amber) 25%, transparent)', borderRadius: 8,
                             padding: '6px 0', fontSize: 11, fontWeight: 600, fontFamily: 'inherit',
                             color: togglingActiveId === inst.id ? 'var(--text-muted)' : 'var(--amber)',
                             cursor: togglingActiveId === inst.id ? 'wait' : 'pointer',
@@ -751,7 +751,7 @@ export default function ConfigView() {
                           title="Apaga a instância no servidor UazapiGO e remove da plataforma (histórico preservado)"
                           style={{
                             flex: 1, background: 'transparent',
-                            border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8,
+                            border: '1px solid color-mix(in srgb, var(--red) 25%, transparent)', borderRadius: 8,
                             padding: '6px 0', fontSize: 11, fontWeight: 600, fontFamily: 'inherit',
                             color: removingId === inst.id ? 'var(--text-muted)' : 'var(--red)',
                             cursor: removingId === inst.id ? 'wait' : 'pointer',
@@ -768,7 +768,7 @@ export default function ConfigView() {
           )}
 
           {connected > 0 && (
-            <div style={{ marginTop: 14, background: 'rgba(37,211,102,0.06)', border: '1px solid rgba(37,211,102,0.12)', borderRadius: 10, padding: '10px 16px', fontSize: 12, color: 'var(--accent-light)' }}>
+            <div style={{ marginTop: 14, background: 'color-mix(in srgb, var(--green) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--green) 14%, transparent)', borderRadius: 10, padding: '10px 16px', fontSize: 12, color: 'var(--green)' }}>
               ✓ {connected} número{connected !== 1 ? 's' : ''} pronto{connected !== 1 ? 's' : ''} para disparos. Os disparos serão distribuídos automaticamente entre os números conectados.
             </div>
           )}
