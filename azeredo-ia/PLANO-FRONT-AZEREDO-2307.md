@@ -99,3 +99,17 @@ orbs novos; btn-primary gradiente laranja; focus/selection/scrollbar/skeleton.
 ## Changelog
 - 2026-07-23 — Plano criado. Identidade laranja+navy descoberta via fotos corporativas do
   WhatsApp (logo oficial). Aguardando OK do Moroni para executar F1→F5.
+- 2026-07-23 (tarde) — **EXECUTADO E EM PRODUÇÃO** (azeredo-ia.vercel.app, deploy
+  azeredo-qt06u9eai; preview aprovado pelo Moroni em azeredo-ytymib6l3). F1: global.css v3
+  (laranja #E8802F / claro #D46F1E + navy #4A73BD / #1E3A66, superfícies navy-preto, escala
+  de elevação Marpe, field-bg/scrim, orbs da marca). F2: sweep total via `color-mix(in srgb,
+  var(--accent|amber|red|green) N%, transparent)` — zero rgba/hex verde-legado no src; flips
+  semânticos (conectado/entregue/pronto = verde; C do Dashboard: green=laranja,
+  greenLight=verde, blue=navy). F3: monograma AZ (sidebar/mobile/login c/ badge 1989 +
+  favicon data-URI), pílula de tema estilo Marpe, tagline "Representações Comerciais",
+  emojis removidos do login. F4: typecheck 0 erros, build ok, smoke prod (css laranja
+  servido, 8/8 páginas, 302 sem sessão). Fechamento: commit f63b73f4, snapshot handoff tag
+  `checkpoint-2026-07-23` (agora COM bot-tick.yml), u4-status entregas 1 (→prod) e 2
+  (rebrand), comentário na #16. NOTA: a produção já tinha recebido o backlog 22/07
+  funcional ~14h antes (deploy do turno anterior passou antes do pedido de segurar) — o
+  rebrand entrou por cima. Pendência de marca: logo vetorial oficial (Tiago, #16).
