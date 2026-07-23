@@ -113,7 +113,7 @@ export default function AudioPlayer({ src, mime, outbound = false }: Props) {
 
   if (!src) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', color: '#6b7a72', fontSize: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', color: 'var(--text-muted)', fontSize: 12 }}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         Áudio indisponível
       </div>
@@ -122,7 +122,7 @@ export default function AudioPlayer({ src, mime, outbound = false }: Props) {
 
   if (loadError) {
     return (
-      <a href={src} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#25D366', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
+      <a href={src} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Abrir áudio
       </a>
@@ -157,9 +157,9 @@ export default function AudioPlayer({ src, mime, outbound = false }: Props) {
         }}
       >
         {playing ? (
-          <svg width="12" height="12" viewBox="0 0 24 24" fill={outbound ? '#25D366' : '#60a5fa'}><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill={outbound ? 'var(--accent)' : 'var(--blue)'}><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
         ) : (
-          <svg width="12" height="12" viewBox="0 0 24 24" fill={outbound ? '#25D366' : '#60a5fa'}><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill={outbound ? 'var(--accent)' : 'var(--blue)'}><polygon points="5 3 19 12 5 21 5 3"/></svg>
         )}
       </button>
 

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { requireAuth } from '../../../lib/api-auth';
+import { requireRole } from '../../../lib/api-auth';
 
 export const prerender = false;
 
@@ -67,7 +67,13 @@ const MERCOS_TARGETS = `
 "10" = Múltiplo de venda
 "11" = Peso bruto em Kg
 "16" = Categoria principal
-"17" = Subcategoria nível 2`;
+"17" = Subcategoria nível 2
+"19" = Ativo/Inativo (0 = ativo, 1 = inativo — só mapeie se a planilha tiver coluna assim)
+"20" = Exibição no e-commerce (0 = exibe, 1 = oculta — só se existir)
+"23" = Preço de Tabela #1 (tabela de preço adicional, se existir)
+"24" = Preço de Tabela #2
+"25" = Preço de Tabela #3
+"26" = Preço de Tabela #4`;
 
 function sanitizeSample(sample: unknown): string[][] {
   if (!Array.isArray(sample)) return [];
@@ -96,12 +102,12 @@ ${MERCOS_TARGETS}
 
 Tarefas:
 1. Detectar o índice da LINHA DE CABEÇALHO — a linha que contém os TÍTULOS das colunas (ex.: "Descrição", "Cód.", "Preço"). Planilhas de fábrica costumam ter logotipo, dados cadastrais e campos de pedido nas primeiras linhas; ignore-as. CONFIRA: a linha escolhida deve conter rótulos curtos, e a linha SEGUINTE já deve conter produtos. Se a linha que você escolheu contém um nome de produto real, você errou — o cabeçalho é a anterior.
-2. Mapear cada coluna-alvo do Mercos para o índice da coluna correspondente (ou null se não existir). Priorize acertar: código, nome/descrição, preço de tabela, preço mínimo e IPI. Use os VALORES das linhas de dados para confirmar: preço é valor monetário unitário (ex.: "178.32"); código é alfanumérico curto (ex.: "MONA-001783"); NÃO confunda preço com quantidade mínima de venda (ex.: "24.0 - UN" não é preço).
+2. Mapear cada coluna-alvo do Mercos para o índice da coluna correspondente (ou null se não existir). Priorize acertar: código, nome/descrição, preço de tabela, preço mínimo e IPI. Use os VALORES das linhas de dados para confirmar: preço é valor monetário unitário (ex.: "178.32"); código é alfanumérico curto (ex.: "MONA-001783" ou "51534" — rótulos comuns: "SKU", "Cód.", "Referência"); NÃO confunda preço com quantidade mínima de venda (ex.: "24.0 - UN" não é preço). Rótulos abreviados são comuns: "Prc. TAB" = Preço de Tabela; "MULTIPLOS" ou "Múltiplo de venda" = Múltiplo; "CX. Master" NÃO é múltiplo (é caixa master). IPI/ICMS podem vir como fração (0.065 = 6,5%) — mapeie a coluna mesmo assim (a conversão para % é automática). Havendo mais de uma coluna de preço (ex.: "Prc. TAB", "Prc. C/ Desc.", "Prc C/ Desc. C/ IPI"), o Preço de Tabela é o preço BASE sem desconto e sem IPI embutido.
 3. Nunca mapeie a mesma coluna da fábrica para dois alvos diferentes, exceto Preço de Tabela e Preço Mínimo quando a fábrica tiver um único preço (nesse caso mapeie só Preço de Tabela).
 4. Só mapeie um alvo quando a coluna claramente corresponder — na dúvida, use null (melhor faltar do que mapear errado).
 
 Responda com JSON exatamente neste formato:
-{"header_row": <número>, "mapping": {"0": <número|null>, "1": <número|null>, "2": <número|null>, "3": <número|null>, "4": <número|null>, "5": <número|null>, "6": <número|null>, "7": <número|null>, "8": <número|null>, "9": <número|null>, "10": <número|null>, "11": <número|null>, "16": <número|null>, "17": <número|null>}, "confidence": "alta"|"media"|"baixa", "notes": "<1 frase em pt-BR sobre o que merece revisão>"}`;
+{"header_row": <número>, "mapping": {"0": <número|null>, "1": <número|null>, "2": <número|null>, "3": <número|null>, "4": <número|null>, "5": <número|null>, "6": <número|null>, "7": <número|null>, "8": <número|null>, "9": <número|null>, "10": <número|null>, "11": <número|null>, "16": <número|null>, "17": <número|null>, "19": <número|null>, "20": <número|null>, "23": <número|null>, "24": <número|null>, "25": <número|null>, "26": <número|null>}, "confidence": "alta"|"media"|"baixa", "notes": "<1 frase em pt-BR sobre o que merece revisão>"}`;
 
   const out = await callOpenAI(system, user);
 
@@ -111,14 +117,14 @@ Responda com JSON exatamente neste formato:
   const rawMap = (out.mapping && typeof out.mapping === 'object') ? out.mapping as Record<string, unknown> : {};
   const nCols = Math.max(...rows.map(r => r.length), 0);
   const mapping: Record<string, number | null> = {};
-  for (const key of ['0','1','2','3','4','5','6','7','8','9','10','11','16','17']) {
+  for (const key of ['0','1','2','3','4','5','6','7','8','9','10','11','16','17','19','20','23','24','25','26']) {
     const v = rawMap[key];
     mapping[key] = (Number.isInteger(v) && (v as number) >= 0 && (v as number) < nCols) ? (v as number) : null;
   }
   // Dedup: a mesma coluna da fábrica não pode alimentar dois alvos (exceção:
   // Preço de Tabela "2" + Preço Mínimo "3" podem compartilhar). Prioridade
   // para os campos críticos do fluxo da Tati (nome, preço, código, mín, IPI).
-  const priority = ['1','2','0','3','4','8','10','9','11','5','6','7','16','17'];
+  const priority = ['1','2','0','3','4','8','10','9','11','5','6','7','16','17','19','20','23','24','25','26'];
   const used = new Set<number>();
   for (const key of priority) {
     const v = mapping[key];
@@ -179,8 +185,52 @@ Responda com JSON exatamente neste formato:
 
 // -------------------------------------------------------------------- route
 
+// ----------------------------------------------------------------- sicad-map
+// F4 (Checkpoint 10/07): SICAD nomeia fotos pelo NOME do produto, não por um
+// padrão mecânico — o código Mercos é derivação semântica (modelo + medida +
+// cor abreviada). Few-shot com os exemplos reais validados pela Tati; a UI
+// exige revisão antes do zip.
+async function sicadMap(filenames: unknown) {
+  if (!Array.isArray(filenames) || filenames.length === 0) throw new Error('Nenhum nome de arquivo enviado');
+  const names = (filenames as unknown[]).slice(0, 40).map(n => String(n).slice(0, 120));
+
+  const system =
+    'Você converte nomes de fotos de produtos da fábrica SICAD (utilidades domésticas, Brasil) no CÓDIGO Mercos do produto. ' +
+    'O código é uma derivação do nome: dígitos do modelo + medidas sem o "x" + sufixo de cor/variação. ' +
+    'Responda SOMENTE com JSON válido.';
+
+  const user = `Exemplos REAIS validados (De → Para):
+- "Conjunto MSK6142 50x50" → "61425050"
+- "Conjunto PP TR 45x45 (2)" → "334545T"
+- "PP 2000 Azul 12x13 conjunto 13" → "20001230AZ"
+- "PP 2000 Cristal 12x30 conjunto 06" → "20001230CRISTAL"
+- "PP 2000 Mel 12x30" → "20001230M"
+- "PP33 Havana 45x50 Rolo 047" → "334545H"
+
+Nomes de arquivo para converter (ignore a extensão):
+${JSON.stringify(names)}
+
+Regras percebidas nos exemplos: "PP" ≈ modelo 33 quando aparece como PP TR/PP33; "PP 2000" = modelo 2000; medida AxB vira dígitos concatenados; cores abreviam (Azul→AZ, Mel→M, Havana→H) ou ficam por extenso (CRISTAL); números de conjunto/rolo geralmente NÃO entram. Quando não tiver confiança razoável num nome, retorne null para ele — NUNCA invente.
+
+Responda com JSON exatamente neste formato:
+{"map": {"<nome original com extensão>": "<código>" | null, ...}, "confidence": "alta"|"media"|"baixa", "notes": "<1 frase em pt-BR>"}`;
+
+  const out = await callOpenAI(system, user);
+  const raw = (out.map && typeof out.map === 'object') ? out.map as Record<string, unknown> : {};
+  const map: Record<string, string> = {};
+  for (const n of names) {
+    const v = raw[n];
+    if (typeof v === 'string' && v.trim() && v.trim().length <= 40) map[n] = v.trim();
+  }
+  return {
+    map,
+    confidence: ['alta','media','baixa'].includes(out.confidence as string) ? out.confidence : 'baixa',
+    notes: typeof out.notes === 'string' ? out.notes.slice(0, 300) : '',
+  };
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
-  const profile = requireAuth(locals as any);
+  const profile = requireRole(locals as any, ['operacional']);
   if (profile instanceof Response) return profile;
 
   let body: any;
@@ -194,6 +244,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
     if (body.action === 'rename-rule') {
       return new Response(JSON.stringify(await renameRule(body.filenames)), { status: 200 });
+    }
+    if (body.action === 'sicad-map') {
+      return new Response(JSON.stringify(await sicadMap(body.filenames)), { status: 200 });
     }
     return new Response(JSON.stringify({ error: 'action desconhecida' }), { status: 400 });
   } catch (e: any) {

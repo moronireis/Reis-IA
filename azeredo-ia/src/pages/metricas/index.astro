@@ -1,0 +1,19 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import MetricsView from '../../components/metricas/MetricsView';
+export const prerender = false;
+---
+<AppLayout title="Dashboard" activeSection="metricas">
+  <MetricsView client:load />
+</AppLayout>
+
+<style is:global>
+  /* Metrics: chart/funnel stack on narrow screens; KPI pulse */
+  @media (max-width: 860px) {
+    .metrics-split { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 560px) {
+    .metrics-kpis { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+  @keyframes pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.6; } }
+</style>

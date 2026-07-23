@@ -42,10 +42,13 @@ export const GET: APIRoute = async ({ locals, url }) => {
     const profilePic   = instance?.profilePicUrl ?? null;
 
     // Sync to DB — phone_number só quando a API retorna (undefined = não toca
-    // no valor salvo; antes, uma resposta sem o campo APAGAVA o número)
+    // no valor salvo; antes, uma resposta sem o campo APAGAVA o número).
+    // #14: foto/nome de perfil agora persistem — a listagem lê do banco.
     await sb.from('az_whatsapp_instances').update({
       status,
       phone_number: phoneNumber || undefined,
+      profile_name: profileName || undefined,
+      profile_pic_url: profilePic || undefined,
       updated_at: new Date().toISOString(),
     }).eq('id', instanceId);
 

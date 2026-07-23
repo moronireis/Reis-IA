@@ -1,9 +1,10 @@
 import type { APIRoute } from 'astro';
 import { createServerClient } from '../../../../lib/supabase-server';
-import { sendWhatsAppText, sendWhatsAppMedia } from '../../../../lib/whatsapp/send';
+import { sendWhatsAppText, sendWhatsAppMedia, sendWhatsAppCarousel } from '../../../../lib/whatsapp/send';
 import { resolveVariables } from '../../../../lib/variables';
 import { kickWorker, isWorkerRequest } from '../../../../lib/campaign-worker';
 import { scanReplies, type ReplyScanRow } from '../../../../lib/reply-scan';
+import { isLikelyLandline } from '../../../../lib/phone';
 
 export const prerender = false;
 
@@ -67,7 +68,7 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
 
   const { data: campaign } = await sb
     .from('az_campaigns')
-    .select('id, status, processing_until, instance_id, custom_body, template_id, segment_filter, custom_media_url, custom_media_type, az_templates(body, media_url, media_type)')
+    .select('id, status, processing_until, instance_id, custom_body, template_id, segment_filter, custom_media_url, custom_media_type, custom_media, media_format, az_templates(body, media_url, media_type)')
     .eq('id', id)
     .maybeSingle();
 
@@ -87,12 +88,25 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
   const templateBody: string | null =
     (campaign as any).az_templates?.body || campaign.custom_body || null;
 
-  // M2: mídia da campanha — override por campanha > mídia do template
+  // M2/F2: mídias da campanha — array custom_media (álbum, Checkpoint 10/07)
+  // > single custom_media_url (compat) > mídia do template.
   const tpl = (campaign as any).az_templates || {};
-  const mediaUrl: string | null = (campaign as any).custom_media_url || tpl.media_url || null;
-  const mediaType: 'image' | 'video' =
-    (((campaign as any).custom_media_url ? (campaign as any).custom_media_type : tpl.media_type) === 'video')
-      ? 'video' : 'image';
+  const mediaArr = Array.isArray((campaign as any).custom_media) ? (campaign as any).custom_media : [];
+  let mediaList: { url: string; type: 'image' | 'video'; text?: string | null }[] = mediaArr
+    .filter((m: any) => m && m.url)
+    .map((m: any) => ({ url: m.url, type: m.type === 'video' ? 'video' : 'image', text: m.text || null }));
+  // #8: carrossel interativo — só vale com 2+ imagens (sem vídeo)
+  const useCarousel = (campaign as any).media_format === 'carousel'
+    && mediaList.length > 1
+    && mediaList.every(m => m.type === 'image');
+  if (mediaList.length === 0) {
+    const singleUrl: string | null = (campaign as any).custom_media_url || tpl.media_url || null;
+    if (singleUrl) {
+      const singleType = ((campaign as any).custom_media_url ? (campaign as any).custom_media_type : tpl.media_type) === 'video' ? 'video' : 'image';
+      mediaList = [{ url: singleUrl, type: singleType }];
+    }
+  }
+  const mediaUrl: string | null = mediaList[0]?.url || null; // gate: campanha tem mídia?
 
   if (!templateBody) {
     await sb.from('az_campaigns')
@@ -152,8 +166,9 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
   // 3b. Reconcilia entregas: este UazapiGO NÃO emite webhooks de ACK, então
   //     cada hop confere ativamente os envios recentes ainda em 'sent' e
   //     promove para delivered/read via /message/find.
-  await reconcileDeliveries(sb, UAZAPI_URL, uazToken, id, 12, started);
+  const promotedHop = await reconcileDeliveries(sb, UAZAPI_URL, uazToken, id, 12, started);
   await refreshDelivered(sb, id);
+  if (promotedHop > 0) await clearInstanceRestriction(sb, campaign.instance_id);
 
   // 3c. Respostas (Fase 2): varredura curta por hop — o grosso roda no
   //     polling do dashboard, aqui é só para campanhas em andamento.
@@ -171,6 +186,14 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
         processing_until: null,
         last_error: `${acceptedNoDelivery} envios aceitos pelo WhatsApp mas NENHUM entregue — o número de envio pode estar restrito (aceita e não entrega). Reconecte a instância em Configurações ou dispare por outro número, depois use Retomar.`,
       }).eq('id', id);
+      // Marca a instância como restrita — badge em Config/wizard evita que a
+      // Tati escolha esse número de novo. Limpa na 1ª entrega confirmada.
+      if (campaign.instance_id) {
+        await sb.from('az_whatsapp_instances').update({
+          restricted_at: new Date().toISOString(),
+          restricted_reason: `Canário: ${acceptedNoDelivery} envios aceitos sem nenhuma entrega. Reaquecer, reconectar ou trocar o chip.`,
+        }).eq('id', campaign.instance_id);
+      }
       return json({ ok: true, canary_failed: true });
     }
   }
@@ -180,7 +203,7 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
   // 5. Envia o lote
   const { data: batch } = await sb
     .from('az_campaign_recipients')
-    .select('id, contact_id, phone, contact_name, az_contacts(nome_fantasia, razao_social, cidade, estado, contato, segmento)')
+    .select('id, contact_id, phone, contact_name, az_contacts(nome_fantasia, razao_social, cidade, estado, contato, segmento, phone_primary, phones)')
     .eq('campaign_id', id)
     .eq('status', 'pending')
     .order('created_at', { ascending: true })
@@ -210,15 +233,37 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
     if (!ownClaim) continue;
 
     // Pre-check: número existe no WhatsApp? (fail-open em erro de API)
+    // Fallback (Checkpoint 10/07 B1): fone principal reprovado → tenta os
+    // demais fones do contato e envia para o primeiro que tiver WhatsApp.
+    // Caso real: 5/7 falhas da campanha Ingá eram FIXOS cadastrados como
+    // principal, com celular válido no mesmo cadastro.
+    let sendPhone = r.phone;
     const onWA = await checkOnWhatsApp(UAZAPI_URL, uazToken, r.phone);
     if (onWA === false) {
-      await sb.from('az_campaign_recipients').update({
-        status: 'failed',
-        error_message: 'Número não está no WhatsApp',
-      }).eq('id', r.id);
-      await refreshCounters(sb, id);
-      await sleep(FAIL_DELAY_MS);
-      continue;
+      const contact = (r as any).az_contacts || {};
+      const alts = altPhones(contact, r.phone);
+      const rescue = alts.length > 0
+        ? await firstOnWhatsApp(UAZAPI_URL, uazToken, alts)
+        : null;
+
+      if (!rescue) {
+        await sb.from('az_campaign_recipients').update({
+          status: 'failed',
+          error_message: alts.length > 0
+            ? `Sem WhatsApp em nenhum dos ${alts.length + 1} telefones do contato`
+            : 'Número não está no WhatsApp' + (isLikelyLandline(r.phone) ? ' (parece telefone fixo)' : ''),
+        }).eq('id', r.id);
+        await refreshCounters(sb, id);
+        await sleep(FAIL_DELAY_MS);
+        continue;
+      }
+
+      // phone vira o fone efetivamente usado (reconciliação/respostas/dedup
+      // seguem funcionando); o original fica em fallback_from para a UI.
+      sendPhone = rescue;
+      await sb.from('az_campaign_recipients')
+        .update({ phone: rescue, fallback_from: r.phone })
+        .eq('id', r.id);
     }
 
     const c = (r as any).az_contacts || {};
@@ -235,17 +280,62 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
     let errMsg: string | null = null;
     let waMsgId: string | null = null;
     try {
-      // M2: campanha com mídia envia imagem/vídeo com a mensagem de legenda
-      const result = mediaUrl
-        ? await sendWhatsAppMedia(
-            r.phone, mediaUrl, mediaType, body, r.contact_id || undefined, id, instanceToken, campaign.instance_id || undefined
-          )
-        : await sendWhatsAppText(
-            r.phone, body, r.contact_id || undefined, id, instanceToken, campaign.instance_id || undefined
+      if (useCarousel) {
+        // #8: carrossel interativo — 1 mensagem única com cards navegáveis.
+        // Fallback automático para álbum se o servidor recusar o carrossel.
+        const carRes = await sendWhatsAppCarousel(
+          sendPhone, body,
+          mediaList.map(m => ({ image: m.url, text: m.text })),
+          r.contact_id || undefined, id, instanceToken, campaign.instance_id || undefined
+        );
+        ok = carRes.ok;
+        waMsgId = carRes.messageid || null;
+        errMsg = friendlySendError(carRes.error);
+        if (!ok) {
+          const fbRes = await sendWhatsAppMedia(
+            sendPhone, mediaList[0].url, mediaList[0].type, body, r.contact_id || undefined, id, instanceToken, campaign.instance_id || undefined
           );
-      ok = result.ok;
-      waMsgId = result.messageid || null;
-      errMsg = friendlySendError(result.error);
+          if (fbRes.ok) {
+            ok = true;
+            waMsgId = fbRes.messageid || null;
+            errMsg = 'Carrossel recusado pelo servidor — enviado como imagem única (fallback)';
+            for (const m of mediaList.slice(1)) {
+              await sleep(700 + Math.floor(Math.random() * 400));
+              await sendWhatsAppMedia(sendPhone, m.url, m.type, '', r.contact_id || undefined, id, instanceToken, campaign.instance_id || undefined);
+            }
+          }
+        }
+      } else if (mediaList.length > 0) {
+        // M2/F2: 1ª mídia leva a mensagem como legenda; as demais seguem em
+        // sequência curta — o WhatsApp agrupa como álbum no aparelho.
+        // Entrega/canário rastreiam a 1ª mensagem (wa_message_id).
+        const firstRes = await sendWhatsAppMedia(
+          sendPhone, mediaList[0].url, mediaList[0].type, body, r.contact_id || undefined, id, instanceToken, campaign.instance_id || undefined
+        );
+        ok = firstRes.ok;
+        waMsgId = firstRes.messageid || null;
+        errMsg = friendlySendError(firstRes.error);
+        if (ok && mediaList.length > 1) {
+          let extrasOk = 0;
+          for (const m of mediaList.slice(1)) {
+            await sleep(700 + Math.floor(Math.random() * 400));
+            const res = await sendWhatsAppMedia(
+              sendPhone, m.url, m.type, '', r.contact_id || undefined, id, instanceToken, campaign.instance_id || undefined
+            );
+            if (res.ok) extrasOk++;
+          }
+          if (extrasOk < mediaList.length - 1) {
+            errMsg = `Álbum parcial: ${extrasOk + 1} de ${mediaList.length} imagens enviadas`;
+          }
+        }
+      } else {
+        const result = await sendWhatsAppText(
+          sendPhone, body, r.contact_id || undefined, id, instanceToken, campaign.instance_id || undefined
+        );
+        ok = result.ok;
+        waMsgId = result.messageid || null;
+        errMsg = friendlySendError(result.error);
+      }
     } catch (e: any) {
       errMsg = e.message || 'Erro desconhecido';
     }
@@ -253,7 +343,8 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
     await sb.from('az_campaign_recipients').update({
       status: ok ? 'sent' : 'failed',
       sent_at: ok ? new Date().toISOString() : null,
-      error_message: ok ? null : errMsg,
+      // álbum parcial: enviado, mas registra quantas imagens realmente foram
+      error_message: ok ? (errMsg || null) : errMsg,
       wa_message_id: waMsgId,
     }).eq('id', r.id);
 
@@ -262,16 +353,18 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
 
     // Canário: espera a confirmação de entrega antes de liberar o volume
     if (canaryMode && ok && waMsgId) {
-      const delivered = await waitForDelivery(sb, UAZAPI_URL, uazToken, r.id, r.phone, waMsgId, started);
+      const delivered = await waitForDelivery(sb, UAZAPI_URL, uazToken, r.id, sendPhone, waMsgId, started);
       if (delivered) {
         await refreshDelivered(sb, id);
+        await clearInstanceRestriction(sb, campaign.instance_id);
       }
       break; // canário processa exatamente 1 por hop
     }
 
-    // Anti-ban: mídia usa espaçamento maior (4–6s) que texto (2–4s)
+    // Anti-ban: mídia usa espaçamento maior (4–6s) que texto (2–4s);
+    // álbum pesa mais ainda (+0,8s por imagem extra — são N mensagens)
     const okDelay = mediaUrl
-      ? DELAY_MEDIA_MIN_MS + Math.floor(Math.random() * DELAY_MEDIA_JITTER_MS)
+      ? DELAY_MEDIA_MIN_MS + Math.floor(Math.random() * DELAY_MEDIA_JITTER_MS) + (mediaList.length - 1) * 800
       : DELAY_MIN_MS + Math.floor(Math.random() * DELAY_JITTER_MS);
     await sleep(ok ? okDelay : FAIL_DELAY_MS);
   }
@@ -290,7 +383,8 @@ export const POST: APIRoute = async ({ locals, params, request, url }) => {
 
   // 7. Fila vazia → conclui (guard em 'sending' preserva cancelamento)
   //    Varredura final de entregas + respostas antes de fechar o relatório
-  await reconcileDeliveries(sb, UAZAPI_URL, uazToken, id, 30, started);
+  const promotedFinal = await reconcileDeliveries(sb, UAZAPI_URL, uazToken, id, 30, started);
+  if (promotedFinal > 0) await clearInstanceRestriction(sb, campaign.instance_id);
   await scanCampaignReplies(sb, UAZAPI_URL, uazToken, campaign, 12, started + TIME_BUDGET_MS);
   await refreshCounters(sb, id);
   await refreshDelivered(sb, id);
@@ -364,13 +458,71 @@ async function checkOnWhatsApp(uazUrl: string, token: string, phone: string): Pr
   }
 }
 
+// Fones alternativos do contato: phones[] + phone_primary, normalizados,
+// sem duplicar e sem repetir o fone que já reprovou.
+function altPhones(contact: { phone_primary?: string | null; phones?: string[] | null }, failedPhone: string): string[] {
+  const norm = (p: string) => {
+    const d = p.replace(/\D/g, '');
+    if (d.length === 12 || d.length === 13) return d;
+    if (d.length === 10 || d.length === 11) return `55${d}`;
+    return d;
+  };
+  const failed = norm(failedPhone);
+  const seen = new Set<string>([failed]);
+  const out: string[] = [];
+  for (const p of [contact.phone_primary, ...(contact.phones || [])]) {
+    if (!p) continue;
+    const n = norm(p);
+    if (n.length < 12 || seen.has(n)) continue;
+    seen.add(n);
+    out.push(n);
+  }
+  return out;
+}
+
+// Uma chamada /chat/check com todos os candidatos; retorna o primeiro com
+// WhatsApp (ordem do cadastro) ou null.
+async function firstOnWhatsApp(uazUrl: string, token: string, numbers: string[]): Promise<string | null> {
+  if (!uazUrl || !token || numbers.length === 0) return null;
+  try {
+    const res = await fetch(`${uazUrl}/chat/check`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', token },
+      body: JSON.stringify({ numbers }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => null);
+    if (!Array.isArray(data)) return null;
+    const okSet = new Set(
+      data.filter((i: any) => i?.isInWhatsapp === true)
+          .map((i: any) => String(i.query || '').replace(/\D/g, ''))
+    );
+    return numbers.find(n => okSet.has(n)) || null;
+  } catch {
+    return null;
+  }
+}
+
+// Entrega confirmada prova que a instância entrega — remove a marca de
+// restrita (fica de pé só enquanto o problema existir).
+async function clearInstanceRestriction(sb: SB, instanceId: string | null): Promise<void> {
+  if (!instanceId) return;
+  await sb.from('az_whatsapp_instances')
+    .update({ restricted_at: null, restricted_reason: null })
+    .eq('id', instanceId)
+    .not('restricted_at', 'is', null);
+}
+
 // Reconcilia recipients 'sent' (enviados há ≥45s) contra o status real no
 // UazapiGO. Time-boxed: nunca compromete o orçamento do hop.
+// Retorna quantos foram promovidos (entrega confirmada limpa a marca de
+// instância restrita no chamador).
 async function reconcileDeliveries(
   sb: SB, uazUrl: string, token: string,
   campaignId: string, maxRows: number, hopStarted: number
-): Promise<void> {
-  if (!uazUrl || !token) return;
+): Promise<number> {
+  if (!uazUrl || !token) return 0;
 
   const { data: rows } = await sb
     .from('az_campaign_recipients')
@@ -382,6 +534,7 @@ async function reconcileDeliveries(
     .order('sent_at', { ascending: true })
     .limit(maxRows);
 
+  let promoted = 0;
   for (const r of rows || []) {
     if (Date.now() - hopStarted > 12_000) break; // reserva o resto p/ envios
     try {
@@ -396,11 +549,14 @@ async function reconcileDeliveries(
       const st = String(found?.status || '').toLowerCase();
       if (st.includes('read') || st.includes('played')) {
         await sb.from('az_campaign_recipients').update({ status: 'read' }).eq('id', r.id);
+        promoted++;
       } else if (st.includes('deliver')) {
         await sb.from('az_campaign_recipients').update({ status: 'delivered' }).eq('id', r.id);
+        promoted++;
       }
     } catch { /* tenta no próximo hop */ }
   }
+  return promoted;
 }
 
 // Poll do canário: webhook ACK (recipient no banco) OU /message/find no UazapiGO

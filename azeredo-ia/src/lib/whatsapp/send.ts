@@ -79,6 +79,74 @@ export async function sendWhatsAppText(
 }
 
 /**
+ * #8 (backlog GitHub 17/07): carrossel interativo — mensagem única com cards
+ * (imagem + texto) via POST /send/carousel. Diferente do álbum (N mensagens
+ * sequenciais), chega como um carrossel navegável estilo Instagram.
+ */
+export async function sendWhatsAppCarousel(
+  phone: string,
+  text: string,
+  cards: { image: string; text?: string | null }[],
+  contactId?: string,
+  campaignId?: string,
+  instanceToken?: string,
+  instanceId?: string
+): Promise<SendResult> {
+  const UAZAPI_URL = import.meta.env.UAZAPI_URL;
+  const UAZAPI_TOKEN = instanceToken || import.meta.env.UAZAPI_TOKEN;
+
+  if (!UAZAPI_URL || !UAZAPI_TOKEN) {
+    return { ok: false, error: 'WhatsApp not configured' };
+  }
+
+  const normalizedPhone = normalizePhone(phone);
+
+  try {
+    const res = await fetch(`${UAZAPI_URL}/send/carousel`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', token: UAZAPI_TOKEN },
+      body: JSON.stringify({
+        number: normalizedPhone,
+        text,
+        carousel: cards.map(c => ({
+          image: c.image,
+          // o WhatsApp exige texto no card — cai para um espaço quando vazio
+          text: (c.text || '').trim() || ' ',
+        })),
+      }),
+      // Carrossel envolve download de N imagens no servidor UazapiGO
+      signal: AbortSignal.timeout(60_000),
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      return { ok: false, error: data.message || `HTTP ${res.status}` };
+    }
+
+    if (contactId) {
+      const sb = createServerClient();
+      await sb.from('az_messages').insert({
+        contact_id: contactId,
+        campaign_id: campaignId || null,
+        instance_id: instanceId || null,
+        phone: normalizedPhone,
+        wa_message_id: data.messageid || null,
+        direction: 'outbound',
+        body: text,
+        content_type: 'image',
+        media_url: cards[0]?.image || null,
+        status: 'sent',
+      });
+    }
+
+    return { ok: true, messageid: data.messageid };
+  } catch (e: any) {
+    return { ok: false, error: e.message };
+  }
+}
+
+/**
  * Envia mídia (imagem/vídeo) com legenda via POST /send/media do UazapiGO.
  * `file` é uma URL pública (bucket az-media) — o servidor UazapiGO precisa
  * alcançá-la para baixar e reenviar.

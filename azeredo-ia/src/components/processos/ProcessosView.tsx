@@ -12,9 +12,9 @@ interface Process {
 const CATEGORIES = ['Geral', 'Disparos', 'Atendimento', 'Vendas', 'Interno'];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Disparos:    { bg: 'rgba(37,211,102,0.12)',  color: '#4de08c'  } as any,
+  Disparos:    { bg: 'rgba(37,211,102,0.12)',  color: 'var(--accent-light)'  } as any,
   Atendimento: { bg: 'rgba(59,130,246,0.12)',  color: '#93c5fd'  } as any,
-  Vendas:      { bg: 'rgba(251,191,36,0.12)',  color: '#fcd34d'  } as any,
+  Vendas:      { bg: 'rgba(251,191,36,0.12)',  color: 'var(--amber)'  } as any,
   Interno:     { bg: 'rgba(168,85,247,0.12)',  color: '#c4b5fd'  } as any,
   Geral:       { bg: 'rgba(148,163,184,0.12)', color: '#94a3b8'  } as any,
 };
@@ -113,17 +113,17 @@ export default function ProcessosView() {
   return (
     <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
       {/* List panel */}
-      <div style={{ width: 340, borderRight: '1px solid #1e2820', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+      <div style={{ width: 340, borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
         {/* Header */}
-        <div style={{ padding: '20px 20px 0', borderBottom: '1px solid #1e2820' }}>
+        <div style={{ padding: '20px 20px 0', borderBottom: '1px solid var(--hairline)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f2' }}>Processos e Padrões</div>
-              <div style={{ fontSize: 12, color: '#6b7a72', marginTop: 2 }}>{processes.length} documentos</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Processos e Padrões</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{processes.length} documentos</div>
             </div>
             {isAdmin && (
               <button onClick={openNew} style={{
-                background: '#25D366', color: '#fff', border: 'none', borderRadius: 8,
+                background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 8,
                 padding: '7px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6,
               }}>
@@ -134,14 +134,14 @@ export default function ProcessosView() {
           </div>
           {/* Search */}
           <div style={{ position: 'relative', marginBottom: 12 }}>
-            <svg style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#4b5a52' }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Buscar processos..."
               style={{
-                width: '100%', background: '#0d1410', border: '1px solid #1e2820',
-                borderRadius: 8, padding: '8px 10px 8px 32px', color: '#e2e8e4',
+                width: '100%', background: 'var(--bg-card-translucent)', border: '1px solid var(--hairline)',
+                borderRadius: 8, padding: '8px 10px 8px 32px', color: 'var(--text-primary)',
                 fontSize: 13, outline: 'none', boxSizing: 'border-box',
               }}
             />
@@ -151,8 +151,8 @@ export default function ProcessosView() {
             {['', ...CATEGORIES].map(cat => (
               <button key={cat} onClick={() => setFilterCat(cat)} style={{
                 padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 500, cursor: 'pointer', border: 'none',
-                background: filterCat === cat ? '#25D366' : '#131a16',
-                color: filterCat === cat ? '#fff' : '#6b7a72',
+                background: filterCat === cat ? 'var(--accent)' : 'var(--bg-secondary)',
+                color: filterCat === cat ? '#fff' : 'var(--text-muted)',
               }}>
                 {cat || 'Todos'}
               </button>
@@ -163,13 +163,13 @@ export default function ProcessosView() {
         {/* List */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#4b5a52', fontSize: 13 }}>Carregando...</div>
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>Carregando...</div>
           ) : Object.keys(grouped).length === 0 ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#4b5a52', fontSize: 13 }}>Nenhum processo encontrado</div>
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>Nenhum processo encontrado</div>
           ) : (
             Object.entries(grouped).map(([cat, items]) => (
               <div key={cat}>
-                <div style={{ padding: '10px 20px 4px', fontSize: 10, fontWeight: 700, color: '#4b5a52', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <div style={{ padding: '10px 20px 4px', fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   {cat}
                 </div>
                 {items.map(p => {
@@ -187,12 +187,12 @@ export default function ProcessosView() {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: isActive ? '#e2e8e4' : '#c9d5cc' }}>{p.title}</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)' }}>{p.title}</div>
                         <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: c.bg, color: c.color, fontWeight: 600, flexShrink: 0 }}>
                           {p.category}
                         </span>
                       </div>
-                      <div style={{ fontSize: 12, color: '#4b5a52', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                         {p.body.split('\n')[0]}
                       </div>
                     </div>
@@ -205,23 +205,23 @@ export default function ProcessosView() {
       </div>
 
       {/* Detail / Edit panel */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#080c09' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'transparent' }}>
         {editing ? (
           /* Edit form */
           <div style={{ flex: 1, padding: 32, overflowY: 'auto', maxWidth: 720 }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f2', marginBottom: 24 }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 24 }}>
               {selected ? 'Editar Processo' : 'Novo Processo'}
             </div>
 
             <label style={{ display: 'block', marginBottom: 16 }}>
-              <div style={{ fontSize: 12, color: '#6b7a72', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Título *</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Título *</div>
               <input
                 value={form.title}
                 onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                 placeholder="Ex: Processo de Atendimento"
                 style={{
-                  width: '100%', background: '#0d1410', border: '1px solid #1e2820',
-                  borderRadius: 8, padding: '10px 14px', color: '#e2e8e4', fontSize: 14,
+                  width: '100%', background: 'var(--bg-card-translucent)', border: '1px solid var(--hairline)',
+                  borderRadius: 8, padding: '10px 14px', color: 'var(--text-primary)', fontSize: 14,
                   outline: 'none', boxSizing: 'border-box',
                 }}
               />
@@ -229,13 +229,13 @@ export default function ProcessosView() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <label>
-                <div style={{ fontSize: 12, color: '#6b7a72', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Categoria</div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Categoria</div>
                 <select
                   value={form.category}
                   onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                   style={{
-                    width: '100%', background: '#0d1410', border: '1px solid #1e2820',
-                    borderRadius: 8, padding: '10px 14px', color: '#e2e8e4', fontSize: 14,
+                    width: '100%', background: 'var(--bg-card-translucent)', border: '1px solid var(--hairline)',
+                    borderRadius: 8, padding: '10px 14px', color: 'var(--text-primary)', fontSize: 14,
                     outline: 'none', cursor: 'pointer',
                   }}
                 >
@@ -243,14 +243,14 @@ export default function ProcessosView() {
                 </select>
               </label>
               <label>
-                <div style={{ fontSize: 12, color: '#6b7a72', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ordem</div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ordem</div>
                 <input
                   type="number" min={0}
                   value={form.display_order}
                   onChange={e => setForm(f => ({ ...f, display_order: parseInt(e.target.value) || 0 }))}
                   style={{
-                    width: '100%', background: '#0d1410', border: '1px solid #1e2820',
-                    borderRadius: 8, padding: '10px 14px', color: '#e2e8e4', fontSize: 14,
+                    width: '100%', background: 'var(--bg-card-translucent)', border: '1px solid var(--hairline)',
+                    borderRadius: 8, padding: '10px 14px', color: 'var(--text-primary)', fontSize: 14,
                     outline: 'none', boxSizing: 'border-box',
                   }}
                 />
@@ -258,15 +258,15 @@ export default function ProcessosView() {
             </div>
 
             <label style={{ display: 'block', marginBottom: 24 }}>
-              <div style={{ fontSize: 12, color: '#6b7a72', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Conteúdo *</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Conteúdo *</div>
               <textarea
                 value={form.body}
                 onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
                 rows={12}
                 placeholder="Descreva o processo passo a passo..."
                 style={{
-                  width: '100%', background: '#0d1410', border: '1px solid #1e2820',
-                  borderRadius: 8, padding: '10px 14px', color: '#e2e8e4', fontSize: 13,
+                  width: '100%', background: 'var(--bg-card-translucent)', border: '1px solid var(--hairline)',
+                  borderRadius: 8, padding: '10px 14px', color: 'var(--text-primary)', fontSize: 13,
                   outline: 'none', resize: 'vertical', fontFamily: 'Inter, sans-serif',
                   lineHeight: 1.7, boxSizing: 'border-box',
                 }}
@@ -275,14 +275,14 @@ export default function ProcessosView() {
 
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={save} disabled={saving || !form.title || !form.body} style={{
-                background: '#25D366', color: '#fff', border: 'none', borderRadius: 8,
+                background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 8,
                 padding: '10px 24px', fontSize: 13, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer',
                 opacity: saving || !form.title || !form.body ? 0.6 : 1,
               }}>
                 {saving ? 'Salvando...' : 'Salvar'}
               </button>
               <button onClick={() => setEditing(false)} style={{
-                background: '#131a16', color: '#6b7a72', border: '1px solid #1e2820',
+                background: 'var(--surface-btn)', color: 'var(--text-muted)', border: '1px solid var(--hairline)',
                 borderRadius: 8, padding: '10px 20px', fontSize: 13, cursor: 'pointer',
               }}>
                 Cancelar
@@ -294,7 +294,7 @@ export default function ProcessosView() {
           <div style={{ flex: 1, padding: 32, overflowY: 'auto', maxWidth: 720 }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, gap: 16 }}>
               <div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: '#f1f5f2', marginBottom: 8 }}>{selected.title}</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>{selected.title}</div>
                 {(() => { const c = getCat(selected.category) as any; return (
                   <span style={{ fontSize: 11, padding: '3px 12px', borderRadius: 20, background: c.bg, color: c.color, fontWeight: 600 }}>
                     {selected.category}
@@ -304,13 +304,13 @@ export default function ProcessosView() {
               {isAdmin && (
                 <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                   <button onClick={() => openEdit(selected)} style={{
-                    background: 'rgba(37,211,102,0.1)', color: '#25D366', border: '1px solid rgba(37,211,102,0.2)',
+                    background: 'rgba(37,211,102,0.1)', color: 'var(--accent)', border: '1px solid rgba(37,211,102,0.2)',
                     borderRadius: 8, padding: '7px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
                   }}>
                     Editar
                   </button>
                   <button onClick={() => del(selected)} disabled={deleting} style={{
-                    background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)',
+                    background: 'rgba(239,68,68,0.1)', color: 'var(--red)', border: '1px solid rgba(239,68,68,0.2)',
                     borderRadius: 8, padding: '7px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
                   }}>
                     Excluir
@@ -320,12 +320,12 @@ export default function ProcessosView() {
             </div>
 
             <div style={{
-              background: '#0d1410', border: '1px solid #1e2820', borderRadius: 12,
+              background: 'var(--bg-card-translucent)', border: '1px solid var(--hairline)', borderRadius: 12,
               padding: '24px 28px',
             }}>
               {selected.body.split('\n').map((line, i) => (
                 <p key={i} style={{
-                  margin: '0 0 8px', fontSize: 14, color: line.match(/^\d+\./) ? '#e2e8e4' : '#9aad9e',
+                  margin: '0 0 8px', fontSize: 14, color: line.match(/^\d+\./) ? 'var(--text-primary)' : '#9aad9e',
                   lineHeight: 1.7, fontWeight: line.match(/^\d+\./) ? 500 : 400,
                 }}>
                   {line || <br />}
@@ -336,11 +336,11 @@ export default function ProcessosView() {
         ) : (
           /* Empty state */
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2a3a2e" strokeWidth="1.5" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            <div style={{ fontSize: 14, color: '#4b5a52' }}>Selecione um processo para visualizar</div>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--border-light)" strokeWidth="1.5" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <div style={{ fontSize: 14, color: 'var(--text-muted)' }}>Selecione um processo para visualizar</div>
             {isAdmin && (
               <button onClick={openNew} style={{
-                marginTop: 8, background: 'rgba(37,211,102,0.1)', color: '#25D366',
+                marginTop: 8, background: 'rgba(37,211,102,0.1)', color: 'var(--accent)',
                 border: '1px solid rgba(37,211,102,0.2)', borderRadius: 8, padding: '8px 20px',
                 fontSize: 13, fontWeight: 600, cursor: 'pointer',
               }}>

@@ -17,7 +17,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
 
   const { data, error, count } = await sb
     .from('az_campaigns')
-    .select('id, name, status, total_count, sent_count, delivered_count, failed_count, last_error, created_at, started_at, completed_at, az_templates(name), az_whatsapp_instances(display_name, uazapi_name, phone_number)', { count: 'exact' })
+    .select('id, name, status, total_count, sent_count, delivered_count, failed_count, last_error, created_at, started_at, completed_at, group_id, az_templates(name), az_whatsapp_instances(display_name, uazapi_name, phone_number)', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -36,7 +36,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
     return json({ error: 'JSON inválido' }, 400);
   }
 
-  const { name, template_id, custom_body, segment_filter, instance_id, custom_media_url, custom_media_type } = body;
+  const { name, template_id, custom_body, segment_filter, instance_id, custom_media_url, custom_media_type, custom_media, media_format } = body;
 
   if (!name?.trim()) return json({ error: 'Nome é obrigatório' }, 400);
   if (!template_id && !custom_body?.trim()) {
@@ -55,6 +55,8 @@ export const POST: APIRoute = async ({ locals, request }) => {
       instance_id: instance_id || null,
       custom_media_url: custom_media_url || null,
       custom_media_type: custom_media_type || null,
+      custom_media: custom_media || null,
+      media_format: media_format === 'carousel' ? 'carousel' : 'album',
       status: 'draft',
       created_by: (profile as any).id,
     })

@@ -6,6 +6,24 @@ import { createClient } from '@supabase/supabase-js';
 // para /login e nenhuma mensagem inbound era gravada.
 const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/logout', '/api/webhook'];
 
+// #18: gating de PÁGINA por papel (APIs revalidam com requireRole/requireAdmin).
+// Papéis: admin (tudo) | operacional | vendedor | gerencia.
+// /processos saiu do menu (#16) — rota permanece só para admin.
+const PAGE_ROLES: [string, string[]][] = [
+  ['/config',      ['operacional']],
+  ['/ferramentas', ['operacional']],
+  ['/metricas',    ['gerencia']],
+  ['/processos',   []],
+];
+
+function pageAllowed(pathname: string, role: string): boolean {
+  if (role === 'admin') return true;
+  for (const [prefix, roles] of PAGE_ROLES) {
+    if (pathname === prefix || pathname.startsWith(prefix + '/')) return roles.includes(role);
+  }
+  return true;
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
   const { pathname } = context.url;
 
@@ -14,13 +32,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
-  // Worker de disparo (self-chain servidor→servidor, sem cookie de sessão).
-  // O handler revalida o header — aqui só liberamos a passagem.
+  // Worker de disparo (self-chain servidor→servidor, sem cookie de sessão) e
+  // tick do chatbot (#7 — cron GitHub Actions). O handler revalida o header —
+  // aqui só liberamos a passagem.
   // trim(): o valor da env no Vercel pode ter newline no final.
   const workerKey = (import.meta.env.WEBHOOK_KEY || '').trim();
+  const isWorkerPath =
+    (pathname.startsWith('/api/campaigns/') && pathname.endsWith('/process')) ||
+    pathname === '/api/bot/tick';
   if (
-    workerKey &&
-    pathname.startsWith('/api/campaigns/') && pathname.endsWith('/process') &&
+    workerKey && isWorkerPath &&
     context.request.headers.get('x-worker-key') === workerKey
   ) {
     return next();
@@ -73,7 +94,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
           .eq('id', refreshData.user!.id)
           .single();
 
-        (context.locals as any).profile = profile || { id: refreshData.user!.id, role: 'operador' };
+        const prof = profile || { id: refreshData.user!.id, role: 'vendedor' };
+        (context.locals as any).profile = prof;
+        if (!pathname.startsWith('/api/') && !pageAllowed(pathname, prof.role)) {
+          return context.redirect('/disparos');
+        }
         return next();
       }
 
@@ -94,7 +119,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
       .eq('id', user.id)
       .single();
 
-    (context.locals as any).profile = profile || { id: user.id, role: 'operador' };
+    const prof = profile || { id: user.id, role: 'vendedor' };
+    (context.locals as any).profile = prof;
+    if (!pathname.startsWith('/api/') && !pageAllowed(pathname, prof.role)) {
+      return context.redirect('/disparos');
+    }
     return next();
   } catch {
     return context.redirect('/login');

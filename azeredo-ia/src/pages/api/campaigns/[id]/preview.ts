@@ -86,11 +86,40 @@ async function respondWithAudience(
   const { audience, error } = await resolveAudience(sb, filter);
   if (error || !audience) return json({ error: error || 'Falha ao resolver contatos' }, 500);
 
-  const page = audience.contacts.slice(offset, offset + limit);
+  // Partição por vendedor_efetivo (pré-corte, vem da lib) + instância de cada
+  // um — alimenta o seletor de números do wizard e mostra ANTES de disparar
+  // quem tem número e quem fica de fora. Sempre presente (não só com split).
+  const { data: insts } = await sb
+    .from('az_whatsapp_instances')
+    .select('id, display_name, uazapi_name, status, restricted_at, vendedor_nome')
+    .not('vendedor_nome', 'is', null);
+  const instByVendedor = new Map((insts || []).map((i: any) => [i.vendedor_nome, i]));
+  const porVendedor = audience.porVendedor.map(({ vendedor, count }) => {
+    const inst = vendedor ? instByVendedor.get(vendedor) : null;
+    return {
+      vendedor,
+      count,
+      instance: inst ? {
+        id: inst.id,
+        name: inst.display_name || inst.uazapi_name,
+        connected: inst.status === 'connected',
+        restricted: !!inst.restricted_at,
+      } : null,
+    };
+  });
+
+  // Split: lista e contagem só incluem quem tem para onde rotear — o que a
+  // Tati vê é exatamente o que dispara (quem fica de fora aparece na partição).
+  const contacts = filter.split_por_vendedor
+    ? audience.contacts.filter(c => c.vendedor_efetivo && instByVendedor.has(c.vendedor_efetivo))
+    : audience.contacts;
+
+  const page = contacts.slice(offset, offset + limit);
 
   return json({
-    count: audience.contacts.length,
+    count: contacts.length,
     duplicates: audience.duplicates.length,
+    por_vendedor: porVendedor,
     offset,
     contacts: page.map(c => ({
       id: c.id,

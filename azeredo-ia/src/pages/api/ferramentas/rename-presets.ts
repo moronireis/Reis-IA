@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { requireAuth } from '../../../lib/api-auth';
+import { requireRole } from '../../../lib/api-auth';
 import { createServerClient } from '../../../lib/supabase-server';
 
 export const prerender = false;
@@ -17,10 +17,15 @@ const KEY = 'rename_presets';
 
 type Rule =
   | { type: 'segment'; separator: string; index: number }
-  | { type: 'regex'; pattern: string; group: number };
+  | { type: 'regex'; pattern: string; group: number }
+  | { type: 'depara'; map: Record<string, string> };
 
 function validRule(rule: any): rule is Rule {
   if (!rule || typeof rule !== 'object') return false;
+  if (rule.type === 'depara') {
+    return !!rule.map && typeof rule.map === 'object' && !Array.isArray(rule.map) &&
+      Object.keys(rule.map).length > 0 && Object.keys(rule.map).length <= 5000;
+  }
   if (rule.type === 'segment') {
     return typeof rule.separator === 'string' && rule.separator.length > 0 &&
       Number.isInteger(rule.index) && rule.index >= 0;
@@ -38,7 +43,7 @@ async function readPresets(sb: ReturnType<typeof createServerClient>): Promise<R
 }
 
 export const GET: APIRoute = async ({ locals }) => {
-  const profile = requireAuth(locals as any);
+  const profile = requireRole(locals as any, ['operacional']);
   if (profile instanceof Response) return profile;
 
   const presets = await readPresets(createServerClient());
@@ -48,7 +53,7 @@ export const GET: APIRoute = async ({ locals }) => {
 };
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  const profile = requireAuth(locals as any);
+  const profile = requireRole(locals as any, ['operacional']);
   if (profile instanceof Response) return profile;
 
   let body: any;

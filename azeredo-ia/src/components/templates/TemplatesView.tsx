@@ -32,17 +32,17 @@ const VARIABLES = [
 ];
 
 const CAT_COLORS: Record<string, string> = {
-  geral: '#7a7a82', promocao: '#4A90FF', reativacao: '#f59e0b',
-  tabela: '#22c55e', lancamento: '#8b5cf6', follow_up: '#06b6d4',
+  geral: 'var(--text-muted)', promocao: '#4A90FF', reativacao: 'var(--amber)',
+  tabela: 'var(--green)', lancamento: '#8b5cf6', follow_up: '#06b6d4',
 };
 
 const S = {
-  root: { flex: 1, display: 'flex', flexDirection: 'column' as const, overflow: 'hidden', background: '#0a0a0a' },
+  root: { flex: 1, display: 'flex', flexDirection: 'column' as const, overflow: 'hidden', background: 'var(--bg-primary)' },
   header: {
-    padding: '20px 24px', borderBottom: '1px solid #1e1e21',
+    padding: '20px 24px', borderBottom: '1px solid var(--border)',
     display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
   },
-  title: { fontSize: '16px', fontWeight: 600, color: '#f0f0f0' },
+  title: { fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)' },
   btnPrimary: {
     padding: '8px 16px', borderRadius: '8px', border: 'none',
     background: '#4A90FF', color: '#fff', fontSize: '13px', fontWeight: 500,
@@ -50,54 +50,54 @@ const S = {
   },
   grid: { flex: 1, overflow: 'auto', padding: '20px 24px', display: 'grid', gap: '12px', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', alignContent: 'start' },
   card: {
-    background: '#111113', border: '1px solid #1e1e21', borderRadius: '10px',
+    background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '10px',
     padding: '16px', display: 'flex', flexDirection: 'column' as const, gap: '10px',
     transition: 'border-color 0.15s',
   },
   cardHeader: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' },
-  cardName: { fontSize: '14px', fontWeight: 600, color: '#f0f0f0', lineHeight: 1.3 },
+  cardName: { fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.3 },
   badge: (color: string) => ({
     display: 'inline-flex', padding: '2px 8px', borderRadius: '4px',
     fontSize: '11px', fontWeight: 500, background: color + '18', color,
     border: `1px solid ${color}33`, flexShrink: 0,
   }),
   body: {
-    fontSize: '13px', color: '#7a7a82', lineHeight: 1.6,
-    background: '#0a0a0a', borderRadius: '6px', padding: '10px 12px',
+    fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6,
+    background: 'var(--bg-primary)', borderRadius: '6px', padding: '10px 12px',
     fontFamily: 'inherit', whiteSpace: 'pre-wrap' as const,
     maxHeight: '100px', overflow: 'hidden',
   },
   actions: { display: 'flex', gap: '8px' },
   btnSm: (danger?: boolean) => ({
-    padding: '5px 10px', borderRadius: '6px', border: `1px solid ${danger ? '#ef444433' : '#1e1e21'}`,
-    background: 'transparent', color: danger ? '#ef4444' : '#7a7a82',
+    padding: '5px 10px', borderRadius: '6px', border: `1px solid ${danger ? 'var(--red)33' : 'var(--border)'}`,
+    background: 'transparent', color: danger ? 'var(--red)' : 'var(--text-muted)',
     fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit',
   }),
-  empty: { padding: '60px 24px', textAlign: 'center' as const, color: '#4a4a52', fontSize: '14px' },
+  empty: { padding: '60px 24px', textAlign: 'center' as const, color: 'var(--text-faint)', fontSize: '14px' },
   // Modal
   overlay: {
     position: 'fixed' as const, inset: 0, background: 'rgba(0,0,0,0.7)',
     display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '24px',
   },
   modal: {
-    background: '#111113', border: '1px solid #1e1e21', borderRadius: '12px',
+    background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '12px',
     width: '100%', maxWidth: '560px', display: 'flex', flexDirection: 'column' as const, gap: '20px', padding: '24px',
   },
-  modalTitle: { fontSize: '15px', fontWeight: 600, color: '#f0f0f0' },
-  label: { fontSize: '12px', fontWeight: 600, color: '#7a7a82', marginBottom: '6px', display: 'block', letterSpacing: '0.01em' },
+  modalTitle: { fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' },
+  label: { fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px', display: 'block', letterSpacing: '0.01em' },
   fieldInput: {
-    width: '100%', padding: '9px 12px', background: '#0a0a0a',
-    border: '1px solid #1e1e21', borderRadius: '8px', color: '#f0f0f0',
+    width: '100%', padding: '9px 12px', background: 'var(--bg-primary)',
+    border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text-primary)',
     fontSize: '13px', outline: 'none', fontFamily: 'inherit',
   },
   fieldSelect: {
-    width: '100%', padding: '9px 12px', background: '#0a0a0a',
-    border: '1px solid #1e1e21', borderRadius: '8px', color: '#f0f0f0',
+    width: '100%', padding: '9px 12px', background: 'var(--bg-primary)',
+    border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text-primary)',
     fontSize: '13px', outline: 'none', fontFamily: 'inherit', cursor: 'pointer',
   },
   fieldTextarea: {
-    width: '100%', padding: '9px 12px', background: '#0a0a0a',
-    border: '1px solid #1e1e21', borderRadius: '8px', color: '#f0f0f0',
+    width: '100%', padding: '9px 12px', background: 'var(--bg-primary)',
+    border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text-primary)',
     fontSize: '13px', outline: 'none', fontFamily: 'inherit', resize: 'vertical' as const,
     minHeight: '120px',
   },
@@ -108,15 +108,15 @@ const S = {
     border: '1px solid rgba(74,144,255,0.2)', cursor: 'pointer', fontFamily: 'monospace',
   },
   preview: {
-    background: '#0a0a0a', borderRadius: '8px', padding: '10px 12px',
-    fontSize: '13px', color: '#c0c0c8', lineHeight: 1.6,
+    background: 'var(--bg-primary)', borderRadius: '8px', padding: '10px 12px',
+    fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.6,
     whiteSpace: 'pre-wrap' as const, minHeight: '60px',
-    border: '1px solid #1e1e21',
+    border: '1px solid var(--border)',
   },
   modalFooter: { display: 'flex', gap: '10px', justifyContent: 'flex-end' },
   btnCancel: {
-    padding: '8px 16px', borderRadius: '8px', border: '1px solid #1e1e21',
-    background: 'transparent', color: '#7a7a82', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit',
+    padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)',
+    background: 'transparent', color: 'var(--text-muted)', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit',
   },
   btnSave: {
     padding: '8px 16px', borderRadius: '8px', border: 'none',
@@ -268,21 +268,21 @@ export default function TemplatesView() {
         ) : templates.map(t => (
           <div key={t.id} style={S.card}
             onMouseEnter={e => (e.currentTarget.style.borderColor = '#2a2a2e')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e1e21')}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
           >
             <div style={S.cardHeader}>
               <span style={S.cardName}>{t.name}</span>
               <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
                 {t.media_url && (
-                  <span style={S.badge('#25D366')} title={t.media_type === 'video' ? 'Template com vídeo' : 'Template com imagem'}>
+                  <span style={S.badge('var(--accent)')} title={t.media_type === 'video' ? 'Template com vídeo' : 'Template com imagem'}>
                     {t.media_type === 'video' ? 'vídeo' : 'imagem'}
                   </span>
                 )}
-                <span style={S.badge(CAT_COLORS[t.category] || '#7a7a82')}>{catLabel(t.category)}</span>
+                <span style={S.badge(CAT_COLORS[t.category] || 'var(--text-muted)')}>{catLabel(t.category)}</span>
               </div>
             </div>
             {t.media_url && t.media_type === 'image' && (
-              <img src={t.media_url} alt="" style={{ width: '100%', height: 110, objectFit: 'cover', borderRadius: 6, border: '1px solid #1e1e21' }} />
+              <img src={t.media_url} alt="" style={{ width: '100%', height: 110, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border)' }} />
             )}
             <div style={S.body}>{t.body}</div>
             <div style={S.actions}>
@@ -345,12 +345,12 @@ export default function TemplatesView() {
               {formMediaUrl ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   {formMediaType === 'image' ? (
-                    <img src={formMediaUrl} alt="mídia do template" style={{ width: 84, height: 84, objectFit: 'cover', borderRadius: 8, border: '1px solid #1e1e21' }} />
+                    <img src={formMediaUrl} alt="mídia do template" style={{ width: 84, height: 84, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
                   ) : (
-                    <video src={formMediaUrl} style={{ width: 84, height: 84, objectFit: 'cover', borderRadius: 8, border: '1px solid #1e1e21' }} muted />
+                    <video src={formMediaUrl} style={{ width: 84, height: 84, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} muted />
                   )}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <span style={{ fontSize: 11, color: '#7a7a82' }}>{formMediaType === 'image' ? 'Imagem anexada' : 'Vídeo anexado'}</span>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{formMediaType === 'image' ? 'Imagem anexada' : 'Vídeo anexado'}</span>
                     <button style={S.btnSm(true)} onClick={() => { setFormMediaUrl(null); setFormMediaType(null); }}>
                       Remover mídia
                     </button>
@@ -370,7 +370,7 @@ export default function TemplatesView() {
                 style={{ display: 'none' }}
                 onChange={e => { const f = e.target.files?.[0]; if (f) uploadMedia(f); e.target.value = ''; }}
               />
-              <div style={{ fontSize: 10, color: '#4a4a52', marginTop: 6 }}>
+              <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 6 }}>
                 JPG/PNG/WebP até 5MB · MP4/MOV até 16MB. A mensagem vira legenda da mídia no WhatsApp.
               </div>
             </div>

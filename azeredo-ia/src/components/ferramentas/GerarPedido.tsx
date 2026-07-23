@@ -65,46 +65,46 @@ const S = {
   grid3: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 },
   grid4: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 16, marginBottom: 16 },
   section: { marginBottom: 28 },
-  sectionTitle: { fontSize: 12, fontWeight: 700, color: '#4a6050', textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 14, paddingBottom: 8, borderBottom: '1px solid #1c2820' },
+  sectionTitle: { fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 14, paddingBottom: 8, borderBottom: '1px solid var(--hairline)' },
   field: { display: 'flex', flexDirection: 'column' as const, gap: 5 },
-  fieldLabel: { fontSize: 11, fontWeight: 600, color: '#4a6050', textTransform: 'uppercase' as const, letterSpacing: '0.05em' },
+  fieldLabel: { fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' as const, letterSpacing: '0.05em' },
   input: {
-    background: '#0d120e', border: '1px solid #1c2820', borderRadius: 6,
-    color: '#e8f0e8', fontSize: 13, padding: '8px 10px', outline: 'none',
+    background: 'var(--bg-card-translucent)', border: '1px solid var(--hairline)', borderRadius: 6,
+    color: 'var(--text-primary)', fontSize: 13, padding: '8px 10px', outline: 'none',
     fontFamily: 'inherit', width: '100%', boxSizing: 'border-box' as const,
   },
-  tableWrap: { overflowX: 'auto' as const, borderRadius: 8, border: '1px solid #1c2820', marginBottom: 12 },
+  tableWrap: { overflowX: 'auto' as const, borderRadius: 8, border: '1px solid var(--hairline)', marginBottom: 12 },
   table: { width: '100%', borderCollapse: 'collapse' as const, fontSize: 12 },
-  th: { padding: '8px 10px', textAlign: 'left' as const, background: '#0d120e', color: '#4a6050', fontWeight: 600, borderBottom: '1px solid #1c2820', whiteSpace: 'nowrap' as const, fontSize: '11px' as const },
-  td: { padding: '6px 6px', borderBottom: '1px solid #0d120e', verticalAlign: 'middle' as const },
+  th: { padding: '8px 10px', textAlign: 'left' as const, background: 'var(--bg-card-translucent)', color: 'var(--text-muted)', fontWeight: 600, borderBottom: '1px solid var(--hairline)', whiteSpace: 'nowrap' as const, fontSize: '11px' as const },
+  td: { padding: '6px 6px', borderBottom: '1px solid var(--bg-secondary)', verticalAlign: 'middle' as const },
   tdInput: {
-    background: '#080c09', border: '1px solid #1c2820', borderRadius: 5,
-    color: '#e8f0e8', fontSize: 12, padding: '5px 7px', outline: 'none',
+    background: 'transparent', border: '1px solid var(--hairline)', borderRadius: 5,
+    color: 'var(--text-primary)', fontSize: 12, padding: '5px 7px', outline: 'none',
     fontFamily: 'inherit', width: '100%', boxSizing: 'border-box' as const,
   },
-  tdVal: { padding: '6px 10px', borderBottom: '1px solid #0d120e', color: '#8aaa90', fontSize: 12, textAlign: 'right' as const, whiteSpace: 'nowrap' as const },
+  tdVal: { padding: '6px 10px', borderBottom: '1px solid var(--bg-secondary)', color: 'var(--text-secondary)', fontSize: 12, textAlign: 'right' as const, whiteSpace: 'nowrap' as const },
   addBtn: {
-    padding: '7px 16px', borderRadius: 6, border: '1px solid #1c2820',
-    background: '#0d120e', color: '#4de08c', fontSize: 12, fontWeight: 600,
+    padding: '7px 16px', borderRadius: 6, border: '1px solid var(--hairline)',
+    background: 'var(--bg-card-translucent)', color: 'var(--accent-light)', fontSize: 12, fontWeight: 600,
     cursor: 'pointer', fontFamily: 'inherit',
   },
   removeBtn: {
     padding: '4px 8px', borderRadius: 4, border: 'none',
-    background: 'rgba(239,68,68,0.12)', color: '#f87171',
+    background: 'rgba(239,68,68,0.12)', color: 'var(--red)',
     cursor: 'pointer', fontSize: 11, fontFamily: 'inherit',
   },
   totalsBox: {
-    background: '#0d120e', border: '1px solid #1c2820', borderRadius: 8,
+    background: 'var(--bg-card-translucent)', border: '1px solid var(--hairline)', borderRadius: 8,
     padding: '16px 20px', display: 'flex', flexDirection: 'column' as const, gap: 6, marginBottom: 24,
   },
   totalsRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  totalsLabel: { fontSize: 12, color: '#4a6050' },
-  totalsVal: { fontSize: 13, color: '#8aaa90', fontFamily: 'monospace' },
-  totalsValBig: { fontSize: 15, color: '#e8f0e8', fontWeight: 700, fontFamily: 'monospace' },
+  totalsLabel: { fontSize: 12, color: 'var(--text-muted)' },
+  totalsVal: { fontSize: 13, color: 'var(--text-secondary)', fontFamily: 'monospace' },
+  totalsValBig: { fontSize: 15, color: 'var(--text-primary)', fontWeight: 700, fontFamily: 'monospace' },
   genBtn: (disabled: boolean) => ({
     padding: '11px 28px', borderRadius: 8, border: 'none', fontFamily: 'inherit',
     fontSize: 13, fontWeight: 600, cursor: disabled ? 'not-allowed' : 'pointer',
-    background: disabled ? '#1c2820' : '#25D366', color: disabled ? '#4a6050' : '#fff',
+    background: disabled ? 'var(--border)' : 'var(--accent)', color: disabled ? 'var(--text-muted)' : '#fff',
   }),
 };
 
@@ -225,7 +225,7 @@ export default function GerarPedido() {
 
   return (
     <div style={S.wrap}>
-      <div style={{ marginBottom: 24, fontSize: 13, color: '#8aaa90' }}>
+      <div style={{ marginBottom: 24, fontSize: 13, color: 'var(--text-secondary)' }}>
         Preencha os dados do pedido e gere o arquivo no formato Mercos.
       </div>
 
@@ -300,7 +300,7 @@ export default function GerarPedido() {
                 const c = calcs[i];
                 return (
                   <tr key={i} style={{ background: i % 2 === 0 ? '#080c09' : '#0a0f0b' }}>
-                    <td style={{ ...S.td, color: '#2d3d30', textAlign: 'center' as const, fontSize: 11 }}>{i + 1}</td>
+                    <td style={{ ...S.td, color: 'var(--text-faint)', textAlign: 'center' as const, fontSize: 11 }}>{i + 1}</td>
                     <td style={S.td}><input style={S.tdInput} value={item.codigo} onChange={setItem(i, 'codigo')} placeholder="REF" /></td>
                     <td style={S.td}><input style={{ ...S.tdInput, minWidth: 180 }} value={item.produto} onChange={setItem(i, 'produto')} placeholder="Nome do produto" /></td>
                     <td style={S.td}><input style={S.tdInput} value={item.unidade} onChange={setItem(i, 'unidade')} placeholder="Un" /></td>
@@ -308,7 +308,7 @@ export default function GerarPedido() {
                     <td style={S.td}><input style={S.tdInput} value={item.preco_tabela} onChange={setItem(i, 'preco_tabela')} placeholder="0,00" /></td>
                     <td style={S.td}><input style={S.tdInput} value={item.desc_pct} onChange={setItem(i, 'desc_pct')} placeholder="0" /></td>
                     <td style={S.tdVal}>{c.preco > 0 ? fmtMoney(c.liquido) : '—'}</td>
-                    <td style={{ ...S.tdVal, color: '#e8f0e8', fontWeight: 600 }}>{c.preco > 0 ? fmtMoney(c.subtotal) : '—'}</td>
+                    <td style={{ ...S.tdVal, color: 'var(--text-primary)', fontWeight: 600 }}>{c.preco > 0 ? fmtMoney(c.subtotal) : '—'}</td>
                     <td style={{ ...S.td, textAlign: 'center' as const }}>
                       {items.length > 1 && (
                         <button style={S.removeBtn} onClick={() => removeItem(i)}>✕</button>
@@ -337,11 +337,11 @@ export default function GerarPedido() {
           </div>
           <div style={S.totalsRow}>
             <span style={S.totalsLabel}>Total de Descontos</span>
-            <span style={{ ...S.totalsVal, color: '#f87171' }}>- R$ {fmtMoney(totalDesc)}</span>
+            <span style={{ ...S.totalsVal, color: 'var(--red)' }}>- R$ {fmtMoney(totalDesc)}</span>
           </div>
-          <div style={{ height: 1, background: '#1c2820', margin: '4px 0' }} />
+          <div style={{ height: 1, background: 'var(--border)', margin: '4px 0' }} />
           <div style={S.totalsRow}>
-            <span style={{ ...S.totalsLabel, color: '#e8f0e8', fontWeight: 600 }}>Valor total em produtos</span>
+            <span style={{ ...S.totalsLabel, color: 'var(--text-primary)', fontWeight: 600 }}>Valor total em produtos</span>
             <span style={S.totalsValBig}>R$ {fmtMoney(totalLiq)}</span>
           </div>
         </div>
@@ -351,7 +351,7 @@ export default function GerarPedido() {
         {generating ? 'Gerando...' : 'Baixar Pedido (.xlsx)'}
       </button>
       {!canGenerate && (
-        <div style={{ marginTop: 8, fontSize: 12, color: '#f87171' }}>
+        <div style={{ marginTop: 8, fontSize: 12, color: 'var(--red)' }}>
           Preencha: representada, nome do cliente e ao menos um item com produto e preço.
         </div>
       )}

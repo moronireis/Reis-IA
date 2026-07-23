@@ -1,0 +1,19 @@
+# Chatbot AZEREDO IA — tick de fallback (#7, backlog 17/07)
+# O bot responde em segundos com a plataforma aberta (pump do dashboard);
+# este cron garante o primeiro atendimento com a plataforma FECHADA.
+# 15 min mantém o uso de minutos do Actions dentro do free tier.
+name: bot-tick
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Aciona o tick do chatbot
+        run: |
+          curl -s -X POST "https://azeredo-ia.vercel.app/api/bot/tick" \
+            -H "x-worker-key: ${{ secrets.AZEREDO_WORKER_KEY }}" \
+            --max-time 60 | head -c 300

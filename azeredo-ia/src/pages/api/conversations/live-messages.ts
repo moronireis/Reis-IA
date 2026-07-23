@@ -2,6 +2,17 @@
  * GET /api/conversations/live-messages?instance_id=UUID&jid=5551...@s.whatsapp.net&limit=50
  * Fetches messages live from UazapiGO for a specific chat.
  * Uses POST /message/find — the correct UazapiGO endpoint.
+ *
+ * Fix #2 (backlog GitHub, 17/07): o parâmetro correto do /message/find é
+ * `chatid` (minúsculo) — o antigo `chatId` era ignorado pelo servidor, que
+ * respondia com as últimas mensagens da INSTÂNCIA inteira. Era isso que
+ * misturava conversas de clientes diferentes na tela. Além do parâmetro,
+ * há um filtro defensivo: mensagem que não pertence ao chat pedido é
+ * descartada mesmo se o servidor devolver.
+ *
+ * #3 (chat completo): mensagens de mídia apontam para o proxy
+ * /api/conversations/live-media, que baixa do CDN do WhatsApp, decripta
+ * (AES-256-CBC) e cacheia no bucket az-media.
  */
 import type { APIRoute } from 'astro';
 import { requireAuth } from '../../../lib/api-auth';
@@ -32,11 +43,11 @@ export const GET: APIRoute = async ({ locals, url }) => {
   if (inst.status !== 'connected') return json({ error: 'Instance not connected' }, 400);
 
   try {
-    // UazapiGO: POST /message/find — returns messages for a specific chat
+    // UazapiGO: POST /message/find — parâmetro é `chatid` (minúsculo!)
     const resp = await fetch(`${UAZAPI_URL}/message/find`, {
       method: 'POST',
       headers: { token: inst.token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chatId: jid, count: limit }),
+      body: JSON.stringify({ chatid: jid, limit }),
     });
 
     if (!resp.ok) {
@@ -47,30 +58,46 @@ export const GET: APIRoute = async ({ locals, url }) => {
     const raw = await resp.json();
     const msgs = Array.isArray(raw) ? raw : raw?.messages ?? raw?.data ?? [];
 
-    const normalized = msgs.map((m: any) => {
+    // Filtro defensivo: só mensagens do chat pedido. Compara o chatid da
+    // mensagem (quando o servidor informa) com o jid solicitado — nunca mais
+    // mistura conversa de outro cliente, independente do comportamento do
+    // servidor com parâmetros desconhecidos.
+    const wantedPhone = jid.split('@')[0].replace(/\D/g, '');
+    const belongsToChat = (m: any): boolean => {
+      const mChat = m.chatid ?? m.chatId ?? m.key?.remoteJid ?? m.remoteJid ?? null;
+      if (!mChat) return true; // servidor não informou — confia no filtro do request
+      const mPhone = String(mChat).split('@')[0].replace(/\D/g, '');
+      return mPhone === wantedPhone || String(mChat) === jid;
+    };
+
+    const normalized = msgs.filter(belongsToChat).map((m: any) => {
       const fromMe      = m.fromMe ?? false;
       const body        = m.text ?? m.body ?? m.caption ?? '';
       const ts          = m.messageTimestamp ?? m.timestamp ?? 0;
       // Timestamps can be ms (13 digits) or s (10 digits)
       const tsMs        = ts > 1e12 ? ts : ts * 1000;
       const msgType     = m.messageType ?? m.type ?? 'ExtendedTextMessage';
+      const msgId       = m.messageid ?? m.id ?? String(tsMs);
 
       let content_type = 'text';
-      if (msgType.toLowerCase().includes('image') || msgType.toLowerCase().includes('sticker')) {
-        content_type = 'image';
-      } else if (msgType.toLowerCase().includes('audio') || msgType.toLowerCase().includes('ptt')) {
-        content_type = 'audio';
-      } else if (msgType.toLowerCase().includes('video')) {
-        content_type = 'video';
-      } else if (msgType.toLowerCase().includes('document')) {
-        content_type = 'document';
-      }
+      const lower = String(m.mediaType || msgType).toLowerCase();
+      if (lower.includes('sticker')) content_type = 'sticker';
+      else if (lower.includes('image')) content_type = 'image';
+      else if (lower.includes('audio') || lower.includes('ptt')) content_type = 'audio';
+      else if (lower.includes('video')) content_type = 'video';
+      else if (lower.includes('document')) content_type = 'document';
 
-      const media_url  = m.fileURL ?? m.content?.URL ?? m.content?.url ?? null;
-      const mimetype   = m.content?.mimetype ?? null;
+      const cdnUrl   = m.fileURL ?? m.content?.URL ?? m.content?.url ?? null;
+      const mimetype = m.content?.mimetype ?? m.mimetype ?? null;
+
+      // Mídia: aponta para o proxy que decripta + cacheia (a URL do CDN do
+      // WhatsApp vem criptografada e expira — não serve direto no <img>).
+      const media_url = (content_type !== 'text' && (cdnUrl || msgId))
+        ? `/api/conversations/live-media?instance_id=${instance_id}&id=${encodeURIComponent(msgId)}&type=${content_type}`
+        : null;
 
       return {
-        id:           m.id ?? m.messageid ?? String(tsMs),
+        id:           msgId,
         body:         body || null,
         content_type,
         media_url,
