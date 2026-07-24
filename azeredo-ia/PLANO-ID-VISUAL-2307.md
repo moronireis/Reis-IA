@@ -75,3 +75,15 @@ escopo e alinhar para depois da validação conjunta.
 
 ## Changelog
 - 2026-07-23 — Plano criado (anexos das issues #20/#21 baixados e analisados).
+- 2026-07-23 (noite) — **EXECUTADO E EM PRODUÇÃO** (deploy azeredo-9azrmzvbb; preview
+  azeredo-eaa7isup9 aprovado). #21: anexos tratados SEM vectosolve (API key ausente) —
+  remoção de fundo por des-composição sobre branco em PIL (sem franja), recortes via sips;
+  assets em `public/brand/` (logo-azeredo.png 676×262, monograma-az.png 215×136,
+  favicon-az.png 128); lockup no login (drop-shadow segura o navy no escuro), monograma na
+  sidebar/mobile, favicon PNG; tokens calibrados (--accent-light #F59B3D, --accent-dark
+  #D6661A, navy claro #1C2E52). #20: os 5 `rgba(10,16,12,.62)` da ConversasView + sticky de
+  Contatos (`rgba(8,12,9,.92)`) → --glass-nav/--glass-modal; bgs `rgba(255,255,255,.03-.05)`
+  → --field-bg; GerarPedido tokenizado. Smoke prod ok. Fechamento: commit f92f7c8c,
+  snapshot tag checkpoint-2026-07-23b, u4-status entrega 3, comentários #19 (pedido de
+  escopo ao postrenan), #20 e #21. Pendência: arquivo vetorial do logo (nitidez em telas
+  grandes) — pedido na #21.
