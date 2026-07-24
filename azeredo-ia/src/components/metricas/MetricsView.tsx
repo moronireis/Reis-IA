@@ -300,7 +300,7 @@ function Funnel({ totals }: { totals: Agg }) {
               <span style={{ color: C.sub }}>{s.label}</span>
               <span style={{ color: C.ink, fontWeight: 600 }}>{fmt(s.value)} {i > 0 && <span style={{ color: C.mut, fontWeight: 400 }}>· {pct(rel)}</span>}</span>
             </div>
-            <div style={{ height: 10, borderRadius: 5, background: 'rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+            <div style={{ height: 10, borderRadius: 5, background: 'var(--field-bg)', overflow: 'hidden' }}>
               <div style={{ width: `${w}%`, height: '100%', borderRadius: 5, background: s.color, boxShadow: `0 0 12px ${s.color}44`, transition: 'width 0.5s cubic-bezier(0.16,1,0.3,1)' }} />
             </div>
           </div>
@@ -390,7 +390,7 @@ const segBtn = (active: boolean): React.CSSProperties => ({
 });
 const ghostBtn: React.CSSProperties = {
   padding: '7px 14px', borderRadius: 9, border: '1px solid rgba(255,255,255,0.10)', cursor: 'pointer', fontSize: 12.5, fontWeight: 500,
-  background: 'rgba(255,255,255,0.03)', color: C.sub, fontFamily: 'inherit',
+  background: 'var(--field-bg)', color: C.sub, fontFamily: 'inherit',
 };
 const tabBtn = (active: boolean): React.CSSProperties => ({
   padding: '7px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 600, fontFamily: 'inherit',

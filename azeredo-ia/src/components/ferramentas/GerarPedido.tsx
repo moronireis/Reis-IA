@@ -299,7 +299,7 @@ export default function GerarPedido() {
               {items.map((item, i) => {
                 const c = calcs[i];
                 return (
-                  <tr key={i} style={{ background: i % 2 === 0 ? '#080c09' : '#0a0f0b' }}>
+                  <tr key={i} style={{ background: i % 2 === 0 ? 'var(--bg-primary)' : 'var(--bg-secondary)' }}>
                     <td style={{ ...S.td, color: 'var(--text-faint)', textAlign: 'center' as const, fontSize: 11 }}>{i + 1}</td>
                     <td style={S.td}><input style={S.tdInput} value={item.codigo} onChange={setItem(i, 'codigo')} placeholder="REF" /></td>
                     <td style={S.td}><input style={{ ...S.tdInput, minWidth: 180 }} value={item.produto} onChange={setItem(i, 'produto')} placeholder="Nome do produto" /></td>

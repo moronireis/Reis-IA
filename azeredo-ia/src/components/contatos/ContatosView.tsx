@@ -53,7 +53,7 @@ const S = {
     padding: '10px 16px', textAlign: 'left' as const, fontSize: '11px',
     fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' as const,
     letterSpacing: '0.05em', borderBottom: '1px solid var(--hairline)',
-    background: 'rgba(8, 12, 9, 0.92)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', position: 'sticky' as const, top: 0, zIndex: 1,
+    background: 'var(--glass-modal)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', position: 'sticky' as const, top: 0, zIndex: 1,
   },
   td: { padding: '11px 16px', borderBottom: '1px solid var(--hairline)', color: 'var(--text-secondary)', verticalAlign: 'middle' as const },
   tdPrimary: { padding: '11px 16px', borderBottom: '1px solid var(--hairline)', color: 'var(--text-primary)', fontWeight: 500, verticalAlign: 'middle' as const },

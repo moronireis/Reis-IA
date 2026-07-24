@@ -570,7 +570,7 @@ export default function ConversasView() {
 
       {/* ── Instance bar (always visible) ── */}
       <div style={{
-        background: 'rgba(10, 16, 12, 0.62)', borderBottom: '1px solid var(--hairline)',
+        background: 'var(--glass-nav)', borderBottom: '1px solid var(--hairline)',
         padding: '10px 16px', display: 'flex', gap: 8, alignItems: 'center',
         flexShrink: 0, overflowX: 'auto',
       }}>
@@ -665,7 +665,7 @@ export default function ConversasView() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
         {/* ── Left: conversation list ── */}
-        <div style={{ width: 320, borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', flexShrink: 0, background: 'rgba(10, 16, 12, 0.62)' }}>
+        <div style={{ width: 320, borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', flexShrink: 0, background: 'var(--glass-nav)' }}>
 
           {/* List header */}
           <div style={{ padding: '12px 14px 0', borderBottom: '1px solid var(--hairline)' }}>
@@ -818,7 +818,7 @@ export default function ConversasView() {
                               {allMode && chat.instance_name && (
                                 <span title="Número que atende esta conversa" style={{
                                   fontSize: 9, fontWeight: 700, color: 'var(--text-secondary)',
-                                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                                  background: 'var(--field-bg)', border: '1px solid rgba(255,255,255,0.08)',
                                   borderRadius: 100, padding: '1px 6px',
                                 }}>
                                   {chat.instance_name}
@@ -892,7 +892,7 @@ export default function ConversasView() {
           {hasActiveChat ? (
             <>
               {/* Chat header */}
-              <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(10, 16, 12, 0.62)', flexShrink: 0 }}>
+              <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', gap: 10, background: 'var(--glass-nav)', flexShrink: 0 }}>
                 <Avatar image={headerPhoto || selectedChat?.image} name={activeName} size={36} active isGroup={selectedChat?.is_group} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -963,13 +963,13 @@ export default function ConversasView() {
 
               {/* #3: preview do anexo pendente */}
               {attach && (
-                <div style={{ padding: '8px 16px', borderTop: '1px solid var(--border)', background: 'rgba(10, 16, 12, 0.62)', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ padding: '8px 16px', borderTop: '1px solid var(--border)', background: 'var(--glass-nav)', display: 'flex', alignItems: 'center', gap: 10 }}>
                   {attach.type === 'image' ? (
                     <img src={attach.url} alt="" style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)' }} />
                   ) : attach.type === 'video' ? (
                     <video src={attach.url} style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 8 }} muted />
                   ) : (
-                    <div style={{ width: 44, height: 44, borderRadius: 8, background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 8, background: 'var(--field-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="1.5" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                     </div>
                   )}
@@ -986,7 +986,7 @@ export default function ConversasView() {
               )}
 
               {/* Input */}
-              <div style={{ padding: '10px 16px', borderTop: '1px solid var(--border)', background: 'rgba(10, 16, 12, 0.62)', display: 'flex', gap: 8, alignItems: 'flex-end', flexShrink: 0 }}>
+              <div style={{ padding: '10px 16px', borderTop: '1px solid var(--border)', background: 'var(--glass-nav)', display: 'flex', gap: 8, alignItems: 'flex-end', flexShrink: 0 }}>
                 {/* #3: anexar arquivo (imagem/vídeo/PDF/áudio) — só no modo live */}
                 {liveMode && (
                   <>

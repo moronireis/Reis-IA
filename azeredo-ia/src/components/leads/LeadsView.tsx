@@ -57,7 +57,7 @@ function LeadCard({ lead, onOpen, dragging }: { lead: Lead; onOpen?: () => void;
       {lead.segmentos.length > 0 && (
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 6 }}>
           {lead.segmentos.slice(0, 3).map(s => (
-            <span key={s} style={{ fontSize: 9.5, fontWeight: 600, color: sub, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--hairline)', borderRadius: 100, padding: '1px 7px' }}>{s}</span>
+            <span key={s} style={{ fontSize: 9.5, fontWeight: 600, color: sub, background: 'var(--field-bg)', border: '1px solid var(--hairline)', borderRadius: 100, padding: '1px 7px' }}>{s}</span>
           ))}
           {lead.segmentos.length > 3 && <span style={{ fontSize: 9.5, color: mut }}>+{lead.segmentos.length - 3}</span>}
         </div>
